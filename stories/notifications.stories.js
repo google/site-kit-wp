@@ -1,4 +1,22 @@
 /**
+ * Notification Component Stories.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
@@ -10,12 +28,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { provideSiteInfo, provideModules, WithTestRegistry } from '../tests/js/utils';
+import { provideModuleRegistrations, provideSiteInfo, provideModules, WithTestRegistry } from '../tests/js/utils';
 import UserInputSuccessNotification from '../assets/js/components/notifications/UserInputSuccessNotification';
 import ModulesList from '../assets/js/components/ModulesList';
 import Notification from '../assets/js/components/legacy-notifications/notification';
 import UserInputSettings from '../assets/js/components/notifications/UserInputSettings';
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { STORE_NAME as MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 import gWinImage from '../assets/images/g-win.png';
 import rocketImage from '../assets/images/rocket.png';
 import sunImage from '../assets/images/sun.png';
@@ -28,6 +47,8 @@ storiesOf( 'Global/Notifications', module )
 	.add( 'Module Setup Complete', () => {
 		const setupRegistry = ( registry ) => {
 			provideModules( registry );
+			provideModuleRegistrations( registry );
+			registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( false );
 		};
 
 		return (
@@ -35,7 +56,7 @@ storiesOf( 'Global/Notifications', module )
 				<Notification
 					id="notification-id"
 					title={ __( 'Congrats on completing the setup for Analytics!', 'google-site-kit' ) }
-					winImage={ global._googlesitekitLegacyData.admin.assetsRoot + rocketImage }
+					winImage={ rocketImage }
 					dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 					format="large"
 					type="win-success"
@@ -101,34 +122,43 @@ storiesOf( 'Global/Notifications', module )
 			pageIndex="First detected: 2/13/18"
 		/>
 	) )
-	.add( 'Traffic Increase Win', () => (
-		<Notification
-			id="notification-id"
-			title={ __( 'Congrats on more website visitors!', 'google-site-kit' ) }
-			description={ __( 'You had a record-high amount of visitors to your website yesterday.', 'google-site-kit' ) }
-			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-			format="large"
-			winImage={ global._googlesitekitLegacyData.admin.assetsRoot + sunImage }
-			logo
-			module="analytics"
-			moduleName="Analytics"
-			blockData={
-				[
-					{
-						title: 'Site Visitors',
-						datapoint: '23,780',
-						datapointUnit: '',
-					},
-					{
-						title: 'Increase',
-						datapoint: 25,
-						datapointUnit: '%',
-					},
-				]
-			}
-			type="win-stats"
-		/>
-	) )
+	.add( 'Traffic Increase Win', () => {
+		const setupRegistry = ( registry ) => {
+			provideModules( registry );
+			provideModuleRegistrations( registry );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<Notification
+					id="notification-id"
+					title={ __( 'Congrats on more website visitors!', 'google-site-kit' ) }
+					description={ __( 'You had a record-high amount of visitors to your website yesterday.', 'google-site-kit' ) }
+					dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+					format="large"
+					winImage={ sunImage }
+					logo
+					module="analytics"
+					moduleName="Analytics"
+					blockData={
+						[
+							{
+								title: 'Site Visitors',
+								datapoint: '23,780',
+								datapointUnit: '',
+							},
+							{
+								title: 'Increase',
+								datapoint: 25,
+								datapointUnit: '%',
+							},
+						]
+					}
+					type="win-stats"
+				/>
+			</WithTestRegistry>
+		);
+	} )
 	.add( 'Pageview Increase Win', () => (
 		<Notification
 			id="notification-id"
@@ -137,7 +167,7 @@ storiesOf( 'Global/Notifications', module )
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
 			logo={ true }
-			winImage={ global._googlesitekitLegacyData.admin.assetsRoot + sunSmallImage }
+			winImage={ sunSmallImage }
 			blockData={
 				[
 					{
@@ -162,7 +192,7 @@ storiesOf( 'Global/Notifications', module )
 			description={ __( 'Last month was great! Here are some high level stats', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
-			winImage={ global._googlesitekitLegacyData.admin.assetsRoot + gWinImage }
+			winImage={ gWinImage }
 			blockData={
 				[
 					{

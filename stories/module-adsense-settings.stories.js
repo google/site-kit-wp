@@ -29,21 +29,21 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import {
-	SettingsEdit,
-	SettingsView,
-	SettingsSetupIncomplete,
-} from '../assets/js/modules/adsense/components/settings';
+import { SettingsSetupIncomplete } from '../assets/js/modules/adsense/components/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
 import {
 	ACCOUNT_STATUS_PENDING,
 	ACCOUNT_STATUS_APPROVED,
 	SITE_STATUS_ADDED,
 } from '../assets/js/modules/adsense/util/status';
-import { createTestRegistry, provideUserAuthentication, provideModules } from '../tests/js/utils';
+import {
+	createTestRegistry,
+	provideUserAuthentication,
+	provideModules,
+	provideModuleRegistrations,
+} from '../tests/js/utils';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
 function filterAdSenseSettingsSetupIncomplete() {
@@ -97,10 +97,6 @@ const Settings = createLegacySettingsWrapper( 'adsense' );
 storiesOf( 'AdSense Module/Settings', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
-		registry.dispatch( CORE_MODULES ).registerModule( 'adsense', {
-			settingsEditComponent: SettingsEdit,
-			settingsViewComponent: SettingsView,
-		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
@@ -110,6 +106,7 @@ storiesOf( 'AdSense Module/Settings', module )
 			active: true,
 			connected: true,
 		} ] );
+		provideModuleRegistrations( registry );
 
 		return storyFn( registry );
 	} )
