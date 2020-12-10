@@ -36,7 +36,7 @@ import { fillFilterWithComponent } from '../../util/helpers';
 import { getQueryParameter } from '../../util/standalone';
 import { isWPError } from '../../util/errors';
 import AuthError from '../notifications/AuthError';
-import DashboardAuthScopesAlert from '../notifications/DashboardAuthScopesAlert';
+import UnsatisfiedScopesAlert from '../notifications/UnsatisfiedScopesAlert';
 import { getCacheKey, getCache, setCache } from './cache';
 import { TYPE_CORE, TYPE_MODULES } from './constants';
 import { invalidateCacheGroup } from './invalidate-cache-group';
@@ -257,7 +257,7 @@ const dataAPI = {
 		if ( [ 'authError', 'insufficientPermissions' ].includes( data.reason ) ) {
 			addFilter( 'googlesitekit.ErrorNotification',
 				'googlesitekit.AuthNotification',
-				fillFilterWithComponent( DashboardAuthScopesAlert ), 1 );
+				fillFilterWithComponent( UnsatisfiedScopesAlert ), 1 );
 			addedNoticeCount++;
 		}
 

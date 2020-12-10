@@ -32,7 +32,7 @@ const SLASH_ARGS_ENCODED = SLASH_ENCODED.replace( '%', '~' );
  * Uses string.replace internally with RegExp as string.replaceAll
  * is not yet supported in Node and some browsers.
  *
- * @since n.e.x.t
+ * @since 1.22.0
  *
  * @param {*} value Raw argument value.
  * @return {string} Encoded value.
@@ -45,7 +45,7 @@ const encodeValue = ( value ) => {
 /**
  * Converts an object of report arguments into the special URL segment format.
  *
- * @since n.e.x.t
+ * @since 1.22.0
  *
  * @param {Object} reportArgs Object of arguments to convert. Values should not be URL encoded.
  * @return {string} Formatted URL segment.

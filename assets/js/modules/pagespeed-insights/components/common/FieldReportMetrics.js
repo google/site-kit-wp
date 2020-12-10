@@ -31,7 +31,6 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import ReportMetric from './ReportMetric';
-import ReportDetailsLink from './ReportDetailsLink';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import ErrorText from '../../../../components/ErrorText';
 
@@ -115,12 +114,10 @@ export default function FieldReportMetrics( { data, error } ) {
 						description={ __( 'How stable the elements on the page are', 'google-site-kit' ) }
 						displayValue={ cls }
 						category={ cumulativeLayoutShift.category }
+						isLast
 					/>
 				</tbody>
 			</table>
-			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--single-item googlesitekit-pagespeed-report__row--last">
-				<ReportDetailsLink />
-			</div>
 		</div>
 	);
 }

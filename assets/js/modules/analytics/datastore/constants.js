@@ -32,3 +32,6 @@ export const FORM_SETUP = 'analyticsSetup';
 // OAuth scope required for provisioning a Google Analytics account.
 export const PROVISIONING_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
 export const EDIT_SCOPE = 'https://www.googleapis.com/auth/analytics.edit';
+
+// Date range offset days for Analytics report requests.
+export const DATE_RANGE_OFFSET = 1;

@@ -369,6 +369,19 @@ module.exports = [
 		},
 	},
 	{
+		id: 'global-notifications--user-input-success-notification',
+		kind: 'Global/Notifications',
+		name: 'User Input Success Notification',
+		story: 'User Input Success Notification',
+		parameters: {
+			fileName: './stories/notifications.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+			},
+		},
+	},
+	{
 		id: 'global--page-headers',
 		kind: 'Global',
 		name: 'Page Headers',
@@ -480,8 +493,8 @@ module.exports = [
 		},
 	},
 	{
-		id: 'setup--step-one',
-		kind: 'Setup',
+		id: 'setup-using-gcp--step-one',
+		kind: 'Setup / Using GCP',
 		name: 'Step One',
 		story: 'Step One',
 		parameters: {

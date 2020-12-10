@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 import LegacyDashboardAdSenseTopEarningPagesSmall from './LegacyDashboardAdSenseTopEarningPagesSmall';
 import LegacyAdSenseDashboardMainSummary from './LegacyAdSenseDashboardMainSummary';
-import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
+import ModuleSettingsWarning from '../../../../components/legacy-notifications/module-settings-warning';
 
 class LegacyDashboardEarnings extends Component {
 	render() {
@@ -42,7 +42,7 @@ class LegacyDashboardEarnings extends Component {
 						title={ __( 'Earnings', 'google-site-kit' ) }
 						description={ __( 'How much you’re earning from your content through AdSense.', 'google-site-kit' ) }
 					/>
-					<ModuleSettingsWarning slug="adsense" context="module-sitekit-dashboard" />
+					<ModuleSettingsWarning slug="adsense" />
 				</div>
 				<LegacyAdSenseDashboardMainSummary />
 				<LegacyDashboardAdSenseTopEarningPagesSmall />

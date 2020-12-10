@@ -25,7 +25,7 @@ describe( 'prepareForReadableLargeNumber', () => {
 	} );
 
 	describe( 'Numbers between 1000 and 10,000.', () => {
-		const numbersBetweet1000And10000 = [
+		const numbersBetween1000And10000 = [
 			[
 				1000,
 				1,
@@ -47,7 +47,7 @@ describe( 'prepareForReadableLargeNumber', () => {
 				6.6,
 			],
 		];
-		it.each( numbersBetweet1000And10000 )( 'for %d should round to %s', ( value, expected ) => {
+		it.each( numbersBetween1000And10000 )( 'for %d should round to %s', ( value, expected ) => {
 			expect( prepareForReadableLargeNumber( value ) ).toStrictEqual( expected );
 		} );
 	} );

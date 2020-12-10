@@ -28,8 +28,8 @@ import { __ } from '@wordpress/i18n';
 import LegacyDashboardSplashMain from './LegacyDashboardSplashMain';
 import LegacyDashboardSplashNotifications from './LegacyDashboardSplashNotifications';
 import { trackEvent } from '../../util';
-import SetupUsingGCP from '../setup';
-import SetupWrapper from '../setup/setup-wrapper';
+import SetupUsingGCP from '../legacy-setup/SetupUsingGCP';
+import ModuleSetup from '../setup/ModuleSetup';
 
 const AUTHENTICATION = 1;
 const SETUP = 2;
@@ -138,8 +138,7 @@ class LegacyDashboardSplashApp extends Component {
 		if ( this.state.showAuthenticationSetupWizard ) {
 			return <SetupUsingGCP />;
 		}
-
-		return <SetupWrapper moduleSlug={ moduleToSetup } />;
+		return <ModuleSetup moduleSlug={ moduleToSetup } />;
 	}
 }
 

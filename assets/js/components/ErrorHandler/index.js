@@ -32,9 +32,9 @@ import { Icon, check, stack } from '@wordpress/icons';
 /**
  * Internal dependencies
  */
-import Notification from '../notifications/notification';
+import Notification from '../legacy-notifications/notification';
 import Link from '../Link';
-import Button from '../button';
+import Button from '../Button';
 
 class ErrorHandler extends Component {
 	constructor( props ) {
