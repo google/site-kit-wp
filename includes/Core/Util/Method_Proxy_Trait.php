@@ -16,13 +16,26 @@ trait Method_Proxy_Trait {
 	 * Gets a proxy function for a class method.
 	 *
 	 * @since 1.17.0
+	 * @since n.e.x.t Added the $type parameter.
 	 *
 	 * @param string $method Method name.
+	 * @param string $type Method type that defines how proxied function should be used. Accepts "multi-callable" and "once-callable" which means that the proxied method can be executed only once.
 	 * @return callable A proxy function.
 	 */
-	private function get_method_proxy( $method ) {
-		return function ( ...$args ) use ( $method ) {
-			return $this->{ $method }( ...$args );
+	private function get_method_proxy( $method, $type = 'multi-callable' ) {
+		static $calls = array();
+
+		return function ( ...$args ) use ( $method, $type, $calls ) {
+			if ( 'once-callable' === $type && array_key_exists( $method, $calls ) ) {
+				return $calls[ $method ];
+			}
+
+			$results = $this->{ $method }( ...$args );
+			if ( 'once-callable' === $type ) {
+				$calls[ $method ] = $results;
+			}
+
+			return $results;
 		};
 	}
 
