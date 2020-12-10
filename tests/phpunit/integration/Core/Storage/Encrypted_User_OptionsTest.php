@@ -53,6 +53,18 @@ class Encrypted_User_OptionsTest extends TestCase {
 		$this->assertEquals( base64_encode( serialize( array( 'test-value' ) ) ), get_user_option( 'test-serialized-option', $user_id ) );
 	}
 
+	public function test_user_input_state_value() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$encrypted_user_options = $this->new_encrypted_user_options();
+
+		update_user_option( $user_id, 'googlesitekit_user_input_state', base64_encode( 'completed' ) );
+		$this->assertEquals( 'completed', $encrypted_user_options->get( 'googlesitekit_user_input_state' ) );
+
+		update_user_option( $user_id, 'googlesitekit_user_input_state', base64_encode( 'invalid' ) );
+		$this->assertEquals( '', $encrypted_user_options->get( 'googlesitekit_user_input_state' ) );
+	}
+
 	public function test_delete() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
