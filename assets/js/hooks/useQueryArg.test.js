@@ -23,20 +23,17 @@ import { renderHook, actHook } from '../../../tests/js/test-utils';
 import useQueryArg from './useQueryArg';
 
 describe( 'useQueryArg', () => {
-	let oldLocation;
-	let oldHistory;
+	let mockGlobal;
 	const historyReplaceStateMock = jest.fn();
 
 	beforeAll( () => {
-		oldLocation = global.location;
-		oldHistory = global.history;
-		delete global.location;
-		delete global.history;
-		global.location = {
-			href: 'http://example.com/path?page=demo',
-		};
-		global.history = {
-			replaceState: historyReplaceStateMock,
+		mockGlobal = {
+			location: {
+				href: 'http://example.com/path?page=demo',
+			},
+			history: {
+				replaceState: historyReplaceStateMock,
+			},
 		};
 	} );
 
@@ -44,19 +41,16 @@ describe( 'useQueryArg', () => {
 		historyReplaceStateMock.mockClear();
 	} );
 
-	afterAll( () => {
-		global.location = oldLocation;
-		global.history = oldHistory;
-	} );
-
 	it( 'should return initial query param by default', () => {
-		const { result: { current: [ query ] } } = renderHook( ( ) => useQueryArg( 'page' ) );
+		const { result } = renderHook( ( ) => useQueryArg( 'page', '', mockGlobal ) );
+		const [ query ] = result.current;
 
 		expect( query ).toBe( 'demo' );
 	} );
 
 	it( 'should push a new state to history when setQuery is called', () => {
-		const { result: { current: [ , setQuery ] } } = renderHook( ( ) => useQueryArg( 'page' ) );
+		const { result } = renderHook( ( ) => useQueryArg( 'page', '', mockGlobal ) );
+		const [ , setQuery ] = result.current;
 
 		actHook( () => {
 			setQuery( 'prod' );
@@ -67,7 +61,8 @@ describe( 'useQueryArg', () => {
 	} );
 
 	it( 'should push a new state to history when setQuery is called with url encodable value', () => {
-		const { result: { current: [ , setQuery ] } } = renderHook( ( ) => useQueryArg( 'page' ) );
+		const { result } = renderHook( ( ) => useQueryArg( 'page', '', mockGlobal ) );
+		const [ , setQuery ] = result.current;
 
 		actHook( () => {
 			setQuery( 'p%$^rod' );

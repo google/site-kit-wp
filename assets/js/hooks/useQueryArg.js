@@ -19,30 +19,28 @@
 /**
  * WordPress dependencies
  */
-import { useState, useCallback } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { addQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
- * Uses a location query param as a state.
+ * Uses a location query param as a variable in a component.
  *
  * @since n.e.x.t
  *
  * @param {string} key            The query param key to be used.
  * @param {string} [initialValue] Optional. The initial value for the query param to be used.
+ * @param {Object} [_global]      The global window object.
  * @return {Array} The getter and setter for the query param state.
  */
-function useQueryArg( key, initialValue ) {
-	const [ value, setValue ] = useState( getQueryArg( global.location.href, key ) || initialValue );
+function useQueryArg( key, initialValue, _global = global ) {
+	const [ value, setValue ] = useState( getQueryArg( _global.location.href, key ) || initialValue );
 
-	const onSetValue = useCallback(
-		( newValue ) => {
-			setValue( newValue );
+	const onSetValue = ( newValue ) => {
+		setValue( newValue );
 
-			const newURL = addQueryArgs( global.location.href, { [ key ]: newValue } );
-			global.history.replaceState( null, '', newURL );
-		},
-		[ key ]
-	);
+		const newURL = addQueryArgs( _global.location.href, { [ key ]: newValue } );
+		_global.history.replaceState( null, '', newURL );
+	};
 
 	return [ value, onSetValue ];
 }

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -43,12 +43,12 @@ const SettingsAdmin = () => {
 	const isUserInputCompleted = useSelect( ( select ) => select( CORE_USER ).getUserInputState() === 'completed' );
 	const userInputURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
 
-	const goTo = useCallback( ( num = 1 ) => {
+	const goTo = ( questionIndex = 1 ) => {
 		global.location.assign( addQueryArgs( userInputURL, {
-			question: USER_INPUT_QUESTIONS_LIST[ num - 1 ],
+			question: USER_INPUT_QUESTIONS_LIST[ questionIndex - 1 ],
 			redirect_url: global.location.href,
 		} ) );
-	}, [ userInputURL ] );
+	};
 
 	return (
 		<Fragment>
