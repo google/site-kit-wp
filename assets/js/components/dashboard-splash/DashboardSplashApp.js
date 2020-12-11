@@ -32,7 +32,7 @@ export default function DashboardSplashApp() {
 	if ( usingProxy === true ) {
 		return <SetupUsingProxy />;
 	}
-	
+
 	if ( usingProxy === false ) {
 		return <SetupUsingGCP />;
 	}
