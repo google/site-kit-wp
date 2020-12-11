@@ -35,7 +35,7 @@ import data, { TYPE_MODULES } from '../data';
 import ProgressBar from '../ProgressBar';
 import HelpLink from '../HelpLink';
 import { Select, TextField, Input } from '../../material-components';
-import Button from '../button';
+import Button from '../Button';
 
 class SearchConsole extends Component {
 	constructor( props ) {

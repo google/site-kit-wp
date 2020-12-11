@@ -25,58 +25,61 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Component, createRef } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { MDCFormField, MDCRadio } from '../material-components';
 
-class Radio extends Component {
-	constructor( props ) {
-		super( props );
-		this.formFieldRef = createRef();
-		this.radioRef = createRef();
-	}
+const Radio = ( {
+	onClick,
+	id,
+	name,
+	value,
+	checked,
+	disabled,
+	children,
+} ) => {
+	const formFieldRef = useCallback( ( el ) => {
+		if ( el !== null ) {
+			const formField = new MDCFormField( el );
+			const radioEl = el.querySelector( '.mdc-radio' );
 
-	componentDidMount() {
-		const formField = new MDCFormField( this.formFieldRef.current );
-		formField.input = new MDCRadio( this.radioRef.current );
-	}
+			if ( radioEl ) {
+				formField.input = new MDCRadio( radioEl );
+			}
+		}
+	}, [] );
 
-	render() {
-		const { onClick, id, name, value, checked, disabled, children } = this.props;
-
-		return (
-			<div className="mdc-form-field" ref={ this.formFieldRef }>
-				<div
-					className={ classnames(
-						'mdc-radio',
-						{ 'mdc-radio--disabled': disabled }
-					) }
-					ref={ this.radioRef }
-				>
-					<input
-						className="mdc-radio__native-control"
-						onClick={ onClick }
-						type="radio"
-						id={ id }
-						name={ name }
-						value={ value }
-						checked={ checked }
-						disabled={ disabled }
-						onChange={ () => {} }
-					/>
-					<div className="mdc-radio__background">
-						<div className="mdc-radio__outer-circle"></div>
-						<div className="mdc-radio__inner-circle"></div>
-					</div>
+	return (
+		<div className="mdc-form-field" ref={ formFieldRef }>
+			<div
+				className={ classnames(
+					'mdc-radio',
+					{ 'mdc-radio--disabled': disabled }
+				) }
+			>
+				<input
+					className="mdc-radio__native-control"
+					onClick={ onClick }
+					type="radio"
+					id={ id }
+					name={ name }
+					value={ value }
+					checked={ checked }
+					disabled={ disabled }
+					readOnly
+				/>
+				<div className="mdc-radio__background">
+					<div className="mdc-radio__outer-circle"></div>
+					<div className="mdc-radio__inner-circle"></div>
 				</div>
-				<label htmlFor={ id }>{ children }</label>
 			</div>
-		);
-	}
-}
+			<label htmlFor={ id }>{ children }</label>
+		</div>
+	);
+};
 
 Radio.propTypes = {
 	onClick: PropTypes.func,

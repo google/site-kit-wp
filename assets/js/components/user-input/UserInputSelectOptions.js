@@ -32,8 +32,8 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import Radio from '../radio';
-import Checkbox from '../checkbox';
+import Radio from '../Radio';
+import Checkbox from '../Checkbox';
 import { Cell, Input, TextField } from '../../material-components';
 const { useSelect, useDispatch } = Data;
 
