@@ -10,8 +10,8 @@
 
 namespace Google\Site_Kit\Core\Tags\Guards;
 
-use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Guards\Guard_Interface;
+use Google\Site_Kit\Core\Util\Input;
 
 /**
  * Guard that verifies if the "tagverify" query arg is used.
@@ -23,22 +23,22 @@ use Google\Site_Kit\Core\Guards\Guard_Interface;
 class TagVerify implements Guard_Interface {
 
 	/**
-	 * Plugin context.
+	 * Input access abstraction.
 	 *
 	 * @since n.e.x.t
-	 * @var Context
+	 * @var Input
 	 */
-	private $context;
+	private $input;
 
 	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Context $context Plugin context.
+	 * @param Input $input Input instance.
 	 */
-	public function __construct( Context $context ) {
-		$this->context = $context;
+	public function __construct( Input $input ) {
+		$this->input = $input;
 	}
 
 	/**
@@ -49,7 +49,7 @@ class TagVerify implements Guard_Interface {
 	 * @return bool|WP_Error TRUE if guarded tag can be activated, otherwise FALSE or an error.
 	 */
 	public function can_activate() {
-		return ! $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN );
+		return ! $this->input->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN );
 	}
 
 }

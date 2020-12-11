@@ -110,7 +110,7 @@ final class Tag_Manager extends Module
 				if ( ! $tag->is_tag_blocked() ) {
 					$settings = $this->get_settings()->get();
 
-					$tag->use_guard( new TagVerifyGuard( $this->context ) );
+					$tag->use_guard( new TagVerifyGuard( $this->context->input() ) );
 					$tag->use_guard( new TruthyValueGuard( $container_id ) );
 					$tag->use_guard( new TruthyValueGuard( $settings['useSnippet'] ) );
 

@@ -137,7 +137,7 @@ final class Analytics extends Module
 				}
 
 				if ( $tag && ! $tag->is_tag_blocked() ) {
-					$tag->use_guard( new TagVerifyGuard( $this->context ) );
+					$tag->use_guard( new TagVerifyGuard( $this->context->input() ) );
 					$tag->use_guard( new TruthyValueGuard( $property_id ) );
 					$tag->use_guard( new TruthyValueGuard( $this->get_data( 'use-snippet' ) ) );
 

@@ -104,7 +104,7 @@ final class AdSense extends Module
 					: new Web_Tag( $client_id, self::MODULE_SLUG );
 
 				if ( ! $tag->is_tag_blocked() ) {
-					$tag->use_guard( new TagVerifyGuard( $this->context ) );
+					$tag->use_guard( new TagVerifyGuard( $this->context->input() ) );
 					$tag->use_guard( new TruthyValueGuard( $client_id ) );
 					$tag->use_guard( new TruthyValueGuard( $this->get_data( 'use-snippet' ) ) );
 
