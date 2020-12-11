@@ -326,7 +326,14 @@ export const baseControls = {
 	} ),
 	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl( ( { select } ) => ( { payload } ) => {
 		const { slug } = payload;
-		const getAdminReauthURL = select( `modules/${ slug }` )?.getAdminReauthURL;
+		const storeName = select( 'core/modules' )?.getModuleStoreName( slug );
+
+		// If a storeName wasn't specified on registerModule we assume there is no store for this module
+		if ( ! storeName ) {
+			return;
+		}
+
+		const getAdminReauthURL = select( storeName )?.getAdminReauthURL;
 		if ( getAdminReauthURL ) {
 			return getAdminReauthURL();
 		}
@@ -604,6 +611,29 @@ const baseSelectors = {
 		// Modules are already resolved after we getModule() so they can't be undefined.
 		const modules = select( STORE_NAME ).getModules();
 		return module.dependants.map( ( dependantSlug ) => modules[ dependantSlug ]?.name || dependantSlug );
+	} ),
+
+	/**
+	 * Gets module store name by slug.
+	 *
+	 * Returns the store name if preset or null if there is no store name for this module.
+	 * Returns `undefined` if state is still loading or if said module doesn't exist.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug Module slug.
+	 * @return {(string|null|undefined)} An string of the store name if a name has been set for this module; null if no store name was set; `undefined` if state is still loading.
+	 */
+	getModuleStoreName: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const module = select( STORE_NAME ).getModule( slug );
+
+		// Return `undefined` if module with this slug isn't loaded yet.
+		if ( module === undefined ) {
+			return undefined;
+		}
+
+		// Return the store name or null if no store name was set.
+		return module?.storeName || null;
 	} ),
 
 	/**
