@@ -102,16 +102,12 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
-	const uniqueVisitorsServiceURL = useSelect(
-		( select ) => select( STORE_NAME ).getServiceReportURL( `visitors-overview`, {
-			'_r.drilldown': `analytics.pagePath:${ url }`,
-		} )
-	);
-	const goalsServiceURL = useSelect(
-		( select ) => select( STORE_NAME ).getServiceReportURL( `conversions-goals-overview`, {
-			'_r.drilldown': `analytics.pagePath:${ url }`,
-		} )
-	);
+	const uniqueVisitorsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( `visitors-overview`, {
+		'_r.drilldown': `analytics.pagePath:${ url }`,
+	} ) );
+	const goalsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( `conversions-goals-overview`, {
+		'_r.drilldown': `analytics.pagePath:${ url }`,
+	} ) );
 
 	const goalURL = 'https://support.google.com/analytics/answer/1032415?hl=en#create_or_edit_goals';
 

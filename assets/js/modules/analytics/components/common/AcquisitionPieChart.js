@@ -67,10 +67,8 @@ const GOOGLE_CHART_PIE_SETTINGS = {
 
 function AcquisitionPieChart( { data, args, source } ) {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const sourceURI = useSelect( ( select ) => {
-		return select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', {
-			'_r.drilldown': `analytics.pagePath:${ url }`,
-		} );
+	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', {
+		'_r.drilldown': `analytics.pagePath:${ url }`,
 	} );
 
 	if ( ! data ) {

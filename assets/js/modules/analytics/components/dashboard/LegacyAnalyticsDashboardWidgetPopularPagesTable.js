@@ -38,9 +38,7 @@ import TableOverflowContainer from '../../../../components/TableOverflowContaine
 const { useSelect } = Data;
 
 const RenderLayout = ( { children } ) => {
-	const serviceURL = useSelect(
-		( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages' )
-	);
+	const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages' ) );
 	return (
 		<div className="
 			mdc-layout-grid__cell

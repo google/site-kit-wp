@@ -37,11 +37,9 @@ const { useSelect } = Data;
 
 export default function AnalyticsDashboardDetailsWidgetTopAcquisitionSources() {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const serviceURL = useSelect(
-		( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', {
-			'_r.drilldown': `analytics.pagePath:${ url }`,
-		} )
-	);
+	const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', {
+		'_r.drilldown': `analytics.pagePath:${ url }`,
+	} ) );
 
 	return (
 		<Fragment>
