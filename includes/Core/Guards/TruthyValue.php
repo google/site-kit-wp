@@ -46,7 +46,12 @@ class TruthyValue implements Guard_Interface {
 	 * @return bool|WP_Error TRUE if guarded entity can be activated, otherwise FALSE or an error.
 	 */
 	public function can_activate() {
-		return ! is_wp_error( $this->value ) && ! empty( $this->value );
+		$value = $this->value;
+		if ( is_callable( $value ) ) {
+			$value = call_user_func( $value );
+		}
+
+		return ! is_wp_error( $value ) && ! empty( $value );
 	}
 
 }
