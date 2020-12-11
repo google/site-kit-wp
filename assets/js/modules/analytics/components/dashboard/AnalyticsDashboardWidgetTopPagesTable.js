@@ -30,13 +30,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { getTimeInSeconds, numberFormat } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
+import { STORE_NAME as MODULES_ANALYTICS } from '../../datastore/constants';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
 import { getTopPagesReportDataDefaults } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import Link from '../../../../components/Link';
+const { withSelect } = Data;
 
 const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 	const { data, colspan } = props;
@@ -90,6 +94,17 @@ const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 		hideColumns: {
 			mobile: [ 2, 3 ],
 		},
+		PrimaryLink: withSelect( ( select, { href = '/' } ) => {
+			const serviceURL = select( MODULES_ANALYTICS ).getServiceReportURL( 'content-drilldown', {
+				'explorer-table.plotKeys': '[]',
+				'_r.drilldown': `analytics.pagePath:${ href }`,
+			} );
+
+			return {
+				href: serviceURL,
+				external: true,
+			};
+		} )( Link ),
 	};
 
 	const dataTable = getDataTableFromData( dataMapped, headers, options );
