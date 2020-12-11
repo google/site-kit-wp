@@ -180,7 +180,7 @@ const webpackConfig = ( env, argv ) => {
 			},
 			externals,
 			output: {
-				filename: '[name].[contenthash].js',
+				filename: ( mode === 'production' ? '[name].[contenthash].js' : '[name].js' ),
 				path: path.join( __dirname, 'dist/assets/js' ),
 				chunkFilename: '[name].[chunkhash].js',
 				publicPath: '',
