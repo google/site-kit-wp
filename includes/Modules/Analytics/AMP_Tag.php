@@ -48,7 +48,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	protected function register_hooks() {
+	public function register() {
 		$render = $this->get_method_proxy_once( 'render' );
 
 		// Which actions are run depends on the version of the AMP Plugin

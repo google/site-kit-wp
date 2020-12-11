@@ -37,6 +37,7 @@ use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Analytics\Google_Service_AnalyticsProvisioning;
 use Google\Site_Kit\Modules\Analytics\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics\Settings;
+use Google\Site_Kit\Modules\Analytics\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics\Web_Tag;
 use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
@@ -123,31 +124,30 @@ final class Analytics extends Module
 		add_action(
 			'template_redirect',
 			function() {
-				$tag         = null;
-				$property_id = $this->get_data( 'property-id' );
+				$tag             = null;
+				$module_settings = $this->get_settings();
+				$settings        = $module_settings->get();
 
 				if ( $this->context->is_amp() ) {
-					$tag = new AMP_Tag( $property_id, self::MODULE_SLUG );
+					$tag = new AMP_Tag( $settings['propertyID'], self::MODULE_SLUG );
 				} else {
-					$tag          = new Web_Tag( $property_id, self::MODULE_SLUG );
-					$anonymize_ip = $this->get_data( 'anonymize-ip' );
-
-					$tag->set_amp_mode( $this->context->get_amp_mode() );
-					$tag->set_anonymize_ip( ! is_wp_error( $anonymize_ip ) && $anonymize_ip );
+					$tag = new Web_Tag( $settings['propertyID'], self::MODULE_SLUG );
+					$tag->set_anonymize_ip( ! empty( $settings['anonymizeIP'] ) );
 				}
 
 				if ( $tag && ! $tag->is_tag_blocked() ) {
 					$tag->use_guard( new TagVerifyGuard( $this->context->input() ) );
-					$tag->use_guard( new TruthyValueGuard( $property_id ) );
-					$tag->use_guard( new TruthyValueGuard( $this->get_data( 'use-snippet' ) ) );
+					$tag->use_guard( new Tag_Guard( $module_settings ) );
 
-					$home_domain = wp_parse_url(
-						$this->context->get_canonical_home_url(),
-						PHP_URL_HOST
-					);
+					if ( $tag->can_register() ) {
+						if ( $this->context->get_amp_mode() ) {
+							$home = $this->context->get_canonical_home_url();
+							$home = wp_parse_url( $home, PHP_URL_HOST );
+							$tag->set_home_domain( $home_domain );
+						}
 
-					$tag->set_home_domain( $home_domain );
-					$tag->register();
+						$tag->register();
+					}
 				}
 			}
 		);

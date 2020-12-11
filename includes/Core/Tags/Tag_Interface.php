@@ -26,4 +26,13 @@ interface Tag_Interface {
 	 */
 	public function register();
 
+	/**
+	 * Determines whether the tag can be register or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool TRUE if the tag can be register, otherwise FALSE.
+	 */
+	public function can_register();
+
 }

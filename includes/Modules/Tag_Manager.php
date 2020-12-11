@@ -32,6 +32,7 @@ use Google\Site_Kit\Core\Tags\Guards\TagVerify as TagVerifyGuard;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Tag_Manager\AMP_Tag;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
+use Google\Site_Kit\Modules\Tag_Manager\Tag_Guard;
 use Google\Site_Kit\Modules\Tag_Manager\Web_Tag;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Account;
@@ -93,28 +94,21 @@ final class Tag_Manager extends Module
 		add_action(
 			'template_redirect',
 			function() {
-				$is_amp       = $this->context->is_amp();
-				$container_id = $this->get_data(
-					'container-id',
-					array(
-						'usageContext' => $is_amp
-							? self::USAGE_CONTEXT_AMP
-							: self::USAGE_CONTEXT_WEB,
-					)
-				);
+				$is_amp          = $this->context->is_amp();
+				$module_settings = $this->get_settings();
+				$settings        = $module_settings->get();
 
 				$tag = $is_amp
-					? new AMP_Tag( $container_id, self::MODULE_SLUG )
-					: new Web_Tag( $container_id, self::MODULE_SLUG );
+					? new AMP_Tag( $settings['ampContainerID'], self::MODULE_SLUG )
+					: new Web_Tag( $settings['containerID'], self::MODULE_SLUG );
 
 				if ( ! $tag->is_tag_blocked() ) {
-					$settings = $this->get_settings()->get();
-
 					$tag->use_guard( new TagVerifyGuard( $this->context->input() ) );
-					$tag->use_guard( new TruthyValueGuard( $container_id ) );
-					$tag->use_guard( new TruthyValueGuard( $settings['useSnippet'] ) );
+					$tag->use_guard( new Tag_Guard( $module_settings, $is_amp ) );
 
-					$tag->register();
+					if ( $tag->can_register() ) {
+						$tag->register();
+					}
 				}
 			}
 		);

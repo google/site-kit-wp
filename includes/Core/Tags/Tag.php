@@ -60,21 +60,23 @@ abstract class Tag implements Tag_Interface {
 	}
 
 	/**
-	 * Registers tag if it can be activated.
+	 * Determines whether the tag can be register or not.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @return bool TRUE if the tag can be register, otherwise FALSE.
 	 */
-	final public function register() {
+	public function can_register() {
 		foreach ( $this->guards as $guard ) {
 			if ( $guard instanceof Guard_Interface ) {
 				$can_activate = $guard->can_activate();
 				if ( is_wp_error( $can_activate ) || ! $can_activate ) {
-					return;
+					return false;
 				}
 			}
 		}
 
-		$this->register_hooks();
+		return true;
 	}
 
 	/**
@@ -82,6 +84,6 @@ abstract class Tag implements Tag_Interface {
 	 *
 	 * @since n.e.x.t
 	 */
-	abstract protected function register_hooks();
+	abstract public function register();
 
 }

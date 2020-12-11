@@ -29,7 +29,7 @@ class Web_Tag extends Module_Web_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	protected function register_hooks() {
+	public function register() {
 		$render_no_js = $this->get_method_proxy_once( 'render_no_js' );
 
 		add_action( 'wp_head', $this->get_method_proxy( 'render' ) );

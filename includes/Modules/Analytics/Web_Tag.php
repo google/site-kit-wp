@@ -33,14 +33,6 @@ class Web_Tag extends Module_Web_Tag {
 	private $home_domain;
 
 	/**
-	 * The current AMP mode.
-	 *
-	 * @since n.e.x.t
-	 * @var string
-	 */
-	private $amp_mode;
-
-	/**
 	 * Whether or not to anonymize IP addresses.
 	 *
 	 * @since n.e.x.t
@@ -60,17 +52,6 @@ class Web_Tag extends Module_Web_Tag {
 	}
 
 	/**
-	 * Sets the current amp mode.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $amp_mode AMP mode.
-	 */
-	public function set_amp_mode( $amp_mode ) {
-		$this->amp_mode = $amp_mode;
-	}
-
-	/**
 	 * Sets whether or not to anonymize IP addresses.
 	 *
 	 * @since n.e.x.t
@@ -86,7 +67,7 @@ class Web_Tag extends Module_Web_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	protected function register_hooks() {
+	public function register() {
 		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_gtag_script' ) );
 		$this->do_init_tag_action();
 	}
@@ -114,10 +95,8 @@ class Web_Tag extends Module_Web_Tag {
 		wp_script_add_data( 'google_gtagjs', 'script_execution', 'async' );
 		wp_add_inline_script( 'google_gtagjs', 'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}' );
 
-		if ( $this->amp_mode ) {
-			$gtag_opt['linker'] = array(
-				'domains' => array( $this->home_domain ),
-			);
+		if ( ! empty( $this->home_domain ) ) {
+			$gtag_opt['linker'] = array( 'domains' => array( $this->home_domain ) );
 		}
 
 		if ( $this->anonymize_ip ) {

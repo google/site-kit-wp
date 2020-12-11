@@ -33,6 +33,7 @@ use Google\Site_Kit\Core\Tags\Guards\TagVerify as TagVerifyGuard;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\AdSense\AMP_Tag;
 use Google\Site_Kit\Modules\AdSense\Settings;
+use Google\Site_Kit\Modules\AdSense\Tag_Guard;
 use Google\Site_Kit\Modules\AdSense\Web_Tag;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense_Account;
@@ -98,17 +99,20 @@ final class AdSense extends Module
 					return;
 				}
 
-				$client_id = $this->get_data( 'client-id' );
-				$tag       = $this->context->is_amp()
-					? new AMP_Tag( $client_id, self::MODULE_SLUG )
-					: new Web_Tag( $client_id, self::MODULE_SLUG );
+				$module_settings = $this->get_settings();
+				$settings        = $module_settings->get();
+
+				$tag = $this->context->is_amp()
+					? new AMP_Tag( $settings['clientID'], self::MODULE_SLUG )
+					: new Web_Tag( $settings['clientID'], self::MODULE_SLUG );
 
 				if ( ! $tag->is_tag_blocked() ) {
 					$tag->use_guard( new TagVerifyGuard( $this->context->input() ) );
-					$tag->use_guard( new TruthyValueGuard( $client_id ) );
-					$tag->use_guard( new TruthyValueGuard( $this->get_data( 'use-snippet' ) ) );
+					$tag->use_guard( new Tag_Guard( $module_settings ) );
 
-					$tag->register();
+					if ( $tag->can_register() ) {
+						$tag->register();
+					}
 				}
 			}
 		);
