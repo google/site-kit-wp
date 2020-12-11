@@ -30,8 +30,8 @@ const { useSelect, useDispatch } = Data;
 
 export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
 	const storeName = `modules/${ slug }`;
-	const isDoingSubmitChanges = useSelect( ( select ) => select( storeName )?.isDoingSubmitChanges?.() );
-	const haveSettingsChanged = useSelect( ( select ) => select( storeName )?.haveSettingsChanged?.() );
+	const isDoingSubmitChanges = useSelect( ( select ) => select( 'core/modules' )?.isDoingSubmitChanges?.( slug ) );
+	const haveSettingsChanged = useSelect( ( select ) => select( storeName )?.haveSettingsChanged?.() || false );
 	const { SettingsEditComponent, SettingsViewComponent } = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) || {} );
 
 	// Rollback any temporary selections to saved values if settings have changed and no longer editing.

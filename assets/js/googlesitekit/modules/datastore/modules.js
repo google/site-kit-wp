@@ -53,6 +53,7 @@ const RECEIVE_CHECK_REQUIREMENTS_SUCCESS = 'RECEIVE_CHECK_REQUIREMENTS_SUCCESS';
 
 const moduleDefaults = {
 	slug: '',
+	storeName: null,
 	name: '',
 	description: '',
 	homepage: null,
@@ -222,9 +223,11 @@ const baseActions = {
 	 * @since 1.20.0 Introduced the ability to register settings and setup components.
 	 * @since 1.22.0 Introduced the ability to add a checkRequirements function.
 	 * @since n.e.x.t Introduced the ability to register an Icon component.
+	 * @since n.e.x.t Introduced the ability to explictly define a module store name.
 	 *
 	 * @param {string}      slug                             Module slug.
 	 * @param {Object}      [settings]                       Optional. Module settings.
+	 * @param {Object}      [settings.storeName]             Optional. Module storeName. If non is provided we assume no store is required for this module.
 	 * @param {string}      [settings.name]                  Optional. Module name. Default is the slug.
 	 * @param {string}      [settings.description]           Optional. Module description. Default empty string.
 	 * @param {WPComponent} [settings.Icon]                  Optional. React component to render module icon. Default none.
@@ -236,6 +239,7 @@ const baseActions = {
 	 * @param {Function}    [settings.checkRequirements]     Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
 	 */
 	*registerModule( slug, {
+		storeName,
 		name,
 		description,
 		Icon,
@@ -249,6 +253,7 @@ const baseActions = {
 		invariant( slug, 'module slug is required' );
 
 		const settings = {
+			storeName,
 			name,
 			description,
 			Icon,

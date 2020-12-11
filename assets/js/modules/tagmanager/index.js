@@ -34,6 +34,7 @@ domReady( () => {
 	Modules.registerModule(
 		'tagmanager',
 		{
+			storeName: 'modules/tagmanager',
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,

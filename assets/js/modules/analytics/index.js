@@ -47,6 +47,7 @@ domReady( () => {
 	Modules.registerModule(
 		'analytics',
 		{
+			storeName: 'modules/analytics',
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,

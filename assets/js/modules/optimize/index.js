@@ -34,6 +34,7 @@ domReady( () => {
 	Modules.registerModule(
 		'optimize',
 		{
+			storeName: 'modules/optimize',
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
