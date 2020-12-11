@@ -54,7 +54,7 @@ final class User_Input_State extends User_Setting {
 				return false;
 			}
 
-			return true;
+			return $value;
 		};
 	}
 }
