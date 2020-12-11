@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics;
 
-use Google\Site_Kit\Core\Tags\Web_Tag as Base_Web_Tag;
+use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-class Web_Tag extends Base_Web_Tag {
+class Web_Tag extends Module_Web_Tag {
 
 	use Method_Proxy_Trait;
 

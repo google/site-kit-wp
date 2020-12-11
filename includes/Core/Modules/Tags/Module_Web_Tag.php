@@ -1,14 +1,16 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Tags\Web_Tag
+ * Class Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag
  *
- * @package   Google\Site_Kit\Core\Tags
+ * @package   Google\Site_Kit\Core\Modules\Tags
  * @copyright 2020 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Tags;
+namespace Google\Site_Kit\Core\Modules\Tags;
+
+use Google\Site_Kit\Core\Tags\Blockable_Tag_Interface;
 
 /**
  * Base class for Web tag.
@@ -17,7 +19,7 @@ namespace Google\Site_Kit\Core\Tags;
  * @access private
  * @ignore
  */
-abstract class Web_Tag extends Tag implements Blockable_Tag_Interface {
+abstract class Module_Web_Tag extends Module_Tag implements Blockable_Tag_Interface {
 
 	/**
 	 * Checks whether or not the tag should be blocked from rendering.

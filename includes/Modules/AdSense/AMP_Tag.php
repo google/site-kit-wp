@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Modules\AdSense;
 
-use Google\Site_Kit\Core\Tags\AMP_Tag as Base_AMP_Tag;
+use Google\Site_Kit\Core\Modules\Tags\Module_AMP_Tag;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-class AMP_Tag extends Base_AMP_Tag {
+class AMP_Tag extends Module_AMP_Tag {
 
 	use Method_Proxy_Trait;
 

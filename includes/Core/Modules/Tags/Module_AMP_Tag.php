@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Tags\AMP_Tag
+ * Class Google\Site_Kit\Core\Modules\Tags\Module_AMP_Tag
  *
  * @package   Google\Site_Kit\Core\Tags
  * @copyright 2020 Google LLC
@@ -8,7 +8,9 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Tags;
+namespace Google\Site_Kit\Core\Modules\Tags;
+
+use Google\Site_Kit\Core\Tags\Blockable_Tag_Interface;
 
 /**
  * Base class for AMP tag.
@@ -17,7 +19,7 @@ namespace Google\Site_Kit\Core\Tags;
  * @access private
  * @ignore
  */
-abstract class AMP_Tag extends Tag implements Blockable_Tag_Interface {
+abstract class Module_AMP_Tag extends Module_Tag implements Blockable_Tag_Interface {
 
 	/**
 	 * Checks whether or not the tag should be blocked from rendering.

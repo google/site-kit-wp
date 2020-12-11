@@ -104,8 +104,8 @@ final class Tag_Manager extends Module
 				);
 
 				$tag = $is_amp
-					? new AMP_Tag( self::MODULE_SLUG, $container_id )
-					: new Web_Tag( self::MODULE_SLUG, $container_id );
+					? new AMP_Tag( $container_id, self::MODULE_SLUG )
+					: new Web_Tag( $container_id, self::MODULE_SLUG );
 
 				if ( ! $tag->is_tag_blocked() ) {
 					$settings = $this->get_settings()->get();

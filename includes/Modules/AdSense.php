@@ -100,8 +100,8 @@ final class AdSense extends Module
 
 				$client_id = $this->get_data( 'client-id' );
 				$tag       = $this->context->is_amp()
-					? new AMP_Tag( self::MODULE_SLUG, $client_id )
-					: new Web_Tag( self::MODULE_SLUG, $client_id );
+					? new AMP_Tag( $client_id, self::MODULE_SLUG )
+					: new Web_Tag( $client_id, self::MODULE_SLUG );
 
 				if ( ! $tag->is_tag_blocked() ) {
 					$tag->use_guard( new TagVerifyGuard( $this->context ) );

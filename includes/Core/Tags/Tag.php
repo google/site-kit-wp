@@ -22,14 +22,6 @@ use Google\Site_Kit\Core\Guards\Guard_Interface;
 abstract class Tag implements Tag_Interface {
 
 	/**
-	 * Module slug.
-	 *
-	 * @since n.e.x.t
-	 * @var string
-	 */
-	protected $slug;
-
-	/**
 	 * Tag ID.
 	 *
 	 * @since n.e.x.t
@@ -50,12 +42,10 @@ abstract class Tag implements Tag_Interface {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $module_slug Module slug.
 	 * @param string $tag_id Tag ID.
 	 */
-	public function __construct( $module_slug, $tag_id ) {
-		$this->module_slug = $module_slug;
-		$this->tag_id      = $tag_id;
+	public function __construct( $tag_id ) {
+		$this->tag_id = $tag_id;
 	}
 
 	/**

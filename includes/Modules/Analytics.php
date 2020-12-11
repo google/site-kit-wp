@@ -127,9 +127,9 @@ final class Analytics extends Module
 				$property_id = $this->get_data( 'property-id' );
 
 				if ( $this->context->is_amp() ) {
-					$tag = new AMP_Tag( self::MODULE_SLUG, $property_id );
+					$tag = new AMP_Tag( $property_id, self::MODULE_SLUG );
 				} else {
-					$tag          = new Web_Tag( self::MODULE_SLUG, $property_id );
+					$tag          = new Web_Tag( $property_id, self::MODULE_SLUG );
 					$anonymize_ip = $this->get_data( 'anonymize-ip' );
 
 					$tag->set_amp_mode( $this->context->get_amp_mode() );
