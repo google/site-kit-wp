@@ -30,17 +30,17 @@ class AMP_Tag extends Module_AMP_Tag {
 	 * @since n.e.x.t
 	 */
 	protected function register_hooks() {
-		$print_amp_gtm = $this->get_method_proxy_once( 'print_amp_gtm' );
+		$render = $this->get_method_proxy_once( 'render' );
 
 		// Which actions are run depends on the version of the AMP Plugin
 		// (https://amp-wp.org/) available. Version >=1.3 exposes a
 		// new, `amp_print_analytics` action.
 		// For all AMP modes, AMP plugin version >=1.3.
-		add_action( 'amp_print_analytics', $print_amp_gtm );
+		add_action( 'amp_print_analytics', $render );
 		// For AMP Standard and Transitional, AMP plugin version <1.3.
-		add_action( 'wp_footer', $print_amp_gtm, 20 );
+		add_action( 'wp_footer', $render, 20 );
 		// For AMP Reader, AMP plugin version <1.3.
-		add_action( 'amp_post_template_footer', $print_amp_gtm, 20 );
+		add_action( 'amp_post_template_footer', $render, 20 );
 
 		// Load amp-analytics component for AMP Reader.
 		$this->enqueue_amp_reader_component_script( 'amp-analytics', 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js' );
@@ -53,7 +53,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	private function print_amp_gtm() {
+	protected function render() {
 		// Add the optoutElementId for compatibility with our Analytics opt-out mechanism.
 		// This configuration object will be merged with the configuration object returned
 		// by the `config` attribute URL.

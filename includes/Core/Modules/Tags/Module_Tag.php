@@ -42,4 +42,11 @@ abstract class Module_Tag extends Tag {
 		$this->module_slug = $module_slug;
 	}
 
+	/**
+	 * Outputs the tag.
+	 *
+	 * @since n.e.x.t
+	 */
+	abstract protected function render();
+
 }

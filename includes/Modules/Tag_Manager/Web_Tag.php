@@ -30,13 +30,13 @@ class Web_Tag extends Module_Web_Tag {
 	 * @since n.e.x.t
 	 */
 	protected function register_hooks() {
-		$print_gtm_no_js = $this->get_method_proxy_once( 'print_gtm_no_js' );
+		$render_no_js = $this->get_method_proxy_once( 'render_no_js' );
 
-		add_action( 'wp_head', $this->get_method_proxy( 'print_gtm_js' ) );
+		add_action( 'wp_head', $this->get_method_proxy( 'render' ) );
 		// For non-AMP (if `wp_body_open` supported).
-		add_action( 'wp_body_open', $print_gtm_no_js, -9999 );
+		add_action( 'wp_body_open', $render_no_js, -9999 );
 		// For non-AMP (as fallback).
-		add_action( 'wp_footer', $print_gtm_no_js );
+		add_action( 'wp_footer', $render_no_js );
 
 		$this->do_init_tag_action();
 	}
@@ -46,7 +46,7 @@ class Web_Tag extends Module_Web_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	private function print_gtm_js() {
+	protected function render() {
 		?>
 <!-- Google Tag Manager added by Site Kit -->
 <script<?php echo $this->get_tag_blocked_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
@@ -69,7 +69,7 @@ class Web_Tag extends Module_Web_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	private function print_gtm_no_js() {
+	private function render_no_js() {
 		// Consent-based blocking requires JS to be enabled so we need to bail here if present.
 		if ( $this->get_tag_blocked_on_consent_attribute() ) {
 			return;

@@ -49,19 +49,19 @@ class AMP_Tag extends Module_AMP_Tag {
 	 * @since n.e.x.t
 	 */
 	protected function register_hooks() {
-		$print_amp_gtag = $this->get_method_proxy_once( 'print_amp_gtag' );
+		$render = $this->get_method_proxy_once( 'render' );
 
 		// Which actions are run depends on the version of the AMP Plugin
 		// (https://amp-wp.org/) available. Version >=1.3 exposes a
 		// new, `amp_print_analytics` action.
 		// For all AMP modes, AMP plugin version >=1.3.
-		add_action( 'amp_print_analytics', $print_amp_gtag );
+		add_action( 'amp_print_analytics', $render );
 		// For AMP Standard and Transitional, AMP plugin version <1.3.
-		add_action( 'wp_footer', $print_amp_gtag, 20 );
+		add_action( 'wp_footer', $render, 20 );
 		// For AMP Reader, AMP plugin version <1.3.
-		add_action( 'amp_post_template_footer', $print_amp_gtag, 20 );
+		add_action( 'amp_post_template_footer', $render, 20 );
 		// For Web Stories plugin.
-		add_action( 'web_stories_print_analytics', $print_amp_gtag );
+		add_action( 'web_stories_print_analytics', $render );
 
 		// Load amp-analytics component for AMP Reader.
 		$this->enqueue_amp_reader_component_script( 'amp-analytics', 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js' );
@@ -74,7 +74,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	private function print_amp_gtag() {
+	protected function render() {
 		$gtag_amp_opt = array(
 			'optoutElementId' => '__gaOptOutExtension',
 			'vars'            => array(

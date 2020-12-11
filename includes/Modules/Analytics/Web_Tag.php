@@ -87,7 +87,7 @@ class Web_Tag extends Module_Web_Tag {
 	 * @since n.e.x.t
 	 */
 	protected function register_hooks() {
-		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_gtag_js' ) );
+		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_gtag_script' ) );
 		$this->do_init_tag_action();
 	}
 
@@ -96,7 +96,16 @@ class Web_Tag extends Module_Web_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	private function enqueue_gtag_js() {
+	protected function render() {
+		// Do nothing, gtag script is enqueued.
+	}
+
+	/**
+	 * Enqueues gtag script.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function enqueue_gtag_script() {
 		$gtag_opt = array();
 		$gtag_src = 'https://www.googletagmanager.com/gtag/js?id=' . rawurldecode( $this->tag_id );
 
