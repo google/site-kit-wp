@@ -182,7 +182,7 @@ const webpackConfig = ( env, argv ) => {
 			output: {
 				filename: ( mode === 'production' ? '[name].[contenthash].js' : '[name].js' ),
 				path: path.join( __dirname, 'dist/assets/js' ),
-				chunkFilename: '[name].[chunkhash].js',
+				chunkFilename: ( mode === 'production' ? '[name].[chunkhash].js' : '[name].js' ),
 				publicPath: '',
 				/*
 					If multiple webpack runtimes (from different compilations) are used on the
