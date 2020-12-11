@@ -13,7 +13,7 @@
 # limitations under the License.
 #
 
-sudo: required
+os: linux
 
 dist: xenial
 
