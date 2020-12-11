@@ -42,20 +42,12 @@ export default function UseSnippetInstructions() {
 	const gtmActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'tagmanager' ) );
 	const gtmUseSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
 	const settingsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
-	const supportURLAutoInsert = useSelect(
-		( select ) => select( CORE_SITE ).getGoogleSupportURL(
-			{
-				path: 'https://support.google.com/optimize/answer/6314801',
-			}
-		)
-	);
-	const supportURLDisabledAutoInsert = useSelect(
-		( select ) => select( CORE_SITE ).getGoogleSupportURL(
-			{
-				path: 'https://support.google.com/optimize/answer/6262084',
-			}
-		)
-	);
+	const supportURLAutoInsert = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: 'https://support.google.com/optimize/answer/6314801',
+	} ) );
+	const supportURLDisabledAutoInsert = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: 'https://support.google.com/optimize/answer/6262084',
+	} ) );
 
 	if ( ! analyticsActive ) {
 		return (

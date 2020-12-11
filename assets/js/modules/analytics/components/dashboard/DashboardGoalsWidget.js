@@ -76,14 +76,10 @@ function DashboardGoalsWidget() {
 		};
 	} );
 
-	const supportURL = useSelect(
-		( select ) => select( CORE_SITE ).getGoogleSupportURL(
-			{
-				path: 'https://support.google.com/analytics/answer/1032415',
-				hash: 'create_or_edit_goals',
-			}
-		)
-	);
+	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: 'https://support.google.com/analytics/answer/1032415',
+		hash: 'create_or_edit_goals',
+	} ) );
 
 	if ( loading ) {
 		return <PreviewBlock width="100%" height="202px" />;

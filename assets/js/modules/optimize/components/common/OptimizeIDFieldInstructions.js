@@ -31,13 +31,9 @@ import Link from '../../../../components/Link';
 const { useSelect } = Data;
 
 export default function OptimizeIDFieldInstructions() {
-	const supportURL = useSelect(
-		( select ) => select( CORE_SITE ).getGoogleSupportURL(
-			{
-				path: 'https://support.google.com/optimize/answer/6211921',
-			}
-		)
-	);
+	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: 'https://support.google.com/optimize/answer/6211921',
+	} ) );
 
 	return (
 		<p>

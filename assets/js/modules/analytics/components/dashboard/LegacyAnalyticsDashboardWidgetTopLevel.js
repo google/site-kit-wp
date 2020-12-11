@@ -118,14 +118,10 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 			path: applyEntityToReportPath( url, `/report/conversions-goals-overview/${ pathIDSegment }` ),
 		}
 	) );
-	const goalURL = useSelect(
-		( select ) => select( CORE_SITE ).getGoogleSupportURL(
-			{
-				path: 'https://support.google.com/analytics/answer/1032415',
-				hash: 'create_or_edit_goals',
-			}
-		)
-	);
+	const goalURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: 'https://support.google.com/analytics/answer/1032415',
+		hash: 'create_or_edit_goals',
+	} ) );
 
 	let goalCompletions = '',
 		goalCompletionsChange = '',

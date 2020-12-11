@@ -141,66 +141,61 @@ describe( 'core/site site info', () => {
 		} );
 
 		describe( 'getGoogleSupportURL', () => {
-			it( 'returns null if no arguments are supplied', async () => {
-				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
-
-				const supportURL = registry.select( STORE_NAME ).getGoogleSupportURL();
-				expect( supportURL ).toEqual( null );
-			} );
-
-			it( 'returns null if no path is supplied or is empty', async () => {
-				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
-
-				const supportURL = registry.select( STORE_NAME ).getGoogleSupportURL( {
-					path: '',
-				} );
-				expect( supportURL ).toEqual( null );
-			} );
-
-			it( 'returns the path with the user locale', async () => {
-				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
-
-				const supportURL = registry.select( STORE_NAME ).getGoogleSupportURL( {
-					path: 'https://support.google.com/analytics/answer/1032415',
-				} );
-				expect( supportURL ).toEqual( 'https://support.google.com/analytics/answer/1032415?hl=en-US' );
-			} );
-
-			it( 'returns the path, hash and the user locale', async () => {
-				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
-
-				const supportURL = registry.select( STORE_NAME ).getGoogleSupportURL( {
-					path: 'https://support.google.com/analytics/answer/1032415',
-					hash: 'hash_value',
-				} );
-				expect( supportURL ).toEqual( 'https://support.google.com/analytics/answer/1032415?hl=en-US#hash_value' );
-			} );
-
-			it( 'returns the path, query and the user locale', async () => {
-				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
-
-				const supportURL = registry.select( STORE_NAME ).getGoogleSupportURL( {
-					path: 'https://support.google.com/analytics/answer/1032415',
-					query: {
-						param: 'value',
-						param2: 'value2',
+			it.each( [
+				[
+					'returns null if no arguments are supplied',
+					undefined,
+					null,
+				],
+				[
+					'returns null if no path is supplied or is empty',
+					{
+						path: '',
 					},
-				} );
-				expect( supportURL ).toEqual( 'https://support.google.com/analytics/answer/1032415?param=value&param2=value2&hl=en-US' );
-			} );
-
-			it( 'returns the path, query, hash and the user locale', async () => {
-				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
-
-				const supportURL = registry.select( STORE_NAME ).getGoogleSupportURL( {
-					path: 'https://support.google.com/analytics/answer/1032415',
-					query: {
-						param: 'value',
-						param2: 'value2',
+					null,
+				],
+				[
+					'returns the path, hash and the user locale',
+					{
+						path: 'https://support.google.com/analytics/answer/1032415',
+						hash: 'hash_value',
 					},
-					hash: 'hash_value',
-				} );
-				expect( supportURL ).toEqual( 'https://support.google.com/analytics/answer/1032415?param=value&param2=value2&hl=en-US#hash_value' );
+					'https://support.google.com/analytics/answer/1032415?hl=en-US#hash_value',
+				],
+				[
+					'returns the path, query and the user locale',
+					{
+						path: 'https://support.google.com/analytics/answer/1032415',
+						query: {
+							param: 'value',
+							param2: 'value2',
+						},
+					},
+					'https://support.google.com/analytics/answer/1032415?param=value&param2=value2&hl=en-US',
+				],
+				[
+					'returns the path with the user locale',
+					{
+						path: 'https://support.google.com/analytics/answer/1032415',
+					},
+					'https://support.google.com/analytics/answer/1032415?hl=en-US',
+				],
+				[
+					'returns the path, query, hash and the user locale',
+					{
+						path: 'https://support.google.com/analytics/answer/1032415',
+						query: {
+							param: 'value',
+							param2: 'value2',
+						},
+						hash: 'hash_value',
+					},
+					'https://support.google.com/analytics/answer/1032415?param=value&param2=value2&hl=en-US#hash_value',
+				],
+			] )( '%s', async ( _, args, expected ) => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+				const supportURL = registry.select( STORE_NAME ).getGoogleSupportURL( args );
+				expect( supportURL ).toEqual( expected );
 			} );
 
 			it( 'returns the path with a predefined locale', async () => {

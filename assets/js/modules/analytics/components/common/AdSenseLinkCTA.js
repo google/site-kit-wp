@@ -30,13 +30,9 @@ import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/sit
 const { useSelect } = Data;
 
 export default function AdSenseLinkCTA() {
-	const supportURL = useSelect(
-		( select ) => select( CORE_SITE ).getGoogleSupportURL(
-			{
-				path: 'https://support.google.com/adsense/answer/6084409',
-			}
-		)
-	);
+	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: 'https://support.google.com/adsense/answer/6084409',
+	} ) );
 
 	return (
 		<CTA

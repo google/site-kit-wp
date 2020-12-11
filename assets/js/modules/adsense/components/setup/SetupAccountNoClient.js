@@ -32,13 +32,9 @@ import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/sit
 const { useSelect } = Data;
 
 export default function SetupAccountNoClient() {
-	const supportURL = useSelect(
-		( select ) => select( CORE_SITE ).getGoogleSupportURL(
-			{
-				path: 'https://support.google.com/adsense/answer/6023158',
-			}
-		)
-	);
+	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: 'https://support.google.com/adsense/answer/6023158',
+	} ) );
 
 	return (
 		<Fragment>

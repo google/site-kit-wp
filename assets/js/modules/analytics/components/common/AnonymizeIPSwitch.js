@@ -37,13 +37,9 @@ export default function AnonymizeIPSwitch() {
 	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
-	const supportURL = useSelect(
-		( select ) => select( CORE_SITE ).getGoogleSupportURL(
-			{
-				path: 'https://support.google.com/analytics/answer/2763052',
-			}
-		)
-	);
+	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: 'https://support.google.com/analytics/answer/2763052',
+	} ) );
 	const { setAnonymizeIP } = useDispatch( STORE_NAME );
 	const onChange = useCallback( () => {
 		setAnonymizeIP( ! anonymizeIP );

@@ -483,11 +483,7 @@ export const selectors = {
 	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
 	 */
 	getGoogleSupportURL: ( state, args ) => {
-		if ( ! args ) {
-			return null;
-		}
-
-		const { path, query, hash } = args;
+		const { path, query, hash } = args || {};
 
 		if ( ! path ) {
 			return null;
