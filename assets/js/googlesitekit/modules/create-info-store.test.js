@@ -30,6 +30,7 @@ import { STORE_NAME as CORE_SITE } from '../datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../datastore/user/constants';
 
 const MODULE_SLUG = 'test-slug';
+const TEST_STORE_NAME = 'test/' + MODULE_SLUG;
 
 describe( 'createInfoStore store', () => {
 	let registry;
@@ -44,9 +45,9 @@ describe( 'createInfoStore store', () => {
 
 	describe( 'storeName', () => {
 		it( 'returns the correct default store name', () => {
-			const { STORE_NAME } = createInfoStore( MODULE_SLUG, {} );
+			const { STORE_NAME } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } );
 
-			expect( STORE_NAME ).toEqual( `modules/${ MODULE_SLUG }` );
+			expect( STORE_NAME ).toEqual( TEST_STORE_NAME );
 		} );
 
 		it( 'returns the passed store name', () => {
@@ -63,7 +64,7 @@ describe( 'createInfoStore store', () => {
 			// Uses google dashboard when no `adminPage` is provided.
 			it( 'returns the adminScreenURL page if no `adminPage` is provided', () => {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( { adminURL: 'http://example.com/wp-admin/' } );
-				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG );
+				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } );
 				registry.registerStore( STORE_NAME, store );
 
 				const adminSreenURL = registry.select( STORE_NAME ).getAdminScreenURL();
@@ -76,7 +77,7 @@ describe( 'createInfoStore store', () => {
 			// It uses `adminPage` when provided.
 			it( 'returns adminPage url when `adminPage` is provided', () => {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( { adminURL: 'http://example.com/wp-admin/' } );
-				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, { adminPage: 'test-admin-page' } );
+				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME, adminPage: 'test-admin-page' } );
 				registry.registerStore( STORE_NAME, store );
 
 				const adminSreenURL = registry.select( STORE_NAME ).getAdminScreenURL();
@@ -89,7 +90,7 @@ describe( 'createInfoStore store', () => {
 			// It adds extra query parameters if provided.
 			it( 'adds extra query parameters to the adminScreenURL when provided', () => {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( { adminURL: 'http://example.com/wp-admin/' } );
-				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG );
+				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } );
 				registry.registerStore( STORE_NAME, store );
 
 				const adminSreenURL = registry.select( STORE_NAME ).getAdminScreenURL( { foo: 'bar' } );
@@ -105,7 +106,7 @@ describe( 'createInfoStore store', () => {
 			it( 'works with no slug passed', () => {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( { adminURL: 'http://example.com/wp-admin/' } );
 				registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
-				const { STORE_NAME, ...store } = createInfoStore();
+				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } );
 				registry.registerStore( STORE_NAME, store );
 
 				const adminReauthURL = registry.select( STORE_NAME ).getAdminReauthURL();
@@ -119,7 +120,7 @@ describe( 'createInfoStore store', () => {
 			it( 'it generates an adminReauthURL with reAuth set to false', () => {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( { adminURL: 'http://example.com/wp-admin/' } );
 				registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
-				const { STORE_NAME, ...store } = createInfoStore();
+				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } );
 				registry.registerStore( STORE_NAME, store );
 
 				const adminReauthURL = registry.select( STORE_NAME ).getAdminReauthURL( false );
@@ -133,7 +134,7 @@ describe( 'createInfoStore store', () => {
 			it( 'adds notification query parameter to the adminReauthURL when needsReautentication is false and requireSetup is false', () => {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( { adminURL: 'http://example.com/wp-admin/' } );
 				registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
-				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, { requiresSetup: false } );
+				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME, requiresSetup: false } );
 				registry.registerStore( STORE_NAME, store );
 
 				const adminReauthURL = registry.select( STORE_NAME ).getAdminReauthURL();
@@ -160,7 +161,7 @@ describe( 'createInfoStore store', () => {
 				registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: true } );
 				registry.dispatch( CORE_USER ).receiveConnectURL( connectURL );
 
-				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG );
+				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } );
 				registry.registerStore( STORE_NAME, store );
 
 				const adminReauthURL = registry.select( STORE_NAME ).getAdminReauthURL();

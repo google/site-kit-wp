@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * WordPress dependencies
  */
 import { addQueryArgs } from '@wordpress/url';
@@ -36,11 +41,11 @@ const { createRegistrySelector } = Data;
  * @since 1.10.0
  * @private
  *
- * @param {string}  slug                  Slug of the module that the store is for.
- * @param {Object}  options               Options to consider for the store.
- * @param {number}  options.storeName     Store name to use.
- * @param {string}  options.adminPage     Store admin page. Default is 'googlesitekit-dashboard'.
- * @param {boolean} options.requiresSetup Store flag, for requires setup. Default is 'true'.
+ * @param {string}  slug                 Slug of the module that the store is for.
+ * @param {Object}  args                 Arguments to configure the store.
+ * @param {number}  args.storeName       Store name to use.
+ * @param {string}  [args.adminPage]     Optional. Store admin page. Default is 'googlesitekit-dashboard'.
+ * @param {boolean} [args.requiresSetup] Optional. Store flag, for requires setup. Default is 'true'.
  * @return {Object} The info store object.
  */
 export const createInfoStore = ( slug, {
@@ -48,6 +53,8 @@ export const createInfoStore = ( slug, {
 	adminPage = 'googlesitekit-dashboard',
 	requiresSetup = true,
 } = {} ) => {
+	invariant( storeName, 'storeName is required.' );
+
 	const STORE_NAME = storeName || `modules/${ slug }`;
 
 	const initialState = {};
