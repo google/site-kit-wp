@@ -17,6 +17,11 @@
  */
 
 /**
+ *
+ */
+import isPlainObject from 'lodash/isPlainObject';
+
+/**
  * Internal dependencies
  */
 import { isValidStringsOrObjects } from '../../../util/report-validation';
