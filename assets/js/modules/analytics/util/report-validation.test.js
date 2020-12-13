@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { isValidDimensions, isValidMetrics } from './report-validation';
+import { isValidDimensions, isValidDimensionFilters, isValidMetrics } from './report-validation';
 
 describe( 'Analytics Reporting API validation', () => {
 	describe( 'isValidDimensions', () => {
@@ -61,6 +61,34 @@ describe( 'Analytics Reporting API validation', () => {
 					name: 'test4',
 				},
 			] ) ).toBeFalsy();
+		} );
+	} );
+
+	describe( 'isValidDimensionFilters', () => {
+		it( 'should return TRUE if a valid object is passed with a valid dimension', () => {
+			expect( isValidDimensionFilters( {
+				test: 'foo',
+			}, {
+				name: 'test',
+			} ) ).toBeTruthy();
+		} );
+		it( 'should return FALSE if no dimensions or dimensionFilters are passed.', () => {
+			expect( isValidDimensionFilters( {}, [] ) ).toBeFalsy();
+		} );
+		it( 'should return FALSE if a valid object is passed with invalid dimension', () => {
+			expect( isValidDimensionFilters( {
+				test: 'foo',
+			}, {
+				name: 'bar',
+			} ) ).toBeFalsy();
+		} );
+		it( 'should return FALSE if a valid object is passed with a mix of valid and invalid dimension', () => {
+			expect( isValidDimensionFilters( {
+				foo: 'foo',
+				bar: 'bar',
+			}, {
+				name: 'foo',
+			} ) ).toBeFalsy();
 		} );
 	} );
 

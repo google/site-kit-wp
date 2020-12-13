@@ -68,8 +68,8 @@ export function isValidDimensions( dimensions ) {
  *
  * @since n.e.x.t
  *
- * @param {Object}                               dimensionFilters The dimension filters to check.
- * @param {string|string[]|Object|Object[]|null} dimensions       The dimensions to check.
+ * @param {Object}   dimensionFilters The dimension filters to check.
+ * @param {Object[]} dimensions       The dimensions to check.
  * @return {boolean} TRUE if dimension filters are valid, otherwise FALSE.
  */
 export function isValidDimensionFilters( dimensionFilters, dimensions ) {
