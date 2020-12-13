@@ -144,4 +144,40 @@ describe( 'normalizeReportOptions', () => {
 			] );
 		} );
 	} );
+
+	describe( 'dimensionFilterss', () => {
+		it( 'normalizes no dimensionFilters into an empty object', () => {
+			expect( normalizeReportOptions() ).toMatchObject( { dimensionFilters: {} } );
+			expect( normalizeReportOptions( {} ) ).toMatchObject( { dimensionFilters: {} } );
+		} );
+
+		it( 'normalizes non object dimensionFilters into an empty object', () => {
+			expect( normalizeReportOptions( { dimensionFilters: false } ) ).toMatchObject( { dimensionFilters: {} } );
+			expect( normalizeReportOptions( { dimensionFilters: null } ) ).toMatchObject( { dimensionFilters: {} } );
+			expect( normalizeReportOptions( { dimensionFilters: undefined } ) ).toMatchObject( { dimensionFilters: {} } );
+			expect( normalizeReportOptions( { dimensionFilters: 'foo' } ) ).toMatchObject( { dimensionFilters: {} } );
+			expect( normalizeReportOptions( { dimensionFilters: 42 } ) ).toMatchObject( { dimensionFilters: {} } );
+			expect( normalizeReportOptions( { dimensionFilters: [ 'foo' ] } ) ).toMatchObject( { dimensionFilters: {} } );
+		} );
+
+		it( 'normalizes a dimensionFilters object to remove non primitive values', () => {
+			const dimensionFilters = {
+				foo: 'bar',
+				bar: () => true,
+				baz: [ 'ab' ],
+				qux: { foo: 'bar' },
+				wibble: 3,
+				wobble: false,
+				wubble: 1n,
+			};
+
+			const expected = {
+				foo: 'bar',
+				wibble: 3,
+				wobble: false,
+			};
+
+			expect( normalizeReportOptions( { dimensionFilters } ) ).toMatchObject( { dimensionFilters: expected } );
+		} );
+	} );
 } );
