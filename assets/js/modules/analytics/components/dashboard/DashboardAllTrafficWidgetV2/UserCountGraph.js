@@ -1,7 +1,7 @@
 /**
- * LegacyDashboardSplashNotifications component.
+ * UserCountGraph component
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,16 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
+import PropTypes from 'prop-types';
 
-/**
- * A single module. Keeps track of its own active state and settings.
- */
-class LegacyDashboardSplashNotifications extends Component {
-	render() {
-		return null;
-	}
+// eslint-disable-next-line no-unused-vars
+export default function UserCountGraph( { dimensionName, dimensionValue } ) {
+	return null;
 }
 
-export default withFilters( 'googlesitekit.DashboardSplashNotifications' )( LegacyDashboardSplashNotifications );
+UserCountGraph.propTypes = {
+	dimensionName: PropTypes.string,
+	dimensionValue: PropTypes.string,
+};

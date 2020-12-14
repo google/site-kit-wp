@@ -50,6 +50,7 @@ import {
 	dashboardUniqueVisitorsSparkData,
 	dashboardUniqueVisitorsVisitorData,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
+import DashboardAllTrafficWidgetV2 from '../assets/js/modules/analytics/components/dashboard/DashboardAllTrafficWidgetV2';
 
 /**
  * Defines some additional setup for all stories.
@@ -77,6 +78,29 @@ generateReportBasedWidgetStories( {
 	data: dashboardAllTrafficData,
 	options: dashboardAllTrafficArgs,
 	Component: DashboardAllTrafficWidget,
+	wrapWidget: false,
+	setup,
+} );
+
+generateReportBasedWidgetStories( {
+	moduleSlugs: [ 'analytics' ],
+	datastore: STORE_NAME,
+	group: 'Analytics Module/Components/Dashboard/All Traffic Widget V2',
+	data: [], // TODO: Provide fixtures/mocks for all necessary responses.
+	options: { // TODO: Provide fixtures/mocks for all necessary requests.
+		startDate: '2020-11-01',
+		endDate: '2020-11-28',
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Users',
+			},
+		],
+		dimensions: [
+			'ga:channelGrouping',
+		],
+	},
+	Component: DashboardAllTrafficWidgetV2,
 	wrapWidget: false,
 	setup,
 } );
