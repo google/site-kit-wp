@@ -40,7 +40,7 @@ import { STORE_NAME, ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from './const
 import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
-import { getLocale } from '../../../util';
+import { listFormat } from '../../../util';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -411,20 +411,7 @@ const baseResolvers = {
 		if ( inactiveModules.length ) {
 			/* translators: Error message text. 1: A flattened list of module names. 2: A module name. */
 			const messageTemplate = __( 'You need to set up %1$s to gain access to %2$s.', 'google-site-kit' );
-
-			let errorMessage;
-
-			// Not all browsers support Intl.Listformat per
-			// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat#Browser_compatibility
-			// We've seen that the built versions don't polyfill for the unsupported browsers (iOS/safari) so we provide a fallback.
-			if ( Intl.Listformat ) {
-				const formatter = new Intl.ListFormat( getLocale(), { style: 'long', type: 'conjunction' } );
-				errorMessage = sprintf( messageTemplate, formatter.format( inactiveModules ), module.name );
-			} else {
-				/* translators: used between list items, there is a space after the comma. */
-				const listSeparator = __( ', ', 'google-site-kit' );
-				errorMessage = sprintf( messageTemplate, inactiveModules.join( listSeparator ), module.name );
-			}
+			const errorMessage = sprintf( messageTemplate, listFormat( inactiveModules ), module.name );
 
 			yield baseActions.receiveCheckRequirementsError( slug, {
 				code: ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
