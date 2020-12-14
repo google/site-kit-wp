@@ -16,6 +16,45 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME } from '../../../datastore/constants';
+const { useSelect } = Data;
+
 export default function UserDimensionsPieChart() {
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
+
+	const args = {
+		startDate,
+		endDate,
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Users',
+			},
+		],
+		dimensions: 'ga:channelGrouping',
+		orderby: {
+			fieldName: 'ga:users',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 5,
+	};
+
+	if ( url ) {
+		args.url = url;
+	}
+
+	const loaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
+	const data = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
+
+	global.console.log( loaded, error, data );
+
 	return null;
 }
