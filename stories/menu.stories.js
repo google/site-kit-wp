@@ -1,5 +1,5 @@
 /**
- * React Shim tests.
+ * Menu Component Stories.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,22 +19,36 @@
 /**
  * External dependencies
  */
-import reactDefault, * as react from 'react';
+import { storiesOf } from '@storybook/react';
 
 /**
  * Internal dependencies
  */
-import reactShimDefault, * as reactShim from './react-shim';
+import Menu from '../assets/js/components/Menu';
 
-describe( 'react shim', () => {
-	it( 'mirrors all exports from the react package', () => {
-		const realExports = Object.keys( react ).sort();
-		const shimExports = Object.keys( reactShim ).sort();
-
-		expect( shimExports ).toEqual( realExports );
+storiesOf( 'Global', module )
+	.add( 'Menu', () => (
+		<div>
+			<div>
+				<p>Menu</p>
+				<Menu
+					menuOpen
+					menuItems={ [
+						'Item 1',
+						'Item 2',
+						'Item 3',
+						'Item 4',
+						'Item 5',
+					] }
+					onSelected={ ( index ) => {
+						global.console.log( index );
+					} }
+					id="googlesitekit-menu"
+				/>
+			</div>
+		</div>
+	), {
+		options: {
+			onReadyScript: 'mouse.js',
+		},
 	} );
-
-	it( 'mirrors the default export', () => {
-		expect( reactDefault ).toEqual( reactShimDefault );
-	} );
-} );

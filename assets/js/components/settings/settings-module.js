@@ -43,16 +43,17 @@ import {
 	getReAuthURL,
 	showErrorNotification,
 	getModulesData,
+	listFormat,
 } from '../../util';
 import { refreshAuthentication } from '../../util/refresh-authentication';
 import Link from '../Link';
-import Button from '../../components/button';
+import Button from '../../components/Button';
 import data, { TYPE_MODULES } from '../../components/data';
 import SettingsOverlay from '../../components/settings/SettingsOverlay';
 import Spinner from '../Spinner';
 import GenericError from '../legacy-notifications/generic-error';
 import SetupModule from './SetupModule';
-import Dialog from '../../components/dialog';
+import Dialog from '../../components/Dialog';
 import ModuleIcon from '../ModuleIcon';
 import ModuleSetupIncomplete from '../../components/settings/module-setup-incomplete';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -210,8 +211,7 @@ class SettingsModule extends Component {
 		const modulesBeingEdited = filter( isEditing, ( module ) => module );
 		const editActive = 0 < modulesBeingEdited.length;
 
-		/* translators: used between list items, there is a space after the comma. */
-		const dependentModules = map( this.getDependentModules(), 'name' ).join( __( ', ', 'google-site-kit' ) );
+		const dependentModules = listFormat( map( this.getDependentModules(), 'name' ) );
 
 		// Set button text based on state.
 		let buttonText = __( 'Close', 'google-site-kit' );
