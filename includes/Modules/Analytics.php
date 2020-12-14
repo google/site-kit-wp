@@ -143,7 +143,7 @@ final class Analytics extends Module
 						if ( $this->context->get_amp_mode() ) {
 							$home = $this->context->get_canonical_home_url();
 							$home = wp_parse_url( $home, PHP_URL_HOST );
-							$tag->set_home_domain( $home_domain );
+							$tag->set_home_domain( $home );
 						}
 
 						$tag->register();
