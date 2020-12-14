@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../modules/search-console/datastore/constants';
+import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { extractSearchConsoleDashboardData, isZeroReport } from '../../modules/search-console/util';
 import { trackEvent } from '../../util/tracking';
@@ -37,21 +37,17 @@ import ReportZero from '../ReportZero';
 const { useSelect } = Data;
 
 const WPDashboardImpressions = () => {
-	const { data, error, loading } = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
-		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			dimensions: 'date',
-			compareDateRanges: true,
-		};
+	const args = {
+		dateRange,
+		dimensions: 'date',
+		compareDateRanges: true,
+	};
 
-		return {
-			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
-		};
-	} );
+	const data = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( args ) );
+	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ args ] ) );
+	const loading = useSelect( ( select ) => ! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ args ] ) );
 
 	useEffect( () => {
 		if ( error ) {

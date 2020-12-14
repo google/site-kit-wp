@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../modules/analytics/datastore/constants';
+import { STORE_NAME as MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
@@ -38,20 +38,16 @@ import { parseTotalUsersData, userReportDataDefaults } from '../../modules/analy
 const { useSelect } = Data;
 
 const WPDashboardUniqueVisitors = () => {
-	const { data, loading, error } = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
-		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			...userReportDataDefaults,
-		};
+	const args = {
+		dateRange,
+		...userReportDataDefaults,
+	};
 
-		return {
-			data: store.getReport( args ),
-			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-		};
-	} );
+	const data = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( args ) );
+	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ) );
+	const loading = useSelect( ( select ) => ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ) );
 
 	if ( loading ) {
 		return <PreviewBlock width="48%" height="92px" />;

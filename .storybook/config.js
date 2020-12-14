@@ -42,6 +42,7 @@ const resetFeatures = () => {
 	disableFeature( 'userInput' );
 	disableFeature( 'storeErrorNotifications' );
 	disableFeature( 'serviceSetupV2' );
+	disableFeature( 'widgets.wpDashboard' );
 };
 const resetGlobals = () => {
 	global._googlesitekitLegacyData = cloneDeep( dashboardData );

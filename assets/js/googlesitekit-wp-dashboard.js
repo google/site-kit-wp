@@ -33,7 +33,7 @@ import { render } from '@wordpress/element';
  */
 import './components/data';
 import Root from './components/root';
-import WPDashboardApp from './components/wp-dashboard/wp-dashboard-app';
+import WPDashboardApp from './components/wp-dashboard/WPDashboardApp';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {

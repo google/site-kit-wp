@@ -32,8 +32,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { getModulesData } from '../../util';
 import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
-import LegacyWPDashboardModule from './legacy-wp-dashboard-module';
-import LegacyWPDashboardHeader from './legacy-wp-dashboard-header';
+import LegacyWPDashboardModule from './LegacyWPDashboardModule';
+import LegacyWPDashboardHeader from './LegacyWPDashboardHeader';
 
 class LegacyWPDashboardModules extends Component {
 	render() {

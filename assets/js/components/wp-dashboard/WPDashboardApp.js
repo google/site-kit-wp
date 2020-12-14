@@ -27,11 +27,11 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import Link from '../Link';
-import LegacyWPDashboardModules from './legacy-wp-dashboard-modules';
-import WPDashboardImpressions from './wp-dashboard-impressions';
-import WPDashboardClicks from './wp-dashboard-clicks';
-import WPDashboardUniqueVisitors from './wp-dashboard-unique-visitors';
-import WPDashboardSessionDuration from './wp-dashboard-session-duration';
+import LegacyWPDashboardModules from './LegacyWPDashboardModules';
+import WPDashboardImpressions from './WPDashboardImpressions';
+import WPDashboardClicks from './WPDashboardClicks';
+import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
+import WPDashboardSessionDuration from './WPDashboardSessionDuration';
 import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';

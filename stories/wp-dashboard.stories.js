@@ -31,7 +31,7 @@ import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
  */
 import GoogleLogoIcon from '../assets/svg/logo-g.svg';
 import SiteKitLogoIcon from '../assets/svg/logo-sitekit.svg';
-import WPDashboardApp from '../assets/js/components/wp-dashboard/wp-dashboard-app';
+import WPDashboardApp from '../assets/js/components/wp-dashboard/WPDashboardApp';
 import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
 import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/components/wp-dashboard/WPSearchConsoleDashboardWidget';
 import { createAddToFilter } from '../assets/js/util/helpers';
@@ -40,14 +40,12 @@ import WPAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analyt
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
-import { disableFeature } from './utils/features';
 
 storiesOf( 'WordPress', module )
 	.add( 'WordPress Dashboard', () => {
 		global._googlesitekitLegacyData = wpDashboardData;
 		global._googlesitekitLegacyData.admin.assetsRoot = ''; // See .storybook/config.js
 		global._googlesitekitLegacyData.canAdsRun = true;
-		disableFeature( 'widgets.wpDashboard' );
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveSiteInfo( {
