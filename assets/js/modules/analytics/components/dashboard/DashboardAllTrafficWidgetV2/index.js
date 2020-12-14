@@ -46,6 +46,7 @@ function DashboardAllTrafficWidget() {
 	return (
 		<Widget
 			slug="analyticsAllTrafficV2"
+			className="googlesitekit-widget--footer-v2"
 			footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
