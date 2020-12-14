@@ -45,12 +45,14 @@ export * from './validation';
  * Extracts data required for a pie chart from the Analytics report information.
  *
  * @since 1.16.0 Added keyColumnIndex argument.
+ * @since n.e.x.t Added addOthers argument.
  *
- * @param {Array}  reports        The array with reports data.
- * @param {number} keyColumnIndex The number of a column to extract metrics data from.
+ * @param {Array}   reports        The array with reports data.
+ * @param {number}  keyColumnIndex The number of a column to extract metrics data from.
+ * @param {boolean} withOthers     Whether to add "Others" record to the data map or not.
  * @return {Array} Extracted data.
  */
-export function extractAnalyticsDataForTrafficChart( reports, keyColumnIndex ) {
+export function extractAnalyticsDataForTrafficChart( reports, keyColumnIndex = 0, withOthers = false ) {
 	if ( ! reports || ! reports.length ) {
 		return null;
 	}
@@ -63,14 +65,26 @@ export function extractAnalyticsDataForTrafficChart( reports, keyColumnIndex ) {
 		[ 'Source', 'Percent' ],
 	];
 
+	let others = 1;
+
 	each( rows, ( row ) => {
 		const users = row.metrics[ 0 ].values[ keyColumnIndex ];
 		const percent = ( users / totalUsers );
 
-		const source = row.dimensions[ 0 ];
+		dataMap.push( [
+			row.dimensions[ 0 ],
+			percent,
+		] );
 
-		dataMap.push( [ source, percent ] );
+		others -= percent;
 	} );
+
+	if ( withOthers && others > 0.01 ) {
+		dataMap.push( [
+			__( 'Others', 'google-site-kit' ),
+			others,
+		] );
+	}
 
 	return dataMap;
 }

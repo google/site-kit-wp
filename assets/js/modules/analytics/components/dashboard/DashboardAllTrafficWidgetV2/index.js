@@ -64,7 +64,7 @@ function DashboardAllTrafficWidget() {
 					</Cell>
 					<Cell size={ 4 }>
 						<DimensionTabs />
-						<UserDimensionsPieChart />
+						<UserDimensionsPieChart dimensionName={ dimensionName } />
 					</Cell>
 				</Row>
 			</Grid>
