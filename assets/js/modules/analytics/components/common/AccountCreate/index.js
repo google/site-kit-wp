@@ -25,7 +25,7 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Button from '../../../../../components/button';
+import Button from '../../../../../components/Button';
 import Link from '../../../../../components/Link';
 import ProgressBar from '../../../../../components/ProgressBar';
 import { trackEvent } from '../../../../../util';

@@ -1,5 +1,5 @@
 /**
- * Element Shim tests.
+ * UserDimensionsPieChart component
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,21 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import * as wordpressElement from '@wordpress/element';
-
-/**
- * Internal dependencies
- */
-import * as elementShim from './element-shim';
-
-describe( '@wordpress/element shim', () => {
-	it( 'mirrors all exports from the @wordpress/element package', () => {
-		const realExports = Object.keys( wordpressElement ).sort();
-		const shimExports = Object.keys( elementShim ).sort();
-
-		expect( shimExports ).toEqual( realExports );
-	} );
-} );
+export default function UserDimensionsPieChart() {
+	return null;
+}

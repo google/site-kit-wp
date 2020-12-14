@@ -69,7 +69,7 @@ describe( 'SettingsRenderer', () => {
 	describe( 'registered module with view component only', () => {
 		beforeEach( () => {
 			registry.dispatch( STORE_NAME ).registerModule( slug, {
-				settingsViewComponent: SettingsView,
+				SettingsViewComponent: SettingsView,
 			} );
 		} );
 
@@ -91,8 +91,8 @@ describe( 'SettingsRenderer', () => {
 	describe( 'registered module with both view and edit components', () => {
 		beforeEach( () => {
 			registry.dispatch( STORE_NAME ).registerModule( slug, {
-				settingsViewComponent: SettingsView,
-				settingsEditComponent: SettingsEdit,
+				SettingsViewComponent: SettingsView,
+				SettingsEditComponent: SettingsEdit,
 			} );
 		} );
 

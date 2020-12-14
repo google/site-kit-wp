@@ -70,11 +70,11 @@ export default function ModuleSetup( { moduleSlug } ) {
 		}, 500, 'later' );
 	}, [ moduleSlug ] );
 
-	if ( ! module?.setupComponent ) {
+	if ( ! module?.SetupComponent ) {
 		return null;
 	}
 
-	const { setupComponent: SetupComponent } = module;
+	const { SetupComponent } = module;
 
 	return (
 		<Fragment>

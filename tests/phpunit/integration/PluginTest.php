@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests;
 
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Plugin;
 
 /**

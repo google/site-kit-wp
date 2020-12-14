@@ -97,7 +97,7 @@ rl.question( 'Username: ', ( username ) => {
 				html = html.replace( /elastic ?search/gi, 'site kit' );
 
 				// Asset root.
-				html = html.replace( /"assetsRoot":"(.*?)"/gi, '"assetsRoot":"/assets/"' );
+				html = html.replace( /"assetsRoot":"(.*?)"/gi, '"assetsRoot":"/"' );
 
 				// Store one file for each localized variable used by the plugin.
 				const scriptsToMatch = [

@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import set from 'lodash/set';
 
 /**
  * Internal dependencies
@@ -28,6 +27,7 @@ import set from 'lodash/set';
 import Header from '../assets/js/components/Header';
 import DateRangeSelector from '../assets/js/components/DateRangeSelector';
 import { createTestRegistry, provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
+import { enableFeature } from './utils/features';
 
 storiesOf( 'Global', module )
 	.addDecorator( ( storyFn ) => {
@@ -38,8 +38,6 @@ storiesOf( 'Global', module )
 		return storyFn( registry );
 	} )
 	.add( 'Plugin Header', ( registry ) => {
-		set( global, 'featureFlags.storeErrorNotifications.enabled', false );
-
 		return (
 			<WithTestRegistry registry={ registry }>
 				<Header />
@@ -47,7 +45,7 @@ storiesOf( 'Global', module )
 		);
 	} )
 	.add( 'Plugin Header with Date Selector', ( registry ) => {
-		set( global, 'featureFlags.storeErrorNotifications.enabled', false );
+		enableFeature( 'storeErrorNotifications' );
 
 		return (
 			<WithTestRegistry registry={ registry }>

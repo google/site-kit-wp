@@ -36,7 +36,7 @@ import Data from 'googlesitekit-data';
 import PersonWalking from '../../../svg/person-walking.svg';
 import { trackEvent } from '../../util';
 import Header from '../Header';
-import Button from '../button';
+import Button from '../Button';
 import ResetButton from '../ResetButton';
 import Layout from '../layout/layout';
 import Notification from '../legacy-notifications/notification';

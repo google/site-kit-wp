@@ -21,13 +21,14 @@
  */
 import { __ } from '@wordpress/i18n';
 import { Fragment, useState, useEffect, useCallback, createInterpolateElement } from '@wordpress/element';
+import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { clearWebStorage } from '../util';
-import Dialog from './dialog';
+import Dialog from './Dialog';
 import Modal from './Modal';
 import Link from './Link';
 import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
@@ -41,7 +42,7 @@ function ResetButton( { children } ) {
 
 	useEffect( () => {
 		const handleCloseModal = ( event ) => {
-			if ( 27 === event.keyCode ) {
+			if ( ESCAPE === event.keyCode ) {
 				// Only close the modal if the "Escape" key is pressed.
 				setDialogActive( false );
 			}
