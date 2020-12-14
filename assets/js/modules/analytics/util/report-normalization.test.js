@@ -145,7 +145,7 @@ describe( 'normalizeReportOptions', () => {
 		} );
 	} );
 
-	describe( 'dimensionFilterss', () => {
+	describe( 'dimensionFilters', () => {
 		it( 'normalizes no dimensionFilters into an empty object', () => {
 			expect( normalizeReportOptions() ).toMatchObject( { dimensionFilters: {} } );
 			expect( normalizeReportOptions( {} ) ).toMatchObject( { dimensionFilters: {} } );
