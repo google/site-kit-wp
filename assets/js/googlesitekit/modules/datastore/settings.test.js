@@ -29,7 +29,7 @@ describe( 'core/modules settings', () => {
 	const nonExistentModuleSlug = 'not-module';
 	const moduleStoreName = `modules/${ slug }`;
 	const controlReturn = 'dummy_return_value';
-	let validateCanSubmitChangesError = false;
+	const validateCanSubmitChangesError = false;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -51,7 +51,11 @@ describe( 'core/modules settings', () => {
 	describe( 'actions', () => {
 		describe( 'submitChanges', () => {
 			it( 'should return an error if a module doesnt exist', async () => {
-				const expectedError = { error: `'modules/${ nonExistentModuleSlug }' does not have a submitChanges() action.` };
+				// console.log( 'await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug )', await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) );
+				const expectedError = {
+					error: `The module ${ nonExistentModuleSlug } does not have a store.`,
+					response: undefined,
+				};
 				expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
 			} );
 
@@ -100,7 +104,7 @@ describe( 'core/modules settings', () => {
 
 			it( 'should proxy the selector call to the module with the given slug', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( true );
-				validateCanSubmitChangesError = 'error message';
+				// validateCanSubmitChangesError = 'error message';
 				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( false );
 			} );
 		} );

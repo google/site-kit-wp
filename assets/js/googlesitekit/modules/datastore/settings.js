@@ -7,7 +7,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,12 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-const { createRegistrySelector } = Data;
+// import { dispatch } from '@wordpress/data';
+const { createRegistrySelector, createRegistryControl } = Data;
+// import { STORE_NAME } from './constants';
+import { STORE_NAME as CORE_MODULES } from './constants';
+
+const SETTINGS_SUBMIT_CHANGES = 'SETTINGS_SUBMIT_CHANGES';
 
 export const actions = {
 	/**
@@ -36,19 +41,40 @@ export const actions = {
 	 * @param {string} slug Slug for module store.
 	 * @return {Object} Module's submitChanges response object if it exists, otherwise object with `error` property if it doesn't.
 	 */
-	submitChanges( slug ) {
+	*submitChanges( slug ) {
 		invariant( slug, 'slug is required.' );
-		return ( function* () {
-			const registry = yield Data.commonActions.getRegistry();
 
-			const { submitChanges } = registry.dispatch( `modules/${ slug }` ) || {};
-			if ( !! submitChanges ) {
-				return submitChanges();
-			}
+		const { response, error } = yield {
+			payload: { slug },
+			type: SETTINGS_SUBMIT_CHANGES,
+		};
 
-			return { error: `'modules/${ slug }' does not have a submitChanges() action.` };
-		}() );
+		if ( error ) {
+			return { error };
+		}
+
+		return { response };
 	},
+};
+
+export const controls = {
+	[ SETTINGS_SUBMIT_CHANGES ]: createRegistryControl( ( registry ) => async ( { payload } ) => {
+		const { slug } = payload;
+		const storeName = registry.select( CORE_MODULES )?.getModuleStoreName( slug );
+
+		// global.console.log( 'slug', slug );
+		// global.console.log( 'storeName', storeName );
+
+		if ( ! storeName ) {
+			return { error: `The module ${ slug } does not have a store.` };
+		}
+		const { submitChanges } = registry.dispatch( storeName );
+		if ( ! submitChanges ) {
+			return { error: `The module ${ slug } does not have a submitChanges() action.` };
+		}
+		// global.console.log( 'submit changes now' );
+		return await submitChanges( slug );
+	} ),
 };
 
 export const selectors = {
@@ -62,7 +88,8 @@ export const selectors = {
 	 */
 	isDoingSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		return !! select( `modules/${ slug }` )?.isDoingSubmitChanges?.();
+		const storeName = select( 'core/modules' )?.getModuleStoreName( slug );
+		return !! select( storeName )?.isDoingSubmitChanges?.();
 	} ),
 
 	/**
@@ -75,12 +102,14 @@ export const selectors = {
 	 */
 	canSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		return !! select( `modules/${ slug }` )?.canSubmitChanges?.();
+		const storeName = select( 'core/modules' )?.getModuleStoreName( slug );
+		return !! select( storeName )?.canSubmitChanges?.();
 	} ),
 
 };
 
 export default {
 	actions,
+	controls,
 	selectors,
 };
