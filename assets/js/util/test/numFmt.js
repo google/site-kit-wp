@@ -1,7 +1,25 @@
 /**
+ * `numFmt` tests
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * Internal dependencies
  */
-import { numberFormatWithUnit } from '../';
+import { numFmt } from '../';
 
 /**
  * Sets the Site Kit locale to a (legacy) global variable.
@@ -22,7 +40,7 @@ const setupGoogleSiteKit = ( langCode ) => {
 // This `NO-BREAK SPACE` or HTML's `&nbsp;` is used by Intl.NumberFormat between unit and number. ASCII `194 160`
 const NO_BREAK_SPACE = ' ';
 
-describe( 'numberFormatWithUnit', () => {
+describe( 'numFmt', () => {
 	afterEach( () => {
 		global._googlesitekitLegacyData = null;
 	} );
@@ -71,10 +89,34 @@ describe( 'numberFormatWithUnit', () => {
 			'USD',
 			`$${ NO_BREAK_SPACE }123.87`,
 		],
+		[
+			'en_US',
+			12,
+			's',
+			`12s`,
+		],
+		[
+			'en_US',
+			123,
+			's',
+			`2m 3s`,
+		],
+		[
+			'en_US',
+			10000000,
+			'',
+			`10M`,
+		],
+		[
+			'en_US',
+			100000,
+			'ts',
+			`100,000`,
+		],
 	];
 
 	it.each( siteKitLocales )( 'formats numbers correctly with locale variant %s', ( locale, number, unit, expected ) => {
 		setupGoogleSiteKit( locale );
-		expect( numberFormatWithUnit( number, unit ) ).toStrictEqual( expected );
+		expect( numFmt( number, unit ) ).toStrictEqual( expected );
 	} );
 } );

@@ -14,7 +14,7 @@ import { numberFormat } from '../';
  */
 const setupGoogleSiteKit = ( langCode ) => {
 	return global._googlesitekitLegacyData = {
-		locale: { '': { lang: langCode } },
+		locale: langCode,
 	};
 };
 
