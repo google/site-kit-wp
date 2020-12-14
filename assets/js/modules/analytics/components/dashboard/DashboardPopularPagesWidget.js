@@ -32,7 +32,7 @@ import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
 import { getDataTableFromData } from '../../../../components/data-table';
-import { numberFormat } from '../../../../util';
+import { numFmt } from '../../../../util';
 import { isZeroReport } from '../../util';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
@@ -106,7 +106,7 @@ function DashboardPopularPagesWidget() {
 
 		return [
 			title,
-			numberFormat( row.metrics[ 0 ].values[ 0 ] ),
+			numFmt( row.metrics[ 0 ].values[ 0 ] ),
 		];
 	} );
 

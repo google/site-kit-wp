@@ -31,7 +31,7 @@ import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
 import {
 	getTimeInSeconds,
-	numberFormat,
+	numFmt,
 } from '../../../../util';
 import {
 	isDataZeroForReporting,
@@ -62,7 +62,7 @@ class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 
 			return [
 				title,
-				numberFormat( row.metrics[ 0 ].values[ 0 ] ),
+				numFmt( row.metrics[ 0 ].values[ 0 ] ),
 			];
 		} );
 

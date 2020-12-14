@@ -24,7 +24,7 @@ import { each } from 'lodash';
 /**
  * Internal dependencies
  */
-import { changeToPercent, readableLargeNumber } from '../../../util';
+import { changeToPercent } from '../../../util';
 export * from './is-zero-report';
 
 function reduceSearchConsoleData( rows ) {
@@ -58,23 +58,15 @@ function reduceSearchConsoleData( rows ) {
 		totalPosition += row.position;
 	} );
 
-	const totalClicksRaw = totalClicks;
-	const totalImpressionsRaw = totalImpressions;
-
-	totalClicks = readableLargeNumber( totalClicks );
-	totalImpressions = readableLargeNumber( totalImpressions );
-
 	// Do not divide by zero.
-	const averageCTR = count > 0 ? ( totalCTR / count * 100 ).toFixed( 1 ) : '0.0';
+	const averageCTR = count > 0 ? +( totalCTR / count * 100 ).toFixed( 1 ) : 0.0;
 	const averageCTRRaw = count > 0 ? totalCTR / count : 0.0;
-	const averagePosition = count > 0 ? ( totalPosition / count ).toFixed( 1 ) : '0.0';
+	const averagePosition = count > 0 ? +( totalPosition / count ).toFixed( 1 ) : 0.0;
 
 	return {
 		dataMap,
 		totalClicks,
-		totalClicksRaw,
 		totalImpressions,
-		totalImpressionsRaw,
 		averageCTR,
 		averageCTRRaw,
 		averagePosition,
@@ -94,8 +86,8 @@ export const extractSearchConsoleDashboardData = ( rows ) => {
 		totalImpressions: latestData.totalImpressions,
 		averageCTR: latestData.averageCTR,
 		averagePosition: latestData.averagePosition,
-		totalClicksChange: changeToPercent( olderData.totalClicksRaw, latestData.totalClicksRaw ),
-		totalImpressionsChange: changeToPercent( olderData.totalImpressionsRaw, latestData.totalImpressionsRaw ),
+		totalClicksChange: changeToPercent( olderData.totalClicks, latestData.totalClicks ),
+		totalImpressionsChange: changeToPercent( olderData.totalImpressions, latestData.totalImpressions ),
 		averageCTRChange: changeToPercent( olderData.averageCTRRaw, latestData.averageCTRRaw ),
 		averagePositionChange: changeToPercent( olderData.averagePosition, latestData.averagePosition ),
 	};

@@ -43,7 +43,7 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
  */
 import { trackEvent } from './tracking';
 import { fillFilterWithComponent } from './helpers';
-import { numberFormatWithUnit } from './i18n';
+import { numberFormat } from './i18n';
 export { trackEvent };
 export * from './sanitize';
 export * from './stringify';
@@ -132,24 +132,10 @@ export const prepareForReadableLargeNumber = ( number ) => {
  *
  * @since 1.0.0
  *
- * @param {number}           number The large number to format.
- * @param {(string|boolean)} unit   Optional currency code to format as amount.
+ * @param {number} number The large number to format.
  * @return {string} The formatted number.
  */
-export const readableLargeNumber = ( number, unit = false ) => {
-	// Cast parsable values to numeric types.
-	number = isFinite( number ) ? number : Number( number );
-
-	if ( ! isFinite( number ) ) {
-		// eslint-disable-next-line no-console
-		console.warn( 'Invalid number', number, typeof number );
-		number = 0;
-	}
-
-	if ( unit ) {
-		return numberFormatWithUnit( number, unit );
-	}
-
+export const readableLargeNumber = ( number ) => {
 	const withSingleDecimal = {
 		minimumFractionDigits: 1,
 		maximumFractionDigits: 1,
@@ -186,20 +172,68 @@ export const readableLargeNumber = ( number, unit = false ) => {
 };
 
 /**
- * Formats a number using the Internationalization Number Format API.
+ * Formats a number with unit using the JS Internationalization Number Format API.
  *
- * @since 1.0.0
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter} For all available formatting options.
+ * @since n.e.x.t
  *
- * @param {number} number           The number to format.
- * @param {Object} [options]        Formatting options.
- * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
- * @return {string} The formatted number.
+ * @param {number|string}            number    The number to format.
+ * @param {string}                   [unit]    The unit for the number.
+ * @param {Intl.NumberFormatOptions} [options] Formatting options.
+ * @return {string} The formatted number with unit.
  */
-export const numberFormat = ( number, options = {} ) => {
-	const { locale = getLocale(), ...formatOptions } = options;
+export const numFmt = ( number, unit, options = {} ) => {
+	// Cast parsable values to numeric types.
+	number = isFinite( number ) ? number : Number( number );
 
-	return new Intl.NumberFormat( locale, formatOptions ).format( number );
+	if ( ! isFinite( number ) ) {
+		// eslint-disable-next-line no-console
+		console.warn( 'Invalid number', number, typeof number );
+		return null;
+	}
+
+	// Expand shorthand values for units.
+	if ( '%' === unit ) {
+		options = {
+			style: 'percent',
+			maximumFractionDigits: 2,
+			...options,
+		};
+		number /= 100;
+	} else if ( 's' === unit ) {
+		options = {
+			style: 'seconds',
+			...options,
+		};
+	} else if ( 'ts' === unit ) {
+		// custom unit `ts`: thousand separated
+		// used to show numbers with thousand separators
+		return numberFormat( number );
+	} else if ( !! unit && typeof unit === 'string' ) {
+		options = {
+			style: 'currency',
+			currency: unit,
+			...options,
+		};
+	}
+
+	// Note: `metric` is our custom, default style.
+	const { style = 'metric' } = options;
+
+	if ( 'metric' === style ) {
+		return readableLargeNumber( number );
+	}
+
+	if ( 'seconds' === style ) {
+		return prepareSecondsForDisplay( number );
+	}
+
+	try {
+		// assuming the unit is a currency code.
+		return numberFormat( number, options );
+	} catch ( e ) {
+		// if the unit is not a currency code then simply concatenate number and unit.
+		return `${ number }${ unit }`;
+	}
 };
 
 /**

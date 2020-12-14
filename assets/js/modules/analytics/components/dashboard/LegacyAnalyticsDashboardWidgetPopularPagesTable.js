@@ -25,7 +25,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat } from '../../../../util';
+import { getTimeInSeconds, numFmt } from '../../../../util';
 import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
@@ -91,7 +91,7 @@ function LegacyAnalyticsDashboardWidgetPopularPagesTable( { data } ) {
 
 		return [
 			title,
-			numberFormat( row.metrics[ 0 ].values[ 0 ] ),
+			numFmt( row.metrics[ 0 ].values[ 0 ] ),
 		];
 	} );
 

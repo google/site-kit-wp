@@ -27,7 +27,6 @@ import { Component, Fragment } from '@wordpress/element';
  */
 import {
 	getTimeInSeconds,
-	prepareSecondsForDisplay,
 	changeToPercent,
 } from '../../../../util';
 import {
@@ -112,7 +111,8 @@ class WPAnalyticsDashboardWidgetOverview extends Component {
 						<DataBlock
 							className="googlesitekit-wp-dashboard-stats__data-table overview-average-session-duration"
 							title={ __( 'Avg. Time on Page', 'google-site-kit' ) }
-							datapoint={ prepareSecondsForDisplay( averageSessionDuration ) }
+							datapoint={ averageSessionDuration }
+							datapointUnit="s"
 							change={ averageSessionDurationChange }
 							changeDataUnit="%"
 						/>

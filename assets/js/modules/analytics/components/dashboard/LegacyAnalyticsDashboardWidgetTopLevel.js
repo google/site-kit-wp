@@ -146,7 +146,7 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 				<DataBlock
 					className="overview-total-users"
 					title={ __( 'Unique Visitors from Search', 'google-site-kit' ) }
-					datapoint={ totalUsers }
+					datapoint={ Number( totalUsers ) }
 					change={ totalUsersChange }
 					changeDataUnit="%"
 					source={ {
@@ -180,7 +180,7 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 						<DataBlock
 							className="overview-bounce-rate"
 							title={ __( 'Bounce Rate', 'google-site-kit' ) }
-							datapoint={ Number( averageBounceRate ).toFixed( 2 ) }
+							datapoint={ averageBounceRate }
 							datapointUnit="%"
 							change={ averageBounceRateChange }
 							changeDataUnit="%"

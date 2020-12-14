@@ -32,9 +32,8 @@ import { __ } from '@wordpress/i18n';
  * @since 1.8.0
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter} For all available formatting options.
  *
- * @param {number} number           The number to format.
- * @param {Object} [options]        Formatting options.
- * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
+ * @param {number}                   number    The number to format.
+ * @param {Intl.NumberFormatOptions} [options] Formatting options.
  * @return {string} The formatted number.
  */
 export const numberFormat = ( number, options = {} ) => {

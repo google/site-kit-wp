@@ -30,10 +30,10 @@ import { __, sprintf, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getLocale, numberFormatWithUnit } from '../../../util/i18n';
+import { getLocale } from '../../../util/i18n';
 import calculateOverviewData from './calculateOverviewData';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
-import { prepareSecondsForDisplay } from '../../../util';
+import { numFmt, prepareSecondsForDisplay } from '../../../util';
 
 export { calculateOverviewData };
 
@@ -157,7 +157,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	const dataFormats = [
 		( x ) => parseFloat( x ).toLocaleString(),
 		( x ) => parseFloat( x ).toLocaleString(),
-		( x ) => numberFormatWithUnit( x, '%' ),
+		( x ) => numFmt( x, '%' ),
 		prepareSecondsForDisplay,
 
 	];
@@ -212,7 +212,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 			} ) }">
 				<path d="M5.625 10L5.625 2.375L9.125 5.875L10 5L5 -1.76555e-07L-2.7055e-07 5L0.875 5.875L4.375 2.375L4.375 10L5.625 10Z" fill="currentColor" />
 			</svg>`,
-			numberFormatWithUnit( Math.abs( difference ), '%' ),
+			numFmt( Math.abs( difference ), '%' ),
 		);
 
 		dataMap.push( [

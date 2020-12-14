@@ -132,8 +132,8 @@ function DashboardUniqueVisitorsWidget() {
 	}
 
 	const { totals } = visitorsData[ 0 ].data;
-	const totalUsers = totals[ 0 ].values;
-	const previousTotalUsers = totals[ 1 ].values;
+	const totalUsers = totals[ 0 ].values[ 0 ];
+	const previousTotalUsers = totals[ 1 ].values[ 0 ];
 	const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
 
 	return (

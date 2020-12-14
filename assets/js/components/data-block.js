@@ -32,9 +32,8 @@ import { sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import ChangeArrow from './ChangeArrow';
-import { numberFormatWithUnit } from '../util/i18n';
 import SourceLink from './SourceLink';
-import { readableLargeNumber } from '../util';
+import { numFmt } from '../util';
 
 class DataBlock extends Component {
 	constructor( props ) {
@@ -88,7 +87,7 @@ class DataBlock extends Component {
 		if ( change ) {
 			// If changeDataUnit is given, try using it as currency first, otherwise add it as suffix.
 			if ( changeDataUnit ) {
-				changeFormatted = numberFormatWithUnit( Math.abs( change ), changeDataUnit );
+				changeFormatted = numFmt( Math.abs( Number( change ) ), changeDataUnit );
 			}
 
 			// If period is given (requires %s placeholder), add it.
@@ -96,8 +95,6 @@ class DataBlock extends Component {
 				changeFormatted = sprintf( period, changeFormatted );
 			}
 		}
-
-		const dataPointFormatted = Number( datapoint ) ? readableLargeNumber( datapoint, datapointUnit ) : datapoint;
 
 		return (
 			<div
@@ -122,7 +119,7 @@ class DataBlock extends Component {
 						{ title }
 					</h3>
 					<div className="googlesitekit-data-block__datapoint">
-						{ dataPointFormatted }
+						{ numFmt( datapoint, datapointUnit ) }
 					</div>
 				</div>
 				{ sparklineComponent &&

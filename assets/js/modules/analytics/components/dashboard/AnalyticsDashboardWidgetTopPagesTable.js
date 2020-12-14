@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat, numberFormatWithUnit } from '../../../../util';
+import { getTimeInSeconds, numFmt } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
@@ -85,9 +85,9 @@ const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 		links[ i ] = `${ baseServiceURL }:${ encodeURIComponent( url.replace( /\//g, '~2F' ) ) }`;
 		return [
 			title,
-			numberFormat( row.metrics[ 0 ].values[ 0 ] ),
-			numberFormat( row.metrics[ 0 ].values[ 1 ] ),
-			<div className="googlesitekit-table__body-item-chart-wrap" key={ 'minichart-' + i }>{ numberFormatWithUnit( percent, '%' ) }</div>,
+			numFmt( row.metrics[ 0 ].values[ 0 ] ),
+			numFmt( row.metrics[ 0 ].values[ 1 ] ),
+			<div className="googlesitekit-table__body-item-chart-wrap" key={ 'minichart-' + i }>{ numFmt( percent, '%' ) }</div>,
 		];
 	} );
 

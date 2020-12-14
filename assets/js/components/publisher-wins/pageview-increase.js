@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { numberFormat, getTimeInSeconds, getModulesData } from '../../util';
+import { getTimeInSeconds, getModulesData } from '../../util';
 import { calculateOverviewData } from '../../modules/analytics/util';
 import sunSmallImage from '../../../images/sun-small.png';
 
@@ -61,8 +61,8 @@ const pageviewIncrease = ( reports, id ) => {
 		blockData: [
 			{
 				title: __( 'Total Page Views', 'google-site-kit' ),
-				datapoint: numberFormat( totalPageViews ),
-				datapointUnit: '',
+				datapoint: totalPageViews,
+				datapointUnit: 'ts',
 			},
 			{
 				title: __( 'Increase', 'google-site-kit' ),

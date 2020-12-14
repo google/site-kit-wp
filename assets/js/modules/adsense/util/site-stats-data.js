@@ -29,7 +29,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { readableLargeNumber, numberFormat, getLocale } from '../../../util';
+import { getLocale, numFmt } from '../../../util';
 
 /**
  * Gets data for a Google Chart from an adesnse report.
@@ -83,9 +83,9 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 			previousDate.toLocaleDateString( locale, localeDateOptions ),
 		);
 
-		let tooltipData = readableLargeNumber( currentMonth, metadata?.currency );
+		let tooltipData = numFmt( currentMonth, metadata?.currency );
 		if ( metadata?.type === 'METRIC_RATIO' ) {
-			tooltipData = numberFormat( currentMonth, { style: 'percent' } );
+			tooltipData = numFmt( currentMonth, '%' );
 		}
 
 		const statInfo = sprintf(

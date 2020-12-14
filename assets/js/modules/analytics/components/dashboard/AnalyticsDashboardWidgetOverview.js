@@ -32,7 +32,6 @@ import { Component } from '@wordpress/element';
  */
 import {
 	getTimeInSeconds,
-	prepareSecondsForDisplay,
 	changeToPercent,
 } from '../../../../util';
 import DataBlock from '../../../../components/data-block';
@@ -137,7 +136,8 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			{
 				className: 'googlesitekit-data-block--duration googlesitekit-data-block--button-4',
 				title: __( 'Session Duration', 'google-site-kit' ),
-				datapoint: prepareSecondsForDisplay( averageSessionDuration ),
+				datapoint: averageSessionDuration,
+				datapointUnit: 's',
 				change: averageSessionDurationChange,
 				changeDataUnit: '%',
 				context: 'button',

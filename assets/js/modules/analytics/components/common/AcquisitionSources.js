@@ -31,7 +31,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  */
 import { getDataTableFromData } from '../../../../components/data-table';
 import MiniChart from '../../../../components/MiniChart';
-import { numberFormat, numberFormatWithUnit } from '../../../../util/i18n';
+import { numFmt } from '../../../../util';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 
@@ -108,12 +108,12 @@ function AcquisitionSources( { data, args } ) {
 		const cells = [ row.dimensions[ 0 ] ];
 
 		if ( row.metrics[ 0 ].values.length > 1 ) {
-			cells.push( ...row.metrics[ 0 ].values.map( ( value ) => numberFormat( value ) ) );
+			cells.push( ...row.metrics[ 0 ].values.map( ( value ) => numFmt( value ) ) );
 		}
 
 		cells.push(
 			<div key={ `minichart-${ i }` } className="googlesitekit-table__body-item-chart-wrap">
-				{ numberFormatWithUnit( percent, '%' ) }
+				{ numFmt( percent, '%' ) }
 				<MiniChart percent={ percent.toFixed( 1 ) } index={ i } />
 			</div>
 		);
