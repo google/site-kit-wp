@@ -26,7 +26,7 @@ import { _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME as MODULE_ANALYTICS, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { STORE_NAME as MODULES_ANALYTICS, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import whenActive from '../../../../../util/when-active';
 import TotalUserCount from './TotalUserCount';
@@ -41,12 +41,11 @@ const { useSelect } = Data;
 function DashboardAllTrafficWidget() {
 	const dimensionName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionName' ) || 'ga:channelGrouping' );
 	const dimensionValue = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionValue' ) );
-	const serviceReportURL = useSelect( ( select ) => select( MODULE_ANALYTICS ).getServiceReportURL( 'trafficsources-overview' ) );
+	const serviceReportURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'trafficsources-overview' ) );
 
 	return (
 		<Widget
 			slug="analyticsAllTrafficV2"
-			noPadding
 			footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
@@ -55,6 +54,7 @@ function DashboardAllTrafficWidget() {
 					external
 				/>
 			) }
+			noPadding
 		>
 			<Grid>
 				<Row>
