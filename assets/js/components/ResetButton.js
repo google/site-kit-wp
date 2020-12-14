@@ -28,7 +28,7 @@ import { ESCAPE } from '@wordpress/keycodes';
  */
 import Data from 'googlesitekit-data';
 import { clearWebStorage } from '../util';
-import Dialog from './dialog';
+import Dialog from './Dialog';
 import Modal from './Modal';
 import Link from './Link';
 import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';

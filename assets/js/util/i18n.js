@@ -22,6 +22,11 @@
 import { get } from 'lodash';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Formats a number using the JS Internationalization Number Format API.
  *
  * @since 1.8.0
@@ -39,37 +44,34 @@ export const numberFormat = ( number, options = {} ) => {
 };
 
 /**
- * Formats a number with unit using the JS Internationalization Number Format API.
+ * Flattens an array of strings into a string using the JS Internationalization List Format API.
  *
  * @since n.e.x.t
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat|`options` parameter} For all available options.
  *
- * @param {number|string}    number           The number to format.
- * @param {string|undefined} unit             The unit for the number.
- * @param {Object}           [options]        Formatting options.
- * @param {string}           [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
- * @return {string} The formatted number with unit.
+ * @param {Array}  list             The list to flatten.
+ * @param {Object} [options]        Formatting options.
+ * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
+ * @param {string} [options.style]  Length of the formatted message. Defaults to long.
+ * @param {string} [options.type]   Type of list. Defaults to 'conjunction' (A, B, and C).
+ *                                  Also available 'disjunction' (A, B, or C)
+ *                                  Also available 'unit' (5 pounds, 12 ounces)
+ * @return {string} The flattened list.
  */
-export const numberFormatWithUnit = ( number, unit, options = {} ) => {
-	if ( typeof number === 'string' ) {
-		number = parseFloat( number );
-	}
-	if ( ! unit || ! unit.length ) {
-		return numberFormat( number, options );
+export const listFormat = ( list, options = {} ) => {
+	const { locale = getLocale(), style = 'long', type = 'conjunction' } = options;
+
+	// Not all browsers support Intl.Listformat per
+	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat#Browser_compatibility
+	// We've seen that the built versions don't polyfill for the unsupported browsers (iOS/safari) so we provide a fallback.
+	if ( Intl.ListFormat ) {
+		const formatter = new Intl.ListFormat( locale, { style, type } );
+		return formatter.format( list );
 	}
 
-	if ( unit === '%' ) {
-		return numberFormat( number / 100, {
-			maximumFractionDigits: 2,
-			style: 'percent',
-			...options,
-		} );
-	}
-
-	try {
-		return numberFormat( Math.abs( number ), { style: 'currency', currency: unit, ...options } );
-	} catch ( e ) {
-		return `${ numberFormat( Math.abs( number ) ) }${ unit }`;
-	}
+	/* translators: used between list items, there is a space after the comma. */
+	const listSeparator = __( ', ', 'google-site-kit' );
+	return list.join( listSeparator );
 };
 
 /**

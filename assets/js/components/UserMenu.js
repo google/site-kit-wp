@@ -21,16 +21,16 @@
  */
 import { Fragment, useState, useRef, useEffect, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { ESCAPE, ENTER, SPACE } from '@wordpress/keycodes';
+import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { clearWebStorage } from '../util';
-import Dialog from './dialog';
-import Button from './button';
-import Menu from './menu';
+import Dialog from './Dialog';
+import Button from './Button';
+import Menu from './Menu';
 import Modal from './Modal';
 import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
@@ -50,14 +50,16 @@ function UserMenu() {
 
 	useEffect( () => {
 		const handleMenuClose = ( e ) => {
-			// Close the menu if the user presses the Escape key
-			// or if they click outside of the menu.
-			if (
-				( ( 'keyup' === e.type && ESCAPE === e.keyCode ) || 'mouseup' === e.type ) &&
-				! menuButtonRef.current.buttonRef.current.contains( e.target ) &&
-				! menuRef.current.menuRef.current.contains( e.target )
-			) {
-				toggleMenu( false );
+			if ( menuButtonRef?.current && menuRef?.current ) {
+				// Close the menu if the user presses the Escape key
+				// or if they click outside of the menu.
+				if (
+					( ( 'keyup' === e.type && ESCAPE === e.keyCode ) || 'mouseup' === e.type ) &&
+					! menuButtonRef.current.contains( e.target ) &&
+					! menuRef.current.contains( e.target )
+				) {
+					toggleMenu( false );
+				}
 			}
 		};
 
@@ -89,23 +91,18 @@ function UserMenu() {
 		toggleMenu( false );
 	}, [ dialogActive ] );
 
-	const handleMenuItemSelect = useCallback( ( index, e ) => {
-		if (
-			( 'keydown' === e.type && ( ENTER === e.keyCode || SPACE === e.keyCode ) ) || // Enter or Space is pressed.
-			'click' === e.type // Mouse is clicked
-		) {
-			switch ( index ) {
-				case 0:
-					handleDialog();
-					break;
-				case 1:
-					if ( proxyPermissionsURL ) {
-						global.location.assign( proxyPermissionsURL );
-					}
-					break;
-				default:
-					handleMenu();
-			}
+	const handleMenuItemSelect = useCallback( ( index ) => {
+		switch ( index ) {
+			case 0:
+				handleDialog();
+				break;
+			case 1:
+				if ( proxyPermissionsURL ) {
+					global.location.assign( proxyPermissionsURL );
+				}
+				break;
+			default:
+				handleMenu();
 		}
 	}, [ proxyPermissionsURL, handleMenu, handleDialog ] );
 
