@@ -17,11 +17,6 @@
  */
 
 /**
- *
- */
-import isPlainObject from 'lodash/isPlainObject';
-
-/**
  * Internal dependencies
  */
 import { isValidStringsOrObjects } from '../../../util/report-validation';
@@ -73,25 +68,7 @@ export function isValidDimensions( dimensions ) {
  * @return {boolean} TRUE if dimension filters are valid, otherwise FALSE.
  */
 export function isValidDimensionFilters( dimensionFilters, dimensions ) {
-	if ( ! isPlainObject( dimensions ) ) {
-		return false;
-	}
-	const validDimensions = [];
-
-	// Grab the dimension from a single dimension string/object.
-	const parseDimension = ( dimension, dimensionsCollection ) => {
-		if ( typeof dimension === 'string' ) {
-			dimensionsCollection.push( dimension );
-		} else if ( typeof dimension === 'object' && dimension.hasOwnProperty( 'name' ) ) {
-			dimensionsCollection.push( dimension.name );
-		}
-	};
-
-	if ( Array.isArray( dimensions ) ) {
-		dimensions.forEach( ( singleDimension ) => parseDimension( singleDimension, validDimensions ) );
-	} else {
-		parseDimension( dimensions, validDimensions );
-	}
+	const validDimensions = dimensions.map( ( dimension ) => dimension.name );
 
 	// Ensure every dimensionFilter key corresponds to a valid dimension.
 	return Object.keys( dimensionFilters ).every(

@@ -68,27 +68,28 @@ describe( 'Analytics Reporting API validation', () => {
 		it( 'should return TRUE if a valid object is passed with a valid dimension', () => {
 			expect( isValidDimensionFilters( {
 				test: 'foo',
-			}, {
+			}, [ {
 				name: 'test',
-			} ) ).toBeTruthy();
+			} ] ) ).toBeTruthy();
 		} );
-		it( 'should return FALSE if no dimensions or dimensionFilters are passed.', () => {
-			expect( isValidDimensionFilters( {}, [] ) ).toBeFalsy();
+		it( 'should return TRUE if no dimensionFilters are passed.', () => {
+			expect( isValidDimensionFilters( {}, [] ) ).toBeTruthy();
+			expect( isValidDimensionFilters( {}, [ { name: 'foo' } ] ) ).toBeTruthy();
 		} );
 		it( 'should return FALSE if a valid object is passed with invalid dimension', () => {
 			expect( isValidDimensionFilters( {
 				test: 'foo',
-			}, {
+			}, [ {
 				name: 'bar',
-			} ) ).toBeFalsy();
+			} ] ) ).toBeFalsy();
 		} );
 		it( 'should return FALSE if a valid object is passed with a mix of valid and invalid dimension', () => {
 			expect( isValidDimensionFilters( {
 				foo: 'foo',
 				bar: 'bar',
-			}, {
+			}, [ {
 				name: 'foo',
-			} ) ).toBeFalsy();
+			} ] ) ).toBeFalsy();
 		} );
 	} );
 
