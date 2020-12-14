@@ -41,7 +41,7 @@ import ResetButton from '../ResetButton';
 import Layout from '../layout/layout';
 import Notification from '../legacy-notifications/notification';
 import OptIn from '../optin';
-import CompatibilityChecks from './compatibility-checks';
+import CompatibilityChecks from './CompatibilityChecks';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;

@@ -46,7 +46,7 @@ const ERROR_WP_PRE_V5 = 'wp_pre_v5';
 
 export const AMP_PROJECT_TEST_URL = 'https://cdn.ampproject.org/v0.js';
 
-const checks = [
+const compatibilityChecks = [
 	// Check for a known non-public/reserved domain.
 	async () => {
 		const { hostname } = global.location;
@@ -115,7 +115,7 @@ export default class CompatibilityChecks extends Component {
 			return;
 		}
 		try {
-			for ( const testCallback of checks ) {
+			for ( const testCallback of compatibilityChecks ) {
 				await testCallback();
 			}
 		} catch ( error ) {
