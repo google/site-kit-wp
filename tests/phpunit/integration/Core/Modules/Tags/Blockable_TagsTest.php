@@ -10,47 +10,60 @@
 
 namespace Google\Site_Kit\Tests\Core\Modules;
 
-use Google\Site_Kit\Context;
+use Google\Site_Kit\Tests\Core\Modules\Tags\FakeModule_AMP_Tag;
+use Google\Site_Kit\Tests\Core\Modules\Tags\FakeModule_Web_Tag;
 use Google\Site_Kit\Tests\TestCase;
 
 class Module_With_Blockable_Tags_TraitTest extends TestCase {
 
+	private $amp_tag;
+
+	private $web_tag;
+
+	private $tag_id;
+
+	private $module_slug;
+
+	public function setUp() {
+		parent::setUp();
+
+		$this->tag_id      = 'test-tag-id';
+		$this->module_slug = 'fake-module';
+
+		$this->web_tag = new FakeModule_Web_Tag( $this->tag_id, $this->module_slug );
+		$this->amp_tag = new FakeModule_AMP_Tag( $this->tag_id, $this->module_slug );
+	}
+
 	public function test_is_tag_blocked() {
-		$module = new FakeModule_With_Tags( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
 		// Tag is not blocked by default.
-		$this->assertFalse( $module->is_tag_blocked() );
+		$this->assertFalse( $this->web_tag->is_tag_blocked() );
 
-		add_filter( 'googlesitekit_fake-module_tag_blocked', '__return_true' );
+		add_filter( "googlesitekit_{$this->module_slug}_tag_blocked", '__return_true' );
 
-		$this->assertTrue( $module->is_tag_blocked() );
+		$this->assertTrue( $this->web_tag->is_tag_blocked() );
 
 		// The return value of the filter is cast to a boolean before returning.
-		add_filter( 'googlesitekit_fake-module_tag_blocked', '__return_empty_string' );
-		$this->assertFalse( $module->is_tag_blocked() );
+		add_filter( "googlesitekit_{$this->module_slug}_tag_blocked", '__return_empty_string' );
+		$this->assertFalse( $this->web_tag->is_tag_blocked() );
 	}
 
 	public function test_is_tag_blocked__amp() {
-		$module = new FakeModule_With_Tags( $this->get_amp_primary_context() );
-
 		// Tag is not blocked by default.
-		$this->assertFalse( $module->is_tag_blocked() );
+		$this->assertFalse( $this->amp_tag->is_tag_blocked() );
 
-		add_filter( 'googlesitekit_fake-module_tag_amp_blocked', '__return_true' );
+		add_filter( "googlesitekit_{$this->module_slug}_tag_amp_blocked", '__return_true' );
 
-		$this->assertTrue( $module->is_tag_blocked() );
+		$this->assertTrue( $this->amp_tag->is_tag_blocked() );
 	}
 
-	public function test_get_tag_block_on_consent_attribute() {
-		$module = new FakeModule_With_Tags( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
+	public function test_get_tag_blocked_on_consent_attribute() {
 		// Returns empty string by default.
-		$this->assertEquals( '', $module->get_tag_block_on_consent_attribute() );
+		$this->assertEquals( '', $this->web_tag->get_tag_blocked_on_consent_attribute() );
 
 		// Returns attributes to prevent script loading if truthy.
-		add_filter( 'googlesitekit_fake-module_tag_block_on_consent', '__return_true' );
+		add_filter( "googlesitekit_{$this->module_slug}_tag_block_on_consent", '__return_true' );
 
-		$this->assertEquals( ' type="text/plain" data-block-on-consent', $module->get_tag_block_on_consent_attribute() );
+		$this->assertEquals( ' type="text/plain" data-block-on-consent', $this->web_tag->get_tag_blocked_on_consent_attribute() );
 	}
 
 	/**
@@ -58,18 +71,16 @@ class Module_With_Blockable_Tags_TraitTest extends TestCase {
 	 * @param mixed  $filter_value Value to return from filter callback.
 	 * @param string $expected     Expected return value from method.
 	 */
-	public function test_get_tag_amp_block_on_consent_attribute( $filter_value, $expected ) {
-		$module = new FakeModule_With_Tags( $this->get_amp_primary_context() );
-
+	public function test_get_tag_amp_blocked_on_consent_attribute( $filter_value, $expected ) {
 		// Returns empty string by default.
-		$this->assertEquals( '', $module->get_tag_amp_block_on_consent_attribute() );
+		$this->assertEquals( '', $this->amp_tag->get_tag_blocked_on_consent_attribute() );
 
 		$filter_callback = function () use ( $filter_value ) {
 			return $filter_value;
 		};
-		add_filter( 'googlesitekit_fake-module_tag_amp_block_on_consent', $filter_callback );
+		add_filter( "googlesitekit_{$this->module_slug}_tag_amp_block_on_consent", $filter_callback );
 
-		$this->assertEquals( $expected, $module->get_tag_amp_block_on_consent_attribute() );
+		$this->assertEquals( $expected, $this->amp_tag->get_tag_blocked_on_consent_attribute() );
 	}
 
 	public function amp_block_on_consent_attribute_provider() {
