@@ -44,35 +44,33 @@ export const actions = {
 	*submitChanges( slug ) {
 		invariant( slug, 'slug is required.' );
 
-		const { response, error } = yield {
+		const result = yield {
 			payload: { slug },
 			type: SETTINGS_SUBMIT_CHANGES,
 		};
 
-		if ( error ) {
-			return { error };
+		if ( result?.error ) {
+			return { error: result.error };
 		}
 
-		return { response };
+		return result;
 	},
 };
 
 export const controls = {
 	[ SETTINGS_SUBMIT_CHANGES ]: createRegistryControl( ( registry ) => async ( { payload } ) => {
 		const { slug } = payload;
-		const storeName = registry.select( CORE_MODULES )?.getModuleStoreName( slug );
-
-		// global.console.log( 'slug', slug );
-		// global.console.log( 'storeName', storeName );
+		const storeName = await registry.select( CORE_MODULES )?.getModuleStoreName( slug );
 
 		if ( ! storeName ) {
 			return { error: `The module ${ slug } does not have a store.` };
 		}
-		const { submitChanges } = registry.dispatch( storeName );
+
+		const { submitChanges } = await registry.dispatch( storeName );
 		if ( ! submitChanges ) {
 			return { error: `The module ${ slug } does not have a submitChanges() action.` };
 		}
-		// global.console.log( 'submit changes now' );
+
 		return await submitChanges( slug );
 	} ),
 };
@@ -88,7 +86,7 @@ export const selectors = {
 	 */
 	isDoingSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		const storeName = select( 'core/modules' )?.getModuleStoreName( slug );
+		const storeName = select( CORE_MODULES )?.getModuleStoreName( slug );
 		return !! select( storeName )?.isDoingSubmitChanges?.();
 	} ),
 
@@ -102,10 +100,9 @@ export const selectors = {
 	 */
 	canSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		const storeName = select( 'core/modules' )?.getModuleStoreName( slug );
+		const storeName = select( CORE_MODULES )?.getModuleStoreName( slug );
 		return !! select( storeName )?.canSubmitChanges?.();
 	} ),
-
 };
 
 export default {
