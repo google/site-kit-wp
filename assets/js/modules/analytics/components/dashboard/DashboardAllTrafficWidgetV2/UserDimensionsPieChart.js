@@ -67,24 +67,29 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 	const options = {
 		chartArea: {
 			width: '100%',
-			height: '100%',
+			height: '80%',
 		},
 		backgroundColor: 'transparent',
 		height: 250,
 		legend: {
 			alignment: 'center',
+			position: 'bottom',
 			textStyle: {
-				color: '#5b5b61',
+				color: 'black',
 				fontSize: 12,
 			},
 		},
+		pieHole: 0.6,
+		pieSliceTextStyle: {
+			color: 'black',
+			fontSize: 12,
+		},
 		slices: {
-			0: { color: '#178EC5' },
-			1: { color: '#54B23B' },
-			2: { color: '#EB5729' },
-			3: { color: '#ECED33' },
-			4: { color: '#34CBE3' },
-			5: { color: '#82E88E' },
+			0: { color: '#ffcd33' },
+			1: { color: '#c196ff' },
+			2: { color: '#9de3fe' },
+			3: { color: '#ff7fc6' },
+			4: { color: '#ff886b' },
 		},
 		title: null,
 		width: '100%',
