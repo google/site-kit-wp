@@ -29,8 +29,8 @@ import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastor
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
-	const storeName = `modules/${ slug }`;
-	const isDoingSubmitChanges = useSelect( ( select ) => select( 'core/modules' )?.isDoingSubmitChanges?.( slug ) );
+	const storeName = useSelect( ( select ) => select( CORE_MODULES ).getModuleStoreName( slug ) );
+	const isDoingSubmitChanges = useSelect( ( select ) => select( CORE_MODULES )?.isDoingSubmitChanges?.( slug ) );
 	const haveSettingsChanged = useSelect( ( select ) => select( storeName )?.haveSettingsChanged?.() || false );
 	const { SettingsEditComponent, SettingsViewComponent } = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) || {} );
 

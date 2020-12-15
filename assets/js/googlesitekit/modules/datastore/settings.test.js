@@ -27,7 +27,7 @@ describe( 'core/modules settings', () => {
 	let registry;
 	const slug = 'test-module';
 	const nonExistentModuleSlug = 'not-module';
-	const moduleStoreName = `modules/${ slug }`;
+	const moduleStoreName = `test/${ slug }`;
 	const testReturnValue = 'dummy_return_value';
 	let validateCanSubmitChangesError = false;
 	let testDuringSubmissionCallback = () => {};

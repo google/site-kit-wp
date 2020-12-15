@@ -29,7 +29,7 @@ describe( 'SettingsRenderer', () => {
 	let registry;
 
 	const slug = 'test-module-slug';
-	const storeName = `modules/${ slug }`;
+	const storeName = `test/${ slug }`;
 	const settingSlugs = [ 'testSetting' ];
 
 	const SettingsEdit = () => <div data-testid="edit-component">edit</div>;
@@ -41,6 +41,7 @@ describe( 'SettingsRenderer', () => {
 		registry = createTestRegistry();
 		registry.registerStore( storeName, storeDefinition );
 		registry.dispatch( storeName ).receiveGetSettings( { testSetting: 'initial value' } );
+		registry.dispatch( STORE_NAME ).registerModule( slug, { storeName } );
 		provideModules( registry );
 	} );
 

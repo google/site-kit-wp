@@ -70,7 +70,7 @@ export const createModuleStore = ( slug, {
 	invariant( slug, 'slug is required.' );
 	invariant( storeName, 'storeName is required.' );
 
-	storeName = storeName || `modules/${ slug }`; // TODO: remove this now that the storeName is required
+	storeName = storeName || `test/${ slug }`; // TODO: remove this now that the storeName is required
 
 	const notificationsStore = createNotificationsStore( 'modules', slug, 'notifications', {
 		storeName,
