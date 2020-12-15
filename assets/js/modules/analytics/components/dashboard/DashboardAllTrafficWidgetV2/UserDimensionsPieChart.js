@@ -36,6 +36,8 @@ import { STORE_NAME } from '../../../datastore/constants';
 import { sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForTrafficChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
+import PreviewBlock from '../../../../../components/PreviewBlock';
+import ReportError from '../../../../../components/ReportError';
 const { useSelect } = Data;
 
 export default function UserDimensionsPieChart( { dimensionName } ) {
@@ -62,11 +64,11 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
 
 	if ( ! loaded ) {
-		return null;
+		return <PreviewBlock width="282px" height="282px" shape="circular" />;
 	}
 
 	if ( error ) {
-		return null;
+		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	const dataMap = extractAnalyticsDataForTrafficChart( report, 0, true );
