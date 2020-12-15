@@ -1,7 +1,7 @@
 /**
- * Dashboard splash styles.
+ * DimensionTabs component
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,6 @@
  * limitations under the License.
  */
 
-.googlesitekit-splash {
-
-	.googlesitekit-splash__wrapper {
-
-		@include googlesitekit-inner-padding;
-		padding-bottom: 10px;
-		padding-top: 10px;
-
-		@media (min-width: $bp-desktop) {
-			padding-bottom: 15px;
-			padding-top: 15px;
-		}
-	}
-
-	.googlesitekit-splash__title {
-		color: $c-tertiary;
-		margin: 0 0 -4px 0;
-
-		@media (min-width: $bp-desktop) {
-			margin: 0 0 -8px 0;
-		}
-	}
-
+export default function DimensionTabs() {
+	return null;
 }
