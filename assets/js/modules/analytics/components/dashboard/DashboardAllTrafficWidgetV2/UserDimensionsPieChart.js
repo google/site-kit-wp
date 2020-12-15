@@ -1,7 +1,7 @@
 /**
- * Dashboard splash outro styles.
+ * UserDimensionsPieChart component
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,6 @@
  * limitations under the License.
  */
 
-.googlesitekit-splash-outro {
-	background-color: $c-base;
-	padding: 45px 0;
-	text-align: center;
-
-	@media (min-width: $bp-tablet) {
-		padding: 45px;
-	}
-
-	.googlesitekit-splash-outro__title {
-		margin: 20px auto 25px auto;
-		max-width: 600px;
-	}
+export default function UserDimensionsPieChart() {
+	return null;
 }
