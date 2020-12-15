@@ -176,12 +176,11 @@ export const readableLargeNumber = ( number ) => {
  *
  * @since n.e.x.t
  *
- * @param {number|string}            number    The number to format.
- * @param {string}                   [unit]    The unit for the number.
- * @param {Intl.NumberFormatOptions} [options] Formatting options.
+ * @param {number|string}                     number    The number to format.
+ * @param {(Intl.NumberFormatOptions|string)} [options] Formatting options or unit.
  * @return {string} The formatted number with unit.
  */
-export const numFmt = ( number, unit, options = {} ) => {
+export const numFmt = ( number, options = {} ) => {
 	// Cast parsable values to numeric types.
 	number = isFinite( number ) ? number : Number( number );
 
@@ -191,33 +190,33 @@ export const numFmt = ( number, unit, options = {} ) => {
 		return null;
 	}
 
+	let formatOptions = {};
+
 	// Expand shorthand values for units.
-	if ( '%' === unit ) {
-		options = {
+	if ( '%' === options ) {
+		formatOptions = {
 			style: 'percent',
 			maximumFractionDigits: 2,
-			...options,
 		};
 		number /= 100;
-	} else if ( 's' === unit ) {
-		options = {
+	} else if ( 's' === options ) {
+		formatOptions = {
 			style: 'seconds',
-			...options,
 		};
-	} else if ( 'ts' === unit ) {
-		// custom unit `ts`: thousand separated
-		// used to show numbers with thousand separators
+	} else if ( 'decimal' === options ) {
+		// custom unit `decimal`: used to return numbers with thousand separators
 		return numberFormat( number );
-	} else if ( !! unit && typeof unit === 'string' ) {
-		options = {
+	} else if ( !! options && typeof options === 'string' ) {
+		formatOptions = {
 			style: 'currency',
-			currency: unit,
-			...options,
+			currency: options,
 		};
+	} else {
+		formatOptions = { ...options };
 	}
 
 	// Note: `metric` is our custom, default style.
-	const { style = 'metric' } = options;
+	const { style = 'metric' } = formatOptions;
 
 	if ( 'metric' === style ) {
 		return readableLargeNumber( number );
@@ -228,11 +227,12 @@ export const numFmt = ( number, unit, options = {} ) => {
 	}
 
 	try {
-		// assuming the unit is a currency code.
-		return numberFormat( number, options );
+		return numberFormat( number, formatOptions );
 	} catch ( e ) {
-		// if the unit is not a currency code then simply concatenate number and unit.
-		return `${ number }${ unit }`;
+		if ( !! options && typeof options === 'string' ) {
+			// if the formatting doesn't work, return the concatenated options(assuming as a custom unit) and number
+			return `${ number }${ options }`;
+		}
 	}
 };
 

@@ -145,7 +145,7 @@ storiesOf( 'Global/Notifications', module )
 							{
 								title: 'Site Visitors',
 								datapoint: 23780,
-								datapointUnit: 'ts',
+								datapointUnit: 'decimal',
 							},
 							{
 								title: 'Increase',

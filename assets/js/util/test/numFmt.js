@@ -110,7 +110,7 @@ describe( 'numFmt', () => {
 		[
 			'en_US',
 			100000,
-			'ts',
+			'decimal',
 			`100,000`,
 		],
 	];

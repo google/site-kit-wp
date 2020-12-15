@@ -62,7 +62,7 @@ const pageviewIncrease = ( reports, id ) => {
 			{
 				title: __( 'Total Page Views', 'google-site-kit' ),
 				datapoint: totalPageViews,
-				datapointUnit: 'ts',
+				datapointUnit: 'decimal',
 			},
 			{
 				title: __( 'Increase', 'google-site-kit' ),
