@@ -24,13 +24,13 @@ import { isValidDimensions, isValidDimensionFilters, isValidMetrics } from './re
 describe( 'Analytics Reporting API validation', () => {
 	describe( 'isValidDimensions', () => {
 		it( 'should return TRUE if a non empty string is passed', () => {
-			expect( isValidDimensions( 'test' ) ).toBeTruthy();
+			expect( isValidDimensions( 'test' ) ).toBe( true );
 		} );
 
 		it( 'should return TRUE if a valid object is passed', () => {
 			expect( isValidDimensions( {
 				name: 'test',
-			} ) ).toBeTruthy();
+			} ) ).toBe( true );
 		} );
 
 		it( 'should return TRUE if a valid array of objects/strings is passed', () => {
@@ -43,11 +43,11 @@ describe( 'Analytics Reporting API validation', () => {
 				{
 					name: 'test4',
 				},
-			] ) ).toBeTruthy();
+			] ) ).toBe( true );
 		} );
 
 		it( 'should return FALSE if neither string nor array is passed', () => {
-			expect( isValidDimensions( 5.2 ) ).toBeFalsy();
+			expect( isValidDimensions( 5.2 ) ).toBe( false );
 		} );
 
 		it( 'should return FALSE if not a valid array of objects/strings is passed', () => {
@@ -60,7 +60,7 @@ describe( 'Analytics Reporting API validation', () => {
 				{
 					name: 'test4',
 				},
-			] ) ).toBeFalsy();
+			] ) ).toBe( false );
 		} );
 	} );
 
@@ -70,18 +70,18 @@ describe( 'Analytics Reporting API validation', () => {
 				test: 'foo',
 			}, [ {
 				name: 'test',
-			} ] ) ).toBeTruthy();
+			} ] ) ).toBe( true );
 		} );
 		it( 'should return TRUE if no dimensionFilters are passed.', () => {
-			expect( isValidDimensionFilters( {}, [] ) ).toBeTruthy();
-			expect( isValidDimensionFilters( {}, [ { name: 'foo' } ] ) ).toBeTruthy();
+			expect( isValidDimensionFilters( {}, [] ) ).toBe( true );
+			expect( isValidDimensionFilters( {}, [ { name: 'foo' } ] ) ).toBe( true );
 		} );
 		it( 'should return FALSE if a valid object is passed with invalid dimension', () => {
 			expect( isValidDimensionFilters( {
 				test: 'foo',
 			}, [ {
 				name: 'bar',
-			} ] ) ).toBeFalsy();
+			} ] ) ).toBe( false );
 		} );
 		it( 'should return FALSE if a valid object is passed with a mix of valid and invalid dimension', () => {
 			expect( isValidDimensionFilters( {
@@ -89,25 +89,25 @@ describe( 'Analytics Reporting API validation', () => {
 				bar: 'bar',
 			}, [ {
 				name: 'foo',
-			} ] ) ).toBeFalsy();
+			} ] ) ).toBe( false );
 		} );
 	} );
 
 	describe( 'isValidMetrics', () => {
 		it( 'should return TRUE if a non empty string is passed', () => {
-			expect( isValidMetrics( 'test' ) ).toBeTruthy();
+			expect( isValidMetrics( 'test' ) ).toBe( true );
 		} );
 
 		it( 'should return TRUE if a valid object is passed', () => {
 			expect( isValidMetrics( {
 				expression: 'test',
 				alias: 'Test',
-			} ) ).toBeTruthy();
+			} ) ).toBe( true );
 
 			// 'alias' is optional.
 			expect( isValidMetrics( {
 				expression: 'test',
-			} ) ).toBeTruthy();
+			} ) ).toBe( true );
 		} );
 
 		it( 'should return TRUE if a valid array of objects/strings is passed', () => {
@@ -123,11 +123,11 @@ describe( 'Analytics Reporting API validation', () => {
 					alias: 'Test4',
 				},
 				{ expression: 'test5' },
-			] ) ).toBeTruthy();
+			] ) ).toBe( true );
 		} );
 
 		it( 'should return FALSE if neither string nor array is passed', () => {
-			expect( isValidMetrics( 5.2 ) ).toBeFalsy();
+			expect( isValidMetrics( 5.2 ) ).toBe( false );
 		} );
 
 		it( 'should return FALSE if not a valid array of objects/strings is passed', () => {
@@ -142,7 +142,7 @@ describe( 'Analytics Reporting API validation', () => {
 					expression: 'test4',
 					alias: 'Test4',
 				},
-			] ) ).toBeFalsy();
+			] ) ).toBe( false );
 		} );
 	} );
 } );
