@@ -31,12 +31,27 @@
 
 		.mdc-tab {
 			height: 40px;
+			margin: 0 10px;
 			padding: 0 20px;
 		}
 
 		.mdc-tab__text-label {
 			letter-spacing: normal;
 			text-transform: none;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTrafficV2__dimensions {
+		padding-top: 30px;
+
+		.googlesitekit-line-chart {
+			align-items: center;
+			display: flex;
+			min-height: 410px;
+
+			& .googlesitekit-chart-loading {
+				padding: 0 40px;
+			}
 		}
 	}
 }

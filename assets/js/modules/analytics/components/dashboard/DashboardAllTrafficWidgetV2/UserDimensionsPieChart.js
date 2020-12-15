@@ -66,11 +66,13 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 	const dataMap = extractAnalyticsDataForTrafficChart( report, 0, true );
 	const options = {
 		chartArea: {
+			left: 0,
+			height: 300,
+			top: 50,
 			width: '100%',
-			height: '80%',
 		},
 		backgroundColor: 'transparent',
-		height: 250,
+		height: 410,
 		legend: {
 			alignment: 'center',
 			position: 'bottom',
@@ -82,6 +84,7 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 		pieHole: 0.6,
 		pieSliceTextStyle: {
 			color: 'black',
+			fontName: 'Roboto',
 			fontSize: 12,
 		},
 		slices: {

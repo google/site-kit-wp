@@ -59,12 +59,12 @@ function DashboardAllTrafficWidget() {
 		>
 			<Grid>
 				<Row>
-					<Cell size={ 8 }>
+					<Cell size={ 7 }>
 						<TotalUserCount dimensionName={ dimensionName } dimensionValue={ dimensionValue } />
 						<UserCountGraph dimensionName={ dimensionName } dimensionValue={ dimensionValue } />
 					</Cell>
-					<Cell size={ 4 }>
-						<DimensionTabs />
+					<Cell className="googlesitekit-widget--analyticsAllTrafficV2__dimensions" size={ 5 }>
+						<DimensionTabs dimensionName={ dimensionName } />
 						<UserDimensionsPieChart dimensionName={ dimensionName } />
 					</Cell>
 				</Row>
