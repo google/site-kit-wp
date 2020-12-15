@@ -96,7 +96,7 @@ export const selectors = {
 	 */
 	canSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		const storeName = select( CORE_MODULES )?.getModuleStoreName( slug );
+		const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
 		return !! select( storeName )?.canSubmitChanges?.();
 	} ),
 };
