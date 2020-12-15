@@ -41,7 +41,6 @@ describe( 'SettingsRenderer', () => {
 		registry = createTestRegistry();
 		registry.registerStore( storeName, storeDefinition );
 		registry.dispatch( storeName ).receiveGetSettings( { testSetting: 'initial value' } );
-		registry.dispatch( STORE_NAME ).registerModule( slug, { storeName } );
 		provideModules( registry );
 	} );
 
@@ -57,14 +56,22 @@ describe( 'SettingsRenderer', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'rolls back settings to the received values if changed when leaving edit context', async () => {
-		const { rerender } = render( <SettingsRenderer slug={ slug } isOpen isEditing />, { registry } );
+	describe( 'registered module with store', () => {
+		beforeEach( () => {
+			registry.dispatch( STORE_NAME ).registerModule( slug, {
+				storeName,
+			} );
+		} );
 
-		await act( () => registry.dispatch( storeName ).setTestSetting( 'new value' ) );
+		it( 'rolls back settings to the received values if changed when leaving edit context', async () => {
+			const { rerender } = render( <SettingsRenderer slug={ slug } isOpen isEditing />, { registry } );
 
-		rerender( <SettingsRenderer slug={ slug } isOpen isEditing={ false } /> );
+			await act( () => registry.dispatch( storeName ).setTestSetting( 'new value' ) );
 
-		expect( registry.select( storeName ).getTestSetting() ).toBe( 'initial value' );
+			rerender( <SettingsRenderer slug={ slug } isOpen isEditing={ false } /> );
+
+			expect( registry.select( storeName ).getTestSetting() ).toBe( 'initial value' );
+		} );
 	} );
 
 	describe( 'registered module with view component only', () => {
