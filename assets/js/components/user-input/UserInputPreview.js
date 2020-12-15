@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { __ } from '@wordpress/i18n';
 import { useCallback, useState, Fragment } from '@wordpress/element';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -57,11 +58,15 @@ export default function UserInputPreview( { noFooter, back, goTo, redirectURL } 
 		setIsNavigating( true );
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
-			const url = new URL( redirectURL || dashboardURL );
-			// Here we don't use `addQueryArgs` due to a bug with how it handles hashes
-			// See https://github.com/WordPress/gutenberg/issues/16655
-			url.searchParams.set( 'notification', 'user_input_success' );
-			global.location.assign( url.toString() );
+			if ( redirectURL ) {
+				const url = new URL( redirectURL );
+				// Here we don't use `addQueryArgs` due to a bug with how it handles hashes
+				// See https://github.com/WordPress/gutenberg/issues/16655
+				url.searchParams.set( 'notification', 'user_input_success' );
+				global.location.assign( url.toString() );
+			} else {
+				global.location.assign( addQueryArgs( dashboardURL, { notification: 'user_input_success' } ) );
+			}
 		} else {
 			setIsNavigating( false );
 		}
@@ -86,21 +91,24 @@ export default function UserInputPreview( { noFooter, back, goTo, redirectURL } 
 							<Row>
 								<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 									<UserInputPreviewGroup
-										title={ __( '1 — Which best describes your team/role relation to this site?', 'google-site-kit' ) }
+										questionNumber={ 1 }
+										title={ __( 'Which best describes your team/role relation to this site?', 'google-site-kit' ) }
 										edit={ goTo.bind( null, 1 ) }
 										values={ settings?.role?.values || [] }
 										options={ USER_INPUT_ANSWERS_ROLE }
 									/>
 
 									<UserInputPreviewGroup
-										title={ __( '2 — How often do you create new posts for this site?', 'google-site-kit' ) }
+										questionNumber={ 2 }
+										title={ __( 'How often do you create new posts for this site?', 'google-site-kit' ) }
 										edit={ goTo.bind( null, 2 ) }
 										values={ settings?.postFrequency?.values || [] }
 										options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
 									/>
 
 									<UserInputPreviewGroup
-										title={ __( '3 — What are the goals of this site?', 'google-site-kit' ) }
+										questionNumber={ 3 }
+										title={ __( 'What are the goals of this site?', 'google-site-kit' ) }
 										edit={ goTo.bind( null, 3 ) }
 										values={ settings?.goals?.values || [] }
 										options={ USER_INPUT_ANSWERS_GOALS }
@@ -108,14 +116,16 @@ export default function UserInputPreview( { noFooter, back, goTo, redirectURL } 
 								</Cell>
 								<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 									<UserInputPreviewGroup
-										title={ __( '4 — What do you need help most with for this site?', 'google-site-kit' ) }
+										questionNumber={ 4 }
+										title={ __( 'What do you need help most with for this site?', 'google-site-kit' ) }
 										edit={ goTo.bind( null, 4 ) }
 										values={ settings?.helpNeeded?.values || [] }
 										options={ USER_INPUT_ANSWERS_HELP_NEEDED }
 									/>
 
 									<UserInputPreviewGroup
-										title={ __( '5 — To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for:', 'google-site-kit' ) }
+										questionNumber={ 5 }
+										title={ __( 'To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for:', 'google-site-kit' ) }
 										edit={ goTo.bind( null, 5 ) }
 										values={ settings?.searchTerms?.values || [] }
 									/>

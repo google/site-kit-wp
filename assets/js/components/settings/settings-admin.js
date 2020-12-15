@@ -54,15 +54,16 @@ const SettingsAdmin = () => {
 		<Fragment>
 			{ featureFlags.userInput.enabled && (
 				<Cell size={ 12 }>
-					<Layout>
-						{ isUserInputCompleted ? (
+					{ isUserInputCompleted && (
+						<Layout>
 							<div className="googlesitekit-module-page googlesitekit-settings-user-input">
 								<UserInputPreview goTo={ goTo } noFooter />
 							</div>
-						) : (
-							<UserInputSettings isDimissable={ false } />
-						) }
-					</Layout>
+						</Layout>
+					) }
+					{ ! isUserInputCompleted && (
+						<UserInputSettings isDimissable={ false } />
+					) }
 				</Cell>
 			) }
 			<div className="
