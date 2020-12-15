@@ -40,6 +40,8 @@ import {
 import SearchConsoleIcon from '../../../svg/search-console.svg';
 
 domReady( () => {
+	// IMPORTANT: When updating arguments here, also update the same call in
+	// `provideModuleRegistrations`.
 	Modules.registerModule(
 		'search-console',
 		{

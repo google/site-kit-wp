@@ -71,6 +71,8 @@ addFilter(
 );
 
 domReady( () => {
+	// IMPORTANT: When updating arguments here, also update the same call in
+	// `provideModuleRegistrations`.
 	Modules.registerModule(
 		'adsense',
 		{
