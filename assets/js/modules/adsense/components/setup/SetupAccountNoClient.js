@@ -33,7 +33,7 @@ const { useSelect } = Data;
 
 export default function SetupAccountNoClient() {
 	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
-		path: 'https://support.google.com/adsense/answer/6023158',
+		path: '/adsense/answer/6023158',
 	} ) );
 
 	return (

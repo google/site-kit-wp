@@ -31,7 +31,7 @@ const { useSelect } = Data;
 
 export default function AdSenseLinkCTA() {
 	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
-		path: 'https://support.google.com/adsense/answer/6084409',
+		path: '/adsense/answer/6084409',
 	} ) );
 
 	return (

@@ -157,7 +157,7 @@ describe( 'core/site site info', () => {
 				[
 					'returns the path, hash and the user locale',
 					{
-						path: 'https://support.google.com/analytics/answer/1032415',
+						path: '/analytics/answer/1032415',
 						hash: 'hash_value',
 					},
 					'https://support.google.com/analytics/answer/1032415?hl=en-US#hash_value',
@@ -165,7 +165,7 @@ describe( 'core/site site info', () => {
 				[
 					'returns the path, query and the user locale',
 					{
-						path: 'https://support.google.com/analytics/answer/1032415',
+						path: '/analytics/answer/1032415',
 						query: {
 							param: 'value',
 							param2: 'value2',
@@ -176,14 +176,14 @@ describe( 'core/site site info', () => {
 				[
 					'returns the path with the user locale',
 					{
-						path: 'https://support.google.com/analytics/answer/1032415',
+						path: '/analytics/answer/1032415',
 					},
 					'https://support.google.com/analytics/answer/1032415?hl=en-US',
 				],
 				[
 					'returns the path, query, hash and the user locale',
 					{
-						path: 'https://support.google.com/analytics/answer/1032415',
+						path: '/analytics/answer/1032415',
 						query: {
 							param: 'value',
 							param2: 'value2',
@@ -207,7 +207,7 @@ describe( 'core/site site info', () => {
 				global._googlesitekitLegacyData.locale = 'de';
 
 				const supportURL = registry.select( STORE_NAME ).getGoogleSupportURL( {
-					path: 'https://support.google.com/analytics/answer/1032415',
+					path: '/analytics/answer/1032415',
 				} );
 				expect( supportURL ).toEqual( 'https://support.google.com/analytics/answer/1032415?hl=de' );
 			} );

@@ -477,7 +477,7 @@ export const selectors = {
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {Object} [args]       Optional arguments for the resulting URL.
-	 * @param {string} [args.path]  Base URL to build complete URL.
+	 * @param {string} [args.path]  Base URL to build complete URL with starting slash.
 	 * @param {Object} [args.query] Object to append query to the URL.
 	 * @param {string} [args.hash]  Optional hash.
 	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
@@ -489,7 +489,7 @@ export const selectors = {
 			return null;
 		}
 
-		const url = new URL( addQueryArgs( path, { ...query, hl: getLocale() } ) );
+		const url = new URL( addQueryArgs( `https://support.google.com${ path }`, { ...query, hl: getLocale() } ) );
 		url.hash = hash || '';
 
 		return url.toString();

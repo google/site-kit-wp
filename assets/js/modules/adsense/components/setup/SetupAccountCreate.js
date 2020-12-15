@@ -45,7 +45,7 @@ export default function SetupAccountCreate() {
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 	const signUpURL = useSelect( ( select ) => select( STORE_NAME ).getServiceCreateAccountURL() );
 	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
-		path: 'https://support.google.com/adsense/answer/2659101',
+		path: '/adsense/answer/2659101',
 	} ) );
 
 	const createAccountHandler = useCallback( async ( event ) => {

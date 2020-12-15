@@ -77,7 +77,7 @@ function DashboardGoalsWidget() {
 	} );
 
 	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
-		path: 'https://support.google.com/analytics/answer/1032415',
+		path: '/analytics/answer/1032415',
 		hash: 'create_or_edit_goals',
 	} ) );
 
