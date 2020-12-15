@@ -967,15 +967,17 @@ final class Analytics extends Module
 				if ( ! empty( $dimension_filters ) && is_array( $dimension_filters ) ) {
 					foreach ( $request_args['dimensions'] as $dimension ) {
 						$dimension_name = $dimension->getName();
-						if ( isset( $dimension_filters[ $dimension_name ] ) ) {
-							$dimension_value  = $dimension_filters[ $dimension_name ];
-							$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
-							$dimension_filter->setDimensionName( $dimension_name );
-							$dimension_filter->setOperator( 'EXACT' );
-							$dimension_filter->setExpressions( array( $dimension_value ) );
-							$dimension_filter->setCaseSensitive( false );
-							$dimension_filter_instances[] = $dimension_filter;
+						if ( ! isset( $dimension_filters[ $dimension_name ] ) ) {
+							continue;
 						}
+
+						$dimension_value  = $dimension_filters[ $dimension_name ];
+						$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
+						$dimension_filter->setDimensionName( $dimension_name );
+						$dimension_filter->setOperator( 'EXACT' );
+						$dimension_filter->setExpressions( array( $dimension_value ) );
+						$dimension_filter->setCaseSensitive( false );
+						$dimension_filter_instances[] = $dimension_filter;
 					}
 
 					if ( ! empty( $dimension_filter_instances ) ) {
