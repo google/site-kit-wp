@@ -36,6 +36,7 @@ import { getExistingTag } from '../../util/tag';
 import Link from '../Link';
 import Warning from '../legacy-notifications/warning';
 import ProgressBar from '../ProgressBar';
+import { useChecks } from '../../hooks/useChecks';
 
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
 const ERROR_FETCH_FAIL = 'check_fetch_failed';
@@ -101,6 +102,9 @@ const compatibilityChecks = [
 
 export default class CompatibilityChecks extends Component {
 	constructor( props ) {
+		const { complete2, error2 } = useChecks( compatibilityChecks );
+		console.log( complete2 ); // eslint-disable-line no-console
+		console.log( error2 ); // eslint-disable-line no-console
 		const { isSiteKitConnected } = global._googlesitekitLegacyData.setup;
 		super( props );
 		this.state = {
