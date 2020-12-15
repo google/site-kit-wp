@@ -22,12 +22,18 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../../datastore/constants';
+import { sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForTrafficChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 const { useSelect } = Data;
@@ -72,6 +78,8 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 			width: '100%',
 		},
 		backgroundColor: 'transparent',
+		fontName: 'Roboto',
+		fontSize: 12,
 		height: 410,
 		legend: {
 			alignment: 'center',
@@ -98,13 +106,29 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 		width: '100%',
 	};
 
+	const labels = {
+		'ga:channelGrouping': __( '<span>By</span> channels', 'google-site-kit' ),
+		'ga:country': __( '<span>By</span> locations', 'google-site-kit' ),
+		'ga:deviceCategory': __( '<span>By</span> devices', 'google-site-kit' ),
+	};
+
+	const sanitizeArgs = {
+		ALLOWED_TAGS: [ 'span' ],
+		ALLOWED_ATTR: [],
+	};
+
 	return (
 		<GoogleChart
 			chartType="pie"
 			options={ options }
 			data={ dataMap }
 			loadHeight={ 205 }
-		/>
+		>
+			<div
+				className="googlesitekit-line-chart__title"
+				dangerouslySetInnerHTML={ sanitizeHTML( labels[ dimensionName ] || '', sanitizeArgs ) }
+			/>
+		</GoogleChart>
 	);
 }
 

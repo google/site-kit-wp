@@ -21,6 +21,7 @@
  */
 import debounce from 'lodash/debounce';
 import { until } from 'wait-promise';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -73,6 +74,7 @@ export default function GoogleChart( props ) {
 	const {
 		chartType,
 		className,
+		children,
 		data,
 		loadCompressed,
 		loadHeight,
@@ -192,9 +194,26 @@ export default function GoogleChart( props ) {
 					) }
 				</div>
 			</div>
+
+			{ ! loading && (
+				children
+			) }
 		</div>
 	);
 }
+
+GoogleChart.propTypes = {
+	chartType: PropTypes.oneOf( [ 'pie', 'line', '' ] ),
+	className: PropTypes.string,
+	children: PropTypes.node,
+	data: PropTypes.arrayOf( PropTypes.array ),
+	loadCompressed: PropTypes.bool,
+	loadSmall: PropTypes.bool,
+	loadHeight: PropTypes.number,
+	loadText: PropTypes.bool,
+	selectedStats: PropTypes.arrayOf( PropTypes.number ),
+	singleStat: PropTypes.bool,
+};
 
 GoogleChart.defaultProps = {
 	chartType: 'line',
