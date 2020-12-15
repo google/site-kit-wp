@@ -17,16 +17,17 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+import Tab from '@material/react-tab';
+import TabBar from '@material/react-tab-bar';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-
-/**
- * External dependencies
- */
-import Tab from '@material/react-tab';
-import TabBar from '@material/react-tab-bar';
 
 /**
  * Internal dependencies
@@ -34,10 +35,9 @@ import TabBar from '@material/react-tab-bar';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
-const { useSelect, useDispatch } = Data;
+const { useDispatch } = Data;
 
-export default function DimensionTabs() {
-	const dimensionName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionName' ) || 'ga:channelGrouping' );
+export default function DimensionTabs( { dimensionName } ) {
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const tabs = [
@@ -76,3 +76,7 @@ export default function DimensionTabs() {
 		</TabBar>
 	);
 }
+
+DimensionTabs.propTypes = {
+	dimensionName: PropTypes.string.isRequired,
+};
