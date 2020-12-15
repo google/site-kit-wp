@@ -302,7 +302,7 @@ const webpackConfig = ( env, argv ) => {
 						vendor: {
 							chunks: 'initial',
 							name: 'googlesitekit-vendor',
-							filename: 'googlesitekit-vendor.[contenthash].js',
+							filename: ( mode === 'production' ? 'googlesitekit-vendor.[contenthash].js' : 'googlesitekit-vendor.js' ),
 							enforce: true,
 							test: /[\\/]node_modules[\\/]/,
 						},
