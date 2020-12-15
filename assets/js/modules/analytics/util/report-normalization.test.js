@@ -160,7 +160,7 @@ describe( 'normalizeReportOptions', () => {
 			expect( normalizeReportOptions( { dimensionFilters: [ 'foo' ] } ) ).toMatchObject( { dimensionFilters: {} } );
 		} );
 
-		it( 'normalizes a dimensionFilters object to remove non primitive values', () => {
+		it( 'normalizes a dimensionFilters object to remove non string values', () => {
 			const dimensionFilters = {
 				foo: 'bar',
 				bar: () => true,
@@ -173,8 +173,6 @@ describe( 'normalizeReportOptions', () => {
 
 			const expected = {
 				foo: 'bar',
-				wibble: 3,
-				wobble: false,
 			};
 
 			expect( normalizeReportOptions( { dimensionFilters } ) ).toMatchObject( { dimensionFilters: expected } );

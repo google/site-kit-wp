@@ -69,7 +69,7 @@ const normalizeDimensionFilters = ( dimensionFilters ) => {
 	const normalizedFilters = {};
 	if ( isPlainObject( dimensionFilters ) ) {
 		for ( const [ key, value ] of Object.entries( dimensionFilters ) ) {
-			if ( [ 'string', 'number', 'boolean' ].includes( typeof value ) ) {
+			if ( typeof value === 'string' ) {
 				normalizedFilters[ key ] = value;
 			}
 		}
