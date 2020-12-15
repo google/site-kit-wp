@@ -133,7 +133,7 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 }
 
 UserDimensionsPieChart.propTypes = {
-	dimensionName: PropTypes.string,
+	dimensionName: PropTypes.string.isRequired,
 };
 
 UserDimensionsPieChart.defaultProps = {

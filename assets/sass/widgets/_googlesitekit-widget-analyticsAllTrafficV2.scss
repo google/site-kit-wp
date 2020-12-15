@@ -33,6 +33,11 @@
 			height: 40px;
 			margin: 0 10px;
 			padding: 0 20px;
+
+			@media (min-width: $bp-tablet) and (max-width: $bp-xlarge) {
+				margin: 0;
+				padding: 0 10px;
+			}
 		}
 
 		.mdc-tab__text-label {
