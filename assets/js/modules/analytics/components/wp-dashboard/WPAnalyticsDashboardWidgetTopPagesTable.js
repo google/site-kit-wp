@@ -62,7 +62,7 @@ class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 
 			return [
 				title,
-				numFmt( row.metrics[ 0 ].values[ 0 ], 'decimal' ),
+				numFmt( row.metrics[ 0 ].values[ 0 ], { style: 'decimal' } ),
 			];
 		} );
 

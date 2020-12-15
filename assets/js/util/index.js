@@ -203,9 +203,6 @@ export const numFmt = ( number, options = {} ) => {
 		formatOptions = {
 			style: 'seconds',
 		};
-	} else if ( 'decimal' === options ) {
-		// custom unit `decimal`: used to return numbers with thousand separators
-		return numberFormat( number );
 	} else if ( !! options && typeof options === 'string' ) {
 		formatOptions = {
 			style: 'currency',

@@ -85,8 +85,8 @@ const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 		links[ i ] = `${ baseServiceURL }:${ encodeURIComponent( url.replace( /\//g, '~2F' ) ) }`;
 		return [
 			title,
-			numFmt( row.metrics[ 0 ].values[ 0 ], 'decimal' ),
-			numFmt( row.metrics[ 0 ].values[ 1 ], 'decimal' ),
+			numFmt( row.metrics[ 0 ].values[ 0 ], { style: 'decimal' } ),
+			numFmt( row.metrics[ 0 ].values[ 1 ], { style: 'decimal' } ),
 			<div className="googlesitekit-table__body-item-chart-wrap" key={ 'minichart-' + i }>{ numFmt( percent, '%' ) }</div>,
 		];
 	} );

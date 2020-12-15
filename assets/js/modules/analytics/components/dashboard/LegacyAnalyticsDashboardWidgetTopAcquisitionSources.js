@@ -92,9 +92,9 @@ function LegacyAnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 
 		return [
 			row.dimensions[ 0 ],
-			numFmt( row.metrics[ 0 ].values[ 0 ], 'decimal' ),
-			numFmt( row.metrics[ 0 ].values[ 1 ], 'decimal' ),
-			numFmt( row.metrics[ 0 ].values[ 2 ], 'decimal' ),
+			numFmt( row.metrics[ 0 ].values[ 0 ], { style: 'decimal' } ),
+			numFmt( row.metrics[ 0 ].values[ 1 ], { style: 'decimal' } ),
+			numFmt( row.metrics[ 0 ].values[ 2 ], { style: 'decimal' } ),
 			<Fragment key={ 'minichart-analytics-top-as-' + i }><div className="googlesitekit-table__body-item-chart-wrap">{ numFmt( percent, '%' ) } <MiniChart percent={ percent.toFixed( 1 ) } index={ i } /></div></Fragment>,
 		];
 	} );
