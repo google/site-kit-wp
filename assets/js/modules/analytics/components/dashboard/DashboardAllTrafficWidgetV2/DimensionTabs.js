@@ -19,9 +19,9 @@
 /**
  * External dependencies
  */
+import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -78,9 +78,5 @@ export default function DimensionTabs( { dimensionName } ) {
 }
 
 DimensionTabs.propTypes = {
-	dimensionName: PropTypes.string,
-};
-
-DimensionTabs.defaultProps = {
-	dimensionName: 'ga:channelGrouping',
+	dimensionName: PropTypes.string.isRequired,
 };
