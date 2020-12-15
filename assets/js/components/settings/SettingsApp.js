@@ -40,28 +40,33 @@ import Layout from '../layout/layout';
 import HelpLink from '../HelpLink';
 import SettingsModules from './settings-modules';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { Cell, Grid, Row } from '../../material-components';
 
 const { useSelect, useDispatch } = Data;
 
-// tabID to tabIndex
-const tabToIndex = {
-	settings: 0,
-	connect: 1,
-	admin: 2,
-};
-const tabIDsByIndex = Object.keys( tabToIndex );
-
 export default function SettingsApp() {
 	const [ hash, setHash ] = useHash();
-	let [ activeTabID, moduleSlug, moduleState ] = hash.replace( '#', '' ).split( /\// );
+
+	const parseHash = ( hashToParse ) => hashToParse.replace( '#', '' ).split( /\// );
+
+	useEffect( () => {
+		if ( hash ) {
+			const [ , moduleSlug, moduleState ] = parseHash( hash );
+			if ( moduleSlug && moduleState ) {
+				setModuleSettingsPanelState( moduleSlug, moduleState );
+			}
+		} else {
+			setHash( hashFrom( activeTabID ) );
+		}
+	}, [] );
+
+	let [ activeTabID, moduleSlug, moduleState ] = parseHash( hash );
 	if ( ! activeTabID ) {
 		activeTabID = 'settings';
 	}
 
 	moduleSlug = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( moduleSlug ) ) && moduleSlug;
-	moduleState = useSelect( ( select ) => {
-		return moduleSlug ? select( CORE_MODULES ).getModuleSettingsPanelState( moduleSlug ) : null;
-	} );
+	moduleState = useSelect( ( select ) => moduleSlug ? select( CORE_MODULES ).getModuleSettingsPanelState( moduleSlug ) : null );
 
 	const { setModuleSettingsPanelState } = useDispatch( CORE_MODULES );
 
@@ -69,47 +74,41 @@ export default function SettingsApp() {
 		moduleState = 'view';
 	}
 
-	const activeTab = tabToIndex[ activeTabID ];
+	const activeTab = SettingsApp.tabToIndex[ activeTabID ];
 
-	const fragmentsFrom = ( tabID, slug = moduleSlug, state = moduleState ) => {
+	const hashFrom = ( tabID, slug = moduleSlug, state = moduleState ) => {
 		const fragments = [ tabID ];
 
-		if ( tabID === 'settings' ) {
-			// eslint-disable-next-line no-unused-expressions
-			slug && fragments.push( slug );
-			// eslint-disable-next-line no-unused-expressions
-			slug && state && fragments.push( state );
+		if ( tabID === 'settings' && slug ) {
+			fragments.push( slug );
+			if ( state ) {
+				fragments.push( state );
+			}
 		}
 
-		return fragments;
-	};
-
-	useEffect( () => {
-		setHash( fragmentsFrom( activeTabID ).join( '/' ) );
-	}, [] );
-
-	const handleTabUpdate = ( tabIndex ) => {
-		const newActiveTabID = tabIDsByIndex[ tabIndex ];
-		setHash( fragmentsFrom( newActiveTabID ).join( '/' ) );
+		return fragments.join( '/' );
 	};
 
 	const setModuleState = ( slug, state ) => {
-		const fragments = fragmentsFrom( activeTabID, slug, state ).join( '/' );
-
 		setModuleSettingsPanelState( slug, state );
-		setHash( fragments );
+		setHash( hashFrom( activeTabID, slug, state ) );
+	};
+
+	const handleTabUpdate = ( tabIndex ) => {
+		const newActiveTabID = SettingsApp.tabIDsByIndex[ tabIndex ];
+		setHash( hashFrom( newActiveTabID ) );
 	};
 
 	return (
 		<Fragment>
 			<Header />
 			<div className="googlesitekit-module-page">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
 							<PageHeader title={ __( 'Settings', 'google-site-kit' ) } />
-						</div>
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+						</Cell>
+						<Cell size={ 12 }>
 							<Layout>
 								<TabBar
 									activeIndex={ activeTab }
@@ -126,26 +125,32 @@ export default function SettingsApp() {
 									</Tab>
 								</TabBar>
 							</Layout>
-						</div>
-						{ ( [ 'settings', 'connect' ].includes( activeTabID ) ) && // TODO Refactor SettingsModules into separate components.
+						</Cell>
+						{ [ 'settings', 'connect' ].includes( activeTabID ) && ( // TODO Refactor SettingsModules into separate components.
 							<SettingsModules
 								activeTab={ activeTab }
 								activeModule={ moduleSlug }
 								moduleState={ moduleState }
 								setModuleState={ setModuleState }
 							/>
-						}
-						{ 'admin' === activeTabID && <SettingsAdmin /> }
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-12
-							mdc-layout-grid__cell--align-right
-						">
+						) }
+						{ 'admin' === activeTabID && (
+							<SettingsAdmin />
+						) }
+						<Cell size={ 12 } alignRight>
 							<HelpLink />
-						</div>
-					</div>
-				</div>
+						</Cell>
+					</Row>
+				</Grid>
 			</div>
 		</Fragment>
 	);
 }
+
+// tabID to tabIndex
+SettingsApp.tabToIndex = {
+	settings: 0,
+	connect: 1,
+	admin: 2,
+};
+SettingsApp.tabIDsByIndex = Object.keys( SettingsApp.tabToIndex );
