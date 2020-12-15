@@ -45,6 +45,8 @@ import AnalyticsIcon from '../../../svg/analytics.svg';
 import DashboardAllTrafficWidgetV2 from './components/dashboard/DashboardAllTrafficWidgetV2';
 
 domReady( () => {
+	// IMPORTANT: When updating arguments here, also update the same call in
+	// `provideModuleRegistrations`.
 	Modules.registerModule(
 		'analytics',
 		{

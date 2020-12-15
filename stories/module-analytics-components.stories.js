@@ -86,8 +86,20 @@ generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/All Traffic Widget V2',
-	data: dashboardAllTrafficData,
-	options: dashboardAllTrafficArgs,
+	data: [], // TODO: Provide fixtures/mocks for all necessary responses.
+	options: { // TODO: Provide fixtures/mocks for all necessary requests.
+		startDate: '2020-11-01',
+		endDate: '2020-11-28',
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Users',
+			},
+		],
+		dimensions: [
+			'ga:channelGrouping',
+		],
+	},
 	Component: DashboardAllTrafficWidgetV2,
 	wrapWidget: false,
 	setup,
