@@ -21,15 +21,16 @@
  */
 import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { createTestRegistry, provideModules } from '../../../../../tests/js/utils';
 
 describe( 'core/modules settings', () => {
 	let registry;
 	const slug = 'test-module';
 	const nonExistentModuleSlug = 'not-module';
 	const moduleStoreName = `modules/${ slug }`;
-	const controlReturn = 'dummy_return_value';
-	const validateCanSubmitChangesError = false;
+	const testReturnValue = 'dummy_return_value';
+	let validateCanSubmitChangesError = false;
+	let testDuringSubmissionCallback = () => {};
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -38,7 +39,10 @@ describe( 'core/modules settings', () => {
 			moduleStoreName,
 			Modules.createModuleStore( slug, {
 				storeName: moduleStoreName,
-				submitChanges: () => controlReturn,
+				submitChanges: async () => {
+					await testDuringSubmissionCallback();
+					return testReturnValue;
+				},
 				validateCanSubmitChanges: () => {
 					if ( validateCanSubmitChangesError ) {
 						throw new Error( validateCanSubmitChangesError );
@@ -46,6 +50,10 @@ describe( 'core/modules settings', () => {
 				},
 			} ),
 		);
+
+		registry.dispatch( STORE_NAME ).registerModule( slug, { storeName: moduleStoreName } );
+
+		provideModules( registry );
 	} );
 
 	describe( 'actions', () => {
@@ -55,17 +63,15 @@ describe( 'core/modules settings', () => {
 				expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
 			} );
 
-			// The test registry doesn't proxy because getModules in modules.js returns undefined with serverDefinitions === undefined.
-			// it( 'should proxy the dispatched action to the module with the given slug', async () => {
-			// 	expect( await registry.dispatch( STORE_NAME ).submitChanges( slug ) ).toBe( controlReturn );
-			// } );
+			it( 'should proxy the dispatched action to the module with the given slug', async () => {
+				expect( await registry.dispatch( STORE_NAME ).submitChanges( slug ) ).toBe( testReturnValue );
+			} );
 
-			// Generator does not correctly surface invariant violations
-			// it( 'should throw an error if submitChanges has been called without a module slug', async () => {
-			// 	expect( () => {
-			// 		registry.dispatch( STORE_NAME ).submitChanges();
-			// 	} ).toThrow();
-			// } );
+			it( 'should throw an error if submitChanges has been called without a module slug', async () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).submitChanges();
+				} ).toThrow();
+			} );
 		} );
 	} );
 
@@ -76,22 +82,14 @@ describe( 'core/modules settings', () => {
 			} );
 
 			it( 'should proxy the selector call to the module with the given slug', async () => {
-				registry = createTestRegistry();
+				// Check isDoingSubmitChanges is true whiule submitChanges is being preformed
+				testDuringSubmissionCallback = () => {
+					expect( registry.select( STORE_NAME ).isDoingSubmitChanges( slug ) ).toBe( true );
+				};
+				await registry.dispatch( STORE_NAME ).submitChanges( slug );
 
-				registry.registerStore(
-					moduleStoreName,
-					Modules.createModuleStore( slug, {
-						storeName: moduleStoreName,
-						validateCanSubmitChanges: () => true,
-						submitChanges: async ( { select } ) => {
-							expect( select( STORE_NAME ).isDoingSubmitChanges( slug ) ).toBe( true );
-							return {};
-						},
-					} ),
-				);
-
+				// Check that isDoingSubmitChanges returns to false once changes are saved.
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( slug ) ).toBe( false );
-				registry.dispatch( STORE_NAME ).submitChanges( slug );
 			} );
 		} );
 
@@ -100,12 +98,11 @@ describe( 'core/modules settings', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges( nonExistentModuleSlug ) ).toBe( false );
 			} );
 
-			// These tests also return undefined due to getModules in modules.js returns undefined with serverDefinitions === undefined.
-			// it( 'should proxy the selector call to the module with the given slug', () => {
-			// 	expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( true );
-			// 	validateCanSubmitChangesError = 'error message';
-			// 	expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( false );
-			// } );
+			it( 'should proxy the selector call to the module with the given slug', () => {
+				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( true );
+				validateCanSubmitChangesError = 'error message';
+				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( false );
+			} );
 		} );
 	} );
 } );

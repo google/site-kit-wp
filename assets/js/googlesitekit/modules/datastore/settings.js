@@ -41,26 +41,22 @@ export const actions = {
 	 * @param {string} slug Slug for module store.
 	 * @return {Object} Module's submitChanges response object if it exists, otherwise object with `error` property if it doesn't.
 	 */
-	*submitChanges( slug ) {
+	submitChanges( slug ) {
 		invariant( slug, 'slug is required.' );
 
-		const result = yield {
-			payload: { slug },
-			type: SETTINGS_SUBMIT_CHANGES,
-		};
-
-		if ( result?.error ) {
-			return { error: result.error };
-		}
-
-		return result;
+		return ( function* () {
+			return yield {
+				payload: { slug },
+				type: SETTINGS_SUBMIT_CHANGES,
+			};
+		}() );
 	},
 };
 
 export const controls = {
 	[ SETTINGS_SUBMIT_CHANGES ]: createRegistryControl( ( registry ) => async ( { payload } ) => {
 		const { slug } = payload;
-		const storeName = await registry.select( CORE_MODULES )?.getModuleStoreName( slug );
+		const storeName = registry.select( CORE_MODULES )?.getModuleStoreName( slug );
 
 		if ( ! storeName ) {
 			return { error: `The module ${ slug } does not have a store.` };
@@ -71,7 +67,7 @@ export const controls = {
 			return { error: `The module ${ slug } does not have a submitChanges() action.` };
 		}
 
-		return await submitChanges( slug );
+		return submitChanges( slug );
 	} ),
 };
 
