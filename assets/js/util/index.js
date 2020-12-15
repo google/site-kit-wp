@@ -203,6 +203,11 @@ export const numFmt = ( number, options = {} ) => {
 		formatOptions = {
 			style: 'seconds',
 		};
+	} else if ( 'decimal' === options ) {
+		// Node: `decimal` is our custom style used to return numbers with thousand separators
+		formatOptions = {
+			style: 'decimal',
+		};
 	} else if ( !! options && typeof options === 'string' ) {
 		formatOptions = {
 			style: 'currency',
