@@ -51,7 +51,7 @@ export default function SettingsApp() {
 
 	useEffect( () => {
 		if ( hash ) {
-			const [ , moduleSlug, moduleState ] = parseHash( hash );
+			const [ _activeTabID, moduleSlug, moduleState ] = parseHash( hash );
 			if ( moduleSlug && moduleState ) {
 				setModuleSettingsPanelState( moduleSlug, moduleState );
 			}
