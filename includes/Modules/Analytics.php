@@ -976,7 +976,6 @@ final class Analytics extends Module
 						$dimension_filter->setDimensionName( $dimension_name );
 						$dimension_filter->setOperator( 'EXACT' );
 						$dimension_filter->setExpressions( array( $dimension_value ) );
-						$dimension_filter->setCaseSensitive( false );
 						$dimension_filter_instances[] = $dimension_filter;
 					}
 
