@@ -35,7 +35,7 @@ export const modulesNotificationsToRequest = () => {
 /**
  * Retrieves the total number of notifications from session storage.
  *
- * Otherwise make the requests to get modules and page wins notifications.
+ * Otherwise make the requests to get modules notifications.
  *
  * @since 1.0.0
  *
