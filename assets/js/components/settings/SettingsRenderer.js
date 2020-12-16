@@ -33,12 +33,19 @@ export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
 	const storeName = `modules/${ slug }`;
 	const isDoingSubmitChanges = useSelect( ( select ) => select( storeName )?.isDoingSubmitChanges?.() );
 	const haveSettingsChanged = useSelect( ( select ) => select( storeName )?.haveSettingsChanged?.() );
-	const isConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( slug ) );
 	const {
 		SettingsEditComponent,
 		SettingsViewComponent,
 		SettingsSetupIncompleteComponent,
-	} = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) || {} );
+		doesModuleExist,
+		connected,
+	} = useSelect( ( select ) => {
+		const module = select( CORE_MODULES ).getModule( slug );
+		return {
+			...module,
+			doesModuleExist: !! module,
+		};
+	} );
 
 	// Rollback any temporary selections to saved values if settings have changed and no longer editing.
 	const { rollbackSettings } = useDispatch( storeName ) || {};
@@ -48,9 +55,9 @@ export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
 		}
 	}, [ rollbackSettings, haveSettingsChanged, isDoingSubmitChanges, isEditing ] );
 
-	if ( ! isOpen ) {
+	if ( ! isOpen || ! doesModuleExist ) {
 		return null;
-	} else if ( isOpen && ! isConnected ) {
+	} else if ( isOpen && ! connected ) {
 		if ( !! SettingsSetupIncompleteComponent ) {
 			return <SettingsSetupIncompleteComponent />;
 		}
