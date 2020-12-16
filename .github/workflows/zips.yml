@@ -53,8 +53,10 @@ jobs:
       - name: npm install
         run: |
           npm ci
-      - name: Create destination directory
-        run: mkdir -p ${{ github.ref }}
+      - name: Create destination directory and update file permissions
+        run: |
+          mkdir -p ${{ github.ref }}
+          sudo chown -R $(id -u):$(id -g) .
       - name: Build develop version
         run: |
           npm run dev-zip
