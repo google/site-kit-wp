@@ -102,4 +102,4 @@ runs:
         wp rewrite structure '%postname%' --hard
         echo "::endgroup::"
 
-        wp server --host=0.0.0.0 --port=9002 &
+        wp server --host=0.0.0.0 --port=9002 > /tmp/wp-server.log &

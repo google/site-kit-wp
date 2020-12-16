@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-20.04
     # if: github.event.pull_request.draft == false
     steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v1
+        with:
+          php-version: 5.6
       - uses: actions/checkout@v2
       - name: Load Composer cache
         uses: actions/cache@v2
@@ -45,3 +49,4 @@ jobs:
           name: e2e-screenshots
           path: |
             tests/e2e/screenshots
+            /tmp/wp-server.log
