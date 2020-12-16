@@ -23,6 +23,7 @@ import each from 'lodash/each';
 
 export * from './is-zero-report';
 export * from './parsing';
+export * from './site-stats-data';
 export * from './status';
 export * from './validation';
 export * from './url';

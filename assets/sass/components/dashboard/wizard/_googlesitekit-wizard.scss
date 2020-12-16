@@ -3,6 +3,11 @@
 	@include googlesitekit-inner-padding;
 	padding-top: 10px;
 
+	.googlesitekit-opt-in {
+		margin-bottom: 8px;
+		margin-top: 8px;
+	}
+
 	.googlesitekit-wizard__asterisk {
 		color: $c-required;
 

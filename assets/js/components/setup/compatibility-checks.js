@@ -241,9 +241,10 @@ export default class CompatibilityChecks extends Component {
 		if ( error ) {
 			CTAFeedback = <Fragment>
 				<div className="googlesitekit-setup-compat mdc-layout-grid mdc-layout-grid--align-left">
-					<div className="mdc-layout-grid__inner">
+					<div className="googlesitekit-setup__warning">
 						<Warning />
-						<div className="googlesitekit-heading-4 mdc-layout-grid__cell--span-11">
+
+						<div className="googlesitekit-heading-4">
 							{ __( 'Your site may not be ready for Site Kit', 'google-site-kit' ) }
 						</div>
 					</div>

@@ -19,7 +19,7 @@
 /**
  * Checks whether the report data is valid.
  *
- * @since n.e.x.t
+ * @since 1.22.0
  *
  * @param {Object} report Report data object.
  * @return {(boolean|undefined)} Returns undefined if in the loading state, true if the report has no data or missing data, otherwise false.

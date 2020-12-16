@@ -35,7 +35,7 @@ export const actions = {
 	/**
 	 * Sets the module settings panel state for a given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param {string} slug  Module slug.
 	 * @param {string} value New setting for module, one of: closed, edit, view.
@@ -80,7 +80,7 @@ export const selectors = {
 	/**
 	 * Gets the settings panel state for a given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
@@ -101,7 +101,7 @@ export const selectors = {
 	/**
 	 * Checks whether the module settings panel is open for a given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
@@ -116,7 +116,7 @@ export const selectors = {
 	/**
 	 * Checks whether the module settings panel is closed for a given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
@@ -131,7 +131,7 @@ export const selectors = {
 	/**
 	 * Checks whether the module settings panel is in edit state for a given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
@@ -148,7 +148,7 @@ export const selectors = {
 	/**
 	 * Checks whether the module settings panel is locked for a given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.

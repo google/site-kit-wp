@@ -16,6 +16,26 @@
  * limitations under the License.
  */
 
+function checkForEmptyLinesInGroup( groupOfTags, { context, jsdoc, jsdocNode } = {} ) {
+	groupOfTags.forEach( ( tag, index ) => {
+		if ( index === 0 ) {
+			return;
+		}
+
+		const previousTag = groupOfTags[ index - 1 ];
+
+		if ( jsdoc.source.match(
+			new RegExp( `@${ previousTag.tag }.*\\n\\n@${ tag.tag }`, 'gm' )
+		) ) {
+			context.report( {
+				data: { name: jsdocNode.name },
+				message: `There should not be an empty line between @${ previousTag.tag } and @${ tag.tag }.`,
+				node: jsdocNode,
+			} );
+		}
+	} );
+}
+
 function findTagInGroup( tagsInGroup, utils, index = 0 ) {
 	const foundTag = !! utils.filterTags( ( { tag } ) => {
 		return [ tagsInGroup[ index ] ].includes( tag );
@@ -82,6 +102,7 @@ function isFunction( node ) {
 }
 
 module.exports = {
+	checkForEmptyLinesInGroup,
 	findTagInGroup,
 	isDependencyBlock,
 	isFunction,

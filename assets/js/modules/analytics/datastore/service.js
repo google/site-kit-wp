@@ -72,7 +72,7 @@ export const selectors = {
 	/**
 	 * Gets a URL for a specific reporting view on the service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {string} type         Report type.

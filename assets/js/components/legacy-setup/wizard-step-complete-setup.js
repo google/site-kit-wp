@@ -31,7 +31,7 @@ import { Component } from '@wordpress/element';
  * Internal dependencies
  */
 import { trackEvent } from '../../util';
-import Button from '../button';
+import Button from '../Button';
 import rocketBodyImage from '../../../images/rocket-body.png';
 import rocketCloudsImage from '../../../images/rocket-clouds.png';
 import rocketDustImage from '../../../images/rocket-dust.png';
