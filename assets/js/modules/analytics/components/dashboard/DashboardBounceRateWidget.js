@@ -148,6 +148,6 @@ function DashboardBounceRateWidget() {
 
 export default whenActive( {
 	moduleName: 'analytics',
-	FallbackComponent: () => <AnalyticsInactiveCTA />,
-	IncompleteComponent: () => <CompleteModuleActivationCTA slug="analytics" />,
+	FallbackComponent: <AnalyticsInactiveCTA />,
+	IncompleteComponent: <CompleteModuleActivationCTA slug="analytics" />,
 } )( DashboardBounceRateWidget );
