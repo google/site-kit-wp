@@ -1425,7 +1425,7 @@ final class Analytics extends Module
 		if ( ! empty( $dimension_filters_clauses ) ) {
 			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
 			$dimension_filter_clause->setFilters( $dimension_filters_clauses );
-			$request->setDimensionFilterClauses( array( $dimension_filter_clause ) );
+			$request->setDimensionFilterClauses( $dimension_filters_clauses );
 		}
 
 		if ( ! empty( $args['row_limit'] ) ) {
