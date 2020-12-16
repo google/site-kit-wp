@@ -93,7 +93,7 @@ describe( 'modules/adsense report', () => {
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( report ).toEqual( '1000% fail' );
+				expect( report ).toEqual( fixtures.report );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
