@@ -15,7 +15,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v1
         with:
-          php-version: 5.6
+          php-version: 7.3
       - uses: actions/checkout@v2
       - name: Load Composer cache
         uses: actions/cache@v2
