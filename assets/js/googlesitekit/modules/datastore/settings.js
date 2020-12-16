@@ -59,7 +59,7 @@ export const controls = {
 		const storeName = registry.select( CORE_MODULES )?.getModuleStoreName( slug );
 
 		if ( ! storeName ) {
-			return { error: `The module ${ slug } does not have a store.` };
+			return { error: `The module '${ slug }' does not have a store.` };
 		}
 
 		const { submitChanges } = await registry.dispatch( storeName );
