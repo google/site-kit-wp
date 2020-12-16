@@ -28,7 +28,7 @@ import modulesAdSenseStore from '../../assets/js/modules/adsense/datastore';
 import { STORE_NAME as MODULES_ADSENSE } from '../../assets/js/modules/adsense/datastore/constants';
 import { SetupMain as AdSenseSetupMain } from '../../assets/js/modules/adsense/components/setup';
 import {
-	SettingsEdit as AdSenseSettingsEdit,
+	SettingsEdit as AdSenseSettingsEdit, SettingsSetupIncomplete,
 	SettingsView as AdSenseSettingsView,
 } from '../../assets/js/modules/adsense/components/settings';
 import AdSenseIcon from '../../assets/svg/adsense.svg';
@@ -270,6 +270,7 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 			SettingsEditComponent: AdSenseSettingsEdit,
 			SettingsViewComponent: AdSenseSettingsView,
 			SetupComponent: AdSenseSetupMain,
+			SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
 			Icon: AdSenseIcon,
 			checkRequirements: () => {
 				// TODO: Remove this duplicate-ish code and instead import from reusable AdSense utility function.

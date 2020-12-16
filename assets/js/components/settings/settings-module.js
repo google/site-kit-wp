@@ -55,7 +55,6 @@ import GenericError from '../legacy-notifications/generic-error';
 import SetupModule from './SetupModule';
 import Dialog from '../../components/Dialog';
 import ModuleIcon from '../ModuleIcon';
-import ModuleSetupIncomplete from '../../components/settings/module-setup-incomplete';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import SettingsRenderer from '../settings/SettingsRenderer';
 import VisuallyHidden from '../VisuallyHidden';
@@ -323,26 +322,16 @@ class SettingsModule extends Component {
 						>
 							<div className="mdc-layout-grid">
 								<div className="mdc-layout-grid__inner">
-									{ setupComplete && (
-										<Fragment>
-											<div className="
-												mdc-layout-grid__cell
-												mdc-layout-grid__cell--span-12
-											">
-												<SettingsRenderer
-													slug={ slug }
-													isEditing={ isEditing[ moduleKey ] }
-													isOpen={ isOpen }
-												/>
-											</div>
-										</Fragment>
-									) }
-									{
-										hasSettings && ! setupComplete &&
-											<ModuleSetupIncomplete
-												slug={ slug }
-											/>
-									}
+									<div className="
+										mdc-layout-grid__cell
+										mdc-layout-grid__cell--span-12
+									">
+										<SettingsRenderer
+											slug={ slug }
+											isEditing={ isEditing[ moduleKey ] }
+											isOpen={ isOpen }
+										/>
+									</div>
 								</div>
 							</div>
 							<footer className="googlesitekit-settings-module__footer">

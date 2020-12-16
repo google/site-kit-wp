@@ -223,17 +223,18 @@ const baseActions = {
 	 * @since 1.22.0 Introduced the ability to add a checkRequirements function.
 	 * @since n.e.x.t Introduced the ability to register an Icon component.
 	 *
-	 * @param {string}      slug                             Module slug.
-	 * @param {Object}      [settings]                       Optional. Module settings.
-	 * @param {string}      [settings.name]                  Optional. Module name. Default is the slug.
-	 * @param {string}      [settings.description]           Optional. Module description. Default empty string.
-	 * @param {WPComponent} [settings.Icon]                  Optional. React component to render module icon. Default none.
-	 * @param {number}      [settings.order]                 Optional. Numeric indicator for module order. Default 10.
-	 * @param {string}      [settings.homepage]              Optional. Module homepage URL. Default empty string.
-	 * @param {WPComponent} [settings.SettingsEditComponent] Optional. React component to render the settings edit panel. Default none.
-	 * @param {WPComponent} [settings.SettingsViewComponent] Optional. React component to render the settings view panel. Default none.
-	 * @param {WPComponent} [settings.SetupComponent]        Optional. React component to render the setup panel. Default none.
-	 * @param {Function}    [settings.checkRequirements]     Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
+	 * @param {string}      slug                                        Module slug.
+	 * @param {Object}      [settings]                                  Optional. Module settings.
+	 * @param {string}      [settings.name]                             Optional. Module name. Default is the slug.
+	 * @param {string}      [settings.description]                      Optional. Module description. Default empty string.
+	 * @param {WPComponent} [settings.Icon]                             Optional. React component to render module icon. Default none.
+	 * @param {number}      [settings.order]                            Optional. Numeric indicator for module order. Default 10.
+	 * @param {string}      [settings.homepage]                         Optional. Module homepage URL. Default empty string.
+	 * @param {WPComponent} [settings.SettingsEditComponent]            Optional. React component to render the settings edit panel. Default none.
+	 * @param {WPComponent} [settings.SettingsViewComponent]            Optional. React component to render the settings view panel. Default none.
+	 * @param {WPComponent} [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
+	 * @param {WPComponent} [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
+	 * @param {Function}    [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
 	 */
 	*registerModule( slug, {
 		name,
@@ -244,6 +245,7 @@ const baseActions = {
 		SettingsEditComponent,
 		SettingsViewComponent,
 		SetupComponent,
+		SettingsSetupIncompleteComponent,
 		checkRequirements = () => true,
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
@@ -257,6 +259,7 @@ const baseActions = {
 			SettingsEditComponent,
 			SettingsViewComponent,
 			SetupComponent,
+			SettingsSetupIncompleteComponent,
 			checkRequirements,
 		};
 

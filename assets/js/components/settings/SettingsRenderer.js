@@ -26,13 +26,19 @@ import { useEffect } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import DefaultSettingsSetupIncomplete from './DefaultSettingsSetupIncomplete';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
 	const storeName = `modules/${ slug }`;
 	const isDoingSubmitChanges = useSelect( ( select ) => select( storeName )?.isDoingSubmitChanges?.() );
 	const haveSettingsChanged = useSelect( ( select ) => select( storeName )?.haveSettingsChanged?.() );
-	const { SettingsEditComponent, SettingsViewComponent } = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) || {} );
+	const isConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( slug ) );
+	const {
+		SettingsEditComponent,
+		SettingsViewComponent,
+		SettingsSetupIncompleteComponent,
+	} = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) || {} );
 
 	// Rollback any temporary selections to saved values if settings have changed and no longer editing.
 	const { rollbackSettings } = useDispatch( storeName ) || {};
@@ -44,6 +50,11 @@ export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
 
 	if ( ! isOpen ) {
 		return null;
+	} else if ( isOpen && ! isConnected ) {
+		if ( !! SettingsSetupIncompleteComponent ) {
+			return <SettingsSetupIncompleteComponent />;
+		}
+		return <DefaultSettingsSetupIncomplete slug={ slug } />;
 	}
 
 	if ( isEditing && SettingsEditComponent ) {
