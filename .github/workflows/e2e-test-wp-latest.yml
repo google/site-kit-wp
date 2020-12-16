@@ -19,7 +19,7 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           path: ~/.cache/composer/files
       - name: Install Composer dependencies
-        run: composer install --no-dev --no-interaction --no-progress
+        run: composer install --no-dev --no-interaction --no-progress --ignore-platform-reqs
       - name: Load NPM cache
         uses: actions/cache@v2
         with:

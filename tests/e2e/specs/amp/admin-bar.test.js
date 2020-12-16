@@ -71,10 +71,8 @@ describe( 'AMP Admin Bar compatibility', () => {
 		await expect( page ).toHaveValidAMPForUser();
 		await expect( page ).toHaveValidAMPForVisitor();
 
-		await Promise.all( [
-			page.hover( '#wp-admin-bar-google-site-kit' ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
-		] );
+		await page.hover( '#wp-admin-bar-google-site-kit' );
+		await page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) );
 
 		const adminBarApp = await page.$( '#js-googlesitekit-adminbar' );
 		await expect( adminBarApp ).toMatchElement( '.googlesitekit-data-block__title', { text: /total clicks/i } );
