@@ -10,7 +10,7 @@ jobs:
   e2e:
     name: E2E Tests
     runs-on: ubuntu-18.04
-    if: github.event.pull_request.draft == false
+    # if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v2
       - name: Load Composer cache
@@ -29,22 +29,17 @@ jobs:
         uses: ./.github/actions/npm
         with:
           command: build:test
-      - name: Start E2E environment using NPM script
+      - name: Start E2E environment
         uses: ./.github/actions/npm
         with:
           command: env:start
-      # - name: Start E2E environment
-      #   uses: ./.github/actions/e2e-env
-      #   with:
-      #     version: latest
       - name: Run E2E Tests
         uses: ./.github/actions/npm
         with:
-          command: test:e2e
+          command: test:e2e -- tests/e2e/specs/amp/admin-bar.test.js
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: e2e-screenshots
-          path: |
-            tests/e2e/screenshots
+          path: tests/e2e/screenshots

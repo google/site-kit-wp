@@ -214,7 +214,7 @@ function observeConsoleLogging() {
 		// failure.
 
 		// eslint-disable-next-line no-console
-		process.stdout.write( `[${ logFunction }]: ${ text }\n` );
+		console[ logFunction ]( text );
 	} );
 }
 
@@ -334,9 +334,7 @@ beforeAll( async () => {
 	observeConsoleLogging();
 	// Log uncaught exceptions on the client.
 	// eslint-disable-next-line no-console
-	page.on( 'pageerror', ( msg ) => {
-		process.stderr.write( `${ msg }\n` );
-	} );
+	page.on( 'pageerror', console.error );
 
 	if ( '1' === process.env.DEBUG_NAV ) {
 		page.on( 'request', observeNavigationRequest );

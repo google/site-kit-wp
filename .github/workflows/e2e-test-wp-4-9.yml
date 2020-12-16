@@ -10,7 +10,7 @@ jobs:
   e2e:
     name: E2E Tests
     runs-on: ubuntu-18.04
-    # if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v2
       - name: Load Composer cache
@@ -43,5 +43,4 @@ jobs:
         if: failure()
         with:
           name: e2e-screenshots
-          path: |
-            tests/e2e/screenshots
+          path: tests/e2e/screenshots
