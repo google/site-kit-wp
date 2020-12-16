@@ -87,7 +87,7 @@ function DashboardUniqueVisitorsWidget() {
 		};
 
 		return {
-			loading: store.isResolving( 'getReport', [ sparklineArgs ] ) || store.isResolving( 'getReport', [ args ] ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ sparklineArgs ] ) || ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
 			// Due to the nature of these queries, we need to run them separately.
 			sparkData: store.getReport( sparklineArgs ),

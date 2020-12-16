@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
 
@@ -31,11 +32,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import ProgressBar from '../../../../components/ProgressBar';
+import Link from '../../../../components/Link';
 import LabReportMetrics from '../common/LabReportMetrics';
 import FieldReportMetrics from '../common/FieldReportMetrics';
+import Recommendations from '../common/Recommendations';
+import ReportDetailsLink from '../common/ReportDetailsLink';
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
@@ -65,16 +70,18 @@ export default function DashboardPageSpeed() {
 		const store = select( STORE_NAME );
 
 		return {
-			isFetchingMobile: store.isFetchingGetReport( referenceURL, STRATEGY_MOBILE ),
+			isFetchingMobile: ! store.hasFinishedResolution( 'getReport', [ referenceURL, STRATEGY_MOBILE ] ),
 			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE ),
 			errorMobile: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_MOBILE ] ),
-			isFetchingDesktop: store.isFetchingGetReport( referenceURL, STRATEGY_DESKTOP ),
+			isFetchingDesktop: ! store.hasFinishedResolution( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ),
 			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP ),
 			errorDesktop: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ),
 		};
 	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
+	const { invalidateResolution } = useDispatch( STORE_NAME );
+
 	const setStrategyMobile = useCallback( () => setValues( FORM_DASH_WIDGET, { strategy: STRATEGY_MOBILE } ), [] );
 	const setStrategyDesktop = useCallback( () => setValues( FORM_DASH_WIDGET, { strategy: STRATEGY_DESKTOP } ), [] );
 	const setDataSrcField = useCallback( () => setValues( FORM_DASH_WIDGET, { dataSrc: DATA_SRC_FIELD } ), [] );
@@ -96,6 +103,17 @@ export default function DashboardPageSpeed() {
 			setStrategyMobile();
 		}
 	}, [] );
+
+	const updateReport = useCallback( async ( event ) => {
+		event.preventDefault();
+
+		// Invalidate the PageSpeed API request caches.
+		await API.invalidateCache( 'modules', 'pagespeed-insights', 'pagespeed' );
+
+		// Invalidate the cached resolver.
+		invalidateResolution( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] );
+		invalidateResolution( 'getReport', [ referenceURL, STRATEGY_MOBILE ] );
+	}, [ invalidateResolution, referenceURL ] );
 
 	// Set the default data source based on report data.
 	useEffect( () => {
@@ -161,10 +179,29 @@ export default function DashboardPageSpeed() {
 					/>
 				</div>
 			</header>
+
 			<section>
 				{ dataSrc === DATA_SRC_LAB && <LabReportMetrics data={ reportData } error={ reportError } /> }
 				{ dataSrc === DATA_SRC_FIELD && <FieldReportMetrics data={ reportData } error={ reportError } /> }
 			</section>
+
+			{ ! reportError && (
+				<Recommendations referenceURL={ referenceURL } strategy={ strategy } />
+			) }
+
+			<div
+				className={ classnames(
+					'googlesitekit-pagespeed-report__footer',
+					{ 'googlesitekit-pagespeed-report__footer--with-action': dataSrc === DATA_SRC_LAB },
+				) }
+			>
+				{ dataSrc === DATA_SRC_LAB && (
+					<Link onClick={ updateReport }>
+						{ __( 'Run test again', 'google-site-kit' ) }
+					</Link>
+				) }
+				<ReportDetailsLink />
+			</div>
 		</Fragment>
 	);
 }

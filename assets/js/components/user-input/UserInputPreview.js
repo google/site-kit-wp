@@ -34,12 +34,13 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Cell, Row } from '../../material-components';
-import Button from '../button';
+import Button from '../Button';
 import ProgressBar from '../ProgressBar';
 import ErrorNotice from '../ErrorNotice';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import { getUserInputAnwsers } from './util/constants';
+import { addQueryArgs } from '@wordpress/url';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputPreview( { back, goTo } ) {
@@ -57,7 +58,7 @@ export default function UserInputPreview( { back, goTo } ) {
 		setIsNavigating( true );
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
-			global.location.assign( dashboardURL );
+			global.location.assign( addQueryArgs( dashboardURL, { notification: 'user_input_success' } ) );
 		} else {
 			setIsNavigating( false );
 		}

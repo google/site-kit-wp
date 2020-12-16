@@ -17,3 +17,4 @@
  */
 
 export const STORE_NAME = 'core/modules';
+export const ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES = 'insufficient_module_dependencies';

@@ -43,7 +43,7 @@ import {
 	ContainerNames,
 	WebContainerSelect,
 } from '../common';
-import Button from '../../../../components/button';
+import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import SetupErrorNotice from './SetupErrorNotice';
 import FormInstructions from '../common/FormInstructions';
@@ -79,7 +79,7 @@ export default function SetupForm( { finishSetup } ) {
 			setValues( FORM_SETUP, { autoSubmit: false } );
 
 			// If a singular property ID is set in the container(s) and Analytics is active,
-			// we disable the snippet output via Analyics to prevent duplicate measurement.
+			// we disable the snippet output via Analytics to prevent duplicate measurement.
 			if ( singleAnalyticsPropertyID && analyticsModuleActive ) {
 				dispatchAnalytics.setUseSnippet( false );
 				await throwOnError( () => dispatchAnalytics.saveSettings() );

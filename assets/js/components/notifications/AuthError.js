@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import Notification from './notification';
+import Notification from '../legacy-notifications/notification';
 const { useSelect } = Data;
 
 export default function AuthError() {

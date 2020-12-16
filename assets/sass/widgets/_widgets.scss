@@ -80,4 +80,10 @@
 	&.googlesitekit-widget--no-padding .googlesitekit-widget__body {
 		padding: 0;
 	}
+
+	&.googlesitekit-widget--footer-v2 .googlesitekit-widget__footer {
+		border-top: 0;
+		display: flex;
+		justify-content: flex-end;
+	}
 }
