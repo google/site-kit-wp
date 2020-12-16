@@ -25,24 +25,23 @@ import { createTestRegistry, provideModules } from '../../../../../tests/js/util
 
 describe( 'core/modules settings', () => {
 	let registry;
+	let submitChanges;
 	const slug = 'test-module';
 	const nonExistentModuleSlug = 'not-module';
 	const moduleStoreName = `test/${ slug }`;
 	const testReturnValue = 'dummy_return_value';
 	let validateCanSubmitChangesError = false;
-	let testDuringSubmissionCallback = () => {};
 
 	beforeEach( () => {
+		submitChanges = jest.fn();
+
 		registry = createTestRegistry();
 
 		registry.registerStore(
 			moduleStoreName,
 			Modules.createModuleStore( slug, {
 				storeName: moduleStoreName,
-				submitChanges: async () => {
-					await testDuringSubmissionCallback();
-					return testReturnValue;
-				},
+				submitChanges,
 				validateCanSubmitChanges: () => {
 					if ( validateCanSubmitChangesError ) {
 						throw new Error( validateCanSubmitChangesError );
@@ -64,6 +63,7 @@ describe( 'core/modules settings', () => {
 			} );
 
 			it( 'should proxy the dispatched action to the module with the given slug', async () => {
+				submitChanges.mockImplementation( () => testReturnValue );
 				expect( await registry.dispatch( STORE_NAME ).submitChanges( slug ) ).toBe( testReturnValue );
 			} );
 
@@ -82,11 +82,13 @@ describe( 'core/modules settings', () => {
 			} );
 
 			it( 'should proxy the selector call to the module with the given slug', async () => {
-				// Check isDoingSubmitChanges is true whiule submitChanges is being preformed
-				testDuringSubmissionCallback = () => {
-					expect( registry.select( STORE_NAME ).isDoingSubmitChanges( slug ) ).toBe( true );
-				};
+				// Check isDoingSubmitChanges is true while submitChanges is being performed
+				let checkIsDoingSubmitChanges;
+				submitChanges.mockImplementation( ( { select } ) => {
+					checkIsDoingSubmitChanges = select( STORE_NAME ).isDoingSubmitChanges( slug );
+				} );
 				await registry.dispatch( STORE_NAME ).submitChanges( slug );
+				expect( checkIsDoingSubmitChanges ).toBe( true );
 
 				// Check that isDoingSubmitChanges returns to false once changes are saved.
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( slug ) ).toBe( false );

@@ -55,8 +55,6 @@ export const createInfoStore = ( slug, {
 } = {} ) => {
 	invariant( storeName, 'storeName is required.' );
 
-	const STORE_NAME = storeName || `modules/${ slug }`;
-
 	const initialState = {};
 	const actions = {};
 	const controls = {};
@@ -97,7 +95,7 @@ export const createInfoStore = ( slug, {
 				reAuth: undefined,
 			} : {};
 
-			const redirectURL = select( STORE_NAME ).getAdminScreenURL( { slug, reAuth, ...noSetupQueryArgs } );
+			const redirectURL = select( storeName ).getAdminScreenURL( { slug, reAuth, ...noSetupQueryArgs } );
 			if ( redirectURL === undefined ) {
 				return undefined;
 			}
@@ -113,7 +111,7 @@ export const createInfoStore = ( slug, {
 	};
 
 	return {
-		STORE_NAME,
+		storeName,
 		initialState,
 		actions,
 		controls,
