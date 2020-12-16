@@ -64,7 +64,7 @@ export const controls = {
 
 		const { submitChanges } = await registry.dispatch( storeName );
 		if ( ! submitChanges ) {
-			return { error: `The module ${ slug } does not have a submitChanges() action.` };
+			return { error: `The module '${ slug }' does not have a submitChanges() action.` };
 		}
 
 		return submitChanges( slug );
