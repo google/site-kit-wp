@@ -34,6 +34,7 @@ describe( 'SettingsApp', () => {
 	};
 
 	beforeEach( () => {
+		global.location.hash = '';
 		global.featureFlags = { storeErrorNotifications: { enabled: true } };
 
 		registry = createTestRegistry();
@@ -72,9 +73,15 @@ describe( 'SettingsApp', () => {
 	} );
 
 	it( 'should change location hash & DOM correctly when module accordian clicked and closed', async () => {
-		const { getByRole, queryByRole } = render( <SettingsApp />, { registry } );
+		const { getByRole, findByRole, queryByRole } = render( <SettingsApp />, { registry } );
 
 		fireEvent.click( getByRole( 'tab', { name: /analytics/i } ) );
+
+		const analyticsPanel = await findByRole( 'tabpanel' );
+		expect( analyticsPanel ).toBeInTheDocument();
+
+		expect( global.location.hash ).toEqual( '#settings/analytics/view' );
+
 		fireEvent.click( getByRole( 'tab', { name: /analytics/i } ) );
 		expect( global.location.hash ).toEqual( '#settings/analytics/closed' );
 
@@ -89,9 +96,13 @@ describe( 'SettingsApp', () => {
 			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 		);
 
-		const { getByRole, queryByTestID } = render( <SettingsApp />, { registry } );
+		const { getByRole, findByRole, queryByTestID } = render( <SettingsApp />, { registry } );
 
 		fireEvent.click( getByRole( 'tab', { name: /analytics/i } ) );
+
+		const analyticsPanel = await findByRole( 'tabpanel' );
+		expect( analyticsPanel ).toBeInTheDocument();
+
 		fireEvent.click( getByRole( 'button', { name: /edit/i } ) );
 
 		expect( global.location.hash ).toEqual( '#settings/analytics/edit' );
@@ -110,12 +121,18 @@ describe( 'SettingsApp', () => {
 		const { getByRole, findByRole } = render( <SettingsApp />, { registry } );
 
 		fireEvent.click( getByRole( 'tab', { name: /analytics/i } ) );
+
+		const analyticsPanel = await findByRole( 'tabpanel' );
+		expect( analyticsPanel ).toBeInTheDocument();
+
 		fireEvent.click( getByRole( 'button', { name: /edit/i } ) );
+		expect( global.location.hash ).toEqual( '#settings/analytics/edit' );
+
 		fireEvent.click( getByRole( 'button', { name: /cancel/i } ) );
 		expect( global.location.hash ).toEqual( '#settings/analytics/view' );
 
-		const analyticsPanel = await findByRole( 'tabpanel', { hidden: false } );
-		expect( analyticsPanel ).toHaveAttribute( 'id', 'googlesitekit-settings-module__content--analytics' );
+		const finalAnalyticsPanel = await findByRole( 'tabpanel' );
+		expect( finalAnalyticsPanel ).toBeInTheDocument();
 	} );
 
 	it( 'should change location hash & DOM correctly when tab is clicked and changed', async () => {

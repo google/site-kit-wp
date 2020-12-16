@@ -49,23 +49,14 @@ export default function SettingsApp() {
 
 	const parseHash = ( hashToParse ) => hashToParse.replace( '#', '' ).split( /\// );
 
-	useEffect( () => {
-		if ( hash ) {
-			const [ _activeTabID, moduleSlug, moduleState ] = parseHash( hash );
-			if ( moduleSlug && moduleState ) {
-				setModuleSettingsPanelState( moduleSlug, moduleState );
-			}
-		} else {
-			setHash( hashFrom( activeTabID ) );
-		}
-	}, [] );
-
 	let [ activeTabID, moduleSlug, moduleState ] = parseHash( hash );
 	if ( ! activeTabID ) {
 		activeTabID = 'settings';
 	}
 
-	moduleSlug = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( moduleSlug ) ) && moduleSlug;
+	const isModuleActive = useSelect( ( select ) => moduleSlug ? select( CORE_MODULES ).isModuleActive( moduleSlug ) : null );
+
+	moduleSlug = isModuleActive && moduleSlug;
 	moduleState = useSelect( ( select ) => moduleSlug ? select( CORE_MODULES ).getModuleSettingsPanelState( moduleSlug ) : null );
 
 	const { setModuleSettingsPanelState } = useDispatch( CORE_MODULES );
@@ -98,6 +89,15 @@ export default function SettingsApp() {
 		const newActiveTabID = SettingsApp.tabIDsByIndex[ tabIndex ];
 		setHash( hashFrom( newActiveTabID ) );
 	};
+
+	useEffect( () => {
+		if ( isModuleActive && ! hash ) {
+			setHash( hashFrom( activeTabID ) );
+		} else if ( isModuleActive && moduleSlug && moduleState ) {
+			const [ _activeTabID, _moduleSlug, moduleStateOnMount ] = parseHash( hash );
+			setModuleSettingsPanelState( moduleSlug, moduleStateOnMount );
+		}
+	}, [ isModuleActive ] );
 
 	return (
 		<Fragment>
