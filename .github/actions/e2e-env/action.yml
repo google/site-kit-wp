@@ -89,11 +89,18 @@ runs:
           echo "::endgroup::"
         fi
 
+        echo "::group::Installing AMP ${{ inputs.amp }}"
         if [ ! -z "${{ inputs.amp }}" ]; then
-          echo "::group::Installing AMP ${{ inputs.amp }}"
           wp plugin install amp --force --version=${{ inputs.amp }}
-          echo "::endgroup::"
+        else
+          wp plugin install amp --force --quiet --version="2.0.0"
+          wp plugin update amp --minor --quiet
         fi
+        echo "::endgroup::"
+
+        echo "::group::Installing the twentytwenty theme"
+        wp theme install twentytwenty --activate
+        echo "::endgroup::"
 
         echo "::group::Activating site-kit"
         wp plugin activate google-site-kit
