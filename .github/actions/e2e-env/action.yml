@@ -39,8 +39,7 @@ runs:
 
         echo "::group::Creating a new config file"
         wp config create --dbname=wordpress_test --dbuser=root --dbpass=root
-        wp config set WP_DEBUG 1 --raw --type=constant --quiet
-        wp config set WP_DEBUG_DISPLAY 1 --raw --type=constant --quiet
+        wp config set SCRIPT_DEBUG 1 --raw --type=constant --quiet
         echo "::endgroup::"
 
         echo "::group::Creating the database"
