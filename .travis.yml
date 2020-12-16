@@ -38,11 +38,6 @@ branches:
 # Before install, failures in this section will result in build status 'errored'
 before_install:
   - |
-    if [[ "$JS" == "1" ]] || [[ "$E2E" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
-      nvm install
-      npm ci
-    fi
-  - |
     if [[ "$PHP" == "1" ]] || [[ "$E2E" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
       docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer install
     fi
@@ -62,11 +57,6 @@ script:
       composer lint || exit 1
       npm run lint:js || exit 1
       npm run lint:css || exit 1
-    fi
-  - |
-    if [[ "$JS" == "1" ]]; then
-      npm run test:js || exit 1 # JS unit tests
-      npm run test || exit 1 # Bundle size test
     fi
   - |
     if [[ "$PHP" == "1" ]]; then
@@ -101,9 +91,6 @@ jobs:
     - name: PHP Tests (PHP 7.4, WordPress nightly)
       php: 7.4
       env: PHP=1 WP_VERSION=nightly
-    - name: JS Tests
-      php: 7.4
-      env: JS=1 WP_VERSION=latest PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
     - name: E2E Tests (WordPress latest)
       env: E2E=1
     - name: E2E Tests (WordPress nightly)
