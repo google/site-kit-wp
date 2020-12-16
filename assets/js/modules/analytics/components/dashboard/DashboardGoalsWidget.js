@@ -38,6 +38,7 @@ import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
+import CompleteModuleActivationCTA from '../../../../components/CompleteModuleActivationCTA';
 
 const { useSelect } = Data;
 
@@ -149,5 +150,5 @@ function DashboardGoalsWidget() {
 export default whenActive( {
 	moduleName: 'analytics',
 	FallbackComponent: () => <AnalyticsInactiveCTA />,
-	// IncompleteComponent: () => <CompleteModuleActivationCTA slug="analytics" />, // TODO: waiting for #2299
+	IncompleteComponent: () => <CompleteModuleActivationCTA slug="analytics" />,
 } )( DashboardGoalsWidget );

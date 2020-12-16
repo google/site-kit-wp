@@ -39,6 +39,7 @@ import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
+import CompleteModuleActivationCTA from '../../../../components/CompleteModuleActivationCTA';
 
 const { useSelect } = Data;
 
@@ -148,5 +149,5 @@ function DashboardBounceRateWidget() {
 export default whenActive( {
 	moduleName: 'analytics',
 	FallbackComponent: () => <AnalyticsInactiveCTA />,
-	// IncompleteComponent: () => <CompleteModuleActivationCTA slug="analytics" />, // TODO: waiting for #2299
+	IncompleteComponent: () => <CompleteModuleActivationCTA slug="analytics" />,
 } )( DashboardBounceRateWidget );

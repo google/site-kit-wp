@@ -22,6 +22,8 @@
 import Widgets from 'googlesitekit-widgets';
 import DashboardPageSpeed from './DashboardPageSpeed';
 import whenActive from '../../../../util/when-active';
+import ActivateModuleCTA from '../../../../components/ActivateModuleCTA';
+import CompleteModuleActivationCTA from '../../../../components/CompleteModuleActivationCTA';
 const { Widget } = Widgets.components;
 
 function DashboardPageSpeedWidget() {
@@ -39,6 +41,6 @@ function DashboardPageSpeedWidget() {
 
 export default whenActive( {
 	moduleName: 'pagespeed-insights',
-	// FallbackComponent: () => <ActivateModuleCTA slug="pagespeed-insights" />, // TODO: waiting for #2299
-	// IncompleteComponent: () => <CompleteModuleActivationCTA slug="pagespeed-insights" />, // TODO: waiting for #2299
+	FallbackComponent: () => <ActivateModuleCTA slug="pagespeed-insights" />,
+	IncompleteComponent: () => <CompleteModuleActivationCTA slug="pagespeed-insights" />,
 } )( DashboardPageSpeedWidget );
