@@ -16,6 +16,7 @@ jobs:
         uses: shivammathur/setup-php@v1
         with:
           php-version: 7.3
+          extensions: mbstring, intl, mysql, mysqli, mysqlnd, pdo_mysql
       - uses: actions/checkout@v2
       - name: Load Composer cache
         uses: actions/cache@v2
@@ -49,4 +50,3 @@ jobs:
           name: e2e-screenshots
           path: |
             tests/e2e/screenshots
-            /tmp/wp-server.log

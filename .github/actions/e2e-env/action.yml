@@ -39,6 +39,8 @@ runs:
 
         echo "::group::Creating a new config file"
         wp config create --dbname=wordpress_test --dbuser=root --dbpass=root
+        wp config set WP_DEBUG 1 --raw --type=constant --quiet
+        wp config set WP_DEBUG_DISPLAY 1 --raw --type=constant --quiet
         echo "::endgroup::"
 
         echo "::group::Creating the database"
@@ -102,4 +104,4 @@ runs:
         wp rewrite structure '%postname%' --hard
         echo "::endgroup::"
 
-        wp server --host=0.0.0.0 --port=9002 > /tmp/wp-server.log &
+        wp server --host=0.0.0.0 --port=9002 &
