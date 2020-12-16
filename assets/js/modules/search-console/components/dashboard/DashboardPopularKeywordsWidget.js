@@ -27,7 +27,7 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { numberFormat, untrailingslashit } from '../../../../util';
@@ -53,7 +53,7 @@ function DashboardPopularKeywordsWidget() {
 		const store = select( STORE_NAME );
 		const domain = store.getPropertyID();
 
-		const dateRange = select( CORE_USER ).getDateRangeDates( { offsetDays: 1 } );
+		const dateRange = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
 		const args = {
 			startDate: dateRange.startDate,
 			endDate: dateRange.endDate,
