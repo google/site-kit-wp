@@ -35,6 +35,6 @@ jobs:
       - name: npm install
         run: npm ci
       - name: Run Bundlesize Tests
-        run: npm run test
+        run: npm run test:bundlesize
       - name: Run Jest Tests
         run: npm run test:js
