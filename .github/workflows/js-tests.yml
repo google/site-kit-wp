@@ -34,6 +34,8 @@ jobs:
             ${{ runner.os }}-node-cache-
       - name: npm install
         run: npm ci
+      - name: Build JS (Production Version, with tests)
+        run: npm run build:test
       - name: Run Bundlesize Tests
         run: npm run test:bundlesize
       - name: Run Jest Tests
