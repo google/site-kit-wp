@@ -1,4 +1,4 @@
-name: JS Tests
+name: Code Linting
 
 on:
   pull_request:
@@ -12,8 +12,8 @@ on:
       - ready_for_review
 
 jobs:
-  visual-regression:
-    name: Run JS Tests
+  php-lint:
+    name: Run PHP Lint
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:
@@ -32,6 +32,12 @@ jobs:
         run: composer install --no-dev --no-interaction --no-progress
       - name: PHP Lint
         run: composer lint
+  js-css-lint:
+    name: Run JS/CSS Lint
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v2
       - name: Read .nvmrc
         run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
         id: nvm
