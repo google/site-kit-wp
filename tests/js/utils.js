@@ -258,7 +258,7 @@ export const provideModules = ( registry, extraData = [] ) => {
 /**
  * Provides module registration data to the given registry.
  *
- * @since n.e.x.t
+ * @since 1.23.0
  * @private
  *
  * @param {Object}   registry    Registry object to dispatch to.
