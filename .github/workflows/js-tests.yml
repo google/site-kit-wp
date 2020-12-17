@@ -14,7 +14,7 @@ on:
 
 jobs:
   js-tests:
-    name: Run JS Tests
+    name: JS Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -34,11 +34,11 @@ jobs:
             ${{ runner.os }}-node-cache-
       - name: npm install
         run: npm ci
-      - name: Run Jest Tests
+      - name: Jest Tests
         run: npm run test:js
       - name: Build JS (Production Version, with tests)
         run: npm run build:test
-      - name: Run Bundlesize Tests
+      - name: Bundlesize
         run: npm run test:bundlesize
         env:
           BUNDLESIZE_GITHUB_TOKEN: ${{ secrets.BUNDLESIZE_GITHUB_TOKEN }}
