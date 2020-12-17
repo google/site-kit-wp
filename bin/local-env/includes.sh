@@ -157,7 +157,7 @@ dc() {
 # Executes a WP CLI request in the CLI container.
 ##
 wp() {
-	dc exec -u xfs $CLI wp "$@"
+	dc exec -Tu xfs $CLI wp "$@"
 }
 
 ##
@@ -166,5 +166,5 @@ wp() {
 # Executes the given command in the wordpress container.
 ##
 container() {
-	dc exec $CONTAINER "$@"
+	dc exec -T $CONTAINER "$@"
 }
