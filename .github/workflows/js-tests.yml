@@ -34,6 +34,8 @@ jobs:
             ${{ runner.os }}-node-cache-
       - name: npm install
         run: npm ci
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
       - name: Jest Tests
         run: npm run test:js
       - name: Build JS (Production Version, with tests)
