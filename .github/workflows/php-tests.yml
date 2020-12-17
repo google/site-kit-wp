@@ -20,9 +20,8 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_DATABASE: wordpress
-          MYSQL_PASSWORD: ''
+          MYSQL_ROOT_PASSWORD: ''
     steps:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
