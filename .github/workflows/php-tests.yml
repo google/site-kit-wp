@@ -43,6 +43,6 @@ jobs:
       - name: Set up PHP test data
         run: tests/bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
         env:
-          WP_VERSION: '5.7'
+          WP_VERSION: '5.6'
       - name: Run Unit Tests
         run: composer test
