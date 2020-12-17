@@ -80,6 +80,7 @@ export default function GoogleChart( props ) {
 		loadHeight,
 		loadSmall,
 		loadText,
+		onReady,
 		options,
 		selectedStats,
 		singleStat,
@@ -115,10 +116,15 @@ export default function GoogleChart( props ) {
 				? new global.google.visualization.PieChart( chartRef.current )
 				: new global.google.visualization.LineChart( chartRef.current );
 
+			if ( onReady ) {
+				global.google.visualization.events.addListener( googleChart, 'ready', () => {
+					onReady( googleChart );
+				} );
+			}
+
 			setChart( googleChart );
 		}
-	}, [ loading, !! chartRef.current, chartType, visualizationLoaded ] );
-	// } );
+	}, [ loading, !! chartRef.current, chartType, visualizationLoaded, onReady ] );
 
 	// Draw the chart whenever one of these properties has changed.
 	useEffect( () => {
@@ -211,6 +217,7 @@ GoogleChart.propTypes = {
 	loadSmall: PropTypes.bool,
 	loadHeight: PropTypes.number,
 	loadText: PropTypes.bool,
+	onReady: PropTypes.func,
 	selectedStats: PropTypes.arrayOf( PropTypes.number ),
 	singleStat: PropTypes.bool,
 };

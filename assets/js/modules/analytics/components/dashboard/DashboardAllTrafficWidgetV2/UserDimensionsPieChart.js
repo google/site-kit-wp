@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -41,6 +42,7 @@ import ReportError from '../../../../../components/ReportError';
 const { useSelect } = Data;
 
 export default function UserDimensionsPieChart( { dimensionName } ) {
+	const [ chartLoaded, setChartLoaded ] = useState( false );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
@@ -59,6 +61,10 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 		args.url = url;
 	}
 
+	const onReady = useCallback( () => {
+		setChartLoaded( true );
+	}, [] );
+
 	const loaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
 	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
@@ -72,41 +78,6 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 	}
 
 	const dataMap = extractAnalyticsDataForTrafficChart( report, 0, true );
-	const options = {
-		chartArea: {
-			left: 0,
-			height: 300,
-			top: 50,
-			width: '100%',
-		},
-		backgroundColor: 'transparent',
-		fontName: 'Roboto',
-		fontSize: 12,
-		height: 410,
-		legend: {
-			alignment: 'center',
-			position: 'bottom',
-			textStyle: {
-				color: 'black',
-				fontSize: 12,
-			},
-		},
-		pieHole: 0.6,
-		pieSliceTextStyle: {
-			color: 'black',
-			fontName: 'Roboto',
-			fontSize: 12,
-		},
-		slices: {
-			0: { color: '#ffcd33' },
-			1: { color: '#c196ff' },
-			2: { color: '#9de3fe' },
-			3: { color: '#ff7fc6' },
-			4: { color: '#ff886b' },
-		},
-		title: null,
-		width: '100%',
-	};
 
 	const labels = {
 		'ga:channelGrouping': __( '<span>By</span> channels', 'google-site-kit' ),
@@ -119,16 +90,21 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 		ALLOWED_ATTR: [],
 	};
 
+	const title = chartLoaded
+		? sanitizeHTML( labels[ dimensionName ] || '', sanitizeArgs )
+		: { __html: '' };
+
 	return (
 		<GoogleChart
 			chartType="pie"
-			options={ options }
+			options={ UserDimensionsPieChart.chartOptions }
 			data={ dataMap }
 			loadHeight={ 205 }
+			onReady={ onReady }
 		>
 			<div
 				className="googlesitekit-line-chart__title"
-				dangerouslySetInnerHTML={ sanitizeHTML( labels[ dimensionName ] || '', sanitizeArgs ) }
+				dangerouslySetInnerHTML={ title }
 			/>
 		</GoogleChart>
 	);
@@ -140,4 +116,40 @@ UserDimensionsPieChart.propTypes = {
 
 UserDimensionsPieChart.defaultProps = {
 	dimensionName: 'ga:channelGrouping',
+};
+
+UserDimensionsPieChart.chartOptions = {
+	chartArea: {
+		left: 0,
+		height: 300,
+		top: 50,
+		width: '100%',
+	},
+	backgroundColor: 'transparent',
+	fontName: 'Roboto',
+	fontSize: 12,
+	height: 410,
+	legend: {
+		alignment: 'center',
+		position: 'bottom',
+		textStyle: {
+			color: 'black',
+			fontSize: 12,
+		},
+	},
+	pieHole: 0.6,
+	pieSliceTextStyle: {
+		color: 'black',
+		fontName: 'Roboto',
+		fontSize: 12,
+	},
+	slices: {
+		0: { color: '#ffcd33' },
+		1: { color: '#c196ff' },
+		2: { color: '#9de3fe' },
+		3: { color: '#ff7fc6' },
+		4: { color: '#ff886b' },
+	},
+	title: null,
+	width: '100%',
 };
