@@ -20,5 +20,5 @@ jobs:
       # See https://github.com/marketplace/actions/cancel-workflow-action#advanced
       - uses: styfle/cancel-workflow-action@0.6.0
         with:
-          workflow_id: storybook.yml,visual-regression.yml,zips.yml
+          workflow_id: end2end-test.yml,storybook.yml,visual-regression.yml,zips.yml
           access_token: ${{ github.token }}
