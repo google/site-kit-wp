@@ -18,6 +18,9 @@ jobs:
     if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
