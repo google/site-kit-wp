@@ -19,6 +19,7 @@ jobs:
     strategy:
       matrix:
         php: ['7.4']
+        multisite: ['']
         wordpress: ['latest', 'nightly']
         include:
           # Run PHP 5.6 tests only for WordPress 4.7
@@ -33,7 +34,6 @@ jobs:
         image: mysql:5.7
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_DATABASE: wordpress
         ports:
           - 3306
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
@@ -45,10 +45,6 @@ jobs:
       WP_MULTISITE: ${{ matrix.multisite }}
     steps:
       - uses: actions/checkout@v2
-      - uses: shivammathur/setup-php@v2
-        with:
-          extensions: mysqli
-          php-version: ${{ matrix.php }}
       - name: Create database
         env:
           MYSQL_TCP_PORT: ${{ job.services.mysql.ports[3306] }}
@@ -56,6 +52,10 @@ jobs:
           mysql -u root -h ${DB_HOST} -e "CREATE DATABASE ${WP_DB_NAME};"
           mysql -u root -h ${DB_HOST} -e "CREATE USER ${WP_DB_USER} IDENTIFIED BY '${WP_DB_PASS}';"
           mysql -u root -h ${DB_HOST} -e "GRANT ALL PRIVILEGES ON ${WP_DB_NAME}.* TO ${WP_DB_USER};"
+      - uses: shivammathur/setup-php@v2
+        with:
+          extensions: mysqli
+          php-version: ${{ matrix.php }}
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
