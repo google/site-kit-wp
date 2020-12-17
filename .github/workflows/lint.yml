@@ -32,7 +32,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
       - name: Composer Install
-        run: composer install --no-dev --no-interaction --no-progress
+        run: composer install --no-interaction --no-progress
       - name: Add Composer paths to $PATH
         run: echo "PATH=$CWD/vendor/bin:$(composer global config bin-dir --absolute):$PATH" >> $GITHUB_ENV
       - name: PHP Lint
