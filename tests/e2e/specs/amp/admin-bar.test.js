@@ -69,7 +69,7 @@ describe( 'AMP Admin Bar compatibility', () => {
 		mockBatchResponse = searchConsole;
 
 		page.on( 'request', ( request ) => {
-			process.stdout.write( JSON.stringify( request, undefined, 2 ) );
+			process.stdout.write( request.url() );
 			request.continue();
 		} );
 
