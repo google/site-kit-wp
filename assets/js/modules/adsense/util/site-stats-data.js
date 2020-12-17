@@ -73,8 +73,8 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 		const prevMonth = parseFloat( ( previous?.rows || [] ).find( findRowByDate( previousDate ) )?.[ selectedColumn ] || 0 );
 
 		const difference = prevMonth !== 0
-			? ( currentMonth * 100 / prevMonth ) - 100
-			: 100; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 100
+			? ( currentMonth / prevMonth ) - 1
+			: 1; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 1
 
 		const dateRange = sprintf(
 			/* translators: 1: date for user stats, 2: previous date for user stats comparison */

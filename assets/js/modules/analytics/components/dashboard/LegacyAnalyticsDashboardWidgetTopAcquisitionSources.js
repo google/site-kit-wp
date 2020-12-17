@@ -88,14 +88,21 @@ function LegacyAnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 	const totalUsers = data[ 0 ].data.totals[ 0 ].values[ 1 ];
 
 	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-		const percent = ( row.metrics[ 0 ].values[ 1 ] / totalUsers * 100 );
+		const change = row.metrics[ 0 ].values[ 1 ] / totalUsers;
 
 		return [
 			row.dimensions[ 0 ],
-			numFmt( row.metrics[ 0 ].values[ 0 ], 'decimal' ),
-			numFmt( row.metrics[ 0 ].values[ 1 ], 'decimal' ),
-			numFmt( row.metrics[ 0 ].values[ 2 ], 'decimal' ),
-			<Fragment key={ 'minichart-analytics-top-as-' + i }><div className="googlesitekit-table__body-item-chart-wrap">{ numFmt( percent, '%' ) } <MiniChart percent={ percent.toFixed( 1 ) } index={ i } /></div></Fragment>,
+			numFmt( row.metrics[ 0 ].values[ 0 ], { style: 'decimal' } ),
+			numFmt( row.metrics[ 0 ].values[ 1 ], { style: 'decimal' } ),
+			numFmt( row.metrics[ 0 ].values[ 2 ], { style: 'decimal' } ),
+			(
+				<Fragment key={ 'minichart-analytics-top-as-' + i }>
+					<div className="googlesitekit-table__body-item-chart-wrap">
+						{ numFmt( change, '%' ) }
+						<MiniChart change={ change } index={ i } />
+					</div>
+				</Fragment>
+			),
 		];
 	} );
 

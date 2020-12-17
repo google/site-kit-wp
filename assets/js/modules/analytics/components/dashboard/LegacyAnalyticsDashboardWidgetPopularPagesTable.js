@@ -91,7 +91,7 @@ function LegacyAnalyticsDashboardWidgetPopularPagesTable( { data } ) {
 
 		return [
 			title,
-			numFmt( row.metrics[ 0 ].values[ 0 ] ),
+			numFmt( row.metrics[ 0 ].values[ 0 ], { style: 'decimal' } ),
 		];
 	} );
 

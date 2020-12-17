@@ -24,7 +24,7 @@ import { each } from 'lodash';
 /**
  * Internal dependencies
  */
-import { changeToPercent } from '../../../util';
+import { calculateChange } from '../../../util';
 export * from './is-zero-report';
 
 function reduceSearchConsoleData( rows ) {
@@ -59,8 +59,7 @@ function reduceSearchConsoleData( rows ) {
 	} );
 
 	// Do not divide by zero.
-	const averageCTR = count > 0 ? +( totalCTR / count * 100 ).toFixed( 1 ) : 0.0;
-	const averageCTRRaw = count > 0 ? totalCTR / count : 0.0;
+	const averageCTR = count > 0 ? totalCTR / count : 0.0;
 	const averagePosition = count > 0 ? +( totalPosition / count ).toFixed( 1 ) : 0.0;
 
 	return {
@@ -68,7 +67,6 @@ function reduceSearchConsoleData( rows ) {
 		totalClicks,
 		totalImpressions,
 		averageCTR,
-		averageCTRRaw,
 		averagePosition,
 	};
 }
@@ -86,10 +84,10 @@ export const extractSearchConsoleDashboardData = ( rows ) => {
 		totalImpressions: latestData.totalImpressions,
 		averageCTR: latestData.averageCTR,
 		averagePosition: latestData.averagePosition,
-		totalClicksChange: changeToPercent( olderData.totalClicks, latestData.totalClicks ),
-		totalImpressionsChange: changeToPercent( olderData.totalImpressions, latestData.totalImpressions ),
-		averageCTRChange: changeToPercent( olderData.averageCTRRaw, latestData.averageCTRRaw ),
-		averagePositionChange: changeToPercent( olderData.averagePosition, latestData.averagePosition ),
+		totalClicksChange: calculateChange( olderData.totalClicks, latestData.totalClicks ),
+		totalImpressionsChange: calculateChange( olderData.totalImpressions, latestData.totalImpressions ),
+		averageCTRChange: calculateChange( olderData.averageCTR, latestData.averageCTR ),
+		averagePositionChange: calculateChange( olderData.averagePosition, latestData.averagePosition ),
 	};
 };
 

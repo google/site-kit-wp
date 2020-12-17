@@ -80,14 +80,18 @@ const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 
 	const links = [];
 	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-		const percent = Number( row.metrics[ 0 ].values[ 2 ] );
+		const percent = Number( row.metrics[ 0 ].values[ 2 ] ) / 100;
 		const [ title, url ] = row.dimensions;
 		links[ i ] = `${ baseServiceURL }:${ encodeURIComponent( url.replace( /\//g, '~2F' ) ) }`;
 		return [
 			title,
-			numFmt( row.metrics[ 0 ].values[ 0 ], 'decimal' ),
-			numFmt( row.metrics[ 0 ].values[ 1 ], 'decimal' ),
-			<div className="googlesitekit-table__body-item-chart-wrap" key={ 'minichart-' + i }>{ numFmt( percent, '%' ) }</div>,
+			numFmt( row.metrics[ 0 ].values[ 0 ], { style: 'decimal' } ),
+			numFmt( row.metrics[ 0 ].values[ 1 ], { style: 'decimal' } ),
+			(
+				<div className="googlesitekit-table__body-item-chart-wrap" key={ 'minichart-' + i }>
+					{ numFmt( percent, '%' ) }
+				</div>
+			),
 		];
 	} );
 

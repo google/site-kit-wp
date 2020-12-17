@@ -60,11 +60,18 @@ class LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Comp
 		const totalUsers = data[ 0 ].data.totals[ 0 ].values[ 1 ];
 
 		const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-			const percent = ( row.metrics[ 0 ].values[ 1 ] / totalUsers * 100 );
+			const change = row.metrics[ 0 ].values[ 1 ] / totalUsers;
 
 			return [
 				row.dimensions[ 0 ],
-				<Fragment key={ 'minichart-' + i }><div className="googlesitekit-table__body-item-chart-wrap">{ numFmt( percent, '%' ) } <MiniChart percent={ percent.toFixed( 1 ) } index={ i } /></div></Fragment>,
+				(
+					<Fragment key={ 'minichart-' + i }>
+						<div className="googlesitekit-table__body-item-chart-wrap">
+							{ numFmt( change, '%' ) }
+							<MiniChart change={ change } index={ i } />
+						</div>
+					</Fragment>
+				),
 			];
 		} );
 

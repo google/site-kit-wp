@@ -87,12 +87,24 @@ class DataBlock extends Component {
 		if ( change ) {
 			// If changeDataUnit is given, try using it as currency first, otherwise add it as suffix.
 			if ( changeDataUnit ) {
-				changeFormatted = numFmt( Math.abs( Number( change ) ), changeDataUnit );
+				changeFormatted = numFmt( Math.abs( Number( change ) ), changeDataUnit === '%' ? {
+					style: 'percent',
+					maximumFractionDigits: 1,
+				} : changeDataUnit );
 			}
 
 			// If period is given (requires %s placeholder), add it.
 			if ( period ) {
 				changeFormatted = sprintf( period, changeFormatted );
+			}
+		}
+
+		let datapointFormatted = datapoint;
+		if ( datapoint ) {
+			if ( datapointUnit ) {
+				datapointFormatted = numFmt( datapoint, datapointUnit );
+			} else {
+				datapointFormatted = numFmt( datapoint );
 			}
 		}
 
@@ -119,7 +131,7 @@ class DataBlock extends Component {
 						{ title }
 					</h3>
 					<div className="googlesitekit-data-block__datapoint">
-						{ numFmt( datapoint, datapointUnit ) }
+						{ datapointFormatted }
 					</div>
 				</div>
 				{ sparklineComponent &&

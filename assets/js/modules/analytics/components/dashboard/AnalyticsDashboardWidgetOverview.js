@@ -32,7 +32,7 @@ import { Component } from '@wordpress/element';
  */
 import {
 	getTimeInSeconds,
-	changeToPercent,
+	calculateChange,
 } from '../../../../util';
 import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
@@ -98,7 +98,7 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			averageSessionDurationChange,
 		} = overviewData;
 
-		const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
+		const totalUsersChange = calculateChange( previousTotalUsers, totalUsers );
 
 		const dataBlocks = [
 			{
@@ -124,7 +124,7 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			{
 				className: 'googlesitekit-data-block--bounce googlesitekit-data-block--button-3',
 				title: __( 'Bounce Rate', 'google-site-kit' ),
-				datapoint: averageBounceRate,
+				datapoint: averageBounceRate / 100,
 				change: averageBounceRateChange,
 				changeDataUnit: '%',
 				context: 'button',

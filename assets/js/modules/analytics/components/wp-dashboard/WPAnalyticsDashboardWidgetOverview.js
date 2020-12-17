@@ -27,7 +27,7 @@ import { Component, Fragment } from '@wordpress/element';
  */
 import {
 	getTimeInSeconds,
-	changeToPercent,
+	calculateChange,
 } from '../../../../util';
 import {
 	calculateOverviewData,
@@ -92,7 +92,7 @@ class WPAnalyticsDashboardWidgetOverview extends Component {
 			averageSessionDurationChange,
 		} = overview;
 
-		const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
+		const totalUsersChange = calculateChange( previousTotalUsers, totalUsers );
 
 		return (
 			<Fragment>

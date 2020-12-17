@@ -145,11 +145,10 @@ storiesOf( 'Global/Notifications', module )
 							{
 								title: 'Site Visitors',
 								datapoint: 23780,
-								datapointUnit: 'decimal',
 							},
 							{
 								title: 'Increase',
-								datapoint: 25,
+								datapoint: 0.25,
 								datapointUnit: '%',
 							},
 						]
@@ -177,7 +176,7 @@ storiesOf( 'Global/Notifications', module )
 					},
 					{
 						title: 'Increase',
-						datapoint: 15,
+						datapoint: 0.15,
 						datapointUnit: '%',
 					},
 				]
@@ -207,7 +206,7 @@ storiesOf( 'Global/Notifications', module )
 					},
 					{
 						title: 'Average CTR',
-						datapoint: 12.9,
+						datapoint: 0.129,
 						datapointUnit: '%',
 					},
 				]
@@ -229,7 +228,7 @@ storiesOf( 'Global/Notifications', module )
 						title: 'Total Clicks',
 						datapoint: 256,
 						datapointUnit: 'K',
-						change: 20,
+						change: 0.20,
 						changeDataUnit: '%',
 						period: '%s for month',
 					},
@@ -237,15 +236,15 @@ storiesOf( 'Global/Notifications', module )
 						title: 'Total Impressions',
 						datapoint: 3.5,
 						datapointUnit: 'm',
-						change: 13,
+						change: 0.13,
 						changeDataUnit: '%',
 						period: '%s for month',
 					},
 					{
 						title: 'Average CTR',
-						datapoint: 2.9,
+						datapoint: 0.029,
 						datapointUnit: '%',
-						change: 5,
+						change: 0.05,
 						changeDataUnit: '%',
 						period: '%s for month',
 					},

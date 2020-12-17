@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds, getModulesData, changeToPercent } from '../../util';
+import { getTimeInSeconds, getModulesData, calculateChange } from '../../util';
 import { parseTotalUsersData } from '../../../js/modules/analytics/util';
 import sunImage from '../../../images/sun.png';
 
@@ -41,10 +41,10 @@ const trafficIncrease = ( reports, id ) => {
 
 	const totals = reports?.[0]?.data?.totals || [];
 	const { totalUsers, previousTotalUsers } = parseTotalUsersData( totals );
-	const totalUsersChange = Number( changeToPercent( previousTotalUsers, totalUsers ) );
+	const totalUsersChange = calculateChange( previousTotalUsers, totalUsers );
 
 	// Adds threshold to show data only between 10-100 percent change.
-	if ( 10 > totalUsersChange || 100 < totalUsersChange ) {
+	if ( 0.1 > totalUsersChange || 1 < totalUsersChange ) {
 		return false;
 	}
 

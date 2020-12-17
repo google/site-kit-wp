@@ -104,7 +104,7 @@ function AcquisitionSources( { data, args } ) {
 
 	const totalUsers = data[ 0 ].data.totals[ 0 ].values[ keyColumnIndex ];
 	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-		const percent = ( row.metrics[ 0 ].values[ keyColumnIndex ] / totalUsers * 100 );
+		const change = row.metrics[ 0 ].values[ keyColumnIndex ] / totalUsers;
 		const cells = [ row.dimensions[ 0 ] ];
 
 		if ( row.metrics[ 0 ].values.length > 1 ) {
@@ -113,8 +113,8 @@ function AcquisitionSources( { data, args } ) {
 
 		cells.push(
 			<div key={ `minichart-${ i }` } className="googlesitekit-table__body-item-chart-wrap">
-				{ numFmt( percent, '%' ) }
-				<MiniChart percent={ percent.toFixed( 1 ) } index={ i } />
+				{ numFmt( change, '%' ) }
+				<MiniChart change={ change } index={ i } />
 			</div>
 		);
 

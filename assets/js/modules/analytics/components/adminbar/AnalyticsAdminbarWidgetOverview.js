@@ -27,7 +27,7 @@ import { Component, Fragment } from '@wordpress/element';
  */
 import {
 	getTimeInSeconds,
-	changeToPercent,
+	calculateChange,
 } from '../../../../util';
 import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
@@ -87,7 +87,7 @@ class AnalyticsAdminbarWidgetOverview extends Component {
 			totalSessionsChange,
 		} = overview;
 
-		const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
+		const totalUsersChange = calculateChange( previousTotalUsers, totalUsers );
 
 		return (
 			<Fragment>

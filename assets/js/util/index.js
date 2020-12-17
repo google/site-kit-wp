@@ -32,10 +32,6 @@ import {
 import {
 	addFilter,
 } from '@wordpress/hooks';
-import {
-	__,
-	sprintf,
-} from '@wordpress/i18n';
 import { addQueryArgs, getQueryString } from '@wordpress/url';
 
 /**
@@ -43,7 +39,6 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
  */
 import { trackEvent } from './tracking';
 import { fillFilterWithComponent } from './helpers';
-import { numberFormat } from './i18n';
 export { trackEvent };
 export * from './sanitize';
 export * from './stringify';
@@ -105,140 +100,6 @@ export const removeURLParameter = ( url, parameter ) => {
 };
 
 /**
- * Prepares a number to be used in readableLargeNumber.
- *
- * @since 1.7.0
- *
- * @param {number} number The large number to prepare.
- * @return {number} The prepared number.
- */
-export const prepareForReadableLargeNumber = ( number ) => {
-	if ( 1000000 <= number ) {
-		return Math.round( number / 100000 ) / 10;
-	}
-
-	if ( 10000 <= number ) {
-		return Math.round( number / 1000 );
-	}
-
-	if ( 1000 <= number ) {
-		return Math.round( number / 100 ) / 10;
-	}
-	return number;
-};
-
-/**
- * Formats a large number for shortened display.
- *
- * @since 1.0.0
- *
- * @param {number} number The large number to format.
- * @return {string} The formatted number.
- */
-export const readableLargeNumber = ( number ) => {
-	const withSingleDecimal = {
-		minimumFractionDigits: 1,
-		maximumFractionDigits: 1,
-	};
-
-	// Numbers over 1,000,000 round normally and display a single decimal unless the decimal is 0.
-	if ( 1000000 <= number ) {
-		return sprintf(
-			// translators: %s: an abbreviated number in millions.
-			__( '%sM', 'google-site-kit' ),
-			numberFormat( prepareForReadableLargeNumber( number ), number % 10 === 0 ? {} : withSingleDecimal )
-		);
-	}
-
-	// Numbers between 10,000 and 1,000,000 round normally and have no decimals
-	if ( 10000 <= number ) {
-		return sprintf(
-			// translators: %s: an abbreviated number in thousands.
-			__( '%sK', 'google-site-kit' ),
-			numberFormat( prepareForReadableLargeNumber( number ) )
-		);
-	}
-
-	// Numbers between 1,000 and 10,000 round normally and display a single decimal unless the decimal is 0.
-	if ( 1000 <= number ) {
-		return sprintf(
-			// translators: %s: an abbreviated number in thousands.
-			__( '%sK', 'google-site-kit' ),
-			numberFormat( prepareForReadableLargeNumber( number ), number % 10 === 0 ? {} : withSingleDecimal )
-		);
-	}
-
-	return number.toString();
-};
-
-/**
- * Formats a number with unit using the JS Internationalization Number Format API.
- *
- * @since n.e.x.t
- *
- * @param {number|string}                     number    The number to format.
- * @param {(Intl.NumberFormatOptions|string)} [options] Formatting options or unit.
- * @return {string} The formatted number with unit.
- */
-export const numFmt = ( number, options = {} ) => {
-	// Cast parsable values to numeric types.
-	number = isFinite( number ) ? number : Number( number );
-
-	if ( ! isFinite( number ) ) {
-		// eslint-disable-next-line no-console
-		console.warn( 'Invalid number', number, typeof number );
-		return null;
-	}
-
-	let formatOptions = {};
-
-	// Expand shorthand values for units.
-	if ( '%' === options ) {
-		formatOptions = {
-			style: 'percent',
-			maximumFractionDigits: 2,
-		};
-		number /= 100;
-	} else if ( 's' === options ) {
-		formatOptions = {
-			style: 'seconds',
-		};
-	} else if ( 'decimal' === options ) {
-		// Node: `decimal` is our custom style used to return numbers with thousand separators
-		formatOptions = {
-			style: 'decimal',
-		};
-	} else if ( !! options && typeof options === 'string' ) {
-		formatOptions = {
-			style: 'currency',
-			currency: options,
-		};
-	} else {
-		formatOptions = { ...options };
-	}
-
-	// Note: `metric` is our custom, default style.
-	const { style = 'metric' } = formatOptions;
-
-	if ( 'metric' === style ) {
-		return readableLargeNumber( number );
-	}
-
-	if ( 'seconds' === style ) {
-		return prepareSecondsForDisplay( number );
-	}
-
-	try {
-		return numberFormat( number, formatOptions );
-	} catch ( e ) {
-		if ( !! options && typeof options === 'string' ) {
-			// if the formatting doesn't work, return the concatenated options(assuming as a custom unit) and number
-			return `${ number }${ options }`;
-		}
-	}
-};
-
-/**
  * Gets the current locale for use with browser APIs.
  *
  * @since 1.6.0
@@ -296,37 +157,6 @@ export const getTimeInSeconds = ( period ) => {
 };
 
 /**
- * Converts seconds to a display ready string indicating
- * the number of hours, minutes and seconds that have elapsed.
- *
- * For example, passing 65 returns '1m 5s'.
- *
- * @since 1.0.0
- *
- * @param {number} seconds The number of seconds.
- * @return {string} Human readable string indicating time elapsed.
- *
- */
-export const prepareSecondsForDisplay = ( seconds ) => {
-	seconds = parseInt( seconds, 10 );
-
-	if ( isNaN( seconds ) || 0 === seconds ) {
-		return '0.0s';
-	}
-	const results = {};
-	results.hours = Math.floor( seconds / 60 / 60 );
-	results.minutes = Math.floor( ( seconds / 60 ) % 60 );
-	results.seconds = Math.floor( seconds % 60 );
-
-	const returnString =
-		( results.hours ? results.hours + 'h ' : '' ) +
-		( results.minutes ? results.minutes + 'm ' : '' ) +
-		( results.seconds ? results.seconds + 's ' : '' );
-
-	return returnString.trim();
-};
-
-/**
  * Retrieves the number of days between 2 dates.
  *
  * @since 1.0.0
@@ -352,16 +182,29 @@ export const getDaysBetweenDates = ( dateStart, dateEnd ) => {
  * @param {number} current  The current value.
  * @return {(number|string)} The percent change.
  */
-export const changeToPercent = ( previous, current ) => {
+export const changeToPercent = ( previous, current ) =>
+	( calculateChange( previous, current ) * 100 ).toFixed( 1 );
+
+/**
+ * Calculates the change between two values.
+ *
+ * @since 1.0.0
+ *
+ * @param {number} previous The previous value.
+ * @param {number} current  The current value.
+ * @return {(number|null)} The percent change. Null if the input or output is invalid.
+ */
+export const calculateChange = ( previous, current ) => {
 	// Prevent divide by zero errors.
 	if ( '0' === previous || 0 === previous || isNaN( previous ) ) {
-		return '';
+		return null;
 	}
-	const change = ( ( current - previous ) / previous * 100 ).toFixed( 1 );
+
+	const change = ( current - previous ) / previous;
 
 	// Avoid NaN at all costs.
-	if ( isNaN( change ) || 'Infinity' === change ) {
-		return '';
+	if ( isNaN( change ) || ! isFinite( change ) ) {
+		return null;
 	}
 
 	return change;

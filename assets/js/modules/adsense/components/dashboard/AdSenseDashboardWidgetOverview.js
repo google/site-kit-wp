@@ -36,7 +36,7 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
-import { changeToPercent } from '../../../../util';
+import { calculateChange } from '../../../../util';
 import { isZeroReport } from '../../util';
 const { useSelect } = Data;
 
@@ -117,7 +117,7 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 						title={ metrics[ headers[ 0 ].name ] }
 						datapoint={ totals[ 0 ] }
 						datapointUnit={ headers[ 0 ]?.currency }
-						change={ previousTotals !== undefined ? changeToPercent( previousTotals[ 0 ], totals[ 0 ] ) : 0 }
+						change={ previousTotals !== undefined ? calculateChange( previousTotals[ 0 ], totals[ 0 ] ) : 0 }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 0 }
@@ -132,7 +132,7 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 						title={ metrics[ headers[ 1 ].name ] }
 						datapoint={ totals[ 1 ] }
 						datapointUnit={ headers[ 1 ]?.currency }
-						change={ previousTotals !== undefined ? changeToPercent( previousTotals[ 1 ], totals[ 1 ] ) : 0 }
+						change={ previousTotals !== undefined ? calculateChange( previousTotals[ 1 ], totals[ 1 ] ) : 0 }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 1 }
@@ -146,7 +146,7 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 						className="googlesitekit-data-block--impression googlesitekit-data-block--button-3"
 						title={ metrics[ headers[ 2 ].name ] }
 						datapoint={ totals[ 2 ] }
-						change={ previousTotals !== undefined ? changeToPercent( previousTotals[ 2 ], totals[ 2 ] ) : 0 }
+						change={ previousTotals !== undefined ? calculateChange( previousTotals[ 2 ], totals[ 2 ] ) : 0 }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 2 }
@@ -159,9 +159,9 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 						stat={ 3 }
 						className="googlesitekit-data-block--impression googlesitekit-data-block--button-4"
 						title={ metrics[ headers[ 3 ].name ] }
-						datapoint={ totals[ 3 ] * 100 }
+						datapoint={ totals[ 3 ] }
 						datapointUnit={ '%' }
-						change={ previousTotals !== undefined ? changeToPercent( previousTotals[ 3 ], totals[ 3 ] ) : 0 }
+						change={ previousTotals !== undefined ? calculateChange( previousTotals[ 3 ], totals[ 3 ] ) : 0 }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 3 }

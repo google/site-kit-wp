@@ -33,7 +33,7 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
-import { changeToPercent } from '../../../../util';
+import { calculateChange } from '../../../../util';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
@@ -118,7 +118,7 @@ function DashboardBounceRateWidget() {
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 	const averageBounceRate = lastMonth[ 0 ];
-	const averageBounceRateChange = changeToPercent( previousMonth[ 0 ], lastMonth[ 0 ] );
+	const averageBounceRateChange = calculateChange( previousMonth[ 0 ], lastMonth[ 0 ] );
 
 	return (
 		<DataBlock

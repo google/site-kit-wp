@@ -29,7 +29,7 @@ import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../util';
-import { changeToPercent, untrailingslashit } from '../../../../util';
+import { calculateChange, untrailingslashit } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import { trackEvent } from '../../../../util/tracking';
 import whenActive from '../../../../util/when-active';
@@ -97,7 +97,7 @@ function DashboardImpressionsWidget() {
 
 	const totalImpressions = sumObjectListValue( latestData, 'impressions' );
 	const totalOlderImpressions = sumObjectListValue( olderData, 'impressions' );
-	const totalImpressionsChange = changeToPercent( totalOlderImpressions, totalImpressions );
+	const totalImpressionsChange = calculateChange( totalOlderImpressions, totalImpressions );
 
 	const sparklineData = [
 		[

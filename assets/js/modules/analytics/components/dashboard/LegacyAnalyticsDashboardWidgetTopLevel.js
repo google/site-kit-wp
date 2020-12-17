@@ -32,7 +32,7 @@ import { Fragment, useState, useEffect } from '@wordpress/element';
  */
 import {
 	getTimeInSeconds,
-	changeToPercent,
+	calculateChange,
 } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import {
@@ -132,7 +132,7 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 		averageBounceRateChange = overview.averageBounceRateChange;
 	}
 
-	const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
+	const totalUsersChange = calculateChange( previousTotalUsers, totalUsers );
 
 	return (
 		<Fragment>
@@ -146,7 +146,7 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 				<DataBlock
 					className="overview-total-users"
 					title={ __( 'Unique Visitors from Search', 'google-site-kit' ) }
-					datapoint={ Number( totalUsers ) }
+					datapoint={ totalUsers }
 					change={ totalUsersChange }
 					changeDataUnit="%"
 					source={ {

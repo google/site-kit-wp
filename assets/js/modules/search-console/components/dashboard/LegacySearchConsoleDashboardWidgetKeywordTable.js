@@ -87,8 +87,8 @@ const LegacySearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 		links[ i ] = addQueryArgs( baseServiceURL, { query: `!${ query }` } );
 		return [
 			query,
-			numFmt( row.clicks ),
-			numFmt( row.impressions ),
+			numFmt( row.clicks, { style: 'decimal' } ),
+			numFmt( row.impressions, { style: 'decimal' } ),
 		];
 	} );
 
