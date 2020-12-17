@@ -14,7 +14,7 @@ on:
 
 jobs:
   php5.6-tests-wp-4.7:
-    name: PHP ${{ matrix.php }} / WordPress ${{ matrix.wordpress }} ${{ matrix.multisite && "(Multisite)" }}
+    name: 'PHP ${{ matrix.php }} / WordPress ${{ matrix.wordpress }} (Multisite: ${{ matrix.multisite }})'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -26,7 +26,7 @@ jobs:
             php: '5.6'
           # Run multisite only for WordPress latest/PHP 7.4
           - wordpress: 'latest'
-            multisite: '1'
+            multisite: yes
             php: '7.4'
     services:
       mysql:
