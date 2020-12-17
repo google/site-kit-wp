@@ -39,19 +39,19 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
     env:
       DB_HOST: 127.0.0.1
-      WP_DB_USER: wp
-      WP_DB_PASS: password
+      WP_DB_USER: root
+      WP_DB_PASS: ''
       WP_DB_NAME: wordpress_test
       WP_MULTISITE: ${{ matrix.multisite }}
     steps:
       - uses: actions/checkout@v2
-      - name: Create database
-        env:
-          MYSQL_TCP_PORT: ${{ job.services.mysql.ports[3306] }}
-        run: |
-          mysql -u root -h ${DB_HOST} -e "CREATE DATABASE ${WP_DB_NAME};"
-          mysql -u root -h ${DB_HOST} -e "CREATE USER ${WP_DB_USER} IDENTIFIED BY '${WP_DB_PASS}';"
-          mysql -u root -h ${DB_HOST} -e "GRANT ALL PRIVILEGES ON ${WP_DB_NAME}.* TO ${WP_DB_USER};"
+      # - name: Create database
+      #   env:
+      #     MYSQL_TCP_PORT: ${{ job.services.mysql.ports[3306] }}
+      #   run: |
+      #     mysql -u root -h ${DB_HOST} -e "CREATE DATABASE ${WP_DB_NAME};"
+      #     mysql -u root -h ${DB_HOST} -e "CREATE USER ${WP_DB_USER} IDENTIFIED BY '${WP_DB_PASS}';"
+      #     mysql -u root -h ${DB_HOST} -e "GRANT ALL PRIVILEGES ON ${WP_DB_NAME}.* TO ${WP_DB_USER};"
       - uses: shivammathur/setup-php@v2
         with:
           extensions: mysqli
