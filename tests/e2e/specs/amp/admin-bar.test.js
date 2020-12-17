@@ -68,6 +68,11 @@ describe( 'AMP Admin Bar compatibility', () => {
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = searchConsole;
 
+		page.on( 'request', ( request ) => {
+			process.stdout.write( JSON.stringify( request, undefined, 2 ) );
+			request.continue();
+		} );
+
 		await expect( page ).toHaveValidAMPForUser();
 		await expect( page ).toHaveValidAMPForVisitor();
 
