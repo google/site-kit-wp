@@ -69,7 +69,9 @@ jobs:
       - name: Composer Install
         run: composer install --no-interaction --no-progress
       - name: Set up PHP test data
-        run: tests/bin/install-wp-tests.sh ${WP_DB_NAME} ${WP_DB_USER} ${WP_DB_PASS} ${DB_HOST} ${{ matrix.wordpress }}
+        run: tests/bin/install-wp-tests.sh ${WP_DB_NAME} ${WP_DB_USER} ${WP_DB_PASS} ${WP_DB_HOST} ${{ matrix.wordpress }}
+        env:
+          WP_DB_HOST: ${{ env.DB_HOST }}:${{ job.services.mysql.ports[3306] }}
       - name: Run Unit Tests
         run: composer test
         env:
