@@ -45,7 +45,7 @@ jobs:
         env:
           WP_VERSION: ${{ matrix.wordpress }}
       - name: Set WordPress version
-        if: ${{ matrix.wordpress != 'latest-stable' }}
+        if: ${{ matrix.wordpress != 'latest-stable' || matrix.wordpress == 'latest-stable (multisite)' || matrix.wordpress == 'nightly' }}
         run: echo "WP_VERSION=$WP_VERSION" >> $GITHUB_ENV
         env:
           WP_VERSION: ${{ matrix.wordpress }}
@@ -60,11 +60,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
       - name: Composer Install
-        if: ${{ !((matrix.wordpress == 'latest-stable' || matrix.wordpress == 'latest-stable-nightly') && matrix.php == '5.6') }}
+        if: ${{ !((matrix.wordpress == 'latest-stable' || matrix.wordpress == 'latest-stable (multisite)' || matrix.wordpress == 'nightly') && matrix.php == '5.6') }}
         run: docker run --rm -v "$PWD:/app" -v "${{ steps.composer-cache.outputs.dir }}:/tmp/cache" composer install --no-interaction --no-progress
       - name: Set up PHP test data
-        if: ${{ !((matrix.wordpress == 'latest-stable' || matrix.wordpress == 'latest-stable-nightly') && matrix.php == '5.6') }}
+        if: ${{ !((matrix.wordpress == 'latest-stable' || matrix.wordpress == 'latest-stable (multisite)' || matrix.wordpress == 'nightly') && matrix.php == '5.6') }}
         run: tests/bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 $WP_VERSION
       - name: Run Unit Tests
-        if: ${{ !((matrix.wordpress == 'latest-stable' || matrix.wordpress == 'latest-stable-nightly') && matrix.php == '5.6') }}
+        if: ${{ !((matrix.wordpress == 'latest-stable' || matrix.wordpress == 'latest-stable (multisite)' || matrix.wordpress == 'nightly') && matrix.php == '5.6') }}
         run: composer test
