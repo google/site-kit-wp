@@ -71,7 +71,7 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 		// hidden via CSS.
 		widgetComponent = (
 			<Fragment>
-				<Widget slug={ slug }>
+				<Widget slug="overridden">
 					<OverrideComponent />
 				</Widget>
 				<div className="googlesitekit-widget-grid-hidden">
