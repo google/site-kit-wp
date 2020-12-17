@@ -34,7 +34,7 @@ import { readableLargeNumber, numberFormat, getLocale } from '../../../util';
 /**
  * Gets data for a Google Chart from an adesnse report.
  *
- * @since n.e.x.t
+ * @since 1.23.0
  *
  * @param {Object} current        A report object for the current period.
  * @param {Object} previous       A report object for the previous period.
