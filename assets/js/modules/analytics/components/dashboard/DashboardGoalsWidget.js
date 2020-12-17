@@ -32,7 +32,7 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import CTA from '../../../../components/legacy-notifications/cta';
-import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
+import WidgetActivateModuleCTA from '../../../../googlesitekit/widgets/components/WidgetActivateModuleCTA';
 import { readableLargeNumber, changeToPercent } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
@@ -148,5 +148,7 @@ function DashboardGoalsWidget() {
 
 export default whenActive( {
 	moduleName: 'analytics',
-	fallbackComponent: AnalyticsInactiveCTA,
+	fallbackComponent: () => (
+		<WidgetActivateModuleCTA widgetSlug="analyticsGoals" moduleSlug="analytics" />
+	),
 } )( DashboardGoalsWidget );

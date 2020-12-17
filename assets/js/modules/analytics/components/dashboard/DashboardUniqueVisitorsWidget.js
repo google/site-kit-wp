@@ -32,7 +32,7 @@ import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
-import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
+import WidgetActivateModuleCTA from '../../../../googlesitekit/widgets/components/WidgetActivateModuleCTA';
 import { changeToPercent, readableLargeNumber } from '../../../../util';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
@@ -161,5 +161,7 @@ function DashboardUniqueVisitorsWidget() {
 
 export default whenActive( {
 	moduleName: 'analytics',
-	fallbackComponent: AnalyticsInactiveCTA,
+	fallbackComponent: () => (
+		<WidgetActivateModuleCTA widgetSlug="analyticsUniqueVisitors" moduleSlug="analytics" />
+	),
 } )( DashboardUniqueVisitorsWidget );
