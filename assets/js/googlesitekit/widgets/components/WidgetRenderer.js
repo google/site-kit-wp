@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -32,11 +32,28 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
 import Widget from './Widget';
+import WidgetReportZero from './WidgetReportZero';
+import WidgetActivateModuleCTA from './WidgetActivateModuleCTA';
+import WidgetCompleteModuleActivationCTA from './WidgetCompleteModuleActivationCTA';
 
 const { useSelect } = Data;
 
+function withWidgetSlug( widgetSlug ) {
+	return ( WrappedComponent ) => {
+		return ( props ) => <WrappedComponent widgetSlug={ widgetSlug } { ...props } />;
+	};
+}
+
 const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 	const widget = useSelect( ( select ) => select( STORE_NAME ).getWidget( slug ) );
+
+	// Scope widget-specific components to the widget instance so that the
+	// component does not need to (re-)specify the widget slug.
+	const widgetComponentProps = {
+		WidgetReportZero: useMemo( () => withWidgetSlug( slug )( WidgetReportZero ), [ WidgetReportZero, slug ] ),
+		WidgetActivateModuleCTA: useMemo( () => withWidgetSlug( slug )( WidgetActivateModuleCTA ), [ WidgetActivateModuleCTA, slug ] ),
+		WidgetCompleteModuleActivationCTA: useMemo( () => withWidgetSlug( slug )( WidgetCompleteModuleActivationCTA ), [ WidgetCompleteModuleActivationCTA, slug ] ),
+	};
 
 	if ( ! widget ) {
 		return null;
@@ -44,7 +61,7 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 
 	const { Component, wrapWidget } = widget;
 
-	let widgetComponent = <Component />;
+	let widgetComponent = <Component { ...widgetComponentProps } />;
 
 	if ( OverrideComponent ) {
 		// If OverrideComponent passed, render it instead of the actual widget.

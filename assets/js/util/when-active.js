@@ -60,7 +60,7 @@ export default function whenActive( { moduleName, fallbackComponent = null } ) {
 
 			// Return a fallback if the module isn't connected yet.
 			if ( ! isConnected ) {
-				return fallbackComponent ? createElement( fallbackComponent ) : fallbackComponent;
+				return fallbackComponent ? createElement( fallbackComponent, props ) : fallbackComponent;
 			}
 
 			return createElement( wrappedComponent, props );
