@@ -28,15 +28,24 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, WIDGET_AREA_STYLES } from '../datastore/constants';
 import WidgetRenderer from './WidgetRenderer';
-import { getWidgetClassNames } from '../util';
+import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
 const { useSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug } ) {
-	const { widgets, widgetArea } = useSelect( ( select ) => ( {
-		widgetArea: select( STORE_NAME ).getWidgetArea( slug ),
-		widgets: select( STORE_NAME ).getWidgets( slug ),
-	} ) );
+	const widgetArea = useSelect( ( select ) => select( STORE_NAME ).getWidgetArea( slug ) );
+
+	const { widgets, widgetStates } = useSelect( ( select ) => {
+		const allWidgets = select( STORE_NAME ).getWidgets( slug );
+		const allWidgetStates = {};
+		allWidgets.forEach( ( widget ) => {
+			allWidgetStates[ widget.slug ] = select( STORE_NAME ).getWidgetState( widget.slug );
+		} );
+		return {
+			widgets: allWidgets,
+			widgetStates: allWidgetStates,
+		};
+	} );
 
 	const activeWidgets = widgets.filter( ( widget ) => {
 		const widgetExists = widgets.some( ( item ) => item.slug === widget.slug );
@@ -52,10 +61,33 @@ export default function WidgetAreaRenderer( { slug } ) {
 		return null;
 	}
 
-	const widgetClassNames = getWidgetClassNames( activeWidgets );
+	// Compute the layout.
+	const {
+		classNames,
+		columnWidths,
+		rowIndexes,
+	} = getWidgetLayout( activeWidgets );
+
+	// Combine widgets with similar CTAs and prepare final props to pass to
+	// `WidgetRenderer` below. Only one consecutive instance of a similar CTA
+	// will be maintained (via an "override component"), and all other similar
+	// ones will receive a CSS class to hide them.
+	// A combined CTA will span the combined width of all widgets that it was
+	// combined from.
+	const {
+		gridClassNames,
+		overrideComponents,
+	} = combineWidgets( activeWidgets, widgetStates, {
+		classNames,
+		columnWidths,
+		rowIndexes,
+	} );
+
+	// Render all widgets.
 	const widgetsOutput = activeWidgets.map( ( widget, i ) => (
 		<WidgetRenderer
-			gridClassName={ widgetClassNames[ i ] !== null ? classnames( widgetClassNames[ i ] ) : 'googlesitekit-widget-area--hidden' }
+			gridClassName={ classnames( gridClassNames[ i ] ) }
+			OverrideComponent={ overrideComponents[ i ] }
 			key={ widget.slug }
 			slug={ widget.slug }
 		/>

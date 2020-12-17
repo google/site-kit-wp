@@ -22,6 +22,11 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -30,7 +35,7 @@ import Widget from './Widget';
 
 const { useSelect } = Data;
 
-const WidgetRenderer = ( { slug, gridClassName } ) => {
+const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 	const widget = useSelect( ( select ) => select( STORE_NAME ).getWidget( slug ) );
 
 	if ( ! widget ) {
@@ -41,10 +46,29 @@ const WidgetRenderer = ( { slug, gridClassName } ) => {
 
 	let widgetComponent = <Component />;
 
-	if ( wrapWidget ) {
+	if ( OverrideComponent ) {
+		// If OverrideComponent passed, render it instead of the actual widget.
+		// It always needs to be wrapped as it is expected to be a
+		// widget-agnostic component.
+		// The real widget component will still be rendered, but it will be
+		// hidden via CSS.
+		widgetComponent = (
+			<Fragment>
+				<Widget slug={ slug }>
+					<OverrideComponent />
+				</Widget>
+				<div className="googlesitekit-widget-grid-hidden">
+					{ widgetComponent }
+				</div>
+			</Fragment>
+		);
+	} else if ( wrapWidget ) {
+		// Otherwise, wrap the component only if that is requested for this
+		// widget.
 		widgetComponent = <Widget slug={ slug }>{ widgetComponent }</Widget>;
 	}
 
+	// Wrap the widget into a grid class.
 	if ( gridClassName ) {
 		widgetComponent = (
 			<div className={ gridClassName }>
@@ -59,6 +83,7 @@ const WidgetRenderer = ( { slug, gridClassName } ) => {
 WidgetRenderer.propTypes = {
 	slug: PropTypes.string.isRequired,
 	gridClassName: PropTypes.string,
+	OverrideComponent: PropTypes.elementType,
 };
 
 export default WidgetRenderer;
