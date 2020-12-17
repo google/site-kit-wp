@@ -11,9 +11,19 @@ on:
       - synchronize
       - ready_for_review
 
+services:
+  mysql:
+    image: mysql:5.7
+    env:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_DATABASE: wordpress
+  ports:
+    - 3306
+  options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
 jobs:
   php-tests:
-    name: Run PHP Lint
+    name: Run PHP Tests
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:
@@ -35,5 +45,5 @@ jobs:
         run: docker run --rm -v "$PWD:/app" -v "${{ steps.composer-cache.outputs.dir }}:/tmp/cache" composer install --no-interaction --no-progress
       - name: Set up PHP test data
         run: tests/bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
-      - name: Run PHP Tests
+      - name: Run Unit Tests
         run: composer test
