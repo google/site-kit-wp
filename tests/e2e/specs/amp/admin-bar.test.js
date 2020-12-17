@@ -70,7 +70,6 @@ describe( 'AMP Admin Bar compatibility', () => {
 
 		page.on( 'request', ( request ) => {
 			process.stdout.write( request.url() );
-			request.continue();
 		} );
 
 		await expect( page ).toHaveValidAMPForUser();
