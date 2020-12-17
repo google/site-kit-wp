@@ -20,7 +20,6 @@ jobs:
       matrix:
         php: ['5.6', '7.4']
         wordpress: ['4.7', 'latest-stable', 'latest-stable (multisite)', 'nightly']
-    if: github.event.pull_request.draft == false
     services:
       mysql:
         image: mysql:5.7
