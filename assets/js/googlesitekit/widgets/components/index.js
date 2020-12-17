@@ -20,3 +20,6 @@ export { default as WidgetAreaRenderer } from './WidgetAreaRenderer';
 export { default as WidgetContextRenderer } from './WidgetContextRenderer';
 export { default as WidgetRenderer } from './WidgetRenderer';
 export { default as Widget } from './Widget';
+export { default as WidgetReportZero } from './WidgetReportZero';
+export { default as WidgetActivateModuleCTA } from './WidgetActivateModuleCTA';
+export { default as WidgetCompleteModuleActivationCTA } from './WidgetCompleteModuleActivationCTA';
