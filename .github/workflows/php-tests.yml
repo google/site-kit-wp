@@ -13,7 +13,7 @@ on:
       - ready_for_review
 
 jobs:
-  php5.6-tests-wp-4.7:
+  php5-6-tests-wp-4-7:
     name: PHP Tests (WordPress 4.7, PHP 5.6)
     runs-on: ubuntu-latest
     services:
@@ -47,7 +47,7 @@ jobs:
           WP_VERSION: '4.7'
       - name: Unit Tests
         run: composer test
-  php7.4-tests-wp-latest:
+  php7-4-tests-wp-latest:
     name: PHP Tests (WordPress Latest, PHP 7.4)
     runs-on: ubuntu-latest
     services:
@@ -83,7 +83,7 @@ jobs:
         run: tests/bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 $WP_VERSION
       - name: Unit Tests
         run: composer test
-  php7.4-tests-wp-latest-multisite:
+  php7-4-tests-wp-latest-multisite:
     name: PHP Tests (WordPress Latest—Multisite, PHP 7.4)
     runs-on: ubuntu-latest
     services:
@@ -121,7 +121,7 @@ jobs:
           WP_MULTISITE: '1'
       - name: Unit Tests
         run: composer test
-  php7.4-tests-wp-nightly:
+  php7-4-tests-wp-nightly:
     name: PHP Tests (WordPress Nightly, PHP 7.4)
     runs-on: ubuntu-latest
     services:
