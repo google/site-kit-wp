@@ -19,8 +19,7 @@ jobs:
     strategy:
       matrix:
         php: ['5.6', '7.4']
-        multisite: ['', '1']
-        wordpress: ['4.7', 'latest-stable', 'nightly']
+        wordpress: ['4.7', 'latest-stable', 'latest-stable (multisite)', 'nightly']
     if: github.event.pull_request.draft == false
     services:
       mysql:
@@ -34,8 +33,12 @@ jobs:
           php-version: ${{ matrix.php }}
       - name: Start MySQL
         run: sudo service mysql start
+      - name: Enable multisite
+        if: ${{ matrix.wordpress == 'latest-stable-multisite' }}
+        run: |
+          echo "WP_MULTISITE=1" >> $GITHUB_ENV
       - name: Extract version from stable WordPress
-        if: ${{ matrix.wordpress == 'latest-stable' }}
+        if: ${{ matrix.wordpress == 'latest-stable' || matrix.wordpress == 'latest-stable-multisite' }}
         run: |
           curl -s http://api.wordpress.org/core/version-check/1.7/ > /tmp/wp-latest.json
           echo "WP_VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')" >> $GITHUB_ENV
@@ -57,17 +60,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
       - name: Composer Install
-        if: ${{ !(matrix.wordpress == 'latest-stable' && matrix.php == '5.6') }}
+        if: ${{ !((matrix.wordpress == 'latest-stable' || matrix.wordpress == 'latest-stable-nightly') && matrix.php == '5.6') }}
         run: docker run --rm -v "$PWD:/app" -v "${{ steps.composer-cache.outputs.dir }}:/tmp/cache" composer install --no-interaction --no-progress
-        env:
-          WP_MULTISITE: ${{ matrix.multisite }}
       - name: Set up PHP test data
-        if: ${{ !(matrix.wordpress == 'latest-stable' && matrix.php == '5.6') }}
+        if: ${{ !((matrix.wordpress == 'latest-stable' || matrix.wordpress == 'latest-stable-nightly') && matrix.php == '5.6') }}
         run: tests/bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 $WP_VERSION
-        env:
-          WP_MULTISITE: ${{ matrix.multisite }}
       - name: Run Unit Tests
-        if: ${{ !(matrix.wordpress == 'latest-stable' && matrix.php == '5.6') }}
+        if: ${{ !((matrix.wordpress == 'latest-stable' || matrix.wordpress == 'latest-stable-nightly') && matrix.php == '5.6') }}
         run: composer test
-        env:
-          WP_MULTISITE: ${{ matrix.multisite }}
