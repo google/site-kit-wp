@@ -33,8 +33,6 @@ jobs:
             ${{ runner.os }}-composer-
       - name: Composer Install
         run: composer install --no-interaction --no-progress
-      - name: Add Composer paths to $PATH
-        run: echo "PATH=$CWD/vendor/bin:$(composer global config bin-dir --absolute):$PATH" >> $GITHUB_ENV
       - name: PHP Lint
         run: composer lint
   js-css-lint:
