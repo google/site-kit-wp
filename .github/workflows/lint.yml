@@ -1,10 +1,11 @@
 name: Code Linting
 
 on:
-  pull_request:
+  push:
     branches:
-      - master
       - develop
+      - master
+  pull_request:
     types:
       - opened
       - reopened
@@ -15,7 +16,6 @@ jobs:
   php-lint:
     name: Run PHP Lint
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
@@ -38,7 +38,6 @@ jobs:
   js-css-lint:
     name: Run JS/CSS Lint
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v2
       - name: Read .nvmrc
