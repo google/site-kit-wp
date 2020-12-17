@@ -1363,7 +1363,7 @@ final class Analytics extends Module
 	 *     Optional. Additional arguments.
 	 *
 	 *     @type array  $dimensions        List of request dimensions. Default empty array.
-	 *     @type array  $dimension_filters List of dimension filters for the specified request dimensions. Default empty array.
+	 *     @type Google_Service_AnalyticsReporting_DimensionFilter[]  $dimension_filters List of dimension filter instances for the specified request dimensions. Default empty array.
 	 *     @type string $start_date        Start date in 'Y-m-d' format. Default empty string.
 	 *     @type string $end_date          End date in 'Y-m-d' format. Default empty string.
 	 *     @type string $page              Specific page URL to filter by. Default empty string.
