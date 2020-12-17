@@ -14,7 +14,7 @@ on:
 
 jobs:
   php-lint:
-    name: Run PHP Lint
+    name: PHP Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -36,7 +36,7 @@ jobs:
       - name: PHP Lint
         run: composer lint
   js-css-lint:
-    name: Run JS/CSS Lint
+    name: JS/CSS Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
