@@ -21,6 +21,8 @@ jobs:
         image: mysql:5.7
         env:
           MYSQL_DATABASE: wordpress
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_PASSWORD: password
     steps:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
