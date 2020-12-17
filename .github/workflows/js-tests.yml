@@ -1,10 +1,11 @@
 name: JS Tests
 
 on:
-  pull_request:
+  push:
     branches:
-      - master
       - develop
+      - master
+  pull_request:
     types:
       - opened
       - reopened
