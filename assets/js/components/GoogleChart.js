@@ -111,20 +111,20 @@ export default function GoogleChart( props ) {
 
 	// Create a new chart when the library is loaded.
 	useEffect( () => {
-		if ( ! loading && chartRef?.current && visualizationLoaded ) {
+		if ( ! loading && chartRef.current && visualizationLoaded ) {
 			const googleChart = 'pie' === chartType
 				? new global.google.visualization.PieChart( chartRef.current )
 				: new global.google.visualization.LineChart( chartRef.current );
 
 			if ( onReady ) {
 				global.google.visualization.events.addListener( googleChart, 'ready', () => {
-					onReady( googleChart );
+					onReady( googleChart, data );
 				} );
 			}
 
 			setChart( googleChart );
 		}
-	}, [ loading, !! chartRef.current, chartType, visualizationLoaded, onReady ] );
+	}, [ loading, !! chartRef.current, visualizationLoaded ] );
 
 	// Draw the chart whenever one of these properties has changed.
 	useEffect( () => {
@@ -159,9 +159,9 @@ export default function GoogleChart( props ) {
 		};
 	}, [
 		chart,
-		data,
+		JSON.stringify( data ),
+		JSON.stringify( options ),
 		selectedStats,
-		options,
 		singleStat,
 	] );
 
