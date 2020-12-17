@@ -30,15 +30,23 @@ import {
 	decodeHTMLEntity,
 	trackEvent,
 } from '../../util';
-import AdminbarModules from './adminbar-modules';
+import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
+import AdminBarSessions from './AdminBarSessions';
+import AdminBarImpressions from './AdminBarImpressions';
+import AdminBarClicks from './AdminBarClicks';
+import AdminbarModules from './LegacyAdminBarModules';
+import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
 import Link from '../Link';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
 export default function AdminBarApp() {
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
 	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: currentEntityURL } ) );
+	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
+	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
 
 	const onMoreDetailsClick = useCallback( async () => {
 		await trackEvent( 'admin_bar', 'post_details_click' );
@@ -75,6 +83,28 @@ export default function AdminBarApp() {
 						mdc-layout-grid__cell--align-middle
 					">
 						<div className="mdc-layout-grid__inner">
+							{ featureFlags.widgets.adminBar.enabled && (
+								<Fragment>
+									{
+										( analyticsModuleActive && analyticsModuleConnected )
+											? (
+												<Fragment>
+													<AdminBarUniqueVisitors />
+													<AdminBarSessions />
+												</Fragment>
+											)
+											: (
+												<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet ">
+													<AnalyticsInactiveCTA />
+												</div>
+											)
+									}
+
+									<AdminBarImpressions />
+									<AdminBarClicks />
+								</Fragment>
+							) }
+
 							<AdminbarModules />
 						</div>
 					</div>
