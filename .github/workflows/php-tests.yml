@@ -16,6 +16,11 @@ jobs:
   php-tests:
     name: Run PHP Tests
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['5.6', '7.4']
+        multisite: ['', '1']
+        wordpress: ['4.7', 'latest-stable', 'nightly']
     if: github.event.pull_request.draft == false
     services:
       mysql:
@@ -26,9 +31,21 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: ${{ matrix.php }}
       - name: Start MySQL
         run: sudo service mysql start
+      - name: Extract version from stable WordPress
+        if: ${{ matrix.wordpress == 'latest-stable' }}
+        run: |
+          curl -s http://api.wordpress.org/core/version-check/1.7/ > /tmp/wp-latest.json
+          echo "WP_VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')" >> $GITHUB_ENV
+        env:
+          WP_VERSION: ${{ matrix.wordpress }}
+      - name: Set WordPress version
+        if: ${{ matrix.wordpress != 'latest-stable' }}
+        run: echo "WP_VERSION=$WP_VERSION" >> $GITHUB_ENV
+        env:
+          WP_VERSION: ${{ matrix.wordpress }}
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
@@ -40,10 +57,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
       - name: Composer Install
+        if: ${{ !(matrix.wordpress == 'latest-stable' && matrix.php == '5.6') }}
         run: docker run --rm -v "$PWD:/app" -v "${{ steps.composer-cache.outputs.dir }}:/tmp/cache" composer install --no-interaction --no-progress
+        env:
+          WP_MULTISITE: ${{ matrix.multisite }}
       - name: Set up PHP test data
+        if: ${{ !(matrix.wordpress == 'latest-stable' && matrix.php == '5.6') }}
         run: tests/bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 $WP_VERSION
         env:
-          WP_VERSION: '5.6'
+          WP_MULTISITE: ${{ matrix.multisite }}
       - name: Run Unit Tests
+        if: ${{ !(matrix.wordpress == 'latest-stable' && matrix.php == '5.6') }}
         run: composer test
+        env:
+          WP_MULTISITE: ${{ matrix.multisite }}
