@@ -14,7 +14,7 @@ on:
 
 jobs:
   php5.6-tests-wp-4.7:
-    name: PHP ${{ matrix.php }} / WordPress ${{ matrix.wordpress }} ${{ multisite && "(Multisite)" }}
+    name: PHP ${{ matrix.php }} / WordPress ${{ matrix.wordpress }} ${{ matrix.multisite && "(Multisite)" }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
