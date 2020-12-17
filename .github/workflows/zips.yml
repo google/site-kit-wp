@@ -12,11 +12,12 @@ on:
       - closed
       - reopened
       - synchronize
+      - ready_for_review
 
 jobs:
   build-zips:
     name: Build Zips
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true ) ) || github.event.pull_request.head.repo.fork )
     steps:
       - uses: actions/checkout@v2
@@ -25,8 +26,11 @@ jobs:
         with:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           path: ~/.cache/composer/files
-      - name: Install Composer dependencies
-        run: composer install --no-dev --no-interaction --no-progress
+      - name: Composer Install
+        uses: php-actions/composer@v4
+        with:
+          dev: no
+          php_version: 7.3
       - name: Load NPM cache
         uses: actions/cache@v2
         with:
@@ -37,6 +41,7 @@ jobs:
       - name: Create archives
         run: |
           mkdir -p ${{ github.ref }}
+          sudo chown -R $(id -u):$(id -g) .
           npm run dev-zip
           mv *.zip ${{ github.ref }}/google-site-kit-dev.zip
           npm run release-zip
