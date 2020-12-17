@@ -41,3 +41,5 @@ jobs:
         run: npm run build:test
       - name: Run Bundlesize Tests
         run: npm run test:bundlesize
+        env:
+          BUNDLESIZE_GITHUB_TOKEN: ${{ secrets.BUNDLESIZE_GITHUB_TOKEN }}
