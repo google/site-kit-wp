@@ -13,7 +13,7 @@ on:
       - ready_for_review
 
 jobs:
-  php5.6-tests-wp-4.7:
+  php-tests:
     name: 'PHP ${{ matrix.php }} / WordPress ${{ matrix.wordpress }} (Multisite: ${{ matrix.multisite }})'
     runs-on: ubuntu-latest
     strategy:
