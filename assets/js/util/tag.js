@@ -47,6 +47,7 @@ import { AMP_MODE_SECONDARY } from '../googlesitekit/datastore/site/constants';
  * @return {(string|null)} The tag id if found, otherwise null.
  */
 export const getExistingTag = async ( module ) => {
+	// @TODO remove this FN.
 	const { homeURL, ampMode } = global._googlesitekitLegacyData.admin;
 	const tagFetchQueryArgs = {
 		// Indicates a tag checking request. This lets Site Kit know not to output its own tags.
@@ -80,6 +81,7 @@ export const getExistingTag = async ( module ) => {
  * @return {(string|null)} The tag id if found, otherwise null.
  */
 export const scrapeTag = async ( url, module ) => {
+	// @TODO remove this FN.
 	try {
 		const html = await fetch( url, { credentials: 'omit' } ).then( ( res ) => res.text() );
 		return extractTag( html, module ) || null;
@@ -98,6 +100,7 @@ export const scrapeTag = async ( url, module ) => {
  * @return {(string|boolean)} The tag id if found, otherwise false.
  */
 export const extractTag = ( string, module ) => {
+	// @TODO remove this FN.
 	const matchers = {
 		adsense: adsenseTagMatchers,
 		analytics: analyticsTagMatchers,
