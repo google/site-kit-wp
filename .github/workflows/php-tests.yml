@@ -30,6 +30,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
+          extensions: mbstring, intl, redis, pdo_mysql
           php-version: ${{ matrix.php }}
       - name: Start MySQL
         run: sudo service mysql start
@@ -45,7 +46,7 @@ jobs:
         env:
           WP_VERSION: ${{ matrix.wordpress }}
       - name: Set WordPress version
-        if: ${{ matrix.wordpress != 'latest-stable' || matrix.wordpress == 'latest-stable (multisite)' || matrix.wordpress == 'nightly' }}
+        if: ${{ !(matrix.wordpress == 'latest-stable' || matrix.wordpress == 'latest-stable (multisite)' || matrix.wordpress == 'nightly') }}
         run: echo "WP_VERSION=$WP_VERSION" >> $GITHUB_ENV
         env:
           WP_VERSION: ${{ matrix.wordpress }}
