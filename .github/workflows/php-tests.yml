@@ -19,7 +19,8 @@ jobs:
     strategy:
       matrix:
         php: ['7.4']
-        wordpress: ['4.7', 'latest', 'nightly']
+        multisite: no
+        wordpress: ['latest', 'nightly']
         include:
           # Run PHP 5.6 tests only for WordPress 4.7
           - wordpress: '4.7'
@@ -39,8 +40,8 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
     env:
       DB_HOST: 127.0.0.1
-      WP_DB_USER: root
-      WP_DB_PASS: ''
+      WP_DB_USER: wp
+      WP_DB_PASS: password
       WP_DB_NAME: wordpress_test
       WP_MULTISITE: ${{ matrix.multisite }}
     steps:
