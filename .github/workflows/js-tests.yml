@@ -14,7 +14,7 @@ on:
 
 jobs:
   js-tests:
-    name: JS Tests
+    name: JS
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
