@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.6
 Requires PHP:      5.6
-Stable tag:        1.22.0
+Stable tag:        1.23.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -87,6 +87,29 @@ We plan to expand the plugin’s capabilities and integrations in the future; we
 If you have some ideas to improve the plugin or to solve a bug, feel free to raise an issue or submit a pull request in the [GitHub repository for the plugin](https://github.com/google/site-kit-wp). Please stick to the [contributing guidelines](https://github.com/google/site-kit-wp/blob/master/CONTRIBUTING.md). You can also contribute to the plugin by translating it. Simply visit [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/google-site-kit) to get started.
 
 == Changelog ==
+
+= 1.23.0 =
+
+**Added**
+
+* Scaffold components for a new version of the Analytics All Traffic widget. See [#2392](https://github.com/google/site-kit-wp/issues/2392).
+* Display graph with historic AdSense data on module page, showing earnings, RPM, impressions and CTR over time. See [#1921](https://github.com/google/site-kit-wp/issues/1921).
+
+**Enhanced**
+
+* Introduce `listFormat` function to format entries in a comma-separated list. See [#2486](https://github.com/google/site-kit-wp/issues/2486).
+* Rename arguments across various datastore actions requiring a `WPComponent` type to use capitalized names to better indicate a `WPComponent` (and not a `WPElement`) is required. See [#2413](https://github.com/google/site-kit-wp/issues/2413).
+* Improve validation of user input submission states. See [#2323](https://github.com/google/site-kit-wp/issues/2323).
+* Introduce `ActivateModuleCTA` and `CompleteModuleActivationCTA` components to centrally manage UI for those scenarios. See [#2299](https://github.com/google/site-kit-wp/issues/2299).
+* Remove legacy `googlesitekit.moduleHasSetupWizard` JS filter. See [#2291](https://github.com/google/site-kit-wp/issues/2291).
+* Remove legacy splash screen and the associated components. See [#2290](https://github.com/google/site-kit-wp/issues/2290).
+* Allow registering module icon SVGs via the `core/modules` action `registerModule`. See [#2143](https://github.com/google/site-kit-wp/issues/2143).
+
+**Fixed**
+
+* Fix various low-level technical bugs due to duplicate module initialization by relying on a single reused Webpack runtime across entrypoints. See [#2444](https://github.com/google/site-kit-wp/issues/2444).
+* Remove duplicate error message UI on top of module settings panel, since error messages are now displayed within the panel's main content already. See [#2396](https://github.com/google/site-kit-wp/issues/2396).
+* Fix component-specific initialization logic of Google charts library to prevent duplicate initialization. See [#2247](https://github.com/google/site-kit-wp/issues/2247).
 
 = 1.22.0 =
 

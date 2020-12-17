@@ -44,7 +44,7 @@ final class User_Input_State extends User_Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.23.0
 	 *
 	 * @return callable|null
 	 */
