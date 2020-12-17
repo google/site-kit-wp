@@ -56,11 +56,6 @@ jobs:
           mysql -u root -h ${DB_HOST} -e "CREATE DATABASE ${WP_DB_NAME};"
           mysql -u root -h ${DB_HOST} -e "CREATE USER ${WP_DB_USER} IDENTIFIED BY '${WP_DB_PASS}';"
           mysql -u root -h ${DB_HOST} -e "GRANT ALL PRIVILEGES ON ${WP_DB_NAME}.* TO ${WP_DB_USER};"
-      - name: Extract version from stable WordPress
-        run: |
-          curl -s http://api.wordpress.org/core/version-check/1.7/ > /tmp/wp-latest.json
-          echo "WP_VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')" >> $GITHUB_ENV
-        if:
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
