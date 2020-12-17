@@ -28,6 +28,8 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
+      - name: Start MySQL
+        run: sudo /etc/init.d/mysql start
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
