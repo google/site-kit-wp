@@ -1,4 +1,4 @@
-name: E2E Tests (WordPress 4.7, AMP 1.x)
+name: E2E Tests
 
 on:
   push:
@@ -14,7 +14,7 @@ on:
 
 jobs:
   e2e-tests-wp-4-7-amp-1:
-    name: Run E2E Tests
+    name: E2E (WordPress 4.7, AMP 1.x)
 
     env:
       WP_VERSION: 4.7.19

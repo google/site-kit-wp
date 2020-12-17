@@ -1,4 +1,4 @@
-name: E2E Tests (WordPress 4.9, Gutenberg 4.9)
+name: E2E Tests
 
 on:
   push:
@@ -14,7 +14,7 @@ on:
 
 jobs:
   e2e-tests-wp-4-9-gutenberg:
-    name: Run E2E Tests
+    name: E2E (WordPress 4.9, Gutenberg 4.9)
 
     env:
       WP_VERSION: 4.9.16
