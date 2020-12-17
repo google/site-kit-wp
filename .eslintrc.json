@@ -38,13 +38,6 @@
         "message": "Use 'global' instead."
       }
     ],
-    "no-unused-vars": [
-      "error",
-      {
-        "argsIgnorePattern": "^_",
-        "varsIgnorePattern": "^_"
-      }
-    ],
     "react/jsx-fragments": [
       "error",
       "element"

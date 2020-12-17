@@ -1,7 +1,7 @@
 /**
  * SettingsApp component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,8 +94,9 @@ export default function SettingsApp() {
 		if ( isModuleActive && ! hash ) {
 			setHash( hashFrom( activeTabID ) );
 		} else if ( isModuleActive && moduleSlug && moduleState ) {
-			const [ _activeTabID, _moduleSlug, moduleStateOnMount ] = parseHash( hash );
-			setModuleSettingsPanelState( moduleSlug, moduleStateOnMount );
+			const hashParts = parseHash( hash );
+			// The 2nd index contains the current module state.
+			setModuleSettingsPanelState( moduleSlug, hashParts[ 2 ] || 'view' );
 		}
 	}, [ isModuleActive ] );
 
