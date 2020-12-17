@@ -56,6 +56,8 @@ jobs:
             ${{ runner.os }}-node-cache-
       - name: npm install
         run: npm ci
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
       - name: JS Lint
         run: npm run lint:js
       - name: CSS Lint
