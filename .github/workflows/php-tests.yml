@@ -72,7 +72,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
       - name: Composer Install
-        run: docker run --rm -v "$PWD:/app" -v "${{ steps.composer-cache.outputs.dir }}:/tmp/cache" composer install --no-interaction --no-progress
+        run: composer install --no-interaction --no-progress
       - name: Set up PHP test data
         run: tests/bin/install-wp-tests.sh ${{ WP_DB_NAME }} ${{ WP_DB_USER }} ${{ WP_DB_PASS }} ${{ DB_HOST }} ${{ matrix.wordpress }}
       - name: Run Unit Tests
