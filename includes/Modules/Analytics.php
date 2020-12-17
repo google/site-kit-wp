@@ -1419,11 +1419,13 @@ final class Analytics extends Module
 			$dimension_filter->setOperator( 'EXACT' );
 			$args['page'] = str_replace( trim( $this->context->get_reference_site_url(), '/' ), '', esc_url_raw( $args['page'] ) );
 			$dimension_filter->setExpressions( array( rawurldecode( $args['page'] ) ) );
+			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
+			$dimension_filter_clause->setFilters( array( $dimension_filter ) );
+			$dimension_filter_clause->setOperator( 'AND' );
+			$dimension_filters_clauses[] = $dimension_filter_clause;
 		}
 
 		if ( ! empty( $dimension_filters_clauses ) ) {
-			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
-			$dimension_filter_clause->setFilters( array( $dimension_filter ) );
 			$request->setDimensionFilterClauses( $dimension_filters_clauses );
 		}
 
