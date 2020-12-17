@@ -10,6 +10,7 @@ on:
       - closed
       - reopened
       - synchronize
+      - ready_for_review
 
 jobs:
   cancel:
