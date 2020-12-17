@@ -1,0 +1,76 @@
+name: E2E Tests (WordPress nightly)
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+jobs:
+  e2e-tests-wp-nightly:
+    name: Run E2E Tests
+
+    env:
+      WP_VERSION: nightly
+
+    runs-on: ubuntu-latest
+
+    if: github.event_name == push || github.event.pull_request.draft == false
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Read .nvmrc
+        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
+        id: nvm
+
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@v1
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: npm install
+        run: npm ci
+
+      - name: Build
+        run: npm run build:test
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Composer Install
+        uses: php-actions/composer@v4
+        with:
+          dev: no
+          php_version: 7.3
+
+      - name: Start environment
+        run: npm run env:start
+
+      - name: Run the tests
+        run: npm run test:e2e
