@@ -1421,7 +1421,6 @@ final class Analytics extends Module
 			$dimension_filter->setExpressions( array( rawurldecode( $args['page'] ) ) );
 			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
 			$dimension_filter_clause->setFilters( array( $dimension_filter ) );
-			$dimension_filter_clause->setOperator( 'AND' );
 			$dimension_filter_clauses[] = $dimension_filter_clause;
 		}
 
