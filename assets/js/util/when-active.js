@@ -55,7 +55,7 @@ export default function whenActive( { moduleName, FallbackComponent = null, Inco
 			const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleName ) );
 
 			// Return null if the module is not loaded yet or doesn't exist.
-			if ( ! module || typeof module === 'undefined' || module === null ) {
+			if ( ! module ) {
 				return null;
 			}
 
