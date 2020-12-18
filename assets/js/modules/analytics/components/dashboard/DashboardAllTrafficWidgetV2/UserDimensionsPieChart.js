@@ -101,11 +101,6 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 				difference = ( absOthers.current * 100 / absOthers.previous ) - 100;
 			}
 
-			const percent = numberFormat( rowData[ 1 ], {
-				style: 'percent',
-				maximumFractionDigits: 1,
-			} );
-
 			const absValue = row ? row.metrics[ 0 ].values[ 0 ] : absOthers.current;
 			const label = sprintf(
 				/* translators: %s number of users */
@@ -115,7 +110,7 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 
 			const statInfo = sprintf(
 				/* translators: 1: up or down arrow , 2: different change in percentage, %%: percent symbol */
-				_x( '<em>%1$s %2$s%%</em>', 'Stat information for user dimensions chart tooltip', 'google-site-kit' ),
+				_x( '%1$s %2$s%%', 'Stat information for user dimensions chart tooltip', 'google-site-kit' ),
 				`<svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="${ classnames( 'googlesitekit-change-arrow', {
 					'googlesitekit-change-arrow--up': difference > 0,
 					'googlesitekit-change-arrow--down': difference < 0,
@@ -132,9 +127,8 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 				} ) }">
 					<p>${ rowData[ 0 ].toUpperCase() }</p>
 					<p>
-						${ statInfo }
-						<b style="margin:0 .5em">${ percent }</b>
-						${ label }
+						<em>${ statInfo }</em>
+						<b style="margin-left:.5em">${ label }</b>
 					</p>
 				</div>`
 			);
