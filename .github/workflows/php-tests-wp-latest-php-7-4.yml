@@ -43,6 +43,7 @@ jobs:
         run: |
           mysql -u root -h ${DB_HOST} -e "CREATE USER ${WP_DB_USER} IDENTIFIED BY '${WP_DB_PASS}';"
           mysql -u root -h ${DB_HOST} -e "GRANT ALL PRIVILEGES ON *.* TO ${WP_DB_USER};"
+          mysql -u root -h ${DB_HOST} -e "FLUSH PRIVILEGES;"
       - uses: shivammathur/setup-php@v2
         with:
           extensions: mysqli
