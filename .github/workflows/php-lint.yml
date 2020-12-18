@@ -14,7 +14,7 @@ on:
 
 jobs:
   php-lint:
-    name: PHP Lint
+    name: PHP
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -35,30 +35,3 @@ jobs:
         run: composer install --no-interaction --no-progress
       - name: PHP Lint
         run: composer lint
-  js-css-lint:
-    name: JS/CSS Lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Read .nvmrc
-        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-        id: nvm
-      - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v1
-        with:
-          node-version: "${{ steps.nvm.outputs.NVMRC }}"
-      - name: Cache Node - npm
-        uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-cache-
-      - name: npm install
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
-      - name: CSS Lint
-        run: npm run lint:css
-      - name: JS Lint
-        run: npm run lint:js
