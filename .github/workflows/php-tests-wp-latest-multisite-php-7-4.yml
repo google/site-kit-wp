@@ -12,8 +12,8 @@ on:
       - synchronize
 
 jobs:
-  php-tests-wp-latest-php-7-4:
-    name: WP Latest, PHP 7.4
+  php-tests-wp-latest-multisite-php-7-4:
+    name: WP Latest (Multisite), PHP 7.4
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -31,6 +31,7 @@ jobs:
       MYSQL_DATABASE: wordpress_test
       MYSQL_ROOT_PASSWORD: password
       WP_VERSION: latest
+      WP_MULTISITE: '1'
     steps:
       - uses: actions/checkout@v2
       - name: Verify MySQL connection
