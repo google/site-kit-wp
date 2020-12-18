@@ -41,8 +41,8 @@ const { useSelect } = Data;
  *
  * @param {Object}                options                       Options for enhancing function.
  * @param {string}                options.moduleName            Name of a module to check.
- * @param {WPComponent|undefined} [options.FallbackComponent]   Optional. Fallback component to render when the module is not active.
- * @param {WPComponent|undefined} [options.IncompleteComponent] Optional. Fallback component to render when the module is active but not connected.
+ * @param {WPComponent|null} [options.FallbackComponent]   Optional. Fallback component to render when the module is not active.
+ * @param {WPComponent|null} [options.IncompleteComponent] Optional. Fallback component to render when the module is active but not connected.
  * @return {Function} Enhancing function.
  */
 export default function whenActive( { moduleName, FallbackComponent = null, IncompleteComponent = null } ) {
