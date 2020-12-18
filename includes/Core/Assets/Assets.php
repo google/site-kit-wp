@@ -236,8 +236,10 @@ final class Assets {
 	 * @since 1.0.0
 	 */
 	private function register_assets() {
-		$assets = $this->get_assets();
+		wp_register_script( 'googlesitekit-google-charts', '//www.gstatic.com/charts/loader.js', null, null ); // phpcs:ignore
+		wp_add_inline_script( 'googlesitekit-google-charts', 'google.charts.load("current", {packages:["corechart"]});' );
 
+		$assets = $this->get_assets();
 		foreach ( $assets as $asset ) {
 			$asset->register( $this->context );
 		}
@@ -313,6 +315,7 @@ final class Assets {
 			'googlesitekit-datastore-site',
 			'googlesitekit-datastore-user',
 			'googlesitekit-widgets',
+			'googlesitekit-google-charts',
 		);
 
 		// Register plugin scripts.
