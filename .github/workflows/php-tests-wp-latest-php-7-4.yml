@@ -21,11 +21,11 @@ jobs:
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
         ports:
-          - 3306
+          - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
     env:
       DB_HOST: 127.0.0.1
-      DB_PORT: ${{ job.services.mysql.ports[3306] }}
+      DB_PORT: 3306
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       MYSQL_DATABASE: wordpress_test
