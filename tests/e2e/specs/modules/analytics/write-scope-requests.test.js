@@ -154,7 +154,8 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForRequest( ( req ) => req.url().match( 'analytics.google.com/analytics/web' ) );
 	} );
 
-	it( 'prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
+	// TODO: Fix instability to remove skip.
+	it.skip( 'prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
 		scope = 'https://www.googleapis.com/auth/analytics.edit';
 		interceptCreateProfileRequest = true;
 
@@ -200,7 +201,8 @@ describe( 'Analytics write scope requests', () => {
 		expect( console ).toHaveErrored(); // Permission scope error.
 	} );
 
-	it( 'prompts for additional permissions during a new Analytics profile creation if the user has not granted the Analytics edit scope', async () => {
+	// TODO: Fix instability to remove skip.
+	it.skip( 'prompts for additional permissions during a new Analytics profile creation if the user has not granted the Analytics edit scope', async () => {
 		scope = 'https://www.googleapis.com/auth/analytics.edit';
 
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
