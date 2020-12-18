@@ -236,7 +236,7 @@ final class Assets {
 	 * @since 1.0.0
 	 */
 	private function register_assets() {
-		wp_register_script( 'googlesitekit-google-charts', '//www.gstatic.com/charts/loader.js', null, null ); // phpcs:ignore
+		wp_register_script( 'googlesitekit-google-charts', 'https://www.gstatic.com/charts/loader.js', null, null ); // phpcs:ignore
 		wp_add_inline_script( 'googlesitekit-google-charts', 'google.charts.load("current", {packages:["corechart"]});' );
 
 		$assets = $this->get_assets();
