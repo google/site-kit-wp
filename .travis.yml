@@ -38,12 +38,7 @@ branches:
 # Before install, failures in this section will result in build status 'errored'
 before_install:
   - |
-    if [[ "$JS" == "1" ]] || [[ "$E2E" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
-      nvm install
-      npm ci
-    fi
-  - |
-    if [[ "$PHP" == "1" ]] || [[ "$E2E" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
+    if [[ "$PHP" == "1" ]]; then
       docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer install
     fi
   - |
@@ -54,41 +49,27 @@ before_install:
 
 script:
   - |
-    if [[ "$SNIFF" == "1" ]]; then
-      composer lint || exit 1
-      npm run lint:js || exit 1
-      npm run lint:css || exit 1
-    fi
-  - |
-    if [[ "$JS" == "1" ]]; then
-      npm run test:js || exit 1 # JS unit tests
-      npm run test || exit 1 # Bundle size test
-    fi
-  - |
-    if [[ "$E2E" == "1" ]]; then
-      npm run build:test || exit 1 # Build for tests.
-      docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer install
-      npm run env:start || exit 1
-      npm run test:e2e:ci || exit 1 # E2E tests.
+    if [[ "$PHP" == "1" ]]; then
+      composer test || exit 1
     fi
 
 jobs:
   fast_finish: true
+  allow_failures:
+    - env: PHP=1 WP_VERSION=nightly
   include:
-    - name: Lint
+    - name: PHP Tests (PHP 5.6, WordPress 4.7)
+      php: 5.6
+      env: PHP=1 WP_VERSION=4.7
+    - name: PHP Tests (PHP 7.4, WordPress latest)
       php: 7.4
-      env: SNIFF=1 WP_VERSION=4.7 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-    - name: JS Tests
+      env: PHP=1 WP_VERSION=latest
+    - name: PHP Tests (PHP 7.4, WordPress Multisite latest)
       php: 7.4
-      env: JS=1 WP_VERSION=latest PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-    - name: E2E Tests (WordPress latest)
-      env: E2E=1
-    - name: E2E Tests (WordPress nightly)
-      env: E2E=1 WP_VERSION=nightly
-    - name: E2E Tests (WordPress 4.7)
-      env: E2E=1 WP_VERSION=4.7.13 AMP_VERSION=1.5.5
-    - name: E2E Tests (WordPress 4.9, Gutenberg 4.9)
-      env: E2E=1 WP_VERSION=4.9.10 GUTENBERG_VERSION=4.9.0
+      env: PHP=1 WP_VERSION=latest WP_MULTISITE=1
+    - name: PHP Tests (PHP 7.4, WordPress nightly)
+      php: 7.4
+      env: PHP=1 WP_VERSION=nightly
 
 services:
   - docker
