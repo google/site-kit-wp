@@ -10,25 +10,11 @@ on:
       - opened
       - reopened
       - synchronize
-      - ready_for_review
 
 jobs:
-  php-tests:
-    name: 'PHP ${{ matrix.php }} / WordPress ${{ matrix.wordpress }} MULTISITE=${{ matrix.multisite }}'
+  php-tests-wp-latest-php-7-4:
+    name: WP Latest, PHP 7.4
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php: ['7.4']
-        multisite: ['']
-        wordpress: ['latest', 'nightly']
-        include:
-          # Run PHP 5.6 tests only for WordPress 4.7
-          - wordpress: '4.7'
-            php: '5.6'
-          # Run multisite only for WordPress latest/PHP 7.4
-          - wordpress: 'latest'
-            multisite: '1'
-            php: '7.4'
     services:
       mysql:
         image: mysql:5.7
@@ -39,10 +25,11 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
     env:
       DB_HOST: 127.0.0.1
-      WP_DB_USER: root
-      WP_DB_PASS: ''
-      WP_DB_NAME: wordpress_test
-      WP_MULTISITE: ${{ matrix.multisite }}
+      DB_PORT: ${{ job.services.mysql.ports[3306] }}
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: wordpress_test
+      MYSQL_ROOT_PASSWORD: password
     steps:
       - uses: actions/checkout@v2
       # - name: Create database
@@ -52,10 +39,15 @@ jobs:
       #     mysql -u root -h ${DB_HOST} -e "CREATE DATABASE ${WP_DB_NAME};"
       #     mysql -u root -h ${DB_HOST} -e "CREATE USER ${WP_DB_USER} IDENTIFIED BY '${WP_DB_PASS}';"
       #     mysql -u root -h ${DB_HOST} -e "GRANT ALL PRIVILEGES ON ${WP_DB_NAME}.* TO ${WP_DB_USER};"
+      - name: Verify MySQL connection
+        run: |
+          while ! mysqladmin ping -h"$DB_HOST" -P"$DB_PORT" --silent; do
+            sleep 1
+          done
       - uses: shivammathur/setup-php@v2
         with:
           extensions: mysqli
-          php-version: ${{ matrix.php }}
+          php-version: '7.4'
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
@@ -69,8 +61,8 @@ jobs:
       - name: Composer Install
         run: composer install --no-interaction --no-progress
       - name: Set up PHP test data
-        run: tests/bin/install-wp-tests.sh ${WP_DB_NAME} ${WP_DB_USER} ${WP_DB_PASS} ${DB_HOST} ${{ matrix.wordpress }}
+        run: tests/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${{ matrix.wordpress }}
       - name: Run Unit Tests
         run: composer test
         env:
-          WP_DB_HOST: ${{ env.DB_HOST }}:${{ job.services.mysql.ports[3306] }}
+          WP_DB_HOST: ${{ env.DB_HOST }}:${{ env.DB_PORT }}
