@@ -38,12 +38,7 @@ branches:
 # Before install, failures in this section will result in build status 'errored'
 before_install:
   - |
-    if [[ "$SNIFF" == "1" ]]; then
-      nvm install
-      npm ci
-    fi
-  - |
-    if [[ "$PHP" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
+    if [[ "$PHP" == "1" ]]; then
       docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer install
     fi
   - |
@@ -58,12 +53,6 @@ before_install:
 
 script:
   - |
-    if [[ "$SNIFF" == "1" ]]; then
-      composer lint || exit 1
-      npm run lint:js || exit 1
-      npm run lint:css || exit 1
-    fi
-  - |
     if [[ "$PHP" == "1" ]]; then
       composer test || exit 1
     fi
@@ -73,9 +62,6 @@ jobs:
   allow_failures:
     - env: PHP=1 WP_VERSION=nightly
   include:
-    - name: Lint
-      php: 7.4
-      env: SNIFF=1 WP_VERSION=4.7 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
     - name: PHP Tests (PHP 5.6, WordPress 4.7)
       php: 5.6
       env: PHP=1 WP_VERSION=4.7
