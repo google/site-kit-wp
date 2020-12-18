@@ -87,12 +87,11 @@ export const selectors = {
 		}
 
 		const argsSegment = reportArgsToURLSegment( reportArgs );
-		let path = escapeURI`/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }`;
+		let path = escapeURI`/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
 
 		if ( argsSegment ) {
-			path += escapeURI`/${ argsSegment }`;
+			path += escapeURI`${ argsSegment }/`;
 		}
-		path += '/';
 
 		return selectors.getServiceURL( state, { path } );
 	} ),
