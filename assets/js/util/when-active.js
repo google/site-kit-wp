@@ -39,8 +39,8 @@ const { useSelect } = Data;
  *
  * @since 1.16.0
  *
- * @param {Object}                options                       Options for enhancing function.
- * @param {string}                options.moduleName            Name of a module to check.
+ * @param {Object}           options                       Options for enhancing function.
+ * @param {string}           options.moduleName            Name of a module to check.
  * @param {WPComponent|null} [options.FallbackComponent]   Optional. Fallback component to render when the module is not active.
  * @param {WPComponent|null} [options.IncompleteComponent] Optional. Fallback component to render when the module is active but not connected.
  * @return {Function} Enhancing function.
