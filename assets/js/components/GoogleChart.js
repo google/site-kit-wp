@@ -37,7 +37,6 @@ export default function GoogleChart( props ) {
 	const {
 		chartType,
 		className,
-		children,
 		data,
 		loadCompressed,
 		loadHeight,
@@ -144,10 +143,6 @@ export default function GoogleChart( props ) {
 					) }
 				</div>
 			</div>
-
-			{ ! loading && (
-				children
-			) }
 		</div>
 	);
 }
@@ -155,7 +150,6 @@ export default function GoogleChart( props ) {
 GoogleChart.propTypes = {
 	chartType: PropTypes.oneOf( [ 'pie', 'line', '' ] ),
 	className: PropTypes.string,
-	children: PropTypes.node,
 	data: PropTypes.arrayOf( PropTypes.array ),
 	loadCompressed: PropTypes.bool,
 	loadSmall: PropTypes.bool,

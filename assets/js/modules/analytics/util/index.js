@@ -45,45 +45,66 @@ export * from './validation';
  * Extracts data required for a pie chart from the Analytics report information.
  *
  * @since 1.16.0 Added keyColumnIndex argument.
- * @since n.e.x.t Added addOthers argument.
+ * @since n.e.x.t Updated the function signature to use options argument instead of keyColumnIndex.
  *
- * @param {Array}   reports        The array with reports data.
- * @param {number}  keyColumnIndex The number of a column to extract metrics data from.
- * @param {boolean} withOthers     Whether to add "Others" record to the data map or not.
+ * @param {Array}    reports                   The array with reports data.
+ * @param {Object}   [options]                 Optional. Data extraction options.
+ * @param {number}   [options.keyColumnIndex]  Optional. The number of a column to extract metrics data from.
+ * @param {boolean}  [options.withOthers]      Optional. Whether to add "Others" record to the data map or not.
+ * @param {Function} [options.tooltipCallback] Optional. A callback function for tooltip column values.
  * @return {Array} Extracted data.
  */
-export function extractAnalyticsDataForTrafficChart( reports, keyColumnIndex = 0, withOthers = false ) {
+export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 	if ( ! reports || ! reports.length ) {
 		return null;
 	}
 
+	const {
+		keyColumnIndex = 0,
+		withOthers = false,
+		tooltipCallback,
+	} = options;
+
 	const data = reports[ 0 ].data;
 	const rows = data.rows;
 
+	const withTooltips = typeof tooltipCallback === 'function';
+	const columns = [ 'Source', 'Percent' ];
+	if ( withTooltips ) {
+		columns.push( {
+			type: 'string',
+			role: 'tooltip',
+			p: {
+				html: true,
+			},
+		} );
+	}
+
 	const totalUsers = data.totals[ 0 ].values[ keyColumnIndex ];
-	const dataMap = [
-		[ 'Source', 'Percent' ],
-	];
+	const dataMap = [ columns ];
 
 	let others = 1;
-
-	each( rows, ( row ) => {
+	for ( const row of rows ) {
 		const users = row.metrics[ 0 ].values[ keyColumnIndex ];
 		const percent = ( users / totalUsers );
 
-		dataMap.push( [
-			row.dimensions[ 0 ],
-			percent,
-		] );
-
 		others -= percent;
-	} );
+
+		const rowData = [ row.dimensions[ 0 ], percent ];
+		if ( withTooltips ) {
+			rowData.push( tooltipCallback( row, rowData ) );
+		}
+
+		dataMap.push( rowData );
+	}
 
 	if ( withOthers && others > 0.01 ) {
-		dataMap.push( [
-			__( 'Others', 'google-site-kit' ),
-			others,
-		] );
+		const rowData = [ __( 'Others', 'google-site-kit' ), others ];
+		if ( withTooltips ) {
+			rowData.push( tooltipCallback( null, rowData ) );
+		}
+
+		dataMap.push( rowData );
 	}
 
 	return dataMap;
