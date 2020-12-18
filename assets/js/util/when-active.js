@@ -41,8 +41,8 @@ const { useSelect } = Data;
  *
  * @param {Object}                options                       Options for enhancing function.
  * @param {string}                options.moduleName            Name of a module to check.
- * @param {WPComponent|undefined} [options.FallbackComponent]   Optional. Fallback component to render when the module is not active.
- * @param {WPComponent|undefined} [options.IncompleteComponent] Optional. Fallback component to render when the module is active but not connected.
+ * @param {WPComponent|null} [options.FallbackComponent]   Optional. Fallback component to render when the module is not active.
+ * @param {WPComponent|null} [options.IncompleteComponent] Optional. Fallback component to render when the module is active but not connected.
  * @return {Function} Enhancing function.
  */
 export default function whenActive( { moduleName, FallbackComponent = null, IncompleteComponent = null } ) {
@@ -55,7 +55,7 @@ export default function whenActive( { moduleName, FallbackComponent = null, Inco
 			const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleName ) );
 
 			// Return null if the module is not loaded yet or doesn't exist.
-			if ( ! module || typeof module === 'undefined' || module === null ) {
+			if ( ! module ) {
 				return null;
 			}
 
@@ -65,7 +65,7 @@ export default function whenActive( { moduleName, FallbackComponent = null, Inco
 			}
 
 			// Return a fallback if the module is active but not connected yet.
-			if ( module.active === true && module.connected === false ) {
+			if ( module.connected === false ) {
 				return IncompleteComponent !== null ? IncompleteComponent : null;
 			}
 
