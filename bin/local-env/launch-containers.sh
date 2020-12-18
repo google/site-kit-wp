@@ -24,7 +24,7 @@ dc down --remove-orphans >/dev/null 2>&1
 
 # Download image updates.
 status_message "Downloading Docker image updates..."
-dc pull
+dc pull --quiet
 
 # Launch the containers.
 status_message "Starting Docker containers..."
