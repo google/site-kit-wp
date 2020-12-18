@@ -9,6 +9,16 @@ SITE_TITLE='Google Site Kit Dev'
 # Set the name of the Docker Compose project.
 export COMPOSE_PROJECT_NAME='googlesitekit-e2e'
 
+# TTY compatibility.
+# For some environments, a TTY may not be available (e.g. GitHub Actions).
+# Docker Compose allocates a TTY by default, so it's important that we disable it
+# automatically when needed.
+if [ -t 0 ]; then
+	COMPOSE_EXEC_ARGS=""
+else
+	COMPOSE_EXEC_ARGS="-T" # Disable pseudo-tty allocation. By default `docker-compose exec` allocates a TTY.
+fi
+
 ##
 # Ask a Yes/No question, and way for a reply.
 #
@@ -157,7 +167,7 @@ dc() {
 # Executes a WP CLI request in the CLI container.
 ##
 wp() {
-	dc exec -u xfs $CLI wp "$@"
+	dc exec $COMPOSE_EXEC_ARGS -u xfs $CLI wp "$@"
 }
 
 ##
@@ -166,5 +176,5 @@ wp() {
 # Executes the given command in the wordpress container.
 ##
 container() {
-	dc exec $CONTAINER "$@"
+	dc exec $COMPOSE_EXEC_ARGS $CONTAINER "$@"
 }

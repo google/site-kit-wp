@@ -70,7 +70,7 @@ class User_Input_StateTest extends TestCase {
 			array( 'required', true, 'required' ),
 			array( 'missing', true, 'missing' ),
 			array( '', true, '' ),
-			array( 'invalid-value', false, '' ),
+			array( 'invalid-value', true, '' ),
 		);
 	}
 }
