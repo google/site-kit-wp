@@ -47,7 +47,7 @@ jobs:
           mysql -u root -h ${DB_HOST} -e "FLUSH PRIVILEGES;"
       - uses: shivammathur/setup-php@v2
         with:
-          extensions: mysqli
+          extensions: composer, mysqli
           php-version: '5.6'
       - name: Get Composer Cache Directory
         id: composer-cache
