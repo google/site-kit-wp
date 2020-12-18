@@ -63,7 +63,7 @@ export default function GoogleChart( props ) {
 
 			if ( onReady ) {
 				global.google.visualization.events.addListener( googleChart, 'ready', () => {
-					onReady( googleChart, data );
+					onReady( googleChart );
 				} );
 			}
 
