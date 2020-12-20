@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Assets;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\External\GoogleCharts;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Util\BC_Functions;
@@ -236,10 +237,8 @@ final class Assets {
 	 * @since 1.0.0
 	 */
 	private function register_assets() {
-		wp_register_script( 'googlesitekit-google-charts', 'https://www.gstatic.com/charts/loader.js', null, null ); // phpcs:ignore
-		wp_add_inline_script( 'googlesitekit-google-charts', 'google.charts.load("current", {packages:["corechart"]});' );
-
 		$assets = $this->get_assets();
+
 		foreach ( $assets as $asset ) {
 			$asset->register( $this->context );
 		}
@@ -385,6 +384,10 @@ final class Assets {
 						);
 					},
 				)
+			),
+			new GoogleCharts(
+				'googlesitekit-google-charts',
+				array()
 			),
 			new Script(
 				'googlesitekit-runtime',
