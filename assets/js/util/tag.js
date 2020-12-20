@@ -31,7 +31,7 @@ import { addQueryArgs, isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { default as setupTagMatchers } from '../components/setup/tag-matchers';
+// import { default as setupTagMatchers } from '../components/setup/tag-matchers';
 import { default as adsenseTagMatchers } from '../modules/adsense/util/tag-matchers';
 import { default as analyticsTagMatchers } from '../modules/analytics/util/tag-matchers';
 import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util';
@@ -105,7 +105,7 @@ export const extractTag = ( string, module ) => {
 		adsense: adsenseTagMatchers,
 		analytics: analyticsTagMatchers,
 		tagmanager: tagmanagerTagMatchers,
-		setup: setupTagMatchers,
+		// setup: setupTagMatchers,
 	}[ module ] || [];
 
 	const matchingPattern = matchers.find( ( pattern ) => pattern.test( string ) );

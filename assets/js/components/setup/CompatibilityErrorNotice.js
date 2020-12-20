@@ -27,6 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { sanitizeHTML } from '../../util/sanitize';
 import Link from '../Link';
 import { useSelect } from '@wordpress/data';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
 const ERROR_FETCH_FAIL = 'check_fetch_failed';
@@ -37,10 +38,8 @@ const ERROR_WP_PRE_V5 = 'wp_pre_v5';
 
 export const AMP_PROJECT_TEST_URL = 'https://cdn.ampproject.org/v0.js';
 
-const developerPlugin = useSelect( ( select ) => select( CORE_SITE ).getDeveloperPluginState() );
-
-const helperCTA = () => {
-	const { installed, active, installURL, activateURL, configureURL } = this.state.developerPlugin;
+const helperCTA = ( developerPlugin ) => {
+	const { installed, active, installURL, activateURL, configureURL } = developerPlugin;
 
 	if ( ! installed && installURL ) {
 		return {
@@ -75,7 +74,8 @@ const helperCTA = () => {
 };
 
 export default function CompatibilityErrorNotice( error ) {
-	const { installed } = this.state.developerPlugin; // Where to get this from?
+	const developerPlugin = useSelect( ( select ) => select( CORE_SITE ).getDeveloperPluginState() );
+	const { installed } = developerPlugin;
 
 	switch ( error ) {
 		case ERROR_INVALID_HOSTNAME:
@@ -86,7 +86,7 @@ export default function CompatibilityErrorNotice( error ) {
 					{ installed && __( 'Looks like this may be a staging environment and you already have the helper plugin. Before you can use Site Kit, please make sure you’ve provided the necessary credentials in the Authentication section and verified your production site in Search Console.', 'google-site-kit' ) }
 					{ ' ' }
 					<Link
-						{ ...this.helperCTA() }
+						{ ...helperCTA( developerPlugin ) }
 						inherit
 					/>
 				</p>

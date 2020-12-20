@@ -19,14 +19,14 @@
 /**
  * WordPress dependencies
  */
-import { useState, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Debounces a value after the specified delay.
  *
  * @since 1.16.0
  *
- * @param {Array}  checks The checks to run.
+ * @param {Array} checks The checks to run.
  * @return {string} The update value after the delay.
  */
 export async function useChecks( checks ) {
@@ -35,12 +35,19 @@ export async function useChecks( checks ) {
 		error: null,
 	};
 
-	try {
-		await Promise.all( checks.map( ( check ) => check() ) );
-		checkStatus.complete = true;
-	} catch ( error ) {
-		checkStatus.error = error;
-	}
+	useEffect(
+		async () => {
+			try {
+				await Promise.all( checks.map( ( check ) => check() ) );
+				checkStatus.complete = true;
+			} catch ( error ) {
+				checkStatus.error = error;
+			}
+
+			return checkStatus;
+		},
+		[ checks, checkStatus ]
+	);
 
 	return checkStatus;
 }
