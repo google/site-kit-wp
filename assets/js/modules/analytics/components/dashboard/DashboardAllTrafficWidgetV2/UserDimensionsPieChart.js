@@ -65,6 +65,22 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 
 	const onReady = useCallback( () => {
 		setChartLoaded( true );
+
+		const chartData = GoogleChart.charts.get( 'user-dimensions-pie-chart' );
+		const { chart, onSelect } = chartData || {};
+
+		if ( chart && ! onSelect ) {
+			chartData.onSelect = global.google.visualization.events.addListener( chart, 'select', () => {
+				const { row } = chart.getSelection()?.[ 0 ] || {};
+				if ( row !== null && row !== undefined ) {
+					const { dataTable } = GoogleChart.charts.get( 'user-dimensions-pie-chart' ) || {};
+					if ( dataTable ) {
+						const dimensionValue = dataTable.getValue( row, 0 );
+						global.console.info( 'Dimension Value:', dimensionValue );
+					}
+				}
+			} );
+		}
 	}, [] );
 
 	const loaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
@@ -153,6 +169,7 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 	return (
 		<div className="googlesitekit-widget--analyticsAllTrafficV2__dimensions-chart">
 			<GoogleChart
+				chartID="user-dimensions-pie-chart"
 				chartType="pie"
 				options={ UserDimensionsPieChart.chartOptions }
 				data={ dataMap }

@@ -35,6 +35,7 @@ import ProgressBar from './ProgressBar';
 
 export default function GoogleChart( props ) {
 	const {
+		chartID,
 		chartType,
 		className,
 		data,
@@ -56,14 +57,23 @@ export default function GoogleChart( props ) {
 	// Create a new chart when the library is loaded.
 	useEffect( () => {
 		if ( ! chart && ! loading && chartRef.current && visualizationLoaded ) {
-			const googleChart = 'pie' === chartType
-				? new global.google.visualization.PieChart( chartRef.current )
-				: new global.google.visualization.LineChart( chartRef.current );
+			let googleChart;
 
-			if ( onReady ) {
-				global.google.visualization.events.addListener( googleChart, 'ready', () => {
-					onReady( googleChart );
-				} );
+			if ( ! chartID || ! GoogleChart.charts.has( chartID ) ) {
+				googleChart = 'pie' === chartType
+					? new global.google.visualization.PieChart( chartRef.current )
+					: new global.google.visualization.LineChart( chartRef.current );
+
+				const chartData = { chart: googleChart };
+				if ( onReady ) {
+					chartData.onReady = global.google.visualization.events.addListener( googleChart, 'ready', onReady );
+				}
+
+				if ( chartID ) {
+					GoogleChart.charts.set( chartID, chartData );
+				}
+			} else {
+				googleChart = GoogleChart.charts.get( chartID ).chart;
 			}
 
 			setChart( googleChart );
@@ -90,6 +100,9 @@ export default function GoogleChart( props ) {
 
 			if ( chart ) {
 				chart.draw( dataTable, options );
+				if ( chartID && GoogleChart.charts.has( chartID ) ) {
+					GoogleChart.charts.get( chartID ).dataTable = dataTable;
+				}
 			}
 		};
 
@@ -119,6 +132,23 @@ export default function GoogleChart( props ) {
 		}, 50 );
 
 		return () => {
+			if ( chartID && GoogleChart.charts.has( chartID ) ) {
+				const {
+					chart: googleChart,
+					onSelect: selectListener,
+					onReady: readyListener,
+				} = GoogleChart.charts.get( chartID );
+
+				if ( googleChart ) {
+					global.google.visualization.events.removeListener( selectListener );
+					global.google.visualization.events.removeListener( readyListener );
+
+					googleChart.clearChart();
+				}
+
+				GoogleChart.charts.delete( chartID );
+			}
+
 			clearInterval( interval );
 		};
 	}, [] );
@@ -148,6 +178,7 @@ export default function GoogleChart( props ) {
 }
 
 GoogleChart.propTypes = {
+	chartID: PropTypes.string,
 	chartType: PropTypes.oneOf( [ 'pie', 'line', '' ] ),
 	className: PropTypes.string,
 	data: PropTypes.arrayOf( PropTypes.array ),
@@ -171,3 +202,5 @@ GoogleChart.defaultProps = {
 	selectedStats: [],
 	singleStat: true,
 };
+
+GoogleChart.charts = new Map();
