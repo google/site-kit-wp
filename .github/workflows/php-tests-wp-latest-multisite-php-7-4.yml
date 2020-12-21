@@ -13,7 +13,7 @@ on:
 
 jobs:
   php-tests-wp-latest-multisite-php-7-4:
-    name: WP Latest (Multisite), PHP 7.4
+    name: PHP (PHP 7.4, WordPress Latest, Multisite)
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -39,12 +39,6 @@ jobs:
           while ! mysqladmin ping -h"$DB_HOST" -P"$DB_PORT" --silent; do
             sleep 1
           done
-      - name: Grant database access
-        env:
-          MYSQL_TCP_PORT: ${{ env.DB_PORT }}
-        run: |
-          mysql -u root -h ${DB_HOST} -e "CREATE USER ${MYSQL_USER} IDENTIFIED BY '${MYSQL_PASSWORD}';"
-          mysql -u root -h ${DB_HOST} -e "GRANT ALL PRIVILEGES ON *.* TO ${MYSQL_USER};"
       - uses: shivammathur/setup-php@v2
         with:
           extensions: mysqli
