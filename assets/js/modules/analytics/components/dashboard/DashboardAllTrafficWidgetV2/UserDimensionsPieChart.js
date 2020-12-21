@@ -26,7 +26,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { useCallback, useState } from '@wordpress/element';
-import { __, _n, _x, sprintf } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -118,15 +118,10 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 			}
 
 			const absValue = row ? row.metrics[ 0 ].values[ 0 ] : absOthers.current;
-			const label = sprintf(
-				/* translators: %s number of users */
-				_n( '%s user', '%s users', absValue, 'google-site-kit' ),
-				numberFormat( absValue ),
-			);
-
 			const statInfo = sprintf(
-				/* translators: 1: up or down arrow , 2: different change in percentage, %%: percent symbol */
-				_x( '%1$s %2$s%%', 'Stat information for user dimensions chart tooltip', 'google-site-kit' ),
+				/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, %%: percent symbol */
+				_x( 'Users: <strong>%1$s</strong> <em>%2$s %3$s%%</em>', 'Stat information for the user dimensions chart tooltip', 'google-site-kit' ),
+				numberFormat( absValue ),
 				`<svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="${ classnames( 'googlesitekit-change-arrow', {
 					'googlesitekit-change-arrow--up': difference > 0,
 					'googlesitekit-change-arrow--down': difference < 0,
@@ -142,10 +137,7 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 					'googlesitekit-visualization-tooltip--down': difference < 0,
 				} ) }">
 					<p>${ rowData[ 0 ].toUpperCase() }</p>
-					<p>
-						<em>${ statInfo }</em>
-						<b style="margin-left:.5em">${ label }</b>
-					</p>
+					<p>${ statInfo }</p>
 				</div>`
 			);
 		},
