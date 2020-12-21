@@ -49,7 +49,7 @@ import { createSubmitChangesStore } from './create-submit-changes-store';
  *
  * @param {string}   slug                            Slug of the module that the store is for.
  * @param {Object}   args                            Arguments to consider for the store.
- * @param {number}   args.storeName                  Store name to use. Default is 'modules/{slug}'.
+ * @param {number}   args.storeName                  Store name to use.
  * @param {Array}    [args.settingSlugs]             Optional. If the module store should support settings, this needs to be a list of the slugs that are part of the module and handled by the module's 'modules/{slug}/data/settings' API endpoint.
  *                                                    Default is undefined.
  * @param {string}   [args.adminPage]                Optional. Store admin page. Default is 'googlesitekit-dashboard'.
@@ -69,8 +69,6 @@ export const createModuleStore = ( slug, {
 } = {} ) => {
 	invariant( slug, 'slug is required.' );
 	invariant( storeName, 'storeName is required.' );
-
-	storeName = storeName || `test/${ slug }`; // TODO: remove this now that the storeName is required
 
 	const notificationsStore = createNotificationsStore( 'modules', slug, 'notifications', {
 		storeName,

@@ -49,7 +49,7 @@ describe( 'createModuleStore store', () => {
 	beforeEach( () => {
 		registry = createRegistry();
 
-		storeDefinition = createModuleStore( MODULE_SLUG, { storeName: TEST_STORE_NAME, settingSlugs, registry } );
+		storeDefinition = createModuleStore( MODULE_SLUG, { storeName: TEST_STORE_NAME, settingSlugs } );
 
 		registry.registerStore( storeDefinition.STORE_NAME, storeDefinition );
 	} );

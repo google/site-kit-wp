@@ -58,7 +58,7 @@ describe( 'core/modules settings', () => {
 	describe( 'actions', () => {
 		describe( 'submitChanges', () => {
 			it( 'should return an error if a module doesnt exist', async () => {
-				const expectedError = { error: `The module ${ nonExistentModuleSlug } does not have a store.` };
+				const expectedError = { error: `The module '${ nonExistentModuleSlug }' does not have a store.` };
 				expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
 			} );
 

@@ -51,11 +51,11 @@ describe( 'createInfoStore store', () => {
 		} );
 
 		it( 'returns the passed store name', () => {
-			const { storeName } = createInfoStore( MODULE_SLUG, {
+			const { STORE_NAME } = createInfoStore( MODULE_SLUG, {
 				storeName: 'test/createstore',
 			} );
 
-			expect( storeName ).toEqual( 'test/createstore' );
+			expect( STORE_NAME ).toEqual( 'test/createstore' );
 		} );
 	} );
 
@@ -106,10 +106,10 @@ describe( 'createInfoStore store', () => {
 			it( 'works with no slug passed', () => {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( { adminURL: 'http://example.com/wp-admin/' } );
 				registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
-				const { storeName, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } );
-				registry.registerStore( storeName, store );
+				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } );
+				registry.registerStore( STORE_NAME, store );
 
-				const adminReauthURL = registry.select( storeName ).getAdminReauthURL();
+				const adminReauthURL = registry.select( STORE_NAME ).getAdminReauthURL();
 
 				const { origin, pathname } = new URL( adminReauthURL );
 				expect( origin + pathname ).toEqual( 'http://example.com/wp-admin/admin.php' );
@@ -120,10 +120,10 @@ describe( 'createInfoStore store', () => {
 			it( 'it generates an adminReauthURL with reAuth set to false', () => {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( { adminURL: 'http://example.com/wp-admin/' } );
 				registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
-				const { storeName, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } );
-				registry.registerStore( storeName, store );
+				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } );
+				registry.registerStore( STORE_NAME, store );
 
-				const adminReauthURL = registry.select( storeName ).getAdminReauthURL( false );
+				const adminReauthURL = registry.select( STORE_NAME ).getAdminReauthURL( false );
 
 				const { origin, pathname } = new URL( adminReauthURL );
 				expect( origin + pathname ).toEqual( 'http://example.com/wp-admin/admin.php' );
@@ -134,10 +134,10 @@ describe( 'createInfoStore store', () => {
 			it( 'adds notification query parameter to the adminReauthURL when needsReautentication is false and requireSetup is false', () => {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( { adminURL: 'http://example.com/wp-admin/' } );
 				registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
-				const { storeName, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME, requiresSetup: false } );
-				registry.registerStore( storeName, store );
+				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME, requiresSetup: false } );
+				registry.registerStore( STORE_NAME, store );
 
-				const adminReauthURL = registry.select( storeName ).getAdminReauthURL();
+				const adminReauthURL = registry.select( STORE_NAME ).getAdminReauthURL();
 
 				const { origin, pathname } = new URL( adminReauthURL );
 				expect( origin + pathname ).toEqual( 'http://example.com/wp-admin/admin.php' );
@@ -161,10 +161,10 @@ describe( 'createInfoStore store', () => {
 				registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: true } );
 				registry.dispatch( CORE_USER ).receiveConnectURL( connectURL );
 
-				const { storeName, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } );
-				registry.registerStore( storeName, store );
+				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } );
+				registry.registerStore( STORE_NAME, store );
 
-				const adminReauthURL = registry.select( storeName ).getAdminReauthURL();
+				const adminReauthURL = registry.select( STORE_NAME ).getAdminReauthURL();
 
 				const { origin, pathname } = new URL( adminReauthURL );
 				expect( origin + pathname ).toEqual( connectURLBase );

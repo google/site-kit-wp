@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 const { createRegistrySelector, createRegistryControl } = Data;
 import { STORE_NAME as CORE_MODULES } from './constants';
 
-const SETTINGS_SUBMIT_CHANGES = 'SETTINGS_SUBMIT_CHANGES';
+const SUBMIT_MODULE_CHANGES = 'SUBMIT_MODULE_CHANGES';
 
 export const actions = {
 	/**
@@ -45,22 +45,22 @@ export const actions = {
 		return ( function* () {
 			return yield {
 				payload: { slug },
-				type: SETTINGS_SUBMIT_CHANGES,
+				type: SUBMIT_MODULE_CHANGES,
 			};
 		}() );
 	},
 };
 
 export const controls = {
-	[ SETTINGS_SUBMIT_CHANGES ]: createRegistryControl( ( registry ) => async ( { payload } ) => {
+	[ SUBMIT_MODULE_CHANGES ]: createRegistryControl( ( registry ) => ( { payload } ) => {
 		const { slug } = payload;
-		const storeName = registry.select( CORE_MODULES )?.getModuleStoreName( slug );
+		const storeName = registry.select( CORE_MODULES ).getModuleStoreName( slug );
 
 		if ( ! storeName ) {
 			return { error: `The module '${ slug }' does not have a store.` };
 		}
 
-		const { submitChanges } = await registry.dispatch( storeName );
+		const { submitChanges } = registry.dispatch( storeName );
 		if ( ! submitChanges ) {
 			return { error: `The module '${ slug }' does not have a submitChanges() action.` };
 		}

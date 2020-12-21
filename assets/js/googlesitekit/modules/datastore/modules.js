@@ -326,7 +326,7 @@ export const baseControls = {
 	} ),
 	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl( ( { select } ) => ( { payload } ) => {
 		const { slug } = payload;
-		const storeName = select( 'core/modules' )?.getModuleStoreName( slug );
+		const storeName = select( STORE_NAME ).getModuleStoreName( slug );
 
 		// If a storeName wasn't specified on registerModule we assume there is no store for this module
 		if ( ! storeName ) {
@@ -633,7 +633,7 @@ const baseSelectors = {
 		}
 
 		// Return the store name or null if no store name was set.
-		return module?.storeName || null;
+		return module?.storeName;
 	} ),
 
 	/**
@@ -677,7 +677,9 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
-	 * @return {(boolean|null|undefined)} TRUE when the module exists, is active and connected, otherwise FALSE; `undefined` if state is still loading or `null` if said module doesn't exist.
+	 * @return {(boolean|null|undefined)} `true` when the module exists, is active and connected, otherwise `false`
+	 * 									  `undefined` if state is still loading.
+	 * 									  `null` if said module doesn't exist.
 	 */
 	isModuleConnected: createRegistrySelector( ( select ) => ( state, slug ) => {
 		const module = select( STORE_NAME ).getModule( slug );

@@ -111,7 +111,7 @@ export const createInfoStore = ( slug, {
 	};
 
 	return {
-		storeName,
+		STORE_NAME: storeName,
 		initialState,
 		actions,
 		controls,
