@@ -25,9 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-// import { dispatch } from '@wordpress/data';
 const { createRegistrySelector, createRegistryControl } = Data;
-// import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_MODULES } from './constants';
 
 const SETTINGS_SUBMIT_CHANGES = 'SETTINGS_SUBMIT_CHANGES';
@@ -82,7 +80,7 @@ export const selectors = {
 	 */
 	isDoingSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		const storeName = select( CORE_MODULES )?.getModuleStoreName( slug );
+		const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
 		return !! select( storeName )?.isDoingSubmitChanges?.();
 	} ),
 
