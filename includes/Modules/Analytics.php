@@ -1220,21 +1220,40 @@ final class Analytics extends Module
 					if ( in_array( $account_id, $account_ids, true ) ) {
 						$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
 					} else {
-						// Iterate over each account in reverse so if there is no match,
-						// the last $properties_profiles will be from the first account (selected by default).
-						foreach ( array_reverse( $accounts ) as $account ) {
+						$fallback_properties_profiles = null;
+						$accounts_array               = array_values( $accounts );
+
+						for ( $i = 0, $len = min( 25, count( $accounts_array ) ); $i < $len; $i++ ) {
+							$account = $accounts_array[ $i ];
+
 							/* @var Google_Service_Analytics_Account $account Analytics account object. */
 							$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account->getId() ) );
+							if ( ! is_wp_error( $properties_profiles ) ) {
+								if ( isset( $properties_profiles['matchedProperty'] ) ) {
+									break;
+								} elseif ( is_null( $fallback_properties_profiles ) ) {
+									$fallback_properties_profiles = $properties_profiles;
+								}
+							} else {
+								if ( ! is_null( $fallback_properties_profiles ) ) {
+									$properties_profiles = $fallback_properties_profiles;
+								}
 
-							if ( ! is_wp_error( $properties_profiles ) && isset( $properties_profiles['matchedProperty'] ) ) {
 								break;
 							}
+						}
+
+						if ( empty( $properties_profiles['matchedProperty'] ) && ! is_null( $fallback_properties_profiles ) ) {
+							$properties_profiles = $fallback_properties_profiles;
 						}
 					}
 				}
 
 				if ( is_wp_error( $properties_profiles ) ) {
-					return $properties_profiles;
+					$properties_profiles = array(
+						'properties' => array(),
+						'profiles'   => array(),
+					);
 				}
 
 				return array_merge( compact( 'accounts' ), $properties_profiles );
