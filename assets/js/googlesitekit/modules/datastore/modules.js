@@ -227,7 +227,7 @@ const baseActions = {
 	 *
 	 * @param {string}      slug                             Module slug.
 	 * @param {Object}      [settings]                       Optional. Module settings.
-	 * @param {Object}      [settings.storeName]             Optional. Module storeName. If non is provided we assume no store is required for this module.
+	 * @param {string}      [settings.storeName]             Optional. Module storeName. If none is provided we assume no store exists for this module.
 	 * @param {string}      [settings.name]                  Optional. Module name. Default is the slug.
 	 * @param {string}      [settings.description]           Optional. Module description. Default empty string.
 	 * @param {WPComponent} [settings.Icon]                  Optional. React component to render module icon. Default none.

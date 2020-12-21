@@ -34,7 +34,7 @@ import { createSubmitChangesStore } from './create-submit-changes-store';
 
 const SETTING_SLUG = 'testSetting';
 const MODULE_SLUG = 'base';
-const TEST_STORE_NAME = 'test/' + MODULE_SLUG;
+const TEST_STORE_NAME = `test/${ MODULE_SLUG }`;
 
 describe( 'createModuleStore store', () => {
 	const settingSlugs = [ SETTING_SLUG ];
