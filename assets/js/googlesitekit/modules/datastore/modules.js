@@ -633,7 +633,7 @@ const baseSelectors = {
 		}
 
 		// Return the store name or null if no store name was set.
-		return module?.storeName;
+		return module.storeName;
 	} ),
 
 	/**
