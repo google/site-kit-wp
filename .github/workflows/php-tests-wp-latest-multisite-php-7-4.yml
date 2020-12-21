@@ -39,6 +39,11 @@ jobs:
           while ! mysqladmin ping -h"$DB_HOST" -P"$DB_PORT" --silent; do
             sleep 1
           done
+      - name: Grant database access
+        env:
+          MYSQL_TCP_PORT: ${{ env.DB_PORT }}
+        run: |
+          mysql -u root -h ${DB_HOST} -e "GRANT ALL PRIVILEGES ON *.* TO ${MYSQL_USER};"
       - uses: shivammathur/setup-php@v2
         with:
           extensions: mysqli
