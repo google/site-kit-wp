@@ -44,12 +44,6 @@ describe( 'createInfoStore store', () => {
 	} );
 
 	describe( 'storeName', () => {
-		it( 'returns the correct default store name', () => {
-			const { storeName } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } );
-
-			expect( storeName ).toEqual( TEST_STORE_NAME );
-		} );
-
 		it( 'throws an error if storeName is not passed', async () => {
 			expect( () => {
 				createInfoStore( MODULE_SLUG );
