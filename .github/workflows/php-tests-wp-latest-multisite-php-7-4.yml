@@ -34,11 +34,6 @@ jobs:
       WP_MULTISITE: '1'
     steps:
       - uses: actions/checkout@v2
-      - name: Verify MySQL connection
-        run: |
-          while ! mysqladmin ping -h"$DB_HOST" -P"$DB_PORT" --silent; do
-            sleep 1
-          done
       - name: Grant database access
         env:
           MYSQL_TCP_PORT: ${{ env.DB_PORT }}
