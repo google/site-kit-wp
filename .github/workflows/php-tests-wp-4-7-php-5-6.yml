@@ -13,7 +13,7 @@ on:
 
 jobs:
   php-tests-wp-4-7-php-5-6:
-    name: WP 4.7, PHP 5.6
+    name: PHP (PHP 5.6, WordPress 4.7) 
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -26,8 +26,8 @@ jobs:
     env:
       DB_HOST: 127.0.0.1
       DB_PORT: 3306
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
       MYSQL_DATABASE: wordpress_test
       MYSQL_ROOT_PASSWORD: password
       WP_VERSION: '4.7'
