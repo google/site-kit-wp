@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import DataBlock from '../data-block';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import { STORE_NAME as MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
 import { changeToPercent, readableLargeNumber } from '../../util';
 const { useSelect } = Data;
 
@@ -42,7 +42,7 @@ const AdminBarSessions = ( { classNames } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
-		offsetDays: 1,
+		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
 	const reportArgs = {
 		...dateRangeDates,
