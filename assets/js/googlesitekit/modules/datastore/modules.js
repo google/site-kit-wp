@@ -40,7 +40,7 @@ import { STORE_NAME, ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from './const
 import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
-import { getLocale } from '../../../util';
+import { listFormat } from '../../../util';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -62,10 +62,10 @@ const moduleDefaults = {
 	dependencies: [],
 	dependants: [],
 	order: 10,
-	icon: null,
-	settingsEditComponent: null,
-	settingsViewComponent: null,
-	setupComponent: null,
+	Icon: null,
+	SettingsEditComponent: null,
+	SettingsViewComponent: null,
+	SetupComponent: null,
 };
 
 const normalizeModules = memize(
@@ -219,30 +219,31 @@ const baseActions = {
 	 * Registers a module.
 	 *
 	 * @since 1.13.0
-	 * @since 1.20.0  Introduced the ability to register settings and setup components.
+	 * @since 1.20.0 Introduced the ability to register settings and setup components.
 	 * @since 1.22.0 Introduced the ability to add a checkRequirements function.
+	 * @since 1.23.0 Introduced the ability to register an Icon component.
 	 *
 	 * @param {string}      slug                             Module slug.
 	 * @param {Object}      [settings]                       Optional. Module settings.
 	 * @param {string}      [settings.name]                  Optional. Module name. Default is the slug.
 	 * @param {string}      [settings.description]           Optional. Module description. Default empty string.
-	 * @param {string}      [settings.icon]                  Optional. Module icon. Default empty string.
+	 * @param {WPComponent} [settings.Icon]                  Optional. React component to render module icon. Default none.
 	 * @param {number}      [settings.order]                 Optional. Numeric indicator for module order. Default 10.
 	 * @param {string}      [settings.homepage]              Optional. Module homepage URL. Default empty string.
-	 * @param {WPComponent} [settings.settingsEditComponent] Optional. React component to render the settings edit panel. Default none.
-	 * @param {WPComponent} [settings.settingsViewComponent] Optional. React component to render the settings view panel. Default none.
-	 * @param {WPComponent} [settings.setupComponent]        Optional. React component to render the setup panel. Default none.
+	 * @param {WPComponent} [settings.SettingsEditComponent] Optional. React component to render the settings edit panel. Default none.
+	 * @param {WPComponent} [settings.SettingsViewComponent] Optional. React component to render the settings view panel. Default none.
+	 * @param {WPComponent} [settings.SetupComponent]        Optional. React component to render the setup panel. Default none.
 	 * @param {Function}    [settings.checkRequirements]     Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
 	 */
 	*registerModule( slug, {
 		name,
 		description,
-		icon,
+		Icon,
 		order,
 		homepage,
-		settingsEditComponent,
-		settingsViewComponent,
-		setupComponent,
+		SettingsEditComponent,
+		SettingsViewComponent,
+		SetupComponent,
 		checkRequirements = () => true,
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
@@ -250,12 +251,12 @@ const baseActions = {
 		const settings = {
 			name,
 			description,
-			icon,
+			Icon,
 			order,
 			homepage,
-			settingsEditComponent,
-			settingsViewComponent,
-			setupComponent,
+			SettingsEditComponent,
+			SettingsViewComponent,
+			SetupComponent,
 			checkRequirements,
 		};
 
@@ -333,7 +334,7 @@ const baseReducer = ( state, { type, payload } ) => {
 		case REGISTER_MODULE: {
 			const { slug, settings } = payload;
 
-			if ( state.clientDefinitions[ slug ] ) {
+			if ( !! state.clientDefinitions[ slug ] ) {
 				global.console.warn( `Could not register module with slug "${ slug }". Module "${ slug }" is already registered.` );
 				return state;
 			}
@@ -410,20 +411,7 @@ const baseResolvers = {
 		if ( inactiveModules.length ) {
 			/* translators: Error message text. 1: A flattened list of module names. 2: A module name. */
 			const messageTemplate = __( 'You need to set up %1$s to gain access to %2$s.', 'google-site-kit' );
-
-			let errorMessage;
-
-			// Not all browsers support Intl.Listformat per
-			// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat#Browser_compatibility
-			// We've seen that the built versions don't polyfill for the unsupported browsers (iOS/safari) so we provide a fallback.
-			if ( Intl.Listformat ) {
-				const formatter = new Intl.ListFormat( getLocale(), { style: 'long', type: 'conjunction' } );
-				errorMessage = sprintf( messageTemplate, formatter.format( inactiveModules ), module.name );
-			} else {
-				/* translators: used between list items, there is a space after the comma. */
-				const listSeparator = __( ', ', 'google-site-kit' );
-				errorMessage = sprintf( messageTemplate, inactiveModules.join( listSeparator ), module.name );
-			}
+			const errorMessage = sprintf( messageTemplate, listFormat( inactiveModules ), module.name );
 
 			yield baseActions.receiveCheckRequirementsError( slug, {
 				code: ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
@@ -518,6 +506,35 @@ const baseSelectors = {
 
 		// This module exists, so let's return it.
 		return modules[ slug ];
+	} ),
+
+	/**
+	 * Gets a specific module icon by slug.
+	 *
+	 * Returns a specific module icon by its slug.
+	 * Returns `null` if state is still loading or if said module doesn't exist or doesn't have an icon.
+	 *
+	 * @since 1.23.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(WPComponent|undefined|null)} A specific module's icon; `undefined` if state is still loading; `null` if said module doesn't exist or doesn't have an icon.
+	 */
+	getModuleIcon: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const module = select( STORE_NAME ).getModule( slug );
+		// Return `undefined` if module with this slug isn't loaded yet.
+		if ( module === undefined ) {
+			return undefined;
+		}
+
+		// A module with this slug couldn't be found or the icon is not found for the module; return `null` to signify the
+		// "module not found" or "icon not found" state
+		if ( module === null || module.Icon === null ) {
+			return null;
+		}
+
+		// This module and the icon exists, so let's return it.
+		return module.Icon;
 	} ),
 
 	/**

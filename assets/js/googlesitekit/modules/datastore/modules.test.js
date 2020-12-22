@@ -276,7 +276,6 @@ describe( 'core/modules modules', () => {
 				order: 1,
 				description: 'A module for testing',
 				homepage: 'https://sitekit.withgoogle.com/',
-				icon: 'icon-name',
 			};
 
 			beforeEach( () => {
@@ -311,16 +310,16 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'accepts settings components for the module', () => {
-				const settingsViewComponent = () => 'view';
-				const settingsEditComponent = () => 'edit';
+				const SettingsViewComponent = () => 'view';
+				const SettingsEditComponent = () => 'edit';
 
 				registry.dispatch( STORE_NAME ).registerModule( moduleSlug, {
-					settingsViewComponent,
-					settingsEditComponent,
+					SettingsViewComponent,
+					SettingsEditComponent,
 				} );
 
-				expect( store.getState().clientDefinitions[ moduleSlug ].settingsViewComponent ).toEqual( settingsViewComponent );
-				expect( store.getState().clientDefinitions[ moduleSlug ].settingsEditComponent ).toEqual( settingsEditComponent );
+				expect( store.getState().clientDefinitions[ moduleSlug ].SettingsViewComponent ).toEqual( SettingsViewComponent );
+				expect( store.getState().clientDefinitions[ moduleSlug ].SettingsEditComponent ).toEqual( SettingsEditComponent );
 			} );
 		} );
 
@@ -548,8 +547,8 @@ describe( 'core/modules modules', () => {
 
 				const module = registry.select( STORE_NAME ).getModule( 'test-module' );
 
-				expect( module.settingsViewComponent ).toEqual( null );
-				expect( module.settingsEditComponent ).toEqual( null );
+				expect( module.SettingsViewComponent ).toEqual( null );
+				expect( module.SettingsEditComponent ).toEqual( null );
 			} );
 		} );
 

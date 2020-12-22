@@ -140,6 +140,79 @@ describe( 'core/site site info', () => {
 			} );
 		} );
 
+		describe( 'getGoogleSupportURL', () => {
+			it.each( [
+				[
+					'returns null if no arguments are supplied',
+					undefined,
+					null,
+				],
+				[
+					'returns null if no path is supplied or is empty',
+					{
+						path: '',
+					},
+					null,
+				],
+				[
+					'returns the path, hash and the user locale',
+					{
+						path: '/analytics/answer/1032415',
+						hash: 'hash_value',
+					},
+					'https://support.google.com/analytics/answer/1032415?hl=en-US#hash_value',
+				],
+				[
+					'returns the path, query and the user locale',
+					{
+						path: '/analytics/answer/1032415',
+						query: {
+							param: 'value',
+							param2: 'value2',
+						},
+					},
+					'https://support.google.com/analytics/answer/1032415?param=value&param2=value2&hl=en-US',
+				],
+				[
+					'returns the path with the user locale',
+					{
+						path: '/analytics/answer/1032415',
+					},
+					'https://support.google.com/analytics/answer/1032415?hl=en-US',
+				],
+				[
+					'returns the path, query, hash and the user locale',
+					{
+						path: '/analytics/answer/1032415',
+						query: {
+							param: 'value',
+							param2: 'value2',
+						},
+						hash: 'hash_value',
+					},
+					'https://support.google.com/analytics/answer/1032415?param=value&param2=value2&hl=en-US#hash_value',
+				],
+			] )( '%s', async ( _, args, expected ) => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+				const supportURL = registry.select( STORE_NAME ).getGoogleSupportURL( args );
+				expect( supportURL ).toEqual( expected );
+			} );
+
+			it( 'returns the path with a predefined locale', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				if ( ! global._googlesitekitLegacyData ) {
+					global._googlesitekitLegacyData = {};
+				}
+				global._googlesitekitLegacyData.locale = 'de';
+
+				const supportURL = registry.select( STORE_NAME ).getGoogleSupportURL( {
+					path: '/analytics/answer/1032415',
+				} );
+				expect( supportURL ).toEqual( 'https://support.google.com/analytics/answer/1032415?hl=de' );
+			} );
+		} );
+
 		describe( 'getSiteInfo', () => {
 			it( 'uses a resolver to load site info from a global variable by default, then deletes that global variable after consumption', async () => {
 				global[ baseInfoVar ] = baseInfo;
