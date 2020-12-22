@@ -37,12 +37,11 @@ const Modules = {
 	 *
 	 * @since 1.8.0
 	 *
-	 * @param {any}    args      Module action arguments.
-	 * @param {string} args.slug Slug of the module to activate.
+	 * @param {string} slug Slug of the module to activate.
 	 * @return {Promise} The dispatched action.
 	 */
-	activateModule: ( ...args ) => {
-		return Data.dispatch( STORE_NAME ).activateModule( ...args );
+	activateModule: ( slug ) => {
+		return Data.dispatch( STORE_NAME ).activateModule( slug );
 	},
 	/**
 	 * Deactivates a module on the server.
@@ -51,12 +50,11 @@ const Modules = {
 	 *
 	 * @since 1.8.0
 	 *
-	 * @param {any}    args      Module action arguments.
-	 * @param {string} args.slug Slug of the module to activate.
+	 * @param {string} slug Slug of the module to activate.
 	 * @return {Promise} The dispatched action.
 	 */
-	deactivateModule: ( ...args ) => {
-		return Data.dispatch( STORE_NAME ).deactivateModule( ...args );
+	deactivateModule: ( slug ) => {
+		return Data.dispatch( STORE_NAME ).deactivateModule( slug );
 	},
 	/**
 	 * Registers a module.
@@ -64,22 +62,22 @@ const Modules = {
 	 * @since 1.13.0
 	 * @since 1.20.0 Introduced the ability to register settings and setup components.
 	 * @since 1.22.0 Introduced the ability to add a checkRequirements function.
+	 * @since 1.23.0 Introduced the ability to register an Icon component.
 	 *
-	 * @param {Object}      args                         Module action arguments.
-	 * @param {string}      args.slug                    Module slug.
-	 * @param {string}      [args.name]                  Optional. Module name. Default is the slug.
-	 * @param {string}      [args.description]           Optional. Module description. Default empty string.
-	 * @param {string}      [args.icon]                  Optional. Module icon. Default empty string.
-	 * @param {number}      [args.order]                 Optional. Numeric indicator for module order. Default 10.
-	 * @param {string}      [args.homepage]              Optional. Module homepage URL. Default empty string.
-	 * @param {WPComponent} [args.settingsEditComponent] Optional. React component to render the settings edit panel. Default none.
-	 * @param {WPComponent} [args.settingsViewComponent] Optional. React component to render the settings view panel. Default none.
-	 * @param {WPComponent} [args.setupComponent]        Optional. React component to render the setup panel. Default none.
-	 * @param {Function}    [args.checkRequirements]     Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
+	 * @param {string}      slug                             Module slug.
+	 * @param {Object}      [settings]                       Optional. Module settings.
+	 * @param {string}      [settings.name]                  Optional. Module name. Default is the slug.
+	 * @param {string}      [settings.description]           Optional. Module description. Default empty string.
+	 * @param {WPComponent} [settings.Icon]                  Optional. React component to render module icon. Default none.
+	 * @param {number}      [settings.order]                 Optional. Numeric indicator for module order. Default 10.
+	 * @param {string}      [settings.homepage]              Optional. Module homepage URL. Default empty string.
+	 * @param {WPComponent} [settings.SettingsEditComponent] Optional. React component to render the settings edit panel. Default none.
+	 * @param {WPComponent} [settings.SettingsViewComponent] Optional. React component to render the settings view panel. Default none.
+	 * @param {WPComponent} [settings.SetupComponent]        Optional. React component to render the setup panel. Default none.
 	 * @return {Promise} The dispatched action.
 	 */
-	registerModule: ( ...args ) => {
-		return Data.dispatch( STORE_NAME ).registerModule( ...args );
+	registerModule: ( slug, settings ) => {
+		return Data.dispatch( STORE_NAME ).registerModule( slug, settings );
 	},
 };
 
