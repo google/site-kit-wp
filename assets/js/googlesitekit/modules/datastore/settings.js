@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import Data from 'googlesitekit-data';
 const { createRegistrySelector, createRegistryControl } = Data;
-import { STORE_NAME as CORE_MODULES } from './constants';
+import { STORE_NAME } from './constants';
 
 const SUBMIT_MODULE_CHANGES = 'SUBMIT_MODULE_CHANGES';
 
@@ -54,7 +54,7 @@ export const actions = {
 export const controls = {
 	[ SUBMIT_MODULE_CHANGES ]: createRegistryControl( ( registry ) => ( { payload } ) => {
 		const { slug } = payload;
-		const storeName = registry.select( CORE_MODULES ).getModuleStoreName( slug );
+		const storeName = registry.select( STORE_NAME ).getModuleStoreName( slug );
 
 		if ( ! storeName ) {
 			return { error: `The module '${ slug }' does not have a store.` };
@@ -80,7 +80,7 @@ export const selectors = {
 	 */
 	isDoingSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+		const storeName = select( STORE_NAME ).getModuleStoreName( slug );
 		return !! select( storeName )?.isDoingSubmitChanges?.();
 	} ),
 
@@ -94,7 +94,7 @@ export const selectors = {
 	 */
 	canSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+		const storeName = select( STORE_NAME ).getModuleStoreName( slug );
 		return !! select( storeName )?.canSubmitChanges?.();
 	} ),
 };

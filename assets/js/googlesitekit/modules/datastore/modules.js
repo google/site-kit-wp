@@ -639,7 +639,6 @@ const baseSelectors = {
 			return null;
 		}
 
-		// Return the store name.
 		return module.storeName;
 	} ),
 
@@ -656,7 +655,7 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {(boolean|null|undefined)} `true` when the module exists and is active.
 	 * 									  `undefined` if state is still loading.
-	 * 									   `null` if said module doesn't exist.
+	 * 									  `null` if said module doesn't exist.
 	 */
 	isModuleActive: createRegistrySelector( ( select ) => ( state, slug ) => {
 		const module = select( STORE_NAME ).getModule( slug );
