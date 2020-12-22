@@ -37,7 +37,9 @@ export default function AnonymizeIPSwitch() {
 	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
-
+	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/analytics/answer/2763052',
+	} ) );
 	const { setAnonymizeIP } = useDispatch( STORE_NAME );
 	const onChange = useCallback( () => {
 		setAnonymizeIP( ! anonymizeIP );
@@ -62,7 +64,7 @@ export default function AnonymizeIPSwitch() {
 				}
 				{ ' ' }
 				<Link
-					href="https://support.google.com/analytics/answer/2763052"
+					href={ supportURL }
 					external
 					inherit
 					aria-label={ __( 'Learn more about IP anonymization.', 'google-site-kit' ) }

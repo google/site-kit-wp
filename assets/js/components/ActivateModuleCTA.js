@@ -44,6 +44,7 @@ const ActivateModuleCTA = ( { slug, title, description } ) => {
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 	const { activateModule } = useDispatch( CORE_MODULES );
+
 	const onCTAClick = useCallback( async () => {
 		const { error, response } = await activateModule( slug );
 
@@ -58,37 +59,36 @@ const ActivateModuleCTA = ( { slug, title, description } ) => {
 				type: 'win-error',
 			} );
 		}
-	} );
+	}, [ activateModule ] );
 
-	if ( ! module || ! canManageOptions ) {
+	if ( ! module?.name || ! canManageOptions ) {
 		return null;
 	}
-	const { name } = module;
-
-	const moduleTitle = title ||
-		sprintf(
-			/* translators: %s: Module name */
-			__( 'Activate %s', 'google-site-kit' ),
-			name,
-		);
-	const moduleDescription = description ||
-		sprintf(
-			/* translators: %s: Module name */
-			__( '%s module needs to be configured', 'google-site-kit' ),
-			name,
-		);
-	const moduleCTALabel = sprintf(
-		/* translators: %s: Module name */
-		__( 'Set up %s', 'google-site-kit' ),
-		name,
-	);
 
 	return (
 		<CTA
-			title={ moduleTitle }
-			description={ moduleDescription }
+			title={
+				title || sprintf(
+					/* translators: %s: Module name */
+					__( 'Activate %s', 'google-site-kit' ),
+					module.name,
+				)
+			}
+			description={
+				description || sprintf(
+					/* translators: %s: Module name */
+					__( '%s module needs to be configured', 'google-site-kit' ),
+					module.name,
+				)
+			}
+			ctaLabel={
+				sprintf(
+					/* translators: %s: Module name */
+					__( 'Set up %s', 'google-site-kit' ),
+					module.name,
+				)
+			}
 			onClick={ onCTAClick }
-			ctaLabel={ moduleCTALabel }
 		/>
 	);
 };
