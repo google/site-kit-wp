@@ -317,45 +317,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'global-notifications--traffic-increase-win',
-		kind: 'Global/Notifications',
-		name: 'Traffic Increase Win',
-		story: 'Traffic Increase Win',
-		parameters: {
-			fileName: './stories/notifications.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'global-notifications--pageview-increase-win',
-		kind: 'Global/Notifications',
-		name: 'Pageview Increase Win',
-		story: 'Pageview Increase Win',
-		parameters: {
-			fileName: './stories/notifications.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'global-notifications--total-stats',
-		kind: 'Global/Notifications',
-		name: 'Total Stats',
-		story: 'Total Stats',
-		parameters: {
-			fileName: './stories/notifications.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
 		id: 'global-notifications--user-input-success-notification',
 		kind: 'Global/Notifications',
 		name: 'User Input Success Notification',
