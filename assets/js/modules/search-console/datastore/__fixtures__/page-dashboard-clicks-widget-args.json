@@ -1,6 +1,0 @@
-{
-	"dimensions": "date",
-	"compareDateRanges": true,
-	"dateRange": "last-28-days",
-	"url": "https://www.example.com/test-page/"
-}

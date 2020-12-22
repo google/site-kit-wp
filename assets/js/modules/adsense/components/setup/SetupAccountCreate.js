@@ -31,8 +31,8 @@ import Link from '../../../../components/Link';
 import { trackEvent } from '../../../../util';
 import { parseAccountID } from '../../util/parsing';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as siteStoreName } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as userStoreName } from '../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	ErrorNotices,
 	UserProfile,
@@ -40,10 +40,13 @@ import {
 const { useSelect } = Data;
 
 export default function SetupAccountCreate() {
-	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
-	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
+	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 	const signUpURL = useSelect( ( select ) => select( STORE_NAME ).getServiceCreateAccountURL() );
+	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/adsense/answer/2659101',
+	} ) );
 
 	const createAccountHandler = useCallback( async ( event ) => {
 		event.preventDefault();
@@ -93,7 +96,7 @@ export default function SetupAccountCreate() {
 				) }
 				{ ' ' }
 				<Link
-					href="https://support.google.com/adsense/answer/2659101"
+					href={ supportURL }
 					inherit
 					external
 					aria-label={ __( 'Learn more about adding a user to an existing AdSense account', 'google-site-kit' ) }
