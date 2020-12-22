@@ -29,23 +29,23 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	changeToPercent,
-	readableLargeNumber,
-} from '../../util';
+import AdminBarPreview from './AdminBarPreview';
 import DataBlock from '../data-block';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
-import { parseTotalUsersData } from '../../modules/analytics/util';
-import AdminBarPreview from './AdminBarPreview';
+import {
+	changeToPercent,
+	readableLargeNumber,
+} from '../../util';
 const { useSelect } = Data;
 
 const AdminBarUniqueVisitors = ( { classNames } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
+		offsetDays: 1,
 	} ) );
 	const reportArgs = {
 		...dateRangeDates,
@@ -63,7 +63,15 @@ const AdminBarUniqueVisitors = ( { classNames } ) => {
 		return <AdminBarPreview />;
 	}
 
-	const { totalUsers, previousTotalUsers } = parseTotalUsersData( analyticsData );
+	if ( ! analyticsData || ! analyticsData.length ) {
+		return false;
+	}
+
+	const { totals } = analyticsData[ 0 ].data;
+	const lastMonth = totals[ 0 ].values;
+	const previousMonth = totals[ 1 ].values;
+	const totalUsers = lastMonth[ 0 ];
+	const previousTotalUsers = previousMonth[ 0 ];
 
 	return (
 		<div className={ classNames }>

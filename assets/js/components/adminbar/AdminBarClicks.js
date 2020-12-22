@@ -33,7 +33,8 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { extractSearchConsoleDashboardData } from '../../modules/search-console/util';
+import { changeToPercent } from '../../util';
+import sumObjectListValue from '../../util/sum-object-list-value';
 import DataBlock from '../data-block';
 import AdminBarPreview from './AdminBarPreview';
 const { useSelect } = Data;
@@ -42,6 +43,7 @@ const AdminBarClicks = ( { classNames } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
+		offsetDays: 1,
 	} ) );
 	const reportArgs = {
 		...dateRangeDates,
@@ -54,10 +56,14 @@ const AdminBarClicks = ( { classNames } ) => {
 		return <AdminBarPreview />;
 	}
 
-	const {
-		totalClicks,
-		totalClicksChange,
-	} = extractSearchConsoleDashboardData( searchConsoleData );
+	// Split the data in two chunks.
+	const half = Math.floor( searchConsoleData.length / 2 );
+	const latestData = searchConsoleData.slice( half );
+	const olderData = searchConsoleData.slice( 0, half );
+
+	const totalClicks = sumObjectListValue( latestData, 'clicks' );
+	const totalOlderClicks = sumObjectListValue( olderData, 'clicks' );
+	const totalClicksChange = changeToPercent( totalOlderClicks, totalClicks );
 
 	return (
 		<div className={ classNames }>
