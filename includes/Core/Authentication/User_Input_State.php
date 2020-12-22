@@ -42,17 +42,19 @@ final class User_Input_State extends User_Setting {
 	const VALUE_MISSING = 'missing';
 
 	/**
-	 * Sets the value of the setting with the given value.
+	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since 1.20.0
+	 * @since 1.23.0
 	 *
-	 * @param string $value Setting value. One of 'required', 'missing', 'completed' or ''.
-	 * @return bool True on success, false on failure or if value is not a valid string.
+	 * @return callable|null
 	 */
-	public function set( $value ) {
-		if ( ! in_array( $value, array( self::VALUE_COMPLETED, self::VALUE_MISSING, self::VALUE_REQUIRED, '' ), true ) ) {
-			return false;
-		}
-		return parent::set( $value );
+	protected function get_sanitize_callback() {
+		return function( $value ) {
+			if ( ! in_array( $value, array( self::VALUE_COMPLETED, self::VALUE_MISSING, self::VALUE_REQUIRED, '' ), true ) ) {
+				return false;
+			}
+
+			return $value;
+		};
 	}
 }

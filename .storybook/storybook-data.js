@@ -493,19 +493,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'splash--splash-page',
-		kind: 'Splash',
-		name: 'Splash Page',
-		story: 'Splash Page',
-		parameters: {
-			fileName: './stories/splash.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
 		id: 'global--switches',
 		kind: 'Global',
 		name: 'Switches',
