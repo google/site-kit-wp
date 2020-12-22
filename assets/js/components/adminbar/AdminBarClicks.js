@@ -29,24 +29,25 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import AdminBarPreview from './AdminBarPreview';
 import Data from 'googlesitekit-data';
+import DataBlock from '../data-block';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { changeToPercent } from '../../util';
+import { STORE_NAME as MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-console/datastore/constants';
+import { changeToPercent, readableLargeNumber } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
-import DataBlock from '../data-block';
-import AdminBarPreview from './AdminBarPreview';
 const { useSelect } = Data;
 
 const AdminBarClicks = ( { classNames } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
-		offsetDays: 1,
+		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
 	const reportArgs = {
-		...dateRangeDates,
+		startDate: compareStartDate,
+		endDate,
 		dimensions: 'date',
 		url,
 	};
@@ -70,7 +71,7 @@ const AdminBarClicks = ( { classNames } ) => {
 			<DataBlock
 				className="overview-total-clicks"
 				title={ __( 'Total Clicks', 'google-site-kit' ) }
-				datapoint={ totalClicks }
+				datapoint={ readableLargeNumber( totalClicks ) }
 				change={ totalClicksChange }
 				changeDataUnit="%"
 			/>

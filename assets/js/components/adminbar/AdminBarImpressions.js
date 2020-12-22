@@ -29,22 +29,25 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import AdminBarPreview from './AdminBarPreview';
 import Data from 'googlesitekit-data';
 import DataBlock from '../data-block';
-import { extractSearchConsoleDashboardData } from '../../modules/search-console/util';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import AdminBarPreview from './AdminBarPreview';
+import { STORE_NAME as MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-console/datastore/constants';
+import { changeToPercent, readableLargeNumber } from '../../util';
+import sumObjectListValue from '../../util/sum-object-list-value';
 const { useSelect } = Data;
 
 const AdminBarImpressions = ( { classNames } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
+		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
 	const reportArgs = {
-		...dateRangeDates,
+		startDate: compareStartDate,
+		endDate,
 		dimensions: 'date',
 		url,
 	};
@@ -54,17 +57,21 @@ const AdminBarImpressions = ( { classNames } ) => {
 		return <AdminBarPreview />;
 	}
 
-	const {
-		totalImpressions,
-		totalImpressionsChange,
-	} = extractSearchConsoleDashboardData( searchConsoleData );
+	// Split the data in two chunks.
+	const half = Math.floor( searchConsoleData.length / 2 );
+	const latestData = searchConsoleData.slice( half );
+	const olderData = searchConsoleData.slice( 0, half );
+
+	const totalImpressions = sumObjectListValue( latestData, 'impressions' );
+	const totalOlderImpressions = sumObjectListValue( olderData, 'impressions' );
+	const totalImpressionsChange = changeToPercent( totalOlderImpressions, totalImpressions );
 
 	return (
 		<div className={ classNames }>
 			<DataBlock
 				className="overview-total-impressions"
 				title={ __( 'Total Impressions', 'google-site-kit' ) }
-				datapoint={ totalImpressions }
+				datapoint={ readableLargeNumber( totalImpressions ) }
 				change={ totalImpressionsChange }
 				changeDataUnit="%"
 			/>

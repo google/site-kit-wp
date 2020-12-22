@@ -35,10 +35,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
-import {
-	changeToPercent,
-	readableLargeNumber,
-} from '../../util';
+import { changeToPercent, readableLargeNumber } from '../../util';
 const { useSelect } = Data;
 
 const AdminBarUniqueVisitors = ( { classNames } ) => {
