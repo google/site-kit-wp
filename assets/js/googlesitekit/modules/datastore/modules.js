@@ -634,7 +634,12 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		// Return the store name or null if no store name was set.
+		// Return null if no store name was set
+		if ( module === null ) {
+			return null;
+		}
+
+		// Return the store name.
 		return module.storeName;
 	} ),
 

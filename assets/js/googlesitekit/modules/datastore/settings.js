@@ -81,7 +81,7 @@ export const selectors = {
 	isDoingSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
 		const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
-		return !! select( storeName ).isDoingSubmitChanges?.();
+		return !! select( storeName )?.isDoingSubmitChanges?.();
 	} ),
 
 	/**
