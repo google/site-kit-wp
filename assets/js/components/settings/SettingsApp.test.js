@@ -83,7 +83,8 @@ describe( 'SettingsApp', () => {
 		expect( global.location.hash ).toEqual( '#settings/analytics/view' );
 
 		fireEvent.click( getByRole( 'tab', { name: /analytics/i } ) );
-		expect( global.location.hash ).toEqual( '#settings/analytics/closed' );
+		// A closed state should not be reflected in the hash as it is implied as default.
+		expect( global.location.hash ).toEqual( '#settings' );
 
 		await waitFor( () => {
 			expect( queryByRole( 'tabpanel' ) ).toBeNull();
