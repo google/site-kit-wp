@@ -53,4 +53,4 @@ $WP_TESTS_DIR=/path/to/wp/develop/phpunit composer test
 
 ## Automated Tests
 
-Tests are automatically run with [Travis-CI](https://travis-ci.com/google/site-kit-wp) for each commit and pull request.
+Tests are automatically run with GitHub Actions for each commit and pull request.
