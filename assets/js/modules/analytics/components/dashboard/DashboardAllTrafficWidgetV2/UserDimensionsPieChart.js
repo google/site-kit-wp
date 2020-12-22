@@ -16,6 +16,16 @@
  * limitations under the License.
  */
 
-export default function UserDimensionsPieChart() {
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+// eslint-disable-next-line no-unused-vars
+export default function UserDimensionsPieChart( { sourceLink } ) {
 	return null;
 }
+
+UserDimensionsPieChart.propTypes = {
+	sourceLink: PropTypes.string,
+};
