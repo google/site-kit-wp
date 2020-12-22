@@ -25,7 +25,10 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-const { createRegistrySelector } = Data;
+const { createRegistrySelector, createRegistryControl } = Data;
+import { STORE_NAME } from './constants';
+
+const SUBMIT_MODULE_CHANGES = 'SUBMIT_MODULE_CHANGES';
 
 export const actions = {
 	/**
@@ -38,17 +41,32 @@ export const actions = {
 	 */
 	submitChanges( slug ) {
 		invariant( slug, 'slug is required.' );
+
 		return ( function* () {
-			const registry = yield Data.commonActions.getRegistry();
-
-			const { submitChanges } = registry.dispatch( `modules/${ slug }` ) || {};
-			if ( !! submitChanges ) {
-				return submitChanges();
-			}
-
-			return { error: `'modules/${ slug }' does not have a submitChanges() action.` };
+			return yield {
+				payload: { slug },
+				type: SUBMIT_MODULE_CHANGES,
+			};
 		}() );
 	},
+};
+
+export const controls = {
+	[ SUBMIT_MODULE_CHANGES ]: createRegistryControl( ( registry ) => ( { payload } ) => {
+		const { slug } = payload;
+		const storeName = registry.select( STORE_NAME ).getModuleStoreName( slug );
+
+		if ( ! storeName ) {
+			return { error: `The module '${ slug }' does not have a store.` };
+		}
+
+		const { submitChanges } = registry.dispatch( storeName );
+		if ( ! submitChanges ) {
+			return { error: `The module '${ slug }' does not have a submitChanges() action.` };
+		}
+
+		return submitChanges( slug );
+	} ),
 };
 
 export const selectors = {
@@ -62,7 +80,8 @@ export const selectors = {
 	 */
 	isDoingSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		return !! select( `modules/${ slug }` )?.isDoingSubmitChanges?.();
+		const storeName = select( STORE_NAME ).getModuleStoreName( slug );
+		return !! select( storeName )?.isDoingSubmitChanges?.();
 	} ),
 
 	/**
@@ -75,12 +94,13 @@ export const selectors = {
 	 */
 	canSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		return !! select( `modules/${ slug }` )?.canSubmitChanges?.();
+		const storeName = select( STORE_NAME ).getModuleStoreName( slug );
+		return !! select( storeName )?.canSubmitChanges?.();
 	} ),
-
 };
 
 export default {
 	actions,
+	controls,
 	selectors,
 };
