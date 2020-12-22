@@ -39,7 +39,6 @@ import { getAvailableDateRanges } from '../../../../../util/date-range';
 import ChangeArrow from '../../../../../components/ChangeArrow';
 const { useSelect } = Data;
 
-// eslint-disable-next-line no-unused-vars
 export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
@@ -48,7 +47,6 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 	const args = {
 		...dateRangeDates,
 		metrics: [ { expression: 'ga:users' } ],
-		dimensions: [ dimensionName ],
 		orderby: {
 			fieldName: 'ga:users',
 			sortOrder: 'DESCENDING',
@@ -58,6 +56,13 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 
 	if ( url ) {
 		args.url = url;
+	}
+
+	if ( dimensionName && dimensionValue ) {
+		args.dimensions = [ dimensionName ];
+		args.dimensionFilters = {
+			[ dimensionName ]: dimensionValue,
+		};
 	}
 
 	const loaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );

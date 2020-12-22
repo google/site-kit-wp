@@ -32,15 +32,16 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME } from '../../../datastore/constants';
+import { STORE_NAME, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function UserDimensionsPieChart( { dimensionName } ) {
 	const [ chartLoaded, setChartLoaded ] = useState( false );
@@ -63,6 +64,8 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 		args.url = url;
 	}
 
+	const { setValues } = useDispatch( CORE_FORMS );
+
 	const onReady = useCallback( () => {
 		setChartLoaded( true );
 
@@ -76,12 +79,12 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 					const { dataTable } = GoogleChart.charts.get( 'user-dimensions-pie-chart' ) || {};
 					if ( dataTable ) {
 						const dimensionValue = dataTable.getValue( row, 0 );
-						global.console.info( 'Dimension Value:', dimensionValue );
+						setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionName, dimensionValue } );
 					}
 				}
 			} );
 		}
-	}, [] );
+	}, [ dimensionName, setValues ] );
 
 	const loaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
