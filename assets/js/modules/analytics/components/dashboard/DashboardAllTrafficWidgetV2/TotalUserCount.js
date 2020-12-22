@@ -20,13 +20,100 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
+
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME } from '../../../datastore/constants';
+import { numberFormat, readableLargeNumber } from '../../../../../util';
+import { getAvailableDateRanges } from '../../../../../util/date-range';
+import ChangeArrow from '../../../../../components/ChangeArrow';
+const { useSelect } = Data;
 
 // eslint-disable-next-line no-unused-vars
 export default function TotalUserCount( { dimensionName, dimensionValue } ) {
-	return null;
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
+
+	const args = {
+		...dateRangeDates,
+		metrics: [ { expression: 'ga:users' } ],
+		dimensions: [ dimensionName ],
+		orderby: {
+			fieldName: 'ga:users',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 1,
+	};
+
+	if ( url ) {
+		args.url = url;
+	}
+
+	const loaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
+	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
+
+	if ( ! loaded || error ) {
+		return null;
+	}
+
+	const { totals } = report?.[ 0 ]?.data || {};
+	const [ current, previous ] = totals || [];
+	const change = previous?.values?.[ 0 ] > 0
+		? ( current?.values?.[ 0 ] / previous?.values?.[ 0 ] ) - 1
+		: null;
+
+	let currentDateRangeLabel = null;
+	const currentDateRangeDays = getAvailableDateRanges()[ dateRange ]?.days;
+	if ( currentDateRangeDays ) {
+		currentDateRangeLabel = sprintf(
+			/* translators: %s number of days */
+			__( 'in the last %s days', 'google-site-kit' ),
+			currentDateRangeDays,
+		);
+	}
+
+	return (
+		<div className="googlesitekit-widget--analyticsAllTrafficV2__totalcount">
+			<h3>
+				{ __( 'Users', 'google-site-kit' ) }
+			</h3>
+			<h2>
+				{ readableLargeNumber( current?.values?.[ 0 ] ) }
+			</h2>
+			<div>
+				<span className={ classnames( 'googlesitekit-widget--analyticsAllTrafficV2__totalcount--change', {
+					'googlesitekit-widget--analyticsAllTrafficV2__totalcount--up-change': 0 <= change,
+					'googlesitekit-widget--analyticsAllTrafficV2__totalcount--down-change': 0 > change,
+				} ) }>
+					<ChangeArrow
+						direction={ 0 <= change ? 'up' : 'down' }
+						width={ 18 }
+						height={ 17 }
+					/>
+
+					{ numberFormat( change, { style: 'percent', maximumFractionDigits: 1 } ) }
+				</span>
+				<span className="googlesitekit-widget--analyticsAllTrafficV2__totalcount--daterange">
+					{ currentDateRangeLabel }
+				</span>
+			</div>
+		</div>
+	);
 }
 
 TotalUserCount.propTypes = {
-	dimensionName: PropTypes.string,
+	dimensionName: PropTypes.string.isRequired,
 	dimensionValue: PropTypes.string,
 };
