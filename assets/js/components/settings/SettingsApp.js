@@ -70,7 +70,7 @@ export default function SettingsApp() {
 	const hashFrom = ( tabID, slug = moduleSlug, state = moduleState ) => {
 		const fragments = [ tabID ];
 
-		if ( tabID === 'settings' && slug ) {
+		if ( tabID === 'settings' && slug && state !== 'closed' ) {
 			fragments.push( slug );
 			if ( state ) {
 				fragments.push( state );
