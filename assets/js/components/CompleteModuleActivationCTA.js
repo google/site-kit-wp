@@ -40,43 +40,42 @@ const CompleteModuleActivationCTA = ( { slug, title, description } ) => {
 	const module = useSelect( ( select ) => select( MODULES_STORE ).getModule( slug ) );
 	const adminReauthURL = useSelect( ( select ) => select( `modules/${ slug }` )?.getAdminReauthURL() );
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
-	const { name } = module;
 
 	const onCTAClick = useCallback( async () => {
-		global.location = adminReauthURL;
-	} );
+		global.location.assign( adminReauthURL );
+	}, [ adminReauthURL ] );
 
-	if ( ! canManageOptions ) {
+	if ( ! module?.name || ! canManageOptions ) {
 		return null;
 	}
 
-	const moduleTitle = title ||
-		sprintf(
-			/* translators: %s: Module name */
-			__( 'Complete %s activation', 'google-site-kit' ),
-			name,
-		);
-	const moduleDescription = description ||
-		sprintf(
-			/* translators: %s: Module name */
-			__( '%s module setup needs to be completed', 'google-site-kit' ),
-			name,
-		);
-	const moduleCTA = __( 'Complete setup', 'google-site-kit' );
-
-	const moduleAriaLabel = sprintf(
-		/* translators: %s: Module name */
-		__( 'Complete %s setup', 'google-site-kit' ),
-		name,
-	);
-
 	return (
 		<CTA
-			title={ moduleTitle }
-			description={ moduleDescription }
+			title={
+				title || sprintf(
+					/* translators: %s: Module name */
+					__( 'Complete %s activation', 'google-site-kit' ),
+					module.name,
+				)
+			}
+			description={
+				description || sprintf(
+					/* translators: %s: Module name */
+					__( '%s module setup needs to be completed', 'google-site-kit' ),
+					module.name,
+				)
+			}
+			ctaLabel={
+				__( 'Complete setup', 'google-site-kit' )
+			}
+			aria-label={
+				sprintf(
+					/* translators: %s: Module name */
+					__( 'Complete %s setup', 'google-site-kit' ),
+					module.name,
+				)
+			}
 			onClick={ onCTAClick }
-			ctaLabel={ moduleCTA }
-			aria-label={ moduleAriaLabel }
 		/>
 	);
 };
