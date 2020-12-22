@@ -31,9 +31,12 @@ import { SettingsEdit, SettingsView } from './components/settings';
 import TagManagerIcon from '../../../svg/tagmanager.svg';
 
 domReady( () => {
+	// IMPORTANT: When updating arguments here, also update the same call in
+	// `provideModuleRegistrations`.
 	Modules.registerModule(
 		'tagmanager',
 		{
+			storeName: 'modules/tagmanager',
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,

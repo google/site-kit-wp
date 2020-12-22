@@ -108,8 +108,10 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 	const goalsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( `conversions-goals-overview`, {
 		'_r.drilldown': `analytics.pagePath:${ url }`,
 	} ) );
-
-	const goalURL = 'https://support.google.com/analytics/answer/1032415?hl=en#create_or_edit_goals';
+	const goalURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/analytics/answer/1032415',
+		hash: 'create_or_edit_goals',
+	} ) );
 
 	let goalCompletions = '',
 		goalCompletionsChange = '',

@@ -29,7 +29,6 @@ import { getQueryParameter } from '../../util';
 import DashboardCoreSiteAlerts from './dashboard-core-site-alerts';
 import DashboardSetupAlerts from './dashboard-setup-alerts';
 import DashboardModulesAlerts from './dashboard-modules-alerts';
-import DashboardWinsAlerts from './dashboard-wins-alerts';
 import UserInputSettings from '../notifications/UserInputSettings';
 import UnsatisfiedScopesAlert from '../notifications/UnsatisfiedScopesAlert';
 
@@ -39,7 +38,6 @@ const notification = getQueryParameter( 'notification' );
 const addCoreSiteNotifications = createAddToFilter( <DashboardCoreSiteAlerts /> );
 const addSetupNotifications = createAddToFilter( <DashboardSetupAlerts /> );
 const addModulesNotifications = createAddToFilter( <DashboardModulesAlerts /> );
-const addWinsNotifications = createAddToFilter( <DashboardWinsAlerts /> );
 const addUserInputSettings = createAddToFilter( <UserInputSettings /> );
 const addAuthNotification = createAddToFilter( <UnsatisfiedScopesAlert /> );
 
@@ -67,8 +65,4 @@ if ( 'authentication_success' === notification || 'authentication_failure' === n
 	addFilter( 'googlesitekit.DashboardNotifications',
 		'googlesitekit.ModulesNotification',
 		addModulesNotifications, 1 );
-
-	addFilter( 'googlesitekit.DashboardNotifications',
-		'googlesitekit.WinsNotification',
-		addWinsNotifications, 1 );
 }

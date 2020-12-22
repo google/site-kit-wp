@@ -70,10 +70,12 @@ class SettingsModules extends Component {
 		e.target.closest( '.googlesitekit-settings-module__header' ).focus();
 
 		// If same as activeModule, toggle closed, otherwise it is open.
-		const isOpen = module !== activeModule || ! moduleState;
+		const isOpen = module !== activeModule || moduleState === 'closed';
 
-		this.props.setActiveModule( isOpen ? module : null );
-		this.props.setModuleState( isOpen ? 'view' : null );
+		this.props.setModuleState(
+			module,
+			isOpen ? 'view' : 'closed',
+		);
 	}
 
 	/**
@@ -116,13 +118,14 @@ class SettingsModules extends Component {
 				error: false,
 			} );
 
-			this.props.setModuleState( 'view' );
+			this.props.setModuleState( module, 'view' );
 		} else {
 			this.setState( {
 				error: false, // Reset error state when switching modules.
 			} );
 			this.props.setModuleState(
-				this.props.moduleState === 'edit' ? 'view' : 'edit'
+				module,
+				this.props.moduleState === 'edit' ? 'view' : 'edit',
 			);
 		}
 	}
@@ -150,7 +153,7 @@ class SettingsModules extends Component {
 				handleEdit={ this.handleButtonAction }
 				handleConfirm
 				isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
-				isOpen={ isCurrentModule && moduleState }
+				isOpen={ isCurrentModule && moduleState !== 'closed' }
 				handleAccordion={ this.handleAccordion }
 				handleDialog={ this.handleDialog }
 				provides={ provides }
