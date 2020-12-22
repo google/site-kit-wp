@@ -28,6 +28,7 @@ import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME as MODULES_ANALYTICS, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import whenActive from '../../../../../util/when-active';
 import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
@@ -41,7 +42,31 @@ const { useSelect } = Data;
 function DashboardAllTrafficWidget() {
 	const dimensionName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionName' ) || 'ga:channelGrouping' );
 	const dimensionValue = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionValue' ) );
-	const serviceReportURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'trafficsources-overview' ) );
+	const entityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+
+	let reportType;
+	switch ( dimensionName ) {
+		case 'ga:channelGrouping':
+			reportType = 'trafficsources-overview';
+			break;
+		case 'ga:country':
+			reportType = 'visitors-geo';
+			break;
+		case 'ga:deviceCategory':
+			reportType = 'visitors-mobile-overview';
+			break;
+		default:
+			reportType = 'trafficsources-overview';
+	}
+
+	let reportArgs = {};
+	if ( entityURL ) {
+		reportArgs = {
+			'explorer-table.plotKeys': '[]',
+			'_r.drilldown': `analytics.pagePath:${ entityURL }`,
+		};
+	}
+	const serviceReportURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( reportType, reportArgs ) );
 
 	return (
 		<Widget
@@ -65,7 +90,7 @@ function DashboardAllTrafficWidget() {
 					</Cell>
 					<Cell size={ 4 }>
 						<DimensionTabs dimensionName={ dimensionName } />
-						<UserDimensionsPieChart />
+						<UserDimensionsPieChart sourceLink={ serviceReportURL } />
 					</Cell>
 				</Row>
 			</Grid>
