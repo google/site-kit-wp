@@ -25,7 +25,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import URLSearchWidget from '../../googlesitekit/widgets/components/URLSearchWidget';
-import { CONTEXT_DASHBOARD, CONTEXT_PAGE_DASHBOARD } from './default-contexts';
+import {
+	CONTEXT_DASHBOARD,
+	CONTEXT_PAGE_DASHBOARD,
+	CONTEXT_MODULE_SEARCH_CONSOLE,
+	CONTEXT_MODULE_ANALYTICS,
+	CONTEXT_MODULE_ADSENSE,
+} from './default-contexts';
 import {
 	AREA_DASHBOARD_ALL_TRAFFIC,
 	AREA_DASHBOARD_SEARCH_FUNNEL,
@@ -36,6 +42,9 @@ import {
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
 	AREA_PAGE_DASHBOARD_POPULARITY,
 	AREA_PAGE_DASHBOARD_SPEED,
+	AREA_MODULE_SEARCH_CONSOLE_MAIN,
+	AREA_MODULE_ANALYTICS_MAIN,
+	AREA_MODULE_ADSENSE_MAIN,
 } from './default-areas';
 import { WIDGET_URL_SEARCH } from './default-widgets';
 import { WIDGET_AREA_STYLES, WIDGET_WIDTHS } from './datastore/constants';
@@ -158,5 +167,38 @@ export function registerDefaults( widgetsAPI ) {
 		[
 			AREA_DASHBOARD_POPULARITY,
 		],
+	);
+
+	widgetsAPI.registerWidgetArea(
+		AREA_MODULE_SEARCH_CONSOLE_MAIN,
+		{
+			priority: 1,
+			subtitle: ' ',
+			style: WIDGET_AREA_STYLES.BOXES,
+			title: ' ',
+		},
+		CONTEXT_MODULE_SEARCH_CONSOLE,
+	);
+
+	widgetsAPI.registerWidgetArea(
+		AREA_MODULE_ANALYTICS_MAIN,
+		{
+			priority: 1,
+			subtitle: ' ',
+			style: WIDGET_AREA_STYLES.BOXES,
+			title: ' ',
+		},
+		CONTEXT_MODULE_ANALYTICS,
+	);
+
+	widgetsAPI.registerWidgetArea(
+		AREA_MODULE_ADSENSE_MAIN,
+		{
+			priority: 1,
+			subtitle: ' ',
+			style: WIDGET_AREA_STYLES.BOXES,
+			title: ' ',
+		},
+		CONTEXT_MODULE_ADSENSE,
 	);
 }
