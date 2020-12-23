@@ -87,9 +87,9 @@ function DashboardUniqueVisitorsWidget() {
 			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
 			// Due to the nature of these queries, we need to run them separately.
 			sparkData: store.getReport( sparklineArgs ),
-			serviceURL: store.getServiceReportURL( 'visitors-overview', {
+			serviceURL: store.getServiceReportURL( 'visitors-overview', url ? {
 				'_r.drilldown': `analytics.pagePath:${ url }`,
-			} ),
+			} : undefined ),
 			visitorsData: store.getReport( args ),
 		};
 	} );

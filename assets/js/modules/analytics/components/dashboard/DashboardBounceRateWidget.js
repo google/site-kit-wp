@@ -70,9 +70,9 @@ function DashboardBounceRateWidget() {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
-			serviceURL: store.getServiceReportURL( 'visitors-overview', {
+			serviceURL: store.getServiceReportURL( 'visitors-overview', url ? {
 				'_r.drilldown': `analytics.pagePath:${ url }`,
-			} ),
+			} : undefined ),
 		};
 	} );
 

@@ -32,7 +32,7 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Layout from '../assets/js/components/layout/layout';
 import AnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopPagesTable';
-import { dashboardPopularPagesArgs, dashboardPopularPagesData, settings } from '../assets/js/modules/analytics/datastore/__fixtures__';
+import { dashboardPopularPagesArgs, dashboardPopularPagesData } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';

@@ -46,9 +46,9 @@ const { useSelect } = Data;
 const LegacyDashboardAcquisitionPieChart = ( { data, source } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
-	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', {
+	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', url ? {
 		'_r.drilldown': `analytics.pagePath:${ url }`,
-	} ) );
+	} : undefined ) );
 
 	if ( ! data || data.error || ! data.length ) {
 		return null;
