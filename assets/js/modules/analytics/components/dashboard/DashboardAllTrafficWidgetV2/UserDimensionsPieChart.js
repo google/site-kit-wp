@@ -33,7 +33,6 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
@@ -43,10 +42,8 @@ import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
 const { useSelect, useDispatch } = Data;
 
-export default function UserDimensionsPieChart( { dimensionName } ) {
+export default function UserDimensionsPieChart( { dimensionName, entityURL } ) {
 	const [ chartLoaded, setChartLoaded ] = useState( false );
-
-	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
 
 	const args = {
@@ -60,12 +57,15 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 		limit: 4,
 	};
 
-	if ( url ) {
-		args.url = url;
+	if ( entityURL ) {
+		args.url = entityURL;
 	}
 
-	const { setValues } = useDispatch( CORE_FORMS );
+	const loaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
+	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
 
+	const { setValues } = useDispatch( CORE_FORMS );
 	const onReady = useCallback( () => {
 		setChartLoaded( true );
 
@@ -85,10 +85,6 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 			} );
 		}
 	}, [ dimensionName, setValues ] );
-
-	const loaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
-	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;
@@ -131,7 +127,7 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 				} ) }">
 					<path d="M5.625 10L5.625 2.375L9.125 5.875L10 5L5 -1.76555e-07L-2.7055e-07 5L0.875 5.875L4.375 2.375L4.375 10L5.625 10Z" fill="currentColor" />
 				</svg>`,
-				Math.abs( difference ).toFixed( 2 ).replace( /(.00|0)$/, '' ), // .replace( ... ) removes trailing zeros
+				numberFormat( Math.abs( difference ), { maximumFractionDigits: 2 } ),
 			);
 
 			return (
@@ -139,8 +135,13 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 					'googlesitekit-visualization-tooltip--up': difference > 0,
 					'googlesitekit-visualization-tooltip--down': difference < 0,
 				} ) }">
-					<p>${ rowData[ 0 ].toUpperCase() }</p>
-					<p>${ statInfo }</p>
+					<p>
+						${ rowData[ 0 ].toUpperCase() }:
+						<b>${ numberFormat( rowData[ 1 ], { maximumFractionDigits: 1, style: 'percent' } ) }</b>
+					</p>
+					<p>
+						${ statInfo }
+					</p>
 				</div>`
 			);
 		},
@@ -181,6 +182,7 @@ export default function UserDimensionsPieChart( { dimensionName } ) {
 
 UserDimensionsPieChart.propTypes = {
 	dimensionName: PropTypes.string.isRequired,
+	entityURL: PropTypes.string,
 };
 
 UserDimensionsPieChart.defaultProps = {
