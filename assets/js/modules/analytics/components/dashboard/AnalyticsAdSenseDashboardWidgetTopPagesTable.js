@@ -88,7 +88,7 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 			row.dimensions[ 0 ],
 			Number( row.metrics[ 0 ].values[ 0 ] ).toFixed( 2 ),
 			Number( row.metrics[ 0 ].values[ 1 ] ).toFixed( 2 ),
-			numFmt( row.metrics[ 0 ].values[ 2 ] ),
+			numFmt( row.metrics[ 0 ].values[ 2 ], { style: 'decimal' } ),
 		];
 	} );
 

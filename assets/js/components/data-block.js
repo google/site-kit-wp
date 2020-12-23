@@ -87,6 +87,7 @@ class DataBlock extends Component {
 		if ( change ) {
 			// If changeDataUnit is given, try using it as currency first, otherwise add it as suffix.
 			if ( changeDataUnit ) {
+				// Format percentage change with only 1 digit instead of the usual 2.
 				changeFormatted = numFmt( Math.abs( Number( change ) ), changeDataUnit === '%' ? {
 					style: 'percent',
 					maximumFractionDigits: 1,
