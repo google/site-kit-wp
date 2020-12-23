@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -29,16 +30,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import AdminBarPreview from './AdminBarPreview';
 import DataBlock from '../data-block';
 import Data from 'googlesitekit-data';
+import PreviewBlock from '../PreviewBlock';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
 import { changeToPercent, readableLargeNumber } from '../../util';
 const { useSelect } = Data;
 
-const AdminBarUniqueVisitors = ( { classNames } ) => {
+const AdminBarUniqueVisitors = ( { className } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
@@ -55,13 +56,21 @@ const AdminBarUniqueVisitors = ( { classNames } ) => {
 		url,
 	};
 	const analyticsData = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( reportArgs ) );
+	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 
-	if ( undefined === analyticsData ) {
-		return <AdminBarPreview />;
+	if ( ! hasFinishedResolution ) {
+		return (
+			<div className={ classnames(
+				'mdc-layout-grid__cell',
+				className,
+			) }>
+				<PreviewBlock width="auto" height="59px" />
+			</div>
+		);
 	}
 
-	if ( ! analyticsData || ! analyticsData.length ) {
-		return false;
+	if ( ! analyticsData?.length ) {
+		return null;
 	}
 
 	const { totals } = analyticsData[ 0 ].data;
@@ -71,7 +80,10 @@ const AdminBarUniqueVisitors = ( { classNames } ) => {
 	const previousTotalUsers = previousMonth[ 0 ];
 
 	return (
-		<div className={ classNames }>
+		<div className={ classnames(
+			'mdc-layout-grid__cell',
+			className,
+		) }>
 			<DataBlock
 				className="overview-total-users"
 				title={ __( 'Total Users', 'google-site-kit' ) }
@@ -84,11 +96,11 @@ const AdminBarUniqueVisitors = ( { classNames } ) => {
 };
 
 AdminBarUniqueVisitors.propTypes = {
-	classNames: PropTypes.string,
+	className: PropTypes.string,
 };
 
 AdminBarUniqueVisitors.defaultProps = {
-	classNames: 'mdc-layout-grid__cell mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
+	className: 'mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
 };
 
 export default AdminBarUniqueVisitors;

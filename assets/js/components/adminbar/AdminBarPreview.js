@@ -35,13 +35,6 @@ const AdminBarPreview = () => (
 		">
 			<PreviewBlock width="auto" height="59px" />
 		</div>
-		<div className="
-			mdc-layout-grid__cell
-			mdc-layout-grid__cell--span-2-tablet
-			mdc-layout-grid__cell--span-3-desktop
-		">
-			<PreviewBlock width="auto" height="59px" />
-		</div>
 	</Fragment>
 );
 

@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -29,9 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import AdminBarPreview from './AdminBarPreview';
 import Data from 'googlesitekit-data';
 import DataBlock from '../data-block';
+import PreviewBlock from '../PreviewBlock';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-console/datastore/constants';
@@ -39,7 +40,7 @@ import { changeToPercent, readableLargeNumber } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 const { useSelect } = Data;
 
-const AdminBarClicks = ( { classNames } ) => {
+const AdminBarClicks = ( { className } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
@@ -52,9 +53,17 @@ const AdminBarClicks = ( { classNames } ) => {
 		url,
 	};
 	const searchConsoleData = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ) );
+	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 
-	if ( undefined === searchConsoleData ) {
-		return <AdminBarPreview />;
+	if ( ! hasFinishedResolution ) {
+		return (
+			<div className={ classnames(
+				'mdc-layout-grid__cell',
+				className,
+			) }>
+				<PreviewBlock width="auto" height="59px" />
+			</div>
+		);
 	}
 
 	// Split the data in two chunks.
@@ -67,7 +76,10 @@ const AdminBarClicks = ( { classNames } ) => {
 	const totalClicksChange = changeToPercent( totalOlderClicks, totalClicks );
 
 	return (
-		<div className={ classNames }>
+		<div className={ classnames(
+			'mdc-layout-grid__cell',
+			className,
+		) }>
 			<DataBlock
 				className="overview-total-clicks"
 				title={ __( 'Total Clicks', 'google-site-kit' ) }
@@ -80,11 +92,11 @@ const AdminBarClicks = ( { classNames } ) => {
 };
 
 AdminBarClicks.propTypes = {
-	classNames: PropTypes.string,
+	className: PropTypes.string,
 };
 
 AdminBarClicks.defaultProps = {
-	classNames: 'mdc-layout-grid__cell mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
+	className: 'mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
 };
 
 export default AdminBarClicks;

@@ -42,7 +42,6 @@ export default function AdminBarApp() {
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
 	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: currentEntityURL } ) );
-	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
 
 	const onMoreDetailsClick = useCallback( async () => {
@@ -80,36 +79,31 @@ export default function AdminBarApp() {
 						mdc-layout-grid__cell--align-middle
 					">
 						<div className="mdc-layout-grid__inner">
-							{ featureFlags.widgets.adminBar.enabled
-								? (
-									<Fragment>
-										{
-											( analyticsModuleActive && analyticsModuleConnected )
-												? (
-													<Fragment>
-														<AdminBarUniqueVisitors />
-														<AdminBarSessions />
-													</Fragment>
-												)
-												: (
-													<div className="
-														mdc-layout-grid__cell
-														mdc-layout-grid__cell--span-6-desktop
-														mdc-layout-grid__cell--span-4-tablet
-													">
-														<AnalyticsInactiveCTA />
-													</div>
-												)
-										}
+							{ featureFlags.widgets.adminBar.enabled && (
+								<Fragment>
+									{ analyticsModuleConnected && (
+										<Fragment>
+											<AdminBarUniqueVisitors />
+											<AdminBarSessions />
+										</Fragment>
+									) }
 
-										<AdminBarImpressions />
-										<AdminBarClicks />
-									</Fragment>
-								)
-								: (
-									<AdminbarModules />
-								)
-							}
+									{ ! analyticsModuleConnected && (
+										<div className="
+											mdc-layout-grid__cell
+											mdc-layout-grid__cell--span-6-desktop
+											mdc-layout-grid__cell--span-4-tablet
+										">
+											<AnalyticsInactiveCTA />
+										</div>
+									) }
+
+									<AdminBarImpressions />
+									<AdminBarClicks />
+								</Fragment>
+							) }
+
+							<AdminbarModules />
 						</div>
 					</div>
 					<div className="

@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -29,16 +30,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import AdminBarPreview from './AdminBarPreview';
 import Data from 'googlesitekit-data';
 import DataBlock from '../data-block';
+import PreviewBlock from '../PreviewBlock';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
 import { changeToPercent, readableLargeNumber } from '../../util';
 const { useSelect } = Data;
 
-const AdminBarSessions = ( { classNames } ) => {
+const AdminBarSessions = ( { className } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
@@ -77,13 +78,21 @@ const AdminBarSessions = ( { classNames } ) => {
 		url,
 	};
 	const analyticsData = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( reportArgs ) );
+	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 
-	if ( undefined === analyticsData ) {
-		return <AdminBarPreview />;
+	if ( ! hasFinishedResolution ) {
+		return (
+			<div className={ classnames(
+				'mdc-layout-grid__cell',
+				className,
+			) }>
+				<PreviewBlock width="auto" height="59px" />
+			</div>
+		);
 	}
 
-	if ( ! analyticsData || ! analyticsData.length ) {
-		return false;
+	if ( ! analyticsData?.length ) {
+		return null;
 	}
 
 	const { totals } = analyticsData[ 0 ].data;
@@ -93,7 +102,10 @@ const AdminBarSessions = ( { classNames } ) => {
 	const totalSessionsChange = changeToPercent( previousMonth[ 1 ], lastMonth[ 1 ] );
 
 	return (
-		<div className={ classNames }>
+		<div className={ classnames(
+			'mdc-layout-grid__cell',
+			className,
+		) }>
 			<DataBlock
 				className="overview-total-sessions"
 				title={ __( 'Total Sessions', 'google-site-kit' ) }
@@ -106,11 +118,11 @@ const AdminBarSessions = ( { classNames } ) => {
 };
 
 AdminBarSessions.propTypes = {
-	classNames: PropTypes.string,
+	className: PropTypes.string,
 };
 
 AdminBarSessions.defaultProps = {
-	classNames: 'mdc-layout-grid__cell mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
+	className: 'mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
 };
 
 export default AdminBarSessions;
