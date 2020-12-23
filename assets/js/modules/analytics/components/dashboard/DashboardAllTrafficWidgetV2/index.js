@@ -46,17 +46,16 @@ function DashboardAllTrafficWidget() {
 
 	let reportType;
 	switch ( dimensionName ) {
-		case 'ga:channelGrouping':
-			reportType = 'trafficsources-overview';
-			break;
 		case 'ga:country':
 			reportType = 'visitors-geo';
 			break;
 		case 'ga:deviceCategory':
 			reportType = 'visitors-mobile-overview';
 			break;
+		case 'ga:channelGrouping':
 		default:
 			reportType = 'trafficsources-overview';
+			break;
 	}
 
 	let reportArgs = {};
@@ -66,6 +65,7 @@ function DashboardAllTrafficWidget() {
 			'_r.drilldown': `analytics.pagePath:${ entityURL }`,
 		};
 	}
+
 	const serviceReportURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( reportType, reportArgs ) );
 
 	return (
@@ -99,7 +99,7 @@ function DashboardAllTrafficWidget() {
 						smSize={ 4 }
 					>
 						<DimensionTabs dimensionName={ dimensionName } />
-						<UserDimensionsPieChart dimensionName={ dimensionName } sourceLink={ serviceReportURL } />
+						<UserDimensionsPieChart dimensionName={ dimensionName } entityURL={ entityURL } />
 					</Cell>
 				</Row>
 			</Grid>
