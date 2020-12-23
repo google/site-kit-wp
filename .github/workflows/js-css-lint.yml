@@ -10,11 +10,10 @@ on:
       - opened
       - reopened
       - synchronize
-      - ready_for_review
 
 jobs:
   js-css-lint:
-    name: JS/CSS
+    name: JS + CSS
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

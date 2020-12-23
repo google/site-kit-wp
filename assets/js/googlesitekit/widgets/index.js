@@ -56,14 +56,14 @@ const Widgets = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param {string}             slug                Widget area's slug.
-	 * @param {Object}             settings            Widget area's settings.
-	 * @param {string}             settings.title      Title for this widget area.
-	 * @param {string}             settings.subtitle   Subtitle for this widget area.
-	 * @param {number}             [settings.priority] Optional. Priority for this widget area. Default: 10.
-	 * @param {(string|undefined)} [settings.icon]     Optional. URL to SVG icon for this widget area.
-	 * @param {string}             [settings.style]    Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
-	 * @param {(string|Array)}     [contextSlugs]      Optional. Widget context slug(s).
+	 * @param {string}         slug                Widget area's slug.
+	 * @param {Object}         settings            Widget area's settings.
+	 * @param {string}         settings.title      Title for this widget area.
+	 * @param {string}         settings.subtitle   Subtitle for this widget area.
+	 * @param {number}         [settings.priority] Optional. Priority for this widget area. Default: 10.
+	 * @param {WPComponent}    settings.Icon       Optional. React component to render icon for this widget area.
+	 * @param {string}         [settings.style]    Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
+	 * @param {(string|Array)} [contextSlugs]      Optional. Widget context slug(s).
 	 */
 	registerWidgetArea( slug, settings, contextSlugs ) {
 		dispatch( STORE_NAME ).registerWidgetArea( slug, settings );

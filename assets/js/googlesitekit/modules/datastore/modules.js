@@ -53,6 +53,7 @@ const RECEIVE_CHECK_REQUIREMENTS_SUCCESS = 'RECEIVE_CHECK_REQUIREMENTS_SUCCESS';
 
 const moduleDefaults = {
 	slug: '',
+	storeName: null,
 	name: '',
 	description: '',
 	homepage: null,
@@ -222,9 +223,11 @@ const baseActions = {
 	 * @since 1.20.0 Introduced the ability to register settings and setup components.
 	 * @since 1.22.0 Introduced the ability to add a checkRequirements function.
 	 * @since 1.23.0 Introduced the ability to register an Icon component.
+	 * @since n.e.x.t Introduced the ability to explictly define a module store name.
 	 *
 	 * @param {string}      slug                             Module slug.
 	 * @param {Object}      [settings]                       Optional. Module settings.
+	 * @param {string}      [settings.storeName]             Optional. Module storeName. If none is provided we assume no store exists for this module.
 	 * @param {string}      [settings.name]                  Optional. Module name. Default is the slug.
 	 * @param {string}      [settings.description]           Optional. Module description. Default empty string.
 	 * @param {WPComponent} [settings.Icon]                  Optional. React component to render module icon. Default none.
@@ -236,6 +239,7 @@ const baseActions = {
 	 * @param {Function}    [settings.checkRequirements]     Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
 	 */
 	*registerModule( slug, {
+		storeName,
 		name,
 		description,
 		Icon,
@@ -249,6 +253,7 @@ const baseActions = {
 		invariant( slug, 'module slug is required' );
 
 		const settings = {
+			storeName,
 			name,
 			description,
 			Icon,
@@ -321,7 +326,14 @@ export const baseControls = {
 	} ),
 	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl( ( { select } ) => ( { payload } ) => {
 		const { slug } = payload;
-		const getAdminReauthURL = select( `modules/${ slug }` )?.getAdminReauthURL;
+		const storeName = select( STORE_NAME ).getModuleStoreName( slug );
+
+		// If a storeName wasn't specified on registerModule we assume there is no store for this module
+		if ( ! storeName ) {
+			return;
+		}
+
+		const getAdminReauthURL = select( storeName )?.getAdminReauthURL;
 		if ( getAdminReauthURL ) {
 			return getAdminReauthURL();
 		}
@@ -602,6 +614,35 @@ const baseSelectors = {
 	} ),
 
 	/**
+	 * Gets module store name by slug.
+	 *
+	 * Returns the store name if preset or null if there is no store name for this module.
+	 * Returns `undefined` if state is still loading or if said module doesn't exist.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug Module slug.
+	 * @return {(string|null|undefined)} `string` of the store name if a name has been set for this module.
+	 * 									 `null` if no store name was set.
+	 * 									 `undefined` if state is still loading.
+	 */
+	getModuleStoreName: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const module = select( STORE_NAME ).getModule( slug );
+
+		// Return `undefined` if module with this slug isn't loaded yet.
+		if ( module === undefined ) {
+			return undefined;
+		}
+
+		// Return null if no store name was set
+		if ( module === null ) {
+			return null;
+		}
+
+		return module.storeName;
+	} ),
+
+	/**
 	 * Checks a module's activation status.
 	 *
 	 * Returns `true` if the module exists and is active.
@@ -612,7 +653,9 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
-	 * @return {(boolean|null|undefined)} TRUE when the module exists and is active; `undefined` if state is still loading or `null` if said module doesn't exist.
+	 * @return {(boolean|null|undefined)} `true` when the module exists and is active.
+	 * 									  `undefined` if state is still loading.
+	 * 									  `null` if said module doesn't exist.
 	 */
 	isModuleActive: createRegistrySelector( ( select ) => ( state, slug ) => {
 		const module = select( STORE_NAME ).getModule( slug );
@@ -642,7 +685,9 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
-	 * @return {(boolean|null|undefined)} TRUE when the module exists, is active and connected, otherwise FALSE; `undefined` if state is still loading or `null` if said module doesn't exist.
+	 * @return {(boolean|null|undefined)} `true` when the module exists, is active and connected, otherwise `false`.
+	 * 									  `undefined` if state is still loading.
+	 * 									  `null` if said module doesn't exist.
 	 */
 	isModuleConnected: createRegistrySelector( ( select ) => ( state, slug ) => {
 		const module = select( STORE_NAME ).getModule( slug );
