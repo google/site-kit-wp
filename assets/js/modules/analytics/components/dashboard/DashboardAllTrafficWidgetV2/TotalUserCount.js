@@ -108,7 +108,7 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 						height={ 17 }
 					/>
 
-					{ numberFormat( change, { style: 'percent', maximumFractionDigits: 1 } ) }
+					{ numberFormat( Math.abs( change ), { style: 'percent', maximumFractionDigits: 1 } ) }
 				</span>
 				<span className="googlesitekit-widget--analyticsAllTrafficV2__totalcount--daterange">
 					{ currentDateRangeLabel }
