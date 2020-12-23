@@ -157,7 +157,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	const dataFormats = [
 		( x ) => parseFloat( x ).toLocaleString(),
 		( x ) => parseFloat( x ).toLocaleString(),
-		( x ) => numFmt( x, '%' ),
+		( x ) => numFmt( x / 100, '%' ),
 		prepareSecondsForDisplay,
 
 	];
