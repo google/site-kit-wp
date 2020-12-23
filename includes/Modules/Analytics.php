@@ -1222,8 +1222,8 @@ final class Analytics extends Module
 					} else {
 						$fallback_properties_profiles = null;
 						$accounts_array               = array_values( $accounts );
-
-						for ( $i = 0, $len = min( 25, count( $accounts_array ) ); $i < $len; $i++ ) {
+						$number_of_accounts           = min( 25, count( $accounts_array ) );
+						for ( $i = 0; $i < $len; $i++ ) {
 							$account = $accounts_array[ $i ];
 
 							/* @var Google_Service_Analytics_Account $account Analytics account object. */
