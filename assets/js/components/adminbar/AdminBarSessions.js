@@ -51,28 +51,8 @@ const AdminBarSessions = ( { className } ) => {
 		limit: 10,
 		metrics: [
 			{
-				expression: 'ga:users',
-				alias: 'Users',
-			},
-			{
 				expression: 'ga:sessions',
 				alias: 'Sessions',
-			},
-			{
-				expression: 'ga:bounceRate',
-				alias: 'Bounce Rate',
-			},
-			{
-				expression: 'ga:avgSessionDuration',
-				alias: 'Average Session Duration',
-			},
-			{
-				expression: 'ga:goalCompletionsAll',
-				alias: 'Goal Completions',
-			},
-			{
-				expression: 'ga:pageviews',
-				alias: 'Pageviews',
 			},
 		],
 		url,
@@ -98,8 +78,8 @@ const AdminBarSessions = ( { className } ) => {
 	const { totals } = analyticsData[ 0 ].data;
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
-	const totalSessions = lastMonth[ 1 ];
-	const totalSessionsChange = changeToPercent( previousMonth[ 1 ], lastMonth[ 1 ] );
+	const totalSessions = lastMonth[ 0 ];
+	const totalSessionsChange = changeToPercent( previousMonth[ 0 ], lastMonth[ 0 ] );
 
 	return (
 		<div className={ classnames(
