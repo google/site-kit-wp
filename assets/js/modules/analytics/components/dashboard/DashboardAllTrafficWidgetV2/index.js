@@ -89,7 +89,7 @@ function DashboardAllTrafficWidget() {
 						<UserCountGraph dimensionName={ dimensionName } dimensionValue={ dimensionValue } />
 					</Cell>
 					<Cell size={ 4 }>
-						<DimensionTabs />
+						<DimensionTabs dimensionName={ dimensionName } />
 						<UserDimensionsPieChart sourceLink={ serviceReportURL } />
 					</Cell>
 				</Row>
