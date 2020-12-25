@@ -21,21 +21,17 @@
  */
 import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-// import { Fragment, useEffect, useState } from '@wordpress/element';
-// import { Fragment, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
-// import { getExistingTag } from '../../util/tag';
 import Warning from '../legacy-notifications/warning';
 import ProgressBar from '../ProgressBar';
 import { useChecks } from '../../hooks/useChecks';
 import CompatibilityErrorNotice from './CompatibilityErrorNotice';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-// const { useDispatch } = Data;
 
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
 const ERROR_FETCH_FAIL = 'check_fetch_failed';
@@ -94,58 +90,7 @@ const compatibilityChecks = [
 ];
 
 export default function CompatibilityChecks( props ) {
-	/*
-	constructor( props ) {
-		console.log( complete2 ); // eslint-disable-line no-console
-		console.log( error2 ); // eslint-disable-line no-console
-		const { isSiteKitConnected } = global._googlesitekitLegacyData.setup;
-		super( props );
-		this.state = {
-			complete: isSiteKitConnected,
-			error: null,
-			developerPlugin: {},
-		};
-	}
-	 */
-
-	/*
-	async componentDidMount() {
-		if ( this.state.complete ) {
-			return;
-		}
-		try {
-			for ( const testCallback of compatibilityChecks ) {
-				await testCallback();
-			}
-		} catch ( error ) {
-			const developerPlugin = await API.get( 'core', 'site', 'developer-plugin' );
-			this.setState( { error, developerPlugin } );
-		}
-
-		this.setState( { complete: true } );
-	}
-	*/
-	/*
-	const complete = false;
-	let error;
-	 */
 	const { complete, error } = useChecks( compatibilityChecks );
-	/*
-	useEffect(
-		() => {
-			( async () => {
-				//const { complete, error } = useChecks( compatibilityChecks );
-				const checks = useChecks( compatibilityChecks );
-				console.log( checks ); // eslint-disable-line no-console
-				debugger; // eslint-disable-line no-debugger
-			} )();
-		},
-		[ complete, error ]
-	);
-	 */
-	console.log( complete ); // eslint-disable-line no-console
-	console.log( error ); // eslint-disable-line no-console
-	debugger; // eslint-disable-line no-debugger
 	let CTAFeedback;
 	let inProgressFeedback;
 	const { children, ...restProps } = props;
@@ -171,8 +116,6 @@ export default function CompatibilityChecks( props ) {
 			<ProgressBar small compress />
 		</div>;
 	}
-
-	// debugger; // eslint-disable-line no-debugger
 
 	return children( {
 		restProps,

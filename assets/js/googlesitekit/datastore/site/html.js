@@ -81,7 +81,7 @@ const RESET_HTML_FOR_URL = 'RESET_HTML_FOR_URL';
 const WAIT_FOR_HTML_FOR_URL = 'WAIT_FOR_HTML_FOR_URL';
 const CHECK_FOR_SETUP_TAG = 'CHECK_FOR_SETUP_TAG';
 
-// Erros
+// Errors
 const ERROR_FETCH_FAIL = 'check_fetch_failed';
 const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
 

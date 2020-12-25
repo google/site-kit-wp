@@ -20,83 +20,39 @@
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
-//import { useEffect } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
-// const { useSelect, useDispatch } = Data;
 const { useSelect } = Data;
 
 /**
- * Debounces a value after the specified delay.
+ * Runs a series of asynchronous checks returning the first encountered error.
+ * All checks should be functions that throw their respective errors.
  *
- * @since 1.16.0
+ * @since n.e.x.t
  *
- * @param {Array} checks The checks to run.
- * @return {string} The update value after the delay.
+ * @param {Array} checks Array of functions to run.
+ * @return {Object} An object contiaining complete and error properties.
  */
 export function useChecks( checks ) {
 	const isSiteKitConnected = useSelect( ( select ) => select( CORE_SITE ).isConnected() );
-	// let complete = !! isSiteKitConnected;
-	// let error = null;
 	const [ complete, setComplete ] = useState( isSiteKitConnected );
 	const [ error, setError ] = useState( undefined );
 	useEffect( () => {
 		const runChecks = async () => {
 			try {
 				await Promise.all( checks.map( ( check ) => check() ) );
-				console.log( 2 ); // eslint-disable-line no-console
-				// complete = true;
 				setComplete( true );
 			} catch ( err ) {
 				setError( error );
-				// error = err;
 			}
 		};
 
 		runChecks();
-
-		/*
-		( async function runChecks() {
-			try {
-				await Promise.all( checks.map( ( check ) => check() ) );
-				console.log( 2 ); // eslint-disable-line no-console
-				complete = true;
-			} catch ( err ) {
-				error = err;
-			}
-		}() );
-		 */
 	}, [] );
-	console.log( complete ); // eslint-disable-line no-console
-	console.log( error ); // eslint-disable-line no-console
 	return { complete, error };
-	/*
-	let complete = isSiteKitConnected;
-	let error;
-	//const [ complete, setComplete ] = useState( isSiteKitConnected );
-	// const [ error, setError ] = useState( undefined );
-	// const { checkSetupTag } = useDispatch( CORE_SITE );
-	// checks.push( checkSetupTag );
-
-	useEffect(
-		() => {
-			( async () => {
-				try {
-					await Promise.all( checks.map( ( check ) => check() ) );
-					console.log( 2 ); // eslint-disable-line no-console
-					complete = true;
-				} catch ( err ) {
-					error = err;
-				}
-			} )();
-		},
-		// [ complete, error ]
-		[]
-	);
-
-	console.log( 3 ); // eslint-disable-line no-console
-	console.log( complete ); // eslint-disable-line no-console
-	return { complete, error };
-	 */
 }
 
