@@ -110,16 +110,13 @@ const baseActions = {
 		return dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getHTMLForURL' );
 	},
 
-	/**
-	 * Waits for setup tag ... HTML for to be resolved for the given URL. @TODO desc..
-	 *
-	 * @since n.e.x.t
-	 */
 	*checkForSetupTag() {
-		yield {
+		const setupTag = yield {
 			payload: {},
 			type: CHECK_FOR_SETUP_TAG,
 		};
+
+		return setupTag;
 	},
 
 	/**

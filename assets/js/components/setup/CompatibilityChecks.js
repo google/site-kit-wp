@@ -21,20 +21,24 @@
  */
 import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+// import { Fragment, useEffect, useState } from '@wordpress/element';
+// import { Fragment, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
-import { getExistingTag } from '../../util/tag';
+// import { getExistingTag } from '../../util/tag';
 import Warning from '../legacy-notifications/warning';
 import ProgressBar from '../ProgressBar';
 import { useChecks } from '../../hooks/useChecks';
 import CompatibilityErrorNotice from './CompatibilityErrorNotice';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+// const { useDispatch } = Data;
 
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
 const ERROR_FETCH_FAIL = 'check_fetch_failed';
-const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
 const ERROR_GOOGLE_API_CONNECTION_FAIL = 'google_api_connection_fail';
 const ERROR_AMP_CDN_RESTRICTED = 'amp_cdn_restricted';
 const ERROR_WP_PRE_V5 = 'wp_pre_v5';
@@ -50,16 +54,11 @@ const compatibilityChecks = [
 			throw ERROR_INVALID_HOSTNAME;
 		}
 	},
-	// Generate and check for a Site Kit specific meta tag on the page to test for aggressive caching.
+	// Check for a Site Kit specific meta tag on the page to test for aggressive caching.
 	async () => {
-		const { token } = await API.set( 'core', 'site', 'setup-tag' );
-
-		const scrapedTag = await getExistingTag( 'setup' ).catch( () => {
-			throw ERROR_FETCH_FAIL;
-		} );
-
-		if ( token !== scrapedTag ) {
-			throw ERROR_TOKEN_MISMATCH;
+		const setupTag = await Data.dispatch( CORE_SITE ).checkForSetupTag();
+		if ( setupTag.error ) {
+			throw setupTag.error;
 		}
 	},
 	// Check that server can connect to Google's APIs via the core/site/data/health-checks endpoint.
@@ -126,7 +125,27 @@ export default function CompatibilityChecks( props ) {
 		this.setState( { complete: true } );
 	}
 	*/
+	/*
+	const complete = false;
+	let error;
+	 */
 	const { complete, error } = useChecks( compatibilityChecks );
+	/*
+	useEffect(
+		() => {
+			( async () => {
+				//const { complete, error } = useChecks( compatibilityChecks );
+				const checks = useChecks( compatibilityChecks );
+				console.log( checks ); // eslint-disable-line no-console
+				debugger; // eslint-disable-line no-debugger
+			} )();
+		},
+		[ complete, error ]
+	);
+	 */
+	console.log( complete ); // eslint-disable-line no-console
+	console.log( error ); // eslint-disable-line no-console
+	debugger; // eslint-disable-line no-debugger
 	let CTAFeedback;
 	let inProgressFeedback;
 	const { children, ...restProps } = props;
@@ -152,6 +171,8 @@ export default function CompatibilityChecks( props ) {
 			<ProgressBar small compress />
 		</div>;
 	}
+
+	// debugger; // eslint-disable-line no-debugger
 
 	return children( {
 		restProps,
