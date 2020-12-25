@@ -48,6 +48,7 @@ export function useChecks( checks ) {
 				setComplete( true );
 			} catch ( err ) {
 				setError( err );
+				setComplete( true );
 			}
 		};
 
