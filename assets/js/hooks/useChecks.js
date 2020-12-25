@@ -47,7 +47,7 @@ export function useChecks( checks ) {
 				await Promise.all( checks.map( ( check ) => check() ) );
 				setComplete( true );
 			} catch ( err ) {
-				setError( error );
+				setError( err );
 			}
 		};
 
