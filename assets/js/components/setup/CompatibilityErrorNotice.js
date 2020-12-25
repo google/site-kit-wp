@@ -73,9 +73,9 @@ const helperCTA = ( developerPlugin ) => {
 	};
 };
 
-export default function CompatibilityErrorNotice( error ) {
-	const developerPlugin = useSelect( ( select ) => select( CORE_SITE ).getDeveloperPluginState() );
-	console.log( developerPlugin ); // eslint-disable-line no-console
+export default function CompatibilityErrorNotice( props ) {
+	const { error } = props;
+	const developerPlugin = useSelect( ( select ) => select( CORE_SITE ).getDeveloperPluginState() ) || {};
 	const { installed } = developerPlugin;
 
 	switch ( error ) {

@@ -49,7 +49,6 @@ const compatibilityChecks = [
 		if ( [ 'localhost', '127.0.0.1' ].includes( hostname ) || hostname.match( /\.(example|invalid|localhost|test)$/ ) ) {
 			throw ERROR_INVALID_HOSTNAME;
 		}
-		throw ERROR_INVALID_HOSTNAME;
 	},
 	// Check for a Site Kit specific meta tag on the page to test for aggressive caching.
 	async () => {
