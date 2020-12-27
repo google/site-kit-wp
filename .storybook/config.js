@@ -39,7 +39,6 @@ bootstrapFetchMocks();
 const resetFeatures = () => {
 	disableFeature( 'widgets.dashboard' );
 	disableFeature( 'widgets.pageDashboard' );
-	disableFeature( 'userInput' );
 	disableFeature( 'storeErrorNotifications' );
 	disableFeature( 'serviceSetupV2' );
 };

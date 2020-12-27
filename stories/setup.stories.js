@@ -71,7 +71,6 @@ storiesOf( 'Setup / Using Proxy', module )
 		);
 	} )
 	.add( 'Start [User Input]', () => {
-		enableFeature( 'userInput' );
 		enableFeature( 'serviceSetupV2' );
 
 		return (
@@ -82,7 +81,6 @@ storiesOf( 'Setup / Using Proxy', module )
 	} )
 	.add( 'Start – with error [User Input]', () => {
 		global._googlesitekitLegacyData.setup.isSiteKitConnected = false;
-		enableFeature( 'userInput' );
 		enableFeature( 'serviceSetupV2' );
 
 		return (
@@ -105,7 +103,6 @@ storiesOf( 'Setup / Using Proxy', module )
 		);
 	} )
 	.add( 'Disconnected - URL Mismatch [User Input]', () => {
-		enableFeature( 'userInput' );
 		enableFeature( 'serviceSetupV2' );
 
 		const setupRegistry = ( registry ) => {

@@ -51,11 +51,9 @@ if ( setup.needReauthenticate ) {
 		addAuthNotification, 1 );
 }
 
-if ( featureFlags.userInput.enabled ) {
-	addFilter( 'googlesitekit.DashboardNotifications',
-		'googlesitekit.UserInputSettings',
-		addUserInputSettings, 1 );
-}
+addFilter( 'googlesitekit.DashboardNotifications',
+	'googlesitekit.UserInputSettings',
+	addUserInputSettings, 1 );
 
 if ( 'authentication_success' === notification || 'authentication_failure' === notification || 'user_input_success' === notification ) {
 	addFilter( 'googlesitekit.DashboardNotifications',
