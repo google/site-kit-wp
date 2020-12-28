@@ -61,12 +61,16 @@ export default function whenActive( { moduleName, FallbackComponent = null, Inco
 
 			// Return a fallback if the module is not active.
 			if ( module.active === false ) {
-				return FallbackComponent !== null ? FallbackComponent : null;
+				return FallbackComponent !== null ? <FallbackComponent /> : null;
 			}
 
 			// Return a fallback if the module is active but not connected yet.
 			if ( module.connected === false ) {
-				return IncompleteComponent !== null ? IncompleteComponent : null;
+				if ( IncompleteComponent !== null ) {
+					return <IncompleteComponent />;
+				}
+				// If there isn't a IncompleteComponent then use the FallbackComponent if available.
+				return FallbackComponent !== null ? <FallbackComponent /> : null;
 			}
 
 			// Return the active and connected component.
