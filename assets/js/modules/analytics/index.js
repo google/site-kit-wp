@@ -41,21 +41,41 @@ import DashboardPopularPagesWidget from './components/dashboard/DashboardPopular
 import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
+import AnalyticsIcon from '../../../svg/analytics.svg';
+import DashboardAllTrafficWidgetV2 from './components/dashboard/DashboardAllTrafficWidgetV2';
 
 domReady( () => {
+	// IMPORTANT: When updating arguments here, also update the same call in
+	// `provideModuleRegistrations`.
 	Modules.registerModule(
 		'analytics',
 		{
-			settingsEditComponent: SettingsEdit,
-			settingsViewComponent: SettingsView,
-			setupComponent: SetupMain,
+			storeName: 'modules/analytics',
+			SettingsEditComponent: SettingsEdit,
+			SettingsViewComponent: SettingsView,
+			SetupComponent: SetupMain,
+			Icon: AnalyticsIcon,
 		}
 	);
 
 	Widgets.registerWidget(
 		'analyticsAllTraffic',
 		{
-			component: DashboardAllTrafficWidget,
+			Component: DashboardAllTrafficWidget,
+			width: Widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+		},
+		[
+			AREA_DASHBOARD_ALL_TRAFFIC,
+			AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
+		],
+	);
+
+	Widgets.registerWidget(
+		'analyticsAllTrafficV2',
+		{
+			Component: DashboardAllTrafficWidgetV2,
 			width: Widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
@@ -69,7 +89,7 @@ domReady( () => {
 	Widgets.registerWidget(
 		'analyticsUniqueVisitors',
 		{
-			component: DashboardUniqueVisitorsWidget,
+			Component: DashboardUniqueVisitorsWidget,
 			width: Widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 3,
 			wrapWidget: true,
@@ -83,7 +103,7 @@ domReady( () => {
 	Widgets.registerWidget(
 		'analyticsGoals',
 		{
-			component: DashboardGoalsWidget,
+			Component: DashboardGoalsWidget,
 			width: Widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 4,
 			wrapWidget: true,
@@ -96,7 +116,7 @@ domReady( () => {
 	Widgets.registerWidget(
 		'analyticsBounceRate',
 		{
-			component: DashboardBounceRateWidget,
+			Component: DashboardBounceRateWidget,
 			width: Widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 4,
 			wrapWidget: true,
@@ -109,7 +129,7 @@ domReady( () => {
 	Widgets.registerWidget(
 		'analyticsPopularPages',
 		{
-			component: DashboardPopularPagesWidget,
+			Component: DashboardPopularPagesWidget,
 			width: Widgets.WIDGET_WIDTHS.HALF,
 			priority: 2,
 			wrapWidget: false,

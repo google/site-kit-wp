@@ -28,14 +28,19 @@ import Modules from 'googlesitekit-modules';
 import './datastore';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
+import TagManagerIcon from '../../../svg/tagmanager.svg';
 
 domReady( () => {
+	// IMPORTANT: When updating arguments here, also update the same call in
+	// `provideModuleRegistrations`.
 	Modules.registerModule(
 		'tagmanager',
 		{
-			settingsEditComponent: SettingsEdit,
-			settingsViewComponent: SettingsView,
-			setupComponent: SetupMain,
+			storeName: 'modules/tagmanager',
+			SettingsEditComponent: SettingsEdit,
+			SettingsViewComponent: SettingsView,
+			SetupComponent: SetupMain,
+			Icon: TagManagerIcon,
 		}
 	);
 } );

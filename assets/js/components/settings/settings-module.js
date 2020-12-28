@@ -30,6 +30,7 @@ import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { compose } from '@wordpress/compose';
 import { applyFilters } from '@wordpress/hooks';
+import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -42,16 +43,17 @@ import {
 	getReAuthURL,
 	showErrorNotification,
 	getModulesData,
+	listFormat,
 } from '../../util';
 import { refreshAuthentication } from '../../util/refresh-authentication';
 import Link from '../Link';
-import Button from '../../components/button';
+import Button from '../../components/Button';
 import data, { TYPE_MODULES } from '../../components/data';
 import SettingsOverlay from '../../components/settings/SettingsOverlay';
 import Spinner from '../Spinner';
 import GenericError from '../legacy-notifications/generic-error';
 import SetupModule from './SetupModule';
-import Dialog from '../../components/dialog';
+import Dialog from '../../components/Dialog';
 import ModuleIcon from '../ModuleIcon';
 import ModuleSetupIncomplete from '../../components/settings/module-setup-incomplete';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -145,7 +147,7 @@ class SettingsModule extends Component {
 	}
 
 	handleCloseModal( e ) {
-		if ( 27 === e.keyCode ) {
+		if ( ESCAPE === e.keyCode ) {
 			this.setState( {
 				dialogActive: false,
 			} );
@@ -209,8 +211,7 @@ class SettingsModule extends Component {
 		const modulesBeingEdited = filter( isEditing, ( module ) => module );
 		const editActive = 0 < modulesBeingEdited.length;
 
-		/* translators: used between list items, there is a space after the comma. */
-		const dependentModules = map( this.getDependentModules(), 'name' ).join( __( ', ', 'google-site-kit' ) );
+		const dependentModules = listFormat( map( this.getDependentModules(), 'name' ) );
 
 		// Set button text based on state.
 		let buttonText = __( 'Close', 'google-site-kit' );
@@ -256,24 +257,6 @@ class SettingsModule extends Component {
 							aria-controls={ `googlesitekit-settings-module__content--${ slug }` }
 							onClick={ handleAccordion.bind( null, slug ) }
 						>
-							{ error && editActive && isEditing[ moduleKey ] &&
-								<div className="googlesitekit-settings-module__error">
-									<div className="mdc-layout-grid">
-										<div className="mdc-layout-grid__inner">
-											<div className="
-												mdc-layout-grid__cell
-												mdc-layout-grid__cell--span-12
-											">
-												{ sprintf(
-													/* translators: %s: Error message */
-													__( 'Error: %s', 'google-site-kit' ),
-													error.errorMsg
-												) }
-											</div>
-										</div>
-									</div>
-								</div>
-							}
 							<div className="mdc-layout-grid">
 								<div className="mdc-layout-grid__inner">
 									<div className="
@@ -286,7 +269,7 @@ class SettingsModule extends Component {
 											googlesitekit-heading-4
 											googlesitekit-settings-module__title
 										">
-											<ModuleIcon slug={ slug } width={ 24 } height={ 26 } className="googlesitekit-settings-module__title-icon" />
+											<ModuleIcon slug={ slug } size={ 24 } className="googlesitekit-settings-module__title-icon" />
 											{ name }
 										</h3>
 									</div>
@@ -374,7 +357,7 @@ class SettingsModule extends Component {
 											{ isEditing[ moduleKey ] || isSavingModule ? (
 												<Fragment>
 													<Button
-														onClick={ () => handleEdit( moduleKey, buttonActionName, buttonAction ) }
+														onClick={ () => handleEdit( slug, buttonActionName, buttonAction ) }
 														disabled={ isSavingModule || ! canSubmitChanges }
 														id={ hasSettings && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
 													>
@@ -384,7 +367,7 @@ class SettingsModule extends Component {
 													{ hasSettings &&
 													<Link
 														className="googlesitekit-settings-module__footer-cancel"
-														onClick={ () => handleEdit( moduleKey, 'cancel' ) }
+														onClick={ () => handleEdit( slug, 'cancel' ) }
 														inherit
 													>
 														{ __( 'Cancel', 'google-site-kit' ) }
@@ -395,7 +378,7 @@ class SettingsModule extends Component {
 											<Link
 												className="googlesitekit-settings-module__edit-button"
 												onClick={ () => {
-													handleEdit( moduleKey, 'edit' );
+													handleEdit( slug, 'edit' );
 												} }
 												inherit
 											>
@@ -521,7 +504,7 @@ export default compose( [
 		const canSubmitChanges = select( CORE_MODULES ).canSubmitChanges( slug );
 
 		return {
-			hasSettings: !! module?.settingsEditComponent,
+			hasSettings: !! module?.SettingsEditComponent,
 			canSubmitChanges,
 		};
 	} ),

@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { React } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -61,14 +56,14 @@ const Widgets = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param {string}             slug                Widget area's slug.
-	 * @param {Object}             settings            Widget area's settings.
-	 * @param {string}             settings.title      Title for this widget area.
-	 * @param {string}             settings.subtitle   Subtitle for this widget area.
-	 * @param {number}             [settings.priority] Optional. Priority for this widget area. Default: 10.
-	 * @param {(string|undefined)} [settings.icon]     Optional. URL to SVG icon for this widget area.
-	 * @param {string}             [settings.style]    Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
-	 * @param {(string|Array)}     [contextSlugs]      Optional. Widget context slug(s).
+	 * @param {string}         slug                Widget area's slug.
+	 * @param {Object}         settings            Widget area's settings.
+	 * @param {string}         settings.title      Title for this widget area.
+	 * @param {string}         settings.subtitle   Subtitle for this widget area.
+	 * @param {number}         [settings.priority] Optional. Priority for this widget area. Default: 10.
+	 * @param {WPComponent}    settings.Icon       Optional. React component to render icon for this widget area.
+	 * @param {string}         [settings.style]    Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
+	 * @param {(string|Array)} [contextSlugs]      Optional. Widget context slug(s).
 	 */
 	registerWidgetArea( slug, settings, contextSlugs ) {
 		dispatch( STORE_NAME ).registerWidgetArea( slug, settings );
@@ -82,13 +77,13 @@ const Widgets = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param {string}          slug                Widget's slug.
-	 * @param {Object}          settings            Widget's settings.
-	 * @param {React.Component} settings.component  React component used to display the contents of this widget.
-	 * @param {number}          settings.priority   Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
-	 * @param {string}          settings.width      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
-	 * @param {boolean}         settings.wrapWidget Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
-	 * @param {(string|Array)}  [widgetAreaSlugs]   Optional. Widget area slug(s).
+	 * @param {string}         slug                Widget's slug.
+	 * @param {Object}         settings            Widget's settings.
+	 * @param {WPComponent}    settings.Component  React component used to display the contents of this widget.
+	 * @param {number}         settings.priority   Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
+	 * @param {string}         settings.width      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
+	 * @param {boolean}        settings.wrapWidget Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
+	 * @param {(string|Array)} [widgetAreaSlugs]   Optional. Widget area slug(s).
 	 */
 	registerWidget( slug, settings, widgetAreaSlugs ) {
 		dispatch( STORE_NAME ).registerWidget( slug, settings );

@@ -19,11 +19,10 @@
 /**
  * Internal dependencies
  */
-import '../publisher-wins';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import SetupUsingProxy from '../setup/SetupUsingProxy';
-import LegacyDashboardSplashApp from './LegacyDashboardSplashApp';
+import SetupUsingGCP from '../legacy-setup/SetupUsingGCP';
 const { useSelect } = Data;
 
 export default function DashboardSplashApp() {
@@ -31,8 +30,10 @@ export default function DashboardSplashApp() {
 
 	if ( usingProxy === true ) {
 		return <SetupUsingProxy />;
-	} else if ( usingProxy === false ) {
-		return <LegacyDashboardSplashApp />;
+	}
+
+	if ( usingProxy === false ) {
+		return <SetupUsingGCP />;
 	}
 
 	return null;
