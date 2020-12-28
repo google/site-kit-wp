@@ -142,26 +142,37 @@ class User_Input_Settings {
 
 		if ( ! empty( $settings ) ) {
 			$user_input_settings_args['body']['settings']       = $settings;
-			$user_input_settings_args['body']['client_user_id'] = get_current_user_id();
+			$user_input_settings_args['body']['client_user_id'] = (string) get_current_user_id();
 		}
 
-		$response = wp_remote_post( $user_input_settings_url, wp_json_encode( $user_input_settings_args ) );
+		// JSON encode the body.
+		$user_input_settings_args['body'] = wp_json_encode( $user_input_settings_args['body'] );
+
+		$response = wp_remote_post( $user_input_settings_url, $user_input_settings_args );
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
 
-		$code = wp_remote_retrieve_response_code( $response );
+		$code     = wp_remote_retrieve_response_code( $response );
+		$body     = wp_remote_retrieve_body( $response );
+		$settings = json_decode( $body, true );
+
 		if ( $code < 200 || 299 < $code ) {
+			if ( is_array( $settings ) && ! empty( $settings['error'] ) ) {
+				return new WP_Error(
+					'user_input_settings_request',
+					/* translators: %s: Google Proxy API Error Message */
+					sprintf( __( 'User input settings request failed with error: %s', 'google-site-kit' ), $settings['error'] ),
+					array( 'status' => $code )
+				);
+			}
 			return new WP_Error(
 				'user_input_settings_request',
 				__( 'User input settings request failed.', 'google-site-kit' ),
 				array( 'status' => $code )
 			);
 		}
-
-		$body     = wp_remote_retrieve_body( $response );
-		$settings = json_decode( $body, true );
 
 		if ( is_array( $settings ) ) {
 			$this->cache_settings( $settings );
