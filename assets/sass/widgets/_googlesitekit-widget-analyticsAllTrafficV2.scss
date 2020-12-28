@@ -1,5 +1,5 @@
 /**
- * `modules/search-console` data store constants.
+ * Analytics AllTraffic V2 styles.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,7 +16,27 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/search-console';
+.googlesitekit-plugin {
 
-// Date range offset days for Search Console report requests.
-export const DATE_RANGE_OFFSET = 2;
+	.googlesitekit-widget.googlesitekit-widget--analyticsAllTrafficV2 {
+
+		.mdc-tab-scroller__scroll-content {
+			justify-content: center;
+		}
+
+		.mdc-tab-indicator__content--underline {
+			border-radius: 4px 4px 0 0;
+			height: 4px;
+		}
+
+		.mdc-tab {
+			height: 40px;
+			padding: 0 20px;
+		}
+
+		.mdc-tab__text-label {
+			letter-spacing: normal;
+			text-transform: none;
+		}
+	}
+}

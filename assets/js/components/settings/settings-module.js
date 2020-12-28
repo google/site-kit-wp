@@ -357,7 +357,7 @@ class SettingsModule extends Component {
 											{ isEditing[ moduleKey ] || isSavingModule ? (
 												<Fragment>
 													<Button
-														onClick={ () => handleEdit( moduleKey, buttonActionName, buttonAction ) }
+														onClick={ () => handleEdit( slug, buttonActionName, buttonAction ) }
 														disabled={ isSavingModule || ! canSubmitChanges }
 														id={ hasSettings && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
 													>
@@ -367,7 +367,7 @@ class SettingsModule extends Component {
 													{ hasSettings &&
 													<Link
 														className="googlesitekit-settings-module__footer-cancel"
-														onClick={ () => handleEdit( moduleKey, 'cancel' ) }
+														onClick={ () => handleEdit( slug, 'cancel' ) }
 														inherit
 													>
 														{ __( 'Cancel', 'google-site-kit' ) }
@@ -378,7 +378,7 @@ class SettingsModule extends Component {
 											<Link
 												className="googlesitekit-settings-module__edit-button"
 												onClick={ () => {
-													handleEdit( moduleKey, 'edit' );
+													handleEdit( slug, 'edit' );
 												} }
 												inherit
 											>
