@@ -25,7 +25,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
@@ -55,15 +55,16 @@ function DashboardUniqueVisitorsWidget() {
 		const accountID = store.getAccountID();
 		const profileID = store.getProfileID();
 		const internalWebPropertyID = store.getInternalWebPropertyID();
-		const commonArgs = {
-			dateRange: select( CORE_USER ).getDateRange(),
-		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			commonArgs.url = url;
-		}
+		const { compareStartDate, compareEndDate, startDate, endDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET, compare: true } );
+
 		const sparklineArgs = {
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate,
+			url,
 			dimensions: 'ga:date',
 			metrics: [
 				{
@@ -71,19 +72,21 @@ function DashboardUniqueVisitorsWidget() {
 					alias: 'Users',
 				},
 			],
-			...commonArgs,
 		};
 
 		// This request needs to be separate from the sparkline request because it would result in a different total if it included the ga:date dimension.
 		const args = {
-			multiDateRange: 1,
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate,
+			url,
 			metrics: [
 				{
 					expression: 'ga:users',
 					alias: 'Total Users',
 				},
 			],
-			...commonArgs,
 		};
 
 		return {
