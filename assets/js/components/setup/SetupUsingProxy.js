@@ -44,9 +44,12 @@ import OptIn from '../optin';
 import CompatibilityChecks from './compatibility-checks';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../../googlesitekit/datastore/user/constants';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 function SetupUsingProxy() {
+	const serviceSetupV2 = useFeature( 'serviceSetupV2' );
+
 	const {
 		isSecondAdmin,
 		isResettable,
@@ -125,10 +128,10 @@ function SetupUsingProxy() {
 										<div className={ classnames(
 											'mdc-layout-grid__inner',
 											{
-												'googlesitekit-setup__content': featureFlags.serviceSetupV2.enabled,
+												'googlesitekit-setup__content': serviceSetupV2,
 											}
 										) }>
-											{ featureFlags.serviceSetupV2.enabled && (
+											{ serviceSetupV2 && (
 												<div
 													className="
 															googlesitekit-setup__icon
@@ -146,8 +149,8 @@ function SetupUsingProxy() {
 													'mdc-layout-grid__cell',
 													'mdc-layout-grid__cell--span-12-tablet',
 													{
-														'mdc-layout-grid__cell--span-6-desktop': featureFlags.serviceSetupV2.enabled,
-														'mdc-layout-grid__cell--span-12-desktop': ! featureFlags.serviceSetupV2.enabled,
+														'mdc-layout-grid__cell--span-6-desktop': serviceSetupV2,
+														'mdc-layout-grid__cell--span-12-desktop': ! serviceSetupV2,
 													}
 												) }
 											>

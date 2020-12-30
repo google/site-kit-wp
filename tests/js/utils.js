@@ -13,6 +13,8 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
 /**
  * Internal dependencies
  */
+import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
+import { enabledFeatures } from '../../assets/js/features';
 import coreSiteStore from '../../assets/js/googlesitekit/datastore/site';
 import { STORE_NAME as CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import coreUserStore from '../../assets/js/googlesitekit/datastore/user';
@@ -111,7 +113,9 @@ export function WithTestRegistry( { children, callback, registry = createTestReg
 
 	return (
 		<RegistryProvider value={ registry }>
-			{ children }
+			<FeaturesProvider value={ enabledFeatures }>
+				{ children }
+			</FeaturesProvider>
 		</RegistryProvider>
 	);
 }

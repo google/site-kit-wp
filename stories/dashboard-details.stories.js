@@ -31,17 +31,13 @@ import { removeAllFilters } from '@wordpress/hooks';
  */
 import { provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import FeaturesProvider from '../assets/js/components/FeaturesProvider';
 import DashboardDetailsApp from '../assets/js/components/dashboard-details/dashboard-details-app';
-import { enableFeature } from './utils/features';
 
 storiesOf( 'Dashboard Details', module )
 	.add( 'Existing Entity', () => {
-		// Ensure feature flag for Header component exists.
-		enableFeature( 'storeErrorNotifications' );
-
 		// Ensure widget API is disabled and don't display legacy widgets either.
 		// TODO: Expand this story to include new widgets once legacy widgets are no longer used.
-		enableFeature( 'widgets.pageDashboard' );
 		removeAllFilters( 'googlesitekit.DashboardDetailsModule' );
 
 		const setupRegistry = ( registry ) => {
@@ -56,7 +52,12 @@ storiesOf( 'Dashboard Details', module )
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardDetailsApp />
+				<FeaturesProvider value={ {
+					widgets: { pageDashboard: true },
+					storeErrorNotifications: true,
+				} }>
+					<DashboardDetailsApp />
+				</FeaturesProvider>
 			</WithTestRegistry>
 		);
 	} )

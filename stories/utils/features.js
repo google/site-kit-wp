@@ -21,10 +21,6 @@
  */
 import set from 'lodash/set';
 
-function setFeatureActive( feature, active ) {
-	set( global, `featureFlags.${ feature }.enabled`, active );
-}
-
 /**
  * Enables a feature.
  *
@@ -33,7 +29,7 @@ function setFeatureActive( feature, active ) {
  * @param {string} feature Feature to enable.
  */
 export function enableFeature( feature ) {
-	setFeatureActive( feature, true );
+	set( global, `_googlesitekitBaseData.enabledFeatures.${ feature }`, true );
 }
 
 /**
@@ -44,5 +40,5 @@ export function enableFeature( feature ) {
  * @param {string} feature Feature to disable.
  */
 export function disableFeature( feature ) {
-	setFeatureActive( feature, false );
+	set( global, `_googlesitekitBaseData.enabledFeatures.${ feature }`, false );
 }

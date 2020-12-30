@@ -54,7 +54,7 @@ class Feature_Flags {
 
 		// In JS, the key always ends in `enabled`, but we add that here to eliminate
 		// semantic redundancy with the name of the method.
-		$feature_path  = explode( '.', "$feature.enabled" );
+		$feature_path  = explode( '.', $feature );
 		$feature_modes = array_reduce(
 			$feature_path,
 			function ( $value, $key ) {
@@ -66,7 +66,20 @@ class Feature_Flags {
 			static::$features
 		);
 
-		return in_array( static::get_mode(), (array) $feature_modes, true );
+		$feature_enabled = in_array( static::get_mode(), (array) $feature_modes, true );
+
+		return apply_filters( 'googlesitekit_is_feature_enabled', $feature_enabled, $feature, static::get_mode() );
+	}
+
+	/**
+	 * Gets the entire feature flags configuration.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Feature configuration.
+	 */
+	public static function get_features() {
+		return static::$features;
 	}
 
 	/**
@@ -99,10 +112,11 @@ class Feature_Flags {
 	 * Gets the current feature flag mode.
 	 *
 	 * @since 1.22.0
+	 * @since n.e.x.t Made the function public.
 	 *
 	 * @return string Current mode.
 	 */
-	private static function get_mode() {
+	public static function get_mode() {
 		/**
 		 * Filter the feature flag mode.
 		 *

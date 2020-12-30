@@ -32,8 +32,11 @@ import Header from '../Header';
 import DateRangeSelector from '../DateRangeSelector';
 import PageHeader from '../PageHeader';
 import { Cell, Grid, Row } from '../../material-components';
+import { useFeature } from '../../hooks/useFeature';
 
 export default function DashboardApp() {
+	const dashboardWidgetsEnabled = useFeature( 'widgets.dashboard' );
+
 	return (
 		<Fragment>
 			<Header>
@@ -53,7 +56,7 @@ export default function DashboardApp() {
 								/>
 							</Cell>
 
-							{ featureFlags.widgets.dashboard.enabled && (
+							{ dashboardWidgetsEnabled && (
 								<Cell size={ 12 }>
 									<WidgetContextRenderer slug="dashboard" />
 								</Cell>
