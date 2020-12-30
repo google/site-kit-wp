@@ -70,7 +70,7 @@ class Feature_FlagsTest extends TestCase {
 		return array(
 			'no feature given'                             => array(
 				array(
-					'test_feature' => array( 'enabled' => 'production' ),
+					'test_feature' => 'production',
 				),
 				'production',
 				'',
@@ -78,7 +78,7 @@ class Feature_FlagsTest extends TestCase {
 			),
 			'non-string truthy feature given'              => array(
 				array(
-					'test_feature' => array( 'enabled' => 'production' ),
+					'test_feature' => 'production',
 				),
 				'production',
 				(object) array( 'foo' => 'bar' ),
@@ -86,7 +86,7 @@ class Feature_FlagsTest extends TestCase {
 			),
 			'feature enabled for production in production' => array(
 				array(
-					'test_feature' => array( 'enabled' => 'production' ),
+					'test_feature' => 'production',
 				),
 				'production',
 				'test_feature',
@@ -95,7 +95,7 @@ class Feature_FlagsTest extends TestCase {
 			'sub-feature enabled for production in production' => array(
 				array(
 					'test_feature' => array(
-						'sub_feature' => array( 'enabled' => 'production' ),
+						'sub_feature' => 'production',
 					),
 				),
 				'production',
@@ -104,7 +104,7 @@ class Feature_FlagsTest extends TestCase {
 			),
 			'feature enabled for development in production' => array(
 				array(
-					'test_feature' => array( 'enabled' => 'development' ),
+					'test_feature' => 'development',
 				),
 				'production',
 				'test_feature',
@@ -113,7 +113,7 @@ class Feature_FlagsTest extends TestCase {
 			'sub-feature enabled for development in production' => array(
 				array(
 					'test_feature' => array(
-						'sub_feature' => array( 'enabled' => 'development' ),
+						'sub_feature' => 'development',
 					),
 				),
 				'production',
@@ -122,9 +122,7 @@ class Feature_FlagsTest extends TestCase {
 			),
 			'feature enabled for development and production in development' => array(
 				array(
-					'test_feature' => array(
-						'enabled' => array( 'development', 'production' ),
-					),
+					'test_feature' => array( 'development', 'production' ),
 				),
 				'development',
 				'test_feature',
@@ -135,7 +133,7 @@ class Feature_FlagsTest extends TestCase {
 					'test_feature' => array(
 						'sub_feature' => array(
 							'third_level' => array(
-								'fourth' => array( 'enabled' => 'test' ),
+								'fourth' => 'test',
 							),
 						),
 					),
