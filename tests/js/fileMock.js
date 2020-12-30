@@ -1,5 +1,5 @@
 /**
- * UserDimensionsPieChart component
+ * Test file mock.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,16 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-// eslint-disable-next-line no-unused-vars
-export default function UserDimensionsPieChart( { sourceLink } ) {
-	return null;
-}
-
-UserDimensionsPieChart.propTypes = {
-	sourceLink: PropTypes.string,
-};
+export default 'test-file-stub';
