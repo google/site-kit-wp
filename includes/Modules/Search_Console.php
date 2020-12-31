@@ -127,7 +127,7 @@ final class Search_Console extends Module
 	 */
 	public function get_scopes() {
 		return array(
-			'https://www.googleapis.com/auth/webmasters',
+			'https://www.googleapis.com/auth/webmasters', // The scope for the Search Console remains the legacy webmasters scope.
 		);
 	}
 
@@ -172,10 +172,10 @@ final class Search_Console extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:matched-sites'   => array( 'service' => 'webmasters' ),
-			'GET:searchanalytics' => array( 'service' => 'webmasters' ),
-			'POST:site'           => array( 'service' => 'webmasters' ),
-			'GET:sites'           => array( 'service' => 'webmasters' ),
+			'GET:matched-sites'   => array( 'service' => 'searchconsole' ),
+			'GET:searchanalytics' => array( 'service' => 'searchconsole' ),
+			'POST:site'           => array( 'service' => 'searchconsole' ),
+			'GET:sites'           => array( 'service' => 'searchconsole' ),
 		);
 	}
 
@@ -192,7 +192,7 @@ final class Search_Console extends Module
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:matched-sites':
-				return $this->get_webmasters_service()->sites->listSites();
+				return $this->get_searchconsole_service()->sites->listSites();
 			case 'GET:searchanalytics':
 				$start_date = $data['startDate'];
 				$end_date   = $data['endDate'];
@@ -247,11 +247,11 @@ final class Search_Console extends Module
 
 					try {
 						// If the site does not exist in the account, an exception will be thrown.
-						$site = $this->get_webmasters_service()->sites->get( $site_url );
+						$site = $this->get_searchconsole_service()->sites->get( $site_url );
 					} catch ( Google_Service_Exception $exception ) {
 						// If we got here, the site does not exist in the account, so we will add it.
 						/* @var ResponseInterface $response Response object. */
-						$response = $this->get_webmasters_service()->sites->add( $site_url );
+						$response = $this->get_searchconsole_service()->sites->add( $site_url );
 
 						if ( 204 !== $response->getStatusCode() ) {
 							return new WP_Error(
@@ -262,7 +262,7 @@ final class Search_Console extends Module
 						}
 
 						// Fetch the site again now that it exists.
-						$site = $this->get_webmasters_service()->sites->get( $site_url );
+						$site = $this->get_searchconsole_service()->sites->get( $site_url );
 					}
 
 					$restore_defer();
@@ -274,7 +274,7 @@ final class Search_Console extends Module
 					);
 				};
 			case 'GET:sites':
-				return $this->get_webmasters_service()->sites->listSites();
+				return $this->get_searchconsole_service()->sites->listSites();
 		}
 
 		return parent::create_data_request( $data );
@@ -420,7 +420,7 @@ final class Search_Console extends Module
 			$request->setRowLimit( $args['row_limit'] );
 		}
 
-		return $this->get_webmasters_service()
+		return $this->get_searchconsole_service()
 			->searchanalytics
 			->query( $property_id, $request );
 	}
@@ -544,8 +544,8 @@ final class Search_Console extends Module
 	 *
 	 * @return Google_Service_SearchConsole The Search Console API service.
 	 */
-	private function get_webmasters_service() {
-		return $this->get_service( 'webmasters' );
+	private function get_searchconsole_service() {
+		return $this->get_service( 'searchconsole' );
 	}
 
 	/**
@@ -563,7 +563,7 @@ final class Search_Console extends Module
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
-			'webmasters' => new Google_Service_SearchConsole( $client ),
+			'searchconsole' => new Google_Service_SearchConsole( $client ),
 		);
 	}
 
