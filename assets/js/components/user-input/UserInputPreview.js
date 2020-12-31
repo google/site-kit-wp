@@ -25,15 +25,13 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState, Fragment } from '@wordpress/element';
-import { addQueryArgs } from '@wordpress/url';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Cell, Row } from '../../material-components';
 import Button from '../Button';
 import ProgressBar from '../ProgressBar';
@@ -41,36 +39,19 @@ import ErrorNotice from '../ErrorNotice';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import { getUserInputAnwsers } from './util/constants';
-const { useSelect, useDispatch } = Data;
+const { useSelect } = Data;
 
-export default function UserInputPreview( { noFooter, back, goTo, redirectURL } ) {
-	const [ isNavigating, setIsNavigating ] = useState( false );
-
-	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
+export default function UserInputPreview(
+	{
+		noFooter,
+		back,
+		goTo,
+		isNavigating,
+		isSavingSettings,
+		error,
+		submitChanges,
+	} ) {
 	const settings = useSelect( ( select ) => select( CORE_USER ).getUserInputSettings() );
-	const { isSavingSettings, error } = useSelect( ( select ) => ( {
-		isSavingSettings: select( CORE_USER ).isFetchingSaveUserInputSettings(),
-		error: select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] ),
-	} ) );
-
-	const { saveUserInputSettings } = useDispatch( CORE_USER );
-	const submitChanges = useCallback( async () => {
-		setIsNavigating( true );
-		const response = await saveUserInputSettings();
-		if ( ! response.error ) {
-			if ( redirectURL ) {
-				const url = new URL( redirectURL );
-				// Here we don't use `addQueryArgs` due to a bug with how it handles hashes
-				// See https://github.com/WordPress/gutenberg/issues/16655
-				url.searchParams.set( 'notification', 'user_input_success' );
-				global.location.assign( url.toString() );
-			} else {
-				global.location.assign( addQueryArgs( dashboardURL, { notification: 'user_input_success' } ) );
-			}
-		} else {
-			setIsNavigating( false );
-		}
-	}, [ dashboardURL ] );
 
 	const {
 		USER_INPUT_ANSWERS_GOALS,
@@ -93,7 +74,7 @@ export default function UserInputPreview( { noFooter, back, goTo, redirectURL } 
 									<UserInputPreviewGroup
 										questionNumber={ 1 }
 										title={ __( 'Which best describes your team/role relation to this site?', 'google-site-kit' ) }
-										edit={ goTo.bind( null, 1 ) }
+										edit={ goTo.bind( null, 1, true ) }
 										values={ settings?.role?.values || [] }
 										options={ USER_INPUT_ANSWERS_ROLE }
 									/>
@@ -101,7 +82,7 @@ export default function UserInputPreview( { noFooter, back, goTo, redirectURL } 
 									<UserInputPreviewGroup
 										questionNumber={ 2 }
 										title={ __( 'How often do you create new posts for this site?', 'google-site-kit' ) }
-										edit={ goTo.bind( null, 2 ) }
+										edit={ goTo.bind( null, 2, true ) }
 										values={ settings?.postFrequency?.values || [] }
 										options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
 									/>
@@ -109,7 +90,7 @@ export default function UserInputPreview( { noFooter, back, goTo, redirectURL } 
 									<UserInputPreviewGroup
 										questionNumber={ 3 }
 										title={ __( 'What are the goals of this site?', 'google-site-kit' ) }
-										edit={ goTo.bind( null, 3 ) }
+										edit={ goTo.bind( null, 3, true ) }
 										values={ settings?.goals?.values || [] }
 										options={ USER_INPUT_ANSWERS_GOALS }
 									/>
@@ -118,7 +99,7 @@ export default function UserInputPreview( { noFooter, back, goTo, redirectURL } 
 									<UserInputPreviewGroup
 										questionNumber={ 4 }
 										title={ __( 'What do you need help most with for this site?', 'google-site-kit' ) }
-										edit={ goTo.bind( null, 4 ) }
+										edit={ goTo.bind( null, 4, true ) }
 										values={ settings?.helpNeeded?.values || [] }
 										options={ USER_INPUT_ANSWERS_HELP_NEEDED }
 									/>
@@ -126,7 +107,7 @@ export default function UserInputPreview( { noFooter, back, goTo, redirectURL } 
 									<UserInputPreviewGroup
 										questionNumber={ 5 }
 										title={ __( 'To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for:', 'google-site-kit' ) }
-										edit={ goTo.bind( null, 5 ) }
+										edit={ goTo.bind( null, 5, true ) }
 										values={ settings?.searchTerms?.values || [] }
 									/>
 								</Cell>
@@ -153,6 +134,10 @@ export default function UserInputPreview( { noFooter, back, goTo, redirectURL } 
 }
 
 UserInputPreview.propTypes = {
+	isNavigating: PropTypes.bool,
+	isSavingSettings: PropTypes.bool,
+	error: PropTypes.bool,
+	submitChanges: PropTypes.func,
 	noFooter: PropTypes.bool,
 	back: PropTypes.func,
 	goTo: PropTypes.func.isRequired,

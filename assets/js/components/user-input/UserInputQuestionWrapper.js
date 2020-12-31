@@ -45,6 +45,9 @@ export default function UserInputQuestionWrapper( props ) {
 		questionNumber,
 		title,
 		description,
+		single,
+		submitChanges,
+		goToPreview,
 		next,
 		nextLabel,
 		back,
@@ -81,17 +84,30 @@ export default function UserInputQuestionWrapper( props ) {
 
 					{ isActive && (
 						<div className="googlesitekit-user-input__buttons">
-							{ back && (
+							{ ! single && back && (
 								<Button text onClick={ back }>
 									{ backLabel || __( 'Back', 'google-site-kit' ) }
 								</Button>
 							) }
-							{ next && (
+							{ ! single && next && (
 								<Button
 									onClick={ next }
 									disabled={ values.filter( ( value ) => value.trim().length > 0 ).length === 0 }
 								>
 									{ nextLabel || __( 'Next', 'google-site-kit' ) }
+								</Button>
+							) }
+							{ single && single === 'user-input' && (
+								<Button onClick={ goToPreview }>
+									{ __( 'Back', 'google-site-kit' ) }
+								</Button>
+							) }
+							{ single && single === 'settings' && (
+								<Button
+									onClick={ submitChanges }
+									disabled={ values.filter( ( value ) => value.trim().length > 0 ).length === 0 }
+								>
+									{ __( 'Submit', 'google-site-kit' ) }
 								</Button>
 							) }
 						</div>
@@ -109,6 +125,12 @@ UserInputQuestionWrapper.propTypes = {
 	isActive: PropTypes.bool,
 	title: PropTypes.string,
 	description: PropTypes.string,
+	single: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.bool,
+	] ),
+	submitChanges: PropTypes.func,
+	goToPreview: PropTypes.func,
 	next: PropTypes.func,
 	nextLabel: PropTypes.string,
 	back: PropTypes.func,

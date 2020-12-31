@@ -19,8 +19,9 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment, useEffect } from '@wordpress/element';
+import { useCallback, useState, Fragment, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -42,13 +43,16 @@ import {
 } from './util/constants';
 import useQueryArg from '../../hooks/useQueryArg';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
-const { useSelect } = Data;
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+const { useSelect, useDispatch } = Data;
 
 export default function UserInputQuestionnaire() {
 	const steps = [ ...USER_INPUT_QUESTIONS_LIST, 'preview' ];
 
 	const [ activeSlug, setActiveSlug ] = useQueryArg( 'question', steps[ 0 ] );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
+	// The single variable is used to edit *just one question* from the summary screens on the user input page and the settings page.
+	const [ single, setSingle ] = useQueryArg( 'single', false );
 
 	const activeSlugIndex = steps.indexOf( activeSlug );
 
@@ -81,7 +85,11 @@ export default function UserInputQuestionnaire() {
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );
 	}, [ activeSlugIndex ] );
 
-	const goTo = useCallback( ( num = 1 ) => {
+	const goTo = useCallback( ( num = 1, shouldSetSingle = false ) => {
+		// Add the single edit context to the query string when navigating to a specific question on the user-input page.
+		if ( shouldSetSingle ) {
+			setSingle( 'user-input' );
+		}
 		if ( steps.length >= num && num > 0 ) {
 			setActiveSlug( steps[ num - 1 ] );
 			global.scrollTo( 0, 0 );
@@ -90,6 +98,39 @@ export default function UserInputQuestionnaire() {
 
 	const back = useCallback( () => {
 		setActiveSlug( steps[ activeSlugIndex - 1 ] );
+	}, [ activeSlugIndex ] );
+
+	const [ isNavigating, setIsNavigating ] = useState( false );
+
+	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
+
+	const { isSavingSettings, error } = useSelect( ( select ) => ( {
+		isSavingSettings: select( CORE_USER ).isFetchingSaveUserInputSettings(),
+		error: select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] ),
+	} ) );
+
+	const { saveUserInputSettings } = useDispatch( CORE_USER );
+
+	const submitChanges = useCallback( async () => {
+		setIsNavigating( true );
+		const response = await saveUserInputSettings();
+		if ( ! response.error ) {
+			if ( redirectURL ) {
+				const url = new URL( redirectURL );
+				// Here we don't use `addQueryArgs` due to a bug with how it handles hashes
+				// See https://github.com/WordPress/gutenberg/issues/16655
+				url.searchParams.set( 'notification', 'user_input_success' );
+				global.location.assign( url.toString() );
+			} else {
+				global.location.assign( addQueryArgs( dashboardURL, { notification: 'user_input_success' } ) );
+			}
+		} else {
+			setIsNavigating( false );
+		}
+	}, [ dashboardURL ] );
+
+	const goToPreview = useCallback( () => {
+		setActiveSlug( steps[ steps.length - 1 ] );
 	}, [ activeSlugIndex ] );
 
 	return (
@@ -107,6 +148,9 @@ export default function UserInputQuestionnaire() {
 					questionNumber={ 1 }
 					title={ __( 'Which best describes your team/role in relation to this site?', 'google-site-kit' ) }
 					description={ __( 'This will help Site Kit show tips that help you specifically in your role.', 'google-site-kit' ) }
+					single={ single }
+					submitChanges={ submitChanges }
+					goToPreview={ goToPreview }
 					next={ next }
 				>
 					<UserInputSelectOptions
@@ -123,6 +167,9 @@ export default function UserInputQuestionnaire() {
 					questionNumber={ 2 }
 					title={ __( 'How often do you create new posts for this site?', 'google-site-kit' ) }
 					description={ __( 'Based on your answer, Site Kit will suggest new features for your dashboard related to content creation.', 'google-site-kit' ) }
+					single={ single }
+					submitChanges={ submitChanges }
+					goToPreview={ goToPreview }
 					next={ next }
 					back={ back }
 				>
@@ -140,6 +187,9 @@ export default function UserInputQuestionnaire() {
 					questionNumber={ 3 }
 					title={ __( 'What are the goals of this site?', 'google-site-kit' ) }
 					description={ __( 'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track how close you’re getting to your specific goals.', 'google-site-kit' ) }
+					single={ single }
+					submitChanges={ submitChanges }
+					goToPreview={ goToPreview }
 					next={ next }
 					back={ back }
 				>
@@ -158,6 +208,9 @@ export default function UserInputQuestionnaire() {
 					questionNumber={ 4 }
 					title={ __( 'What do you need help most with for this site?', 'google-site-kit' ) }
 					description={ __( 'Based on your answers, Site Kit will tailor the metrics and advice you see on your dashboard to help you make progress in these areas.', 'google-site-kit' ) }
+					single={ single }
+					submitChanges={ submitChanges }
+					goToPreview={ goToPreview }
 					next={ next }
 					back={ back }
 				>
@@ -176,6 +229,9 @@ export default function UserInputQuestionnaire() {
 					questionNumber={ 5 }
 					title={ __( 'To help us identify opportunities for your site, enter the top three search terms that best describe your site’s content.', 'google-site-kit' ) }
 					description={ __( 'Site Kit will keep you informed if people start finding you in Search for these terms.', 'google-site-kit' ) }
+					single={ single }
+					submitChanges={ submitChanges }
+					goToPreview={ goToPreview }
 					next={ next }
 					nextLabel={ __( 'Preview', 'google-site-kit' ) }
 					back={ back }
@@ -189,9 +245,13 @@ export default function UserInputQuestionnaire() {
 
 			{ activeSlug === 'preview' && (
 				<UserInputPreview
+					isNavigating={ isNavigating }
+					isSavingSettings={ isSavingSettings }
+					error={ error }
+					submitChanges={ submitChanges }
+					goToPreview={ goToPreview }
 					back={ back }
 					goTo={ goTo }
-					redirectURL={ redirectURL }
 				/>
 			) }
 		</Fragment>
