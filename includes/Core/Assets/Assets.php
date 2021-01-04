@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Core\Assets;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Assets\External\GoogleCharts;
+use Google\Site_Kit\Core\Assets\External\Google_Charts;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Util\BC_Functions;
@@ -384,9 +384,11 @@ final class Assets {
 					},
 				)
 			),
-			new GoogleCharts(
+			new Google_Charts(
 				'googlesitekit-google-charts',
-				array()
+				array(
+					'in_footer' => false,
+				)
 			),
 			new Script(
 				'googlesitekit-runtime',
