@@ -722,7 +722,7 @@ final class Tag_Manager extends Module
 	}
 
 	/**
-	 * Registers the AdSense tag.
+	 * Registers the Tag Manager tag.
 	 *
 	 * @since n.e.x.t
 	 */
