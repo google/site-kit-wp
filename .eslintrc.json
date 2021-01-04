@@ -75,7 +75,6 @@
     },
     {
       "files": [
-        "assets/js/components/**/*.js",
         "**/modules/*/components/**/*.js",
         "assets/js/googlesitekit/*/components/**/*.js"
       ],
