@@ -46,13 +46,7 @@ export default function DefaultSettingsSetupIncomplete( { slug } ) {
 			{ createInterpolateElement(
 				__( 'Setup incomplete: <a>continue module setup</a>', 'google-site-kit' ),
 				{
-					a: <Link
-						className="googlesitekit-settings-module__edit-button"
-						onClick={ () => {
-							global.location = adminReauthURL;
-						} }
-						inherit
-					/>,
+					a: <Link href={ adminReauthURL } inherit />,
 				}
 			) }
 		</Cell>
