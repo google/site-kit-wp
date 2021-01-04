@@ -28,7 +28,7 @@ use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Core\Tags\Guards\TagVerify as TagVerifyGuard;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\AdSense\AMP_Tag;
@@ -902,7 +902,7 @@ final class AdSense extends Module
 			: new Web_Tag( $settings['clientID'], self::MODULE_SLUG );
 
 		if ( ! $tag->is_tag_blocked() ) {
-			$tag->use_guard( new TagVerifyGuard( $this->context->input() ) );
+			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
 			$tag->use_guard( new Tag_Guard( $module_settings ) );
 
 			if ( $tag->can_register() ) {

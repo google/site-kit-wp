@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Tags\Guards\TagVerify
+ * Class Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard
  *
  * @package   Google\Site_Kit\Core\Tags\Guards
  * @copyright 2020 Google LLC
@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Util\Input;
  * @access private
  * @ignore
  */
-class TagVerify implements Guard_Interface {
+class Tag_Verify_Guard implements Guard_Interface {
 
 	/**
 	 * Input access abstraction.

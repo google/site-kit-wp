@@ -1,6 +1,6 @@
 <?php
 /**
- * TagVerifyTest
+ * Tag_Verify_GuardTest
  *
  * @package   Google\Site_Kit\Tests\Core\Tags\Guards
  * @copyright 2020 Google LLC
@@ -10,20 +10,20 @@
 
 namespace Google\Site_Kit\Tests\Core\Tags\Guards;
 
-use Google\Site_Kit\Core\Tags\Guards\TagVerify;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 
-class TagVerifyTest extends TestCase {
+class Tag_Verify_GuardTest extends TestCase {
 
 	/**
-	 * @var TagVerify
+	 * @var Tag_Verify_Guard
 	 */
 	private $tagverify;
 
 	public function setUp() {
 		parent::setUp();
-		$this->tagverify = new TagVerify( new MutableInput() );
+		$this->tagverify = new Tag_Verify_Guard( new MutableInput() );
 	}
 
 	public function test_can_activate_by_default() {
