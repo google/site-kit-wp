@@ -26,7 +26,6 @@ import { useEffect } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import DefaultSettingsSetupIncomplete from './DefaultSettingsSetupIncomplete';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
@@ -37,13 +36,13 @@ export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
 		SettingsEditComponent,
 		SettingsViewComponent,
 		SettingsSetupIncompleteComponent,
-		doesModuleExist,
+		moduleLoaded,
 		connected,
 	} = useSelect( ( select ) => {
 		const module = select( CORE_MODULES ).getModule( slug );
 		return {
 			...module,
-			doesModuleExist: !! module,
+			moduleLoaded: !! module,
 		};
 	} );
 
@@ -55,13 +54,10 @@ export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
 		}
 	}, [ rollbackSettings, haveSettingsChanged, isDoingSubmitChanges, isEditing ] );
 
-	if ( ! isOpen || ! doesModuleExist ) {
+	if ( ! isOpen || ! moduleLoaded ) {
 		return null;
 	} else if ( isOpen && ! connected ) {
-		if ( !! SettingsSetupIncompleteComponent ) {
-			return <SettingsSetupIncompleteComponent />;
-		}
-		return <DefaultSettingsSetupIncomplete slug={ slug } />;
+		return <SettingsSetupIncompleteComponent slug={ slug } />;
 	}
 
 	if ( isEditing && SettingsEditComponent ) {

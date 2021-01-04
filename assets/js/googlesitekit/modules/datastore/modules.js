@@ -41,6 +41,7 @@ import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { listFormat } from '../../../util';
+import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -235,8 +236,8 @@ const baseActions = {
 	 * @param {string}      [settings.homepage]                         Optional. Module homepage URL. Default empty string.
 	 * @param {WPComponent} [settings.SettingsEditComponent]            Optional. React component to render the settings edit panel. Default none.
 	 * @param {WPComponent} [settings.SettingsViewComponent]            Optional. React component to render the settings view panel. Default none.
+	 * @param {WPComponent} [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default DefaultSettingsSetupIncomplete.
 	 * @param {WPComponent} [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
-	 * @param {WPComponent} [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {Function}    [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
 	 */
 	*registerModule( slug, {
@@ -249,7 +250,7 @@ const baseActions = {
 		SettingsEditComponent,
 		SettingsViewComponent,
 		SetupComponent,
-		SettingsSetupIncompleteComponent,
+		SettingsSetupIncompleteComponent = DefaultSettingsSetupIncomplete,
 		checkRequirements = () => true,
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
