@@ -87,11 +87,16 @@ class DataBlock extends Component {
 		if ( change ) {
 			// If changeDataUnit is given, try using it as currency first, otherwise add it as suffix.
 			if ( changeDataUnit ) {
-				// Format percentage change with only 1 digit instead of the usual 2.
-				changeFormatted = numFmt( Math.abs( Number( change ) ), changeDataUnit === '%' ? {
-					style: 'percent',
-					maximumFractionDigits: 1,
-				} : changeDataUnit );
+				if ( changeDataUnit === '%' ) {
+					// Format percentage change with only 1 digit instead of the usual 2.
+					changeFormatted = numFmt( change, {
+						style: 'percent',
+						signDisplay: 'never',
+						maximumFractionDigits: 1,
+					} );
+				} else {
+					changeFormatted = numFmt( change, changeDataUnit );
+				}
 			}
 
 			// If period is given (requires %s placeholder), add it.
@@ -100,14 +105,7 @@ class DataBlock extends Component {
 			}
 		}
 
-		let datapointFormatted = datapoint;
-		if ( datapoint ) {
-			if ( datapointUnit ) {
-				datapointFormatted = numFmt( datapoint, datapointUnit );
-			} else {
-				datapointFormatted = numFmt( datapoint );
-			}
-		}
+		const datapointFormatted = datapoint && numFmt( datapoint, datapointUnit || undefined );
 
 		return (
 			<div
@@ -131,29 +129,32 @@ class DataBlock extends Component {
 					">
 						{ title }
 					</h3>
-					<div className="googlesitekit-data-block__datapoint">
-						{ datapointFormatted }
-					</div>
+					{ datapointFormatted && (
+						<div className="googlesitekit-data-block__datapoint">
+							{ datapointFormatted }
+						</div>
+					) }
 				</div>
-				{ sparklineComponent &&
+				{ sparklineComponent && (
 					<div className="googlesitekit-data-block__sparkline">
 						{ sparklineComponent }
 					</div>
-				}
+				) }
 				<div className="googlesitekit-data-block__change-source-wrapper">
 					<div className="googlesitekit-data-block__change">
-						{ '' === change && <Fragment>&nbsp;</Fragment> }
-						{ change && <Fragment>
-							<span className="googlesitekit-data-block__arrow">
-								<ChangeArrow
-									direction={ 0 < parseFloat( change ) ? 'up' : 'down' }
-									invertColor={ invertChangeColor }
-								/>
-							</span>
-							<span className="googlesitekit-data-block__value">
-								{ changeFormatted }
-							</span>
-						</Fragment> }
+						{ !! change && (
+							<Fragment>
+								<span className="googlesitekit-data-block__arrow">
+									<ChangeArrow
+										direction={ 0 < parseFloat( change ) ? 'up' : 'down' }
+										invertColor={ invertChangeColor }
+									/>
+								</span>
+								<span className="googlesitekit-data-block__value">
+									{ changeFormatted }
+								</span>
+							</Fragment>
+						) }
 					</div>
 					{ source && (
 						<SourceLink

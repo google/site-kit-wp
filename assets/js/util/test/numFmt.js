@@ -17,23 +17,17 @@
  */
 
 /**
+ * External dependencies
+ */
+import { set, unset } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import { numFmt } from '../';
 
-/**
- * Sets the Site Kit locale to a (legacy) global variable.
- *
- * @since 1.7.0
- * @private
- *
- * @param {string} langCode The locale to set Site Kit to use. E.g. `en-US` or `de-DE`.
- * @return {Object} Site Kit configuration object.
- */
 const setupGoogleSiteKit = ( langCode ) => {
-	return global._googlesitekitLegacyData = {
-		locale: langCode,
-	};
+	set( global._googlesitekitLegacyData, 'locale', langCode );
 };
 
 // Unlike normal space. ASCII 32
@@ -42,7 +36,7 @@ const NO_BREAK_SPACE = ' ';
 
 describe( 'numFmt', () => {
 	afterEach( () => {
-		global._googlesitekitLegacyData = null;
+		unset( global._googlesitekitLegacyData, 'locale' );
 	} );
 
 	const siteKitLocales = [
@@ -92,13 +86,13 @@ describe( 'numFmt', () => {
 		[
 			'en_US',
 			12,
-			's',
+			'duration',
 			`12s`,
 		],
 		[
 			'en_US',
 			123,
-			's',
+			'duration',
 			`2m 3s`,
 		],
 		[

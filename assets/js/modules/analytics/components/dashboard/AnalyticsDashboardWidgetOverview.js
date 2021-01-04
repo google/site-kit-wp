@@ -137,7 +137,7 @@ class AnalyticsDashboardWidgetOverview extends Component {
 				className: 'googlesitekit-data-block--duration googlesitekit-data-block--button-4',
 				title: __( 'Session Duration', 'google-site-kit' ),
 				datapoint: averageSessionDuration,
-				datapointUnit: 's',
+				datapointUnit: 'duration',
 				change: averageSessionDurationChange,
 				changeDataUnit: '%',
 				context: 'button',

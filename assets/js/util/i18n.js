@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { get, isFinite } from 'lodash';
+import { get, isFinite, isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -137,9 +137,9 @@ export const readableLargeNumber = ( number ) => {
  *
  * @param {number|string}                     number    The number to format.
  * @param {(Intl.NumberFormatOptions|string)} [options] Formatting options or unit shorthand.
- *                                                      Possible shorthand values are '%', 's',
+ *                                                      Possible shorthand values are '%', 'duration',
  *                                                      or a currency code.
- * @return {string} The formatted number with unit.
+ * @return {string} The formatted number.
  */
 export const numFmt = ( number, options = {} ) => {
 	// Cast parsable values to numeric types.
@@ -148,7 +148,7 @@ export const numFmt = ( number, options = {} ) => {
 	if ( ! isFinite( number ) ) {
 		// eslint-disable-next-line no-console
 		console.warn( 'Invalid number', number, typeof number );
-		return null;
+		number = 0;
 	}
 
 	let formatOptions = {};
@@ -159,7 +159,7 @@ export const numFmt = ( number, options = {} ) => {
 			style: 'percent',
 			maximumFractionDigits: 2,
 		};
-	} else if ( 's' === options ) {
+	} else if ( 'duration' === options ) {
 		formatOptions = {
 			style: 'seconds',
 		};
@@ -168,7 +168,7 @@ export const numFmt = ( number, options = {} ) => {
 			style: 'currency',
 			currency: options,
 		};
-	} else if ( typeof options === 'object' ) {
+	} else if ( isPlainObject( options ) ) {
 		formatOptions = { ...options };
 	}
 
@@ -185,11 +185,12 @@ export const numFmt = ( number, options = {} ) => {
 
 	try {
 		return numberFormat( number, formatOptions );
-	} catch ( e ) {
+	} catch ( _ ) {
 		if ( !! options && typeof options === 'string' ) {
 			// if the formatting doesn't work, return the concatenated options(assuming as a custom unit) and number
-			return `${ number }${ options }`;
+			return numberFormat( number );
 		}
+		return undefined;
 	}
 };
 

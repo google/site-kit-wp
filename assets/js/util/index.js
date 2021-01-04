@@ -174,21 +174,9 @@ export const getDaysBetweenDates = ( dateStart, dateEnd ) => {
 };
 
 /**
- * Calculates the percent change between two values.
- *
- * @since 1.0.0
- *
- * @param {number} previous The previous value.
- * @param {number} current  The current value.
- * @return {(number|string)} The percent change.
- */
-export const changeToPercent = ( previous, current ) =>
-	( calculateChange( previous, current ) * 100 ).toFixed( 1 );
-
-/**
  * Calculates the change between two values.
  *
- * @since 1.0.0
+ * @since n.e.x.t
  *
  * @param {number} previous The previous value.
  * @param {number} current  The current value.
