@@ -99,7 +99,12 @@ function DashboardAllTrafficWidget() {
 						smSize={ 4 }
 					>
 						<DimensionTabs dimensionName={ dimensionName } />
-						<UserDimensionsPieChart dimensionName={ dimensionName } entityURL={ entityURL } />
+
+						<UserDimensionsPieChart
+							dimensionName={ dimensionName }
+							entityURL={ entityURL }
+							sourceLink={ serviceReportURL }
+						/>
 					</Cell>
 				</Row>
 			</Grid>

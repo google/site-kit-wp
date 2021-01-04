@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Assets\External\GoogleCharts
+ * Class Google\Site_Kit\Core\Assets\External\Google_Charts
  *
  * @package   Google\Site_Kit
  * @copyright 2020 Google LLC
@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Assets\Script;
  * @access private
  * @ignore
  */
-class GoogleCharts extends Script {
+class Google_Charts extends Script {
 
 	/**
 	 * Registers the asset.
