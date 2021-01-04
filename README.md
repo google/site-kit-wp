@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.com/google/site-kit-wp.svg?token=smY3Y9yhMfh6hWnXQ2te&branch=develop)](https://travis-ci.com/google/site-kit-wp/)
 # Site Kit by Google
 
 Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.

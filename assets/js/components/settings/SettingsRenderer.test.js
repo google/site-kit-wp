@@ -29,18 +29,18 @@ describe( 'SettingsRenderer', () => {
 	let registry;
 
 	const slug = 'test-module-slug';
-	const storeName = `modules/${ slug }`;
+	const testStoreName = `test/${ slug }`;
 	const settingSlugs = [ 'testSetting' ];
 
 	const SettingsEdit = () => <div data-testid="edit-component">edit</div>;
 	const SettingsView = () => <div data-testid="view-component">view</div>;
 
 	beforeEach( () => {
-		const storeDefinition = Modules.createModuleStore( slug, { storeName, settingSlugs } );
+		const storeDefinition = Modules.createModuleStore( slug, { storeName: testStoreName, settingSlugs } );
 
 		registry = createTestRegistry();
-		registry.registerStore( storeName, storeDefinition );
-		registry.dispatch( storeName ).receiveGetSettings( { testSetting: 'initial value' } );
+		registry.registerStore( testStoreName, storeDefinition );
+		registry.dispatch( testStoreName ).receiveGetSettings( { testSetting: 'initial value' } );
 		provideModules( registry, [
 			{
 				slug,
@@ -49,31 +49,48 @@ describe( 'SettingsRenderer', () => {
 		] );
 	} );
 
-	it( 'renders nothing when not open', () => {
-		const { container } = render( <SettingsRenderer slug={ slug } isOpen={ false } />, { registry } );
+	describe( 'renders correctly', () => {
+		beforeEach( () => {
+			registry.dispatch( STORE_NAME ).registerModule( slug, {
+				storeName: testStoreName,
+			} );
+		} );
 
-		expect( container ).toBeEmptyDOMElement();
+		it( 'renders nothing when not open', () => {
+			const { container } = render( <SettingsRenderer slug={ slug } isOpen={ false } />, { registry } );
+
+			expect( container ).toBeEmptyDOMElement();
+		} );
+
+		it( 'renders nothing when passing a slug to a non-existent module', () => {
+			const { container } = render( <SettingsRenderer slug={ 'non-existent-module' } isOpen />, { registry } );
+
+			expect( container ).toBeEmptyDOMElement();
+		} );
 	} );
 
-	it( 'renders nothing when passing a slug to a non-existent module', () => {
-		const { container } = render( <SettingsRenderer slug={ 'non-existent-module' } isOpen />, { registry } );
+	describe( 'registered module with store', () => {
+		beforeEach( () => {
+			registry.dispatch( STORE_NAME ).registerModule( slug, {
+				storeName: testStoreName,
+			} );
+		} );
 
-		expect( container ).toBeEmptyDOMElement();
-	} );
+		it( 'rolls back settings to the received values if changed when leaving edit context', async () => {
+			const { rerender } = render( <SettingsRenderer slug={ slug } isOpen isEditing />, { registry } );
 
-	it( 'rolls back settings to the received values if changed when leaving edit context', async () => {
-		const { rerender } = render( <SettingsRenderer slug={ slug } isOpen isEditing />, { registry } );
+			await act( () => registry.dispatch( testStoreName ).setTestSetting( 'new value' ) );
 
-		await act( () => registry.dispatch( storeName ).setTestSetting( 'new value' ) );
+			rerender( <SettingsRenderer slug={ slug } isOpen isEditing={ false } /> );
 
-		rerender( <SettingsRenderer slug={ slug } isOpen isEditing={ false } /> );
-
-		expect( registry.select( storeName ).getTestSetting() ).toBe( 'initial value' );
+			expect( registry.select( testStoreName ).getTestSetting() ).toBe( 'initial value' );
+		} );
 	} );
 
 	describe( 'registered module with view component only', () => {
 		beforeEach( () => {
 			registry.dispatch( STORE_NAME ).registerModule( slug, {
+				storeName: testStoreName,
 				SettingsViewComponent: SettingsView,
 			} );
 		} );
@@ -96,6 +113,7 @@ describe( 'SettingsRenderer', () => {
 	describe( 'registered module with both view and edit components', () => {
 		beforeEach( () => {
 			registry.dispatch( STORE_NAME ).registerModule( slug, {
+				storeName: testStoreName,
 				SettingsViewComponent: SettingsView,
 				SettingsEditComponent: SettingsEdit,
 			} );
