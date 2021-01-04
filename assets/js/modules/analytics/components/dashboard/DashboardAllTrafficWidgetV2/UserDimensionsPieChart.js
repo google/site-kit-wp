@@ -41,7 +41,7 @@ import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
 const { useSelect } = Data;
 
-export default function UserDimensionsPieChart( { dimensionName, entityURL } ) {
+export default function UserDimensionsPieChart( { dimensionName, entityURL, sourceLink } ) {
 	const [ chartLoaded, setChartLoaded ] = useState( false );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
 
@@ -128,20 +128,38 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL } ) {
 				numberFormat( Math.abs( difference ), { maximumFractionDigits: 2 } ),
 			);
 
-			return (
-				`<div class="${ classnames( 'googlesitekit-visualization-tooltip', {
+			const dimensionClassName = `googlesitekit-visualization-tooltip-${ rowData[ 0 ].toLowerCase().replace( /\W+/, '_' ) }`;
+
+			let tooltip = (
+				`<p>
+					${ /* translators: %s: dimension label */ sprintf( __( '%s:', 'google-site-kit' ), rowData[ 0 ].toUpperCase() ) }
+					<b>${ numberFormat( rowData[ 1 ], { maximumFractionDigits: 1, style: 'percent' } ) }</b>
+				</p>
+				<p>
+					${ statInfo }
+				</p>`
+			);
+
+			if ( sourceLink && rowData[ 0 ].toLowerCase() === 'others' ) {
+				tooltip += (
+					`<p>
+						<a class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit" href="${ sourceLink }" target="_blank" rel="noreferrer noopener">
+							${ __( 'See the detailed breakdown in Analytics', 'google-site-kit' ) }
+						</a>
+					</p>`
+				);
+			}
+
+			tooltip = (
+				`<div class="${ classnames( 'googlesitekit-visualization-tooltip', dimensionClassName, {
 					'googlesitekit-visualization-tooltip--up': difference > 0,
 					'googlesitekit-visualization-tooltip--down': difference < 0,
 				} ) }">
-					<p>
-						${ rowData[ 0 ].toUpperCase() }:
-						<b>${ numberFormat( rowData[ 1 ], { maximumFractionDigits: 1, style: 'percent' } ) }</b>
-					</p>
-					<p>
-						${ statInfo }
-					</p>
+					${ tooltip }
 				</div>`
 			);
+
+			return tooltip;
 		},
 	} );
 
@@ -179,6 +197,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL } ) {
 }
 
 UserDimensionsPieChart.propTypes = {
+	sourceLink: PropTypes.string,
 	dimensionName: PropTypes.string.isRequired,
 	entityURL: PropTypes.string,
 };
