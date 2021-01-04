@@ -33,7 +33,7 @@ import { readableLargeNumber, getSiteKitAdminURL } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import DataBlock from '../../../../components/data-block';
+import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';

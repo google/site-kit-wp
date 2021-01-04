@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import SettingsModules from '../assets/js/components/settings/settings-modules';
-import Layout from '../assets/js/components/layout/layout';
+import Layout from '../assets/js/components/layout/Layout';
 import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
 import SettingsAdmin from '../assets/js/components/settings/settings-admin';
 import { provideModuleRegistrations, provideModules, provideSiteInfo, WithTestRegistry, untilResolved } from '../tests/js/utils';

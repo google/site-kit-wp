@@ -33,7 +33,7 @@ import { Component } from '@wordpress/element';
 import { trackEvent } from '../../util';
 import Button from '../Button';
 import Link from '../Link';
-import OptIn from '../optin';
+import OptIn from '../OptIn';
 import HelpLink from '../HelpLink';
 
 class WizardStepAuthentication extends Component {

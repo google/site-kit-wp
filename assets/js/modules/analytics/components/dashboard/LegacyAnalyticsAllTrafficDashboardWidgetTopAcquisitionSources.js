@@ -26,7 +26,7 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { getTimeInSeconds } from '../../../../util';
-import withData from '../../../../components/higherorder/withdata';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import MiniChart from '../../../../components/MiniChart';
