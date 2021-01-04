@@ -129,11 +129,9 @@ class DataBlock extends Component {
 					">
 						{ title }
 					</h3>
-					{ datapointFormatted && (
-						<div className="googlesitekit-data-block__datapoint">
-							{ datapointFormatted }
-						</div>
-					) }
+					<div className="googlesitekit-data-block__datapoint">
+						{ datapointFormatted }
+					</div>
 				</div>
 				{ sparklineComponent && (
 					<div className="googlesitekit-data-block__sparkline">
