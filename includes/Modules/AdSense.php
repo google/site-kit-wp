@@ -31,6 +31,7 @@ use Google\Site_Kit\Core\Guards\TruthyValue as TruthyValueGuard;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\TagVerify as TagVerifyGuard;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\AdSense\AMP_Tag;
 use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Modules\AdSense\Tag_Guard;
@@ -50,6 +51,7 @@ use WP_Error;
  */
 final class AdSense extends Module
 	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner {
+	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
@@ -90,32 +92,7 @@ final class AdSense extends Module
 		}
 
 		// AdSense tag placement logic.
-		add_action(
-			'template_redirect',
-			function() {
-				// Web Stories support neither <amp-auto-ads> nor the script.
-				// TODO: 'amp_story' support can be phased out in the long term.
-				if ( is_singular( array( 'web-story', 'amp_story' ) ) ) {
-					return;
-				}
-
-				$module_settings = $this->get_settings();
-				$settings        = $module_settings->get();
-
-				$tag = $this->context->is_amp()
-					? new AMP_Tag( $settings['clientID'], self::MODULE_SLUG )
-					: new Web_Tag( $settings['clientID'], self::MODULE_SLUG );
-
-				if ( ! $tag->is_tag_blocked() ) {
-					$tag->use_guard( new TagVerifyGuard( $this->context->input() ) );
-					$tag->use_guard( new Tag_Guard( $module_settings ) );
-
-					if ( $tag->can_register() ) {
-						$tag->register();
-					}
-				}
-			}
-		);
+		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 	}
 
 	/**
@@ -905,4 +882,34 @@ final class AdSense extends Module
 		}
 		return $matches[1];
 	}
+
+	/**
+	 * Registers the AdSense tag.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function register_tag() {
+		// Web Stories support neither <amp-auto-ads> nor the script.
+		// TODO: 'amp_story' support can be phased out in the long term.
+		if ( is_singular( array( 'web-story', 'amp_story' ) ) ) {
+			return;
+		}
+
+		$module_settings = $this->get_settings();
+		$settings        = $module_settings->get();
+
+		$tag = $this->context->is_amp()
+			? new AMP_Tag( $settings['clientID'], self::MODULE_SLUG )
+			: new Web_Tag( $settings['clientID'], self::MODULE_SLUG );
+
+		if ( ! $tag->is_tag_blocked() ) {
+			$tag->use_guard( new TagVerifyGuard( $this->context->input() ) );
+			$tag->use_guard( new Tag_Guard( $module_settings ) );
+
+			if ( $tag->can_register() ) {
+				$tag->register();
+			}
+		}
+	}
+
 }

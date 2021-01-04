@@ -30,6 +30,7 @@ use Google\Site_Kit\Core\Guards\TruthyValue as TruthyValueGuard;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\TagVerify as TagVerifyGuard;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Tag_Manager\AMP_Tag;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Modules\Tag_Manager\Tag_Guard;
@@ -52,6 +53,7 @@ use Exception;
  */
 final class Tag_Manager extends Module
 	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner {
+	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
@@ -91,27 +93,7 @@ final class Tag_Manager extends Module
 		$this->register_scopes_hook();
 
 		// Tag Manager tag placement logic.
-		add_action(
-			'template_redirect',
-			function() {
-				$is_amp          = $this->context->is_amp();
-				$module_settings = $this->get_settings();
-				$settings        = $module_settings->get();
-
-				$tag = $is_amp
-					? new AMP_Tag( $settings['ampContainerID'], self::MODULE_SLUG )
-					: new Web_Tag( $settings['containerID'], self::MODULE_SLUG );
-
-				if ( ! $tag->is_tag_blocked() ) {
-					$tag->use_guard( new TagVerifyGuard( $this->context->input() ) );
-					$tag->use_guard( new Tag_Guard( $module_settings, $is_amp ) );
-
-					if ( $tag->can_register() ) {
-						$tag->register();
-					}
-				}
-			}
-		);
+		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 	}
 
 	/**
@@ -739,4 +721,29 @@ final class Tag_Manager extends Module
 			),
 		);
 	}
+
+	/**
+	 * Registers the AdSense tag.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function register_tag() {
+		$is_amp          = $this->context->is_amp();
+		$module_settings = $this->get_settings();
+		$settings        = $module_settings->get();
+
+		$tag = $is_amp
+			? new AMP_Tag( $settings['ampContainerID'], self::MODULE_SLUG )
+			: new Web_Tag( $settings['containerID'], self::MODULE_SLUG );
+
+		if ( ! $tag->is_tag_blocked() ) {
+			$tag->use_guard( new TagVerifyGuard( $this->context->input() ) );
+			$tag->use_guard( new Tag_Guard( $module_settings, $is_amp ) );
+
+			if ( $tag->can_register() ) {
+				$tag->register();
+			}
+		}
+	}
+
 }

@@ -34,6 +34,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\TagVerify as TagVerifyGuard;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Analytics\Google_Service_AnalyticsProvisioning;
 use Google\Site_Kit\Modules\Analytics\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics\Settings;
@@ -73,6 +74,7 @@ use Exception;
  */
 final class Analytics extends Module
 	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Admin_Bar, Module_With_Debug_Fields, Module_With_Owner {
+	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
@@ -103,54 +105,13 @@ final class Analytics extends Module
 		 */
 		add_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 
-		add_action(
-			'admin_init',
-			function() {
-				$this->handle_provisioning_callback();
-			}
-		);
-
-		$print_tracking_opt_out = function () {
-			if ( $this->is_tracking_disabled() ) {
-				$this->print_tracking_opt_out();
-			}
-		};
+		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 		// For non-AMP and AMP.
-		add_action( 'wp_head', $print_tracking_opt_out, 0 );
+		add_action( 'wp_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
 		// For Web Stories plugin.
-		add_action( 'web_stories_story_head', $print_tracking_opt_out, 0 );
-
+		add_action( 'web_stories_story_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
 		// Analytics tag placement logic.
-		add_action(
-			'template_redirect',
-			function() {
-				$tag             = null;
-				$module_settings = $this->get_settings();
-				$settings        = $module_settings->get();
-
-				if ( $this->context->is_amp() ) {
-					$tag = new AMP_Tag( $settings['propertyID'], self::MODULE_SLUG );
-				} else {
-					$tag = new Web_Tag( $settings['propertyID'], self::MODULE_SLUG );
-					$tag->set_anonymize_ip( ! empty( $settings['anonymizeIP'] ) );
-				}
-
-				if ( $tag && ! $tag->is_tag_blocked() ) {
-					$tag->use_guard( new TagVerifyGuard( $this->context->input() ) );
-					$tag->use_guard( new Tag_Guard( $module_settings ) );
-
-					if ( $tag->can_register() ) {
-						if ( $this->context->get_amp_mode() ) {
-							$home = $this->context->get_canonical_home_url();
-							$home = wp_parse_url( $home, PHP_URL_HOST );
-							$tag->set_home_domain( $home );
-						}
-
-						$tag->register();
-					}
-				}
-			}
-		);
+		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 
 		( new Advanced_Tracking( $this->context ) )->register();
 	}
@@ -1344,6 +1305,10 @@ final class Analytics extends Module
 	 * @link https://developers.google.com/analytics/devguides/collection/analyticsjs/user-opt-out
 	 */
 	private function print_tracking_opt_out() {
+		if ( ! $this->is_tracking_disabled() ) {
+			return;
+		}
+
 		?>
 		<!-- <?php esc_html_e( 'Google Analytics user opt-out added via Site Kit by Google', 'google-site-kit' ); ?> -->
 		<?php if ( $this->context->is_amp() ) : ?>
@@ -1464,4 +1429,38 @@ final class Analytics extends Module
 		}
 		return $matches[1];
 	}
+
+	/**
+	 * Registers the Analytics tag.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function register_tag() {
+		$tag             = null;
+		$module_settings = $this->get_settings();
+		$settings        = $module_settings->get();
+
+		if ( $this->context->is_amp() ) {
+			$tag = new AMP_Tag( $settings['propertyID'], self::MODULE_SLUG );
+		} else {
+			$tag = new Web_Tag( $settings['propertyID'], self::MODULE_SLUG );
+			$tag->set_anonymize_ip( ! empty( $settings['anonymizeIP'] ) );
+		}
+
+		if ( $tag && ! $tag->is_tag_blocked() ) {
+			$tag->use_guard( new TagVerifyGuard( $this->context->input() ) );
+			$tag->use_guard( new Tag_Guard( $module_settings ) );
+
+			if ( $tag->can_register() ) {
+				if ( $this->context->get_amp_mode() ) {
+					$home = $this->context->get_canonical_home_url();
+					$home = wp_parse_url( $home, PHP_URL_HOST );
+					$tag->set_home_domain( $home );
+				}
+
+				$tag->register();
+			}
+		}
+	}
+
 }
