@@ -28,8 +28,9 @@ import modulesAdSenseStore from '../../assets/js/modules/adsense/datastore';
 import { STORE_NAME as MODULES_ADSENSE } from '../../assets/js/modules/adsense/datastore/constants';
 import { SetupMain as AdSenseSetupMain } from '../../assets/js/modules/adsense/components/setup';
 import {
-	SettingsEdit as AdSenseSettingsEdit, SettingsSetupIncomplete,
+	SettingsEdit as AdSenseSettingsEdit,
 	SettingsView as AdSenseSettingsView,
+	SettingsSetupIncomplete,
 } from '../../assets/js/modules/adsense/components/settings';
 import AdSenseIcon from '../../assets/svg/adsense.svg';
 import { ERROR_CODE_ADBLOCKER_ACTIVE } from '../../assets/js/modules/adsense/constants';

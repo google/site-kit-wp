@@ -58,6 +58,7 @@ import ModuleIcon from '../ModuleIcon';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import SettingsRenderer from '../settings/SettingsRenderer';
 import VisuallyHidden from '../VisuallyHidden';
+import { Grid, Row, Cell } from '../../material-components/layout';
 const { withSelect, withDispatch } = Data;
 
 /**
@@ -320,20 +321,17 @@ class SettingsModule extends Component {
 							aria-hidden={ ! isOpen }
 							aria-labelledby={ `googlesitekit-settings-module__header--${ slug }` }
 						>
-							<div className="mdc-layout-grid">
-								<div className="mdc-layout-grid__inner">
-									<div className="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-12
-									">
+							<Grid>
+								<Row>
+									<Cell size={ 12 }>
 										<SettingsRenderer
 											slug={ slug }
 											isEditing={ isEditing[ moduleKey ] }
 											isOpen={ isOpen }
 										/>
-									</div>
-								</div>
-							</div>
+									</Cell>
+								</Row>
+							</Grid>
 							<footer className="googlesitekit-settings-module__footer">
 								<div className="mdc-layout-grid">
 									<div className="mdc-layout-grid__inner">

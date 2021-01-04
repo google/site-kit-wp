@@ -17,11 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
-import PropTypes from 'prop-types';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -29,6 +33,7 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import Link from '../Link';
 import ModuleSettingsWarning from '../legacy-notifications/module-settings-warning';
+import { Cell } from '../../material-components/layout';
 const { useSelect } = Data;
 
 export default function DefaultSettingsSetupIncomplete( { slug } ) {
@@ -36,14 +41,10 @@ export default function DefaultSettingsSetupIncomplete( { slug } ) {
 	const adminReauthURL = useSelect( ( select ) => select( storeName )?.getAdminReauthURL?.() );
 
 	return (
-		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+		<Cell size={ 12 }>
 			<ModuleSettingsWarning slug={ slug } />
 			{ createInterpolateElement(
-				sprintf(
-					/* translators: %s: link with next step */
-					__( 'Setup incomplete: %s', 'google-site-kit' ),
-					`<a>${ __( 'continue module setup', 'google-site-kit' ) }</a>`
-				),
+				__( 'Setup incomplete: <a>continue module setup</a>', 'google-site-kit' ),
 				{
 					a: <Link
 						className="googlesitekit-settings-module__edit-button"
@@ -54,7 +55,7 @@ export default function DefaultSettingsSetupIncomplete( { slug } ) {
 					/>,
 				}
 			) }
-		</div>
+		</Cell>
 	);
 }
 
