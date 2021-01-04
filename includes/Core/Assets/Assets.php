@@ -314,7 +314,6 @@ final class Assets {
 			'googlesitekit-datastore-site',
 			'googlesitekit-datastore-user',
 			'googlesitekit-widgets',
-			'googlesitekit-google-charts',
 		);
 
 		// Register plugin scripts.
