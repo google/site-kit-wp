@@ -24,7 +24,6 @@ module.exports = [
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
 				hoverSelector: '.googlesitekit-button--hover',
-				postInteractionWait: 3000,
 				onReadyScript: 'mouse.js',
 			},
 		},
@@ -108,7 +107,6 @@ module.exports = [
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
 				readySelector: '.googlesitekit-table-overflow',
-				delay: 2000,
 			},
 		},
 	},
@@ -122,7 +120,6 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				delay: 3000,
 			},
 		},
 	},
@@ -136,7 +133,6 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				delay: 3000,
 			},
 		},
 	},
@@ -191,7 +187,6 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				delay: 1000,
 			},
 		},
 	},
@@ -205,7 +200,6 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				delay: 1000,
 			},
 		},
 	},
@@ -379,9 +373,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				delay: 3000,
 				clickSelector: '.googlesitekit-story-select-click',
-				postInteractionWait: 3000,
 				onReadyScript: 'mouse.js',
 			},
 		},
@@ -396,7 +388,6 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				delay: 3000,
 			},
 		},
 	},
@@ -410,7 +401,6 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				delay: 1000,
 			},
 		},
 	},
@@ -503,7 +493,6 @@ module.exports = [
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
 				readySelector: '.googlesitekit-data-block',
-				delay: 2000,
 			},
 		},
 	},

@@ -54,5 +54,4 @@ module.exports = {
 	viewports,
 	readyEvent: 'backstopjs_ready',
 	misMatchThreshold: 0,
-	delay: 1000, // Default delay to ensure components render complete.
 };
