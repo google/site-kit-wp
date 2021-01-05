@@ -148,7 +148,7 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 				<DataBlock
 					className="overview-total-users"
 					title={ __( 'Unique Visitors from Search', 'google-site-kit' ) }
-					datapoint={ !! totalUsers ? totalUsers : 0 }
+					datapoint={ totalUsers || 0 }
 					change={ totalUsersChange }
 					changeDataUnit="%"
 					source={ {
