@@ -27,10 +27,10 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { numberFormat, untrailingslashit } from '../../../../util';
+import { numFmt, untrailingslashit } from '../../../../util';
 import { getDataTableFromData } from '../../../../components/data-table';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
@@ -52,8 +52,11 @@ function DashboardPopularKeywordsWidget() {
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const domain = store.getPropertyID();
+
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
 		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
+			startDate,
+			endDate,
 			dimensions: 'query',
 			limit: 10,
 		};
@@ -117,8 +120,8 @@ function DashboardPopularKeywordsWidget() {
 		links[ i ] = addQueryArgs( baseServiceURL, { query: `!${ query }` } );
 		return [
 			query,
-			numberFormat( row.clicks ),
-			numberFormat( row.impressions ),
+			numFmt( row.clicks, { style: 'decimal' } ),
+			numFmt( row.impressions, { style: 'decimal' } ),
 		];
 	} );
 

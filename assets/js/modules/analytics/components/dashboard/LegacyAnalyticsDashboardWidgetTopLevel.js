@@ -32,8 +32,7 @@ import { Fragment, useState, useEffect } from '@wordpress/element';
  */
 import {
 	getTimeInSeconds,
-	readableLargeNumber,
-	changeToPercent,
+	calculateChange,
 } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import {
@@ -118,8 +117,10 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 			path: applyEntityToReportPath( url, `/report/conversions-goals-overview/${ pathIDSegment }` ),
 		}
 	) );
-
-	const goalURL = 'https://support.google.com/analytics/answer/1032415?hl=en#create_or_edit_goals';
+	const goalURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/analytics/answer/1032415',
+		hash: 'create_or_edit_goals',
+	} ) );
 
 	let goalCompletions = '',
 		goalCompletionsChange = '',
@@ -129,11 +130,11 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 	if ( overview ) {
 		goalCompletions = overview.goalCompletions;
 		goalCompletionsChange = overview.goalCompletionsChange;
-		averageBounceRate = overview.averageBounceRate;
+		averageBounceRate = overview.averageBounceRate / 100;
 		averageBounceRateChange = overview.averageBounceRateChange;
 	}
 
-	const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
+	const totalUsersChange = calculateChange( previousTotalUsers, totalUsers );
 
 	return (
 		<Fragment>
@@ -147,7 +148,7 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 				<DataBlock
 					className="overview-total-users"
 					title={ __( 'Unique Visitors from Search', 'google-site-kit' ) }
-					datapoint={ readableLargeNumber( totalUsers ) }
+					datapoint={ totalUsers || 0 }
 					change={ totalUsersChange }
 					changeDataUnit="%"
 					source={ {
@@ -181,7 +182,7 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 						<DataBlock
 							className="overview-bounce-rate"
 							title={ __( 'Bounce Rate', 'google-site-kit' ) }
-							datapoint={ Number( averageBounceRate ).toFixed( 2 ) }
+							datapoint={ averageBounceRate }
 							datapointUnit="%"
 							change={ averageBounceRateChange }
 							changeDataUnit="%"
@@ -213,7 +214,7 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 					<DataBlock
 						className="overview-goals-completed"
 						title={ __( 'Goals Completed', 'google-site-kit' ) }
-						datapoint={ readableLargeNumber( goalCompletions ) }
+						datapoint={ goalCompletions }
 						change={ goalCompletionsChange }
 						changeDataUnit="%"
 						source={ {

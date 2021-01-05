@@ -74,6 +74,7 @@ domReady( () => {
 	Modules.registerModule(
 		'pagespeed-insights',
 		{
+			storeName: 'modules/pagespeed-insights',
 			SettingsViewComponent: SettingsView,
 			Icon: PageSpeedInsightsIcon,
 		}
