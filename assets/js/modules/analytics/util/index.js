@@ -47,12 +47,15 @@ export * from './validation';
  * @since 1.16.0 Added keyColumnIndex argument.
  * @since n.e.x.t Updated the function signature to use options argument instead of keyColumnIndex.
  *
- * @param {Array}    reports                    The array with reports data.
- * @param {Object}   [options]                  Optional. Data extraction options.
- * @param {number}   [options.keyColumnIndex]   Optional. The number of a column to extract metrics data from.
- * @param {boolean}  [options.withOthers]       Optional. Whether to add "Others" record to the data map or not.
- * @param {number}   [options.takeBeforeOthers] Optional. Limit the number of rows to process.
- * @param {Function} [options.tooltipCallback]  Optional. A callback function for tooltip column values.
+ * @param {Array}    reports                   The array with reports data.
+ * @param {Object}   [options]                 Optional. Data extraction options.
+ * @param {number}   [options.keyColumnIndex]  Optional. The number of a column to extract metrics data from.
+ * @param {number}   [options.maxSlices]       Optional. Limit the number of slices to display.
+ * @param {boolean}  [options.withOthers]      Optional. Whether to add "Others" record to the data map. Only relevant
+ *                                             if `maxSlices` is passed. If passed, the final slice will be the
+ *                                             "Others" slice, i.e. the number of actual row slices will be
+ *                                             `maxSlices - 1`.
+ * @param {Function} [options.tooltipCallback] Optional. A callback function for tooltip column values.
  * @return {Array} Extracted data.
  */
 export function extractAnalyticsDataForPieChart( reports, options = {} ) {
@@ -62,8 +65,8 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 
 	const {
 		keyColumnIndex = 0,
+		maxSlices,
 		withOthers = false,
-		takeBeforeOthers,
 		tooltipCallback,
 	} = options;
 
@@ -82,17 +85,20 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 		} );
 	}
 
-	// +2 because we need to make sure that we have more elements than we need to display
-	const hasOthers = withOthers && rows.length >= takeBeforeOthers + 2;
-
 	const totalUsers = data.totals[ 0 ].values[ keyColumnIndex ];
 	const dataMap = [ columns ];
 
-	const rowsNumber = hasOthers && takeBeforeOthers > 0
-		? Math.min( rows.length, takeBeforeOthers )
-		: rows.length;
-
+	let hasOthers = withOthers;
+	let rowsNumber = rows.length;
 	let others = 1;
+	if ( maxSlices > 0 ) {
+		hasOthers = withOthers && rows.length > maxSlices;
+		rowsNumber = Math.min( rows.length, hasOthers ? maxSlices - 1 : maxSlices );
+	} else {
+		hasOthers = false;
+		rowsNumber = rows.length;
+	}
+
 	for ( let i = 0; i < rowsNumber; i++ ) {
 		const row = rows[ i ];
 		const users = row.metrics[ 0 ].values[ keyColumnIndex ];

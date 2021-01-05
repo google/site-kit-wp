@@ -103,9 +103,9 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 	} );
 
 	const dataMap = extractAnalyticsDataForPieChart( report, {
-		withOthers: true,
-		takeBeforeOthers: 4,
 		keyColumnIndex: 0,
+		maxSlices: 5,
+		withOthers: true,
 		tooltipCallback: ( row, rowData ) => {
 			let difference = row?.metrics?.[ 1 ]?.values?.[ 0 ] > 0
 				? ( row.metrics[ 0 ].values[ 0 ] * 100 / row.metrics[ 1 ].values[ 0 ] ) - 100
