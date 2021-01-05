@@ -30,7 +30,7 @@ import Widgets from 'googlesitekit-widgets';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { numberFormat, untrailingslashit } from '../../../../util';
+import { numFmt, untrailingslashit } from '../../../../util';
 import { getDataTableFromData } from '../../../../components/data-table';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
@@ -120,8 +120,8 @@ function DashboardPopularKeywordsWidget() {
 		links[ i ] = addQueryArgs( baseServiceURL, { query: `!${ query }` } );
 		return [
 			query,
-			numberFormat( row.clicks ),
-			numberFormat( row.impressions ),
+			numFmt( row.clicks, { style: 'decimal' } ),
+			numFmt( row.impressions, { style: 'decimal' } ),
 		];
 	} );
 
