@@ -68,7 +68,19 @@ class Feature_Flags {
 
 		$feature_enabled = in_array( static::get_mode(), (array) $feature_modes, true );
 
-		return apply_filters( 'googlesitekit_is_feature_enabled', $feature_enabled, $feature, static::get_mode() );
+		/**
+		 * Filters a feature flag's status (on or off).
+		 *
+		 * Mainly this is used by E2E tests to allow certain features to be disabled or
+		 * enabled for testing, but is also useful to switch features on/off on-the-fly.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param string $feature_name    The feature name.
+		 * @param bool   $feature_enabled The current status of this feature flag (`true` or `false`).
+		 * @param string $mode            Site mode for loading features ('development' or 'production').
+		 */
+		return apply_filters( 'googlesitekit_is_feature_enabled', $feature_name, $feature_enabled, static::get_mode() );
 	}
 
 	/**
