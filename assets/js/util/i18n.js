@@ -121,7 +121,10 @@ export const readableLargeNumber = ( number ) => {
 		);
 	}
 
-	return numberFormat( number );
+	return numberFormat( number, {
+		signDisplay: 'never',
+		maximumFractionDigits: 1,
+	} );
 };
 
 /**

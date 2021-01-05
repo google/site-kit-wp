@@ -60,7 +60,7 @@ function reduceSearchConsoleData( rows ) {
 
 	// Do not divide by zero.
 	const averageCTR = count > 0 ? totalCTR / count : 0.0;
-	const averagePosition = count > 0 ? +( totalPosition / count ).toFixed( 1 ) : 0.0;
+	const averagePosition = count > 0 ? totalPosition / count : 0.0;
 
 	return {
 		dataMap,
