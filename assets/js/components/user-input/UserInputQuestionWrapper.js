@@ -97,19 +97,6 @@ export default function UserInputQuestionWrapper( props ) {
 									{ nextLabel || __( 'Next', 'google-site-kit' ) }
 								</Button>
 							) }
-							{ /* { single && single === 'user-input' && (
-								<Button onClick={ goToPreview }>
-									{ __( 'Back', 'google-site-kit' ) }
-								</Button>
-							) }
-							{ single && single === 'settings' && (
-								<Button
-									onClick={ submitChanges }
-									disabled={ values.filter( ( value ) => value.trim().length > 0 ).length === 0 }
-								>
-									{ __( 'Submit', 'google-site-kit' ) }
-								</Button>
-							) } */ }
 						</div>
 					) }
 				</Cell>
