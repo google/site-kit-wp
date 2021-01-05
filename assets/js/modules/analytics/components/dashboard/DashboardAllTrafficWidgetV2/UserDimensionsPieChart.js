@@ -44,7 +44,10 @@ const { useSelect } = Data;
 
 export default function UserDimensionsPieChart( { dimensionName, entityURL, sourceLink } ) {
 	const [ chartLoaded, setChartLoaded ] = useState( false );
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
+	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		compare: true,
+		offsetDays: 1,
+	} ) );
 
 	const args = {
 		...dateRangeDates,

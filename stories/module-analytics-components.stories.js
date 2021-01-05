@@ -88,6 +88,8 @@ generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/All Traffic Widget V2',
+	referenceDate: '2021-01-06',
+	// The following fixtures need to be based on the above reference date.
 	data: [
 		dashboardUserDimensionsData[ 'ga:channelGrouping' ],
 		dashboardUserDimensionsData[ 'ga:country' ],
