@@ -130,10 +130,10 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 			const month = ( date.getMonth() + 1 ).toString();
 			const day = date.getDate().toString();
 			const dateString = date.getFullYear().toString() +
-          ( 2 > month.length ? '0' : '' ) +
-          month +
-          ( 2 > day.length ? '0' : '' ) +
-          day;
+				( 2 > month.length ? '0' : '' ) +
+				month +
+				( 2 > day.length ? '0' : '' ) +
+				day;
 
 			if ( i > rowLength ) {
 				const emptyWeek = {
@@ -157,9 +157,12 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	const dataFormats = [
 		( x ) => parseFloat( x ).toLocaleString(),
 		( x ) => parseFloat( x ).toLocaleString(),
-		( x ) => numFmt( x / 100, '%' ),
+		( x ) => numFmt( x / 100, {
+			style: 'percent',
+			signDisplay: 'never',
+			maximumFractionDigits: 2,
+		} ),
 		prepareSecondsForDisplay,
-
 	];
 
 	const dataMap = [

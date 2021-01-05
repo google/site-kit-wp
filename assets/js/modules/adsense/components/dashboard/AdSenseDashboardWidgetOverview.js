@@ -117,7 +117,7 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 						title={ metrics[ headers[ 0 ].name ] }
 						datapoint={ totals[ 0 ] }
 						datapointUnit={ headers[ 0 ]?.currency }
-						change={ previousTotals !== undefined ? calculateChange( previousTotals[ 0 ], totals[ 0 ] ) : 0 }
+						change={ calculateChange( previousTotals[ 0 ], totals[ 0 ] ) }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 0 }
@@ -132,7 +132,7 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 						title={ metrics[ headers[ 1 ].name ] }
 						datapoint={ totals[ 1 ] }
 						datapointUnit={ headers[ 1 ]?.currency }
-						change={ previousTotals !== undefined ? calculateChange( previousTotals[ 1 ], totals[ 1 ] ) : 0 }
+						change={ calculateChange( previousTotals[ 1 ], totals[ 1 ] ) }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 1 }
@@ -146,7 +146,7 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 						className="googlesitekit-data-block--impression googlesitekit-data-block--button-3"
 						title={ metrics[ headers[ 2 ].name ] }
 						datapoint={ totals[ 2 ] }
-						change={ previousTotals !== undefined ? calculateChange( previousTotals[ 2 ], totals[ 2 ] ) : 0 }
+						change={ calculateChange( previousTotals[ 2 ], totals[ 2 ] ) }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 2 }
@@ -161,7 +161,7 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 						title={ metrics[ headers[ 3 ].name ] }
 						datapoint={ totals[ 3 ] }
 						datapointUnit={ '%' }
-						change={ previousTotals !== undefined ? calculateChange( previousTotals[ 3 ], totals[ 3 ] ) : 0 }
+						change={ calculateChange( previousTotals[ 3 ], totals[ 3 ] ) }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 3 }

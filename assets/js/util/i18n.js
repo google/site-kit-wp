@@ -140,7 +140,7 @@ export const readableLargeNumber = ( number ) => {
  *
  * @param {number|string}                     number    The number to format.
  * @param {(Intl.NumberFormatOptions|string)} [options] Formatting options or unit shorthand.
- *                                                      Possible shorthand values are '%', 'duration',
+ *                                                      Possible shorthand values are '%', 's',
  *                                                      or a currency code.
  * @return {string} The formatted number.
  */
