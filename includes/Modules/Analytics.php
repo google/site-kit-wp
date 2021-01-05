@@ -1397,7 +1397,7 @@ final class Analytics extends Module
 		if ( ! empty( $args['dimension_filters'] ) ) {
 			$dimension_filters       = $args['dimension_filters'];
 			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
-			$dimension_filter_clause->setFilters( array( $dimension_filters ) );
+			$dimension_filter_clause->setFilters( $dimension_filters );
 			$dimension_filter_clause->setOperator( 'AND' );
 			$dimension_filter_clauses[] = $dimension_filter_clause;
 		}
