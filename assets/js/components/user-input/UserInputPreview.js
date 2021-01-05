@@ -62,15 +62,12 @@ export default function UserInputPreview( props ) {
 		error: select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] ),
 	} ) );
 
-	const [ single, setSingle ] = useQueryArg( 'single', false );
+	const [ , setSingle ] = useQueryArg( 'single', false );
 
-	const editSingle = useCallback(
-		( questionNumber ) => {
-			setSingle( 'user-input' );
-			goTo( questionNumber );
-		},
-		[ single ],
-	);
+	const editSingle = useCallback( ( questionNumber ) => {
+		setSingle( 'user-input' );
+		goTo( questionNumber );
+	}, [] );
 
 	return (
 		<div className="googlesitekit-user-input__preview">
