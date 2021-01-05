@@ -81,6 +81,9 @@ export default function AdminBarApp() {
 						<div className="mdc-layout-grid__inner">
 							{ featureFlags.widgets.adminBar.enabled && (
 								<Fragment>
+									<AdminBarImpressions />
+									<AdminBarClicks />
+
 									{ analyticsModuleConnected && (
 										<Fragment>
 											<AdminBarUniqueVisitors />
@@ -97,9 +100,6 @@ export default function AdminBarApp() {
 											<AnalyticsInactiveCTA />
 										</div>
 									) }
-
-									<AdminBarImpressions />
-									<AdminBarClicks />
 								</Fragment>
 							) }
 

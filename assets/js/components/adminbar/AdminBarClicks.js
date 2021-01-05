@@ -33,10 +33,13 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import DataBlock from '../data-block';
 import PreviewBlock from '../PreviewBlock';
+import ReportError from '../ReportError';
+import ReportZero from '../ReportZero';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-console/datastore/constants';
 import { changeToPercent, readableLargeNumber } from '../../util';
+import { isZeroReport } from '../../modules/search-console/util/is-zero-report';
 import sumObjectListValue from '../../util/sum-object-list-value';
 const { useSelect } = Data;
 
@@ -54,6 +57,7 @@ const AdminBarClicks = ( { className } ) => {
 	};
 	const searchConsoleData = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ) );
 	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
+	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
 
 	if ( ! hasFinishedResolution ) {
 		return (
@@ -64,6 +68,14 @@ const AdminBarClicks = ( { className } ) => {
 				<PreviewBlock width="auto" height="59px" />
 			</div>
 		);
+	}
+
+	if ( error ) {
+		return <ReportError moduleSlug="search-console" error={ error } />;
+	}
+
+	if ( isZeroReport( searchConsoleData ) ) {
+		return <ReportZero moduleSlug="search-console" />;
 	}
 
 	if ( ! searchConsoleData?.length ) {
