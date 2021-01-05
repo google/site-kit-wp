@@ -75,7 +75,7 @@
     }
   },
   "lint-staged": {
-    "assets/js/**/*.js": [
+    "*.js": [
       "eslint"
     ],
     "assets/sass/**/*.scss": [
