@@ -54,7 +54,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 			fieldName: 'ga:users',
 			sortOrder: 'DESCENDING',
 		},
-		limit: 4,
+		limit: 6,
 	};
 
 	if ( entityURL ) {
@@ -86,12 +86,12 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 		}
 	}, [ dimensionName, setValues ] );
 
-	if ( ! loaded ) {
-		return <PreviewBlock width="282px" height="282px" shape="circular" />;
-	}
-
 	if ( error ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
+	}
+
+	if ( ! loaded || ! report?.length ) {
+		return <PreviewBlock width="282px" height="282px" shape="circular" />;
 	}
 
 	const absOthers = {
@@ -106,6 +106,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 
 	const dataMap = extractAnalyticsDataForPieChart( report, {
 		withOthers: true,
+		takeBeforeOthers: 4,
 		keyColumnIndex: 0,
 		tooltipCallback: ( row, rowData ) => {
 			let difference = row?.metrics?.[ 1 ]?.values?.[ 0 ] > 0
