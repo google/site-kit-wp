@@ -47,11 +47,12 @@ export * from './validation';
  * @since 1.16.0 Added keyColumnIndex argument.
  * @since n.e.x.t Updated the function signature to use options argument instead of keyColumnIndex.
  *
- * @param {Array}    reports                   The array with reports data.
- * @param {Object}   [options]                 Optional. Data extraction options.
- * @param {number}   [options.keyColumnIndex]  Optional. The number of a column to extract metrics data from.
- * @param {boolean}  [options.withOthers]      Optional. Whether to add "Others" record to the data map or not.
- * @param {Function} [options.tooltipCallback] Optional. A callback function for tooltip column values.
+ * @param {Array}    reports                    The array with reports data.
+ * @param {Object}   [options]                  Optional. Data extraction options.
+ * @param {number}   [options.keyColumnIndex]   Optional. The number of a column to extract metrics data from.
+ * @param {boolean}  [options.withOthers]       Optional. Whether to add "Others" record to the data map or not.
+ * @param {number}   [options.takeBeforeOthers] Optional. Limit the number of rows to process.
+ * @param {Function} [options.tooltipCallback]  Optional. A callback function for tooltip column values.
  * @return {Array} Extracted data.
  */
 export function extractAnalyticsDataForPieChart( reports, options = {} ) {
@@ -62,6 +63,7 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 	const {
 		keyColumnIndex = 0,
 		withOthers = false,
+		takeBeforeOthers,
 		tooltipCallback,
 	} = options;
 
@@ -80,11 +82,19 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 		} );
 	}
 
+	// +2 because we need to make sure that we have more elements than we need to display
+	const hasOthers = withOthers && rows.length >= takeBeforeOthers + 2;
+
 	const totalUsers = data.totals[ 0 ].values[ keyColumnIndex ];
 	const dataMap = [ columns ];
 
+	const rowsNumber = hasOthers && takeBeforeOthers > 0
+		? Math.min( rows.length, takeBeforeOthers )
+		: rows.length;
+
 	let others = 1;
-	for ( const row of rows ) {
+	for ( let i = 0; i < rowsNumber; i++ ) {
+		const row = rows[ i ];
 		const users = row.metrics[ 0 ].values[ keyColumnIndex ];
 		const percent = ( users / totalUsers );
 
@@ -98,7 +108,7 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 		dataMap.push( rowData );
 	}
 
-	if ( withOthers && others > 0.01 ) {
+	if ( hasOthers ) {
 		const rowData = [ __( 'Others', 'google-site-kit' ), others ];
 		if ( withTooltips ) {
 			rowData.push( tooltipCallback( null, rowData ) );
