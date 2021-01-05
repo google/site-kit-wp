@@ -55,7 +55,16 @@ function DashboardBounceRateWidget() {
 		const profileID = store.getProfileID();
 		const internalWebPropertyID = store.getInternalWebPropertyID();
 
-		const { compareStartDate, compareEndDate, startDate, endDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET, compare: true, weekdayAlign: true } );
+		const {
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate
+		} = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+			weekdayAlign: true,
+		} );
 
 		const args = {
 			compareStartDate,
