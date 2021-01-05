@@ -83,10 +83,6 @@ const AdminBarSessions = ( { className } ) => {
 		return <ReportZero moduleSlug="analytics" />;
 	}
 
-	if ( ! analyticsData?.length ) {
-		return null;
-	}
-
 	const { totals } = analyticsData[ 0 ].data;
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;

@@ -78,10 +78,6 @@ const AdminBarImpressions = ( { className } ) => {
 		return <ReportZero moduleSlug="search-console" />;
 	}
 
-	if ( ! searchConsoleData?.length ) {
-		return null;
-	}
-
 	// Split the data in two chunks.
 	const half = Math.floor( searchConsoleData.length / 2 );
 	const latestData = searchConsoleData.slice( half );
