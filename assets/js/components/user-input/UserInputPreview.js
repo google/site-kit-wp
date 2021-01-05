@@ -34,7 +34,6 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Row } from '../../material-components';
 import Button from '../Button';
-import ErrorNotice from '../ErrorNotice';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import { getUserInputAnwsers } from './util/constants';
@@ -57,10 +56,6 @@ export default function UserInputPreview( props ) {
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
 		USER_INPUT_ANSWERS_ROLE,
 	} = getUserInputAnwsers();
-
-	const { error } = useSelect( ( select ) => ( {
-		error: select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] ),
-	} ) );
 
 	const [ , setSingle ] = useQueryArg( 'single', false );
 
@@ -117,8 +112,6 @@ export default function UserInputPreview( props ) {
 								/>
 							</Cell>
 						</Row>
-
-						{ error && <ErrorNotice error={ error } /> }
 
 						{ ! noFooter && (
 							<div className="googlesitekit-user-input__preview--footer">

@@ -35,7 +35,6 @@ import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/cons
 import Button from '../Button';
 import { Row, Cell } from '../../material-components';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
-import useQueryArg from '../../hooks/useQueryArg';
 const { useSelect } = Data;
 
 export default function UserInputQuestionWrapper( props ) {
@@ -51,8 +50,6 @@ export default function UserInputQuestionWrapper( props ) {
 		back,
 		backLabel,
 	} = props;
-
-	const [ single ] = useQueryArg( 'single', false );
 
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
 	const scope = useSelect( ( select ) => select( CORE_USER ).getUserInputSettingScope( slug ) );
@@ -84,7 +81,7 @@ export default function UserInputQuestionWrapper( props ) {
 
 					{ isActive && (
 						<div className="googlesitekit-user-input__buttons">
-							{ ! single && back && (
+							{ back && (
 								<Button text onClick={ back }>
 									{ backLabel || __( 'Back', 'google-site-kit' ) }
 								</Button>

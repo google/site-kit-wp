@@ -44,6 +44,7 @@ import {
 import useQueryArg from '../../hooks/useQueryArg';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import ErrorNotice from '../ErrorNotice';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputQuestionnaire() {
@@ -51,6 +52,7 @@ export default function UserInputQuestionnaire() {
 
 	const [ activeSlug, setActiveSlug ] = useQueryArg( 'question', steps[ 0 ] );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
+	const [ single ] = useQueryArg( 'single', false );
 
 	const activeSlugIndex = steps.indexOf( activeSlug );
 
@@ -98,8 +100,9 @@ export default function UserInputQuestionnaire() {
 
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 
-	const { isSavingSettings } = useSelect( ( select ) => ( {
+	const { isSavingSettings, error } = useSelect( ( select ) => ( {
 		isSavingSettings: select( CORE_USER ).isFetchingSaveUserInputSettings(),
+		error: select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] ),
 	} ) );
 
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
@@ -126,21 +129,27 @@ export default function UserInputQuestionnaire() {
 		setActiveSlug( steps[ steps.length - 1 ] );
 	}, [ activeSlugIndex ] );
 
-	// The single variable is used to edit *just one question* from the summary screens on the user input page and the settings page.
-	const [ single ] = useQueryArg( 'single', false );
-
 	// Update the callbacks and labels for the questions if the user is editing a *single question*.
+	let backCallback = back;
 	let nextCallback = next;
 	let nextLabel;
 
 	if ( single === 'user-input' ) {
+		backCallback = undefined;
 		// When the user is editing a single question in the user-input screen send them back to the preview when they click Update.
 		nextCallback = goToPreview;
 		nextLabel = __( 'Update', 'google-site-kit' );
 	} else if ( single === 'settings' ) {
+		backCallback = undefined;
 		// When the user is editing a single question from the settings screen, submit changes and send them back to the settings pages when they click Submit.
 		nextCallback = submitChanges;
 		nextLabel = __( 'Submit', 'google-site-kit' );
+	}
+
+	if ( isSavingSettings || isNavigating ) {
+		return (
+			<ProgressBar />
+		);
 	}
 
 	return (
@@ -150,6 +159,8 @@ export default function UserInputQuestionnaire() {
 				indeterminate={ false }
 				progress={ ( activeSlugIndex + 1 ) / USER_INPUT_QUESTIONS_LIST.length }
 			/>
+
+			{ error && <ErrorNotice error={ error } /> }
 
 			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_ROLE ) && (
 				<UserInputQuestionWrapper
@@ -177,7 +188,7 @@ export default function UserInputQuestionnaire() {
 					description={ __( 'Based on your answer, Site Kit will suggest new features for your dashboard related to content creation.', 'google-site-kit' ) }
 					next={ nextCallback }
 					nextLabel={ nextLabel }
-					back={ back }
+					back={ backCallback }
 				>
 					<UserInputSelectOptions
 						slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
@@ -195,7 +206,7 @@ export default function UserInputQuestionnaire() {
 					description={ __( 'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track how close you’re getting to your specific goals.', 'google-site-kit' ) }
 					next={ nextCallback }
 					nextLabel={ nextLabel }
-					back={ back }
+					back={ backCallback }
 				>
 					<UserInputSelectOptions
 						slug={ USER_INPUT_QUESTION_GOALS }
@@ -214,7 +225,7 @@ export default function UserInputQuestionnaire() {
 					description={ __( 'Based on your answers, Site Kit will tailor the metrics and advice you see on your dashboard to help you make progress in these areas.', 'google-site-kit' ) }
 					next={ nextCallback }
 					nextLabel={ nextLabel }
-					back={ back }
+					back={ backCallback }
 				>
 					<UserInputSelectOptions
 						slug={ USER_INPUT_QUESTION_HELP_NEEDED }
@@ -233,7 +244,7 @@ export default function UserInputQuestionnaire() {
 					description={ __( 'Site Kit will keep you informed if people start finding you in Search for these terms.', 'google-site-kit' ) }
 					next={ nextCallback }
 					nextLabel={ nextLabel === undefined ? __( 'Preview', 'google-site-kit' ) : nextLabel }
-					back={ back }
+					back={ backCallback }
 				>
 					<UserInputKeywords
 						slug={ USER_INPUT_QUESTION_SEARCH_TERMS }
@@ -242,13 +253,10 @@ export default function UserInputQuestionnaire() {
 				</UserInputQuestionWrapper>
 			) }
 
-			{ activeSlug === 'preview' && ( isSavingSettings || isNavigating ) && (
-				<ProgressBar />
-			) }
 			{ activeSlug === 'preview' && ! isSavingSettings && ! isNavigating && (
 				<UserInputPreview
 					submitChanges={ submitChanges }
-					back={ back }
+					back={ backCallback }
 					goTo={ goTo }
 				/>
 			) }
