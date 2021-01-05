@@ -1393,15 +1393,6 @@ final class Analytics extends Module
 		$request->setIncludeEmptyRows( true );
 		$request->setViewId( $profile_id );
 
-		$dimension_filter_clauses = array();
-		if ( ! empty( $args['dimension_filters'] ) ) {
-			$dimension_filters       = $args['dimension_filters'];
-			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
-			$dimension_filter_clause->setFilters( $dimension_filters );
-			$dimension_filter_clause->setOperator( 'AND' );
-			$dimension_filter_clauses[] = $dimension_filter_clause;
-		}
-
 		if ( ! empty( $args['dimensions'] ) ) {
 			$request->setDimensions( (array) $args['dimensions'] );
 		}
@@ -1411,6 +1402,15 @@ final class Analytics extends Module
 			$date_range->setStartDate( $args['start_date'] );
 			$date_range->setEndDate( $args['end_date'] );
 			$request->setDateRanges( array( $date_range ) );
+		}
+
+		$dimension_filter_clauses = array();
+		if ( ! empty( $args['dimension_filters'] ) ) {
+			$dimension_filters       = $args['dimension_filters'];
+			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
+			$dimension_filter_clause->setFilters( $dimension_filters );
+			$dimension_filter_clause->setOperator( 'AND' );
+			$dimension_filter_clauses[] = $dimension_filter_clause;
 		}
 
 		if ( ! empty( $args['page'] ) ) {
