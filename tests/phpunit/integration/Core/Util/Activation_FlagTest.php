@@ -80,6 +80,5 @@ class Activation_FlagTest extends TestCase {
 		do_action( 'googlesitekit_activation', $network_wide );
 
 		$this->assertNotEmpty( $this->options->get( Activation_Flag::OPTION_SHOW_ACTIVATION_NOTICE ) );
-		$this->assertEquals( 1, $this->options->get( Activation_Flag::OPTION_NEW_SITE_POSTS ) );
 	}
 }
