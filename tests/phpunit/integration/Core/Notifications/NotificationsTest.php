@@ -51,8 +51,7 @@ class NotificationsTest extends TestCase {
 	}
 
 	public function test_non_proxy_request_does_not_request_proxy() {
-
-		$context                        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$context                        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$google_proxy                   = new Google_Proxy( $context );
 		$google_proxy_notifications_url = $google_proxy->url( '/notifications/' );
 
@@ -61,7 +60,6 @@ class NotificationsTest extends TestCase {
 		wp_set_current_user( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );
 
-		// Fake setup and authentication for access to dashboard.
 		$this->fake_site_connection();
 
 		add_filter(
@@ -76,17 +74,11 @@ class NotificationsTest extends TestCase {
 			3
 		);
 
-		// Get a REST server instance.
-		$server = rest_get_server();
-
 		// Make the test request.
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/notifications' );
-		$response = $server->dispatch( $request );
+		$response = rest_get_server()->dispatch( $request );
 
 		// Confirm the request returns 200 status code.
-		$this->assertEquals(
-			$response->get_status(),
-			200
-		);
+		$this->assertEquals( 200, $response->get_status() );
 	}
 }
