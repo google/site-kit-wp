@@ -84,12 +84,12 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 		}
 	}, [] );
 
-	if ( ! loaded ) {
-		return <PreviewBlock width="282px" height="282px" shape="circular" />;
-	}
-
 	if ( error ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
+	}
+
+	if ( ! loaded || ! report?.length ) {
+		return <PreviewBlock width="282px" height="282px" shape="circular" />;
 	}
 
 	const absOthers = {
