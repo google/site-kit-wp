@@ -22,7 +22,7 @@
 import { renderHook, actHook as act } from '../../../tests/js/test-utils';
 import { useDebouncedState } from './useDebouncedState';
 
-describe( 'useDebouncedState', () => {
+describe( 'useChecks', () => {
 	jest.useFakeTimers();
 
 	it( 'should return initial value by default and should not change it after delay is expired', () => {

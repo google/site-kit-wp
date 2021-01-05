@@ -45,7 +45,9 @@ describe( 'CompatibilityChecks', () => {
 
 	it( 'should initially display "Checking Compatibility..." message', async () => {
 		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/setup-tag/ );
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/developer-plugin/ );
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/health-checks/ );
 		muteFetch( { query: { tagverify: '1' } } );
 		const { container } = render(
 			<CompatibilityChecks>
@@ -142,6 +144,9 @@ describe( 'CompatibilityChecks', () => {
 		// Mock request to AMP project.
 		muteFetch( AMP_PROJECT_TEST_URL );
 
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/developer-plugin/ );
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
+
 		// Mock getExistingTag request
 		fetchMock.get(
 			{ query: { tagverify: '1' } },
@@ -158,7 +163,7 @@ describe( 'CompatibilityChecks', () => {
 		);
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 4 );
+			expect( fetchMock ).toHaveFetchedTimes( 5 );
 		} );
 
 		// Expect neither error nor incomplete text to be displayed.
