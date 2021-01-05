@@ -186,15 +186,7 @@ export const numFmt = ( number, options = {} ) => {
 		return prepareSecondsForDisplay( number );
 	}
 
-	try {
-		return numberFormat( number, formatOptions );
-	} catch ( _ ) {
-		if ( !! options && typeof options === 'string' ) {
-			// if the formatting doesn't work, return the concatenated options(assuming as a custom unit) and number
-			return numberFormat( number );
-		}
-		return undefined;
-	}
+	return numberFormat( number, formatOptions );
 };
 
 /**
