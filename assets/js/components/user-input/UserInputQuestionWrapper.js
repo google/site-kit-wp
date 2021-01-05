@@ -35,6 +35,7 @@ import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/cons
 import Button from '../Button';
 import { Row, Cell } from '../../material-components';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
+import useQueryArg from '../../hooks/useQueryArg';
 const { useSelect } = Data;
 
 export default function UserInputQuestionWrapper( props ) {
@@ -45,14 +46,13 @@ export default function UserInputQuestionWrapper( props ) {
 		questionNumber,
 		title,
 		description,
-		single,
-		submitChanges,
-		goToPreview,
 		next,
 		nextLabel,
 		back,
 		backLabel,
 	} = props;
+
+	const [ single ] = useQueryArg( 'single', false );
 
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
 	const scope = useSelect( ( select ) => select( CORE_USER ).getUserInputSettingScope( slug ) );
@@ -89,7 +89,7 @@ export default function UserInputQuestionWrapper( props ) {
 									{ backLabel || __( 'Back', 'google-site-kit' ) }
 								</Button>
 							) }
-							{ ! single && next && (
+							{ next && (
 								<Button
 									onClick={ next }
 									disabled={ values.filter( ( value ) => value.trim().length > 0 ).length === 0 }
@@ -97,7 +97,7 @@ export default function UserInputQuestionWrapper( props ) {
 									{ nextLabel || __( 'Next', 'google-site-kit' ) }
 								</Button>
 							) }
-							{ single && single === 'user-input' && (
+							{ /* { single && single === 'user-input' && (
 								<Button onClick={ goToPreview }>
 									{ __( 'Back', 'google-site-kit' ) }
 								</Button>
@@ -109,7 +109,7 @@ export default function UserInputQuestionWrapper( props ) {
 								>
 									{ __( 'Submit', 'google-site-kit' ) }
 								</Button>
-							) }
+							) } */ }
 						</div>
 					) }
 				</Cell>
@@ -125,12 +125,6 @@ UserInputQuestionWrapper.propTypes = {
 	isActive: PropTypes.bool,
 	title: PropTypes.string,
 	description: PropTypes.string,
-	single: PropTypes.oneOfType( [
-		PropTypes.string,
-		PropTypes.bool,
-	] ),
-	submitChanges: PropTypes.func,
-	goToPreview: PropTypes.func,
 	next: PropTypes.func,
 	nextLabel: PropTypes.string,
 	back: PropTypes.func,

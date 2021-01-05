@@ -51,8 +51,6 @@ export default function UserInputQuestionnaire() {
 
 	const [ activeSlug, setActiveSlug ] = useQueryArg( 'question', steps[ 0 ] );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
-	// The single variable is used to edit *just one question* from the summary screens on the user input page and the settings page.
-	const [ single, setSingle ] = useQueryArg( 'single', false );
 
 	const activeSlugIndex = steps.indexOf( activeSlug );
 
@@ -85,11 +83,7 @@ export default function UserInputQuestionnaire() {
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );
 	}, [ activeSlugIndex ] );
 
-	const goTo = useCallback( ( num = 1, shouldSetSingle = false ) => {
-		// Add the single edit context to the query string when navigating to a specific question on the user-input page.
-		if ( shouldSetSingle ) {
-			setSingle( 'user-input' );
-		}
+	const goTo = useCallback( ( num = 1 ) => {
 		if ( steps.length >= num && num > 0 ) {
 			setActiveSlug( steps[ num - 1 ] );
 			global.scrollTo( 0, 0 );
@@ -132,6 +126,23 @@ export default function UserInputQuestionnaire() {
 		setActiveSlug( steps[ steps.length - 1 ] );
 	}, [ activeSlugIndex ] );
 
+	// The single variable is used to edit *just one question* from the summary screens on the user input page and the settings page.
+	const [ single ] = useQueryArg( 'single', false );
+
+	// Update the callbacks and labels for the questions if the user is editing a *single question*.
+	let nextCallback = next;
+	let nextLabel;
+
+	if ( single === 'user-input' ) {
+		// When the user is editing a single question in the user-input screen send them back to the preview when they click Update.
+		nextCallback = goToPreview;
+		nextLabel = __( 'Update', 'google-site-kit' );
+	} else if ( single === 'settings' ) {
+		// When the user is editing a single question from the settings screen, submit changes and send them back to the settings pages when they click Submit.
+		nextCallback = submitChanges;
+		nextLabel = __( 'Submit', 'google-site-kit' );
+	}
+
 	return (
 		<Fragment>
 			<ProgressBar
@@ -147,10 +158,8 @@ export default function UserInputQuestionnaire() {
 					questionNumber={ 1 }
 					title={ __( 'Which best describes your team/role in relation to this site?', 'google-site-kit' ) }
 					description={ __( 'This will help Site Kit show tips that help you specifically in your role.', 'google-site-kit' ) }
-					single={ single }
-					submitChanges={ submitChanges }
-					goToPreview={ goToPreview }
-					next={ next }
+					next={ nextCallback }
+					nextLabel={ nextLabel }
 				>
 					<UserInputSelectOptions
 						slug={ USER_INPUT_QUESTION_ROLE }
@@ -166,10 +175,8 @@ export default function UserInputQuestionnaire() {
 					questionNumber={ 2 }
 					title={ __( 'How often do you create new posts for this site?', 'google-site-kit' ) }
 					description={ __( 'Based on your answer, Site Kit will suggest new features for your dashboard related to content creation.', 'google-site-kit' ) }
-					single={ single }
-					submitChanges={ submitChanges }
-					goToPreview={ goToPreview }
-					next={ next }
+					next={ nextCallback }
+					nextLabel={ nextLabel }
 					back={ back }
 				>
 					<UserInputSelectOptions
@@ -186,10 +193,8 @@ export default function UserInputQuestionnaire() {
 					questionNumber={ 3 }
 					title={ __( 'What are the goals of this site?', 'google-site-kit' ) }
 					description={ __( 'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track how close you’re getting to your specific goals.', 'google-site-kit' ) }
-					single={ single }
-					submitChanges={ submitChanges }
-					goToPreview={ goToPreview }
-					next={ next }
+					next={ nextCallback }
+					nextLabel={ nextLabel }
 					back={ back }
 				>
 					<UserInputSelectOptions
@@ -207,10 +212,8 @@ export default function UserInputQuestionnaire() {
 					questionNumber={ 4 }
 					title={ __( 'What do you need help most with for this site?', 'google-site-kit' ) }
 					description={ __( 'Based on your answers, Site Kit will tailor the metrics and advice you see on your dashboard to help you make progress in these areas.', 'google-site-kit' ) }
-					single={ single }
-					submitChanges={ submitChanges }
-					goToPreview={ goToPreview }
-					next={ next }
+					next={ nextCallback }
+					nextLabel={ nextLabel }
 					back={ back }
 				>
 					<UserInputSelectOptions
@@ -228,11 +231,8 @@ export default function UserInputQuestionnaire() {
 					questionNumber={ 5 }
 					title={ __( 'To help us identify opportunities for your site, enter the top three search terms that best describe your site’s content.', 'google-site-kit' ) }
 					description={ __( 'Site Kit will keep you informed if people start finding you in Search for these terms.', 'google-site-kit' ) }
-					single={ single }
-					submitChanges={ submitChanges }
-					goToPreview={ goToPreview }
-					next={ next }
-					nextLabel={ __( 'Preview', 'google-site-kit' ) }
+					next={ nextCallback }
+					nextLabel={ nextLabel === undefined ? __( 'Preview', 'google-site-kit' ) : nextLabel }
 					back={ back }
 				>
 					<UserInputKeywords
@@ -248,7 +248,6 @@ export default function UserInputQuestionnaire() {
 			{ activeSlug === 'preview' && ! isSavingSettings && ! isNavigating && (
 				<UserInputPreview
 					submitChanges={ submitChanges }
-					goToPreview={ goToPreview }
 					back={ back }
 					goTo={ goTo }
 				/>
