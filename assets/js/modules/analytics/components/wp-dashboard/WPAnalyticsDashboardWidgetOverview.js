@@ -112,7 +112,7 @@ class WPAnalyticsDashboardWidgetOverview extends Component {
 							className="googlesitekit-wp-dashboard-stats__data-table overview-average-session-duration"
 							title={ __( 'Avg. Time on Page', 'google-site-kit' ) }
 							datapoint={ averageSessionDuration }
-							datapointUnit="duration"
+							datapointUnit="s"
 							change={ averageSessionDurationChange }
 							changeDataUnit="%"
 						/>

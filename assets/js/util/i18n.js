@@ -131,7 +131,7 @@ export const readableLargeNumber = ( number ) => {
  * Formats a number with unit using the JS Internationalization Number Format API.
  *
  * In addition to the supported 'style' values of the lower-level `numberFormat` function, this function
- * supports two additional 'style' values 'metric' and 'seconds'.
+ * supports two additional 'style' values 'metric' and 'duration' (expects a number in seconds).
  *
  * Another differentiation in behavior is that by default the function will use 'metric' formatting instead
  * of 'decimal' formatting.
@@ -162,9 +162,9 @@ export const numFmt = ( number, options = {} ) => {
 			style: 'percent',
 			maximumFractionDigits: 2,
 		};
-	} else if ( 'duration' === options ) {
+	} else if ( 's' === options ) {
 		formatOptions = {
-			style: 'seconds',
+			style: 'duration',
 		};
 	} else if ( !! options && typeof options === 'string' ) {
 		formatOptions = {
@@ -182,7 +182,7 @@ export const numFmt = ( number, options = {} ) => {
 		return readableLargeNumber( number );
 	}
 
-	if ( 'seconds' === style ) {
+	if ( 'duration' === style ) {
 		return prepareSecondsForDisplay( number );
 	}
 

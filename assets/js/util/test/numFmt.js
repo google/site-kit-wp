@@ -86,13 +86,13 @@ describe( 'numFmt', () => {
 		[
 			'en_US',
 			12,
-			'duration',
+			's',
 			`12s`,
 		],
 		[
 			'en_US',
 			123,
-			'duration',
+			's',
 			`2m 3s`,
 		],
 		[
