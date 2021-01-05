@@ -243,10 +243,11 @@ export default function UserInputQuestionnaire() {
 				</UserInputQuestionWrapper>
 			) }
 
-			{ activeSlug === 'preview' && (
+			{ activeSlug === 'preview' && ( isSavingSettings || isNavigating ) && (
+				<ProgressBar />
+			) }
+			{ activeSlug === 'preview' && ! isSavingSettings && ! isNavigating && (
 				<UserInputPreview
-					isNavigating={ isNavigating }
-					isSavingSettings={ isSavingSettings }
 					error={ error }
 					submitChanges={ submitChanges }
 					goToPreview={ goToPreview }
