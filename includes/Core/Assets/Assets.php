@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\Assets;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Assets\External\Google_Charts;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Util\BC_Functions;
@@ -384,10 +383,14 @@ final class Assets {
 					},
 				)
 			),
-			new Google_Charts(
+			new Script(
 				'googlesitekit-google-charts',
 				array(
-					'in_footer' => false,
+					'src'          => 'https://www.gstatic.com/charts/loader.js',
+					'in_footer'    => false,
+					'before_print' => function( $handle ) {
+						wp_add_inline_script( $handle, 'google.charts.load( "current", { packages: [ "corechart" ] } );' );
+					},
 				)
 			),
 			new Script(
