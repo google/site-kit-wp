@@ -104,9 +104,8 @@ export default function UserInputQuestionnaire() {
 
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 
-	const { isSavingSettings, error } = useSelect( ( select ) => ( {
+	const { isSavingSettings } = useSelect( ( select ) => ( {
 		isSavingSettings: select( CORE_USER ).isFetchingSaveUserInputSettings(),
-		error: select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] ),
 	} ) );
 
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
@@ -248,7 +247,6 @@ export default function UserInputQuestionnaire() {
 			) }
 			{ activeSlug === 'preview' && ! isSavingSettings && ! isNavigating && (
 				<UserInputPreview
-					error={ error }
 					submitChanges={ submitChanges }
 					goToPreview={ goToPreview }
 					back={ back }

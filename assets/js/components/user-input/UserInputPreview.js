@@ -40,14 +40,14 @@ import UserInputQuestionNotice from './UserInputQuestionNotice';
 import { getUserInputAnwsers } from './util/constants';
 const { useSelect } = Data;
 
-export default function UserInputPreview(
-	{
+export default function UserInputPreview( props ) {
+	const {
 		noFooter,
 		back,
 		goTo,
-		error,
 		submitChanges,
-	} ) {
+	} = props;
+
 	const settings = useSelect( ( select ) => select( CORE_USER ).getUserInputSettings() );
 
 	const {
@@ -56,6 +56,10 @@ export default function UserInputPreview(
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
 		USER_INPUT_ANSWERS_ROLE,
 	} = getUserInputAnwsers();
+
+	const { error } = useSelect( ( select ) => ( {
+		error: select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] ),
+	} ) );
 
 	return (
 		<div className="googlesitekit-user-input__preview">
@@ -126,7 +130,6 @@ export default function UserInputPreview(
 }
 
 UserInputPreview.propTypes = {
-	error: PropTypes.bool,
 	submitChanges: PropTypes.func,
 	noFooter: PropTypes.bool,
 	back: PropTypes.func,
