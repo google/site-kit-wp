@@ -12,10 +12,12 @@ namespace Google\Site_Kit\Tests\Core\Notifications;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Notifications\Notifications;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
 
@@ -49,6 +51,11 @@ class NotificationsTest extends TestCase {
 	}
 
 	public function test_non_proxy_request_does_not_request_proxy() {
+
+		$context                        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$google_proxy                   = new Google_Proxy( $context );
+		$google_proxy_notifications_url = $google_proxy->url( '/notifications/' );
+
 		// Create a user with access to the WP REST API and log in.
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
@@ -56,14 +63,18 @@ class NotificationsTest extends TestCase {
 
 		// Fake setup and authentication for access to dashboard.
 		$this->fake_site_connection();
-		remove_all_filters( 'googlesitekit_setup_complete' );
-		$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$authentication->verification()->set( true );
-		$authentication->get_oauth_client()->set_access_token( 'test-access-token', HOUR_IN_SECONDS );
 
-		// Set up the REST Routes including the notification route to test.
-		$rest_routes = new REST_Routes( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$rest_routes->register();
+		add_filter(
+			'pre_http_request',
+			function ( $override, $args, $url ) use ( $google_proxy_notifications_url ) {
+				if ( strstr( $url, $google_proxy_notifications_url ) ) {
+					$this->fail( 'Expected no request to be made to Google proxy notifications endpoint' );
+				}
+				return $override;
+			},
+			10,
+			3
+		);
 
 		// Get a REST server instance.
 		$server = rest_get_server();
@@ -71,11 +82,11 @@ class NotificationsTest extends TestCase {
 		// Make the test request.
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/notifications' );
 		$response = $server->dispatch( $request );
-		$data     = $response->get_data();
 
+		// Confirm the request returns 200 status code.
 		$this->assertEquals(
-			array(),
-			$data
+			$response->get_status(),
+			200
 		);
 	}
 }
