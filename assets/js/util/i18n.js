@@ -46,7 +46,7 @@ export const numberFormat = ( number, options = {} ) => {
 /**
  * Flattens an array of strings into a string using the JS Internationalization List Format API.
  *
- * @since n.e.x.t
+ * @since 1.23.0
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat|`options` parameter} For all available options.
  *
  * @param {Array}  list             The list to flatten.

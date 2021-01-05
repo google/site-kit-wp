@@ -69,9 +69,12 @@ if ( active && setupComplete ) {
 }
 
 domReady( () => {
+	// IMPORTANT: When updating arguments here, also update the same call in
+	// `provideModuleRegistrations`.
 	Modules.registerModule(
 		'pagespeed-insights',
 		{
+			storeName: 'modules/pagespeed-insights',
 			SettingsViewComponent: SettingsView,
 			Icon: PageSpeedInsightsIcon,
 		}

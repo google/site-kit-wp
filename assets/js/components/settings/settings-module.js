@@ -257,24 +257,6 @@ class SettingsModule extends Component {
 							aria-controls={ `googlesitekit-settings-module__content--${ slug }` }
 							onClick={ handleAccordion.bind( null, slug ) }
 						>
-							{ error && editActive && isEditing[ moduleKey ] &&
-								<div className="googlesitekit-settings-module__error">
-									<div className="mdc-layout-grid">
-										<div className="mdc-layout-grid__inner">
-											<div className="
-												mdc-layout-grid__cell
-												mdc-layout-grid__cell--span-12
-											">
-												{ sprintf(
-													/* translators: %s: Error message */
-													__( 'Error: %s', 'google-site-kit' ),
-													error.errorMsg
-												) }
-											</div>
-										</div>
-									</div>
-								</div>
-							}
 							<div className="mdc-layout-grid">
 								<div className="mdc-layout-grid__inner">
 									<div className="
@@ -375,7 +357,7 @@ class SettingsModule extends Component {
 											{ isEditing[ moduleKey ] || isSavingModule ? (
 												<Fragment>
 													<Button
-														onClick={ () => handleEdit( moduleKey, buttonActionName, buttonAction ) }
+														onClick={ () => handleEdit( slug, buttonActionName, buttonAction ) }
 														disabled={ isSavingModule || ! canSubmitChanges }
 														id={ hasSettings && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
 													>
@@ -385,7 +367,7 @@ class SettingsModule extends Component {
 													{ hasSettings &&
 													<Link
 														className="googlesitekit-settings-module__footer-cancel"
-														onClick={ () => handleEdit( moduleKey, 'cancel' ) }
+														onClick={ () => handleEdit( slug, 'cancel' ) }
 														inherit
 													>
 														{ __( 'Cancel', 'google-site-kit' ) }
@@ -396,7 +378,7 @@ class SettingsModule extends Component {
 											<Link
 												className="googlesitekit-settings-module__edit-button"
 												onClick={ () => {
-													handleEdit( moduleKey, 'edit' );
+													handleEdit( slug, 'edit' );
 												} }
 												inherit
 											>

@@ -34,3 +34,4 @@ export { default as LegacyAnalyticsDashboardWidgetPopularPagesTable } from './Le
 export { default as LegacyAnalyticsDashboardWidgetTopAcquisitionSources } from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 export { default as LegacyAnalyticsDashboardWidgetTopLevel } from './LegacyAnalyticsDashboardWidgetTopLevel';
 export { default as LegacyDashboardAcquisitionPieChart } from './LegacyDashboardAcquisitionPieChart';
+export { default as DashboardAllTrafficWidgetV2 } from './DashboardAllTrafficWidgetV2';

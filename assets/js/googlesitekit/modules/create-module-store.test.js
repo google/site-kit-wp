@@ -34,6 +34,7 @@ import { createSubmitChangesStore } from './create-submit-changes-store';
 
 const SETTING_SLUG = 'testSetting';
 const MODULE_SLUG = 'base';
+const TEST_STORE_NAME = `test/${ MODULE_SLUG }`;
 
 describe( 'createModuleStore store', () => {
 	const settingSlugs = [ SETTING_SLUG ];
@@ -48,7 +49,7 @@ describe( 'createModuleStore store', () => {
 	beforeEach( () => {
 		registry = createRegistry();
 
-		storeDefinition = createModuleStore( MODULE_SLUG, { settingSlugs, registry } );
+		storeDefinition = createModuleStore( MODULE_SLUG, { storeName: TEST_STORE_NAME, settingSlugs } );
 
 		registry.registerStore( storeDefinition.STORE_NAME, storeDefinition );
 	} );
@@ -63,7 +64,7 @@ describe( 'createModuleStore store', () => {
 
 	describe( 'name', () => {
 		it( 'returns the correct default store name', () => {
-			expect( storeDefinition.STORE_NAME ).toEqual( `modules/${ MODULE_SLUG }` );
+			expect( storeDefinition.STORE_NAME ).toEqual( TEST_STORE_NAME );
 		} );
 	} );
 
@@ -81,7 +82,7 @@ describe( 'createModuleStore store', () => {
 
 	describe( 'selectors', () => {
 		it.each( [
-			[ 'createInfoStore', createInfoStore() ],
+			[ 'createInfoStore', createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } ) ],
 			[ 'createNotificationsStore', createNotificationsStore( 'modules', MODULE_SLUG, 'notifications' ) ],
 			[ 'createSettingsStore', createSettingsStore( 'modules', MODULE_SLUG, 'settings', { settingSlugs, registry } ) ],
 			[ 'createSubmitChangesStore', createSubmitChangesStore() ],

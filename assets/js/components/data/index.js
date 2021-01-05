@@ -82,7 +82,6 @@ const dataAPI = {
 	 * Gets data for multiple requests from the cache in a single batch process.
 	 *
 	 * This is a replica of combinedGet but only fetching data from cache. No requests are done.
-	 * Solves issue for publisher wins to retrieve data without performing additional requests.
 	 * Likely this will be removed after refactoring.
 	 *
 	 * @since 1.0.0

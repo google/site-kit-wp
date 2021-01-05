@@ -72,13 +72,13 @@ export const actions = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param {string} slug              Widget Area's slug.
-	 * @param {Object} settings          Widget Area's settings.
-	 * @param {string} settings.title    Title for this widget area.
-	 * @param {string} settings.subtitle Subtitle for this widget area.
-	 * @param {string} settings.icon     Optional. URL to SVG icon for this widget area.
-	 * @param {string} settings.style    Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
-	 * @param {number} settings.priority Optional. Priority for this widget area. Default: 10.
+	 * @param {string}      slug              Widget Area's slug.
+	 * @param {Object}      settings          Widget Area's settings.
+	 * @param {string}      settings.title    Title for this widget area.
+	 * @param {string}      settings.subtitle Subtitle for this widget area.
+	 * @param {WPComponent} settings.Icon     Optional. React component to render icon for this widget area.
+	 * @param {string}      settings.style    Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
+	 * @param {number}      settings.priority Optional. Priority for this widget area. Default: 10.
 	 * @return {Object} Redux-style action.
 	 */
 	registerWidgetArea( slug, {
@@ -86,7 +86,7 @@ export const actions = {
 		style = WIDGET_AREA_STYLES.BOXES,
 		title,
 		subtitle,
-		icon,
+		Icon,
 	} = {} ) {
 		invariant( slug, 'slug is required.' );
 		invariant( title, 'settings.title is required.' );
@@ -96,7 +96,7 @@ export const actions = {
 		return {
 			payload: {
 				slug,
-				settings: { priority, style, title, subtitle, icon },
+				settings: { priority, style, title, subtitle, Icon },
 			},
 			type: REGISTER_WIDGET_AREA,
 		};
