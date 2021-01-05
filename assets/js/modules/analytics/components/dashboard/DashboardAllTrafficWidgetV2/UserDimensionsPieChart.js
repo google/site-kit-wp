@@ -35,10 +35,11 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
-import { extractAnalyticsDataForPieChart } from '../../../util';
+import { extractAnalyticsDataForPieChart, isZeroReport } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
+import ReportZero from '../../../../../components/ReportZero';
 const { useSelect } = Data;
 
 export default function UserDimensionsPieChart( { dimensionName, entityURL, sourceLink } ) {
@@ -84,12 +85,16 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 		}
 	}, [] );
 
+	if ( ! loaded ) {
+		return <PreviewBlock width="282px" height="282px" shape="circular" />;
+	}
+
 	if ( error ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( ! loaded || ! report?.length ) {
-		return <PreviewBlock width="282px" height="282px" shape="circular" />;
+	if ( isZeroReport( report ) ) {
+		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const absOthers = {
