@@ -36,7 +36,10 @@ import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { numberFormat, readableLargeNumber } from '../../../../../util';
 import { getAvailableDateRanges } from '../../../../../util/date-range';
+import { isZeroReport } from '../../../util';
 import ChangeArrow from '../../../../../components/ChangeArrow';
+import ReportError from '../../../../../components/ReportError';
+import ReportZero from '../../../../../components/ReportZero';
 const { useSelect } = Data;
 
 export default function TotalUserCount( { dimensionName, dimensionValue } ) {
@@ -72,8 +75,16 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
 	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
 
-	if ( ! loaded || error ) {
+	if ( ! loaded ) {
 		return null;
+	}
+
+	if ( error ) {
+		return <ReportError moduleSlug="analytics" error={ error } />;
+	}
+
+	if ( isZeroReport( report ) ) {
+		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const { totals } = report?.[ 0 ]?.data || {};
