@@ -72,7 +72,7 @@ const fetchGetReportStore = createFetchStore( {
 
 		invariant(
 			isValidDimensionFilters( dimensionFilters ),
-			'Dimension filters must be an object where the values are strings.',
+			'Dimension filters must be a map of dimension names as keys and dimension values as values.',
 		);
 
 		if ( orderby ) {
