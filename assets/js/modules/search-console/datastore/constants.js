@@ -19,4 +19,4 @@
 export const STORE_NAME = 'modules/search-console';
 
 // Date range offset days for Search Console report requests.
-export const DATE_RANGE_OFFSET = 2;
+export const DATE_RANGE_OFFSET = 1;
