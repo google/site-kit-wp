@@ -96,6 +96,9 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 		<div className="googlesitekit-widget--analyticsAllTrafficV2__totalcount">
 			<h3>
 				{ __( 'Users', 'google-site-kit' ) }
+				{ dimensionValue && (
+					<span>{ dimensionValue[ 0 ].toUpperCase() }{ dimensionValue.substring( 1 ) }</span>
+				) }
 			</h3>
 			<h2>
 				{ readableLargeNumber( current?.values?.[ 0 ] ) }
