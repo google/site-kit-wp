@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Button from './Button';
-import Layout from './layout/layout';
+import Layout from './layout/Layout';
 import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';

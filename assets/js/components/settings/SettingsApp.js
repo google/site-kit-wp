@@ -33,12 +33,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import SettingsAdmin from './settings-admin';
+import SettingsAdmin from './SettingsAdmin';
 import Header from '../Header';
 import PageHeader from '../PageHeader';
-import Layout from '../layout/layout';
+import Layout from '../layout/Layout';
 import HelpLink from '../HelpLink';
-import SettingsModules from './settings-modules';
+import SettingsModules from './SettingsModules';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../material-components';
 

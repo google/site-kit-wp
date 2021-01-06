@@ -31,7 +31,7 @@ import { render } from '@wordpress/element';
  * Internal dependencies.
  */
 import { trackEvent } from './util';
-import Root from './components/root';
+import Root from './components/Root';
 import AdminBarApp from './components/adminbar/AdminBarApp';
 import './modules';
 

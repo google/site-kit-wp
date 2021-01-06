@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Layout from '../assets/js/components/layout/layout';
+import Layout from '../assets/js/components/layout/Layout';
 
 storiesOf( 'Global/Layout', module )
 	.add( 'Layout with Header Footer and CTAs', () => (
