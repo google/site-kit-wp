@@ -31,9 +31,9 @@ import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
 import {
 	readableLargeNumber,
-	changeToPercent,
+	calculateChange,
 } from '../../util';
-import DataBlock from '../data-block';
+import DataBlock from '../DataBlock';
 import { parseTotalUsersData, userReportDataDefaults } from '../../modules/analytics/util';
 const { useSelect } = Data;
 
@@ -62,7 +62,7 @@ const WPDashboardUniqueVisitors = () => {
 		previousTotalUsers,
 	} = parseTotalUsersData( data );
 
-	const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
+	const totalUsersChange = calculateChange( previousTotalUsers, totalUsers );
 
 	return (
 		<DataBlock

@@ -30,7 +30,7 @@ import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../../modules/search-conso
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { extractSearchConsoleDashboardData, isZeroReport } from '../../modules/search-console/util';
 import { trackEvent } from '../../util/tracking';
-import DataBlock from '../data-block';
+import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
 import ReportZero from '../ReportZero';

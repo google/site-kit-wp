@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { prepareSecondsForDisplay } from '../../util';
-import DataBlock from '../data-block';
+import DataBlock from '../DataBlock';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { overviewReportDataDefaults } from '../../modules/analytics/util';
