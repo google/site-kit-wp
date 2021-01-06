@@ -26,7 +26,7 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
@@ -48,8 +48,11 @@ function DashboardPopularPagesWidget() {
 		analyticsMainURL,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
+
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
 		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
+			startDate,
+			endDate,
 			dimensions: 'ga:pageTitle,ga:pagePath',
 			metrics: [
 				{
