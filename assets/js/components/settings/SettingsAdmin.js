@@ -21,18 +21,52 @@
  */
 import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import Layout from '../layout/Layout';
 import OptIn from '../OptIn';
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { Cell } from '../../material-components';
 import VisuallyHidden from '../VisuallyHidden';
 import ResetButton from '../ResetButton';
+import UserInputPreview from '../user-input/UserInputPreview';
+import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import UserInputSettings from '../notifications/UserInputSettings';
+const { useSelect } = Data;
 
 const SettingsAdmin = () => {
+	const isUserInputCompleted = useSelect( ( select ) => select( CORE_USER ).getUserInputState() === 'completed' );
+	const userInputURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
+
+	const goTo = ( questionIndex = 1 ) => {
+		global.location.assign( addQueryArgs( userInputURL, {
+			question: USER_INPUT_QUESTIONS_LIST[ questionIndex - 1 ],
+			redirect_url: global.location.href,
+			single: 'settings', // Allows the user to edit a single question then return to the settings page.
+		} ) );
+	};
+
 	return (
 		<Fragment>
+			{ featureFlags.userInput.enabled && (
+				<Cell size={ 12 }>
+					{ isUserInputCompleted && (
+						<Layout>
+							<div className="googlesitekit-module-page googlesitekit-settings-user-input">
+								<UserInputPreview goTo={ goTo } noFooter />
+							</div>
+						</Layout>
+					) }
+					{ ! isUserInputCompleted && (
+						<UserInputSettings isDimissable={ false } />
+					) }
+				</Cell>
+			) }
 			<div className="
 				mdc-layout-grid__cell
 				mdc-layout-grid__cell--span-12
