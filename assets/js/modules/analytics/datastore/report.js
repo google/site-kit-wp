@@ -71,8 +71,8 @@ const fetchGetReportStore = createFetchStore( {
 		);
 
 		invariant(
-			isValidDimensionFilters( dimensionFilters, dimensions ),
-			'Dimension filters must be an object where the keys are valid dimensions.',
+			isValidDimensionFilters( dimensionFilters ),
+			'Dimension filters must be an object where the values are strings.',
 		);
 
 		if ( orderby ) {
