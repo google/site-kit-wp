@@ -32,8 +32,8 @@ import PropTypes from 'prop-types';
  */
 import Button from '../Button';
 import Logo from '../Logo';
-import OptIn from '../optin';
-import CompatibilityChecks from '../setup/compatibility-checks';
+import OptIn from '../OptIn';
+import CompatibilityChecks from '../setup/CompatibilityChecks';
 
 export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 	return (

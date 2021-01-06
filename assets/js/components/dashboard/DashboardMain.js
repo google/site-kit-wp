@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import DashboardModules from './dashboard-modules';
+import DashboardModules from './DashboardModules';
 /**
  * WordPress dependencies
  */

@@ -46,17 +46,16 @@ function DashboardAllTrafficWidget() {
 
 	let reportType;
 	switch ( dimensionName ) {
-		case 'ga:channelGrouping':
-			reportType = 'trafficsources-overview';
-			break;
 		case 'ga:country':
 			reportType = 'visitors-geo';
 			break;
 		case 'ga:deviceCategory':
 			reportType = 'visitors-mobile-overview';
 			break;
+		case 'ga:channelGrouping':
 		default:
 			reportType = 'trafficsources-overview';
+			break;
 	}
 
 	let reportArgs = {};
@@ -66,6 +65,7 @@ function DashboardAllTrafficWidget() {
 			'_r.drilldown': `analytics.pagePath:${ entityURL }`,
 		};
 	}
+
 	const serviceReportURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( reportType, reportArgs ) );
 
 	return (
@@ -84,13 +84,27 @@ function DashboardAllTrafficWidget() {
 		>
 			<Grid>
 				<Row>
-					<Cell size={ 8 }>
+					<Cell
+						lgSize={ 7 }
+						mdSize={ 4 }
+						smSize={ 4 }
+					>
 						<TotalUserCount dimensionName={ dimensionName } dimensionValue={ dimensionValue } />
 						<UserCountGraph dimensionName={ dimensionName } dimensionValue={ dimensionValue } />
 					</Cell>
-					<Cell size={ 4 }>
+					<Cell
+						className="googlesitekit-widget--analyticsAllTrafficV2__dimensions"
+						lgSize={ 5 }
+						mdSize={ 4 }
+						smSize={ 4 }
+					>
 						<DimensionTabs dimensionName={ dimensionName } />
-						<UserDimensionsPieChart sourceLink={ serviceReportURL } />
+
+						<UserDimensionsPieChart
+							dimensionName={ dimensionName }
+							entityURL={ entityURL }
+							sourceLink={ serviceReportURL }
+						/>
 					</Cell>
 				</Row>
 			</Grid>
