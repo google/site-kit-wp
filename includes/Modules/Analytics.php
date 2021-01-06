@@ -962,6 +962,22 @@ final class Analytics extends Module
 					}
 				}
 
+				$dimension_filters          = $data['dimensionFilters'];
+				$dimension_filter_instances = array();
+				if ( ! empty( $dimension_filters ) && is_array( $dimension_filters ) ) {
+					foreach ( $dimension_filters as $dimension_name => $dimension_value ) {
+						$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
+						$dimension_filter->setDimensionName( $dimension_name );
+						$dimension_filter->setOperator( 'EXACT' );
+						$dimension_filter->setExpressions( array( $dimension_value ) );
+						$dimension_filter_instances[] = $dimension_filter;
+					}
+
+					if ( ! empty( $dimension_filter_instances ) ) {
+						$request_args['dimension_filters'] = $dimension_filter_instances;
+					}
+				}
+
 				$request = $this->create_analytics_site_data_request( $request_args );
 
 				if ( is_wp_error( $request ) ) {
@@ -1335,15 +1351,17 @@ final class Analytics extends Module
 	 * Creates a new Analytics site request for the current site and given arguments.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Added $dimension_filters
 	 *
 	 * @param array $args {
 	 *     Optional. Additional arguments.
 	 *
-	 *     @type array  $dimensions List of request dimensions. Default empty array.
-	 *     @type string $start_date Start date in 'Y-m-d' format. Default empty string.
-	 *     @type string $end_date   End date in 'Y-m-d' format. Default empty string.
-	 *     @type string $page       Specific page URL to filter by. Default empty string.
-	 *     @type int    $row_limit  Limit of rows to return. Default 100.
+	 *     @type array                                               $dimensions        List of request dimensions. Default empty array.
+	 *     @type Google_Service_AnalyticsReporting_DimensionFilter[] $dimension_filters List of dimension filter instances for the specified request dimensions. Default empty array.
+	 *     @type string                                              $start_date        Start date in 'Y-m-d' format. Default empty string.
+	 *     @type string                                              $end_date          End date in 'Y-m-d' format. Default empty string.
+	 *     @type string                                              $page              Specific page URL to filter by. Default empty string.
+	 *     @type int                                                 $row_limit         Limit of rows to return. Default 100.
 	 * }
 	 * @return Google_Service_AnalyticsReporting_ReportRequest|WP_Error Analytics site request instance.
 	 */
@@ -1351,11 +1369,12 @@ final class Analytics extends Module
 		$args = wp_parse_args(
 			$args,
 			array(
-				'dimensions' => array(),
-				'start_date' => '',
-				'end_date'   => '',
-				'page'       => '',
-				'row_limit'  => 100,
+				'dimensions'        => array(),
+				'dimension_filters' => array(),
+				'start_date'        => '',
+				'end_date'          => '',
+				'page'              => '',
+				'row_limit'         => 100,
 			)
 		);
 
@@ -1379,6 +1398,15 @@ final class Analytics extends Module
 			$request->setDateRanges( array( $date_range ) );
 		}
 
+		$dimension_filter_clauses = array();
+		if ( ! empty( $args['dimension_filters'] ) ) {
+			$dimension_filters       = $args['dimension_filters'];
+			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
+			$dimension_filter_clause->setFilters( $dimension_filters );
+			$dimension_filter_clause->setOperator( 'AND' );
+			$dimension_filter_clauses[] = $dimension_filter_clause;
+		}
+
 		if ( ! empty( $args['page'] ) ) {
 			$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
 			$dimension_filter->setDimensionName( 'ga:pagePath' );
@@ -1387,7 +1415,11 @@ final class Analytics extends Module
 			$dimension_filter->setExpressions( array( rawurldecode( $args['page'] ) ) );
 			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
 			$dimension_filter_clause->setFilters( array( $dimension_filter ) );
-			$request->setDimensionFilterClauses( array( $dimension_filter_clause ) );
+			$dimension_filter_clauses[] = $dimension_filter_clause;
+		}
+
+		if ( ! empty( $dimension_filter_clauses ) ) {
+			$request->setDimensionFilterClauses( $dimension_filter_clauses );
 		}
 
 		if ( ! empty( $args['row_limit'] ) ) {
