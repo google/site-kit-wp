@@ -85,7 +85,7 @@ describe( 'core/site reset', () => {
 
 				// After a successful reset, `connection` should be `undefined` again.
 				const connection = await registry.select( STORE_NAME ).getConnection();
-				expect( connection ).toEqual( undefined );
+				expect( connection ).toEqual( { connected: true, resettable: true } );
 			} );
 
 			it( 'does not reset local connection if reset request fails', async () => {
