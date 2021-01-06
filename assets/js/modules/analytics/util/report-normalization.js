@@ -32,12 +32,11 @@ import memize from 'memize';
  * @return {Object} Normalized options object.
  */
 export const normalizeReportOptions = memize(
-	( { metrics, dimensions, dimensionFilters, ...options } = {} ) => {
+	( { metrics, dimensions, ...options } = {} ) => {
 		// TODO: build this out to normalize all options used.
 		return {
 			metrics: normalizeMetrics( metrics ),
 			dimensions: normalizeDimensions( dimensions ),
-			dimensionFilters: normalizeDimensionFilters( dimensionFilters ),
 			...options,
 		};
 	}
@@ -63,16 +62,4 @@ const normalizeDimensions = ( dimensions ) => {
 		)
 		.filter( ( dimension ) => isPlainObject( dimension ) )
 	;
-};
-
-const normalizeDimensionFilters = ( dimensionFilters ) => {
-	const normalizedFilters = {};
-	if ( isPlainObject( dimensionFilters ) ) {
-		for ( const [ key, value ] of Object.entries( dimensionFilters ) ) {
-			if ( typeof value === 'string' ) {
-				normalizedFilters[ key ] = value;
-			}
-		}
-	}
-	return normalizedFilters;
 };
