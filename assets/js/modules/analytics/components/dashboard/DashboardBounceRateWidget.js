@@ -33,7 +33,7 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
-import { changeToPercent } from '../../../../util';
+import { calculateChange } from '../../../../util';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
@@ -59,7 +59,7 @@ function DashboardBounceRateWidget() {
 			compareStartDate,
 			compareEndDate,
 			startDate,
-			endDate
+			endDate,
 		} = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
@@ -131,13 +131,13 @@ function DashboardBounceRateWidget() {
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 	const averageBounceRate = lastMonth[ 0 ];
-	const averageBounceRateChange = changeToPercent( previousMonth[ 0 ], lastMonth[ 0 ] );
+	const averageBounceRateChange = calculateChange( previousMonth[ 0 ], lastMonth[ 0 ] );
 
 	return (
 		<DataBlock
 			className="overview-bounce-rate"
 			title={ __( 'Bounce Rate', 'google-site-kit' ) }
-			datapoint={ Number( averageBounceRate ).toFixed( 2 ) }
+			datapoint={ averageBounceRate }
 			datapointUnit="%"
 			change={ averageBounceRateChange }
 			changeDataUnit="%"

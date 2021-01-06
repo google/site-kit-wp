@@ -33,7 +33,7 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
-import { changeToPercent, readableLargeNumber } from '../../../../util';
+import { calculateChange } from '../../../../util';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
@@ -135,15 +135,15 @@ function DashboardUniqueVisitorsWidget() {
 	}
 
 	const { totals } = visitorsData[ 0 ].data;
-	const totalUsers = totals[ 0 ].values;
-	const previousTotalUsers = totals[ 1 ].values;
-	const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
+	const totalUsers = totals[ 0 ].values[ 0 ];
+	const previousTotalUsers = totals[ 1 ].values[ 0 ];
+	const totalUsersChange = calculateChange( previousTotalUsers, totalUsers );
 
 	return (
 		<DataBlock
 			className="overview-total-users"
 			title={ __( 'Unique Visitors', 'google-site-kit' ) }
-			datapoint={ readableLargeNumber( totalUsers ) }
+			datapoint={ totalUsers }
 			change={ totalUsersChange }
 			changeDataUnit="%"
 			source={ {

@@ -29,6 +29,8 @@ import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
 import {
 	accountsPropertiesProfiles,
 	goals,
+	dashboardUserDimensionsArgs,
+	dashboardUserDimensionsData,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import DashboardAllTrafficWidgetV2 from '../assets/js/modules/analytics/components/dashboard/DashboardAllTrafficWidgetV2';
 
@@ -177,20 +179,18 @@ generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/All Traffic Widget V2',
-	data: [], // TODO: Provide fixtures/mocks for all necessary responses.
-	options: { // TODO: Provide fixtures/mocks for all necessary requests.
-		startDate: '2020-11-01',
-		endDate: '2020-11-28',
-		metrics: [
-			{
-				expression: 'ga:users',
-				alias: 'Users',
-			},
-		],
-		dimensions: [
-			'ga:channelGrouping',
-		],
-	},
+	referenceDate: '2021-01-06',
+	// The following fixtures need to be based on the above reference date.
+	data: [
+		dashboardUserDimensionsData[ 'ga:channelGrouping' ],
+		dashboardUserDimensionsData[ 'ga:country' ],
+		dashboardUserDimensionsData[ 'ga:deviceCategory' ],
+	],
+	options: [
+		dashboardUserDimensionsArgs[ 'ga:channelGrouping' ],
+		dashboardUserDimensionsArgs[ 'ga:country' ],
+		dashboardUserDimensionsArgs[ 'ga:deviceCategory' ],
+	],
 	Component: DashboardAllTrafficWidgetV2,
 	wrapWidget: false,
 	setup,

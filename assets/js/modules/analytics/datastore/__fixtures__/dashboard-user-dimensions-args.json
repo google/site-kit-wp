@@ -1,0 +1,59 @@
+{
+	"ga:channelGrouping": {
+		"startDate": "2020-12-09",
+		"endDate": "2021-01-05",
+		"compareStartDate": "2020-11-11",
+		"compareEndDate": "2020-12-08",
+		"metrics": [
+			{
+				"expression": "ga:users"
+			}
+		],
+		"dimensions": [
+			"ga:channelGrouping"
+		],
+		"orderby": {
+			"fieldName": "ga:users",
+			"sortOrder": "DESCENDING"
+		},
+		"limit": 6
+	},
+	"ga:country": {
+		"startDate": "2020-12-09",
+		"endDate": "2021-01-05",
+		"compareStartDate": "2020-11-11",
+		"compareEndDate": "2020-12-08",
+		"metrics": [
+			{
+				"expression": "ga:users"
+			}
+		],
+		"dimensions": [
+			"ga:country"
+		],
+		"orderby": {
+			"fieldName": "ga:users",
+			"sortOrder": "DESCENDING"
+		},
+		"limit": 6
+	},
+	"ga:deviceCategory": {
+		"startDate": "2020-12-09",
+		"endDate": "2021-01-05",
+		"compareStartDate": "2020-11-11",
+		"compareEndDate": "2020-12-08",
+		"metrics": [
+			{
+				"expression": "ga:users"
+			}
+		],
+		"dimensions": [
+			"ga:deviceCategory"
+		],
+		"orderby": {
+			"fieldName": "ga:users",
+			"sortOrder": "DESCENDING"
+		},
+		"limit": 6
+	}
+}

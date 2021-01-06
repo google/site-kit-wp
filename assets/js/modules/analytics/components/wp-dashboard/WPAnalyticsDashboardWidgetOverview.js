@@ -27,9 +27,7 @@ import { Component, Fragment } from '@wordpress/element';
  */
 import {
 	getTimeInSeconds,
-	prepareSecondsForDisplay,
-	readableLargeNumber,
-	changeToPercent,
+	calculateChange,
 } from '../../../../util';
 import {
 	calculateOverviewData,
@@ -94,7 +92,7 @@ class WPAnalyticsDashboardWidgetOverview extends Component {
 			averageSessionDurationChange,
 		} = overview;
 
-		const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
+		const totalUsersChange = calculateChange( previousTotalUsers, totalUsers );
 
 		return (
 			<Fragment>
@@ -106,14 +104,15 @@ class WPAnalyticsDashboardWidgetOverview extends Component {
 						<DataBlock
 							className="googlesitekit-wp-dashboard-stats__data-table overview-total-users"
 							title={ __( 'Total Unique Visitors', 'google-site-kit' ) }
-							datapoint={ readableLargeNumber( totalUsers ) }
+							datapoint={ totalUsers }
 							change={ totalUsersChange }
 							changeDataUnit="%"
 						/>
 						<DataBlock
 							className="googlesitekit-wp-dashboard-stats__data-table overview-average-session-duration"
 							title={ __( 'Avg. Time on Page', 'google-site-kit' ) }
-							datapoint={ prepareSecondsForDisplay( averageSessionDuration ) }
+							datapoint={ averageSessionDuration }
+							datapointUnit="s"
 							change={ averageSessionDurationChange }
 							changeDataUnit="%"
 						/>
