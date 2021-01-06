@@ -41,7 +41,9 @@ const error = {
 storiesOf( 'Global', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
-		const testModuleDefinition = createModuleStore( 'test-module' );
+		const testModuleDefinition = createModuleStore( 'test-module', {
+			storeName: 'modules/test-module',
+		} );
 		registry.registerStore( testModuleDefinition.STORE_NAME, testModuleDefinition );
 		provideModules( registry, [ { slug: 'test-module', name: 'Test Module' } ] );
 

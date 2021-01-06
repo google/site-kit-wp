@@ -25,7 +25,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import whenActive from '../../../../util/when-active';
@@ -34,7 +34,7 @@ import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import CTA from '../../../../components/legacy-notifications/cta';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
-import { readableLargeNumber, changeToPercent } from '../../../../util';
+import { calculateChange } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import ReportError from '../../../../components/ReportError';
@@ -55,9 +55,22 @@ function DashboardGoalsWidget() {
 		const profileID = store.getProfileID();
 		const internalWebPropertyID = store.getInternalWebPropertyID();
 
+		const {
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate,
+		} = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+			weekdayAlign: true,
+		} );
+
 		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			multiDateRange: 1,
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate,
 			dimensions: 'ga:date',
 			metrics: [
 				{
@@ -127,13 +140,13 @@ function DashboardGoalsWidget() {
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 	const goalCompletions = lastMonth[ 0 ];
-	const goalCompletionsChange = changeToPercent( previousMonth[ 0 ], lastMonth[ 0 ] );
+	const goalCompletionsChange = calculateChange( previousMonth[ 0 ], lastMonth[ 0 ] );
 
 	return (
 		<DataBlock
 			className="overview-goals-completed"
 			title={ __( 'Goals Completed', 'google-site-kit' ) }
-			datapoint={ readableLargeNumber( goalCompletions ) }
+			datapoint={ goalCompletions }
 			change={ goalCompletionsChange }
 			changeDataUnit="%"
 			source={ {

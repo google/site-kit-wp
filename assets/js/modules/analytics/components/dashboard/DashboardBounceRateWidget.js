@@ -25,7 +25,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
@@ -33,7 +33,7 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
-import { changeToPercent } from '../../../../util';
+import { calculateChange } from '../../../../util';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
@@ -55,9 +55,22 @@ function DashboardBounceRateWidget() {
 		const profileID = store.getProfileID();
 		const internalWebPropertyID = store.getInternalWebPropertyID();
 
+		const {
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate,
+		} = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+			weekdayAlign: true,
+		} );
+
 		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			multiDateRange: 1,
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate,
 			dimensions: 'ga:date',
 			metrics: [
 				{
@@ -115,18 +128,17 @@ function DashboardBounceRateWidget() {
 	}
 
 	const { totals } = data[ 0 ].data;
-	const lastMonth = totals[ 0 ].values;
-	const previousMonth = totals[ 1 ].values;
-	const averageBounceRate = lastMonth[ 0 ];
-	const averageBounceRateChange = changeToPercent( previousMonth[ 0 ], lastMonth[ 0 ] );
+	const bounceRate = totals[ 0 ].values[ 0 ] / 100.0;
+	const previousBounceRate = totals[ 1 ].values[ 0 ] / 100.0;
+	const bounceRateChange = calculateChange( previousBounceRate, bounceRate );
 
 	return (
 		<DataBlock
 			className="overview-bounce-rate"
 			title={ __( 'Bounce Rate', 'google-site-kit' ) }
-			datapoint={ Number( averageBounceRate ).toFixed( 2 ) }
+			datapoint={ bounceRate }
 			datapointUnit="%"
-			change={ averageBounceRateChange }
+			change={ bounceRateChange }
 			changeDataUnit="%"
 			invertChangeColor
 			source={ {
@@ -138,7 +150,7 @@ function DashboardBounceRateWidget() {
 				sparkLineData &&
 					<Sparkline
 						data={ sparkLineData }
-						change={ averageBounceRateChange }
+						change={ bounceRateChange }
 					/>
 			}
 		/>
