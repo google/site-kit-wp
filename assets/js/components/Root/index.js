@@ -26,8 +26,8 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import ErrorHandler from '../ErrorHandler';
-import PermissionsModal from '../permissions-modal';
-import RestoreSnapshots from '../restore-snapshots';
+import PermissionsModal from '../PermissionsModal';
+import RestoreSnapshots from '../RestoreSnapshots';
 import CollectModuleData from '../data/collect-module-data';
 
 export default function Root( {

@@ -29,8 +29,8 @@ import {
 	reduceAdSenseData,
 	isDataZeroAdSense,
 } from '../../util';
-import Layout from '../../../../components/layout/layout';
-import withData from '../../../../components/higherorder/withdata';
+import Layout from '../../../../components/layout/Layout';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import {
@@ -38,7 +38,7 @@ import {
 	getSiteKitAdminURL,
 } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
-import DataBlock from '../../../../components/data-block';
+import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 
 class LegacyAdSenseDashboardMainSummary extends Component {

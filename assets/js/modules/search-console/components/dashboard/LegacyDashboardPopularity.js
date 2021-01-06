@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import LegacyDashboardPopularityInner from './LegacyDashboardPopularityInner';
-import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
+import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
 
 class LegacyDashboardPopularity extends Component {
 	render() {

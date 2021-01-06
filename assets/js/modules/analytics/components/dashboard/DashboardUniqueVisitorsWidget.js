@@ -25,12 +25,12 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import DataBlock from '../../../../components/data-block';
+import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import { calculateChange } from '../../../../util';
@@ -55,14 +55,27 @@ function DashboardUniqueVisitorsWidget() {
 		const accountID = store.getAccountID();
 		const profileID = store.getProfileID();
 		const internalWebPropertyID = store.getInternalWebPropertyID();
+
+		const {
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate,
+		} = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
 		const commonArgs = {
-			dateRange: select( CORE_USER ).getDateRange(),
+			startDate,
+			endDate,
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
 		if ( url ) {
 			commonArgs.url = url;
 		}
+
 		const sparklineArgs = {
 			dimensions: 'ga:date',
 			metrics: [
@@ -76,7 +89,8 @@ function DashboardUniqueVisitorsWidget() {
 
 		// This request needs to be separate from the sparkline request because it would result in a different total if it included the ga:date dimension.
 		const args = {
-			multiDateRange: 1,
+			compareStartDate,
+			compareEndDate,
 			metrics: [
 				{
 					expression: 'ga:users',
@@ -115,7 +129,7 @@ function DashboardUniqueVisitorsWidget() {
 	const sparkLineData = [
 		[
 			{ type: 'date', label: 'Day' },
-			{ type: 'number', label: 'Bounce Rate' },
+			{ type: 'number', label: 'Unique Visitors' },
 		],
 	];
 	const dataRows = sparkData[ 0 ].data.rows;

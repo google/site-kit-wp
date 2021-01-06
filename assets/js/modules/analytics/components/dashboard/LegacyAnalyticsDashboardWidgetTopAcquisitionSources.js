@@ -31,7 +31,7 @@ import {
 	numFmt,
 } from '../../../../util';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
-import withData from '../../../../components/higherorder/withdata';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';

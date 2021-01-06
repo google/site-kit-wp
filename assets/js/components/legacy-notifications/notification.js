@@ -33,7 +33,7 @@ import { Component, Fragment, createRef, isValidElement } from '@wordpress/eleme
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import { sanitizeHTML } from '../../util/sanitize';
 import { setCache, getCache, deleteCache } from '../data/cache';
-import DataBlock from '../data-block';
+import DataBlock from '../DataBlock';
 import Button from '../Button';
 import Warning from './warning';
 import Error from './error';

@@ -31,11 +31,11 @@ import {
 	numFmt,
 	untrailingslashit,
 } from '../../../../util';
-import withData from '../../../../components/higherorder/withdata';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
-import Layout from '../../../../components/layout/layout';
+import Layout from '../../../../components/layout/Layout';
 import {
 	isDataZeroSearchConsole,
 } from '../../util';

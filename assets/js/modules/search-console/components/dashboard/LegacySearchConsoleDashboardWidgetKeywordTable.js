@@ -26,8 +26,12 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numFmt, untrailingslashit } from '../../../../util';
-import withData from '../../../../components/higherorder/withdata';
+import {
+	getTimeInSeconds,
+	numFmt,
+	untrailingslashit,
+} from '../../../../util';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
