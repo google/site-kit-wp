@@ -37,6 +37,7 @@ import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admi
 bootstrapFetchMocks();
 
 const resetFeatures = () => {
+	disableFeature( 'widgets.adminBar' );
 	disableFeature( 'widgets.dashboard' );
 	disableFeature( 'widgets.pageDashboard' );
 	disableFeature( 'userInput' );

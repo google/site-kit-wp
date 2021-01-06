@@ -26,8 +26,12 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat, untrailingslashit } from '../../../../util';
-import withData from '../../../../components/higherorder/withdata';
+import {
+	getTimeInSeconds,
+	numFmt,
+	untrailingslashit,
+} from '../../../../util';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
@@ -87,8 +91,8 @@ const LegacySearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 		links[ i ] = addQueryArgs( baseServiceURL, { query: `!${ query }` } );
 		return [
 			query,
-			numberFormat( row.clicks ),
-			numberFormat( row.impressions ),
+			numFmt( row.clicks, { style: 'decimal' } ),
+			numFmt( row.impressions, { style: 'decimal' } ),
 		];
 	} );
 

@@ -32,7 +32,7 @@ import { Component, Fragment } from '@wordpress/element';
  */
 import Header from '../Header';
 import Button from '../Button';
-import Layout from '../layout/layout';
+import Layout from '../layout/Layout';
 import data, { TYPE_CORE } from '../data';
 import { trackEvent, clearWebStorage, getSiteKitAdminURL } from '../../util';
 import STEPS from './wizard-steps';

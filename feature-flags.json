@@ -6,6 +6,9 @@
     "pageDashboard": {
       "enabled": "development"
     },
+    "adminBar": {
+      "enabled": "development"
+    },
     "wpDashboard": {
       "enabled": "development"
     }
