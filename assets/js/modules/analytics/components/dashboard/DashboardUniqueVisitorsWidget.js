@@ -56,15 +56,27 @@ function DashboardUniqueVisitorsWidget() {
 		const profileID = store.getProfileID();
 		const internalWebPropertyID = store.getInternalWebPropertyID();
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const { compareStartDate, compareEndDate, startDate, endDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET, compare: true } );
-
-		const sparklineArgs = {
+		const {
 			compareStartDate,
 			compareEndDate,
 			startDate,
 			endDate,
-			url,
+		} = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const commonArgs = {
+			startDate,
+			endDate,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			commonArgs.url = url;
+		}
+
+		const sparklineArgs = {
 			dimensions: 'ga:date',
 			metrics: [
 				{
@@ -72,21 +84,20 @@ function DashboardUniqueVisitorsWidget() {
 					alias: 'Users',
 				},
 			],
+			...commonArgs,
 		};
 
 		// This request needs to be separate from the sparkline request because it would result in a different total if it included the ga:date dimension.
 		const args = {
 			compareStartDate,
 			compareEndDate,
-			startDate,
-			endDate,
-			url,
 			metrics: [
 				{
 					expression: 'ga:users',
 					alias: 'Total Users',
 				},
 			],
+			...commonArgs,
 		};
 
 		return {
@@ -118,7 +129,7 @@ function DashboardUniqueVisitorsWidget() {
 	const sparkLineData = [
 		[
 			{ type: 'date', label: 'Day' },
-			{ type: 'number', label: 'Bounce Rate' },
+			{ type: 'number', label: 'Unique Visitors' },
 		],
 	];
 	const dataRows = sparkData[ 0 ].data.rows;

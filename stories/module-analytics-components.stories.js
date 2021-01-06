@@ -3688,7 +3688,6 @@ generateReportBasedWidgetStories( {
 			compareEndDate: '2020-08-10',
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
-			url: null,
 			metrics: [
 				{
 					expression: 'ga:users',
@@ -3697,11 +3696,8 @@ generateReportBasedWidgetStories( {
 			],
 		},
 		{
-			compareStartDate: '2020-07-14',
-			compareEndDate: '2020-08-10',
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
-			url: null,
 			dimensions: 'ga:date',
 			metrics: [
 				{
@@ -4189,7 +4185,7 @@ generateReportBasedWidgetStories( {
 			compareEndDate: '2020-08-10',
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
-			url: null,
+			url: 'https://www.example.com/example-page/',
 			metrics: [
 				{
 					expression: 'ga:users',
@@ -4198,11 +4194,9 @@ generateReportBasedWidgetStories( {
 			],
 		},
 		{
-			compareStartDate: '2020-07-14',
-			compareEndDate: '2020-08-10',
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
-			url: null,
+			url: 'https://www.example.com/example-page/',
 			dimensions: 'ga:date',
 			metrics: [
 				{
