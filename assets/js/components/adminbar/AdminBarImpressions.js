@@ -38,7 +38,7 @@ import ReportZero from '../ReportZero';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-console/datastore/constants';
-import { calculateChange, readableLargeNumber } from '../../util';
+import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/search-console/util/is-zero-report';
 import sumObjectListValue from '../../util/sum-object-list-value';
 const { useSelect } = Data;
@@ -95,7 +95,7 @@ const AdminBarImpressions = ( { className } ) => {
 			<DataBlock
 				className="overview-total-impressions"
 				title={ __( 'Total Impressions', 'google-site-kit' ) }
-				datapoint={ readableLargeNumber( totalImpressions ) }
+				datapoint={ totalImpressions }
 				change={ totalImpressionsChange }
 				changeDataUnit="%"
 			/>

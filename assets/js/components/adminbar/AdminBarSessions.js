@@ -38,7 +38,7 @@ import ReportZero from '../ReportZero';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
-import { calculateChange, readableLargeNumber } from '../../util';
+import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
@@ -97,7 +97,7 @@ const AdminBarSessions = ( { className } ) => {
 			<DataBlock
 				className="overview-total-sessions"
 				title={ __( 'Total Sessions', 'google-site-kit' ) }
-				datapoint={ readableLargeNumber( totalSessions ) }
+				datapoint={ totalSessions }
 				change={ totalSessionsChange }
 				changeDataUnit="%"
 			/>
