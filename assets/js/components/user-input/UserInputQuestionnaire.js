@@ -44,6 +44,7 @@ import {
 import useQueryArg from '../../hooks/useQueryArg';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { Cell, Row } from '../../material-components';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputQuestionnaire() {
@@ -150,7 +151,20 @@ export default function UserInputQuestionnaire() {
 
 	if ( isSavingSettings || isNavigating ) {
 		return (
-			<ProgressBar />
+			<Fragment>
+				<ProgressBar
+					height={ 0 }
+					indeterminate={ false }
+					progress={ ( activeSlugIndex + 1 ) / USER_INPUT_QUESTIONS_LIST.length }
+				/>
+				<div className="googlesitekit-user-input__preview">
+					<Row>
+						<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
+							<ProgressBar />
+						</Cell>
+					</Row>
+				</div>
+			</Fragment>
 		);
 	}
 
