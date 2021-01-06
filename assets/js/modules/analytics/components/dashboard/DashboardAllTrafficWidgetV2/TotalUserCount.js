@@ -33,7 +33,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME } from '../../../datastore/constants';
+import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { numberFormat, readableLargeNumber } from '../../../../../util';
 import { getAvailableDateRanges } from '../../../../../util/date-range';
 import ChangeArrow from '../../../../../components/ChangeArrow';
@@ -42,7 +42,10 @@ const { useSelect } = Data;
 export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
+	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		compare: true,
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
 
 	const args = {
 		...dateRangeDates,
