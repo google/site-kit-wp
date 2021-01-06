@@ -25,11 +25,11 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import withData from '../../../../components/higherorder/withdata';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
-import Layout from '../../../../components/layout/layout';
+import Layout from '../../../../components/layout/Layout';
 import AdSenseLinkCTA from '../common/AdSenseLinkCTA';
 import { getTimeInSeconds } from '../../../../util';
 import {

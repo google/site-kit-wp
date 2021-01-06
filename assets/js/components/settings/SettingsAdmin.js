@@ -28,9 +28,9 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import Layout from '../layout/layout';
 import { Cell } from '../../material-components';
-import OptIn from '../optin';
+import Layout from '../layout/Layout';
+import OptIn from '../OptIn';
 import VisuallyHidden from '../VisuallyHidden';
 import ResetButton from '../ResetButton';
 import UserInputPreview from '../user-input/UserInputPreview';

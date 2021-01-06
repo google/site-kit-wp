@@ -25,11 +25,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Layout from '../../../../components/layout/layout';
+import Layout from '../../../../components/layout/Layout';
 import LegacyDashboardSearchFunnelInner from '../dashboard/LegacyDashboardSearchFunnelInner';
 import { getModulesData } from '../../../../util';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
-import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
+import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
 
 class DashboardDetailsSearchFunnel extends Component {
 	render() {
