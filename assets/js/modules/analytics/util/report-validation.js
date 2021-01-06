@@ -57,3 +57,18 @@ export function isValidDimensions( dimensions ) {
 		return dimension.hasOwnProperty( 'name' ) && typeof dimension.name === 'string';
 	} );
 }
+
+/**
+ * Verifies provided dimensionFilters to make sure they match allowed values found in dimensions.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dimensionFilters The dimension filters to check.
+ * @return {boolean} TRUE if dimension filters are valid, otherwise FALSE.
+ */
+export function isValidDimensionFilters( dimensionFilters ) {
+	// Ensure every dimensionFilter key corresponds to a valid dimension.
+	return Object.keys( dimensionFilters ).every(
+		( dimension ) => [ 'number', 'string' ].includes( typeof dimensionFilters[ dimension ] ) && typeof dimension === 'string'
+	);
+}
