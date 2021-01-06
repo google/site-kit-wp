@@ -31,7 +31,7 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { clearWebStorage, getModulesData } from '../../util';
-import Layout from '../layout/layout';
+import Layout from '../layout/Layout';
 import Notification from '../legacy-notifications/notification';
 import SettingsModule from './settings-module';
 import SettingsOverlay from './SettingsOverlay';

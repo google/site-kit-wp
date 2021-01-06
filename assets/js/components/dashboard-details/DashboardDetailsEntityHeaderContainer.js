@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Layout from '../layout/layout';
+import Layout from '../layout/Layout';
 
 export default function DashboardDetailsEntityHeaderContainer( { children } ) {
 	return (

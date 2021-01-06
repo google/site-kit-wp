@@ -30,8 +30,8 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Layout from '../../../../components/layout/layout';
-import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
+import Layout from '../../../../components/layout/Layout';
+import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
 import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
 import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
 import getSetupIncompleteComponent from '../../../../components/legacy-notifications/setup-incomplete';

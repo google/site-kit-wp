@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Layout from '../layout/layout';
-import OptIn from '../optin';
+import Layout from '../layout/Layout';
+import OptIn from '../OptIn';
 import VisuallyHidden from '../VisuallyHidden';
 import ResetButton from '../ResetButton';
 

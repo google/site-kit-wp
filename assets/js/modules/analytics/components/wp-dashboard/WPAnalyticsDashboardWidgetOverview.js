@@ -38,9 +38,9 @@ import {
 	parseTotalUsersData,
 } from '../../util';
 import PreviewBlocks from '../../../../components/PreviewBlocks';
-import DataBlock from '../../../../components/data-block';
+import DataBlock from '../../../../components/DataBlock';
 import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
-import withData from '../../../../components/higherorder/withdata';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 
 class WPAnalyticsDashboardWidgetOverview extends Component {
