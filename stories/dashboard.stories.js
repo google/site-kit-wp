@@ -29,10 +29,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import DashboardModuleHeader from '../assets/js/components/dashboard/dashboard-module-header';
+import DashboardModuleHeader from '../assets/js/components/dashboard/DashboardModuleHeader';
 import CTA from '../assets/js/components/legacy-notifications/cta';
 import { createAddToFilter } from '../assets/js/util/helpers';
-import Layout from '../assets/js/components/layout/layout';
+import Layout from '../assets/js/components/layout/Layout';
 import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
 import LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
 import LegacyDashboardSearchFunnelInner from '../assets/js/modules/search-console/components/dashboard/LegacyDashboardSearchFunnelInner';

@@ -30,7 +30,7 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import DataBlock from '../../../../components/data-block';
+import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import CTA from '../../../../components/legacy-notifications/cta';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
