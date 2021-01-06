@@ -4398,7 +4398,10 @@ generateReportBasedWidgetStories( {
 	options: {
 		startDate: '2020-08-13',
 		endDate: '2020-09-09',
-		dimensions: 'ga:pageTitle,ga:pagePath',
+		dimensions: [
+			'ga:pageTitle',
+			'ga:pagePath',
+		],
 		metrics: [
 			{
 				expression: 'ga:pageviews',

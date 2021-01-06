@@ -53,7 +53,10 @@ function DashboardPopularPagesWidget() {
 		const args = {
 			startDate,
 			endDate,
-			dimensions: 'ga:pageTitle,ga:pagePath',
+			dimensions: [
+				'ga:pageTitle',
+				'ga:pagePath',
+			],
 			metrics: [
 				{
 					expression: 'ga:pageviews',
