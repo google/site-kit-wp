@@ -22,15 +22,8 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { removeAllFilters, addFilter } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
-import { SettingsSetupIncomplete } from '../assets/js/modules/adsense/components/settings';
-import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
 import {
@@ -45,31 +38,6 @@ import {
 	provideModuleRegistrations,
 } from '../tests/js/utils';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
-
-function filterAdSenseSettingsSetupIncomplete() {
-	removeAllFilters( 'googlesitekit.ModuleSetupIncomplete' );
-	addFilter(
-		'googlesitekit.ModuleSetupIncomplete',
-		'googlesitekit.AdSenseModuleSettingsSetupIncomplete',
-		fillFilterWithComponent( ( props ) => {
-			const {
-				slug,
-				OriginalComponent,
-			} = props;
-			if ( 'adsense' !== slug ) {
-				return <OriginalComponent { ...props } />;
-			}
-			return (
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-					<SettingsSetupIncomplete />
-				</div>
-			);
-		} )
-	);
-}
-
-// AdSense uses a custom component for its incomplete setup UI.
-filterAdSenseSettingsSetupIncomplete();
 
 const defaultSettings = {
 	accountID: '',
