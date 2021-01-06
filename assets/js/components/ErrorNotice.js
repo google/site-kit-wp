@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { Cell, Row } from '../material-components';
 
 /**
  * Internal dependencies
@@ -35,16 +34,10 @@ export default function ErrorNotice( { error, shouldDisplayError = () => true } 
 	}
 
 	return (
-		<div className={ 'googlesitekit-user-input__error' }>
-			<Row>
-				<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
-					<ErrorText
-						message={ error.message }
-						reconnectURL={ error.data?.reconnectURL }
-					/>
-				</Cell>
-			</Row>
-		</div>
+		<ErrorText
+			message={ error.message }
+			reconnectURL={ error.data?.reconnectURL }
+		/>
 	);
 }
 

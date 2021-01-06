@@ -44,7 +44,6 @@ import {
 import useQueryArg from '../../hooks/useQueryArg';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import ErrorNotice from '../ErrorNotice';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputQuestionnaire() {
@@ -52,7 +51,7 @@ export default function UserInputQuestionnaire() {
 
 	const [ activeSlug, setActiveSlug ] = useQueryArg( 'question', steps[ 0 ] );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
-	const [ single ] = useQueryArg( 'single', false );
+	const [ single, setSingle ] = useQueryArg( 'single', false );
 
 	const activeSlugIndex = steps.indexOf( activeSlug );
 
@@ -85,7 +84,10 @@ export default function UserInputQuestionnaire() {
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );
 	}, [ activeSlugIndex ] );
 
-	const goTo = useCallback( ( num = 1 ) => {
+	const goTo = useCallback( ( num = 1, singleType = false ) => {
+		// If we're going to a single question to edit it, set the query string here.
+		// We can't currently set it in the child component because the useQueryArg hook doesn't update in the parent.
+		setSingle( singleType );
 		if ( steps.length >= num && num > 0 ) {
 			setActiveSlug( steps[ num - 1 ] );
 			global.scrollTo( 0, 0 );
@@ -160,8 +162,6 @@ export default function UserInputQuestionnaire() {
 				progress={ ( activeSlugIndex + 1 ) / USER_INPUT_QUESTIONS_LIST.length }
 			/>
 
-			{ error && <ErrorNotice error={ error } /> }
-
 			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_ROLE ) && (
 				<UserInputQuestionWrapper
 					slug={ USER_INPUT_QUESTION_ROLE }
@@ -171,6 +171,7 @@ export default function UserInputQuestionnaire() {
 					description={ __( 'This will help Site Kit show tips that help you specifically in your role.', 'google-site-kit' ) }
 					next={ nextCallback }
 					nextLabel={ nextLabel }
+					error={ error }
 				>
 					<UserInputSelectOptions
 						slug={ USER_INPUT_QUESTION_ROLE }
@@ -189,6 +190,7 @@ export default function UserInputQuestionnaire() {
 					next={ nextCallback }
 					nextLabel={ nextLabel }
 					back={ backCallback }
+					error={ error }
 				>
 					<UserInputSelectOptions
 						slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
@@ -207,6 +209,7 @@ export default function UserInputQuestionnaire() {
 					next={ nextCallback }
 					nextLabel={ nextLabel }
 					back={ backCallback }
+					error={ error }
 				>
 					<UserInputSelectOptions
 						slug={ USER_INPUT_QUESTION_GOALS }
@@ -226,6 +229,7 @@ export default function UserInputQuestionnaire() {
 					next={ nextCallback }
 					nextLabel={ nextLabel }
 					back={ backCallback }
+					error={ error }
 				>
 					<UserInputSelectOptions
 						slug={ USER_INPUT_QUESTION_HELP_NEEDED }
@@ -245,6 +249,7 @@ export default function UserInputQuestionnaire() {
 					next={ nextCallback }
 					nextLabel={ nextLabel === undefined ? __( 'Preview', 'google-site-kit' ) : nextLabel }
 					back={ backCallback }
+					error={ error }
 				>
 					<UserInputKeywords
 						slug={ USER_INPUT_QUESTION_SEARCH_TERMS }
@@ -256,8 +261,9 @@ export default function UserInputQuestionnaire() {
 			{ activeSlug === 'preview' && ! isSavingSettings && ! isNavigating && (
 				<UserInputPreview
 					submitChanges={ submitChanges }
-					back={ backCallback }
+					back={ back }
 					goTo={ goTo }
+					error={ error }
 				/>
 			) }
 		</Fragment>
