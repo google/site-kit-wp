@@ -128,18 +128,17 @@ function DashboardBounceRateWidget() {
 	}
 
 	const { totals } = data[ 0 ].data;
-	const lastMonth = totals[ 0 ].values;
-	const previousMonth = totals[ 1 ].values;
-	const averageBounceRate = lastMonth[ 0 ];
-	const averageBounceRateChange = calculateChange( previousMonth[ 0 ], lastMonth[ 0 ] );
+	const bounceRate = totals[ 0 ].values[ 0 ] / 100.0;
+	const previousBounceRate = totals[ 1 ].values[ 0 ] / 100.0;
+	const bounceRateChange = calculateChange( previousBounceRate, bounceRate );
 
 	return (
 		<DataBlock
 			className="overview-bounce-rate"
 			title={ __( 'Bounce Rate', 'google-site-kit' ) }
-			datapoint={ averageBounceRate }
+			datapoint={ bounceRate }
 			datapointUnit="%"
-			change={ averageBounceRateChange }
+			change={ bounceRateChange }
 			changeDataUnit="%"
 			invertChangeColor
 			source={ {
@@ -151,7 +150,7 @@ function DashboardBounceRateWidget() {
 				sparkLineData &&
 					<Sparkline
 						data={ sparkLineData }
-						change={ averageBounceRateChange }
+						change={ bounceRateChange }
 					/>
 			}
 		/>
