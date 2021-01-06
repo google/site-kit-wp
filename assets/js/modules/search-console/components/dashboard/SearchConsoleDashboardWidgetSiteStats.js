@@ -26,7 +26,7 @@ import { Component } from '@wordpress/element';
  * Internal dependencies
  */
 import { decodeHTMLEntity, getTimeInSeconds } from '../../../../util';
-import withData from '../../../../components/higherorder/withdata';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import GoogleChart from '../../../../components/GoogleChart';
 import PreviewBlock from '../../../../components/PreviewBlock';

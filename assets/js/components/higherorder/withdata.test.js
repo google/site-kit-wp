@@ -24,7 +24,7 @@ import { addAction, hasFilter, removeAllActions, removeAllFilters } from '@wordp
 /**
  * Internal dependencies
  */
-import withData from './withdata';
+import withData from './withData';
 import { render, act } from '../../../../tests/js/test-utils';
 import dataAPI, { TYPE_MODULES } from '../data';
 import { getCacheKey } from '../data/cache';

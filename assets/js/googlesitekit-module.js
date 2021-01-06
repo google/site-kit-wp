@@ -32,7 +32,7 @@ import { render } from '@wordpress/element';
  */
 import './components/data';
 import './components/legacy-notifications';
-import Root from './components/root';
+import Root from './components/Root';
 import ModuleApp from './components/module-app';
 import ModuleSetup from './components/setup/ModuleSetup';
 

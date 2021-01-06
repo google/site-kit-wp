@@ -75,6 +75,7 @@
     },
     {
       "files": [
+        "assets/js/components/**/*.js",
         "**/modules/*/components/**/*.js",
         "assets/js/googlesitekit/*/components/**/*.js"
       ],
@@ -83,6 +84,15 @@
           2,
           "[A-Z]([A-Z0-9]*[a-z][a-z0-9]*[A-Z]|[a-z0-9]*[A-Z][A-Z0-9]*[a-z])[A-Za-z0-9]*"
         ]
+      }
+    },
+    {
+      "files": [
+        "assets/js/components/data/**/*.js",
+        "assets/js/components/legacy*/**/*.js"
+      ],
+      "rules": {
+        "filenames/match-exported": ["off"]
       }
     }
   ],
