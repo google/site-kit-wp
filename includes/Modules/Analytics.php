@@ -965,13 +965,7 @@ final class Analytics extends Module
 				$dimension_filters          = $data['dimensionFilters'];
 				$dimension_filter_instances = array();
 				if ( ! empty( $dimension_filters ) && is_array( $dimension_filters ) ) {
-					foreach ( $request_args['dimensions'] as $dimension ) {
-						$dimension_name = $dimension->getName();
-						if ( ! isset( $dimension_filters[ $dimension_name ] ) ) {
-							continue;
-						}
-
-						$dimension_value  = $dimension_filters[ $dimension_name ];
+					foreach ( $dimension_filters as $dimension_name => $dimension_value ) {
 						$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
 						$dimension_filter->setDimensionName( $dimension_name );
 						$dimension_filter->setOperator( 'EXACT' );
@@ -1393,15 +1387,6 @@ final class Analytics extends Module
 		$request->setIncludeEmptyRows( true );
 		$request->setViewId( $profile_id );
 
-		$dimension_filter_clauses = array();
-		if ( ! empty( $args['dimension_filters'] ) ) {
-			$dimension_filters       = $args['dimension_filters'];
-			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
-			$dimension_filter_clause->setFilters( array( $dimension_filters ) );
-			$dimension_filter_clause->setOperator( 'AND' );
-			$dimension_filter_clauses[] = $dimension_filter_clause;
-		}
-
 		if ( ! empty( $args['dimensions'] ) ) {
 			$request->setDimensions( (array) $args['dimensions'] );
 		}
@@ -1411,6 +1396,15 @@ final class Analytics extends Module
 			$date_range->setStartDate( $args['start_date'] );
 			$date_range->setEndDate( $args['end_date'] );
 			$request->setDateRanges( array( $date_range ) );
+		}
+
+		$dimension_filter_clauses = array();
+		if ( ! empty( $args['dimension_filters'] ) ) {
+			$dimension_filters       = $args['dimension_filters'];
+			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
+			$dimension_filter_clause->setFilters( $dimension_filters );
+			$dimension_filter_clause->setOperator( 'AND' );
+			$dimension_filter_clauses[] = $dimension_filter_clause;
 		}
 
 		if ( ! empty( $args['page'] ) ) {

@@ -66,30 +66,16 @@ describe( 'Analytics Reporting API validation', () => {
 
 	describe( 'isValidDimensionFilters', () => {
 		it( 'should return TRUE if a valid object is passed with a valid dimension', () => {
-			expect( isValidDimensionFilters( {
-				test: 'foo',
-			}, [ {
-				name: 'test',
-			} ] ) ).toBe( true );
+			expect( isValidDimensionFilters( { test: 'foo' } ) ).toBe( true );
+			expect( isValidDimensionFilters( { foo: 3 } ) ).toBe( true );
 		} );
 		it( 'should return TRUE if no dimensionFilters are passed.', () => {
-			expect( isValidDimensionFilters( {}, [] ) ).toBe( true );
-			expect( isValidDimensionFilters( {}, [ { name: 'foo' } ] ) ).toBe( true );
+			expect( isValidDimensionFilters( {} ) ).toBe( true );
+			expect( isValidDimensionFilters( {} ) ).toBe( true );
 		} );
-		it( 'should return FALSE if a valid object is passed with invalid dimension', () => {
-			expect( isValidDimensionFilters( {
-				test: 'foo',
-			}, [ {
-				name: 'bar',
-			} ] ) ).toBe( false );
-		} );
-		it( 'should return FALSE if a valid object is passed with a mix of valid and invalid dimension', () => {
-			expect( isValidDimensionFilters( {
-				foo: 'foo',
-				bar: 'bar',
-			}, [ {
-				name: 'foo',
-			} ] ) ).toBe( false );
+		it( 'should return FALSE if an invalid dimensionFilters object is passed', () => {
+			expect( isValidDimensionFilters( { foo: false } ) ).toBe( false );
+			expect( isValidDimensionFilters( { foo: 'bar', baz: null } ) ).toBe( false );
 		} );
 	} );
 

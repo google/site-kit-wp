@@ -63,15 +63,12 @@ export function isValidDimensions( dimensions ) {
  *
  * @since n.e.x.t
  *
- * @param {Object}   dimensionFilters The dimension filters to check.
- * @param {Object[]} dimensions       The dimensions to check.
+ * @param {Object} dimensionFilters The dimension filters to check.
  * @return {boolean} TRUE if dimension filters are valid, otherwise FALSE.
  */
-export function isValidDimensionFilters( dimensionFilters, dimensions ) {
-	const validDimensions = dimensions.map( ( dimension ) => dimension.name );
-
+export function isValidDimensionFilters( dimensionFilters ) {
 	// Ensure every dimensionFilter key corresponds to a valid dimension.
 	return Object.keys( dimensionFilters ).every(
-		( dimension ) => validDimensions.includes( dimension )
+		( dimension ) => [ 'number', 'string' ].includes( typeof dimensionFilters[ dimension ] ) && typeof dimension === 'string'
 	);
 }

@@ -65,15 +65,19 @@ const fetchGetReportStore = createFetchStore( {
 			'Metrics for an Analytics report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "expression" and "alias" properties.',
 		);
 
-		invariant(
-			isValidDimensions( dimensions ),
-			'Dimensions for an Analytics report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "name" property.',
-		);
+		if ( dimensions ) {
+			invariant(
+				isValidDimensions( dimensions ),
+				'Dimensions for an Analytics report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "name" property.',
+			);
+		}
 
-		invariant(
-			isValidDimensionFilters( dimensionFilters, dimensions ),
-			'Dimension filters must be an object where the keys are valid dimensions.',
-		);
+		if ( dimensionFilters ) {
+			invariant(
+				isValidDimensionFilters( dimensionFilters ),
+				'Dimension filters must be a map of dimension names as keys and dimension values as values.',
+			);
+		}
 
 		if ( orderby ) {
 			invariant(
