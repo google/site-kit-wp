@@ -26,11 +26,11 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Layout from '../layout/Layout';
-import OptIn from '../OptIn';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell } from '../../material-components';
+import Layout from '../layout/Layout';
+import OptIn from '../OptIn';
 import VisuallyHidden from '../VisuallyHidden';
 import ResetButton from '../ResetButton';
 import UserInputPreview from '../user-input/UserInputPreview';
