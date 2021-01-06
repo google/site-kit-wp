@@ -34,17 +34,21 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { STORE_NAME, FORM_ALL_TRAFFIC_WIDGET, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
-import { extractAnalyticsDataForPieChart } from '../../../util';
+import { extractAnalyticsDataForPieChart, isZeroReport } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
+import ReportZero from '../../../../../components/ReportZero';
 const { useSelect, useDispatch } = Data;
 
 export default function UserDimensionsPieChart( { dimensionName, entityURL, sourceLink } ) {
 	const [ chartLoaded, setChartLoaded ] = useState( false );
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
+	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		compare: true,
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
 
 	const args = {
 		...dateRangeDates,
@@ -86,12 +90,16 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 		}
 	}, [ dimensionName, setValues ] );
 
+	if ( ! loaded ) {
+		return <PreviewBlock width="282px" height="282px" shape="circular" />;
+	}
+
 	if ( error ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( ! loaded || ! report?.length ) {
-		return <PreviewBlock width="282px" height="282px" shape="circular" />;
+	if ( isZeroReport( report ) ) {
+		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const absOthers = {
@@ -105,9 +113,9 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 	} );
 
 	const dataMap = extractAnalyticsDataForPieChart( report, {
-		withOthers: true,
-		takeBeforeOthers: 4,
 		keyColumnIndex: 0,
+		maxSlices: 5,
+		withOthers: true,
 		tooltipCallback: ( row, rowData ) => {
 			let difference = row?.metrics?.[ 1 ]?.values?.[ 0 ] > 0
 				? ( row.metrics[ 0 ].values[ 0 ] * 100 / row.metrics[ 1 ].values[ 0 ] ) - 100

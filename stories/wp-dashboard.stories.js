@@ -31,7 +31,7 @@ import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
  */
 import GoogleLogoIcon from '../assets/svg/logo-g.svg';
 import SiteKitLogoIcon from '../assets/svg/logo-sitekit.svg';
-import WPDashboardMain from '../assets/js/components/wp-dashboard/wp-dashboard-main';
+import WPDashboardMain from '../assets/js/components/wp-dashboard/WPDashboardMain';
 import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
 import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/components/wp-dashboard/WPSearchConsoleDashboardWidget';
 import { createAddToFilter } from '../assets/js/util/helpers';

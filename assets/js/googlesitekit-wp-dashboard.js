@@ -32,8 +32,8 @@ import { render } from '@wordpress/element';
  * Internal dependencies
  */
 import './components/data';
-import Root from './components/root';
-import WPDashboardMain from './components/wp-dashboard/wp-dashboard-main';
+import Root from './components/Root';
+import WPDashboardMain from './components/wp-dashboard/WPDashboardMain';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
