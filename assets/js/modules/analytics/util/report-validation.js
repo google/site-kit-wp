@@ -69,6 +69,6 @@ export function isValidDimensions( dimensions ) {
 export function isValidDimensionFilters( dimensionFilters ) {
 	// Ensure every dimensionFilter key corresponds to a valid dimension.
 	return Object.keys( dimensionFilters ).every(
-		( dimension ) => typeof dimensionFilters[ dimension ] === 'string'
+		( dimension ) => [ 'number', 'string' ].includes( typeof dimensionFilters[ dimension ] ) && typeof dimension === 'string'
 	);
 }
