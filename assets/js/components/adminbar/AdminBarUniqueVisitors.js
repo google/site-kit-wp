@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import DataBlock from '../data-block';
+import DataBlock from '../DataBlock';
 import Data from 'googlesitekit-data';
 import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
@@ -38,7 +38,7 @@ import ReportZero from '../ReportZero';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
-import { changeToPercent, readableLargeNumber } from '../../util';
+import { calculateChange, readableLargeNumber } from '../../util';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
@@ -96,7 +96,7 @@ const AdminBarUniqueVisitors = ( { className } ) => {
 				className="overview-total-users"
 				title={ __( 'Total Users', 'google-site-kit' ) }
 				datapoint={ readableLargeNumber( totalUsers ) }
-				change={ changeToPercent( previousTotalUsers, totalUsers ) }
+				change={ calculateChange( previousTotalUsers, totalUsers ) }
 				changeDataUnit="%"
 			/>
 		</div>

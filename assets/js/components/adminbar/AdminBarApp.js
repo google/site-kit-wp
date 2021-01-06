@@ -31,6 +31,7 @@ import AdminBarImpressions from './AdminBarImpressions';
 import AdminBarClicks from './AdminBarClicks';
 import AdminbarModules from './LegacyAdminBarModules';
 import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
+import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import Data from 'googlesitekit-data';
 import Link from '../Link';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -43,6 +44,7 @@ export default function AdminBarApp() {
 	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
 	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: currentEntityURL } ) );
 	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
+	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 
 	const onMoreDetailsClick = useCallback( async () => {
 		await trackEvent( 'admin_bar', 'post_details_click' );
@@ -84,20 +86,26 @@ export default function AdminBarApp() {
 									<AdminBarImpressions />
 									<AdminBarClicks />
 
-									{ analyticsModuleConnected && (
+									{ analyticsModuleConnected && analyticsModuleActive && (
 										<Fragment>
 											<AdminBarUniqueVisitors />
 											<AdminBarSessions />
 										</Fragment>
 									) }
 
-									{ ! analyticsModuleConnected && (
+									{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 										<div className="
 											mdc-layout-grid__cell
 											mdc-layout-grid__cell--span-6-desktop
 											mdc-layout-grid__cell--span-4-tablet
 										">
-											<AnalyticsInactiveCTA />
+											{ ! analyticsModuleActive && (
+												<AnalyticsInactiveCTA />
+											) }
+
+											{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
+												<CompleteModuleActivationCTA slug="analytics" />
+											) }
 										</div>
 									) }
 								</Fragment>

@@ -31,14 +31,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DataBlock from '../data-block';
+import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
 import ReportZero from '../ReportZero';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-console/datastore/constants';
-import { changeToPercent, readableLargeNumber } from '../../util';
+import { calculateChange, readableLargeNumber } from '../../util';
 import { isZeroReport } from '../../modules/search-console/util/is-zero-report';
 import sumObjectListValue from '../../util/sum-object-list-value';
 const { useSelect } = Data;
@@ -85,7 +85,7 @@ const AdminBarClicks = ( { className } ) => {
 
 	const totalClicks = sumObjectListValue( latestData, 'clicks' );
 	const totalOlderClicks = sumObjectListValue( olderData, 'clicks' );
-	const totalClicksChange = changeToPercent( totalOlderClicks, totalClicks );
+	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
 
 	return (
 		<div className={ classnames(
