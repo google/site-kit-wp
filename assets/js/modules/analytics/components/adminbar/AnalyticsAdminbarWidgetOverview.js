@@ -27,11 +27,10 @@ import { Component, Fragment } from '@wordpress/element';
  */
 import {
 	getTimeInSeconds,
-	readableLargeNumber,
-	changeToPercent,
+	calculateChange,
 } from '../../../../util';
-import DataBlock from '../../../../components/data-block';
-import withData from '../../../../components/higherorder/withdata';
+import DataBlock from '../../../../components/DataBlock';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import {
 	calculateOverviewData,
@@ -88,7 +87,7 @@ class AnalyticsAdminbarWidgetOverview extends Component {
 			totalSessionsChange,
 		} = overview;
 
-		const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
+		const totalUsersChange = calculateChange( previousTotalUsers, totalUsers );
 
 		return (
 			<Fragment>
@@ -100,7 +99,7 @@ class AnalyticsAdminbarWidgetOverview extends Component {
 					<DataBlock
 						className="overview-total-users"
 						title={ __( 'Total Users', 'google-site-kit' ) }
-						datapoint={ readableLargeNumber( totalUsers ) }
+						datapoint={ totalUsers }
 						change={ totalUsersChange }
 						changeDataUnit="%"
 					/>
@@ -113,7 +112,7 @@ class AnalyticsAdminbarWidgetOverview extends Component {
 					<DataBlock
 						className="overview-total-sessions"
 						title={ __( 'Total Sessions', 'google-site-kit' ) }
-						datapoint={ readableLargeNumber( totalSessions ) }
+						datapoint={ totalSessions }
 						change={ totalSessionsChange }
 						changeDataUnit="%"
 					/>

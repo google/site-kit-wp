@@ -31,7 +31,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  */
 import { getDataTableFromData } from '../../../../components/data-table';
 import MiniChart from '../../../../components/MiniChart';
-import { numberFormat } from '../../../../util/i18n';
+import { numFmt } from '../../../../util';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 
@@ -104,20 +104,17 @@ function AcquisitionSources( { data, args } ) {
 
 	const totalUsers = data[ 0 ].data.totals[ 0 ].values[ keyColumnIndex ];
 	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-		const percent = ( row.metrics[ 0 ].values[ keyColumnIndex ] / totalUsers * 100 );
+		const change = row.metrics[ 0 ].values[ keyColumnIndex ] / totalUsers;
 		const cells = [ row.dimensions[ 0 ] ];
 
 		if ( row.metrics[ 0 ].values.length > 1 ) {
-			cells.push( ...row.metrics[ 0 ].values.map( ( value ) => numberFormat( value ) ) );
+			cells.push( ...row.metrics[ 0 ].values.map( ( value ) => numFmt( value ) ) );
 		}
 
 		cells.push(
 			<div key={ `minichart-${ i }` } className="googlesitekit-table__body-item-chart-wrap">
-				{
-					/* translators: %1$s: acquisition source percentage */
-					sprintf( __( '%1$s%%', 'google-site-kit' ), percent.toFixed( 2 ) )
-				}
-				<MiniChart percent={ percent.toFixed( 1 ) } index={ i } />
+				{ numFmt( change, '%' ) }
+				<MiniChart change={ change } index={ i } />
 			</div>
 		);
 

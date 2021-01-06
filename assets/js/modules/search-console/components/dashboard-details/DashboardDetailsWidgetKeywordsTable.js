@@ -27,8 +27,8 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import LegacySearchConsoleDashboardWidgetKeywordTable from '../dashboard/LegacySearchConsoleDashboardWidgetKeywordTable';
-import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
-import Layout from '../../../../components/layout/layout';
+import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
+import Layout from '../../../../components/layout/Layout';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';

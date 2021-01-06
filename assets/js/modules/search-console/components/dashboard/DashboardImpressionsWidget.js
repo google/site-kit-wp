@@ -29,11 +29,11 @@ import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../util';
-import { changeToPercent, readableLargeNumber, untrailingslashit } from '../../../../util';
+import { calculateChange, untrailingslashit } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import { trackEvent } from '../../../../util/tracking';
 import whenActive from '../../../../util/when-active';
-import DataBlock from '../../../../components/data-block';
+import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import ReportError from '../../../../components/ReportError';
@@ -99,7 +99,7 @@ function DashboardImpressionsWidget() {
 
 	const totalImpressions = sumObjectListValue( latestData, 'impressions' );
 	const totalOlderImpressions = sumObjectListValue( olderData, 'impressions' );
-	const totalImpressionsChange = changeToPercent( totalOlderImpressions, totalImpressions );
+	const totalImpressionsChange = calculateChange( totalOlderImpressions, totalImpressions );
 
 	const sparklineData = [
 		[
@@ -118,7 +118,7 @@ function DashboardImpressionsWidget() {
 			<DataBlock
 				className="overview-total-impressions"
 				title={ __( 'Impressions', 'google-site-kit' ) }
-				datapoint={ readableLargeNumber( totalImpressions ) }
+				datapoint={ totalImpressions }
 				change={ totalImpressionsChange }
 				changeDataUnit="%"
 				source={ {

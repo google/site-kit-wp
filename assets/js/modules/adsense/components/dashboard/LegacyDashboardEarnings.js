@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
+import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
 import LegacyDashboardAdSenseTopEarningPagesSmall from './LegacyDashboardAdSenseTopEarningPagesSmall';
 import LegacyAdSenseDashboardMainSummary from './LegacyAdSenseDashboardMainSummary';
 import ModuleSettingsWarning from '../../../../components/legacy-notifications/module-settings-warning';

@@ -24,7 +24,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Layout from '../layout/layout';
+import Layout from '../layout/Layout';
 
 /**
  * Get CTA html wrapper.

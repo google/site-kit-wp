@@ -19,29 +19,34 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
+import { sanitizeHTML } from '../../util/sanitize';
+import { getExistingTag } from '../../util/tag';
+import Link from '../Link';
 import Warning from '../legacy-notifications/warning';
 import ProgressBar from '../ProgressBar';
-import { useChecks } from '../../hooks/useChecks';
-import CompatibilityErrorNotice from './CompatibilityErrorNotice';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
 const ERROR_FETCH_FAIL = 'check_fetch_failed';
+const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
 const ERROR_GOOGLE_API_CONNECTION_FAIL = 'google_api_connection_fail';
 const ERROR_AMP_CDN_RESTRICTED = 'amp_cdn_restricted';
 const ERROR_WP_PRE_V5 = 'wp_pre_v5';
 
 export const AMP_PROJECT_TEST_URL = 'https://cdn.ampproject.org/v0.js';
 
-const compatibilityChecks = [
+const checks = [
 	// Check for a known non-public/reserved domain.
 	async () => {
 		const { hostname } = global.location;
@@ -50,11 +55,16 @@ const compatibilityChecks = [
 			throw ERROR_INVALID_HOSTNAME;
 		}
 	},
-	// Check for a Site Kit specific meta tag on the page to test for aggressive caching.
+	// Generate and check for a Site Kit specific meta tag on the page to test for aggressive caching.
 	async () => {
-		const setupTag = await Data.dispatch( CORE_SITE ).checkForSetupTag();
-		if ( setupTag.error ) {
-			throw setupTag.error;
+		const { token } = await API.set( 'core', 'site', 'setup-tag' );
+
+		const scrapedTag = await getExistingTag( 'setup' ).catch( () => {
+			throw ERROR_FETCH_FAIL;
+		} );
+
+		if ( token !== scrapedTag ) {
+			throw ERROR_TOKEN_MISMATCH;
 		}
 	},
 	// Check that server can connect to Google's APIs via the core/site/data/health-checks endpoint.
@@ -89,39 +99,177 @@ const compatibilityChecks = [
 	},
 ];
 
-export default function CompatibilityChecks( props ) {
-	const { complete, error } = useChecks( compatibilityChecks );
-	let CTAFeedback;
-	let inProgressFeedback;
-	const { children, ...restProps } = props;
+export default class CompatibilityChecks extends Component {
+	constructor( props ) {
+		const { isSiteKitConnected } = global._googlesitekitLegacyData.setup;
+		super( props );
+		this.state = {
+			complete: isSiteKitConnected,
+			error: null,
+			developerPlugin: {},
+		};
+	}
 
-	if ( error ) {
-		CTAFeedback = <Fragment>
-			<div className="googlesitekit-setup-compat mdc-layout-grid mdc-layout-grid--align-left">
-				<div className="googlesitekit-setup__warning">
-					<Warning />
+	async componentDidMount() {
+		if ( this.state.complete ) {
+			return;
+		}
+		try {
+			for ( const testCallback of checks ) {
+				await testCallback();
+			}
+		} catch ( error ) {
+			const developerPlugin = await API.get( 'core', 'site', 'developer-plugin' );
+			this.setState( { error, developerPlugin } );
+		}
 
-					<div className="googlesitekit-heading-4">
-						{ __( 'Your site may not be ready for Site Kit', 'google-site-kit' ) }
+		this.setState( { complete: true } );
+	}
+
+	helperCTA() {
+		const { installed, active, installURL, activateURL, configureURL } = this.state.developerPlugin;
+
+		if ( ! installed && installURL ) {
+			return {
+				'aria-label': __( 'Install the helper plugin', 'google-site-kit' ),
+				children: __( 'Install', 'google-site-kit' ),
+				href: installURL,
+				external: false,
+			};
+		}
+		if ( installed && ! active && activateURL ) {
+			return {
+				'aria-label': __( 'Activate the helper plugin', 'google-site-kit' ),
+				children: __( 'Activate', 'google-site-kit' ),
+				href: activateURL,
+				external: false,
+			};
+		}
+		if ( installed && active && configureURL ) {
+			return {
+				'aria-label': __( 'Configure the helper plugin', 'google-site-kit' ),
+				children: __( 'Configure', 'google-site-kit' ),
+				href: configureURL,
+				external: false,
+			};
+		}
+		return {
+			'aria-label': __( 'Learn how to install and use the helper plugin', 'google-site-kit' ),
+			children: __( 'Learn how', 'google-site-kit' ),
+			href: 'https://sitekit.withgoogle.com/documentation/using-site-kit-on-a-staging-environment/',
+			external: true,
+		};
+	}
+
+	renderError( error ) {
+		const { installed } = this.state.developerPlugin;
+
+		switch ( error ) {
+			case ERROR_INVALID_HOSTNAME:
+			case ERROR_FETCH_FAIL:
+				return (
+					<p>
+						{ ! installed && __( 'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console.', 'google-site-kit' ) }
+						{ installed && __( 'Looks like this may be a staging environment and you already have the helper plugin. Before you can use Site Kit, please make sure you’ve provided the necessary credentials in the Authentication section and verified your production site in Search Console.', 'google-site-kit' ) }
+						{ ' ' }
+						<Link
+							{ ...this.helperCTA() }
+							inherit
+						/>
+					</p>
+				);
+			case ERROR_TOKEN_MISMATCH:
+				return (
+					<p>
+						{ __( 'Looks like you may be using a caching plugin which could interfere with setup. Please deactivate any caching plugins before setting up Site Kit. You may reactivate them once setup has been completed.', 'google-site-kit' ) }
+					</p>
+				);
+			case ERROR_GOOGLE_API_CONNECTION_FAIL:
+				return (
+					<p dangerouslySetInnerHTML={ sanitizeHTML(
+						`
+						${ __( 'Looks like your site is having a technical issue with requesting data from Google services.', 'google-site-kit' ) }
+						<br/>
+						${ sprintf(
+							/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
+							__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
+							'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
+							`<br/>${ error }` // eslint-disable-line indent
+						) /* eslint-disable-line indent */ }
+						`,
+						{
+							ALLOWED_TAGS: [ 'a', 'br' ],
+							ALLOWED_ATTR: [ 'href' ],
+						}
+					) } />
+				);
+			case ERROR_AMP_CDN_RESTRICTED:
+				return (
+					<p dangerouslySetInnerHTML={ sanitizeHTML(
+						`
+						${ __( 'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.', 'google-site-kit' ) }
+						<br/>
+						${ sprintf(
+							/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
+							__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
+							'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
+							`<br/>${ error }` // eslint-disable-line indent
+						) /* eslint-disable-line indent */ }
+						`,
+						{
+							ALLOWED_TAGS: [ 'a', 'br' ],
+							ALLOWED_ATTR: [ 'href' ],
+						}
+					) } />
+				);
+			case ERROR_WP_PRE_V5:
+				return (
+					<p>
+						{ __( 'Looks like you’re using a version of WordPress that’s older than 5.0. You can still install and use Site Kit, but some of its features might not work (for example translations).', 'google-site-kit' ) }
+					</p>
+				);
+		}
+	}
+
+	render() {
+		const { complete, error } = this.state;
+		const { children, ...restProps } = this.props;
+
+		let CTAFeedback;
+		let inProgressFeedback;
+
+		if ( error ) {
+			CTAFeedback = <Fragment>
+				<div className="googlesitekit-setup-compat mdc-layout-grid mdc-layout-grid--align-left">
+					<div className="googlesitekit-setup__warning">
+						<Warning />
+
+						<div className="googlesitekit-heading-4">
+							{ __( 'Your site may not be ready for Site Kit', 'google-site-kit' ) }
+						</div>
 					</div>
+					{ this.renderError( error ) }
 				</div>
-				{ error && <CompatibilityErrorNotice error={ error } /> }
-			</div>
-		</Fragment>;
-	}
+			</Fragment>;
+		}
 
-	if ( ! complete ) {
-		inProgressFeedback = <div style={ { alignSelf: 'center', marginLeft: '1rem' } }>
-			<small>{ __( 'Checking Compatibility…', 'google-site-kit' ) }</small>
-			<ProgressBar small compress />
-		</div>;
-	}
+		if ( ! complete ) {
+			inProgressFeedback = <div style={ { alignSelf: 'center', marginLeft: '1rem' } }>
+				<small>{ __( 'Checking Compatibility…', 'google-site-kit' ) }</small>
+				<ProgressBar small compress />
+			</div>;
+		}
 
-	return children( {
-		restProps,
-		complete,
-		error,
-		inProgressFeedback,
-		CTAFeedback,
-	} );
+		return children( {
+			restProps,
+			complete,
+			error,
+			inProgressFeedback,
+			CTAFeedback,
+		} );
+	}
 }
+
+CompatibilityChecks.propTypes = {
+	children: PropTypes.func.isRequired,
+};
