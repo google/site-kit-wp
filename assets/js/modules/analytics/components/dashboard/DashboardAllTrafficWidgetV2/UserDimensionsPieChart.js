@@ -33,7 +33,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME } from '../../../datastore/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForPieChart, isZeroReport } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
@@ -46,7 +46,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 	const [ chartLoaded, setChartLoaded ] = useState( false );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
-		offsetDays: 1,
+		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
 
 	const args = {
