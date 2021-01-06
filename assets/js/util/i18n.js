@@ -19,12 +19,175 @@
 /**
  * External dependencies
  */
-import { get } from 'lodash';
+import { get, isFinite, isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
+ * Converts seconds to a display ready string indicating
+ * the number of hours, minutes and seconds that have elapsed.
+ *
+ * For example, passing 65 returns '1m 5s'.
+ *
+ * @since 1.0.0
+ *
+ * @param {number} seconds The number of seconds.
+ * @return {string} Human readable string indicating time elapsed.
+ *
+ */
+export const prepareSecondsForDisplay = ( seconds ) => {
+	seconds = parseInt( seconds, 10 );
+
+	if ( isNaN( seconds ) || 0 === seconds ) {
+		return '0.0s';
+	}
+	const results = {};
+	results.hours = Math.floor( seconds / 60 / 60 );
+	results.minutes = Math.floor( ( seconds / 60 ) % 60 );
+	results.seconds = Math.floor( seconds % 60 );
+
+	const returnString =
+		( results.hours ? results.hours + 'h ' : '' ) +
+		( results.minutes ? results.minutes + 'm ' : '' ) +
+		( results.seconds ? results.seconds + 's ' : '' );
+
+	return returnString.trim();
+};
+
+/**
+ * Prepares a number to be used in readableLargeNumber.
+ *
+ * @since 1.7.0
+ *
+ * @param {number} number The large number to prepare.
+ * @return {number} The prepared number.
+ */
+export const prepareForReadableLargeNumber = ( number ) => {
+	if ( 1000000 <= number ) {
+		return Math.round( number / 100000 ) / 10;
+	}
+
+	if ( 10000 <= number ) {
+		return Math.round( number / 1000 );
+	}
+
+	if ( 1000 <= number ) {
+		return Math.round( number / 100 ) / 10;
+	}
+	return number;
+};
+
+/**
+ * Formats a large number for shortened display.
+ *
+ * @since 1.0.0
+ *
+ * @param {number} number The large number to format.
+ * @return {string} The formatted number.
+ */
+export const readableLargeNumber = ( number ) => {
+	const withSingleDecimal = {
+		minimumFractionDigits: 1,
+		maximumFractionDigits: 1,
+	};
+
+	// Numbers over 1,000,000 round normally and display a single decimal unless the decimal is 0.
+	if ( 1000000 <= number ) {
+		return sprintf(
+			// translators: %s: an abbreviated number in millions.
+			__( '%sM', 'google-site-kit' ),
+			numberFormat( prepareForReadableLargeNumber( number ), number % 10 === 0 ? {} : withSingleDecimal )
+		);
+	}
+
+	// Numbers between 10,000 and 1,000,000 round normally and have no decimals
+	if ( 10000 <= number ) {
+		return sprintf(
+			// translators: %s: an abbreviated number in thousands.
+			__( '%sK', 'google-site-kit' ),
+			numberFormat( prepareForReadableLargeNumber( number ) )
+		);
+	}
+
+	// Numbers between 1,000 and 10,000 round normally and display a single decimal unless the decimal is 0.
+	if ( 1000 <= number ) {
+		return sprintf(
+			// translators: %s: an abbreviated number in thousands.
+			__( '%sK', 'google-site-kit' ),
+			numberFormat( prepareForReadableLargeNumber( number ), number % 10 === 0 ? {} : withSingleDecimal )
+		);
+	}
+
+	return numberFormat( number, {
+		signDisplay: 'never',
+		maximumFractionDigits: 1,
+	} );
+};
+
+/**
+ * Formats a number with unit using the JS Internationalization Number Format API.
+ *
+ * In addition to the supported 'style' values of the lower-level `numberFormat` function, this function
+ * supports two additional 'style' values 'metric' and 'duration' (expects a number in seconds).
+ *
+ * Another differentiation in behavior is that by default the function will use 'metric' formatting instead
+ * of 'decimal' formatting.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number|string}                     number    The number to format.
+ * @param {(Intl.NumberFormatOptions|string)} [options] Formatting options or unit shorthand.
+ *                                                      Possible shorthand values are '%', 's',
+ *                                                      or a currency code.
+ * @return {string} The formatted number.
+ */
+export const numFmt = ( number, options = {} ) => {
+	// Cast parsable values to numeric types.
+	number = isFinite( number ) ? number : Number( number );
+
+	if ( ! isFinite( number ) ) {
+		// eslint-disable-next-line no-console
+		console.warn( 'Invalid number', number, typeof number );
+		number = 0;
+	}
+
+	let formatOptions = {};
+
+	// Expand shorthand values for units.
+	if ( '%' === options ) {
+		formatOptions = {
+			style: 'percent',
+			maximumFractionDigits: 2,
+		};
+	} else if ( 's' === options ) {
+		formatOptions = {
+			style: 'duration',
+		};
+	} else if ( !! options && typeof options === 'string' ) {
+		formatOptions = {
+			style: 'currency',
+			currency: options,
+		};
+	} else if ( isPlainObject( options ) ) {
+		formatOptions = { ...options };
+	}
+
+	// Note: `metric` is our custom, default style.
+	const { style = 'metric' } = formatOptions;
+
+	if ( 'metric' === style ) {
+		return readableLargeNumber( number );
+	}
+
+	if ( 'duration' === style ) {
+		return prepareSecondsForDisplay( number );
+	}
+
+	return numberFormat( number, formatOptions );
+};
 
 /**
  * Formats a number using the JS Internationalization Number Format API.
@@ -32,9 +195,9 @@ import { __ } from '@wordpress/i18n';
  * @since 1.8.0
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter} For all available formatting options.
  *
- * @param {number} number           The number to format.
- * @param {Object} [options]        Formatting options.
- * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
+ * @param {number}                   number           The number to format.
+ * @param {Intl.NumberFormatOptions} [options]        Formatting options.
+ * @param {string}                   [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
  * @return {string} The formatted number.
  */
 export const numberFormat = ( number, options = {} ) => {

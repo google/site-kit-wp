@@ -80,9 +80,16 @@ export function generateReportBasedWidgetStories( {
 				};
 			} ) );
 
+			let currentEntityURL = null;
+			if ( Array.isArray( options ) && options[ 0 ].url ) {
+				currentEntityURL = options[ 0 ].url;
+			} else if ( options.url ) {
+				currentEntityURL = options.url;
+			}
+
 			// Set some site information.
 			provideSiteInfo( registry, {
-				currentEntityURL: options.url || null,
+				currentEntityURL,
 			} );
 
 			if ( referenceDate ) {

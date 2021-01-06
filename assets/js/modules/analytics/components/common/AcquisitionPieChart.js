@@ -33,7 +33,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import GoogleChart from '../../../../components/GoogleChart';
 import Link from '../../../../components/Link';
-import { extractAnalyticsDataForTrafficChart } from '../../util';
+import { extractAnalyticsDataForPieChart } from '../../util';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
@@ -83,7 +83,7 @@ function AcquisitionPieChart( { data, args, source } ) {
 	return (
 		<div className="googlesitekit-chart googlesitekit-chart--pie">
 			<GoogleChart
-				data={ extractAnalyticsDataForTrafficChart( data, args.url ? 1 : 0 ) }
+				data={ extractAnalyticsDataForPieChart( data, { keyColumnIndex: args.url ? 1 : 0 } ) }
 				options={ GOOGLE_CHART_PIE_SETTINGS }
 				chartType="pie"
 				id="overview-piechart"

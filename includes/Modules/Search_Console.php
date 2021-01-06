@@ -598,6 +598,7 @@ final class Search_Console extends Module
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
+						'googlesitekit-google-charts',
 					),
 				)
 			),
