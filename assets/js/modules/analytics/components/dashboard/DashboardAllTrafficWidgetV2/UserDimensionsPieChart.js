@@ -189,12 +189,18 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 		? sanitizeHTML( labels[ dimensionName ] || '', sanitizeArgs )
 		: { __html: '' };
 
+	const options = { ...UserDimensionsPieChart.chartOptions };
+	if ( report[ 0 ].data.rows.length < 2 ) {
+		// Hide pie slice text when there is just one slice because it will overlap with the chart title.
+		options.pieSliceTextStyle.color = 'transparent';
+	}
+
 	return (
 		<div className="googlesitekit-widget--analyticsAllTrafficV2__dimensions-chart">
 			<GoogleChart
 				chartID="user-dimensions-pie-chart"
 				chartType="pie"
-				options={ UserDimensionsPieChart.chartOptions }
+				options={ options }
 				data={ dataMap }
 				loadHeight={ 205 }
 				onReady={ onReady }
