@@ -20,33 +20,39 @@
  * Internal dependencies
  */
 import { renderHook, actHook as act } from '../../../tests/js/test-utils';
-import { useDebouncedState } from './useDebouncedState';
+import { muteFetch } from '../../../tests/js/utils';
+import { useChecks } from './useChecks';
 
 describe( 'useChecks', () => {
-	jest.useFakeTimers();
+	it( 'should return { complete:true, error: undefined } successful check runs.', async () => {
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
+		const checks = [ async () => Promise.resolve() ];
+		let result;
+		await act( async () => {
+			( { result } = await renderHook( () => useChecks( checks ) ) );
+		} );
 
-	it( 'should return initial value by default and should not change it after delay is expired', () => {
-		const { result } = renderHook(
-			( { value, delay } ) => useDebouncedState( value, delay ),
-			{ initialProps: { value: 'initial-data', delay: 500 } }
-		);
-
-		expect( result.current ).toBe( 'initial-data' );
-		act( () => jest.advanceTimersByTime( 510 ) );
-		expect( result.current ).toBe( 'initial-data' );
+		expect( result.current ).toStrictEqual( { complete: true, error: undefined } );
 	} );
 
-	it( 'should correctly update value when delay is expired', () => {
-		const { result, rerender } = renderHook(
-			( { value, delay } ) => useDebouncedState( value, delay ),
-			{ initialProps: { value: '', delay: 500 } }
-		);
+	it( 'should return { complete:true, error: "error2" } when first error is encountered.', async () => {
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
+		const checks = [
+			async () => true,
+			async () => {
+				setTimeout( () => {
+					throw 'error1';
+				}, 1 );
+			},
+			async () => {
+				throw 'error2';
+			},
+		];
+		let result;
+		await act( async () => {
+			( { result } = await renderHook( () => useChecks( checks ) ) );
+		} );
 
-		rerender( { value: 'search query', delay: 500 } );
-
-		act( () => jest.advanceTimersByTime( 498 ) );
-		expect( result.current ).toBe( '' );
-		act( () => jest.advanceTimersByTime( 3 ) );
-		expect( result.current ).toBe( 'search query' );
+		expect( result.current ).toStrictEqual( { complete: true, error: 'error2' } );
 	} );
 } );
