@@ -113,6 +113,8 @@ describe( 'CompatibilityChecks', () => {
 
 		// Mock request to AMP project.
 		muteFetch( AMP_PROJECT_TEST_URL );
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/developer-plugin/ );
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 
 		// Mock getExistingTag request.
 		fetchMock.get(
@@ -130,7 +132,7 @@ describe( 'CompatibilityChecks', () => {
 		);
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 4 );
+			expect( fetchMock ).toHaveFetchedTimes( 5 );
 		} );
 
 		// Expect to have made requests to the setup-checks and health-checks endpoints and the AMP Project test URL.
