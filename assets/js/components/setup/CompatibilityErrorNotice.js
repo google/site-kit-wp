@@ -105,11 +105,11 @@ export default function CompatibilityErrorNotice( props ) {
 						${ __( 'Looks like your site is having a technical issue with requesting data from Google services.', 'google-site-kit' ) }
 						<br/>
 						${ sprintf(
-							/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
-							__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
-							'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
-							`<br/>${ error }` // eslint-disable-line indent
-						) /* eslint-disable-line indent */ }
+						/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
+						__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
+						'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
+						`<br/>${ error }` // eslint-disable-line indent
+					) /* eslint-disable-line indent */ }
 						`,
 					{
 						ALLOWED_TAGS: [ 'a', 'br' ],
@@ -124,11 +124,11 @@ export default function CompatibilityErrorNotice( props ) {
 						${ __( 'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.', 'google-site-kit' ) }
 						<br/>
 						${ sprintf(
-							/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
-							__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
-							'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
-							`<br/>${ error }` // eslint-disable-line indent
-						) /* eslint-disable-line indent */ }
+						/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
+						__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
+						'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
+						`<br/>${ error }` // eslint-disable-line indent
+					) /* eslint-disable-line indent */ }
 						`,
 					{
 						ALLOWED_TAGS: [ 'a', 'br' ],
