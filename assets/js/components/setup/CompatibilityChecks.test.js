@@ -20,9 +20,10 @@
  * Internal dependencies
  */
 import CompatibilityChecks, { AMP_PROJECT_TEST_URL } from './CompatibilityChecks';
-import { render, waitFor } from '../../../../tests/js/test-utils';
+import { render, waitFor, act } from '../../../../tests/js/test-utils';
 import { Fragment } from 'react';
 import { muteFetch } from '../../../../tests/js/utils';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 const compatibilityChildren = ( { complete, inProgressFeedback, CTAFeedback } ) => (
 	<Fragment>
@@ -44,18 +45,26 @@ describe( 'CompatibilityChecks', () => {
 	} );
 
 	it( 'should initially display "Checking Compatibility..." message', async () => {
-		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/setup-tag/ );
+		// Mock request to setup-tag
+		fetchMock.post(
+			/^\/google-site-kit\/v1\/core\/site\/data\/setup-tag/,
+			{ body: {}, status: 200 }
+		);
 		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/developer-plugin/ );
 		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/health-checks/ );
 		muteFetch( { query: { tagverify: '1' } } );
-		const { container } = render(
+		// Mock request to AMP project.
+		muteFetch( AMP_PROJECT_TEST_URL );
+
+		const { container, registry } = render(
 			<CompatibilityChecks>
 				{ compatibilityChildren }
 			</CompatibilityChecks>
 		);
 
 		expect( container ).toHaveTextContent( 'Checking Compatibility…' );
+		await act( () => registry.dispatch( CORE_SITE ).checkForSetupTag() );
 	} );
 
 	it( 'should display "Your site may not be ready for Site Kit" if a check throws an error', async () => {
