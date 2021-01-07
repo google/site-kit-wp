@@ -22,7 +22,7 @@
 import { withFilters } from '@wordpress/components';
 import { Component, Fragment } from '@wordpress/element';
 
-class AdminbarModules extends Component {
+class LegacyAdminBarModules extends Component {
 	render() {
 		return (
 			<Fragment />
@@ -30,4 +30,4 @@ class AdminbarModules extends Component {
 	}
 }
 
-export default withFilters( 'googlesitekit.AdminbarModules' )( AdminbarModules );
+export default withFilters( 'googlesitekit.AdminbarModules' )( LegacyAdminBarModules );
