@@ -77,7 +77,7 @@ const ActivateModuleCTA = ( { slug, title, description } ) => {
 			description={
 				description || sprintf(
 					/* translators: %s: Module name */
-					__( '%s module needs to be configured', 'google-site-kit' ),
+					__( '%s module needs to be configured.', 'google-site-kit' ),
 					module.name,
 				)
 			}
