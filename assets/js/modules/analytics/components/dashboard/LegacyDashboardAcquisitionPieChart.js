@@ -35,11 +35,11 @@ import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { getTimeInSeconds } from '../../../../util';
 import GoogleChart from '../../../../components/GoogleChart';
-import withData from '../../../../components/higherorder/withdata';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import Link from '../../../../components/Link';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../../util';
+import { extractAnalyticsDataForPieChart, getAnalyticsErrorMessageFromData, trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../../util';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 
 const { useSelect } = Data;
@@ -58,7 +58,7 @@ const LegacyDashboardAcquisitionPieChart = ( { data, source } ) => {
 		return null;
 	}
 
-	const processedData = extractAnalyticsDataForTrafficChart( data, 1 );
+	const processedData = extractAnalyticsDataForPieChart( data, { keyColumnIndex: 1 } );
 	const options = {
 		chartArea: {
 			width: '100%',

@@ -30,7 +30,7 @@ import { render } from '@wordpress/element';
 import { trackEvent } from './util';
 import './components/legacy-notifications';
 import { ActivationApp } from './components/activation/activation-app';
-import Root from './components/root';
+import Root from './components/Root';
 
 domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-activation' );

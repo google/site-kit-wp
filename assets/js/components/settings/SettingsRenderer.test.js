@@ -41,7 +41,12 @@ describe( 'SettingsRenderer', () => {
 		registry = createTestRegistry();
 		registry.registerStore( testStoreName, storeDefinition );
 		registry.dispatch( testStoreName ).receiveGetSettings( { testSetting: 'initial value' } );
-		provideModules( registry );
+		provideModules( registry, [
+			{
+				slug,
+				connected: true,
+			},
+		] );
 	} );
 
 	describe( 'renders correctly', () => {

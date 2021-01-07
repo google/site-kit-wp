@@ -31,8 +31,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { getModulesData } from '../../../../util';
-import Layout from '../../../../components/layout/layout';
-import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
+import Layout from '../../../../components/layout/Layout';
+import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import LegacyDashboardSearchFunnelInner from './LegacyDashboardSearchFunnelInner';
 
