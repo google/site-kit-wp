@@ -161,14 +161,14 @@ class User_Input_Settings {
 		if ( $code < 200 || 299 < $code ) {
 			if ( is_array( $settings ) && ! empty( $settings['error'] ) ) {
 				return new WP_Error(
-					'user_input_settings_request',
+					$settings['error'],
 					/* translators: %s: Google Proxy API Error Message */
 					sprintf( __( 'User input settings request failed with error: %s', 'google-site-kit' ), $settings['error'] ),
 					array( 'status' => $code )
 				);
 			}
 			return new WP_Error(
-				'user_input_settings_request',
+				'user_input_settings_request_failed',
 				__( 'User input settings request failed.', 'google-site-kit' ),
 				array( 'status' => $code )
 			);
