@@ -29,17 +29,16 @@ import {
 	reduceAdSenseData,
 	isDataZeroAdSense,
 } from '../../util';
-import Layout from '../../../../components/layout/layout';
-import withData from '../../../../components/higherorder/withdata';
+import Layout from '../../../../components/layout/Layout';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import {
 	getTimeInSeconds,
-	readableLargeNumber,
 	getSiteKitAdminURL,
 } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
-import DataBlock from '../../../../components/data-block';
+import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 
 class LegacyAdSenseDashboardMainSummary extends Component {
@@ -123,7 +122,8 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 									<DataBlock
 										className="overview-adsense-rpm"
 										title={ __( 'RPM', 'google-site-kit' ) }
-										datapoint={ readableLargeNumber( period.totals[ 1 ], currencyCode ) }
+										datapoint={ period.totals[ 1 ] }
+										datapointUnit={ currencyCode }
 										source={ {
 											name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 											link: href,
@@ -145,7 +145,8 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 									<DataBlock
 										className="overview-adsense-earnings"
 										title={ __( 'Total Earnings', 'google-site-kit' ) }
-										datapoint={ readableLargeNumber( period.totals[ 0 ], currencyCode ) }
+										datapoint={ period.totals[ 0 ] }
+										datapointUnit={ currencyCode }
 										source={ {
 											name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 											link: href,
@@ -169,7 +170,7 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 									<DataBlock
 										className="overview-adsense-impressions"
 										title={ __( 'Ad Impressions', 'google-site-kit' ) }
-										datapoint={ readableLargeNumber( period.totals[ 2 ] ) }
+										datapoint={ period.totals[ 2 ] }
 										source={ {
 											name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 											link: href,

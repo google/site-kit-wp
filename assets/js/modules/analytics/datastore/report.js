@@ -31,7 +31,7 @@ import { STORE_NAME } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidDateRange, isValidOrders } from '../../../util/report-validation';
-import { isValidDimensions, isValidMetrics } from '../util/report-validation';
+import { isValidDimensions, isValidDimensionFilters, isValidMetrics } from '../util/report-validation';
 import { actions as adsenseActions } from './adsense';
 import { normalizeReportOptions } from '../util/report-normalization';
 import { isRestrictedMetricsError } from '../util/error';
@@ -57,7 +57,7 @@ const fetchGetReportStore = createFetchStore( {
 		invariant( isPlainObject( options ), 'Options for Analytics report must be an object.' );
 		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for Analytics report.' );
 
-		const { metrics, dimensions, orderby } = normalizeReportOptions( options );
+		const { metrics, dimensions, dimensionFilters, orderby } = normalizeReportOptions( options );
 
 		invariant( metrics.length, 'Requests must specify at least one metric for an Analytics report.' );
 		invariant(
@@ -69,6 +69,13 @@ const fetchGetReportStore = createFetchStore( {
 			invariant(
 				isValidDimensions( dimensions ),
 				'Dimensions for an Analytics report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "name" property.',
+			);
+		}
+
+		if ( dimensionFilters ) {
+			invariant(
+				isValidDimensionFilters( dimensionFilters ),
+				'Dimension filters must be a map of dimension names as keys and dimension values as values.',
 			);
 		}
 
@@ -123,10 +130,13 @@ const baseSelectors = {
 	 * @param {string}         options.startDate           Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
 	 * @param {string}         options.endDate             Required, unless dateRange is provided. End date to query report data for as YYYY-mm-dd.
 	 * @param {string}         options.dateRange           Required, alternative to startDate and endDate. A date range string such as 'last-28-days'.
+	 * @param {Array.<string>} options.metrics             Required. List of metrics to query.
 	 * @param {boolean}        [options.compareDateRanges] Optional. Only relevant with dateRange. Default false.
 	 * @param {boolean}        [options.multiDateRange]    Optional. Only relevant with dateRange. Default false.
-	 * @param {Array.<string>} options.metrics             Required. List of metrics to query.
+	 * @param {string}         [options.compareStartDate]  Optional. Start date to compare report data for as YYYY-mm-dd.
+	 * @param {string}         [options.compareEndDate]    Optional. End date to compare report data for as YYYY-mm-dd.
 	 * @param {Array.<string>} [options.dimensions]        Optional. List of dimensions to group results by. Default an empty array.
+	 * @param {Object}         [options.dimensionFilters]  Optional. Map of dimension filters for filtering options on a dimension. Default an empty object.
 	 * @param {Array.<Object>} [options.orderby]           Optional. An order definition object, or a list of order definition objects, each one containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default empty array.
 	 * @param {string}         [options.url]               Optional. URL to get a report for only this URL. Default an empty string.
 	 * @param {number}         [options.limit]             Optional. Maximum number of entries to return. Default 1000.

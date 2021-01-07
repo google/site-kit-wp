@@ -25,14 +25,15 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import DataBlock from '../../../../components/data-block';
+import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import CTA from '../../../../components/legacy-notifications/cta';
-import { readableLargeNumber, changeToPercent } from '../../../../util';
+import { calculateChange } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import ReportError from '../../../../components/ReportError';
@@ -53,9 +54,22 @@ function DashboardGoalsWidget() {
 		const profileID = store.getProfileID();
 		const internalWebPropertyID = store.getInternalWebPropertyID();
 
+		const {
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate,
+		} = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+			weekdayAlign: true,
+		} );
+
 		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			multiDateRange: 1,
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate,
 			dimensions: 'ga:date',
 			metrics: [
 				{
@@ -74,6 +88,11 @@ function DashboardGoalsWidget() {
 		};
 	} );
 
+	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/analytics/answer/1032415',
+		hash: 'create_or_edit_goals',
+	} ) );
+
 	if ( loading ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
@@ -87,7 +106,7 @@ function DashboardGoalsWidget() {
 			<CTA
 				title={ __( 'Use goals to measure success.', 'google-site-kit' ) }
 				description={ __( 'Goals measure how well your site or app fulfills your target objectives.', 'google-site-kit' ) }
-				ctaLink="https://support.google.com/analytics/answer/1032415?hl=en#create_or_edit_goals"
+				ctaLink={ supportURL }
 				ctaLabel={ __( 'Create a new goal', 'google-site-kit' ) }
 			/>
 		);
@@ -120,13 +139,13 @@ function DashboardGoalsWidget() {
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 	const goalCompletions = lastMonth[ 0 ];
-	const goalCompletionsChange = changeToPercent( previousMonth[ 0 ], lastMonth[ 0 ] );
+	const goalCompletionsChange = calculateChange( previousMonth[ 0 ], lastMonth[ 0 ] );
 
 	return (
 		<DataBlock
 			className="overview-goals-completed"
 			title={ __( 'Goals Completed', 'google-site-kit' ) }
-			datapoint={ readableLargeNumber( goalCompletions ) }
+			datapoint={ goalCompletions }
 			change={ goalCompletionsChange }
 			changeDataUnit="%"
 			source={ {
@@ -147,7 +166,6 @@ function DashboardGoalsWidget() {
 
 export default whenActive( {
 	moduleName: 'analytics',
-	fallbackComponent: ( { WidgetActivateModuleCTA } ) => (
-		<WidgetActivateModuleCTA moduleSlug="analytics" />
-	),
+	FallbackComponent: ( { WidgetActivateModuleCTA } ) => <WidgetActivateModuleCTA moduleSlug="analytics" />,
+	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => <WidgetCompleteModuleActivationCTA moduleSlug="analytics" />,
 } )( DashboardGoalsWidget );

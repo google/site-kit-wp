@@ -23,12 +23,11 @@ describe( 'calculateOverviewData', () => {
 				},
 			],
 			[
-				'11.5',
-				'-1.0',
-				'9.3',
-				'-48.5',
-				'',
-				'-18.6',
+				-0.009615384615384616,
+				0.09280000000000005,
+				-0.48461141520426787,
+				null,
+				-0.18634538152610441,
 			],
 		],
 		[
@@ -43,21 +42,20 @@ describe( 'calculateOverviewData', () => {
 				},
 			],
 			[
-				'8.6',
-				'7.8',
-				'-24.6',
-				'17.4',
-				'',
-				'29.6',
+				0.07757484466202222,
+				-0.245536308831494,
+				0.17420715897416142,
+				null,
+				0.29620769094453303,
 			],
 		],
 	];
 	it.each( rangeData )( 'calculating data overview', ( data, expected ) => {
 		const overviewData = calculateOverviewData( data );
-		expect( overviewData.totalSessionsChange ).toEqual( expected[ 1 ] );
-		expect( overviewData.averageBounceRateChange ).toEqual( expected[ 2 ] );
-		expect( overviewData.averageSessionDurationChange ).toEqual( expected[ 3 ] );
-		expect( overviewData.goalCompletionsChange ).toEqual( expected[ 4 ] );
-		expect( overviewData.totalPageViewsChange ).toEqual( expected[ 5 ] );
+		expect( overviewData.totalSessionsChange ).toEqual( expected[ 0 ] );
+		expect( overviewData.averageBounceRateChange ).toEqual( expected[ 1 ] );
+		expect( overviewData.averageSessionDurationChange ).toEqual( expected[ 2 ] );
+		expect( overviewData.goalCompletionsChange ).toEqual( expected[ 3 ] );
+		expect( overviewData.totalPageViewsChange ).toEqual( expected[ 4 ] );
 	} );
 } );

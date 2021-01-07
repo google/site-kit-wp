@@ -26,7 +26,7 @@ import { render, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { clearWebStorage } from './util';
-import Root from './components/root';
+import Root from './components/Root';
 import './modules';
 import ModuleSetup from './components/setup/ModuleSetup';
 import DashboardApp from './components/dashboard/DashboardApp';

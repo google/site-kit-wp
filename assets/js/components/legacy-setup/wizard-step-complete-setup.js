@@ -32,9 +32,6 @@ import { Component } from '@wordpress/element';
  */
 import { trackEvent } from '../../util';
 import Button from '../Button';
-import rocketBodyImage from '../../../images/rocket-body.png';
-import rocketCloudsImage from '../../../images/rocket-clouds.png';
-import rocketDustImage from '../../../images/rocket-dust.png';
 
 class WizardStepCompleteSetup extends Component {
 	constructor( props ) {
@@ -56,9 +53,7 @@ class WizardStepCompleteSetup extends Component {
 					<div className="mdc-layout-grid__inner">
 						<div className="
 							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-4-phone
-							mdc-layout-grid__cell--span-5-tablet
-							mdc-layout-grid__cell--span-9-desktop
+							mdc-layout-grid__cell--span-12
 						">
 							<h2 className="
 									googlesitekit-heading-3
@@ -71,18 +66,6 @@ class WizardStepCompleteSetup extends Component {
 							</p>
 							<div className="googlesitekit-wizard-step__action">
 								<Button id="wizard-step-five-proceed" onClick={ this.props.completeSetup }>{ __( 'Go to Dashboard', 'google-site-kit' ) }</Button>
-							</div>
-						</div>
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-4-phone
-							mdc-layout-grid__cell--span-3-tablet
-							mdc-layout-grid__cell--span-3-desktop
-						">
-							<div className="googlesitekit-rocket">
-								<img className="googlesitekit-rocket__body" alt="" src={ global._googlesitekitLegacyData.admin.assetsRoot + rocketBodyImage } />
-								<img className="googlesitekit-rocket__clouds" alt="" src={ global._googlesitekitLegacyData.admin.assetsRoot + rocketCloudsImage } />
-								<img className="googlesitekit-rocket__dust" alt="" src={ global._googlesitekitLegacyData.admin.assetsRoot + rocketDustImage } />
 							</div>
 						</div>
 					</div>

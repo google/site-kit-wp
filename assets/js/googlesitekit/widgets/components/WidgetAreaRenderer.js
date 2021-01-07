@@ -93,21 +93,25 @@ export default function WidgetAreaRenderer( { slug } ) {
 		/>
 	) );
 
+	const { Icon, title, style, subtitle } = widgetArea;
+
 	return (
-		<Grid className={ `googlesitekit-widget-area googlesitekit-widget-area--${ widgetArea.slug } googlesitekit-widget-area--${ widgetArea.style }` }>
+		<Grid className={ `googlesitekit-widget-area googlesitekit-widget-area--${ slug } googlesitekit-widget-area--${ style }` }>
 			<Row>
 				<Cell className="googlesitekit-widget-area-header" size={ 12 }>
-					<img alt="" src={ widgetArea.icon } />
+					{ Icon && (
+						<Icon width={ 33 } height={ 33 } />
+					) }
 
-					{ widgetArea.title && (
+					{ title && (
 						<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
-							{ widgetArea.title }
+							{ title }
 						</h3>
 					) }
 
-					{ widgetArea.subtitle && (
+					{ subtitle && (
 						<h4 className="googlesitekit-widget-area-header__subtitle">
-							{ widgetArea.subtitle }
+							{ subtitle }
 						</h4>
 					) }
 				</Cell>
@@ -115,8 +119,8 @@ export default function WidgetAreaRenderer( { slug } ) {
 
 			<div className="googlesitekit-widget-area-widgets">
 				<Row>
-					{ widgetArea.style === WIDGET_AREA_STYLES.BOXES && widgetsOutput }
-					{ widgetArea.style === WIDGET_AREA_STYLES.COMPOSITE && (
+					{ style === WIDGET_AREA_STYLES.BOXES && widgetsOutput }
+					{ style === WIDGET_AREA_STYLES.COMPOSITE && (
 						<Cell size={ 12 }>
 							<Grid>
 								<Row>
