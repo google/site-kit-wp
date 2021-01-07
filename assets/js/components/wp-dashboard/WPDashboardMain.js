@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Link from '../Link';
-import WPDashboardModules from './wp-dashboard-modules';
+import WPDashboardModules from './WPDashboardModules';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 

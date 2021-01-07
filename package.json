@@ -75,7 +75,7 @@
     }
   },
   "lint-staged": {
-    "assets/js/**/*.js": [
+    "*.js": [
       "eslint"
     ],
     "assets/sass/**/*.scss": [
@@ -153,7 +153,6 @@
     "svgxuse": "^1.2.6",
     "url-polyfill": "^1.1.9",
     "uuid": "^8.2.0",
-    "wait-promise": "^0.4.1",
     "whatwg-fetch": "^3.2.0"
   },
   "devDependencies": {

@@ -11,14 +11,21 @@
 namespace Google\Site_Kit\Tests\Core\Notifications;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Notifications\Notifications;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\REST_API\REST_Route;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use WP_REST_Request;
 
 /**
  * @group Notifications
  */
 class NotificationsTest extends TestCase {
+	use Fake_Site_Connection_Trait;
 
 	public function test_register() {
 		$notifications = new Notifications( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -41,5 +48,37 @@ class NotificationsTest extends TestCase {
 			),
 			$routes
 		);
+	}
+
+	public function test_non_proxy_request_does_not_request_proxy() {
+		$context                        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$google_proxy                   = new Google_Proxy( $context );
+		$google_proxy_notifications_url = $google_proxy->url( '/notifications/' );
+
+		// Create a user with access to the WP REST API and log in.
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$this->fake_site_connection();
+
+		add_filter(
+			'pre_http_request',
+			function ( $override, $args, $url ) use ( $google_proxy_notifications_url ) {
+				if ( strstr( $url, $google_proxy_notifications_url ) ) {
+					$this->fail( 'Expected no request to be made to Google proxy notifications endpoint' );
+				}
+				return $override;
+			},
+			10,
+			3
+		);
+
+		// Make the test request.
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/notifications' );
+		$response = rest_get_server()->dispatch( $request );
+
+		// Confirm the request returns 200 status code.
+		$this->assertEquals( 200, $response->get_status() );
 	}
 }
