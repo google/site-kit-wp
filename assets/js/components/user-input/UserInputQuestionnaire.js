@@ -272,7 +272,7 @@ export default function UserInputQuestionnaire() {
 				</UserInputQuestionWrapper>
 			) }
 
-			{ activeSlug === 'preview' && ! isSavingSettings && ! isNavigating && (
+			{ activeSlug === 'preview' && (
 				<UserInputPreview
 					submitChanges={ submitChanges }
 					back={ back }
