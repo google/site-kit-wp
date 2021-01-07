@@ -29,7 +29,7 @@ import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
 import AdminBarSessions from './AdminBarSessions';
 import AdminBarImpressions from './AdminBarImpressions';
 import AdminBarClicks from './AdminBarClicks';
-import AdminbarModules from './LegacyAdminBarModules';
+import LegacyAdminBarModules from './LegacyAdminBarModules';
 import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import Data from 'googlesitekit-data';
@@ -111,7 +111,7 @@ export default function AdminBarApp() {
 								</Fragment>
 							) }
 
-							<AdminbarModules />
+							<LegacyAdminBarModules />
 						</div>
 					</div>
 					<div className="
