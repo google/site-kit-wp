@@ -69,7 +69,7 @@ describe( 'CompatibilityChecks', () => {
 
 	it( 'should display "Your site may not be ready for Site Kit" if a check throws an error', async () => {
 		// Mock request to setup-tag
-		fetchMock.post(
+		fetchMock.postOnce(
 			/^\/google-site-kit\/v1\/core\/site\/data\/setup-tag/,
 			{ body: {}, status: 500 }
 		);
