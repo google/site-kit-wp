@@ -122,7 +122,7 @@ const baseActions = {
 	/**
 	 * Waits for HTML for to be resolved for the given URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 * @private
 	 *
 	 * @param {string} url URL for which to fetch HTML.
