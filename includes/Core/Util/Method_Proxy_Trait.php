@@ -26,4 +26,25 @@ trait Method_Proxy_Trait {
 		};
 	}
 
+	/**
+	 * Gets a proxy function for a class method which can be executed only once.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $method Method name.
+	 * @return callable A proxy function.
+	 */
+	private function get_method_proxy_once( $method ) {
+		static $calls = array();
+
+		return function ( ...$args ) use ( $method, $calls ) {
+			$key = get_class( $this ) . '::' . $method;
+			if ( ! array_key_exists( $key, $calls ) ) {
+				$calls[ $key ] = $this->{ $method }( ...$args );
+			}
+
+			return $calls[ $key ];
+		};
+	}
+
 }
