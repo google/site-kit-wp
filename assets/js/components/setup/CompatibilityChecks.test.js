@@ -143,6 +143,7 @@ describe( 'CompatibilityChecks', () => {
 
 	it( 'should not contain incomplete or error messages if checks are successful', async () => {
 		const token = 'test-token-value';
+		const homeURL = 'http://googlesitekit.example.com';
 
 		// Mock request to setup-tag.
 		fetchMock.postOnce(
@@ -171,11 +172,13 @@ describe( 'CompatibilityChecks', () => {
 			}
 		);
 
-		const { container } = render(
+		const { container, registry } = render(
 			<CompatibilityChecks>
 				{ compatibilityChildren }
 			</CompatibilityChecks>
 		);
+
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
 
 		await waitFor( () => {
 			expect( fetchMock ).toHaveFetchedTimes( 5 );
