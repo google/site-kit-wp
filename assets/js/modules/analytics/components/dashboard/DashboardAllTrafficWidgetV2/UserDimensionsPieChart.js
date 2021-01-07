@@ -79,12 +79,20 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 		if ( chart && ! onSelect ) {
 			chartData.onSelect = global.google.visualization.events.addListener( chart, 'select', () => {
 				const { row } = chart.getSelection()?.[ 0 ] || {};
+
 				if ( row !== null && row !== undefined ) {
 					const { dataTable } = GoogleChart.charts.get( 'user-dimensions-pie-chart' ) || {};
 					if ( dataTable ) {
 						const dimensionValue = dataTable.getValue( row, 0 );
-						setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue } );
+
+						if ( 'Others' !== dimensionValue ) {
+							setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue } );
+						} else {
+							setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionName, dimensionValue: '' } );
+						}
 					}
+				} else {
+					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionName, dimensionValue: '' } );
 				}
 			} );
 		}
