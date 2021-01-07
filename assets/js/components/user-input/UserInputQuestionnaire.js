@@ -149,14 +149,18 @@ export default function UserInputQuestionnaire() {
 		nextLabel = __( 'Submit', 'google-site-kit' );
 	}
 
+	const settingsProgress = (
+		<ProgressBar
+			height={ 0 }
+			indeterminate={ false }
+			progress={ ( activeSlugIndex + 1 ) / USER_INPUT_QUESTIONS_LIST.length }
+		/>
+	);
+
 	if ( isSavingSettings || isNavigating ) {
 		return (
 			<Fragment>
-				<ProgressBar
-					height={ 0 }
-					indeterminate={ false }
-					progress={ ( activeSlugIndex + 1 ) / USER_INPUT_QUESTIONS_LIST.length }
-				/>
+				{ settingsProgress }
 				<div className="googlesitekit-user-input__preview">
 					<Row>
 						<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
@@ -170,11 +174,7 @@ export default function UserInputQuestionnaire() {
 
 	return (
 		<Fragment>
-			<ProgressBar
-				height={ 0 }
-				indeterminate={ false }
-				progress={ ( activeSlugIndex + 1 ) / USER_INPUT_QUESTIONS_LIST.length }
-			/>
+			{ settingsProgress }
 
 			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_ROLE ) && (
 				<UserInputQuestionWrapper
