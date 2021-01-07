@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
-import { numberFormat, readableLargeNumber } from '../../../../../util';
+import { readableLargeNumber, numFmt, calculateChange } from '../../../../../util';
 import { getAvailableDateRanges } from '../../../../../util/date-range';
 import { isZeroReport } from '../../../util';
 import ChangeArrow from '../../../../../components/ChangeArrow';
@@ -74,14 +74,14 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
 
 	if ( ! loaded || error || isZeroReport( report ) ) {
+		// The UserCountGraph component will return appropriate PreviewBlock/ReportError/ReportZero component
+		// based on the report fetching status, so we can return just NULL here to make sure it doesn't take extra space.
 		return null;
 	}
 
 	const { totals } = report?.[ 0 ]?.data || {};
 	const [ current, previous ] = totals || [];
-	const change = previous?.values?.[ 0 ] > 0
-		? ( current?.values?.[ 0 ] / previous?.values?.[ 0 ] ) - 1
-		: null;
+	const change = calculateChange( previous?.values?.[ 0 ], current?.values?.[ 0 ] );
 
 	let currentDateRangeLabel = null;
 	const currentDateRangeDays = getAvailableDateRanges()[ dateRange ]?.days;
@@ -115,7 +115,7 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 						height={ 17 }
 					/>
 
-					{ numberFormat( Math.abs( change ), { style: 'percent', maximumFractionDigits: 1 } ) }
+					{ numFmt( Math.abs( change ), { style: 'percent', maximumFractionDigits: 2 } ) }
 				</span>
 				<span className="googlesitekit-widget--analyticsAllTrafficV2__totalcount--daterange">
 					{ currentDateRangeLabel }
