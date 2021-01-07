@@ -26,8 +26,8 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
-import Layout from '../../../../components/layout/layout';
+import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
+import Layout from '../../../../components/layout/Layout';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import LegacyDashboardAcquisitionPieChart from '../dashboard/LegacyDashboardAcquisitionPieChart';
 import { STORE_NAME } from '../../datastore/constants';

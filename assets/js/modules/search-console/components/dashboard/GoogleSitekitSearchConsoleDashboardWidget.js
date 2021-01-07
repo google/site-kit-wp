@@ -38,8 +38,8 @@ import LegacySearchConsoleDashboardWidgetKeywordTable from './LegacySearchConsol
 import SearchConsoleDashboardWidgetOverview from './SearchConsoleDashboardWidgetOverview';
 import DateRangeSelector from '../../../../components/DateRangeSelector';
 import PageHeader from '../../../../components/PageHeader';
-import Layout from '../../../../components/layout/layout';
-import Alert from '../../../../components/alert';
+import Layout from '../../../../components/layout/Layout';
+import Alert from '../../../../components/Alert';
 import ProgressBar from '../../../../components/ProgressBar';
 import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
 import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';

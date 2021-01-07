@@ -30,7 +30,7 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Layout from '../assets/js/components/layout/layout';
+import Layout from '../assets/js/components/layout/Layout';
 import AnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopPagesTable';
 import { dashboardPopularPagesArgs, dashboardPopularPagesData } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';

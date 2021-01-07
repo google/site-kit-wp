@@ -38,10 +38,10 @@ import AnalyticsDashboardWidgetTopPagesTable from './AnalyticsDashboardWidgetTop
 import AnalyticsDashboardWidgetOverview from './AnalyticsDashboardWidgetOverview';
 import DateRangeSelector from '../../../../components/DateRangeSelector';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
-import Layout from '../../../../components/layout/layout';
+import Layout from '../../../../components/layout/Layout';
 import PageHeader from '../../../../components/PageHeader';
 import LegacyDashboardAcquisitionPieChart from './LegacyDashboardAcquisitionPieChart';
-import Alert from '../../../../components/alert';
+import Alert from '../../../../components/Alert';
 import ProgressBar from '../../../../components/ProgressBar';
 import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
 import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';

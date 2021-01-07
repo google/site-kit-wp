@@ -30,8 +30,8 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import LayoutHeader from './layout-header';
-import LayoutFooter from './layout-footer';
+import LayoutHeader from './LayoutHeader';
+import LayoutFooter from './LayoutFooter';
 
 class Layout extends Component {
 	render() {
