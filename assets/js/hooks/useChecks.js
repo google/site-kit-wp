@@ -42,6 +42,7 @@ export function useChecks( checks ) {
 	const [ complete, setComplete ] = useState( isSiteKitConnected );
 	const [ error, setError ] = useState( undefined );
 	useEffect( () => {
+		setComplete( false );
 		const runChecks = async () => {
 			try {
 				await Promise.all( checks.map( ( check ) => check() ) );

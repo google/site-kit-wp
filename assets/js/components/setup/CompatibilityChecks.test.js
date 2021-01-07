@@ -69,13 +69,17 @@ describe( 'CompatibilityChecks', () => {
 
 	it( 'should display "Your site may not be ready for Site Kit" if a check throws an error', async () => {
 		// Mock request to setup-tag
-		fetchMock.postOnce(
+		fetchMock.post(
 			/^\/google-site-kit\/v1\/core\/site\/data\/setup-tag/,
 			{ body: {}, status: 500 }
 		);
 
-		// Mock request to develop-plugin when error is thrown.
+		// Mock request to developer-plugin when error is thrown.
 		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/developer-plugin/ );
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/health-checks/ );
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
+		// Mock request to AMP project.
+		muteFetch( AMP_PROJECT_TEST_URL );
 
 		const { container } = render(
 			<CompatibilityChecks>
@@ -84,7 +88,7 @@ describe( 'CompatibilityChecks', () => {
 		);
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes( 5 );
 		} );
 
 		// Expect neither error nor incomplete text to be displayed.
