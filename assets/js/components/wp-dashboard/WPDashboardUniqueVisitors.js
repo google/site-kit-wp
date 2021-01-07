@@ -25,29 +25,36 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME as MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
-import {
-	readableLargeNumber,
-	calculateChange,
-} from '../../util';
+import { calculateChange } from '../../util';
 import DataBlock from '../DataBlock';
-import { parseTotalUsersData, userReportDataDefaults } from '../../modules/analytics/util';
 const { useSelect } = Data;
 
 const WPDashboardUniqueVisitors = () => {
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		compare: true,
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
 
-	const args = {
-		dateRange,
-		...userReportDataDefaults,
+	const reportArgs = {
+		...dateRangeDates,
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Total Users',
+			},
+		],
+		url,
 	};
 
-	const data = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( args ) );
-	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ) );
-	const loading = useSelect( ( select ) => ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const data = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( reportArgs ) );
+	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
+	const loading = useSelect( ( select ) => ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 
 	if ( loading ) {
 		return <PreviewBlock width="48%" height="92px" />;
@@ -57,19 +64,18 @@ const WPDashboardUniqueVisitors = () => {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	const {
-		totalUsers,
-		previousTotalUsers,
-	} = parseTotalUsersData( data );
-
-	const totalUsersChange = calculateChange( previousTotalUsers, totalUsers );
+	const { totals } = data[ 0 ].data;
+	const lastMonth = totals[ 0 ].values;
+	const previousMonth = totals[ 1 ].values;
+	const totalUsers = lastMonth[ 0 ];
+	const previousTotalUsers = previousMonth[ 0 ];
 
 	return (
 		<DataBlock
 			className="googlesitekit-wp-dashboard-stats__data-table overview-total-users"
 			title={ __( 'Total Unique Visitors', 'google-site-kit' ) }
-			datapoint={ readableLargeNumber( totalUsers ) }
-			change={ totalUsersChange }
+			datapoint={ totalUsers }
+			change={ calculateChange( previousTotalUsers, totalUsers ) }
 			changeDataUnit="%"
 		/>
 	);

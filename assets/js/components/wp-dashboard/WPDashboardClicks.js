@@ -28,8 +28,11 @@ import { useEffect } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { extractSearchConsoleDashboardData, isZeroReport } from '../../modules/search-console/util';
-import { trackEvent } from '../../util/tracking';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
+import { isZeroReport } from '../../modules/search-console/util';
+import { calculateChange, trackEvent } from '../../util';
+import sumObjectListValue from '../../util/sum-object-list-value';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
@@ -37,12 +40,17 @@ import ReportZero from '../ReportZero';
 const { useSelect } = Data;
 
 const WPDashboardClicks = () => {
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		compare: true,
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
 
 	const args = {
-		dateRange,
+		startDate: compareStartDate,
+		endDate,
 		dimensions: 'date',
-		compareDateRanges: true,
+		url,
 	};
 
 	const data = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( args ) );
@@ -67,10 +75,13 @@ const WPDashboardClicks = () => {
 		return <ReportZero moduleSlug="search-console" />;
 	}
 
-	const {
-		totalClicks,
-		totalClicksChange,
-	} = extractSearchConsoleDashboardData( data );
+	const half = Math.floor( data.length / 2 );
+	const latestData = data.slice( half );
+	const olderData = data.slice( 0, half );
+
+	const totalClicks = sumObjectListValue( latestData, 'clicks' );
+	const totalOlderClicks = sumObjectListValue( olderData, 'clicks' );
+	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
 
 	return (
 		<DataBlock

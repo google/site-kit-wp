@@ -25,27 +25,38 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { prepareSecondsForDisplay } from '../../util';
-import DataBlock from '../DataBlock';
-import { STORE_NAME as MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME as MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { overviewReportDataDefaults } from '../../modules/analytics/util';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { calculateChange } from '../../util';
+import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
-import calculateOverviewData from '../../modules/analytics/util/calculateOverviewData';
 const { useSelect } = Data;
 
 const WPDashboardSessionDuration = () => {
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		compare: true,
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
 
-	const args = {
-		dateRange,
-		...overviewReportDataDefaults,
+	const reportArgs = {
+		...dateRangeDates,
+		dimensions: 'ga:date',
+		limit: 10,
+		metrics: [
+			{
+				expression: 'ga:avgSessionDuration',
+				alias: 'Average Session Duration',
+			},
+		],
+		url,
 	};
 
-	const data = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( args ) );
-	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ) );
-	const loading = useSelect( ( select ) => ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const data = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( reportArgs ) );
+	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
+	const loading = useSelect( ( select ) => ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 
 	if ( loading ) {
 		return <PreviewBlock width="48%" height="92px" />;
@@ -55,16 +66,18 @@ const WPDashboardSessionDuration = () => {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	const {
-		averageSessionDuration,
-		averageSessionDurationChange,
-	} = calculateOverviewData( data );
+	const { totals } = data[ 0 ].data;
+	const lastMonth = totals[ 0 ].values;
+	const previousMonth = totals[ 1 ].values;
+	const averageSessionDuration = lastMonth[ 0 ];
+	const averageSessionDurationChange = calculateChange( previousMonth[ 0 ], lastMonth[ 0 ] );
 
 	return (
 		<DataBlock
 			className="googlesitekit-wp-dashboard-stats__data-table overview-average-session-duration"
 			title={ __( 'Avg. Time on Page', 'google-site-kit' ) }
-			datapoint={ prepareSecondsForDisplay( averageSessionDuration ) }
+			datapoint={ averageSessionDuration }
+			datapointUnit="s"
 			change={ averageSessionDurationChange }
 			changeDataUnit="%"
 		/>

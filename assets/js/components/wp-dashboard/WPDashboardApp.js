@@ -33,8 +33,10 @@ import WPDashboardClicks from './WPDashboardClicks';
 import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
 import WPDashboardSessionDuration from './WPDashboardSessionDuration';
 import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
+import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { Cell } from '../../material-components/layout';
 const { useSelect } = Data;
 
 const WPDashboardApp = () => {
@@ -55,15 +57,25 @@ const WPDashboardApp = () => {
 			</div>
 			{ featureFlags.widgets.wpDashboard.enabled && (
 				<div className="googlesitekit-wp-dashboard-stats googlesitekit-wp-dashboard-stats--fourup">
-					<WPDashboardImpressions />
-					<WPDashboardClicks />
+					{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+						<Cell mdSize={ 4 } lgSize={ 6 }>
+							{ ! analyticsModuleActive && (
+								<AnalyticsInactiveCTA />
+							) }
+
+							{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
+								<CompleteModuleActivationCTA slug="analytics" />
+							) }
+						</Cell>
+					) }
 					{ analyticsModuleActive && analyticsModuleConnected && (
 						<Fragment>
 							<WPDashboardUniqueVisitors />
 							<WPDashboardSessionDuration />
 						</Fragment>
 					) }
-					{ ( ! analyticsModuleActive || ! analyticsModuleConnected ) && <AnalyticsInactiveCTA /> }
+					<WPDashboardImpressions />
+					<WPDashboardClicks />
 				</div>
 			) }
 			<LegacyWPDashboardModules />
