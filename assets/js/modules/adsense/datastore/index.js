@@ -30,7 +30,6 @@ import urlchannels from './urlchannels';
 import settings from './settings';
 import adblocker from './adblocker';
 import service from './service';
-import { STORE_NAME } from './constants';
 
 const store = Data.combineStores(
 	baseModuleStore,
@@ -51,8 +50,5 @@ export const controls = store.controls;
 export const reducer = store.reducer;
 export const resolvers = store.resolvers;
 export const selectors = store.selectors;
-
-// Register this store on the global registry.
-Data.registerStore( STORE_NAME, store );
 
 export default store;

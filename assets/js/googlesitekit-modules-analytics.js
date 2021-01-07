@@ -19,4 +19,12 @@
 /**
  * Internal dependencies
  */
-import './modules/analytics';
+import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
+import Widgets from 'googlesitekit-widgets';
+import { registerStore, registerModule, registerWidgets } from './modules/analytics';
+
+registerStore( Data );
+registerModule( Modules );
+registerWidgets( Widgets );
+

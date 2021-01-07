@@ -21,64 +21,67 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import { createModuleStore } from './create-module-store';
 import { STORE_NAME } from './datastore/constants';
-// This import has a side-effect: it automatically registers the "core/modules"
-// store on `googlesitekit.data`.
-import './datastore';
+import store from './datastore';
 
-const Modules = {
-	createModuleStore,
-	/**
-	 * Activates a module on the server.
-	 *
-	 * Activate a module (based on the slug provided).
-	 *
-	 * @since 1.8.0
-	 *
-	 * @param {string} slug Slug of the module to activate.
-	 * @return {Promise} The dispatched action.
-	 */
-	activateModule: ( slug ) => {
-		return Data.dispatch( STORE_NAME ).activateModule( slug );
-	},
-	/**
-	 * Deactivates a module on the server.
-	 *
-	 * Deactivate a module (based on the slug provided).
-	 *
-	 * @since 1.8.0
-	 *
-	 * @param {string} slug Slug of the module to activate.
-	 * @return {Promise} The dispatched action.
-	 */
-	deactivateModule: ( slug ) => {
-		return Data.dispatch( STORE_NAME ).deactivateModule( slug );
-	},
-	/**
-	 * Registers a module.
-	 *
-	 * @since 1.13.0
-	 * @since 1.20.0 Introduced the ability to register settings and setup components.
-	 * @since 1.22.0 Introduced the ability to add a checkRequirements function.
-	 * @since 1.23.0 Introduced the ability to register an Icon component.
-	 *
-	 * @param {string}      slug                             Module slug.
-	 * @param {Object}      [settings]                       Optional. Module settings.
-	 * @param {string}      [settings.name]                  Optional. Module name. Default is the slug.
-	 * @param {string}      [settings.description]           Optional. Module description. Default empty string.
-	 * @param {WPComponent} [settings.Icon]                  Optional. React component to render module icon. Default none.
-	 * @param {number}      [settings.order]                 Optional. Numeric indicator for module order. Default 10.
-	 * @param {string}      [settings.homepage]              Optional. Module homepage URL. Default empty string.
-	 * @param {WPComponent} [settings.SettingsEditComponent] Optional. React component to render the settings edit panel. Default none.
-	 * @param {WPComponent} [settings.SettingsViewComponent] Optional. React component to render the settings view panel. Default none.
-	 * @param {WPComponent} [settings.SetupComponent]        Optional. React component to render the setup panel. Default none.
-	 * @return {Promise} The dispatched action.
-	 */
-	registerModule: ( slug, settings ) => {
-		return Data.dispatch( STORE_NAME ).registerModule( slug, settings );
-	},
-};
+export function registerStore( Data ) {
+	Data.registerStore( STORE_NAME, store );
+}
 
-export default Modules;
+export function createModules( { dispatch } ) {
+	const Modules = {
+		createModuleStore,
+		/**
+		 * Activates a module on the server.
+		 *
+		 * Activate a module (based on the slug provided).
+		 *
+		 * @since 1.8.0
+		 *
+		 * @param {string} slug Slug of the module to activate.
+		 * @return {Promise} The dispatched action.
+		 */
+		activateModule: ( slug ) => {
+			return dispatch( STORE_NAME ).activateModule( slug );
+		},
+		/**
+		 * Deactivates a module on the server.
+		 *
+		 * Deactivate a module (based on the slug provided).
+		 *
+		 * @since 1.8.0
+		 *
+		 * @param {string} slug Slug of the module to activate.
+		 * @return {Promise} The dispatched action.
+		 */
+		deactivateModule: ( slug ) => {
+			return dispatch( STORE_NAME ).deactivateModule( slug );
+		},
+		/**
+		 * Registers a module.
+		 *
+		 * @since 1.13.0
+		 * @since 1.20.0 Introduced the ability to register settings and setup components.
+		 * @since 1.22.0 Introduced the ability to add a checkRequirements function.
+		 * @since 1.23.0 Introduced the ability to register an Icon component.
+		 *
+		 * @param {string}      slug                             Module slug.
+		 * @param {Object}      [settings]                       Optional. Module settings.
+		 * @param {string}      [settings.name]                  Optional. Module name. Default is the slug.
+		 * @param {string}      [settings.description]           Optional. Module description. Default empty string.
+		 * @param {WPComponent} [settings.Icon]                  Optional. React component to render module icon. Default none.
+		 * @param {number}      [settings.order]                 Optional. Numeric indicator for module order. Default 10.
+		 * @param {string}      [settings.homepage]              Optional. Module homepage URL. Default empty string.
+		 * @param {WPComponent} [settings.SettingsEditComponent] Optional. React component to render the settings edit panel. Default none.
+		 * @param {WPComponent} [settings.SettingsViewComponent] Optional. React component to render the settings view panel. Default none.
+		 * @param {WPComponent} [settings.SetupComponent]        Optional. React component to render the setup panel. Default none.
+		 * @return {Promise} The dispatched action.
+		 */
+		registerModule: ( slug, settings ) => {
+			return dispatch( STORE_NAME ).registerModule( slug, settings );
+		},
+	};
+
+	return Modules;
+}

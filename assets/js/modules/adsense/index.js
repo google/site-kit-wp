@@ -20,17 +20,12 @@
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
-import domReady from '@wordpress/dom-ready';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import Widgets from 'googlesitekit-widgets';
-import Data from 'googlesitekit-data';
-const { select } = Data;
-import './datastore';
+import store from './datastore';
 import { AREA_DASHBOARD_EARNINGS } from '../../googlesitekit/widgets/default-areas';
 import { fillFilterWithComponent } from '../../util';
 import { SetupMain } from './components/setup';
@@ -54,9 +49,15 @@ addFilter(
 	fillFilterWithComponent( DashboardZeroData )
 );
 
-domReady( () => {
-	// IMPORTANT: When updating arguments here, also update the same call in
-	// `provideModuleRegistrations`.
+let isAdBlockerActive = () => {};
+
+export const registerStore = ( Data ) => {
+	Data.registerStore( STORE_NAME, store );
+	// TODO: fix hack
+	isAdBlockerActive = () => Data.select( STORE_NAME ).isAdBlockerActive();
+};
+
+export const registerModule = ( Modules ) => {
 	Modules.registerModule(
 		'adsense',
 		{
@@ -67,8 +68,7 @@ domReady( () => {
 			SetupComponent: SetupMain,
 			Icon: AdSenseIcon,
 			checkRequirements: () => {
-				const isAdBlockerActive = select( STORE_NAME ).isAdBlockerActive();
-				if ( ! isAdBlockerActive ) {
+				if ( ! isAdBlockerActive() ) {
 					return;
 				}
 
@@ -80,7 +80,9 @@ domReady( () => {
 			},
 		}
 	);
+};
 
+export const registerWidgets = ( Widgets ) => {
 	Widgets.registerWidget(
 		'adsenseSummary',
 		{
@@ -106,4 +108,4 @@ domReady( () => {
 			AREA_DASHBOARD_EARNINGS,
 		],
 	);
-} );
+};

@@ -17,16 +17,9 @@
  */
 
 /**
- * WordPress dependencies
- */
-import domReady from '@wordpress/dom-ready';
-
-/**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import Widgets from 'googlesitekit-widgets';
-import './datastore';
+import store from './datastore';
 import { SettingsView } from './components/settings';
 import DashboardImpressionsWidget from './components/dashboard/DashboardImpressionsWidget';
 import DashboardClicksWidget from './components/dashboard/DashboardClicksWidget';
@@ -38,10 +31,12 @@ import {
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/search-console.svg';
+import { STORE_NAME } from './datastore/constants';
 
-domReady( () => {
-	// IMPORTANT: When updating arguments here, also update the same call in
-	// `provideModuleRegistrations`.
+export const registerStore = ( Data ) => {
+	Data.registerStore( STORE_NAME, store );
+};
+export const registerModule = ( Modules ) => {
 	Modules.registerModule(
 		'search-console',
 		{
@@ -50,7 +45,8 @@ domReady( () => {
 			Icon: SearchConsoleIcon,
 		}
 	);
-
+};
+export const registerWidgets = ( Widgets ) => {
 	Widgets.registerWidget(
 		'searchConsoleImpressions',
 		{
@@ -90,4 +86,4 @@ domReady( () => {
 			AREA_PAGE_DASHBOARD_POPULARITY,
 		],
 	);
-} );
+};

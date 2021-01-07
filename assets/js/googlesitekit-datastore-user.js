@@ -19,4 +19,7 @@
 /**
  * Internal dependencies
  */
-import './googlesitekit/datastore/user';
+import Data from 'googlesitekit-data';
+import { registerStore } from './googlesitekit/datastore/user';
+
+registerStore( Data );

@@ -20,14 +20,11 @@
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
-import domReady from '@wordpress/dom-ready';
 
 /**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import Widgets from 'googlesitekit-widgets';
-import './datastore';
+import store from './datastore';
 import { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-areas';
 import { getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
@@ -36,6 +33,7 @@ import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedW
 import DashboardPageSpeedCTA from './components/dashboard/DashboardPageSpeedCTA';
 import LegacyDashboardSpeed from './components/dashboard/LegacyDashboardSpeed';
 import PageSpeedInsightsIcon from '../../../svg/pagespeed-insights.svg';
+import { STORE_NAME } from './datastore/constants';
 
 const {
 	active,
@@ -68,9 +66,10 @@ if ( active && setupComplete ) {
 	);
 }
 
-domReady( () => {
-	// IMPORTANT: When updating arguments here, also update the same call in
-	// `provideModuleRegistrations`.
+export const registerStore = ( Data ) => {
+	Data.registerStore( STORE_NAME, store );
+};
+export const registerModule = ( Modules ) => {
 	Modules.registerModule(
 		'pagespeed-insights',
 		{
@@ -79,10 +78,11 @@ domReady( () => {
 			Icon: PageSpeedInsightsIcon,
 		}
 	);
-
+};
+export const registerWidgets = ( Widgets ) => {
 	Widgets.registerWidget( 'pagespeedInsightsWebVitals', {
 		Component: DashboardPageSpeedWidget,
 		width: Widgets.WIDGET_WIDTHS.FULL,
 		wrapWidget: false,
 	}, [ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ] );
-} );
+};

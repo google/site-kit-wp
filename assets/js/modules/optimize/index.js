@@ -17,22 +17,18 @@
  */
 
 /**
- * WordPress dependencies
- */
-import domReady from '@wordpress/dom-ready';
-
-/**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import './datastore';
+import store from './datastore';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import OptimizeIcon from '../../../svg/optimize.svg';
+import { STORE_NAME } from './datastore/constants';
 
-domReady( () => {
-	// IMPORTANT: When updating arguments here, also update the same call in
-	// `provideModuleRegistrations`.
+export const registerStore = ( Data ) => {
+	Data.registerStore( STORE_NAME, store );
+};
+export const registerModule = ( Modules ) => {
 	Modules.registerModule(
 		'optimize',
 		{
@@ -43,4 +39,4 @@ domReady( () => {
 			Icon: OptimizeIcon,
 		}
 	);
-} );
+};

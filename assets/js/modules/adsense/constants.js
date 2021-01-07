@@ -16,4 +16,5 @@
  * limitations under the License.
  */
 
+export const SLUG = 'adsense';
 export const ERROR_CODE_ADBLOCKER_ACTIVE = 'adblocker_active';
