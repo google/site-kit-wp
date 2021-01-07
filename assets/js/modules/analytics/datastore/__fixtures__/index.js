@@ -40,6 +40,8 @@ export { default as dashboardGoalsWidgetData } from './dashboard-goals-widget-da
 export { default as dashboardGoalsWidgetArgs } from './dashboard-goals-widget-args.json';
 export { default as dashboardUserDimensionsData } from './dashboard-user-dimensions-data.json';
 export { default as dashboardUserDimensionsArgs } from './dashboard-user-dimensions-args.json';
+export { default as dashboardUserTotalsData } from './dashboard-user-totals-data.json';
+export { default as dashboardUserTotalsArgs } from './dashboard-user-totals-args.json';
 export * from './dashboard-unique-visitors-data';
 export * from './dashboard-unique-visitors-args';
 export { pageDashboardUniqueVisitorsSparkData, pageDashboardUniqueVisitorsVisitorData } from './page-dashboard-unique-visitors-data';
