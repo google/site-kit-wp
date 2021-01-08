@@ -216,6 +216,9 @@ final class Plugin {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			( new \Google\Site_Kit\Core\CLI\CLI_Commands( $this->context ) )->register();
 		}
+
+		// Add Plugin Row Meta.
+		( new \Google\Site_Kit\Core\Admin\PluginRowMeta() )->register();
 	}
 
 	/**
