@@ -1221,35 +1221,30 @@ final class Analytics extends Module
 						$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
 					} else {
 						$fallback_properties_profiles = null;
-						$accounts_array               = array_values( $accounts );
-						$number_of_accounts           = min( 25, count( $accounts_array ) );
-						for ( $i = 0; $i < $number_of_accounts; $i++ ) {
-							$account = $accounts_array[ $i ];
-
+						// Iterate over the first 25 accounts to avoid making too many requests.
+						foreach ( array_slice( $accounts, 0, 25 ) as $account ) {
 							/* @var Google_Service_Analytics_Account $account Analytics account object. */
 							$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account->getId() ) );
-							if ( ! is_wp_error( $properties_profiles ) ) {
-								if ( isset( $properties_profiles['matchedProperty'] ) ) {
-									break;
-								} elseif ( is_null( $fallback_properties_profiles ) ) {
-									$fallback_properties_profiles = $properties_profiles;
-								}
-							} else {
-								if ( ! is_null( $fallback_properties_profiles ) ) {
-									$properties_profiles = $fallback_properties_profiles;
-								}
 
+							if ( is_wp_error( $properties_profiles ) ) {
+								$properties_profiles = $fallback_properties_profiles;
+								// Stop iteration to avoid potential quota errors.
 								break;
 							}
-						}
-
-						if ( empty( $properties_profiles['matchedProperty'] ) && ! is_null( $fallback_properties_profiles ) ) {
-							$properties_profiles = $fallback_properties_profiles;
+							// If we found a matchedProperty, we're all done.
+							if ( isset( $properties_profiles['matchedProperty'] ) ) {
+								break;
+							}
+							// If we didn't find a matched property yet,
+							// save the response as a fallback, if none set yet.
+							if ( null === $fallback_properties_profiles ) {
+								$fallback_properties_profiles = $properties_profiles;
+							}
 						}
 					}
 				}
 
-				if ( is_wp_error( $properties_profiles ) ) {
+				if ( is_wp_error( $properties_profiles ) || ! $properties_profiles ) {
 					$properties_profiles = array(
 						'properties' => array(),
 						'profiles'   => array(),
