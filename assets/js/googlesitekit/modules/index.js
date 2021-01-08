@@ -23,11 +23,8 @@
  */
 import { createModuleStore } from './create-module-store';
 import { STORE_NAME } from './datastore/constants';
-import store from './datastore';
 
-export function registerStore( Data ) {
-	Data.registerStore( STORE_NAME, store );
-}
+export { registerModule } from './datastore';
 
 export function createModules( { dispatch } ) {
 	const Modules = {

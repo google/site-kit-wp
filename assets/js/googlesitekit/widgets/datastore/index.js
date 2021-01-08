@@ -23,6 +23,7 @@ import Data from 'googlesitekit-data';
 import areas from './areas';
 import widgets from './widgets';
 import { createErrorStore } from '../../data/create-error-store';
+import { STORE_NAME } from './constants';
 
 const store = Data.combineStores(
 	Data.commonStore,
@@ -30,5 +31,9 @@ const store = Data.combineStores(
 	widgets,
 	createErrorStore(),
 );
+
+export const registerStore = ( registry ) => {
+	registry.registerStore( STORE_NAME, store );
+};
 
 export default store;

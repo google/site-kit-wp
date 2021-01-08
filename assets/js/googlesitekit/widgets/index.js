@@ -21,13 +21,9 @@
  */
 import Widget from './components/Widget';
 import { STORE_NAME, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from './datastore/constants';
-import store from './datastore';
 
+export { registerStore } from './datastore';
 export { registerDefaults } from './register-defaults';
-
-export const registerStore = ( Data ) => {
-	Data.registerStore( STORE_NAME, store );
-};
 
 export function createWidgets( { dispatch, select } ) {
 	const Widgets = {
