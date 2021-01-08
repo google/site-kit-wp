@@ -196,33 +196,35 @@ const dataAPI = {
 			data: { request: currentRequest },
 			method: 'POST',
 		} ).then( ( results ) => {
-			each( results, ( result, key ) => {
-				if ( ! keyIndexesMap[ key ] ) {
-					console.debug( 'data_error', 'unknown response key ' + key ); // eslint-disable-line no-console
+			Object.entries( results ).forEach( ( [ requestKey, response ] ) => {
+				if ( ! keyIndexesMap[ requestKey ] ) {
+					console.debug( 'data_error', 'unknown response key ' + requestKey ); // eslint-disable-line no-console
 					return;
 				}
 
-				const isError = isWPError( result );
-				if ( isError ) {
-					const { datapoint, type, identifier } = dataRequest[ keyIndexesMap[ key ] ];
+				const isError = isWPError( response );
 
-					this.handleWPError( {
-						method: 'POST',
-						datapoint,
-						type,
-						identifier,
-						error: result,
-					} );
+				if ( ! isError ) {
+					setCache( requestKey, response );
 				}
+				// Each request is only made once, but may have been requested more than once.
+				// Iterate over each request object for the key to resolve it.
+				keyIndexesMap[ requestKey ].forEach( ( requestIndex ) => {
+					const request = dataRequest[ requestIndex ];
 
-				each( keyIndexesMap[ key ], ( index ) => {
-					const request = dataRequest[ index ];
+					if ( isError ) {
+						const { datapoint, type, identifier } = request;
 
-					if ( ! isError ) {
-						setCache( request.key, result );
+						this.handleWPError( {
+							method: 'POST',
+							datapoint,
+							type,
+							identifier,
+							error: response,
+						} );
 					}
 
-					this.resolve( request, result );
+					this.resolve( request, response );
 				} );
 
 				// Trigger an action indicating this data load completed from the API.
