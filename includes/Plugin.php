@@ -214,8 +214,11 @@ final class Plugin {
 
 		// WP CLI Commands.
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			( new \Google\Site_Kit\Core\CLI\CLI_Commands( $this->context ) )->register();
+			( new Core\CLI\CLI_Commands( $this->context ) )->register();
 		}
+
+		// Add Plugin Row Meta.
+		( new Core\Admin\Plugin_Row_Meta() )->register();
 	}
 
 	/**
