@@ -19,15 +19,12 @@
 /**
  * Internal dependencies
  */
-import store from './datastore';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import TagManagerIcon from '../../../svg/tagmanager.svg';
-import { STORE_NAME } from './datastore/constants';
 
-export const registerStore = ( Data ) => {
-	Data.registerStore( STORE_NAME, store );
-};
+export { registerStore } from './datastore';
+
 export const registerModule = ( Modules ) => {
 	Modules.registerModule(
 		'tagmanager',
