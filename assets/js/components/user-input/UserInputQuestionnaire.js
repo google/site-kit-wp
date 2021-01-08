@@ -19,18 +19,20 @@
 /**
  * WordPress dependencies
  */
-import { useState, useCallback, Fragment } from '@wordpress/element';
+import { useCallback, Fragment, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import ProgressBar from '../ProgressBar';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import UserInputKeywords from './UserInputKeywords';
 import UserInputPreview from './UserInputPreview';
 import {
+	USER_INPUT_QUESTIONS_LIST,
 	USER_INPUT_QUESTION_ROLE,
 	USER_INPUT_QUESTION_POST_FREQUENCY,
 	USER_INPUT_QUESTION_GOALS,
@@ -38,17 +40,35 @@ import {
 	USER_INPUT_QUESTION_SEARCH_TERMS,
 	getUserInputAnwsers,
 } from './util/constants';
+import useQueryArg from '../../hooks/useQueryArg';
+import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+const { useSelect } = Data;
 
 export default function UserInputQuestionnaire() {
-	const [ activeSlug, setActiveSlug ] = useState( USER_INPUT_QUESTION_ROLE );
+	const steps = [ ...USER_INPUT_QUESTIONS_LIST, 'preview' ];
 
-	const questions = [
-		USER_INPUT_QUESTION_ROLE,
-		USER_INPUT_QUESTION_POST_FREQUENCY,
-		USER_INPUT_QUESTION_GOALS,
-		USER_INPUT_QUESTION_HELP_NEEDED,
-		USER_INPUT_QUESTION_SEARCH_TERMS,
-	];
+	const [ activeSlug, setActiveSlug ] = useQueryArg( 'question', steps[ 0 ] );
+	const [ redirectURL ] = useQueryArg( 'redirect_url' );
+
+	const activeSlugIndex = steps.indexOf( activeSlug );
+
+	if ( activeSlugIndex === -1 ) {
+		setActiveSlug( steps[ 0 ] );
+	}
+
+	const answeredUntilIndex = useSelect( ( select ) => {
+		const userInputSettings = select( CORE_USER ).getUserInputSettings();
+		return USER_INPUT_QUESTIONS_LIST.findIndex( ( question ) => userInputSettings[ question ].values.length === 0 );
+	} );
+
+	useEffect( () => {
+		if ( answeredUntilIndex === -1 ) {
+			return;
+		}
+		if ( activeSlugIndex > answeredUntilIndex ) {
+			setActiveSlug( steps[ answeredUntilIndex ] );
+		}
+	}, [ answeredUntilIndex, activeSlugIndex ] );
 
 	const {
 		USER_INPUT_ANSWERS_GOALS,
@@ -56,9 +76,6 @@ export default function UserInputQuestionnaire() {
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
 		USER_INPUT_ANSWERS_ROLE,
 	} = getUserInputAnwsers();
-
-	const steps = [ ...questions, 'preview' ];
-	const activeSlugIndex = steps.indexOf( activeSlug );
 
 	const next = useCallback( () => {
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );
@@ -80,7 +97,7 @@ export default function UserInputQuestionnaire() {
 			<ProgressBar
 				height={ 0 }
 				indeterminate={ false }
-				progress={ ( activeSlugIndex + 1 ) / questions.length }
+				progress={ ( activeSlugIndex + 1 ) / USER_INPUT_QUESTIONS_LIST.length }
 			/>
 
 			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_ROLE ) && (
@@ -171,7 +188,11 @@ export default function UserInputQuestionnaire() {
 			) }
 
 			{ activeSlug === 'preview' && (
-				<UserInputPreview back={ back } goTo={ goTo } />
+				<UserInputPreview
+					back={ back }
+					goTo={ goTo }
+					redirectURL={ redirectURL }
+				/>
 			) }
 		</Fragment>
 	);
