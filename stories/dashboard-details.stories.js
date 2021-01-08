@@ -31,7 +31,7 @@ import { removeAllFilters } from '@wordpress/hooks';
  */
 import { provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import DashboardDetailsApp from '../assets/js/components/dashboard-details/dashboard-details-app';
+import DashboardDetailsApp from '../assets/js/components/dashboard-details/DashboardDetailsApp';
 import { enableFeature } from './utils/features';
 
 storiesOf( 'Dashboard Details', module )
