@@ -56,8 +56,30 @@ const SettingsAdmin = () => {
 				<Cell size={ 12 }>
 					{ isUserInputCompleted && (
 						<Layout>
-							<div className="googlesitekit-module-page googlesitekit-settings-user-input">
-								<UserInputPreview goTo={ goTo } noFooter />
+							<div className="
+								googlesitekit-settings-module
+								googlesitekit-settings-module--active
+								googlesitekit-settings-user-input
+							">
+								<div className="mdc-layout-grid">
+									<div className="mdc-layout-grid__inner">
+										<div className="
+											mdc-layout-grid__cell
+											mdc-layout-grid__cell--span-12
+										">
+											<h3 className="
+												googlesitekit-heading-4
+												googlesitekit-settings-module__title
+											">
+												{ __( 'Your site goals', 'google-site-kit' ) }
+											</h3>
+											<p>
+												{ __( 'Based on your responses, Site Kit will show you metrics and suggestions that are specific to your site to help you achieve your goals', 'google-site-kit' ) }
+											</p>
+										</div>
+									</div>
+									<UserInputPreview goTo={ goTo } noFooter />
+								</div>
 							</div>
 						</Layout>
 					) }
