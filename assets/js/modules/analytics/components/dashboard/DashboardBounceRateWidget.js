@@ -32,13 +32,13 @@ import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
-import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import { calculateChange } from '../../../../util';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
+import ActivateModuleCTA from '../../../../components/ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../../../../components/CompleteModuleActivationCTA';
 
 const { useSelect } = Data;
@@ -160,6 +160,6 @@ function DashboardBounceRateWidget() {
 
 export default whenActive( {
 	moduleName: 'analytics',
-	FallbackComponent: () => <AnalyticsInactiveCTA />,
+	FallbackComponent: () => <ActivateModuleCTA moduleSlug="analytics" />,
 	IncompleteComponent: () => <CompleteModuleActivationCTA moduleSlug="analytics" />,
 } )( DashboardBounceRateWidget );

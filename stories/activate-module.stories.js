@@ -57,4 +57,22 @@ storiesOf( 'Global', module )
 			postInteractionWait: 3000, // Wait for shadows to animate.
 			onReadyScript: 'mouse.js',
 		},
+	} )
+	.add( 'Analytics Inactive CTA', () => {
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( CORE_USER ).receiveCapabilities( {
+				[ PERMISSION_MANAGE_OPTIONS ]: true,
+			} );
+			dispatch( CORE_MODULES ).receiveGetModules( [
+				{
+					slug: 'analytics',
+					name: 'Analytics',
+				},
+			] );
+		};
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<ActivateModuleCTA moduleSlug="analytics" />
+			</WithTestRegistry>
+		);
 	} );

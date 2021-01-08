@@ -65,6 +65,24 @@ const ActivateModuleCTA = ( { moduleSlug, title, description } ) => {
 		return null;
 	}
 
+	// Special-cases for default title and description.
+	// TODO: Solve these in a more appropriate way, e.g. by updating module registration data.
+	switch ( moduleSlug ) {
+		case 'analytics':
+			if ( ! title ) {
+				title = __( 'Learn more about what visitors do on your site.', 'google-site-kit' );
+			}
+			if ( ! description ) {
+				description = __( 'Connect with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' );
+			}
+			break;
+		case 'pagespeed-insights':
+			if ( ! description ) {
+				description = __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA.', 'google-site-kit' );
+			}
+			break;
+	}
+
 	return (
 		<CTA
 			title={

@@ -31,7 +31,7 @@ import { STORE_NAME as MODULES_STORE } from '../../../../googlesitekit/modules/d
 import { STORE_NAME as USER_STORE, PERMISSION_MANAGE_OPTIONS } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
-function DashboardPageSpeedCTA() {
+function LegacyDashboardPageSpeedCTA() {
 	const pagespeedInsightsModule = useSelect( ( select ) => select( MODULES_STORE ).getModule( 'pagespeed-insights' ) );
 	const canManageOptions = useSelect( ( select ) => select( USER_STORE ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 
@@ -71,4 +71,4 @@ function DashboardPageSpeedCTA() {
 	);
 }
 
-export default DashboardPageSpeedCTA;
+export default LegacyDashboardPageSpeedCTA;

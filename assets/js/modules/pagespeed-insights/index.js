@@ -33,7 +33,7 @@ import { getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
 import { SettingsView } from './components/settings';
 import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
-import DashboardPageSpeedCTA from './components/dashboard/DashboardPageSpeedCTA';
+import LegacyDashboardPageSpeedCTA from './components/dashboard/LegacyDashboardPageSpeedCTA';
 import LegacyDashboardSpeed from './components/dashboard/LegacyDashboardSpeed';
 import PageSpeedInsightsIcon from '../../../svg/pagespeed-insights.svg';
 
@@ -63,7 +63,7 @@ if ( active && setupComplete ) {
 	addFilter(
 		'googlesitekit.DashboardModule',
 		'googlesitekit.PageSpeedInsights',
-		createAddToFilter( <DashboardPageSpeedCTA /> ),
+		createAddToFilter( <LegacyDashboardPageSpeedCTA /> ),
 		45
 	);
 }
