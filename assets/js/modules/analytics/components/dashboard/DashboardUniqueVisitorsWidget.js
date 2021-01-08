@@ -34,14 +34,13 @@ import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import { calculateChange } from '../../../../util';
 import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import { isZeroReport } from '../../util';
 
 const { useSelect } = Data;
 
-function DashboardUniqueVisitorsWidget() {
+function DashboardUniqueVisitorsWidget( { WidgetReportZero } ) {
 	const {
 		loading,
 		error,
@@ -122,7 +121,7 @@ function DashboardUniqueVisitorsWidget() {
 	}
 
 	if ( isZeroReport( sparkData ) || isZeroReport( visitorsData ) ) {
-		return <ReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	const sparkLineData = [

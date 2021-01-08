@@ -27,7 +27,6 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import PreviewTable from '../../../../components/PreviewTable';
-import ReportZero from '../../../../components/ReportZero';
 import ReportError from '../../../../components/ReportError';
 import AcquisitionPieChart from '../common/AcquisitionPieChart';
 import AcquisitionSources from '../common/AcquisitionSources';
@@ -35,7 +34,7 @@ import { isZeroReport } from '../../util';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
-function DashboardAllTrafficWidget() {
+function DashboardAllTrafficWidget( { WidgetReportZero } ) {
 	const {
 		loading,
 		report,
@@ -107,7 +106,7 @@ function DashboardAllTrafficWidget() {
 				mdc-layout-grid__cell
 				mdc-layout-grid__cell--span-12
 			">
-				<ReportZero moduleSlug="analytics" />
+				<WidgetReportZero moduleSlug="analytics" />
 			</div>
 		);
 	}

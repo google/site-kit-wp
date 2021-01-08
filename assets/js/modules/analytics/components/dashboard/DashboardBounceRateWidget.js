@@ -35,13 +35,12 @@ import Sparkline from '../../../../components/Sparkline';
 import { calculateChange } from '../../../../util';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 
 const { useSelect } = Data;
 
-function DashboardBounceRateWidget() {
+function DashboardBounceRateWidget( { WidgetReportZero } ) {
 	const {
 		data,
 		error,
@@ -104,7 +103,7 @@ function DashboardBounceRateWidget() {
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	const sparkLineData = [

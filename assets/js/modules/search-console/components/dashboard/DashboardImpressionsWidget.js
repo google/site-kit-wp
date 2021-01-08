@@ -37,13 +37,12 @@ import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
 import sumObjectListValue from '../../../../util/sum-object-list-value';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
 const { useSelect } = Data;
 
-function DashboardImpressionsWidget() {
+function DashboardImpressionsWidget( { WidgetReportZero } ) {
 	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
@@ -89,7 +88,7 @@ function DashboardImpressionsWidget() {
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="search-console" />;
+		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
 	// Split the data in two chunks.

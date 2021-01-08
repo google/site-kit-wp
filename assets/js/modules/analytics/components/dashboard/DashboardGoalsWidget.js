@@ -37,11 +37,10 @@ import { calculateChange } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
 
 const { useSelect } = Data;
 
-function DashboardGoalsWidget() {
+function DashboardGoalsWidget( { WidgetReportZero } ) {
 	const {
 		data,
 		error,
@@ -113,7 +112,7 @@ function DashboardGoalsWidget() {
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	const sparkLineData = [
