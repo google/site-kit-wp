@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
@@ -37,6 +37,7 @@ import ProgressBar from '../../../../components/ProgressBar';
 import { trackEvent } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import {
@@ -55,6 +56,7 @@ export default function SetupMain( { finishSetup } ) {
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
+	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
 
 	const { hasGTMAnalyticsPropertyID, hasGTMAnalyticsPropertyIDPermission } = useSelect( ( select ) => {
 		const gtmPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
@@ -66,13 +68,6 @@ export default function SetupMain( { finishSetup } ) {
 
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
-
-	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
-	const [ isNavigating, setIsNavigating ] = useState( false );
-	const finishSetupAndNavigate = ( ...args ) => {
-		finishSetup( ...args );
-		setIsNavigating( true );
-	};
 
 	useEffect( () => {
 		trackEvent( 'analytics_setup', 'configure_analytics_screen' );
@@ -92,7 +87,7 @@ export default function SetupMain( { finishSetup } ) {
 	} else if ( isCreateAccount || ( Array.isArray( accounts ) && ! accounts.length ) ) {
 		viewComponent = usingProxy ? <AccountCreate /> : <AccountCreateLegacy />;
 	} else {
-		viewComponent = <SetupForm finishSetup={ finishSetupAndNavigate } />;
+		viewComponent = <SetupForm finishSetup={ finishSetup } />;
 	}
 
 	return (

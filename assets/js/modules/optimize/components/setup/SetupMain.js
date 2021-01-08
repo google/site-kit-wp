@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
@@ -35,23 +34,18 @@ import OptimizeIcon from '../../../../../svg/optimize.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
-
-	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
-	const [ isNavigating, setIsNavigating ] = useState( false );
-	const finishSetupAndNavigate = ( ...args ) => {
-		finishSetup( ...args );
-		setIsNavigating( true );
-	};
+	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
 
 	let viewComponent;
 	if ( isDoingSubmitChanges || isNavigating ) {
 		viewComponent = <ProgressBar />;
 	} else {
-		viewComponent = <SetupForm finishSetup={ finishSetupAndNavigate } />;
+		viewComponent = <SetupForm finishSetup={ finishSetup } />;
 	}
 
 	return (
