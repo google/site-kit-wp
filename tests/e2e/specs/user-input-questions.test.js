@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { visitAdminPage } from '@wordpress/e2e-test-utils';
+import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
@@ -29,6 +29,9 @@ import { deactivateUtilityPlugins, resetSiteKit, setupSiteKit } from '../utils';
 describe( 'User Input Settings', () => {
 	beforeEach( async () => {
 		await setupSiteKit();
+		await activatePlugin( 'e2e-tests-auth-plugin' );
+		await activatePlugin( 'e2e-tests-site-verification-plugin' );
+		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 	} );
 
 	afterEach( async () => {
@@ -38,5 +41,6 @@ describe( 'User Input Settings', () => {
 
 	it( 'New user flow', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+		await page.click( '.googlesitekit-start-setup' );
 	} );
 } );
