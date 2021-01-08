@@ -1,29 +1,26 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Admin\PluginRowMeta
+ * Class Google\Site_Kit\Core\Admin\Plugin_Row_Meta
  *
  * @package   Google\Site_Kit
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
 namespace Google\Site_Kit\Core\Admin;
 
-use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Assets\Stylesheet;
-
 /**
- * Class managing Plugin Row Meta
+ * Class for managing plugin row meta.
  *
  * @since n.e.x.t
  * @access private
  * @ignore
  */
-final class PluginRowMeta {
+class Plugin_Row_Meta {
 
 	/**
-	 * Add Plugin Row Meta
+	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -42,11 +39,11 @@ final class PluginRowMeta {
 	}
 
 	/**
-	 * Builds an array of anchor elements to be shown in the plugin row
+	 * Builds an array of anchor elements to be shown in the plugin row.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array of HTML as string
+	 * @return string[] Array of links as HTML strings.
 	 */
 	private function get_plugin_row_meta() {
 		return array(
