@@ -104,11 +104,11 @@ describe( 'googlesitekit.api.cache', () => {
 
 			it( 'should return undefined when the key is found but the cached value is too old', async () => {
 				// Save with a timestamp ten seconds in the past.
-				const didSave = await setItem( 'old-key', 'something', Math.round( Date.now() / 1000 ) - 10 );
+				const didSave = await setItem( 'old-key', 'something', { timestamp: ( Math.round( Date.now() / 1000 ) - 10 ), ttl: 5 } );
 				expect( didSave ).toEqual( true );
 
 				// Only return if the cache hit is less than five seconds old.
-				const result = await getItem( 'old-key', 5 );
+				const result = await getItem( 'old-key' );
 
 				expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }old-key` );
 				expect( result.cacheHit ).toEqual( false );
@@ -116,10 +116,10 @@ describe( 'googlesitekit.api.cache', () => {
 			} );
 
 			it( 'should return the value when the key is found and the data is not stale', async () => {
-				const didSave = await setItem( 'modern-key', 'something' );
+				const didSave = await setItem( 'modern-key', 'something', { ttl: 100 } );
 				expect( didSave ).toEqual( true );
 
-				const result = await getItem( 'modern-key', 100 );
+				const result = await getItem( 'modern-key' );
 
 				expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }modern-key` );
 				expect( result.cacheHit ).toEqual( true );
@@ -127,10 +127,10 @@ describe( 'googlesitekit.api.cache', () => {
 			} );
 
 			it( 'should not return data from the legacy cache', async () => {
-				const didSave = await setItem( 'modern-key', 'something' );
+				const didSave = await setItem( 'modern-key', 'something', { ttl: 100 } );
 				expect( didSave ).toEqual( true );
 
-				const result = await getItem( 'modern-key', 100 );
+				const result = await getItem( 'modern-key' );
 
 				expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }modern-key` );
 				expect( result.cacheHit ).toEqual( true );
@@ -233,10 +233,12 @@ describe( 'googlesitekit.api.cache', () => {
 				// We specify a manual timestamp here to ensure the entire call to
 				// `setItem` can be verified. If we don't set a timestamp manually,
 				// it's obnoxious to test this :-)
-				const didSave = await setItem( 'array', [ 1, 2, 3 ], 500 );
+				const didSave = await setItem( 'array', [ 1, 2, 3 ], { timestamp: 500 } );
 				const storedData = JSON.stringify( {
 					timestamp: 500,
+					ttl: 3600,
 					value: [ 1, 2, 3 ],
+					isError: false,
 				} );
 
 				expect( didSave ).toEqual( true );
