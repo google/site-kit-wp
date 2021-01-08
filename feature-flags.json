@@ -5,6 +5,9 @@
     },
     "pageDashboard": {
       "enabled": "development"
+    },
+    "adminBar": {
+      "enabled": "development"
     }
   },
   "userInput": {

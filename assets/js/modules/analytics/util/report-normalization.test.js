@@ -89,4 +89,59 @@ describe( 'normalizeReportOptions', () => {
 			] );
 		} );
 	} );
+
+	describe( 'dimensions', () => {
+		it( 'normalizes no dimensions into an empty array', () => {
+			expect( normalizeReportOptions() ).toMatchObject( { dimensions: [] } );
+			expect( normalizeReportOptions( {} ) ).toMatchObject( { dimensions: [] } );
+		} );
+
+		it( 'normalizes single string dimensions into an array of objects', () => {
+			const { dimensions } = normalizeReportOptions( { dimensions: 'foo' } );
+
+			expect( dimensions ).toEqual( [ { name: 'foo' } ] );
+		} );
+
+		it( 'normalizes an array of strings into an array of objects', () => {
+			const { dimensions } = normalizeReportOptions( { dimensions: [ 'foo', 'bar' ] } );
+
+			expect( dimensions ).toEqual( [
+				{ name: 'foo' },
+				{ name: 'bar' },
+			] );
+		} );
+
+		it( 'normalizes a single dimension object into an array of objects', () => {
+			const options = { dimensions: { name: 'foo' } };
+			const { dimensions } = normalizeReportOptions( options );
+
+			expect( dimensions ).toEqual( [
+				{ name: 'foo' },
+			] );
+		} );
+
+		it( 'normalizes an array of objects into the same values', () => {
+			const options = { dimensions: [
+				{ name: 'foo' },
+				{ name: 'bar' },
+			] };
+			const { dimensions } = normalizeReportOptions( options );
+			expect( dimensions ).toEqual( [
+				{ name: 'foo' },
+				{ name: 'bar' },
+			] );
+		} );
+
+		it( 'normalizes an array of strings and objects into an array of objects', () => {
+			const options = { dimensions: [
+				{ name: 'foo' },
+				'bar',
+			] };
+			const { dimensions } = normalizeReportOptions( options );
+			expect( dimensions ).toEqual( [
+				{ name: 'foo' },
+				{ name: 'bar' },
+			] );
+		} );
+	} );
 } );
