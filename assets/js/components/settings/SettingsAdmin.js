@@ -40,7 +40,7 @@ import UserInputSettings from '../notifications/UserInputSettings';
 const { useSelect } = Data;
 
 const SettingsAdmin = () => {
-	const isUserInputCompleted = useSelect( ( select ) => select( CORE_USER ).getUserInputState() === 'completed' );
+	const isUserInputCompleted = useSelect( ( select ) => featureFlags.userInput.enabled && select( CORE_USER ).getUserInputState() === 'completed' );
 	const userInputURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
 
 	const goTo = ( questionIndex = 1 ) => {
