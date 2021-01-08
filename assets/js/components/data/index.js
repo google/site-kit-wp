@@ -202,27 +202,25 @@ const dataAPI = {
 					return;
 				}
 
-				const isError = isWPError( response );
+				if ( isWPError( response ) ) {
+					// These variables will be the same for each request so use the first.
+					const { datapoint, type, identifier } = keyIndexesMap[ requestKey ][ 0 ];
 
-				if ( ! isError ) {
+					this.handleWPError( {
+						method: 'POST',
+						datapoint,
+						type,
+						identifier,
+						error: response,
+					} );
+				} else {
 					setCache( requestKey, response );
 				}
+
 				// Each request is only made once, but may have been requested more than once.
 				// Iterate over each request object for the key to resolve it.
 				keyIndexesMap[ requestKey ].forEach( ( requestIndex ) => {
 					const request = dataRequest[ requestIndex ];
-
-					if ( isError ) {
-						const { datapoint, type, identifier } = request;
-
-						this.handleWPError( {
-							method: 'POST',
-							datapoint,
-							type,
-							identifier,
-							error: response,
-						} );
-					}
 
 					this.resolve( request, response );
 				} );
