@@ -61,7 +61,7 @@ function isDependencyBlock( jsdoc ) {
 }
 
 function isImported( node ) {
-	if ( ! node || ! node.type ) {
+	if ( ! node?.type ) {
 		return false;
 	}
 
@@ -73,7 +73,7 @@ function isImported( node ) {
 		'ImportDeclaration',
 	];
 
-	if ( importTypes.includes( node.type ) || importTypes.includes( node?.parent?.type ) ) {
+	if ( importTypes.includes( node.type ) || importTypes.includes( node.parent?.type ) ) {
 		return true;
 	}
 
@@ -83,10 +83,7 @@ function isImported( node ) {
 		}
 	}
 
-	if (
-		node.declarations &&
-		node.declarations.length
-	) {
+	if ( node.declarations?.length ) {
 		const hasImportedDeclarations = node.specifiers.some( ( importedNode ) => {
 			return isImported( importedNode );
 		} );
@@ -96,9 +93,7 @@ function isImported( node ) {
 		}
 	}
 
-	if (
-		node.declaration
-	) {
+	if ( node.declaration ) {
 		return isImported( node.declaration );
 	}
 
