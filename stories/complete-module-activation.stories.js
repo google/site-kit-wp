@@ -48,7 +48,7 @@ storiesOf( 'Global', module )
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<CompleteModuleActivationCTA slug="tagmanager" />
+				<CompleteModuleActivationCTA moduleSlug="tagmanager" />
 			</WithTestRegistry>
 		);
 	}, {

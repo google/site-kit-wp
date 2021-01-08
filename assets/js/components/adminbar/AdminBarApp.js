@@ -104,7 +104,7 @@ export default function AdminBarApp() {
 											) }
 
 											{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
-												<CompleteModuleActivationCTA slug="analytics" />
+												<CompleteModuleActivationCTA moduleSlug="analytics" />
 											) }
 										</div>
 									) }

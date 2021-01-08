@@ -56,13 +56,13 @@ function DashboardPageSpeedCTA() {
 				( ! active )
 					? (
 						<ActivateModuleCTA
-							slug="pagespeed-insights"
+							moduleSlug="pagespeed-insights"
 							description={ description }
 						/>
 					)
 					: (
 						<CompleteModuleActivationCTA
-							slug="pagespeed-insights"
+							moduleSlug="pagespeed-insights"
 							description={ description }
 						/>
 					)

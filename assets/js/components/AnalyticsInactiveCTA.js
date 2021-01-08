@@ -39,7 +39,7 @@ function AnalyticsInactiveCTA( props ) {
 
 	return (
 		<ActivateModuleCTA
-			slug="analytics"
+			moduleSlug="analytics"
 			title={ title }
 			description={ description }
 		/>

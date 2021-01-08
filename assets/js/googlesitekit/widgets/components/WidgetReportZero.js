@@ -35,6 +35,7 @@ import ReportZero from '../../../components/ReportZero';
 
 const { useDispatch } = Data;
 
+// The supported props must match `ReportZero` (except `widgetSlug`).
 export default function WidgetReportZero( { widgetSlug, moduleSlug, ...props } ) {
 	const { setWidgetState, unsetWidgetState } = useDispatch( STORE_NAME );
 

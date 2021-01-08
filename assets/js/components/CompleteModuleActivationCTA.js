@@ -36,9 +36,9 @@ import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesit
 import { STORE_NAME as MODULES_STORE } from '../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
-const CompleteModuleActivationCTA = ( { slug, title, description } ) => {
-	const module = useSelect( ( select ) => select( MODULES_STORE ).getModule( slug ) );
-	const adminReauthURL = useSelect( ( select ) => select( `modules/${ slug }` )?.getAdminReauthURL() );
+const CompleteModuleActivationCTA = ( { moduleSlug, title, description } ) => {
+	const module = useSelect( ( select ) => select( MODULES_STORE ).getModule( moduleSlug ) );
+	const adminReauthURL = useSelect( ( select ) => select( `modules/${ moduleSlug }` )?.getAdminReauthURL() );
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 
 	const onCTAClick = useCallback( async () => {
@@ -81,7 +81,7 @@ const CompleteModuleActivationCTA = ( { slug, title, description } ) => {
 };
 
 CompleteModuleActivationCTA.propTypes = {
-	slug: PropTypes.string.isRequired,
+	moduleSlug: PropTypes.string.isRequired,
 	title: PropTypes.string,
 	description: PropTypes.string,
 };

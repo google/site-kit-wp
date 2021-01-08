@@ -35,18 +35,19 @@ import CompleteModuleActivationCTA from '../../../components/CompleteModuleActiv
 
 const { useDispatch } = Data;
 
+// The supported props must match `CompleteModuleActivationCTA` (except `widgetSlug`).
 export default function WidgetCompleteModuleActivationCTA( { widgetSlug, moduleSlug, ...props } ) {
 	const { setWidgetState, unsetWidgetState } = useDispatch( STORE_NAME );
 
 	useEffect( () => {
-		const metadata = { slug: moduleSlug };
+		const metadata = { moduleSlug };
 		setWidgetState( widgetSlug, CompleteModuleActivationCTA, metadata );
 		return () => {
 			unsetWidgetState( widgetSlug, CompleteModuleActivationCTA, metadata );
 		};
 	}, [ widgetSlug, moduleSlug ] );
 
-	return <CompleteModuleActivationCTA slug={ moduleSlug } { ...props } />;
+	return <CompleteModuleActivationCTA moduleSlug={ moduleSlug } { ...props } />;
 }
 
 WidgetCompleteModuleActivationCTA.propTypes = {

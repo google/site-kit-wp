@@ -40,19 +40,19 @@ import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesit
 import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
-const ActivateModuleCTA = ( { slug, title, description } ) => {
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
+const ActivateModuleCTA = ( { moduleSlug, title, description } ) => {
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 	const { activateModule } = useDispatch( CORE_MODULES );
 
 	const onCTAClick = useCallback( async () => {
-		const { error, response } = await activateModule( slug );
+		const { error, response } = await activateModule( moduleSlug );
 
 		if ( ! error ) {
 			global.location.assign( response.moduleReauthURL );
 		} else {
 			showErrorNotification( GenericError, {
-				id: `${ slug }-setup-error`,
+				id: `${ moduleSlug }-setup-error`,
 				title: __( 'Internal Server Error', 'google-site-kit' ),
 				description: error.message,
 				format: 'small',
@@ -94,7 +94,7 @@ const ActivateModuleCTA = ( { slug, title, description } ) => {
 };
 
 ActivateModuleCTA.propTypes = {
-	slug: PropTypes.string.isRequired,
+	moduleSlug: PropTypes.string.isRequired,
 	title: PropTypes.string,
 	description: PropTypes.string,
 };
