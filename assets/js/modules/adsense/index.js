@@ -25,7 +25,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import store from './datastore';
 import { AREA_DASHBOARD_EARNINGS } from '../../googlesitekit/widgets/default-areas';
 import { fillFilterWithComponent } from '../../util';
 import { SetupMain } from './components/setup';
@@ -42,6 +41,7 @@ import {
 import AdSenseIcon from '../../../svg/adsense.svg';
 import { STORE_NAME } from './datastore/constants';
 import { ERROR_CODE_ADBLOCKER_ACTIVE } from './constants';
+import { registerStore as registerDataStore } from './datastore';
 
 addFilter(
 	'googlesitekit.AdSenseDashboardZeroData',
@@ -52,7 +52,7 @@ addFilter(
 let isAdBlockerActive = () => {};
 
 export const registerStore = ( Data ) => {
-	Data.registerStore( STORE_NAME, store );
+	registerDataStore( Data );
 	// TODO: fix hack
 	isAdBlockerActive = () => Data.select( STORE_NAME ).isAdBlockerActive();
 };

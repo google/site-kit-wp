@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import store from './datastore';
 import { SettingsView } from './components/settings';
 import DashboardImpressionsWidget from './components/dashboard/DashboardImpressionsWidget';
 import DashboardClicksWidget from './components/dashboard/DashboardClicksWidget';
@@ -31,11 +30,9 @@ import {
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/search-console.svg';
-import { STORE_NAME } from './datastore/constants';
 
-export const registerStore = ( Data ) => {
-	Data.registerStore( STORE_NAME, store );
-};
+export { registerStore } from './datastore';
+
 export const registerModule = ( Modules ) => {
 	Modules.registerModule(
 		'search-console',

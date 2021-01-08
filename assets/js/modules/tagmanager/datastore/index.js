@@ -48,4 +48,8 @@ export const {
 	selectors,
 } = store;
 
+export const registerStore = ( registry ) => {
+	registry.registerStore( STORE_NAME, store );
+};
+
 export default store;

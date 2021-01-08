@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import store from './datastore';
 import {
 	AREA_DASHBOARD_ALL_TRAFFIC,
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
@@ -36,11 +35,9 @@ import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqu
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
 import AnalyticsIcon from '../../../svg/analytics.svg';
 import DashboardAllTrafficWidgetV2 from './components/dashboard/DashboardAllTrafficWidgetV2';
-import { STORE_NAME } from './datastore/constants';
 
-export const registerStore = ( Data ) => {
-	Data.registerStore( STORE_NAME, store );
-};
+export { registerStore } from './datastore';
+
 export const registerModule = ( Modules ) => {
 	Modules.registerModule(
 		'analytics',

@@ -24,7 +24,6 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import store from './datastore';
 import { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-areas';
 import { getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
@@ -33,7 +32,8 @@ import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedW
 import DashboardPageSpeedCTA from './components/dashboard/DashboardPageSpeedCTA';
 import LegacyDashboardSpeed from './components/dashboard/LegacyDashboardSpeed';
 import PageSpeedInsightsIcon from '../../../svg/pagespeed-insights.svg';
-import { STORE_NAME } from './datastore/constants';
+
+export { registerStore } from './datastore';
 
 const {
 	active,
@@ -66,9 +66,6 @@ if ( active && setupComplete ) {
 	);
 }
 
-export const registerStore = ( Data ) => {
-	Data.registerStore( STORE_NAME, store );
-};
 export const registerModule = ( Modules ) => {
 	Modules.registerModule(
 		'pagespeed-insights',
