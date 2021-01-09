@@ -4,7 +4,7 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-function ChangeArrow( { direction, invertColor } ) {
+function ChangeArrow( { direction, invertColor, width, height } ) {
 	return (
 		<svg
 			className={ classnames(
@@ -12,8 +12,8 @@ function ChangeArrow( { direction, invertColor } ) {
 				`googlesitekit-change-arrow--${ direction }`,
 				{ 'googlesitekit-change-arrow--inverted-color': invertColor }
 			) }
-			width="9"
-			height="9"
+			width={ width }
+			height={ height }
 			viewBox="0 0 10 10"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
@@ -29,11 +29,15 @@ function ChangeArrow( { direction, invertColor } ) {
 ChangeArrow.propTypes = {
 	direction: PropTypes.string,
 	invertColor: PropTypes.bool,
+	width: PropTypes.number,
+	height: PropTypes.number,
 };
 
 ChangeArrow.defaultProps = {
 	direction: 'up',
 	invertColor: false,
+	width: 9,
+	height: 9,
 };
 
 export default ChangeArrow;
