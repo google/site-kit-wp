@@ -40,10 +40,6 @@ export default function UserInputApp() {
 		hasFinishedGettingInputSettings: select( CORE_USER ).hasFinishedResolution( 'getUserInputSettings' ),
 	} ) );
 
-	if ( ! featureFlags.userInput.enabled ) {
-		return <div>{ __( 'Something went wrong.', 'google-site-kit' ) }</div>;
-	}
-
 	return (
 		<Fragment>
 			<Header />

@@ -1081,10 +1081,6 @@ final class Authentication {
 	 * @since 1.22.0
 	 */
 	private function require_user_input() {
-		if ( ! Feature_Flags::enabled( 'userInput' ) ) {
-			return;
-		}
-
 		if ( User_Input_State::VALUE_COMPLETED !== $this->user_input_state->get() ) {
 			$this->user_input_state->set( User_Input_State::VALUE_REQUIRED );
 			// Set the `mode` query parameter in the proxy setup URL.
