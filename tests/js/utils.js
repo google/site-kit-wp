@@ -16,7 +16,16 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
 import coreSiteStore from '../../assets/js/googlesitekit/datastore/site';
 import { STORE_NAME as CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import coreUserStore from '../../assets/js/googlesitekit/datastore/user';
-import { STORE_NAME as CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
+import {
+	PERMISSION_AUTHENTICATE,
+	PERMISSION_SETUP,
+	PERMISSION_VIEW_POSTS_INSIGHTS,
+	PERMISSION_VIEW_DASHBOARD,
+	PERMISSION_VIEW_MODULE_DETAILS,
+	PERMISSION_MANAGE_OPTIONS,
+	PERMISSION_PUBLISH_POSTS,
+	STORE_NAME as CORE_USER,
+} from '../../assets/js/googlesitekit/datastore/user/constants';
 import coreFormsStore from '../../assets/js/googlesitekit/datastore/forms';
 import { STORE_NAME as CORE_FORMS } from '../../assets/js/googlesitekit/datastore/forms/constants';
 import coreModulesStore from '../../assets/js/googlesitekit/modules/datastore';
@@ -221,6 +230,32 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
 	};
 
 	registry.dispatch( CORE_USER ).receiveUserInfo( {
+		...defaults,
+		...extraData,
+	} );
+};
+
+/**
+ * Provides user capabilities data to the given registry.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {Object} registry    Registry object to dispatch to.
+ * @param {Object} [extraData] Custom capability mappings to set, will be merged with defaults. Default empty object.
+ */
+export const provideUserCapabilities = ( registry, extraData = {} ) => {
+	const defaults = {
+		[ PERMISSION_AUTHENTICATE ]: true,
+		[ PERMISSION_SETUP ]: true,
+		[ PERMISSION_VIEW_POSTS_INSIGHTS ]: true,
+		[ PERMISSION_VIEW_DASHBOARD ]: true,
+		[ PERMISSION_VIEW_MODULE_DETAILS ]: true,
+		[ PERMISSION_MANAGE_OPTIONS ]: true,
+		[ PERMISSION_PUBLISH_POSTS ]: true,
+	};
+
+	registry.dispatch( CORE_USER ).receiveCapabilities( {
 		...defaults,
 		...extraData,
 	} );
