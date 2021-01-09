@@ -18,3 +18,4 @@
 
 export * from './get-widget-layout';
 export * from './combine-widgets';
+export * from './get-widget-component-props';

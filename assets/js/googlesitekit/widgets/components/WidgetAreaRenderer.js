@@ -28,7 +28,7 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, WIDGET_AREA_STYLES } from '../datastore/constants';
 import WidgetRenderer from './WidgetRenderer';
-import { getWidgetLayout, combineWidgets } from '../util';
+import { getWidgetLayout, combineWidgets, getWidgetComponentProps } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
 const { useSelect } = Data;
 
@@ -47,14 +47,19 @@ export default function WidgetAreaRenderer( { slug } ) {
 		};
 	} );
 
+	// TODO: Solve this in a better way.
 	const activeWidgets = widgets.filter( ( widget ) => {
 		const widgetExists = widgets.some( ( item ) => item.slug === widget.slug );
 		const isComponent = typeof widget.Component === 'function';
-		const isActive = 	widget.Component.prototype.render
-			? new widget.Component( {} ).render()
-			: widget.Component( {} );
+		if ( ! widgetExists || ! isComponent ) {
+			return false;
+		}
+		const widgetComponentProps = getWidgetComponentProps( widget.slug );
+		const isActive = widget.Component.prototype.render
+			? new widget.Component( widgetComponentProps ).render()
+			: widget.Component( widgetComponentProps );
 
-		return widgetExists && isComponent && Boolean( isActive );
+		return Boolean( isActive );
 	} );
 
 	if ( activeWidgets.length === 0 ) {
