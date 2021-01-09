@@ -47,6 +47,7 @@ const SettingsAdmin = () => {
 		global.location.assign( addQueryArgs( userInputURL, {
 			question: USER_INPUT_QUESTIONS_LIST[ questionIndex - 1 ],
 			redirect_url: global.location.href,
+			single: 'settings', // Allows the user to edit a single question then return to the settings page.
 		} ) );
 	};
 
