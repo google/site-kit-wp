@@ -89,11 +89,10 @@ const compatibilityChecks = [
 	},
 ];
 
-export default function CompatibilityChecks( props ) {
+export default function CompatibilityChecks( { children, ...props } ) {
 	const { complete, error } = useChecks( compatibilityChecks );
 	let CTAFeedback;
 	let inProgressFeedback;
-	const { children, ...restProps } = props;
 
 	if ( error ) {
 		CTAFeedback = <Fragment>
@@ -118,7 +117,7 @@ export default function CompatibilityChecks( props ) {
 	}
 
 	return children( {
-		restProps,
+		props,
 		complete,
 		error,
 		inProgressFeedback,
