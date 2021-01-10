@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -124,3 +129,7 @@ export default function CompatibilityChecks( { children, ...props } ) {
 		CTAFeedback,
 	} );
 }
+
+CompatibilityChecks.propTypes = {
+	children: PropTypes.func.isRequired,
+};
