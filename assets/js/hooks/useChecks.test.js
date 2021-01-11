@@ -35,7 +35,7 @@ describe( 'useChecks', () => {
 		expect( result.current ).toStrictEqual( { complete: true, error: undefined } );
 	} );
 
-	it( 'should return { complete:true, error: "error2" } when first error is encountered.', async () => {
+	it( 'returns the first error thrown by a check', async () => {
 		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 		const checks = [
 			async () => true,
