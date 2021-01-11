@@ -92,6 +92,7 @@ describe( 'CompatibilityChecks', () => {
 			expect( getByText( container, 'Your site may not be ready for Site Kit' ) ).toBeInTheDocument();
 		} );
 
+		// Expect a Google Site Kit API Error.
 		expect( console ).toHaveErrored();
 	} );
 
