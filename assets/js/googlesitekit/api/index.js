@@ -78,6 +78,13 @@ export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) 
 	return keySections.join( KEY_SEPARATOR );
 };
 
+/**
+ * Dispatches an error to the store, whether it's a permission or auth error.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} error Error object to dispatch.
+ */
 export const dispatchAPIError = ( error ) => {
 	// Check to see if this error was a `ERROR_CODE_MISSING_REQUIRED_SCOPE` error;
 	// if so and there is a data store available to dispatch on, dispatch a
