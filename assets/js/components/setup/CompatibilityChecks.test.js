@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import CompatibilityChecks, { AMP_PROJECT_TEST_URL } from './CompatibilityChecks';
-import { render, waitFor, act } from '../../../../tests/js/test-utils';
+import { render, waitFor, getByText, act } from '../../../../tests/js/test-utils';
 import { Fragment } from 'react';
 import { muteFetch } from '../../../../tests/js/utils';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -88,11 +88,10 @@ describe( 'CompatibilityChecks', () => {
 		);
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 5 );
+			// Warning message shows after the compatibility checks run.
+			expect( getByText( container, 'Your site may not be ready for Site Kit' ) ).toBeInTheDocument();
 		} );
 
-		// Expect neither error nor incomplete text to be displayed.
-		expect( container ).toHaveTextContent( 'Your site may not be ready for Site Kit' );
 		expect( console ).toHaveErrored();
 	} );
 
