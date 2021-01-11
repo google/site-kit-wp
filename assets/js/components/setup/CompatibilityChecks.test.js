@@ -176,9 +176,10 @@ describe( 'CompatibilityChecks', () => {
 			</CompatibilityChecks>
 		);
 
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
+		await act( () => registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } ) );
 
-		await waitForElementToBeRemoved( document.querySelector( '.mdc-linear-progress' ) );
+		// Expect our progress bar for in progress checks to be gone.
+		expect( document.querySelector( '.mdc-linear-progress' ) ).not.toBeInTheDocument();
 
 		// Expect neither error nor incomplete text to be displayed.
 		expect( container ).not.toHaveTextContent( 'Your site may not be ready for Site Kit' );
