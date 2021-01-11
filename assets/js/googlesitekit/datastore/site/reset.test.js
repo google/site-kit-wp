@@ -64,7 +64,7 @@ describe( 'core/site reset', () => {
 				} ).not.toThrow();
 			} );
 
-			it( 'resets connection ', async () => {
+			it( 'resets connection on server only', async () => {
 				const response = true;
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
@@ -83,9 +83,9 @@ describe( 'core/site reset', () => {
 					{ body: { connected: false, resettable: false }, status: 200 }
 				);
 
-				// After a successful reset, `connection` should be `undefined` again.
+				// After a successful reset, `connection` state will be updated on the next page load.
 				const connection = await registry.select( STORE_NAME ).getConnection();
-				expect( connection ).toEqual( undefined );
+				expect( connection ).toEqual( { connected: true, resettable: true } );
 			} );
 
 			it( 'does not reset local connection if reset request fails', async () => {
