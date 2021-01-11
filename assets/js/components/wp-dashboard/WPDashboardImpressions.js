@@ -26,10 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME as MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
 import { isZeroReport } from '../../modules/search-console/util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
@@ -40,7 +38,6 @@ import sumObjectListValue from '../../util/sum-object-list-value';
 const { useSelect } = Data;
 
 const WPDashboardImpressions = () => {
-	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
@@ -50,7 +47,6 @@ const WPDashboardImpressions = () => {
 		startDate: compareStartDate,
 		endDate,
 		dimensions: 'date',
-		url,
 	};
 
 	const data = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( args ) );

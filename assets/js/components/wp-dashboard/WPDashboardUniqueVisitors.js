@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { DATE_RANGE_OFFSET, STORE_NAME as MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
 import { calculateChange } from '../../util';
@@ -35,7 +34,6 @@ import DataBlock from '../DataBlock';
 const { useSelect } = Data;
 
 const WPDashboardUniqueVisitors = () => {
-	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
@@ -49,7 +47,6 @@ const WPDashboardUniqueVisitors = () => {
 				alias: 'Total Users',
 			},
 		],
-		url,
 	};
 
 	const data = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( reportArgs ) );
