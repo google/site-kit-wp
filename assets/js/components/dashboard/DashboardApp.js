@@ -25,9 +25,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import '../publisher-wins';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
-import DashboardMain from './dashboard-main';
+import DashboardMain from './DashboardMain';
 import DashboardNotifications from './dashboard-notifications';
 import Header from '../Header';
 import DateRangeSelector from '../DateRangeSelector';

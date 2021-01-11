@@ -26,8 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Layout from '../../../../components/layout/layout';
-import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
+import Layout from '../../../../components/layout/Layout';
+import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
 import DashboardPageSpeed from './DashboardPageSpeed';
 import { STORE_NAME } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;

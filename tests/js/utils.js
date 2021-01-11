@@ -30,6 +30,7 @@ import { SetupMain as AdSenseSetupMain } from '../../assets/js/modules/adsense/c
 import {
 	SettingsEdit as AdSenseSettingsEdit,
 	SettingsView as AdSenseSettingsView,
+	SettingsSetupIncomplete,
 } from '../../assets/js/modules/adsense/components/settings';
 import AdSenseIcon from '../../assets/svg/adsense.svg';
 import { ERROR_CODE_ADBLOCKER_ACTIVE } from '../../assets/js/modules/adsense/constants';
@@ -160,7 +161,7 @@ export const provideUserAuthentication = ( registry, extraData = {} ) => {
 		requiredScopes: [],
 		grantedScopes: [],
 		unsatisfiedScopes: [],
-		needsReauthentication: [],
+		needsReauthentication: false,
 	};
 
 	const mergedData = { ...defaults, ...extraData };
@@ -258,7 +259,7 @@ export const provideModules = ( registry, extraData = [] ) => {
 /**
  * Provides module registration data to the given registry.
  *
- * @since n.e.x.t
+ * @since 1.23.0
  * @private
  *
  * @param {Object}   registry    Registry object to dispatch to.
@@ -270,6 +271,7 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 			SettingsEditComponent: AdSenseSettingsEdit,
 			SettingsViewComponent: AdSenseSettingsView,
 			SetupComponent: AdSenseSetupMain,
+			SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
 			Icon: AdSenseIcon,
 			checkRequirements: () => {
 				// TODO: Remove this duplicate-ish code and instead import from reusable AdSense utility function.

@@ -25,15 +25,15 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../util';
-import { changeToPercent, readableLargeNumber, untrailingslashit } from '../../../../util';
+import { calculateChange, untrailingslashit } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import { trackEvent } from '../../../../util/tracking';
 import whenActive from '../../../../util/when-active';
-import DataBlock from '../../../../components/data-block';
+import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import ReportError from '../../../../components/ReportError';
@@ -52,10 +52,12 @@ function DashboardImpressionsWidget() {
 		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
 		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 
+		const { compareStartDate, endDate } = select( CORE_USER ).getDateRangeDates( { compare: true, offsetDays: DATE_RANGE_OFFSET } );
 		const args = {
 			dimensions: 'date',
-			compareDateRanges: true,
-			dateRange: select( CORE_USER ).getDateRange(),
+			// Combine both date ranges into one single date range.
+			startDate: compareStartDate,
+			endDate,
 		};
 
 		const serviceBaseURLArgs = {
@@ -97,7 +99,7 @@ function DashboardImpressionsWidget() {
 
 	const totalImpressions = sumObjectListValue( latestData, 'impressions' );
 	const totalOlderImpressions = sumObjectListValue( olderData, 'impressions' );
-	const totalImpressionsChange = changeToPercent( totalOlderImpressions, totalImpressions );
+	const totalImpressionsChange = calculateChange( totalOlderImpressions, totalImpressions );
 
 	const sparklineData = [
 		[
@@ -116,7 +118,7 @@ function DashboardImpressionsWidget() {
 			<DataBlock
 				className="overview-total-impressions"
 				title={ __( 'Impressions', 'google-site-kit' ) }
-				datapoint={ readableLargeNumber( totalImpressions ) }
+				datapoint={ totalImpressions }
 				change={ totalImpressionsChange }
 				changeDataUnit="%"
 				source={ {

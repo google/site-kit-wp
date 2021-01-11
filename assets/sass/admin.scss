@@ -103,7 +103,6 @@
 @import "components/global/googlesitekit-preview-block";
 @import "components/global/googlesitekit-preview-table";
 @import "components/global/googlesitekit-publisher-wins";
-@import "components/global/googlesitekit-rocket";
 @import "components/global/googlesitekit-source-link";
 @import "components/global/googlesitekit-table";
 @import "components/global/googlesitekit-table-overflow";
@@ -137,6 +136,7 @@
 @import "components/settings/googlesitekit-settings-module";
 @import "components/settings/googlesitekit-settings-module-warning";
 @import "components/settings/googlesitekit-settings-notice";
+@import "components/settings/googlesitekit-settings-user-input";
 
 // User Input
 @import "components/user-input/googlesitekit-user-input-module";
@@ -149,6 +149,7 @@
 @import "widgets/widget-area";
 @import "widgets/widget-context";
 @import "widgets/widgets";
+@import "widgets/googlesitekit-widget-analyticsAllTrafficV2";
 
 // Utilities
 @import "utilities/margin";

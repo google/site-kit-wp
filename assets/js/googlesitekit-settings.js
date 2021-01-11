@@ -31,8 +31,8 @@ import { render } from '@wordpress/element';
  * Internal dependencies
  */
 import './components/legacy-notifications';
-import Root from './components/root';
-import SettingsApp from './components/settings/settings-app';
+import Root from './components/Root';
+import SettingsApp from './components/settings/SettingsApp';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {

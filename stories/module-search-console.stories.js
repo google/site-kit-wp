@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
-import Layout from '../assets/js/components/layout/layout';
+import Layout from '../assets/js/components/layout/Layout';
 import SearchConsoleDashboardWidgetOverview from '../assets/js/modules/search-console/components/dashboard/SearchConsoleDashboardWidgetOverview';
 import SearchConsoleDashboardWidgetSiteStats from '../assets/js/modules/search-console/components/dashboard/SearchConsoleDashboardWidgetSiteStats';
 
