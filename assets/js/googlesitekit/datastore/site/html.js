@@ -111,12 +111,10 @@ const baseActions = {
 	},
 
 	*checkForSetupTag() {
-		const setupTag = yield {
+		return yield {
 			payload: {},
 			type: CHECK_FOR_SETUP_TAG,
 		};
-
-		return setupTag;
 	},
 
 	/**
