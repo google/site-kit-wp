@@ -1,0 +1,85 @@
+/**
+ * CTA styles.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#wpadminbar .googlesitekit-zero-data {
+	height: 100%;
+	padding: $grid-gap-phone;
+	width: 100%;
+
+	@media (min-width: $bp-desktop) {
+		padding: $grid-gap-desktop;
+	}
+
+	&--error {
+		// background-color: $c-black;
+		border: 3px solid $c-error;
+	}
+
+	.googlesitekit-adminbar-modules & {
+		padding: $grid-gap-phone;
+	}
+
+	.googlesitekit-wp-dashboard & {
+		box-sizing: border-box;
+		height: auto;
+		margin-top: 12px;
+		padding: 12px;
+	}
+
+	.googlesitekit-wp-dashboard &--error {
+		// background-color: $c-black;
+	}
+
+	// Title.
+	.googlesitekit-wp-dashboard .googlesitekit-wp-dashboard-stats__cta & {
+		margin-top: 0;
+	}
+
+	.googlesitekit-zero-data__title {
+		// color: $c-black;
+		margin: 0 0 10px 0;
+	}
+
+	&--error .googlesitekit-zero-data__title {
+		color: $c-primary;
+	}
+
+	.googlesitekit-adminbar-modules .googlesitekit-zero-data__title {
+		font-size: 1rem;
+		font-weight: $fw-secondary-bold;
+	}
+
+	#google_dashboard_widget & .googlesitekit-zero-data__title { // stylelint-disable-line selector-id-pattern
+		// color: $c-black;
+		font-weight: 700;
+	}
+
+	#google_dashboard_widget &--error .googlesitekit-zero-data__title { // stylelint-disable-line selector-id-pattern
+		color: $c-primary;
+	}
+
+	// Description.
+	.googlesitekit-zero-data__description {
+		// color: $c-black;
+		margin: 0 0 20px 0;
+	}
+
+	*:last-child {
+		margin-bottom: 0;
+	}
+}

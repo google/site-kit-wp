@@ -43,13 +43,17 @@ import { isZeroReport } from '../../modules/search-console/util/is-zero-report';
 import sumObjectListValue from '../../util/sum-object-list-value';
 const { useSelect } = Data;
 
+// reportArgs is declared in this higher scope so that it can be used by hasData.
+let reportArgs;
+
 const AdminBarImpressions = ( { className } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+
 	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
-	const reportArgs = {
+	reportArgs = {
 		startDate: compareStartDate,
 		endDate,
 		dimensions: 'date',
@@ -110,5 +114,17 @@ AdminBarImpressions.propTypes = {
 AdminBarImpressions.defaultProps = {
 	className: 'mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
 };
+
+/**
+ * Has Zero Data
+ *
+ * Allows parent component to check if this component has zero data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Data store select function.
+ * @return {Function} Select function for parent component to run through useSelect hook.
+ */
+AdminBarImpressions.hasZeroData = ( select ) => reportArgs === undefined ? undefined : isZeroReport( select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ) );
 
 export default AdminBarImpressions;

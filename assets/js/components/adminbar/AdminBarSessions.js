@@ -42,13 +42,16 @@ import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
+// reportArgs is declared in this higher scope so that it can be used by hasData.
+let reportArgs;
+
 const AdminBarSessions = ( { className } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
-	const reportArgs = {
+	reportArgs = {
 		...dateRangeDates,
 		dimensions: 'ga:date',
 		limit: 10,
@@ -112,5 +115,17 @@ AdminBarSessions.propTypes = {
 AdminBarSessions.defaultProps = {
 	className: 'mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
 };
+
+/**
+ * Has Zero Data
+ *
+ * Allows parent component to check if this component has zero data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Data store select function.
+ * @return {Function} Select function for parent component to run through useSelect hook.
+ */
+AdminBarSessions.hasZeroData = ( select ) => reportArgs === undefined ? undefined : isZeroReport( select( MODULES_ANALYTICS ).getReport( reportArgs ) );
 
 export default AdminBarSessions;
