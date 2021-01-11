@@ -51,7 +51,11 @@ export function useChecks( checks ) {
 			setComplete( true );
 		};
 
-		runChecks();
+		if ( checks.length ) {
+			runChecks();
+		} else {
+			setComplete( true );
+		}
 	}, [] );
 	return { complete, error };
 }
