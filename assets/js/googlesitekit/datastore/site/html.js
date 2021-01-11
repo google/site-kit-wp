@@ -148,7 +148,7 @@ const baseControls = {
 			const homeURL = await registry.select( STORE_NAME ).getHomeURL();
 
 			( { response, error } = await registry.dispatch( STORE_NAME ).fetchGetHTMLForURL( homeURL ) );
-		} catch ( err ) {
+		} catch {
 			error = ERROR_FETCH_FAIL;
 		}
 
