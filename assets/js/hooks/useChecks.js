@@ -34,7 +34,7 @@ const { useSelect } = Data;
  *
  * @since n.e.x.t
  *
- * @param {Array} checks Array of functions to run.
+ * @param {Function[]} checks Array of functions to run.
  * @return {Object} An object containing complete and error properties.
  */
 export function useChecks( checks ) {
