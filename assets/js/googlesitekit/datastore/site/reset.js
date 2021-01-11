@@ -31,11 +31,6 @@ const fetchResetStore = createFetchStore( {
 	controlCallback: () => {
 		return API.set( 'core', 'site', 'reset' );
 	},
-	reducerCallback: () => {
-		return {
-			...initialState,
-		};
-	},
 } );
 
 const baseInitialState = {};
