@@ -25,8 +25,8 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import { AMP_MODE_PRIMARY } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/optimize/datastore/constants';
 import fixtures from '../assets/js/googlesitekit/modules/datastore/fixtures.json';
 import {

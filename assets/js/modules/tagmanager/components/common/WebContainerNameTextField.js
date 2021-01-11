@@ -28,8 +28,8 @@ import { isURL } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, FORM_SETUP, CONTAINER_CREATE } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import ContainerNameTextField from './ContainerNameTextField';
 const { useSelect, useDispatch } = Data;
 

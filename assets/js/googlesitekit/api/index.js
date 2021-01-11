@@ -41,7 +41,7 @@ import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../util/errors';
 import { trackAPIError } from '../../util/api';
 
 // Specific error to handle here, see below.
-import { STORE_NAME as CORE_USER } from '../datastore/user/constants';
+import { CORE_USER } from '../datastore/user/constants';
 
 // Caching is enabled by default.
 let cachingEnabled = true;

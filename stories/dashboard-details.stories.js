@@ -30,7 +30,7 @@ import { removeAllFilters } from '@wordpress/hooks';
  * Internal dependencies
  */
 import { provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import DashboardDetailsApp from '../assets/js/components/dashboard-details/DashboardDetailsApp';
 import { enableFeature } from './utils/features';
 

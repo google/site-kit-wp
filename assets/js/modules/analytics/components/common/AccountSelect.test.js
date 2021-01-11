@@ -22,7 +22,7 @@
 import AccountSelect from './AccountSelect';
 import { fireEvent, freezeFetch, render, waitFor } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
-import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 
 const setupRegistry = ( registry ) => {

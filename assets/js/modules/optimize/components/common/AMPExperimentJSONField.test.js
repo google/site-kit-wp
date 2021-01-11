@@ -22,8 +22,8 @@
 import AMPExperimentJSONField from './AMPExperimentJSONField';
 import { render } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 
 describe( 'AMPExperimentJSONField', () => {
 	it( 'should render with all arguments passed', () => {

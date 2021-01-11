@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 
 const { useSelect } = Data;
 

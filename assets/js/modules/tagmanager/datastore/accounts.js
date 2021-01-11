@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME, CONTAINER_CREATE } from './constants';
 import { actions as containerActions } from './containers';
 import { isValidAccountSelection } from '../util/validation';

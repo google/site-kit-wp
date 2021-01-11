@@ -30,7 +30,7 @@ import LegacySearchConsoleDashboardWidgetKeywordTable from '../dashboard/LegacyS
 import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
 import Layout from '../../../../components/layout/Layout';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { untrailingslashit } from '../../../../util';
 

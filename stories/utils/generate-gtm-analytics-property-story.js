@@ -21,7 +21,7 @@
  */
 import * as fixtures from '../../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME } from '../../assets/js/modules/analytics/datastore/constants';
-import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../assets/js/googlesitekit/datastore/site/constants';
+import { CORE_SITE, AMP_MODE_SECONDARY } from '../../assets/js/googlesitekit/datastore/site/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,

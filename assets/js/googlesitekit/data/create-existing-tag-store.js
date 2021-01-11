@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_SITE } from '../datastore/site/constants';
+import { CORE_SITE } from '../datastore/site/constants';
 import { getExistingTagURLs, extractExistingTag } from '../../util/tag';
 
 const { createRegistryControl, createRegistrySelector } = Data;

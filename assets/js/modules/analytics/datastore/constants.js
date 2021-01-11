@@ -17,6 +17,7 @@
  */
 
 export const STORE_NAME = 'modules/analytics';
+export { STORE_NAME as MODULES_ANALYTICS };
 
 // A special Account ID value used for the "Set up a new account" option.
 export const ACCOUNT_CREATE = 'account_create';

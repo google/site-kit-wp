@@ -36,8 +36,8 @@ import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
 import { trackEvent } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import {
 	AccountCreate,
