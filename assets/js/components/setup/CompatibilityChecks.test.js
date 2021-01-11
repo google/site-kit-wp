@@ -143,7 +143,7 @@ describe( 'CompatibilityChecks', () => {
 
 	it( 'should not contain incomplete or error messages if checks are successful', async () => {
 		const token = 'test-token-value';
-		const homeURL = 'http://googlesitekit.example.com';
+		const homeURL = 'http://example.com';
 
 		// Mock request to setup-tag.
 		fetchMock.postOnce(
