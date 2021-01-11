@@ -142,6 +142,7 @@ const baseControls = {
 		let error;
 		let response;
 		let token;
+		let tokenMatch = false;
 
 		try {
 			( { token } = await API.set( 'core', 'site', 'setup-tag' ) );
@@ -151,12 +152,13 @@ const baseControls = {
 		} catch {
 			error = ERROR_FETCH_FAIL;
 		}
+		if ( ! error ) {
+			const scrapedTag = extractExistingTag( response, [ /<meta name="googlesitekit-setup" content="([a-z0-9-]+)"/ ] );
+			tokenMatch = token === scrapedTag;
 
-		const scrapedTag = extractExistingTag( response, [ /<meta name="googlesitekit-setup" content="([a-z0-9-]+)"/ ] );
-		const tokenMatch = token === scrapedTag;
-
-		if ( ! tokenMatch ) {
-			error = ERROR_TOKEN_MISMATCH;
+			if ( ! tokenMatch ) {
+				error = ERROR_TOKEN_MISMATCH;
+			}
 		}
 
 		return { response: tokenMatch, error };
