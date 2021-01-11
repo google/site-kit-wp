@@ -25,7 +25,6 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -51,11 +50,7 @@ class LegacyWPDashboardModules extends Component {
 					{ // Show the Analytics CTA if analytics is not enabled.
 						( ! modulesData.analytics.active ) &&
 						<div className="googlesitekit-wp-dashboard-stats__cta">
-							<AnalyticsInactiveCTA
-								title={ __( 'See unique visitors, goal completions, top pages and more.', 'google-site-kit' ) }
-								ctaLabel={ __( 'Set up Analytics', 'google-site-kit' ) }
-								description=""
-							/>
+							<AnalyticsInactiveCTA />
 						</div>
 					}
 				</div>
