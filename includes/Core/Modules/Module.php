@@ -838,11 +838,12 @@ abstract class Module {
 		$reconnect_url = '';
 
 		if ( $e instanceof Google_Service_Exception ) {
+
 			$errors = $e->getErrors();
 			if ( isset( $errors[0]['message'] ) ) {
 				$message = $errors[0]['message'];
 
-				if ( preg_match( '#^Restricted metric\(s\):(.*)$#i', $message ) ) {
+				if ( preg_match( '#^Restricted metric\(s\):(.*)$#im', $message ) ) {
 					$cache_ttl = ( 10 * 60 );
 				}
 			}
