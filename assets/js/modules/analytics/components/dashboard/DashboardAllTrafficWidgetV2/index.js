@@ -85,20 +85,31 @@ function DashboardAllTrafficWidget() {
 			<Grid>
 				<Row>
 					<Cell
+						className="googlesitekit-widget--analyticsAllTrafficV2__totals"
 						lgSize={ 7 }
 						mdSize={ 4 }
 						smSize={ 4 }
 					>
-						<TotalUserCount dimensionName={ dimensionName } dimensionValue={ dimensionValue } />
-						<UserCountGraph dimensionName={ dimensionName } dimensionValue={ dimensionValue } />
+						<TotalUserCount
+							dimensionName={ dimensionName }
+							dimensionValue={ dimensionValue }
+						/>
+
+						<UserCountGraph
+							dimensionName={ dimensionName }
+							dimensionValue={ dimensionValue }
+						/>
 					</Cell>
+
 					<Cell
 						className="googlesitekit-widget--analyticsAllTrafficV2__dimensions"
 						lgSize={ 5 }
 						mdSize={ 4 }
 						smSize={ 4 }
 					>
-						<DimensionTabs dimensionName={ dimensionName } />
+						<DimensionTabs
+							dimensionName={ dimensionName }
+						/>
 
 						<UserDimensionsPieChart
 							dimensionName={ dimensionName }

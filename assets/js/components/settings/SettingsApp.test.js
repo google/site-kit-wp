@@ -23,6 +23,7 @@ import SettingsApp from './SettingsApp';
 import { render, fireEvent, createTestRegistry, provideModules, waitFor } from '../../../../tests/js/test-utils';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import * as fixtures from '../../modules/analytics/datastore/__fixtures__';
+import { disableFeature, enableFeature } from '../../../../stories/utils/features';
 
 describe( 'SettingsApp', () => {
 	let registry;
@@ -35,7 +36,8 @@ describe( 'SettingsApp', () => {
 
 	beforeEach( () => {
 		global.location.hash = '';
-		global.featureFlags = { storeErrorNotifications: { enabled: true } };
+		enableFeature( 'storeErrorNotifications' );
+		disableFeature( 'userInput' );
 
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
