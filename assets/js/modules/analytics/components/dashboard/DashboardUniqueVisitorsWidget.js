@@ -39,6 +39,7 @@ import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import { isZeroReport } from '../../util';
+import CompleteModuleActivationCTA from '../../../../components/CompleteModuleActivationCTA';
 
 const { useSelect } = Data;
 
@@ -175,5 +176,6 @@ function DashboardUniqueVisitorsWidget() {
 
 export default whenActive( {
 	moduleName: 'analytics',
-	fallbackComponent: AnalyticsInactiveCTA,
+	FallbackComponent: () => <AnalyticsInactiveCTA />,
+	IncompleteComponent: () => <CompleteModuleActivationCTA slug="analytics" />,
 } )( DashboardUniqueVisitorsWidget );

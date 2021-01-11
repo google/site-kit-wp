@@ -229,20 +229,16 @@ class User_Input_SettingsTest extends TestCase {
 
 		add_filter(
 			'pre_http_request',
-			function( $pre, $args, $url ) use ( &$body ) {
+			function( $pre, $args, $url ) use ( $data ) {
 				$authentication          = new Authentication( $this->context );
 				$user_input_settings_url = $authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
 				if ( $url !== $user_input_settings_url ) {
 					return $pre;
 				}
 
-				if ( ! empty( $args['body'] ) ) {
-					$body = json_decode( $args['body'], true );
-				}
-
 				return array(
 					'headers'  => array(),
-					'body'     => '{}',
+					'body'     => wp_json_encode( $data ),
 					'response' => array( 'code' => 200 ),
 				);
 			},
@@ -250,9 +246,7 @@ class User_Input_SettingsTest extends TestCase {
 			3
 		);
 
-		$settings->set_settings( $data );
-
-		$this->assertEquals( $data, $body );
+		$this->assertEquals( $data, $settings->set_settings( $data ) );
 	}
 
 	public function test_set_settings_completed_flag() {
