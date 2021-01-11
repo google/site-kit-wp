@@ -46,14 +46,13 @@ export function useChecks( checks ) {
 		const runChecks = async () => {
 			try {
 				await Promise.all( checks.map( ( check ) => check() ) );
-				setComplete( true );
 			} catch ( err ) {
 				setError( err );
-				setComplete( true );
 			}
 		};
 
-		runChecks();
+		await runChecks();
+		setComplete( true );
 	}, [] );
 	return { complete, error };
 }
