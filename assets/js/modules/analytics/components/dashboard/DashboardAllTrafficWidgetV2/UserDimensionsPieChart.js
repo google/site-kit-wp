@@ -79,7 +79,6 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 		if ( chart && ! onSelect ) {
 			chartData.onSelect = global.google.visualization.events.addListener( chart, 'select', () => {
 				const { row } = chart.getSelection()?.[ 0 ] || {};
-
 				if ( row !== null && row !== undefined ) {
 					const { dataTable } = GoogleChart.charts.get( 'user-dimensions-pie-chart' ) || {};
 					if ( dataTable ) {
