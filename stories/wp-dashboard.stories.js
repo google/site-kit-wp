@@ -31,7 +31,7 @@ import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
  */
 import GoogleLogoIcon from '../assets/svg/logo-g.svg';
 import SiteKitLogoIcon from '../assets/svg/logo-sitekit.svg';
-import WPDashboardMain from '../assets/js/components/wp-dashboard/WPDashboardMain';
+import WPDashboardApp from '../assets/js/components/wp-dashboard/WPDashboardApp';
 import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
 import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/components/wp-dashboard/WPSearchConsoleDashboardWidget';
 import { createAddToFilter } from '../assets/js/util/helpers';
@@ -99,7 +99,7 @@ storiesOf( 'WordPress', module )
 						<div className="inside">
 							<div id="js-googlesitekit-wp-dashboard">
 								<WithTestRegistry callback={ setupRegistry }>
-									<WPDashboardMain />
+									<WPDashboardApp />
 								</WithTestRegistry>
 							</div>
 						</div>
