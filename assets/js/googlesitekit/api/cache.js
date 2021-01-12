@@ -178,7 +178,7 @@ export const getItem = async ( key ) => {
 			// (We don't check for a truthy `value`, because it could be legitimately
 			// false-y if `0`, `null`, etc.)
 			if ( timestamp && (
-				ttl === null || ttl === undefined || // Ensure the cached data isn't too old.
+				! ttl || // Ensure the cached data isn't too old.
 				Math.round( Date.now() / 1000 ) - timestamp < ttl
 			) ) {
 				return {
@@ -203,16 +203,16 @@ export const getItem = async ( key ) => {
  *
  * @since 1.5.0
  *
- * @param {string}  key            Name of cache key.
- * @param {*}       value          Value to store in the cache.
- * @param {Object}  args           Optional object containing ttl, timestamp and isError keys.
- * @param {number}  args.ttl       Validity of the cached item in seconds.
- * @param {number}  args.timestamp Timestamp when the cached item was created.
- * @param {boolean} args.isError   Whether the cached item is an error.
+ * @param {string}  key              Name of cache key.
+ * @param {*}       value            Value to store in the cache.
+ * @param {Object}  args           	 Optional object containing ttl, timestamp and isError keys.
+ * @param {number}  [args.ttl]       Optional. Validity of the cached item in seconds.
+ * @param {number}  [args.timestamp] Optional. Timestamp when the cached item was created.
+ * @param {boolean} [args.isError]   Optional. Whether the cached item is an error.
  * @return {Promise} A promise: resolves to `true` if the value was saved; `false` if not (usually because no storage method was available).
  */
 export const setItem = async ( key, value, {
-	ttl = 60 * 60,
+	ttl = 3600, // One hour.
 	timestamp = Math.round( Date.now() / 1000 ),
 	isError = false,
 } = {} ) => {

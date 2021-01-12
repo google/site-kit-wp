@@ -843,8 +843,8 @@ abstract class Module {
 			if ( isset( $errors[0]['message'] ) ) {
 				$message = $errors[0]['message'];
 
-				if ( preg_match( '#^Restricted metric\(s\):(.*)$#im', $message ) ) {
-					$cache_ttl = ( 10 * 60 );
+				if ( preg_match( '#^Restricted metric\(s\)\:#im', $message ) ) {
+					$cache_ttl = ( 10 * MINUTE_IN_SECONDS );
 				}
 			}
 			if ( isset( $errors[0]['reason'] ) ) {
