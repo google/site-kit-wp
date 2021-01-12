@@ -1,0 +1,135 @@
+/**
+ * Analytics AllTraffic V2 styles.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-widget.googlesitekit-widget--analyticsAllTrafficV2 {
+
+		.mdc-tab-scroller__scroll-content {
+			justify-content: center;
+		}
+
+		.mdc-tab-indicator__content--underline {
+			border-radius: 4px 4px 0 0;
+			height: 4px;
+		}
+
+		.mdc-tab {
+			height: 40px;
+			margin: 0 10px;
+			padding: 0 20px;
+
+			@media (min-width: $bp-tablet) and (max-width: $bp-xlarge) {
+				margin: 0;
+				padding: 0 10px;
+			}
+		}
+
+		.mdc-tab__text-label {
+			letter-spacing: normal;
+			text-transform: none;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTrafficV2__dimensions {
+		padding-top: 30px;
+
+		.googlesitekit-line-chart {
+			align-items: center;
+			display: flex;
+			min-height: 410px;
+
+			& .googlesitekit-chart-loading {
+				padding: 0 40px;
+			}
+		}
+
+		.googlesitekit-preview-block {
+			margin: 62px auto;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTrafficV2__dimensions-chart {
+		position: relative;
+	}
+
+	.googlesitekit-widget--analyticsAllTrafficV2__dimensions-chart-title {
+		color: $c-scarpa-flow;
+		font-size: 16px;
+		font-weight: 500;
+		left: 50%;
+		max-width: 80px;
+		position: absolute;
+		text-align: center;
+		text-transform: uppercase;
+		top: 50%;
+		transform: translate(-50%, -50%);
+
+		& span {
+			font-weight: 300;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTrafficV2__totalcount {
+
+		h3 {
+			font-size: 16px;
+			font-weight: 500;
+			margin: 0;
+
+			span::before {
+				content: ">";
+				margin: 0 0.5rem;
+			}
+		}
+
+		h2 {
+			font-size: 80px;
+			font-weight: 700;
+			margin: 0;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTrafficV2__totalcount--change {
+		display: inline-block;
+		font-size: 24px;
+		font-weight: 500;
+		margin: 0;
+		margin-right: 10px;
+
+		svg {
+			margin: 0;
+			margin-right: 5px;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTrafficV2__totalcount--up-change {
+		color: $c-chateau-green;
+	}
+
+	.googlesitekit-widget--analyticsAllTrafficV2__totalcount--down-change {
+		color: $c-thunderbird;
+	}
+
+	.googlesitekit-widget--analyticsAllTrafficV2__totalcount--daterange {
+		display: inline-block;
+		font-size: 12px;
+		font-weight: 400;
+		margin: 0;
+	}
+}
