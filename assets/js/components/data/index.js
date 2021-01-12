@@ -203,8 +203,10 @@ const dataAPI = {
 				}
 
 				if ( isWPError( response ) ) {
-					// These variables will be the same for each request so use the first.
-					const { datapoint, type, identifier } = keyIndexesMap[ requestKey ][ 0 ];
+					// These variables will be the same for each request so use the first
+					// to avoid handling/reporting the same error multiple times.
+					const requestIndex = keyIndexesMap[ requestKey ][ 0 ];
+					const { datapoint, type, identifier } = dataRequest[ requestIndex ];
 
 					this.handleWPError( {
 						method: 'POST',
