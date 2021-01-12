@@ -52,13 +52,11 @@ class Feature_Flags {
 			return false;
 		}
 
-		$features = static::$features->jsonSerialize();
+		$feature_modes = is_array( static::$features[ $feature ] ) ?
+			static::$features[ $feature ] :
+			array( static::$features[ $feature ] );
 
-		$feature_modes = is_array( $features[ $feature ] ) ?
-			$features[ $feature ] :
-			array( $features[ $feature ] );
-
-		$feature_enabled = in_array( static::get_mode(), (array) $feature_modes, true );
+		$feature_enabled = in_array( static::get_mode(), $feature_modes, true );
 
 		/**
 		 * Filters a feature flag's status (on or off).
@@ -85,7 +83,9 @@ class Feature_Flags {
 	public static function get_enabled_features() {
 		$enabled_features = array();
 
-		$features = static::$features->jsonSerialize();
+		$features = is_array( static::$features ) ?
+			static::$features :
+			static::$features->jsonSerialize();
 
 		foreach ( $features as $feature_name => $value ) {
 			if ( static::enabled( $feature_name ) ) {
