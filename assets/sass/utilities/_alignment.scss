@@ -1,7 +1,7 @@
 /**
- * Margin utility styles.
+ * Alignment utility styles.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,8 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-margin-bottom-0 {
-		margin-bottom: 0 !important;
+	.googlesitekit-align-self-center {
+		align-self: center;
 	}
 
-	.googlesitekit-margin-left-1rem {
-		margin-left: 1rem;
-	}
 }

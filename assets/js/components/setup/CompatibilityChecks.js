@@ -115,7 +115,7 @@ export default function CompatibilityChecks( { children, ...props } ) {
 	}
 
 	if ( ! complete ) {
-		inProgressFeedback = <div style={ { alignSelf: 'center', marginLeft: '1rem' } }>
+		inProgressFeedback = <div className="googlesitekit-margin-left-1rem googlesitekit-align-self-center">
 			<small>{ __( 'Checking Compatibility…', 'google-site-kit' ) }</small>
 			<ProgressBar small compress />
 		</div>;
