@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import delay from 'lodash/delay';
 import invariant from 'invariant';
 
 const SET_NAVIGATING_TO = 'SET_NAVIGATING_TO';
@@ -30,7 +31,7 @@ export const initialState = {
 export const actions = {
 
 	/**
-	 * Sets navigating state for the provided URL.
+	 * Sets navigating URL.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -55,7 +56,11 @@ export const actions = {
 
 };
 
-export const controls = {};
+export const controls = {
+	[ SET_NAVIGATING_TO ]: ( { payload } ) => {
+		delay( () => global.location.assign( payload.url ), 500, 'later' );
+	},
+};
 
 export function reducer( state, { type, payload } ) {
 	switch ( type ) {

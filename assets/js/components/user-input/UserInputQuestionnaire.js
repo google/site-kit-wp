@@ -19,9 +19,8 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useState, Fragment, useEffect } from '@wordpress/element';
+import { useCallback, Fragment, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -44,6 +43,7 @@ import {
 import useQueryArg from '../../hooks/useQueryArg';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { Cell, Row } from '../../material-components';
 const { useSelect, useDispatch } = Data;
 
@@ -55,15 +55,23 @@ export default function UserInputQuestionnaire() {
 	const [ single, setSingle ] = useQueryArg( 'single', false );
 
 	const activeSlugIndex = steps.indexOf( activeSlug );
-
 	if ( activeSlugIndex === -1 ) {
 		setActiveSlug( steps[ 0 ] );
 	}
 
+	const { saveUserInputSettings } = useDispatch( CORE_USER );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
+	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 	const answeredUntilIndex = useSelect( ( select ) => {
 		const userInputSettings = select( CORE_USER ).getUserInputSettings();
 		return USER_INPUT_QUESTIONS_LIST.findIndex( ( question ) => userInputSettings[ question ].values.length === 0 );
 	} );
+	const { isSavingSettings, error } = useSelect( ( select ) => ( {
+		isSavingSettings: select( CORE_USER ).isFetchingSaveUserInputSettings(),
+		error: select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] ),
+	} ) );
 
 	useEffect( () => {
 		if ( answeredUntilIndex === -1 ) {
@@ -99,32 +107,16 @@ export default function UserInputQuestionnaire() {
 		setActiveSlug( steps[ activeSlugIndex - 1 ] );
 	}, [ activeSlugIndex ] );
 
-	const [ isNavigating, setIsNavigating ] = useState( false );
-
-	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
-
-	const { isSavingSettings, error } = useSelect( ( select ) => ( {
-		isSavingSettings: select( CORE_USER ).isFetchingSaveUserInputSettings(),
-		error: select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] ),
-	} ) );
-
-	const { saveUserInputSettings } = useDispatch( CORE_USER );
-
 	const submitChanges = useCallback( async () => {
-		setIsNavigating( true );
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
-			if ( redirectURL ) {
-				const url = new URL( redirectURL );
-				// Here we don't use `addQueryArgs` due to a bug with how it handles hashes
-				// See https://github.com/WordPress/gutenberg/issues/16655
-				url.searchParams.set( 'notification', 'user_input_success' );
-				global.location.assign( url.toString() );
-			} else {
-				global.location.assign( addQueryArgs( dashboardURL, { notification: 'user_input_success' } ) );
-			}
-		} else {
-			setIsNavigating( false );
+			const url = new URL( redirectURL || dashboardURL );
+
+			// Here we don't use `addQueryArgs` due to a bug with how it handles hashes
+			// See https://github.com/WordPress/gutenberg/issues/16655
+			url.searchParams.set( 'notification', 'user_input_success' );
+
+			navigateTo( url.toString() );
 		}
 	}, [ dashboardURL ] );
 

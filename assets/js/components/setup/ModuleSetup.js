@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { delay } from 'lodash';
 import PropTypes from 'prop-types';
 
 /**
@@ -69,9 +68,6 @@ export default function ModuleSetup( { moduleSlug } ) {
 		}
 
 		navigateTo( redirectURL );
-		delay( function() {
-			global.location.replace( redirectURL );
-		}, 500, 'later' );
 	}, [ moduleSlug ] );
 
 	if ( ! module?.SetupComponent ) {
