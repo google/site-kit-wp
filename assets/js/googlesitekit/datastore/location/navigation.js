@@ -22,6 +22,7 @@
 import delay from 'lodash/delay';
 import invariant from 'invariant';
 
+const DO_NAVIGATE_TO = 'DO_NAVIGATE_TO';
 const SET_NAVIGATING_TO = 'SET_NAVIGATING_TO';
 
 export const initialState = {
@@ -38,7 +39,8 @@ export const actions = {
 	 * @param {string} url The navigation URL.
 	 * @return {Object} Redux-style action.
 	 */
-	navigateTo( url ) {
+	*navigateTo( url ) {
+		const payload = { url };
 		let isValidURL = false;
 
 		try {
@@ -48,16 +50,21 @@ export const actions = {
 
 		invariant( !! isValidURL, 'url must be a valid URI.' );
 
-		return {
+		yield {
 			type: SET_NAVIGATING_TO,
-			payload: { url },
+			payload,
+		};
+
+		return yield {
+			type: DO_NAVIGATE_TO,
+			payload,
 		};
 	},
 
 };
 
 export const controls = {
-	[ SET_NAVIGATING_TO ]: ( { payload } ) => {
+	[ DO_NAVIGATE_TO ]: ( { payload } ) => {
 		delay( () => global.location.assign( payload.url ), 500, 'later' );
 	},
 };
