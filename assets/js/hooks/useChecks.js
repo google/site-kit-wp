@@ -22,13 +22,6 @@
 import { useEffect, useState } from '@wordpress/element';
 
 /**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
-
-/**
  * Runs a series of asynchronous checks returning the first encountered error.
  * All checks should be functions that throw their respective errors.
  *
@@ -38,8 +31,7 @@ const { useSelect } = Data;
  * @return {Object} An object containing complete and error properties.
  */
 export function useChecks( checks ) {
-	const isSiteKitConnected = useSelect( ( select ) => select( CORE_SITE ).isConnected() );
-	const [ complete, setComplete ] = useState( isSiteKitConnected );
+	const [ complete, setComplete ] = useState( checks.length === 0 );
 	const [ error, setError ] = useState( undefined );
 	useEffect( () => {
 		const runChecks = async () => {
@@ -51,10 +43,8 @@ export function useChecks( checks ) {
 			setComplete( true );
 		};
 
-		if ( checks.length ) {
+		if ( ! complete ) {
 			runChecks();
-		} else {
-			setComplete( true );
 		}
 	}, [] );
 	return { complete, error };
