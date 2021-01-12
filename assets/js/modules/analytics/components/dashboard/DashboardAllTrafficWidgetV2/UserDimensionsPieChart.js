@@ -84,14 +84,15 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 					if ( dataTable ) {
 						const dimensionValue = dataTable.getValue( row, 0 );
 
-						if ( __( 'Others', 'google-site-kit' ) !== dimensionValue ) {
-							setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue } );
-						} else {
-							setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionName, dimensionValue: '' } );
-						}
+						setValues(
+							FORM_ALL_TRAFFIC_WIDGET,
+							{
+								dimensionValue: __( 'Others', 'google-site-kit' ) === dimensionValue ? '' : dimensionValue,
+							}
+						);
 					}
 				} else {
-					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionName, dimensionValue: '' } );
+					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '' } );
 				}
 			} );
 		}
