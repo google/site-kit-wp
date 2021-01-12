@@ -64,14 +64,17 @@ export default function UserInputQuestionnaire() {
 
 	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
-	const answeredUntilIndex = useSelect( ( select ) => {
+	const { isSavingSettings, error, answeredUntilIndex } = useSelect( ( select ) => {
 		const userInputSettings = select( CORE_USER ).getUserInputSettings();
-		return USER_INPUT_QUESTIONS_LIST.findIndex( ( question ) => userInputSettings[ question ].values.length === 0 );
+
+		return {
+			isSavingSettings: select( CORE_USER ).isSavingUserInputSettings( userInputSettings ),
+			error: select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] ),
+			answeredUntilIndex: USER_INPUT_QUESTIONS_LIST.findIndex( ( question ) => userInputSettings[ question ].values.length === 0 ),
+		};
 	} );
-	const { isSavingSettings, error } = useSelect( ( select ) => ( {
-		isSavingSettings: select( CORE_USER ).isFetchingSaveUserInputSettings(),
-		error: select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] ),
-	} ) );
+
+	global.console.log( isSavingSettings );
 
 	useEffect( () => {
 		if ( answeredUntilIndex === -1 ) {
