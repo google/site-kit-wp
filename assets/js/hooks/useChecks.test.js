@@ -47,10 +47,11 @@ describe( 'useChecks', () => {
 				throw 'error2';
 			},
 		];
-		let result;
-		await act( async () => {
-			( { result } = await renderHook( () => useChecks( checks ) ) );
-		} );
+		const { result, waitForValueToChange } = renderHook( () => useChecks( checks ) );
+
+		expect( result.current ).toStrictEqual( { complete: false, error: undefined } );
+
+		await waitForValueToChange( () => result.current.complete );
 
 		expect( result.current ).toStrictEqual( { complete: true, error: 'error2' } );
 	} );
