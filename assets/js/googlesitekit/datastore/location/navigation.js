@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import delay from 'lodash/delay';
 import invariant from 'invariant';
 
 const DO_NAVIGATE_TO = 'DO_NAVIGATE_TO';
@@ -65,7 +64,7 @@ export const actions = {
 
 export const controls = {
 	[ DO_NAVIGATE_TO ]: ( { payload } ) => {
-		delay( () => global.location.assign( payload.url ), 500, 'later' );
+		global.location.assign( payload.url );
 	},
 };
 

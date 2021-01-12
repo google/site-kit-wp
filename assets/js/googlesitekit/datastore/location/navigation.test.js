@@ -24,6 +24,26 @@ import { STORE_NAME } from './constants';
 
 describe( 'core/location', () => {
 	let registry;
+	let oldLocation;
+	const locationAssignMock = jest.fn();
+
+	beforeAll( () => {
+		oldLocation = global.location;
+		delete global.location;
+		global.location = Object.defineProperties(
+			{},
+			{
+				assign: {
+					configurable: true,
+					value: locationAssignMock,
+				},
+			},
+		);
+	} );
+
+	afterAll( () => {
+		global.location = oldLocation;
+	} );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -37,17 +57,13 @@ describe( 'core/location', () => {
 					.toThrow( 'url must be a valid URI.' );
 			} );
 
-			it.skip( 'should use location.assign() function when navigating', async () => {
-				const oldLocation = global.location;
-				const assign = jest.fn();
+			it( 'should use location.assign() function when navigating', async () => {
 				const url = 'https://example.com/';
 
-				global.location = { assign };
 				await registry.dispatch( STORE_NAME ).navigateTo( url );
-				global.location = oldLocation;
 
-				expect( assign ).toHaveBeenCalled();
-				expect( assign ).toHaveBeenCalledWith( url );
+				expect( locationAssignMock ).toHaveBeenCalled();
+				expect( locationAssignMock ).toHaveBeenCalledWith( url );
 			} );
 		} );
 	} );
