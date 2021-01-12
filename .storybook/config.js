@@ -40,6 +40,7 @@ const resetFeatures = () => {
 	disableFeature( 'widgets.adminBar' );
 	disableFeature( 'widgets.dashboard' );
 	disableFeature( 'widgets.pageDashboard' );
+	disableFeature( 'widgets.wpDashboard' );
 	disableFeature( 'userInput' );
 	disableFeature( 'storeErrorNotifications' );
 	disableFeature( 'serviceSetupV2' );
