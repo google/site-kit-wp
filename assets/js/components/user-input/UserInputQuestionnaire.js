@@ -62,7 +62,7 @@ export default function UserInputQuestionnaire() {
 
 	const answeredUntilIndex = useSelect( ( select ) => {
 		const userInputSettings = select( CORE_USER ).getUserInputSettings();
-		return USER_INPUT_QUESTIONS_LIST.findIndex( ( question ) => userInputSettings[ question ].values.length === 0 );
+		return USER_INPUT_QUESTIONS_LIST.findIndex( ( question ) => userInputSettings?.[ question ]?.values?.length === 0 );
 	} );
 
 	useEffect( () => {
