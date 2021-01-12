@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import CompatibilityChecks, { AMP_PROJECT_TEST_URL } from './compatibility-checks';
+import CompatibilityChecks, { AMP_PROJECT_TEST_URL } from './CompatibilityChecks';
 import { render, waitFor } from '../../../../tests/js/test-utils';
 import { Fragment } from 'react';
 import { muteFetch } from '../../../../tests/js/utils';

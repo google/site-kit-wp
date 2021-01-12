@@ -74,18 +74,22 @@ export function getAvailableDateRanges() {
 		'last-7-days': {
 			slug: 'last-7-days',
 			label: label( 7 ),
+			days: 7,
 		},
 		'last-14-days': {
 			slug: 'last-14-days',
 			label: label( 14 ),
+			days: 14,
 		},
 		'last-28-days': {
 			slug: 'last-28-days',
 			label: label( 28 ),
+			days: 28,
 		},
 		'last-90-days': {
 			slug: 'last-90-days',
 			label: label( 90 ),
+			days: 90,
 		},
 	};
 }

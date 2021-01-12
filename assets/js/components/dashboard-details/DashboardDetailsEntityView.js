@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import { decodeHTMLEntity } from '../../util';
 import Link from '../Link';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
-import DashboardDetailsModules from './dashboard-details-modules';
+import DashboardDetailsModules from './DashboardDetailsModules';
 import DashboardDetailsEntityHeaderContainer from './DashboardDetailsEntityHeaderContainer';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { useFeature } from '../../hooks/useFeature';

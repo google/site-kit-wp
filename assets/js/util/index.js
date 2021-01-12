@@ -32,10 +32,6 @@ import {
 import {
 	addFilter,
 } from '@wordpress/hooks';
-import {
-	__,
-	sprintf,
-} from '@wordpress/i18n';
 import { addQueryArgs, getQueryString } from '@wordpress/url';
 
 /**
@@ -104,104 +100,6 @@ export const removeURLParameter = ( url, parameter ) => {
 };
 
 /**
- * Prepares a number to be used in readableLargeNumber.
- *
- * @since 1.7.0
- *
- * @param {number} number The large number to prepare.
- * @return {number} The prepared number.
- */
-export const prepareForReadableLargeNumber = ( number ) => {
-	if ( 1000000 <= number ) {
-		return Math.round( number / 100000 ) / 10;
-	}
-
-	if ( 10000 <= number ) {
-		return Math.round( number / 1000 );
-	}
-
-	if ( 1000 <= number ) {
-		return Math.round( number / 100 ) / 10;
-	}
-	return number;
-};
-
-/**
- * Formats a large number for shortened display.
- *
- * @since 1.0.0
- *
- * @param {number}           number       The large number to format.
- * @param {(string|boolean)} currencyCode Optional currency code to format as amount.
- * @return {string} The formatted number.
- */
-export const readableLargeNumber = ( number, currencyCode = false ) => {
-	// Cast parsable values to numeric types.
-	number = isFinite( number ) ? number : Number( number );
-
-	if ( ! isFinite( number ) ) {
-		// eslint-disable-next-line no-console
-		console.warn( 'Invalid number', number, typeof number );
-		number = 0;
-	}
-
-	if ( currencyCode ) {
-		return numberFormat( number, { style: 'currency', currency: currencyCode } );
-	}
-
-	const withSingleDecimal = {
-		minimumFractionDigits: 1,
-		maximumFractionDigits: 1,
-	};
-
-	// Numbers over 1,000,000 round normally and display a single decimal unless the decimal is 0.
-	if ( 1000000 <= number ) {
-		return sprintf(
-			// translators: %s: an abbreviated number in millions.
-			__( '%sM', 'google-site-kit' ),
-			numberFormat( prepareForReadableLargeNumber( number ), number % 10 === 0 ? {} : withSingleDecimal )
-		);
-	}
-
-	// Numbers between 10,000 and 1,000,000 round normally and have no decimals
-	if ( 10000 <= number ) {
-		return sprintf(
-			// translators: %s: an abbreviated number in thousands.
-			__( '%sK', 'google-site-kit' ),
-			numberFormat( prepareForReadableLargeNumber( number ) )
-		);
-	}
-
-	// Numbers between 1,000 and 10,000 round normally and display a single decimal unless the decimal is 0.
-	if ( 1000 <= number ) {
-		return sprintf(
-			// translators: %s: an abbreviated number in thousands.
-			__( '%sK', 'google-site-kit' ),
-			numberFormat( prepareForReadableLargeNumber( number ), number % 10 === 0 ? {} : withSingleDecimal )
-		);
-	}
-
-	return number.toString();
-};
-
-/**
- * Formats a number using the Internationalization Number Format API.
- *
- * @since 1.0.0
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter} For all available formatting options.
- *
- * @param {number} number           The number to format.
- * @param {Object} [options]        Formatting options.
- * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
- * @return {string} The formatted number.
- */
-export const numberFormat = ( number, options = {} ) => {
-	const { locale = getLocale(), ...formatOptions } = options;
-
-	return new Intl.NumberFormat( locale, formatOptions ).format( number );
-};
-
-/**
  * Gets the current locale for use with browser APIs.
  *
  * @since 1.6.0
@@ -259,37 +157,6 @@ export const getTimeInSeconds = ( period ) => {
 };
 
 /**
- * Converts seconds to a display ready string indicating
- * the number of hours, minutes and seconds that have elapsed.
- *
- * For example, passing 65 returns '1m 5s'.
- *
- * @since 1.0.0
- *
- * @param {number} seconds The number of seconds.
- * @return {string} Human readable string indicating time elapsed.
- *
- */
-export const prepareSecondsForDisplay = ( seconds ) => {
-	seconds = parseInt( seconds, 10 );
-
-	if ( isNaN( seconds ) || 0 === seconds ) {
-		return '0.0s';
-	}
-	const results = {};
-	results.hours = Math.floor( seconds / 60 / 60 );
-	results.minutes = Math.floor( ( seconds / 60 ) % 60 );
-	results.seconds = Math.floor( seconds % 60 );
-
-	const returnString =
-		( results.hours ? results.hours + 'h ' : '' ) +
-		( results.minutes ? results.minutes + 'm ' : '' ) +
-		( results.seconds ? results.seconds + 's ' : '' );
-
-	return returnString.trim();
-};
-
-/**
  * Retrieves the number of days between 2 dates.
  *
  * @since 1.0.0
@@ -307,24 +174,25 @@ export const getDaysBetweenDates = ( dateStart, dateEnd ) => {
 };
 
 /**
- * Calculates the percent change between two values.
+ * Calculates the change between two values.
  *
- * @since 1.0.0
+ * @since n.e.x.t
  *
  * @param {number} previous The previous value.
  * @param {number} current  The current value.
- * @return {(number|string)} The percent change.
+ * @return {(number|null)} The percent change. Null if the input or output is invalid.
  */
-export const changeToPercent = ( previous, current ) => {
+export const calculateChange = ( previous, current ) => {
 	// Prevent divide by zero errors.
 	if ( '0' === previous || 0 === previous || isNaN( previous ) ) {
-		return '';
+		return null;
 	}
-	const change = ( ( current - previous ) / previous * 100 ).toFixed( 1 );
+
+	const change = ( current - previous ) / previous;
 
 	// Avoid NaN at all costs.
-	if ( isNaN( change ) || 'Infinity' === change ) {
-		return '';
+	if ( isNaN( change ) || ! isFinite( change ) ) {
+		return null;
 	}
 
 	return change;

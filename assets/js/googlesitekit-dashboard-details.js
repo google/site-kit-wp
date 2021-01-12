@@ -31,8 +31,8 @@ import { render } from '@wordpress/element';
  * Internal dependencies.
  */
 import './components/legacy-notifications';
-import DashboardDetailsApp from './components/dashboard-details/dashboard-details-app';
-import Root from './components/root';
+import DashboardDetailsApp from './components/dashboard-details/DashboardDetailsApp';
+import Root from './components/Root';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
