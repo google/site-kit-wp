@@ -97,8 +97,10 @@ const createCompatibilityChecks = ( registry ) => [
 
 export default function CompatibilityChecks( { children, ...props } ) {
 	const registry = useRegistry();
+	const isSiteKitConnected = registry.select( CORE_SITE ).isConnected();
 	const [ compatibilityChecks ] = useState( createCompatibilityChecks( registry ) );
-	const { complete, error } = useChecks( compatibilityChecks );
+	// No checks if site kit is already connected.
+	const { complete, error } = useChecks( isSiteKitConnected ? [] : compatibilityChecks );
 	let CTAFeedback;
 	let inProgressFeedback;
 
