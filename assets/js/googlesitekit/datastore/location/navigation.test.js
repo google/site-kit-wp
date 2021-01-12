@@ -37,7 +37,7 @@ describe( 'core/location', () => {
 					.toThrow( 'url must be a valid URI.' );
 			} );
 
-			it.skip( 'requires the formName param', async () => {
+			it.skip( 'should use location.assign() function when navigating', async () => {
 				const oldLocation = global.location;
 				const assign = jest.fn();
 				const url = 'https://example.com/';
