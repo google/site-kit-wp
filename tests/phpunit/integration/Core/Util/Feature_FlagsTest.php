@@ -92,14 +92,6 @@ class Feature_FlagsTest extends TestCase {
 				'test_feature',
 				true,
 			),
-			'sub-feature enabled for production in production' => array(
-				array(
-					'test_feature.sub_feature' => 'production',
-				),
-				'production',
-				'test_feature.sub_feature',
-				true,
-			),
 			'feature enabled for development in production' => array(
 				array(
 					'test_feature' => 'development',
@@ -108,28 +100,12 @@ class Feature_FlagsTest extends TestCase {
 				'test_feature',
 				false,
 			),
-			'sub-feature enabled for development in production' => array(
-				array(
-					'test_feature.sub_feature' => 'development',
-				),
-				'production',
-				'test_feature.sub_feature',
-				false,
-			),
 			'feature enabled for development and production in development' => array(
 				array(
 					'test_feature' => array( 'development', 'production' ),
 				),
 				'development',
 				'test_feature',
-				true,
-			),
-			'deeply nested test feature for test in test'  => array(
-				array(
-					'test_feature.sub_feature.third_level.fourth' => 'test',
-				),
-				'test',
-				'test_feature.sub_feature.third_level.fourth',
 				true,
 			),
 		);
