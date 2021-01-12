@@ -24,7 +24,7 @@ import { useContext } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import FeaturesContext from '../components/FeaturesProvider/context';
+import FeaturesContext from '../components/FeaturesProvider/FeaturesContext';
 
 /**
  * Returns the enabled state of a feature flag.
