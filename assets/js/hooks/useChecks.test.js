@@ -25,7 +25,6 @@ import { useChecks } from './useChecks';
 
 describe( 'useChecks', () => {
 	it( 'should return { complete:true, error: undefined } successful check runs.', async () => {
-		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 		const checks = [ async () => Promise.resolve() ];
 		let result;
 		await act( async () => {
