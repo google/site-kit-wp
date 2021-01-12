@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -31,6 +31,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+const { useRegistry } = Data;
 import API from 'googlesitekit-api';
 import Warning from '../legacy-notifications/warning';
 import ProgressBar from '../ProgressBar';
@@ -46,7 +47,7 @@ const ERROR_WP_PRE_V5 = 'wp_pre_v5';
 
 export const AMP_PROJECT_TEST_URL = 'https://cdn.ampproject.org/v0.js';
 
-const compatibilityChecks = [
+const createCompatibilityChecks = ( registry ) => [
 	// Check for a known non-public/reserved domain.
 	async () => {
 		const { hostname } = global.location;
@@ -57,7 +58,7 @@ const compatibilityChecks = [
 	},
 	// Check for a Site Kit specific meta tag on the page to test for aggressive caching.
 	async () => {
-		const setupTag = await Data.dispatch( CORE_SITE ).checkForSetupTag();
+		const setupTag = await registry.dispatch( CORE_SITE ).checkForSetupTag();
 		if ( setupTag.error ) {
 			throw setupTag.error;
 		}
@@ -95,6 +96,8 @@ const compatibilityChecks = [
 ];
 
 export default function CompatibilityChecks( { children, ...props } ) {
+	const registry = useRegistry();
+	const [ compatibilityChecks ] = useState( createCompatibilityChecks( registry ) );
 	const { complete, error } = useChecks( compatibilityChecks );
 	let CTAFeedback;
 	let inProgressFeedback;
