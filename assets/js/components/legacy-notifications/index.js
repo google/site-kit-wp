@@ -52,7 +52,7 @@ if ( setup.needReauthenticate ) {
 		addAuthNotification, 1 );
 }
 
-if ( enabledFeatures.userInput ) {
+if ( enabledFeatures.includes( 'userInput' ) ) {
 	addFilter( 'googlesitekit.DashboardNotifications',
 		'googlesitekit.UserInputSettings',
 		addUserInputSettings, 1 );
