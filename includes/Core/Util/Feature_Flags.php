@@ -66,11 +66,11 @@ class Feature_Flags {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param string $feature         The feature name.
 		 * @param bool   $feature_enabled The current status of this feature flag (`true` or `false`).
+		 * @param string $feature         The feature name.
 		 * @param string $mode            Site mode for loading features ('development' or 'production').
 		 */
-		return apply_filters( 'googlesitekit_is_feature_enabled', $feature, $feature_enabled, static::get_mode() );
+		return apply_filters( 'googlesitekit_is_feature_enabled', $feature_enabled, $feature, static::get_mode() );
 	}
 
 	/**
