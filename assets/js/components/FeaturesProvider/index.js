@@ -19,8 +19,10 @@
 /**
  * Internal dependencies
  */
-import FeaturesContext from './context';
+import FeaturesContext from './FeaturesContext';
 
 export const { Consumer, Provider } = FeaturesContext;
 
-export default Provider;
+const FeaturesProvider = Provider;
+
+export default FeaturesProvider;
