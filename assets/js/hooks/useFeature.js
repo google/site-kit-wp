@@ -37,7 +37,7 @@ import FeaturesContext from '../components/FeaturesProvider/FeaturesContext';
 export const useFeature = ( feature ) => {
 	const enabledFeatures = useContext( FeaturesContext );
 
-	if ( ! enabledFeatures ) {
+	if ( ! Array.isArray( enabledFeatures ) ) {
 		return false;
 	}
 
