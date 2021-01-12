@@ -173,9 +173,9 @@ export function registerDefaults( widgetsAPI ) {
 		AREA_MODULE_SEARCH_CONSOLE_MAIN,
 		{
 			priority: 1,
-			subtitle: ' ',
+			subtitle: '',
 			style: WIDGET_AREA_STYLES.BOXES,
-			title: ' ',
+			title: __( 'Overview', 'google-site-kit' ),
 		},
 		CONTEXT_MODULE_SEARCH_CONSOLE,
 	);
@@ -184,9 +184,9 @@ export function registerDefaults( widgetsAPI ) {
 		AREA_MODULE_ANALYTICS_MAIN,
 		{
 			priority: 1,
-			subtitle: ' ',
+			subtitle: '',
 			style: WIDGET_AREA_STYLES.BOXES,
-			title: ' ',
+			title: __( 'Overview', 'google-site-kit' ),
 		},
 		CONTEXT_MODULE_ANALYTICS,
 	);
@@ -195,9 +195,9 @@ export function registerDefaults( widgetsAPI ) {
 		AREA_MODULE_ADSENSE_MAIN,
 		{
 			priority: 1,
-			subtitle: ' ',
+			subtitle: '',
 			style: WIDGET_AREA_STYLES.BOXES,
-			title: ' ',
+			title: __( 'Overview', 'google-site-kit' ),
 		},
 		CONTEXT_MODULE_ADSENSE,
 	);
