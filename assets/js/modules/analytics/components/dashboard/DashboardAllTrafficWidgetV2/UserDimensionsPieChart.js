@@ -83,8 +83,16 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 					const { dataTable } = GoogleChart.charts.get( 'user-dimensions-pie-chart' ) || {};
 					if ( dataTable ) {
 						const dimensionValue = dataTable.getValue( row, 0 );
-						setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue } );
+
+						setValues(
+							FORM_ALL_TRAFFIC_WIDGET,
+							{
+								dimensionValue: __( 'Others', 'google-site-kit' ) === dimensionValue ? '' : dimensionValue,
+							}
+						);
 					}
+				} else {
+					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '' } );
 				}
 			} );
 		}
