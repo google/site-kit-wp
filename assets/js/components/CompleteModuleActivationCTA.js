@@ -38,14 +38,15 @@ const { useSelect } = Data;
 
 const CompleteModuleActivationCTA = ( { moduleSlug, title, description } ) => {
 	const module = useSelect( ( select ) => select( MODULES_STORE ).getModule( moduleSlug ) );
-	const adminReauthURL = useSelect( ( select ) => select( `modules/${ moduleSlug }` )?.getAdminReauthURL() );
+	const moduleStoreName = useSelect( ( select ) => select( MODULES_STORE ).getModuleStoreName( moduleSlug ) );
+	const adminReauthURL = useSelect( ( select ) => select( moduleStoreName )?.getAdminReauthURL() );
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 
 	const onCTAClick = useCallback( async () => {
 		global.location.assign( adminReauthURL );
 	}, [ adminReauthURL ] );
 
-	if ( ! module?.name || ! canManageOptions ) {
+	if ( ! module?.name || ! adminReauthURL || ! canManageOptions ) {
 		return null;
 	}
 

@@ -170,7 +170,7 @@ export const provideUserAuthentication = ( registry, extraData = {} ) => {
 		requiredScopes: [],
 		grantedScopes: [],
 		unsatisfiedScopes: [],
-		needsReauthentication: [],
+		needsReauthentication: false,
 	};
 
 	const mergedData = { ...defaults, ...extraData };
