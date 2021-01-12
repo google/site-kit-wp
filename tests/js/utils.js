@@ -20,7 +20,7 @@ import { STORE_NAME as CORE_USER } from '../../assets/js/googlesitekit/datastore
 import coreFormsStore from '../../assets/js/googlesitekit/datastore/forms';
 import { STORE_NAME as CORE_FORMS } from '../../assets/js/googlesitekit/datastore/forms/constants';
 import coreLocationStore from '../../assets/js/googlesitekit/datastore/location';
-import { STORE as CORE_LOCATION } from '../../assets/js/googlesitekit/datastore/location/constants';
+import { STORE_NAME as CORE_LOCATION } from '../../assets/js/googlesitekit/datastore/location/constants';
 import coreModulesStore from '../../assets/js/googlesitekit/modules/datastore';
 import { STORE_NAME as CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import coreWidgetsStore from '../../assets/js/googlesitekit/widgets/datastore';
