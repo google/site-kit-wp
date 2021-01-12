@@ -49,22 +49,6 @@ import { STORE_NAME } from './datastore/constants';
 import { ERROR_CODE_ADBLOCKER_ACTIVE } from './constants';
 
 addFilter(
-	'googlesitekit.ModuleSetupIncomplete',
-	'googlesitekit.AdSenseModuleSettingsSetupIncomplete',
-	fillFilterWithComponent( ( props ) => {
-		const { slug, OriginalComponent } = props;
-		if ( 'adsense' !== slug ) {
-			return <OriginalComponent { ...props } />;
-		}
-		return (
-			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<SettingsSetupIncomplete />
-			</div>
-		);
-	} )
-);
-
-addFilter(
 	'googlesitekit.AdSenseDashboardZeroData',
 	'googlesitekit.AdSenseDashboardZeroDataRefactored',
 	fillFilterWithComponent( DashboardZeroData )
@@ -79,6 +63,7 @@ domReady( () => {
 			storeName: 'modules/adsense',
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
+			SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
 			SetupComponent: SetupMain,
 			Icon: AdSenseIcon,
 			checkRequirements: () => {

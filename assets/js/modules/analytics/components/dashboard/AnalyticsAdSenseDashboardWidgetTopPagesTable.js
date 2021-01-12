@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat } from '../../../../util';
-import withData from '../../../../components/higherorder/withdata';
+import { getTimeInSeconds, numFmt } from '../../../../util';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
@@ -88,7 +88,7 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 			row.dimensions[ 0 ],
 			Number( row.metrics[ 0 ].values[ 0 ] ).toFixed( 2 ),
 			Number( row.metrics[ 0 ].values[ 1 ] ).toFixed( 2 ),
-			numberFormat( row.metrics[ 0 ].values[ 2 ] ),
+			numFmt( row.metrics[ 0 ].values[ 2 ], { style: 'decimal' } ),
 		];
 	} );
 

@@ -26,8 +26,8 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { getTimeInSeconds } from '../../../../util';
-import DataBlock from '../../../../components/data-block';
-import withData from '../../../../components/higherorder/withdata';
+import DataBlock from '../../../../components/DataBlock';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import {
@@ -79,7 +79,8 @@ class SearchConsoleDashboardWidgetOverview extends Component {
 			{
 				className: 'googlesitekit-data-block--ctr googlesitekit-data-block--button-3',
 				title: __( 'Average CTR', 'google-site-kit' ),
-				datapoint: averageCTR + '%',
+				datapoint: averageCTR,
+				datapointUnit: '%',
 				change: averageCTRChange,
 				changeDataUnit: '%',
 				context: 'button',
@@ -119,6 +120,7 @@ class SearchConsoleDashboardWidgetOverview extends Component {
 										className={ block.className }
 										title={ block.title }
 										datapoint={ block.datapoint }
+										datapointUnit={ block.datapointUnit }
 										change={ block.change }
 										changeDataUnit={ block.changeDataUnit }
 										context={ block.context }
