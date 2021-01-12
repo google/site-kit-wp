@@ -13,6 +13,7 @@ import { RegistryProvider } from '@wordpress/data';
 /**
  * Internal dependencies
  */
+import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import { createTestRegistry } from './utils';
 
 // Override `@testing-library/react`'s render method with one that includes
@@ -33,6 +34,7 @@ import { createTestRegistry } from './utils';
  */
 const customRender = ( ui, options = {} ) => {
 	const {
+		features,
 		setupRegistry = ( r ) => r,
 		registry = createTestRegistry(),
 		...renderOptions
@@ -44,7 +46,9 @@ const customRender = ( ui, options = {} ) => {
 	function Wrapper( { children } ) {
 		return (
 			<RegistryProvider value={ registry }>
-				{ children }
+				<FeaturesProvider value={ features }>
+					{ children }
+				</FeaturesProvider>
 			</RegistryProvider>
 		);
 	}

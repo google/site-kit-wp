@@ -24,17 +24,14 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import FeaturesProvider from '../assets/js/components/FeaturesProvider';
 import UserInputApp from '../assets/js/components/user-input/UserInputApp';
 import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'User Input', module )
 	.add( 'UserInputApp', () => {
 		return (
-			<WithTestRegistry>
-				<FeaturesProvider value={ { userInput: true } }>
-					<UserInputApp />
-				</FeaturesProvider>
+			<WithTestRegistry features={ [ 'userInput' ] }>
+				<UserInputApp />
 			</WithTestRegistry>
 		);
 	} );

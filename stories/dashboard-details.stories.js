@@ -31,7 +31,6 @@ import { removeAllFilters } from '@wordpress/hooks';
  */
 import { provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import FeaturesProvider from '../assets/js/components/FeaturesProvider';
 import DashboardDetailsApp from '../assets/js/components/dashboard-details/dashboard-details-app';
 
 storiesOf( 'Dashboard Details', module )
@@ -51,13 +50,8 @@ storiesOf( 'Dashboard Details', module )
 		};
 
 		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<FeaturesProvider value={ {
-					widgets: { pageDashboard: true },
-					storeErrorNotifications: true,
-				} }>
-					<DashboardDetailsApp />
-				</FeaturesProvider>
+			<WithTestRegistry callback={ setupRegistry } features={ [ 'storeErrorNotifications', 'widgets.pageDashboard' ] }>
+				<DashboardDetailsApp />
 			</WithTestRegistry>
 		);
 	} )

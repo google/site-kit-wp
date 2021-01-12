@@ -34,7 +34,7 @@ import { useFeature } from '../hooks/useFeature';
 const { useSelect } = Data;
 
 const Header = ( { children } ) => {
-	const storeErrorNotifications = useFeature( 'storeErrorNotifications' );
+	const storeErrorNotificationsEnabled = useFeature( 'storeErrorNotifications' );
 	const isAuthenticated = useSelect( ( select ) => select( CORE_USER ).isAuthenticated() );
 
 	return (
@@ -67,7 +67,7 @@ const Header = ( { children } ) => {
 				</section>
 			</header>
 			<LegacyErrorNotification />
-			{ storeErrorNotifications && <ErrorNotifications /> }
+			{ storeErrorNotificationsEnabled && <ErrorNotifications /> }
 		</Fragment>
 	);
 };

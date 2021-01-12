@@ -52,19 +52,11 @@ class Feature_Flags {
 			return false;
 		}
 
-		// In JS, the key always ends in `enabled`, but we add that here to eliminate
-		// semantic redundancy with the name of the method.
-		$feature_path  = explode( '.', $feature );
-		$feature_modes = array_reduce(
-			$feature_path,
-			function ( $value, $key ) {
-				if ( isset( $value[ $key ] ) ) {
-					return $value[ $key ];
-				}
-				return null;
-			},
-			static::$features
-		);
+		$features = static::$features->jsonSerialize();
+
+		$feature_modes = is_array( $features[ $feature ] ) ?
+			$features[ $feature ] :
+			array( $features[ $feature ] );
 
 		$feature_enabled = in_array( static::get_mode(), (array) $feature_modes, true );
 
@@ -76,22 +68,32 @@ class Feature_Flags {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param string $feature_name    The feature name.
+		 * @param string $feature         The feature name.
 		 * @param bool   $feature_enabled The current status of this feature flag (`true` or `false`).
 		 * @param string $mode            Site mode for loading features ('development' or 'production').
 		 */
-		return apply_filters( 'googlesitekit_is_feature_enabled', $feature_name, $feature_enabled, static::get_mode() );
+		return apply_filters( 'googlesitekit_is_feature_enabled', $feature, $feature_enabled, static::get_mode() );
 	}
 
 	/**
-	 * Gets the entire feature flags configuration.
+	 * Gets all enabled feature flags.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array Feature configuration.
+	 * @return array[string] An array of all enabled features.
 	 */
-	public static function get_features() {
-		return static::$features;
+	public static function get_enabled_features() {
+		$enabled_features = array();
+
+		$features = static::$features->jsonSerialize();
+
+		foreach ( $features as $feature_name => $value ) {
+			if ( static::enabled( $feature_name ) ) {
+				$enabled_features[] = $feature_name;
+			}
+		}
+
+		return $enabled_features;
 	}
 
 	/**
@@ -124,11 +126,10 @@ class Feature_Flags {
 	 * Gets the current feature flag mode.
 	 *
 	 * @since 1.22.0
-	 * @since n.e.x.t Made the function public.
 	 *
 	 * @return string Current mode.
 	 */
-	public static function get_mode() {
+	private static function get_mode() {
 		/**
 		 * Filter the feature flag mode.
 		 *

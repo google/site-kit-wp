@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { get } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { useContext } from '@wordpress/element';
@@ -29,7 +24,7 @@ import { useContext } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { FeaturesContext } from '../components/FeaturesProvider/context';
+import FeaturesContext from '../components/FeaturesProvider/context';
 
 /**
  * Returns the enabled state of a feature flag.
@@ -42,5 +37,9 @@ import { FeaturesContext } from '../components/FeaturesProvider/context';
 export const useFeature = ( feature ) => {
 	const enabledFeatures = useContext( FeaturesContext );
 
-	return !! get( enabledFeatures, feature, false );
+	if ( ! enabledFeatures ) {
+		return false;
+	}
+
+	return enabledFeatures.includes( feature );
 };

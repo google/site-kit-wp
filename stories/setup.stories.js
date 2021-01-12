@@ -24,7 +24,6 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import FeaturesProvider from '../assets/js/components/FeaturesProvider';
 import SetupUsingGCP from '../assets/js/components/legacy-setup/SetupUsingGCP';
 import SetupUsingProxy from '../assets/js/components/setup/SetupUsingProxy';
 import { STORE_NAME as CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../assets/js/googlesitekit/datastore/user/constants';
@@ -47,10 +46,8 @@ storiesOf( 'Setup / Using GCP', module )
 		};
 
 		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<FeaturesProvider value={ { storeErrorNotifications: true } }>
-					<SetupUsingGCP />
-				</FeaturesProvider>
+			<WithTestRegistry callback={ setupRegistry } features={ [ 'storeErrorNotifications' ] }>
+				<SetupUsingGCP />
 			</WithTestRegistry>
 		);
 	} );
@@ -73,10 +70,8 @@ storiesOf( 'Setup / Using Proxy', module )
 	} )
 	.add( 'Start [User Input]', () => {
 		return (
-			<WithTestRegistry>
-				<FeaturesProvider value={ { userInput: true, serviceSetupV2: true } }>
-					<SetupUsingProxy />
-				</FeaturesProvider>
+			<WithTestRegistry features={ [ 'serviceSetupV2', 'userInput' ] }>
+				<SetupUsingProxy />
 			</WithTestRegistry>
 		);
 	} )
@@ -84,10 +79,8 @@ storiesOf( 'Setup / Using Proxy', module )
 		global._googlesitekitLegacyData.setup.isSiteKitConnected = false;
 
 		return (
-			<WithTestRegistry>
-				<FeaturesProvider value={ { userInput: true, serviceSetupV2: true } }>
-					<SetupUsingProxy />
-				</FeaturesProvider>
+			<WithTestRegistry features={ [ 'serviceSetupV2', 'userInput' ] }>
+				<SetupUsingProxy />
 			</WithTestRegistry>
 		);
 	} )
@@ -112,10 +105,11 @@ storiesOf( 'Setup / Using Proxy', module )
 			} );
 		};
 		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<FeaturesProvider value={ { userInput: true, serviceSetupV2: true } }>
-					<SetupUsingProxy />
-				</FeaturesProvider>
+			<WithTestRegistry
+				callback={ setupRegistry }
+				features={ [ 'serviceSetupV2', 'userInput' ] }
+			>
+				<SetupUsingProxy />
 			</WithTestRegistry>
 		);
 	} )

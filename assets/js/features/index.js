@@ -16,13 +16,4 @@
  * limitations under the License.
  */
 
-const processFeaturesFromMode = ( features, mode = global?._googlesitekitBaseData?.featureMode ) => {
-	return Object.keys( features ).reduce( ( acc, featureName ) => {
-		return {
-			...acc,
-			[ featureName ]: typeof features[ featureName ] === 'string' ? features[ featureName ] === mode : processFeaturesFromMode( features[ featureName ] ),
-		};
-	}, {} );
-};
-
-export const enabledFeatures = processFeaturesFromMode( global?._googlesitekitBaseData?.enabledFeatures || {} );
+export const enabledFeatures = global?._googlesitekitBaseData?.enabledFeatures || [];

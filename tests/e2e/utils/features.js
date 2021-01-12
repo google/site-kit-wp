@@ -17,6 +17,11 @@
  */
 
 /**
+ * Internal dependencies
+ */
+import { wpApiFetch } from './wp-api-fetch';
+
+/**
  * Disables a feature flag during E2E tests.
  *
  * @since n.e.x.t
@@ -27,16 +32,18 @@
 export async function disableFeature( feature ) {
 	try {
 		// Wait until apiFetch is available on the client.
-		await page.waitForFunction( () => window._googlesitekitBaseData?.enabledFeatures !== undefined );
+		await page.waitForFunction( () => window.fetch !== undefined );
+
+		return await wpApiFetch( {
+			path: 'google-site-kit/v1/e2e/feature/set-flag',
+			method: 'post',
+			data: { [ feature ]: false },
+		} );
 	} catch ( error ) {
 		// eslint-disable-next-line no-console
-		console.warn( 'window._googlesitekitBaseData.enabledFeatures not available', page.url() );
+		console.warn( 'disableFeature failure', page.url(), feature );
 		throw error;
 	}
-
-	return await page.evaluate( ( featureKey ) => {
-		return window._googlesitekitBaseData.enabledFeatures[ featureKey ] = false;
-	}, feature );
 }
 
 /**
@@ -50,14 +57,16 @@ export async function disableFeature( feature ) {
 export async function enableFeature( feature ) {
 	try {
 		// Wait until apiFetch is available on the client.
-		await page.waitForFunction( () => window._googlesitekitBaseData?.enabledFeatures !== undefined );
+		await page.waitForFunction( () => window.fetch !== undefined );
+
+		return await wpApiFetch( {
+			path: 'google-site-kit/v1/e2e/feature/set-flag',
+			method: 'post',
+			data: { [ feature ]: true },
+		} );
 	} catch ( error ) {
 		// eslint-disable-next-line no-console
-		console.warn( 'window._googlesitekitBaseData.enabledFeatures not available', page.url() );
+		console.warn( 'enableFeature failure', page.url(), feature );
 		throw error;
 	}
-
-	return await page.evaluate( ( featureKey ) => {
-		return window._googlesitekitBaseData.enabledFeatures[ featureKey ] = true;
-	}, feature );
 }

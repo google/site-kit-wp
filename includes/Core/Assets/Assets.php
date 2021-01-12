@@ -632,8 +632,7 @@ final class Assets {
 			'isNetworkMode'    => $this->context->is_network_mode(),
 			'timezone'         => get_option( 'timezone_string' ),
 			'siteName'         => get_bloginfo( 'name' ),
-			'enabledFeatures'  => Feature_Flags::get_features(),
-			'featureMode'      => Feature_Flags::get_mode(),
+			'enabledFeatures'  => Feature_Flags::get_enabled_features(),
 		);
 
 		/**

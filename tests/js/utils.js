@@ -14,7 +14,6 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
  * Internal dependencies
  */
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
-import { enabledFeatures } from '../../assets/js/features';
 import coreSiteStore from '../../assets/js/googlesitekit/datastore/site';
 import { STORE_NAME as CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import coreUserStore from '../../assets/js/googlesitekit/datastore/user';
@@ -100,10 +99,11 @@ export const createTestRegistry = () => {
  *
  * @param {?Object}   props          Component props.
  * @param {?Function} props.callback Function which receives the registry instance.
+ * @param {?Array}    props.features Feature flags to enable for this test registry provider.
  * @param {?Object}   props.registry Registry object; uses `createTestRegistry()` by default.
  * @return {WPElement} Wrapped components.
  */
-export function WithTestRegistry( { children, callback, registry = createTestRegistry() } = {} ) {
+export function WithTestRegistry( { children, callback, features, registry = createTestRegistry() } = {} ) {
 	// Populate most basic data which should not affect any tests.
 	provideUserInfo( registry );
 
@@ -113,7 +113,7 @@ export function WithTestRegistry( { children, callback, registry = createTestReg
 
 	return (
 		<RegistryProvider value={ registry }>
-			<FeaturesProvider value={ enabledFeatures }>
+			<FeaturesProvider value={ features }>
 				{ children }
 			</FeaturesProvider>
 		</RegistryProvider>

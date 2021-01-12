@@ -26,4 +26,6 @@ import { createContext } from '@wordpress/element';
  */
 import { enabledFeatures } from '../../features';
 
-export const FeaturesContext = createContext( enabledFeatures );
+const FeaturesContext = createContext( enabledFeatures );
+
+export default FeaturesContext;
