@@ -84,7 +84,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 					if ( dataTable ) {
 						const dimensionValue = dataTable.getValue( row, 0 );
 
-						if ( 'Others' !== dimensionValue ) {
+						if ( __( 'Others', 'google-site-kit' ) !== dimensionValue ) {
 							setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue } );
 						} else {
 							setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionName, dimensionValue: '' } );
