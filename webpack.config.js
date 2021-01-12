@@ -180,9 +180,9 @@ const webpackConfig = ( env, argv ) => {
 			},
 			externals,
 			output: {
-				filename: '[name].[contenthash].js',
+				filename: ( mode === 'production' ? '[name].[contenthash].js' : '[name].js' ),
 				path: path.join( __dirname, 'dist/assets/js' ),
-				chunkFilename: '[name].[chunkhash].js',
+				chunkFilename: ( mode === 'production' ? '[name].[chunkhash].js' : '[name].js' ),
 				publicPath: '',
 				/*
 					If multiple webpack runtimes (from different compilations) are used on the
@@ -302,7 +302,7 @@ const webpackConfig = ( env, argv ) => {
 						vendor: {
 							chunks: 'initial',
 							name: 'googlesitekit-vendor',
-							filename: 'googlesitekit-vendor.[contenthash].js',
+							filename: ( mode === 'production' ? 'googlesitekit-vendor.[contenthash].js' : 'googlesitekit-vendor.js' ),
 							enforce: true,
 							test: /[\\/]node_modules[\\/]/,
 						},

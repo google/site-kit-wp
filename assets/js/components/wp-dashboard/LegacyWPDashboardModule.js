@@ -1,5 +1,5 @@
 /**
- * WPDashboard component.
+ * LegacyWPDashboardModule component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -15,31 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint camelcase:[0] */
-
-/**
- * External dependencies
- */
-import './modules';
 
 /**
  * WordPress dependencies
  */
-import domReady from '@wordpress/dom-ready';
-import { render } from '@wordpress/element';
+import { withFilters } from '@wordpress/components';
+import { Component } from '@wordpress/element';
 
 /**
- * Internal dependencies
+ * A single module. Keeps track of its own active state and settings.
  */
-import './components/data';
-import Root from './components/Root';
-import WPDashboardApp from './components/wp-dashboard/WPDashboardApp';
-
-// Initialize the app once the DOM is ready.
-domReady( () => {
-	const renderTarget = document.getElementById( 'js-googlesitekit-wp-dashboard' );
-
-	if ( renderTarget ) {
-		render( <Root dataAPIContext="WPDashboard"><WPDashboardApp /></Root>, renderTarget );
+class LegacyWPDashboardModule extends Component {
+	render() {
+		return null;
 	}
-} );
+}
+
+export default withFilters( 'googlesitekit.WPDashboardModule' )( LegacyWPDashboardModule );

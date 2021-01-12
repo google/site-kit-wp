@@ -31,12 +31,12 @@ import { __ } from '@wordpress/i18n';
  */
 import Button from '../Button';
 
-export default function UserInputPreviewGroup( { title, edit, values, options } ) {
+export default function UserInputPreviewGroup( { questionNumber, title, edit, values, options } ) {
 	return (
 		<div className="googlesitekit-user-input__preview-group">
 			<div className="googlesitekit-user-input__preview-group-title">
 				<p>
-					{ title }
+					{ questionNumber } - { title }
 				</p>
 				<Button text onClick={ edit }>
 					{ __( 'Edit', 'google-site-kit' ) }
@@ -55,6 +55,7 @@ export default function UserInputPreviewGroup( { title, edit, values, options } 
 }
 
 UserInputPreviewGroup.propTypes = {
+	questionNumber: PropTypes.number.isRequired,
 	title: PropTypes.string.isRequired,
 	edit: PropTypes.func.isRequired,
 	values: PropTypes.arrayOf( PropTypes.string ).isRequired,
