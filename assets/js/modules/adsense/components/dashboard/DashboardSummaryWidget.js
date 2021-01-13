@@ -51,8 +51,11 @@ function DashboardSummaryWidget() {
 	} = useSelect( ( select ) => {
 		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
 
+		const referenceDate = select( CORE_USER ).getReferenceDate(); // The issues is the reference date needs to be offset to match the data...
+
 		const todayArgs = {
-			dateRange: 'today',
+			startDate: referenceDate,
+			endDate: referenceDate,
 			metrics,
 		};
 
@@ -65,8 +68,16 @@ function DashboardSummaryWidget() {
 			metrics,
 		};
 
+		// Get the first day of the month an ISO 8601 date string.
+		const startOfMonth = new Date(
+			new Date( referenceDate ).getFullYear(),
+			new Date( referenceDate ).getMonth(),
+			1
+		).toLocaleDateString( 'sv-SE' ); // Sweden uses ISO 8601 as their official date format.
+
 		const dailyArgs = {
-			dateRange: 'this-month',
+			startDate: startOfMonth,
+			endDate: referenceDate,
 			metrics,
 			dimensions: [ 'DATE' ],
 		};
