@@ -80,6 +80,20 @@ describe( 'core/location', () => {
 			} );
 		} );
 
+		describe( 'isNavigatingTo', () => {
+			it.each( [
+				[ '1', 1 ],
+				[ 'false', false ],
+				[ 'undefined', undefined ],
+				[ 'NULL', null ],
+				[ 'NaN', NaN ],
+				[ 'an URL object', new URL( 'http://example.com/' ) ],
+			] )( 'should throw an error if %s is passed', ( name, val ) => {
+				expect( () => registry.select( STORE_NAME ).isNavigatingTo( val ) )
+					.toThrow( 'url must be either a string or a regular expression.' );
+			} );
+		} );
+
 		describe( 'getNavigateURL', () => {
 			it( 'should return NULL when not navigating', () => {
 				expect( registry.select( STORE_NAME ).getNavigateURL() ).toBeNull();

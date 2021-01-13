@@ -59,7 +59,7 @@ function mapScopesToModuleNames( scopes ) {
 }
 
 export default function UnsatisfiedScopesAlert() {
-	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
+	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigatingTo( /\/o\/oauth2/i ) );
 	const unsatisfiedScopes = useSelect( ( select ) => select( CORE_USER ).getUnsatisfiedScopes() );
 	const connectURL = useSelect( ( select ) => select( CORE_USER ).getConnectURL( {
 		redirectURL: global.location.href,

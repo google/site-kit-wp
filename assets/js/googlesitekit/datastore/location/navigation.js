@@ -99,6 +99,27 @@ export const selectors = {
 	},
 
 	/**
+	 * Determines whether navigating to the specific URL or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}        state Data store's state.
+	 * @param {string|RegExp} url   An URL or a regular expression to test.
+	 * @return {boolean} TRUE if navigating to a specific URL, otherwise FALSE.
+	 */
+	isNavigatingTo( state, url ) {
+		const { navigatingTo } = state;
+
+		invariant( typeof url === 'string' || url instanceof RegExp, 'url must be either a string or a regular expression.' );
+
+		if ( typeof url === 'string' ) {
+			return navigatingTo === url;
+		}
+
+		return url.test( navigatingTo );
+	},
+
+	/**
 	 * Gets navigation URL.
 	 *
 	 * @since n.e.x.t
