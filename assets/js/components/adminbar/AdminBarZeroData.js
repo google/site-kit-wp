@@ -1,7 +1,7 @@
 /**
  * Admin Bar Clicks component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,9 @@
 const AdminBarZeroData = () => {
 	return (
 		<div className="
-			mdc-layout-grid__cell
 			mdc-layout-grid__cell--span-4-phone
 			mdc-layout-grid__cell--span-8-tablet
-			mdc-layout-grid__cell--span-10-desktop
+			mdc-layout-grid__cell--span-12-desktop
 		">
 			<div className="googlesitekit-zero-data">
 				<h3 className="googlesitekit-zero-data__title">No data available yet</h3>
