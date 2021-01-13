@@ -193,7 +193,7 @@ export default function GoogleChart( props ) {
 
 GoogleChart.propTypes = {
 	chartID: PropTypes.string,
-	chartType: PropTypes.oneOf( [ 'area', 'pie', 'line' ] ).required,
+	chartType: PropTypes.oneOf( [ 'area', 'pie', 'line' ] ).isRequired,
 	className: PropTypes.string,
 	data: PropTypes.arrayOf( PropTypes.array ),
 	loadCompressed: PropTypes.bool,
