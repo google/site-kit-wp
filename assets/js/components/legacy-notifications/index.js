@@ -24,7 +24,7 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import { enabledFeatures } from '../../features';
+import { isFeatureEnabled } from '../../features';
 import { createAddToFilter } from '../../util/helpers';
 import { getQueryParameter } from '../../util';
 import DashboardCoreSiteAlerts from './dashboard-core-site-alerts';
@@ -52,7 +52,7 @@ if ( setup.needReauthenticate ) {
 		addAuthNotification, 1 );
 }
 
-if ( enabledFeatures.includes( 'userInput' ) ) {
+if ( isFeatureEnabled( 'userInput' ) ) {
 	addFilter( 'googlesitekit.DashboardNotifications',
 		'googlesitekit.UserInputSettings',
 		addUserInputSettings, 1 );

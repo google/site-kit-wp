@@ -17,3 +17,16 @@
  */
 
 export const enabledFeatures = global?._googlesitekitBaseData?.enabledFeatures || [];
+
+/**
+ * Returns true if a feature is enabled; false otherwise.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} feature          The name of the feature to check.
+ * @param {?Array} _enabledFeatures Optional. The list of enabled features. Uses `enabledFeatures` set by the server in a global JS variable, by default.
+ * @return {boolean} `true` if a feature is enabled; `false` otherwise.
+ */
+export const isFeatureEnabled = ( feature, _enabledFeatures = enabledFeatures ) => {
+	return _enabledFeatures.includes( feature );
+};
