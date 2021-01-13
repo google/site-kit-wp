@@ -299,27 +299,24 @@ export const extractAnalyticsChartData = ( reports ) => {
 		return null;
 	}
 
-	// Data is returned as an object.
-	const data = reports[ 0 ].data.rows;
-
-	const dataMap = [
+	return [
 		[
 			{ type: 'date', label: 'Day' },
+			{ type: 'number', label: '' },
 			{ type: 'number', label: 'Users' },
 		],
+		...reports[ 0 ].data.rows.map( ( row ) => {
+			const { values } = row.metrics[ 0 ];
+			const dateString = row.dimensions[ 0 ];
+			const date = parseDimensionStringToDate( dateString );
+
+			return [
+				date,
+				null,
+				values[ 0 ],
+			];
+		} ),
 	];
-
-	each( data, ( row ) => {
-		const { values } = row.metrics[ 0 ];
-		const dateString = row.dimensions[ 0 ];
-		const date = parseDimensionStringToDate( dateString );
-		dataMap.push( [
-			date,
-			values[ 0 ],
-		] );
-	} );
-
-	return dataMap;
 };
 
 /**

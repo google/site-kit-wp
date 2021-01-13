@@ -23,11 +23,6 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { useEffect } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -36,7 +31,7 @@ import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/
 import { STORE_NAME as MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../../analytics/datastore/constants';
 import { isZeroReport } from '../../../../analytics/util/is-zero-report';
 import GoogleChart from '../../../../../components/GoogleChart';
-import { extractAnalyticsDashboardData, reduceAnalyticsRowsData, extractAnalyticsChartData } from '../../../util';
+import { extractAnalyticsChartData } from '../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
 import ReportZero from '../../../../../components/ReportZero';
@@ -83,13 +78,8 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ) );
 	const report = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( args ) );
 
-	useEffect( () => {
-		console.log( 'report', report );
-		console.log( 'dateRangeDates', dateRangeDates );
-	}, [ report ] );
-
 	if ( ! loaded ) {
-		return <PreviewBlock width="282px" height="282px" shape="circular" />;
+		return <PreviewBlock width="282px" height="282px" shape="square" />;
 	}
 
 	if ( error ) {
@@ -105,65 +95,72 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 	return (
 		<div>
 			<GoogleChart
-				chartType="area"
-				// selectedStats={ selectedStats }
+				chartType="line"
 				data={ chartData }
 				options={ {
-				// chart: {
-				// 	title: 'TEST TEST TEST',
-				// },
 					animation: {
 						startup: true,
 					},
 					curveType: 'function',
-					height: 270,
+					height: 340,
 					width: '100%',
-					// backgroundColor: '#eef4fd', // rgba(26, 115, 232, 0.08) over the white background.
 					colors: [ '#1a73e8' ],
 					chartArea: {
 						height: '80%',
-						width: '100%',
+						width: '90%',
 					},
 					legend: {
-						position: 'right',
-						textStyle: {
-							color: '#616161',
-							fontSize: 12,
-						},
+						position: 'none',
 					},
 					hAxis: {
-						baselineColor: '#eef4fd', // rgba(26, 115, 232, 0.08) over the white background.
-						format: 'MMMM d',
+						backgroundColor: '#eef4fd', // rgba(26, 115, 232, 0.08) over the white background.
+						format: 'MMM d',
 						gridlines: {
 							color: '#ffffff',
 						},
+						textPosition: 'out',
 						textStyle: {
 							color: '#616161',
 							fontSize: 12,
 						},
-						// title: 'Nov',
 					},
-					vAxis: {
-						gridlines: {
-							color: '#ece9f1',
+					vAxes: {
+						0: {
+							gridlines: {
+								color: '#ffffff',
+							},
+							textPosition: 'none',
+							ticks: [],
 						},
-						minValue: 0,
-						textStyle: {
-							color: '#616161',
-							fontSize: 12,
-						},
-						titleTextStyle: {
-							color: '#616161',
-							fontSize: 12,
-							italic: false,
+						1: {
+							gridlines: {
+								color: '#ece9f1',
+							},
+							lineWidth: 3,
+							minorGridlines: {
+								color: '#ffffff',
+							},
+							textStyle: {
+								color: '#616161',
+								fontSize: 12,
+							},
+							textPosition: 'out',
+							// title: __( 'Users', 'google-site-kit' ),
+							titleTextStyle: {
+								color: '#616161',
+								fontSize: 12,
+								italic: false,
+							},
 						},
 					},
-					// focusTarget: 'category',
+					series: {
+						0: { targetAxisIndex: 0 },
+						1: { color: '#1a73e8', lineWidth: 3, targetAxisIndex: 1 },
+					},
 					crosshair: {
-						color: 'blue',
+						color: '#1a73e8',
 						opacity: 0.1,
 						orientation: 'vertical',
-						trigger: 'both',
 					},
 				} }
 			/>
