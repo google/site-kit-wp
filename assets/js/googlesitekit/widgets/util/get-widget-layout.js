@@ -1,5 +1,5 @@
 /**
- * Widgets class names utilities.
+ * Widgets layout utilities.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,31 +19,7 @@
 /**
  * Internal dependencies
  */
-import { WIDGET_WIDTHS } from '../datastore/constants';
-
-const WIDTH_GRID_COUNTER_MAP = {
-	[ WIDGET_WIDTHS.QUARTER ]: 3,
-	[ WIDGET_WIDTHS.HALF ]: 6,
-	[ WIDGET_WIDTHS.FULL ]: 12,
-};
-
-const WIDTH_GRID_CLASS_MAP = {
-	[ WIDGET_WIDTHS.QUARTER ]: [
-		'mdc-layout-grid__cell',
-		'mdc-layout-grid__cell--span-2-phone',
-		'mdc-layout-grid__cell--span-3-desktop',
-		'mdc-layout-grid__cell--span-4-tablet',
-	],
-	[ WIDGET_WIDTHS.HALF ]: [
-		'mdc-layout-grid__cell',
-		'mdc-layout-grid__cell--span-6-desktop',
-		'mdc-layout-grid__cell--span-8-tablet',
-	],
-	[ WIDGET_WIDTHS.FULL ]: [
-		'mdc-layout-grid__cell',
-		'mdc-layout-grid__cell--span-12',
-	],
-};
+import { WIDTH_GRID_COUNTER_MAP, WIDTH_GRID_CLASS_MAP } from './constants';
 
 /**
  * Adjusts class names to better fit into the current row knowing that the default sizes don't fill the row completely.

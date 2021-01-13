@@ -58,13 +58,15 @@ export function combineWidgets( activeWidgets, widgetStates, {
 	rowIndexes,
 } ) {
 	const gridClassNames = [ ...classNames ];
-	const overrideComponents = [].fill( null, 0, activeWidgets.length );
+	const overrideComponents = [];
 
 	let currentState = null;
 	let currentRowIndex = -1;
 	let columnWidthsBuffer = [];
 
 	activeWidgets.forEach( ( widget, i ) => {
+		overrideComponents.push( null );
+
 		// Hide any widgets that have `null` as class names (which happens
 		// when the widget renders `null`).
 		if ( gridClassNames[ i ] === null ) {

@@ -1,5 +1,5 @@
 /**
- * API utility function tests.
+ * Widgets layout utilities tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
