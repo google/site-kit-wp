@@ -27,6 +27,7 @@ import domReady from '@wordpress/dom-ready';
 import Modules from 'googlesitekit-modules';
 import Widgets from 'googlesitekit-widgets';
 import './datastore';
+import { STORE_NAME } from './datastore/constants';
 import {
 	AREA_DASHBOARD_ALL_TRAFFIC,
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
@@ -49,7 +50,7 @@ domReady( () => {
 	Modules.registerModule(
 		'analytics',
 		{
-			storeName: 'modules/analytics',
+			storeName: STORE_NAME,
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
