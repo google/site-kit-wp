@@ -78,7 +78,7 @@ class Feature_Flags {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array[string] An array of all enabled features.
+	 * @return string[] An array of all enabled features.
 	 */
 	public static function get_enabled_features() {
 		$enabled_features = array();
