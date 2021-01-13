@@ -85,9 +85,9 @@ function DashboardBounceRateWidget() {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
-			serviceURL: store.getServiceReportURL( 'visitors-overview', url ? {
-				'_r.drilldown': `analytics.pagePath:${ getURLPath( url ) }`,
-			} : undefined ),
+			serviceURL: store.getServiceReportURL( 'visitors-overview', {
+				'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+			} ),
 		};
 	} );
 
