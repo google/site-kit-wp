@@ -1,0 +1,97 @@
+/**
+ * CompatibilityChecks component.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+const { useRegistry } = Data;
+import Warning from '../../legacy-notifications/warning';
+import ProgressBar from '../../ProgressBar';
+import { useChecks } from '../../../hooks/useChecks';
+import CompatibilityErrorNotice from './CompatibilityErrorNotice';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { checkAMPConnectivity, checkHealthChecks, checkHostname, checkWPVersion, registryCheckSetupTag } from './checks';
+
+const createCompatibilityChecks = ( registry ) => {
+	if ( registry.select( CORE_SITE ).isConnected() ) {
+		return [];
+	}
+
+	return [
+		checkHostname,
+		registryCheckSetupTag( registry ),
+		checkHealthChecks,
+		checkAMPConnectivity,
+		checkWPVersion,
+	];
+};
+
+export default function CompatibilityChecks( { children, ...props } ) {
+	const registry = useRegistry();
+	const { complete, error } = useChecks( createCompatibilityChecks( registry ) );
+	let CTAFeedback;
+	let inProgressFeedback;
+
+	if ( error ) {
+		CTAFeedback = <Fragment>
+			<div className="googlesitekit-setup-compat mdc-layout-grid mdc-layout-grid--align-left">
+				<div className="googlesitekit-setup__warning">
+					<Warning />
+
+					<div className="googlesitekit-heading-4">
+						{ __( 'Your site may not be ready for Site Kit', 'google-site-kit' ) }
+					</div>
+				</div>
+				{ error && <CompatibilityErrorNotice error={ error } /> }
+			</div>
+		</Fragment>;
+	}
+
+	if ( ! complete ) {
+		inProgressFeedback = (
+			<div className="googlesitekit-margin-left-1rem googlesitekit-align-self-center">
+				<small>{ __( 'Checking Compatibility…', 'google-site-kit' ) }</small>
+				<ProgressBar small compress />
+			</div>
+		);
+	}
+
+	return children( {
+		props,
+		complete,
+		error,
+		inProgressFeedback,
+		CTAFeedback,
+	} );
+}
+
+CompatibilityChecks.propTypes = {
+	children: PropTypes.func.isRequired,
+};
