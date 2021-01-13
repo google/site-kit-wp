@@ -92,7 +92,10 @@ export default function WidgetAreaRenderer( { slug } ) {
 	const widgetsOutput = activeWidgets.map( ( widget, i ) => (
 		<WidgetRenderer
 			gridClassName={ classnames( gridClassNames[ i ] ) }
-			OverrideComponent={ overrideComponents[ i ] }
+			OverrideComponent={ overrideComponents[ i ] ? () => {
+				const { Component, metadata } = overrideComponents[ i ];
+				return <Component { ...metadata } />;
+			} : undefined }
 			key={ widget.slug }
 			slug={ widget.slug }
 		/>

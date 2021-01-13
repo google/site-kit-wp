@@ -47,7 +47,10 @@ function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
  *                                             widget.
  * @return {Object} Object with `gridClassNames` and `overrideComponents`
  *                  properties, both of which are a list with one item for each
- *                  widget.
+ *                  widget. Every `gridClassNames` entry is an array of class
+ *                  names, every `overrideComponents` entry is either an object
+ *                  with `Component` and `metadata`, or `null` (similar to
+ *                  the `widgetStates` parameter).
  */
 export function combineWidgets( activeWidgets, widgetStates, {
 	classNames,
@@ -55,7 +58,7 @@ export function combineWidgets( activeWidgets, widgetStates, {
 	rowIndexes,
 } ) {
 	const gridClassNames = [ ...classNames ];
-	const overrideComponents = [].fill( undefined, 0, activeWidgets.length );
+	const overrideComponents = [].fill( null, 0, activeWidgets.length );
 
 	let currentState = null;
 	let currentRowIndex = -1;
@@ -87,7 +90,6 @@ export function combineWidgets( activeWidgets, widgetStates, {
 				// combined version will need to be displayed instead of the
 				// widget. The combined version will use the common Component
 				// and pass all common metadata as props.
-				const { Component, metadata } = currentState;
 				columnWidthsBuffer.push( columnWidths[ i ] );
 
 				// Get total (desktop) column width and use corresponding grid
@@ -100,9 +102,7 @@ export function combineWidgets( activeWidgets, widgetStates, {
 					'mdc-layout-grid__cell',
 					`mdc-layout-grid__cell--span-${ combinedColumnWidth }`,
 				];
-				overrideComponents[ i ] = () => (
-					<Component { ...metadata } />
-				);
+				overrideComponents[ i ] = currentState;
 
 				// Reset the columnWidthsBuffer variable.
 				columnWidthsBuffer = [];
