@@ -60,7 +60,7 @@ domReady( () => {
 	Modules.registerModule(
 		'adsense',
 		{
-			storeName: 'modules/adsense',
+			storeName: STORE_NAME,
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
