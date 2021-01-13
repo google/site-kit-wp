@@ -37,7 +37,6 @@ import ReportError from '../../../../../components/ReportError';
 import ReportZero from '../../../../../components/ReportZero';
 const { useSelect } = Data;
 
-// eslint-disable-next-line no-unused-vars
 export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
