@@ -36,8 +36,9 @@ import GoogleSitekitSearchConsoleAdminbarWidget from '../assets/js/modules/searc
 import { createAddToFilter } from '../assets/js/util/helpers';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
-import { WithTestRegistry } from '../tests/js/utils';
+import { provideModules, provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 import CollectModuleData from '../assets/js/components/data/collect-module-data';
+import { disableFeature, enableFeature } from './utils/features';
 
 storiesOf( 'Global', module )
 	.add( 'Admin Bar', () => {
@@ -73,6 +74,8 @@ storiesOf( 'Global', module )
 			'googlesitekit.SearchConsole',
 			addGoogleSitekitSearchConsoleAdminbarWidget );
 
+		disableFeature( 'widgets.adminBar' );
+
 		return (
 			<div id="wpadminbar">
 				<div className="googlesitekit-plugin">
@@ -87,4 +90,34 @@ storiesOf( 'Global', module )
 				</div>
 			</div>
 		);
+	} )
+	.add( 'Admin Bar Zero Data', () => {
+		global._googlesitekitLegacyData = wpAdminBarData;
+
+		const setupRegistry = ( registry ) => {
+			// Set some site information.
+			provideSiteInfo( registry, { currentEntityURL: '/example-page/' } );
+
+			// Set up the search console and analytics modules stores but provide no data.
+			provideModules( registry, [ { slug: 'search-console', active: true, connected: true } ] );
+			provideModules( registry, [ { slug: 'analytics', active: true, connected: true } ] );
+		};
+
+		removeAllFilters( 'googlesitekit.AdminbarModules' );
+		enableFeature( 'widgets.adminBar' );
+
+		return (
+			<div id="wpadminbar">
+				<div className="googlesitekit-plugin">
+					<div id="js-googlesitekit-adminbar" className="ab-sub-wrapper googlesitekit-adminbar" style={ { display: 'block' } }>
+						<section id="js-googlesitekit-adminbar-modules" className="googlesitekit-adminbar-modules">
+							<WithTestRegistry callback={ setupRegistry }>
+								<GoogleSitekitAdminbar />
+							</WithTestRegistry>
+						</section>
+					</div>
+				</div>
+			</div>
+		);
 	} );
+
