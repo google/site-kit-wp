@@ -1,5 +1,5 @@
 /**
- * Utility functions for Tags
+ * URL pathname getter utility function.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

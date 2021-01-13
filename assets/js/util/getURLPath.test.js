@@ -1,5 +1,5 @@
 /**
- * Escape URI components utility tests.
+ * URL pathname getter utility function tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
