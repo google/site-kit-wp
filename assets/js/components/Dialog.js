@@ -115,7 +115,10 @@ const Dialog = ( {
 								>
 									{ confirmButton ? confirmButton : __( 'Disconnect', 'google-site-kit' ) }
 								</Button>
-								<Spinner isSaving={ showSpinner } />
+								<Spinner
+									className="googlesitekit-margin-right-auto"
+									isSaving={ showSpinner }
+								/>
 								<Link
 									className="mdc-dialog__cancel-button"
 									onClick={ handleDialog }

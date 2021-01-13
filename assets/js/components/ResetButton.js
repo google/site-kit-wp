@@ -39,8 +39,10 @@ function ResetButton( { children } ) {
 	const postResetURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { notification: 'reset_success' } ) );
 
 	// Sketching this in for now, these selectors will be added as part of #2497
+	// useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() )
+	// useSelect( ( select ) => select( CORE_LOCATION ).getNavigationURL() )
 	const isNavigating = false;
-	const getNavigationURL = () => postResetURL;
+	const navigatingURL = postResetURL;
 
 	const [ dialogActive, setDialogActive ] = useState( false );
 
@@ -83,7 +85,7 @@ function ResetButton( { children } ) {
 		setDialogActive( true );
 	}, [] );
 
-	const showSpinner = isNavigating && postResetURL === getNavigationURL();
+	const showSpinner = isNavigating && postResetURL === navigatingURL;
 
 	return (
 		<Fragment>
@@ -105,7 +107,7 @@ function ResetButton( { children } ) {
 						{
 							br: <br />,
 						} ) }
-					confirmButton={ showSpinner ? __( 'Resetting', 'google-site-kit' ) : __( 'Reset', 'google-site-kit' ) }
+					confirmButton={ __( 'Reset', 'google-site-kit' ) }
 					danger
 					showSpinner={ showSpinner }
 				/>
