@@ -77,7 +77,7 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 	const report = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( args ) );
 
 	if ( ! loaded ) {
-		return <PreviewBlock width="100%" height="320px" shape="square" />;
+		return <PreviewBlock width="100%" height="300px" shape="square" />;
 	}
 
 	if ( error ) {
