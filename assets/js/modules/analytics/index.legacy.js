@@ -1,7 +1,7 @@
 /**
  * Analytics module initialization.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,6 @@ if ( ! modulesData[ slug ].setupComplete ) {
 
 if ( modulesData.analytics.active ) {
 	const addAnalyticsDashboardWidget = createAddToFilter( <AnalyticsDashboardWidget /> );
-	// const addAnalyticsAllTraffic = createAddToFilter( <LegacyAnalyticsAllTraffic /> );
 	const legacyDashboardAllTraffic = createAddToFilter( <LegacyDashboardAllTraffic /> );
 	const addWPAnalyticsDashboardWidgetOverview = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
 	const addWPAnalyticsDashboardWidgetTopPagesTable = createAddToFilter( <WPAnalyticsDashboardWidgetTopPagesTable /> );
@@ -84,9 +83,6 @@ if ( modulesData.analytics.active ) {
 	/**
 	 * Add components to the Site Kit Dashboard.
 	 */
-	// addFilter( 'googlesitekit.DashboardModule',
-	// 	'googlesitekit.Analytics',
-	// 	addAnalyticsAllTraffic, 9 );
 	addFilter( 'googlesitekit.DashboardModule',
 		'googlesitekit.Analytics',
 		legacyDashboardAllTraffic, 8 );
