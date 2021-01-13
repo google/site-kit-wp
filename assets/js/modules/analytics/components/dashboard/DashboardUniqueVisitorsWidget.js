@@ -34,6 +34,7 @@ import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import { calculateChange } from '../../../../util';
+import { getURLPath } from '../../../../util/getURLPath';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
@@ -102,7 +103,7 @@ function DashboardUniqueVisitorsWidget() {
 			// Due to the nature of these queries, we need to run them separately.
 			sparkData: store.getReport( sparklineArgs ),
 			serviceURL: store.getServiceReportURL( 'visitors-overview', url ? {
-				'_r.drilldown': `analytics.pagePath:${ url }`,
+				'_r.drilldown': `analytics.pagePath:${ getURLPath( url ) }`,
 			} : undefined ),
 			visitorsData: store.getReport( args ),
 		};

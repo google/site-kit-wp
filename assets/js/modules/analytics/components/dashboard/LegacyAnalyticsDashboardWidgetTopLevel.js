@@ -45,7 +45,7 @@ import {
 	userReportDataDefaults,
 	parseTotalUsersData,
 } from '../../util';
-
+import { getURLPath } from '../../../../util/getURLPath';
 import Data from 'googlesitekit-data';
 import DataBlock from '../../../../components/DataBlock';
 import withData from '../../../../components/higherorder/withData';
@@ -102,10 +102,10 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
 	const uniqueVisitorsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( `visitors-overview`, url ? {
-		'_r.drilldown': `analytics.pagePath:${ url }`,
+		'_r.drilldown': `analytics.pagePath:${ getURLPath( url ) }`,
 	} : undefined ) );
 	const goalsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( `conversions-goals-overview`, url ? {
-		'_r.drilldown': `analytics.pagePath:${ url }`,
+		'_r.drilldown': `analytics.pagePath:${ getURLPath( url ) }`,
 	} : undefined ) );
 	const goalURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
 		path: '/analytics/answer/1032415',

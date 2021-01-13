@@ -34,6 +34,7 @@ import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import { calculateChange } from '../../../../util';
+import { getURLPath } from '../../../../util/getURLPath';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
@@ -85,7 +86,7 @@ function DashboardBounceRateWidget() {
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			serviceURL: store.getServiceReportURL( 'visitors-overview', url ? {
-				'_r.drilldown': `analytics.pagePath:${ url }`,
+				'_r.drilldown': `analytics.pagePath:${ getURLPath( url ) }`,
 			} : undefined ),
 		};
 	} );

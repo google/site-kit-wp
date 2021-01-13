@@ -32,13 +32,14 @@ import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/Le
 import LegacyDashboardAcquisitionPieChart from '../dashboard/LegacyDashboardAcquisitionPieChart';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { getURLPath } from '../../../../util/getURLPath';
 
 const { useSelect } = Data;
 
 export default function AnalyticsDashboardDetailsWidgetTopAcquisitionSources() {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', url ? {
-		'_r.drilldown': `analytics.pagePath:${ url }`,
+		'_r.drilldown': `analytics.pagePath:${ getURLPath( url ) }`,
 	} : undefined ) );
 
 	return (

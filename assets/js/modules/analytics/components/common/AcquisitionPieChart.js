@@ -34,6 +34,7 @@ import Data from 'googlesitekit-data';
 import GoogleChart from '../../../../components/GoogleChart';
 import Link from '../../../../components/Link';
 import { extractAnalyticsDataForPieChart } from '../../util';
+import { getURLPath } from '../../../../util/getURLPath';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
@@ -68,7 +69,7 @@ const GOOGLE_CHART_PIE_SETTINGS = {
 function AcquisitionPieChart( { data, args, source } ) {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', url ? {
-		'_r.drilldown': `analytics.pagePath:${ url }`,
+		'_r.drilldown': `analytics.pagePath:${ getURLPath( url ) }`,
 	} : undefined ) );
 
 	if ( ! data ) {
