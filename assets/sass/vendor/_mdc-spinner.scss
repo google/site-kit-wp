@@ -1,0 +1,9 @@
+// Overrides for .spinner
+
+.googlesitekit-plugin {
+	// Admin page, reset dialog: the spinner
+	// should sit next to the reset button
+	.mdc-dialog__actions .mdc-button + .spinner {
+		margin-right: auto;
+	}
+}
