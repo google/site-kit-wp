@@ -204,7 +204,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 	}
 
 	return (
-		<div className="googlesitekit-widget--analyticsAllTrafficV2__dimensions-chart">
+		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart">
 			<GoogleChart
 				chartID="user-dimensions-pie-chart"
 				chartType="pie"
@@ -214,7 +214,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 				onReady={ onReady }
 			/>
 			<div
-				className="googlesitekit-widget--analyticsAllTrafficV2__dimensions-chart-title"
+				className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
 				dangerouslySetInnerHTML={ title }
 			/>
 		</div>

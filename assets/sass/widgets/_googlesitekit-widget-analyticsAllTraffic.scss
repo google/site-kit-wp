@@ -18,7 +18,7 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-widget.googlesitekit-widget--analyticsAllTrafficV2 {
+	.googlesitekit-widget.googlesitekit-widget--analyticsAllTraffic {
 
 		.mdc-tab-scroller__scroll-content {
 			justify-content: center;
@@ -46,7 +46,7 @@
 		}
 	}
 
-	.googlesitekit-widget--analyticsAllTrafficV2__dimensions {
+	.googlesitekit-widget--analyticsAllTraffic__dimensions {
 		padding-top: 30px;
 
 		.googlesitekit-line-chart {
@@ -64,11 +64,11 @@
 		}
 	}
 
-	.googlesitekit-widget--analyticsAllTrafficV2__dimensions-chart {
+	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart {
 		position: relative;
 	}
 
-	.googlesitekit-widget--analyticsAllTrafficV2__dimensions-chart-title {
+	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title {
 		color: $c-scarpa-flow;
 		font-size: 16px;
 		font-weight: 500;
@@ -85,7 +85,7 @@
 		}
 	}
 
-	.googlesitekit-widget--analyticsAllTrafficV2__totalcount {
+	.googlesitekit-widget--analyticsAllTraffic__totalcount {
 
 		h3 {
 			font-size: 16px;
@@ -105,7 +105,7 @@
 		}
 	}
 
-	.googlesitekit-widget--analyticsAllTrafficV2__totalcount--change {
+	.googlesitekit-widget--analyticsAllTraffic__totalcount--change {
 		display: inline-block;
 		font-size: 24px;
 		font-weight: 500;
@@ -118,15 +118,15 @@
 		}
 	}
 
-	.googlesitekit-widget--analyticsAllTrafficV2__totalcount--up-change {
+	.googlesitekit-widget--analyticsAllTraffic__totalcount--up-change {
 		color: $c-chateau-green;
 	}
 
-	.googlesitekit-widget--analyticsAllTrafficV2__totalcount--down-change {
+	.googlesitekit-widget--analyticsAllTraffic__totalcount--down-change {
 		color: $c-thunderbird;
 	}
 
-	.googlesitekit-widget--analyticsAllTrafficV2__totalcount--daterange {
+	.googlesitekit-widget--analyticsAllTraffic__totalcount--daterange {
 		display: inline-block;
 		font-size: 12px;
 		font-weight: 400;

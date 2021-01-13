@@ -94,7 +94,7 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 	}
 
 	return (
-		<div className="googlesitekit-widget--analyticsAllTrafficV2__totalcount">
+		<div className="googlesitekit-widget--analyticsAllTraffic__totalcount">
 			<h3>
 				{ __( 'Users', 'google-site-kit' ) }
 				{ dimensionValue && (
@@ -105,9 +105,9 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 				{ readableLargeNumber( current?.values?.[ 0 ] ) }
 			</h2>
 			<div>
-				<span className={ classnames( 'googlesitekit-widget--analyticsAllTrafficV2__totalcount--change', {
-					'googlesitekit-widget--analyticsAllTrafficV2__totalcount--up-change': 0 <= change,
-					'googlesitekit-widget--analyticsAllTrafficV2__totalcount--down-change': 0 > change,
+				<span className={ classnames( 'googlesitekit-widget--analyticsAllTraffic__totalcount--change', {
+					'googlesitekit-widget--analyticsAllTraffic__totalcount--up-change': 0 <= change,
+					'googlesitekit-widget--analyticsAllTraffic__totalcount--down-change': 0 > change,
 				} ) }>
 					<ChangeArrow
 						direction={ 0 <= change ? 'up' : 'down' }
@@ -117,7 +117,7 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 
 					{ numFmt( Math.abs( change ), { style: 'percent', maximumFractionDigits: 1 } ) }
 				</span>
-				<span className="googlesitekit-widget--analyticsAllTrafficV2__totalcount--daterange">
+				<span className="googlesitekit-widget--analyticsAllTraffic__totalcount--daterange">
 					{ currentDateRangeLabel }
 				</span>
 			</div>
