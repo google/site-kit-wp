@@ -104,7 +104,7 @@ export const createTestRegistry = () => {
  * @param {?Object}   props.registry Registry object; uses `createTestRegistry()` by default.
  * @return {WPElement} Wrapped components.
  */
-export function WithTestRegistry( { children, callback, features, registry = createTestRegistry() } = {} ) {
+export function WithTestRegistry( { children, callback, features = [], registry = createTestRegistry() } = {} ) {
 	// Populate most basic data which should not affect any tests.
 	provideUserInfo( registry );
 
