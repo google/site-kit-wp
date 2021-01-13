@@ -74,6 +74,268 @@ export const dashboardUniqueVisitorsVisitorData = [
 		},
 	},
 ];
+
+export const dashboardUniqueVisitorsV2Data = [ {
+	nextPageToken: null,
+	columnHeader: {
+		dimensions: [ 'ga:date' ],
+		metricHeader: {
+			metricHeaderEntries: [ {
+				name: 'Users Over Time',
+				type: 'INTEGER',
+			} ],
+		},
+	},
+	data: {
+		dataLastRefreshed: null,
+		isDataGolden: null,
+		rowCount: 28,
+		samplesReadCounts: null,
+		samplingSpaceSizes: null,
+		rows: [
+			{
+				dimensions: [ '20201209' ],
+				metrics: [ {
+					values: [ '29' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201210' ],
+				metrics: [ {
+					values: [ '0' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201211' ],
+				metrics: [ {
+					values: [ '12' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201212' ],
+				metrics: [ {
+					values: [ '24' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201213' ],
+				metrics: [ {
+					values: [ '25' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201214' ],
+				metrics: [ {
+					values: [ '66' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201215' ],
+				metrics: [ {
+					values: [ '59' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201216' ],
+				metrics: [ {
+					values: [ '50' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201217' ],
+				metrics: [ {
+					values: [ '46' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201218' ],
+				metrics: [ {
+					values: [ '46' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201219' ],
+				metrics: [ {
+					values: [ '22' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201220' ],
+				metrics: [ {
+					values: [ '23' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201221' ],
+				metrics: [ {
+					values: [ '56' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201222' ],
+				metrics: [ {
+					values: [ '45' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201223' ],
+				metrics: [ {
+					values: [ '29' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201224' ],
+				metrics: [ {
+					values: [ '9' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201225' ],
+				metrics: [ {
+					values: [ '12' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201226' ],
+				metrics: [ {
+					values: [ '24' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201227' ],
+				metrics: [ {
+					values: [ '25' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201228' ],
+				metrics: [ {
+					values: [ '66' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201229' ],
+				metrics: [ {
+					values: [ '59' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201230' ],
+				metrics: [ {
+					values: [ '50' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20201231' ],
+				metrics: [ {
+					values: [ '46' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20210101' ],
+				metrics: [ {
+					values: [ '46' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20210102' ],
+				metrics: [ {
+					values: [ '22' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20210103' ],
+				metrics: [ {
+					values: [ '23' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20210104' ],
+				metrics: [ {
+					values: [ '56' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+			{
+				dimensions: [ '20210105' ],
+				metrics: [ {
+					values: [ '45' ],
+				}, {
+					values: [ '0' ],
+				} ],
+			},
+		],
+		totals: [ {
+			values: [ '288' ],
+		}, {
+			values: [ '224' ],
+		} ],
+		minimums: [ {
+			values: [ '0' ],
+		}, {
+			values: [ '0' ],
+		} ],
+		maximums: [ {
+			values: [ '56' ],
+		}, {
+			values: [ '66' ],
+		} ],
+	},
+} ];
+
 export const dashboardUniqueVisitorsSparkData =
 	[
 		{

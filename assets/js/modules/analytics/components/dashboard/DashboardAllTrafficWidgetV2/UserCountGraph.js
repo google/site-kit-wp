@@ -53,14 +53,13 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 		metrics: [
 			{
 				expression: 'ga:users',
-				alias: 'Total Users',
+				alias: 'Users Over Time',
 			},
 		],
 		orderby: {
 			fieldName: 'ga:date',
 			sortOrder: 'DESCENDING',
 		},
-		limit: 100,
 	};
 
 	if ( currentEntityURL ) {
@@ -79,7 +78,7 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 	const report = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( args ) );
 
 	if ( ! loaded ) {
-		return <PreviewBlock width="282px" height="282px" shape="square" />;
+		return <PreviewBlock width="100%" height="320px" shape="square" />;
 	}
 
 	if ( error ) {
@@ -123,12 +122,19 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 							color: '#616161',
 							fontSize: 12,
 						},
+						ticks: [ new Date( dateRangeDates.startDate ), new Date( dateRangeDates.endDate ) ],
 					},
 					vAxes: {
 						0: {
+							baseline: 0,
 							gridlines: {
 								color: '#ffffff',
 							},
+							viewWindow: {
+								max: 1,
+								min: 0,
+							},
+							viewWindowMode: 'explicit',
 							textPosition: 'none',
 							ticks: [],
 						},
@@ -140,21 +146,19 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 							minorGridlines: {
 								color: '#ffffff',
 							},
+							minValue: 0,
 							textStyle: {
 								color: '#616161',
 								fontSize: 12,
 							},
 							textPosition: 'out',
-							// title: __( 'Users', 'google-site-kit' ),
-							titleTextStyle: {
-								color: '#616161',
-								fontSize: 12,
-								italic: false,
+							viewWindow: {
+								min: 0,
 							},
 						},
 					},
 					series: {
-						0: { targetAxisIndex: 0 },
+						0: { targetAxisIndex: 0, lineWidth: 0 },
 						1: { color: '#1a73e8', lineWidth: 3, targetAxisIndex: 1 },
 					},
 					crosshair: {

@@ -38,6 +38,7 @@ import { readableLargeNumber, numFmt, calculateChange } from '../../../../../uti
 import { getAvailableDateRanges } from '../../../../../util/date-range';
 import { isZeroReport } from '../../../util';
 import ChangeArrow from '../../../../../components/ChangeArrow';
+import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useSelect } = Data;
 
 export default function TotalUserCount( { dimensionName, dimensionValue } ) {
@@ -73,8 +74,19 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
 	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
 
-	if ( ! loaded || error || isZeroReport( report ) ) {
-		// The UserCountGraph component will return appropriate PreviewBlock/ReportError/ReportZero component
+	if ( ! loaded ) {
+		return (
+			<PreviewBlock
+				className="googlesitekit-widget--analyticsAllTrafficV2__totalcount--loading"
+				width="220px"
+				height="130px"
+				shape="square"
+			/>
+		);
+	}
+
+	if ( error || isZeroReport( report ) ) {
+		// The UserCountGraph component will return appropriate ReportError/ReportZero component
 		// based on the report fetching status, so we can return just NULL here to make sure it doesn't take extra space.
 		return null;
 	}
