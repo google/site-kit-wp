@@ -67,7 +67,6 @@ function ResetButton( { children } ) {
 	const handleUnlinkConfirm = useCallback( async () => {
 		await reset();
 		clearWebStorage();
-		setDialogActive( false );
 		global.location.assign( postResetURL );
 	}, [ reset, postResetURL ] );
 

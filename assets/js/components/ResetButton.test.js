@@ -94,7 +94,7 @@ describe( 'ResetButton', () => {
 			expect( document.querySelector( '.mdc-dialog--open' ) ).not.toBeInTheDocument();
 		} );
 
-		it( 'should close the modal on clicking Reset, reset the plugin and delete local and session storage', async () => {
+		it( 'should reset the plugin, delete local and session storage', async () => {
 			const response = true;
 			fetchMock.postOnce(
 				/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
@@ -107,7 +107,7 @@ describe( 'ResetButton', () => {
 			} );
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
-			expect( document.querySelector( '.mdc-dialog--open' ) ).not.toBeInTheDocument();
+			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeInTheDocument();
 			expect( localStorage.clear ).toHaveBeenCalled();
 			expect( sessionStorage.clear ).toHaveBeenCalled();
 
