@@ -38,18 +38,21 @@ import Data from 'googlesitekit-data';
 import GenericError from './legacy-notifications/generic-error';
 import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
 const ActivateModuleCTA = ( { slug, title, description } ) => {
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
+
 	const { activateModule } = useDispatch( CORE_MODULES );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const onCTAClick = useCallback( async () => {
 		const { error, response } = await activateModule( slug );
 
 		if ( ! error ) {
-			global.location.assign( response.moduleReauthURL );
+			navigateTo( response.moduleReauthURL );
 		} else {
 			showErrorNotification( GenericError, {
 				id: `${ slug }-setup-error`,

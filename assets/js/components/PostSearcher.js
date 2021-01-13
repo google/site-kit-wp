@@ -31,13 +31,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from './Button';
-import Layout from './layout/Layout';
 import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import Button from './Button';
+import Layout from './layout/Layout';
 import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
-
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 function PostSearcher() {
 	const [ canSubmit, setCanSubmit ] = useState( false );
@@ -50,9 +50,8 @@ function PostSearcher() {
 		} );
 	} );
 
-	const onClick = useCallback( () => {
-		global.location.assign( detailsURL );
-	}, [ detailsURL ] );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const onClick = useCallback( () => navigateTo( detailsURL ), [ detailsURL ] );
 
 	return (
 		<div

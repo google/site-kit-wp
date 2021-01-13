@@ -33,18 +33,18 @@ import { sprintf, __ } from '@wordpress/i18n';
 import CTA from './legacy-notifications/cta';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
-import { STORE_NAME as MODULES_STORE } from '../googlesitekit/modules/datastore/constants';
-const { useSelect } = Data;
+import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+const { useSelect, useDispatch } = Data;
 
 const CompleteModuleActivationCTA = ( { slug, title, description } ) => {
-	const module = useSelect( ( select ) => select( MODULES_STORE ).getModule( slug ) );
-	const moduleStoreName = useSelect( ( select ) => select( MODULES_STORE ).getModuleStoreName( slug ) );
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
+	const moduleStoreName = useSelect( ( select ) => select( CORE_MODULES ).getModuleStoreName( slug ) );
 	const adminReauthURL = useSelect( ( select ) => select( moduleStoreName )?.getAdminReauthURL() );
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 
-	const onCTAClick = useCallback( async () => {
-		global.location.assign( adminReauthURL );
-	}, [ adminReauthURL ] );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const onCTAClick = useCallback( () => navigateTo( adminReauthURL ), [ adminReauthURL ] );
 
 	if ( ! module?.name || ! adminReauthURL || ! canManageOptions ) {
 		return null;
