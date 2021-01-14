@@ -1,5 +1,5 @@
 /**
- * DashboardSpeed component.
+ * Legacy Dashboard All Traffic component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *

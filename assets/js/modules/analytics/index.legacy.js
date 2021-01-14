@@ -85,7 +85,7 @@ if ( modulesData.analytics.active ) {
 	 */
 	addFilter( 'googlesitekit.DashboardModule',
 		'googlesitekit.Analytics',
-		legacyDashboardAllTraffic, 8 );
+		legacyDashboardAllTraffic, 9 );
 	addFilter( 'googlesitekit.DashboardSearchFunnel',
 		'googlesitekit.Analytics',
 		addLegacyAnalyticsDashboardWidgetTopLevel, 11 );
