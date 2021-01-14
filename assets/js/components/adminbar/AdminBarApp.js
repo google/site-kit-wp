@@ -47,14 +47,13 @@ export default function AdminBarApp() {
 	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 
-	// Check if each section has zero data.
-	const adminBarImpressionsHasZeroData = useSelect( AdminBarImpressions.hasZeroData );
-	const adminBarClicksHasZeroData = useSelect( AdminBarClicks.hasZeroData );
-	const adminBarUniqueVisitorsHasZeroData = useSelect( AdminBarUniqueVisitors.hasZeroData );
-	const adminBarSessionsHasZeroData = useSelect( AdminBarSessions.hasZeroData );
-
 	// True if _all_ admin bar sections have zero data.
-	const zeroData = ( adminBarImpressionsHasZeroData === true && adminBarClicksHasZeroData === true && adminBarUniqueVisitorsHasZeroData === true && adminBarSessionsHasZeroData === true );
+	const zeroData = useSelect( ( select ) => {
+		return AdminBarImpressions.hasZeroData( select )
+			&& AdminBarClicks.hasZeroData( select )
+			&& AdminBarUniqueVisitors.hasZeroData( select )
+			&& AdminBarSessions.hasZeroData( select );
+	} );
 
 	const onMoreDetailsClick = useCallback( async () => {
 		await trackEvent( 'admin_bar', 'post_details_click' );
