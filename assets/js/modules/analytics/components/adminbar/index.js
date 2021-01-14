@@ -16,5 +16,4 @@
  * limitations under the License.
  */
 
-export { default as AnalyticsAdminbarWidget } from './AnalyticsAdminbarWidget';
 export { default as AnalyticsAdminbarWidgetOverview } from './AnalyticsAdminbarWidgetOverview';
