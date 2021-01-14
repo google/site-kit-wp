@@ -17,7 +17,7 @@ use WP_Error;
 /**
  * Base class for a module tag guard.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ abstract class Module_Tag_Guard implements Guard_Interface {
 	/**
 	 * Module settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 * @var Module_Settings
 	 */
 	protected $settings;
@@ -34,7 +34,7 @@ abstract class Module_Tag_Guard implements Guard_Interface {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param Module_Settings $settings Module settings.
 	 */
@@ -45,7 +45,7 @@ abstract class Module_Tag_Guard implements Guard_Interface {
 	/**
 	 * Determines whether the guarded tag can be activated or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @return bool|WP_Error TRUE if guarded tag can be activated, otherwise FALSE or an error.
 	 */

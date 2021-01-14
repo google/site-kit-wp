@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Tags\Blockable_Tag_Interface;
 /**
  * Base class for Web tag.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ abstract class Module_Web_Tag extends Module_Tag implements Blockable_Tag_Interf
 	/**
 	 * Checks whether or not the tag should be blocked from rendering.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @return bool TRUE if the tag should be blocked, otherwise FALSE.
 	 */
@@ -32,7 +32,7 @@ abstract class Module_Web_Tag extends Module_Tag implements Blockable_Tag_Interf
 		/**
 		 * Filters whether or not the tag should be blocked from rendering.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.24.0
 		 *
 		 * @param bool $blocked Whether or not the tag output is suppressed. Default: false.
 		 */
@@ -42,7 +42,7 @@ abstract class Module_Web_Tag extends Module_Tag implements Blockable_Tag_Interf
 	/**
 	 * Gets the HTML attributes for a script tag that may potentially require user consent before loading.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @return string HTML attributes to add if the tag requires consent to load, or an empty string.
 	 */
@@ -50,7 +50,7 @@ abstract class Module_Web_Tag extends Module_Tag implements Blockable_Tag_Interf
 		/**
 		 * Filters whether the tag requires user consent before loading.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.24.0
 		 *
 		 * @param bool $blocked Whether or not the tag requires user consent to load. Default: false.
 		 */
@@ -64,13 +64,13 @@ abstract class Module_Web_Tag extends Module_Tag implements Blockable_Tag_Interf
 	/**
 	 * Fires the "googlesitekit_{module_slug}_init_tag" action to let 3rd party plugins to perform required setup.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	protected function do_init_tag_action() {
 		/**
 		 * Fires when the tag has been initialized which means that the tag will be rendered in the current request.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.24.0
 		 *
 		 * @param string $tag_id Tag ID.
 		 */

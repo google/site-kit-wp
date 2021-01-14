@@ -15,7 +15,7 @@ use WP_Error;
 /**
  * Interface for a guard.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ interface Guard_Interface {
 	/**
 	 * Determines whether the guarded entity can be activated or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @return bool|WP_Error TRUE if guarded entity can be activated, otherwise FALSE or an error.
 	 */

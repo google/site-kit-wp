@@ -61,7 +61,7 @@ export function isValidDimensions( dimensions ) {
 /**
  * Verifies provided dimensionFilters to make sure they match allowed values found in dimensions.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  *
  * @param {Object} dimensionFilters The dimension filters to check.
  * @return {boolean} TRUE if dimension filters are valid, otherwise FALSE.

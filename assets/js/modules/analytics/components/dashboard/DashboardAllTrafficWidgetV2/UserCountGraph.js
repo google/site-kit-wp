@@ -40,7 +40,7 @@ const { useSelect } = Data;
 /**
  * Extracts the data required from an analytics 'site-analytics' request for an Area chart.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @private
  *
  * @param {Object} reports The data returned from the Analytics API call.

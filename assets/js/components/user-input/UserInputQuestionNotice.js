@@ -31,11 +31,14 @@ const { useSelect } = Data;
 
 export default function UserInputQuestionNotice() {
 	const settingsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
+	if ( ! settingsURL ) {
+		return null;
+	}
 
 	const notice = sprintf(
 		/* translators: %s: Settings page URL */
 		__( 'You can always edit your answers after your submission in <a href="%s">Settings</a>.', 'google-site-kit' ),
-		settingsURL,
+		`${ settingsURL }#admin`,
 	);
 
 	const sanitizeArgs = {
