@@ -131,6 +131,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 						<GoogleChart
+							chartType="line"
 							selectedStats={ selectedStats }
 							data={ dataMap }
 							options={ options }
