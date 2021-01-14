@@ -32,7 +32,7 @@ import AdminBarClicks from './AdminBarClicks';
 import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { Grid, Row, Cell } from '../../material-components';
+import { Row, Cell } from '../../material-components';
 import AdminBarZeroData from './AdminBarZeroData';
 const { useSelect } = Data;
 
@@ -53,30 +53,28 @@ export default function AdminBarWidgets() {
 	}
 
 	return (
-		<Grid>
-			<Row>
-				<AdminBarImpressions />
-				<AdminBarClicks />
+		<Row>
+			<AdminBarImpressions />
+			<AdminBarClicks />
 
-				{ analyticsModuleConnected && analyticsModuleActive && (
-					<Fragment>
-						<AdminBarUniqueVisitors />
-						<AdminBarSessions />
-					</Fragment>
-				) }
+			{ analyticsModuleConnected && analyticsModuleActive && (
+				<Fragment>
+					<AdminBarUniqueVisitors />
+					<AdminBarSessions />
+				</Fragment>
+			) }
 
-				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
-					<Cell lgSize={ 6 } mdSize={ 4 }>
-						{ ! analyticsModuleActive && (
-							<AnalyticsInactiveCTA />
-						) }
+			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+				<Cell lgSize={ 6 } mdSize={ 4 }>
+					{ ! analyticsModuleActive && (
+						<AnalyticsInactiveCTA />
+					) }
 
-						{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
-							<CompleteModuleActivationCTA slug="analytics" />
-						) }
-					</Cell>
-				) }
-			</Row>
-		</Grid>
+					{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
+						<CompleteModuleActivationCTA slug="analytics" />
+					) }
+				</Cell>
+			) }
+		</Row>
 	);
 }

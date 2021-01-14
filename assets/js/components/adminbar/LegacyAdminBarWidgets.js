@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import AnalyticsAdminbarWidgetOverview from '../../modules/analytics/components/adminbar/AnalyticsAdminbarWidgetOverview';
 import SearchConsoleAdminbarWidgetOverview from '../../modules/search-console/components/adminbar/SearchConsoleAdminbarWidgetOverview';
-import { Grid, Row } from '../../material-components';
+import { Row } from '../../material-components';
 import AdminBarZeroData from './AdminBarZeroData';
 const { useSelect } = Data;
 
@@ -63,19 +63,17 @@ export default function LegacyAdminBarWidgets() {
 	};
 
 	return (
-		<Grid>
-			<Row>
-				{ /* Legacy widgets include their own grid classes */ }
-				<SearchConsoleAdminbarWidgetOverview
-					handleDataError={ handleSearchConsoleDataError }
-				/>
+		<Row>
+			{ /* Legacy widgets include their own grid classes */ }
+			<SearchConsoleAdminbarWidgetOverview
+				handleDataError={ handleSearchConsoleDataError }
+			/>
 
-				{ /* Due to limitations of withData, the component must always render unconditionally */ }
-				<AnalyticsAdminbarWidgetOverview
-					handleDataError={ handleAnalyticsDataError }
-					analyticsActive={ analyticsModuleActive }
-				/>
-			</Row>
-		</Grid>
+			{ /* Due to limitations of withData, the component must always render unconditionally */ }
+			<AnalyticsAdminbarWidgetOverview
+				handleDataError={ handleAnalyticsDataError }
+				analyticsActive={ analyticsModuleActive }
+			/>
+		</Row>
 	);
 }
