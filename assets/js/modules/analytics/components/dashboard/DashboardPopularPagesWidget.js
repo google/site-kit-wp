@@ -71,15 +71,12 @@ function DashboardPopularPagesWidget() {
 			],
 			limit: 10,
 		};
-		const accountID = select( STORE_NAME ).getAccountID();
-		const profileID = select( STORE_NAME ).getProfileID();
-		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
 
 		return {
+			analyticsMainURL: store.getServiceReportURL( 'content-pages' ),
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
-			analyticsMainURL: store.getServiceURL( { path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }` } ),
 		};
 	} );
 

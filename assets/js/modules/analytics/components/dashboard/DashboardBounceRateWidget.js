@@ -34,7 +34,7 @@ import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import { calculateChange } from '../../../../util';
-import applyEntityToReportPath from '../../util/applyEntityToReportPath';
+import { getURLPath } from '../../../../util/getURLPath';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
@@ -51,10 +51,6 @@ function DashboardBounceRateWidget() {
 		serviceURL,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
-
-		const accountID = store.getAccountID();
-		const profileID = store.getProfileID();
-		const internalWebPropertyID = store.getInternalWebPropertyID();
 
 		const {
 			compareStartDate,
@@ -89,11 +85,9 @@ function DashboardBounceRateWidget() {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
-			serviceURL: store.getServiceURL(
-				{
-					path: applyEntityToReportPath( url, `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ),
-				}
-			),
+			serviceURL: store.getServiceReportURL( 'visitors-overview', {
+				'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+			} ),
 		};
 	} );
 

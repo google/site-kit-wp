@@ -32,12 +32,25 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Layout from '../assets/js/components/layout/Layout';
 import AnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopPagesTable';
+import { dashboardPopularPagesArgs, dashboardPopularPagesData } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
+import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Global', module )
 	.add( 'Data Table', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
+
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+				accountID: '123456789',
+				propertyID: 'UA-1234567-1',
+				internalWebPropertyID: '123456789',
+				profileID: '123456789',
+			} );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetReport( dashboardPopularPagesData, { options: dashboardPopularPagesArgs } );
+		};
 
 		// Load the datacache with data.
 		setTimeout( () => {
@@ -47,7 +60,7 @@ storiesOf( 'Global', module )
 			);
 		}, 250 );
 		return (
-			<WithTestRegistry>
+			<WithTestRegistry callback={ setupRegistry } >
 				<Layout
 					header
 					footer
