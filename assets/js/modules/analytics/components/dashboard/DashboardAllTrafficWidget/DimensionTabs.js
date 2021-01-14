@@ -68,7 +68,11 @@ export default function DimensionTabs( { dimensionName } ) {
 		>
 			{
 				tabs.map( ( tab ) => (
-					<Tab key={ tab.dimensionName } className="mdc-tab--min-width">
+					<Tab
+						key={ tab.dimensionName }
+						className="mdc-tab--min-width"
+						focusOnActivate={ false }
+					>
 						<span className="mdc-tab__text-label">{ tab.tabText }</span>
 					</Tab>
 				) )
