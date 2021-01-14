@@ -1,5 +1,5 @@
 /**
- * Analytics AllTraffic V2 styles.
+ * Analytics AllTraffic styles.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -103,6 +103,10 @@
 			font-weight: 700;
 			margin: 0;
 		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__totalcount--loading {
+		margin: 0 0 10px;
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__totalcount--change {
