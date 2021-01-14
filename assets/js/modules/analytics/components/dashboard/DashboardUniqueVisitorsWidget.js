@@ -34,10 +34,10 @@ import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import { calculateChange } from '../../../../util';
+import { getURLPath } from '../../../../util/getURLPath';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
-import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import { isZeroReport } from '../../util';
 import CompleteModuleActivationCTA from '../../../../components/CompleteModuleActivationCTA';
 
@@ -52,10 +52,6 @@ function DashboardUniqueVisitorsWidget() {
 		visitorsData,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
-
-		const accountID = store.getAccountID();
-		const profileID = store.getProfileID();
-		const internalWebPropertyID = store.getInternalWebPropertyID();
 
 		const {
 			compareStartDate,
@@ -106,11 +102,9 @@ function DashboardUniqueVisitorsWidget() {
 			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
 			// Due to the nature of these queries, we need to run them separately.
 			sparkData: store.getReport( sparklineArgs ),
-			serviceURL: store.getServiceURL(
-				{
-					path: applyEntityToReportPath( url, `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ),
-				}
-			),
+			serviceURL: store.getServiceReportURL( 'visitors-overview', {
+				'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+			} ),
 			visitorsData: store.getReport( args ),
 		};
 	} );
