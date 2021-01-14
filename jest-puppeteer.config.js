@@ -34,6 +34,7 @@ module.exports = {
 			'--no-sandbox',
 			'--disable-setuid-sandbox',
 			'--disable-dev-shm-usage',
+			'--enable-features=NetworkService',
 		],
 	},
 };

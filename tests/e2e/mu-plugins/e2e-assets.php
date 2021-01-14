@@ -35,6 +35,7 @@ add_filter(
 		return $assets;
 	}
 );
+
 // Enqueue E2E Utilities globally `wp_print_scripts` is called on admin and front.
 // If asset is not registered enqueuing is a no-op.
 add_action(
@@ -42,5 +43,28 @@ add_action(
 	function () {
 		wp_enqueue_script( 'googlesitekit-e2e-api-fetch' );
 		wp_enqueue_script( 'googlesitekit-e2e-redux-logger' );
+	}
+);
+
+add_action(
+	'template_redirect',
+	function() {
+		if ( '/e2e-workbox.js' === $_SERVER['REQUEST_URI'] ) {
+			http_response_code( 200 );
+			header( 'Content-Type: application/javascript' );
+			echo file_get_contents( ABSPATH . 'wp-content/plugins/google-site-kit/dist/assets/js/e2e-workbox.js' );
+			exit;
+		}
+	}
+);
+
+add_action(
+	'admin_head',
+	function() {
+		?>
+		<script>
+			window.addEventListener( 'load', () => navigator.serviceWorker.register( '/e2e-workbox.js', { scope: '/' } ) );
+		</script>
+		<?php
 	}
 );

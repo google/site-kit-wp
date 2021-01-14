@@ -389,6 +389,7 @@ const testBundle = () => {
 		entry: {
 			'e2e-api-fetch': './tests/e2e/assets/e2e-api-fetch.js',
 			'e2e-redux-logger': './tests/e2e/assets/e2e-redux-logger.js',
+			'e2e-workbox': './tests/e2e/assets/e2e-workbox.js',
 		},
 		output: {
 			filename: '[name].js',
