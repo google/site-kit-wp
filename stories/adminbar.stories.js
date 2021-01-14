@@ -38,7 +38,6 @@ import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/si
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { provideModules, provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 import CollectModuleData from '../assets/js/components/data/collect-module-data';
-// import { enableFeature } from './utils/features';
 
 storiesOf( 'Global', module )
 	.add( 'Admin Bar', () => {
@@ -93,7 +92,7 @@ storiesOf( 'Global', module )
 		global._googlesitekitLegacyData = wpAdminBarData;
 
 		const setupRegistry = ( registry ) => {
-			// Set some site information.
+		// Set some site information.
 			provideSiteInfo( registry, {
 				currentEntityURL: 'https://www.sitekitbygoogle.com/blog/',
 				currentEntityTitle: 'Blog test post for Google Site Kit',
@@ -107,7 +106,6 @@ storiesOf( 'Global', module )
 		};
 
 		removeAllFilters( 'googlesitekit.AdminbarModules' );
-		// enableFeature( 'widgets.adminBar' );
 
 		return (
 			<div id="wpadminbar">
