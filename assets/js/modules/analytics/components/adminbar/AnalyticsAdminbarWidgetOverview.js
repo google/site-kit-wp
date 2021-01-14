@@ -41,6 +41,7 @@ import {
 	parseTotalUsersData,
 } from '../../util';
 import PreviewBlock from '../../../../components/PreviewBlock';
+import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 
 class AnalyticsAdminbarWidgetOverview extends Component {
 	constructor( props ) {
@@ -77,6 +78,19 @@ class AnalyticsAdminbarWidgetOverview extends Component {
 
 	render() {
 		const { overview, totalUsers, previousTotalUsers } = this.state;
+		const { analyticsActive } = this.props;
+
+		if ( false === analyticsActive ) {
+			return (
+				<div className="
+					mdc-layout-grid__cell
+					mdc-layout-grid__cell--span-4-tablet
+					mdc-layout-grid__cell--span-6-desktop
+				">
+					<AnalyticsInactiveCTA />
+				</div>
+			);
+		}
 
 		if ( ! overview || ! totalUsers ) {
 			return null;
