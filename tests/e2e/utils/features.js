@@ -30,20 +30,11 @@ import { wpApiFetch } from './wp-api-fetch';
  * @return {Promise} Promise from `page.evaluate()` call.
  */
 export async function disableFeature( feature ) {
-	try {
-		// Wait until apiFetch is available on the client.
-		await page.waitForFunction( () => window.fetch !== undefined );
-
-		return await wpApiFetch( {
-			path: 'google-site-kit/v1/e2e/feature/set-flag',
-			method: 'post',
-			data: { [ feature ]: false },
-		} );
-	} catch ( error ) {
-		// eslint-disable-next-line no-console
-		console.warn( 'disableFeature failure', page.url(), feature );
-		throw error;
-	}
+	return await wpApiFetch( {
+		path: 'google-site-kit/v1/e2e/feature/set-flag',
+		method: 'post',
+		data: { [ feature ]: false },
+	} );
 }
 
 /**
@@ -55,18 +46,9 @@ export async function disableFeature( feature ) {
  * @return {Promise} Promise from `page.evaluate()` call.
  */
 export async function enableFeature( feature ) {
-	try {
-		// Wait until apiFetch is available on the client.
-		await page.waitForFunction( () => window.fetch !== undefined );
-
-		return await wpApiFetch( {
-			path: 'google-site-kit/v1/e2e/feature/set-flag',
-			method: 'post',
-			data: { [ feature ]: true },
-		} );
-	} catch ( error ) {
-		// eslint-disable-next-line no-console
-		console.warn( 'enableFeature failure', page.url(), feature );
-		throw error;
-	}
+	return await wpApiFetch( {
+		path: 'google-site-kit/v1/e2e/feature/set-flag',
+		method: 'post',
+		data: { [ feature ]: true },
+	} );
 }

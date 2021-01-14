@@ -98,10 +98,11 @@ export const createTestRegistry = () => {
  * @since 1.7.1
  * @private
  *
- * @param {?Object}   props          Component props.
- * @param {?Function} props.callback Function which receives the registry instance.
- * @param {?Array}    props.features Feature flags to enable for this test registry provider.
- * @param {?Object}   props.registry Registry object; uses `createTestRegistry()` by default.
+ * @param {Object}    [props]          Component props.
+ * @param {Function}  [props.callback] Function which receives the registry instance.
+ * @param {WPElement} [props.children] Children components.
+ * @param {Array}     [props.features] Feature flags to enable for this test registry provider.
+ * @param {Object}    [props.registry] Registry object; uses `createTestRegistry()` by default.
  * @return {WPElement} Wrapped components.
  */
 export function WithTestRegistry( { children, callback, features = [], registry = createTestRegistry() } = {} ) {
