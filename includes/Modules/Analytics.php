@@ -1299,15 +1299,33 @@ final class Analytics extends Module
 	 * @return WP_Error WordPress error object.
 	 */
 	protected function exception_to_error( Exception $e, $datapoint ) {
+		$cache_ttl = false;
+
 		if ( 'report' === $datapoint && $e instanceof Google_Service_Exception ) {
 			$errors = $e->getErrors();
 			// If error is because of AdSense metric being requested, set adsenseLinked to false.
-			if ( isset( $errors[0]['message'] ) && $this->is_adsense_metric( substr( $errors[0]['message'], strlen( 'Restricted metric(s): ' ) ) ) ) {
-				$this->get_settings()->merge( array( 'adsenseLinked' => false ) );
+			if ( isset( $errors[0]['message'] ) ) {
+				if ( $this->is_adsense_metric( substr( $errors[0]['message'], strlen( 'Restricted metric(s): ' ) ) ) ) {
+					$this->get_settings()->merge( array( 'adsenseLinked' => false ) );
+				}
+
+				if ( preg_match( '#^Restricted metric\(s\)\:#im', $errors[0]['message'] ) ) {
+					$cache_ttl = ( 10 * MINUTE_IN_SECONDS );
+				}
 			}
 		}
 
-		return parent::exception_to_error( $e, $datapoint );
+		$error = parent::exception_to_error( $e, $datapoint );
+
+		if ( $cache_ttl && is_wp_error( $error ) ) {
+			$error->add_data(
+				array(
+					'cacheTTL' => $cache_ttl,
+				)
+			);
+		}
+
+		return $error;
 	}
 
 	/**

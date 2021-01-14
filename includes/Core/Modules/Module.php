@@ -831,21 +831,15 @@ abstract class Module {
 
 		$code = $e->getCode();
 
-		$cache_ttl     = false;
 		$message       = $e->getMessage();
 		$status        = is_numeric( $code ) && $code ? (int) $code : 500;
 		$reason        = '';
 		$reconnect_url = '';
 
 		if ( $e instanceof Google_Service_Exception ) {
-
 			$errors = $e->getErrors();
 			if ( isset( $errors[0]['message'] ) ) {
 				$message = $errors[0]['message'];
-
-				if ( preg_match( '#^Restricted metric\(s\)\:#im', $message ) ) {
-					$cache_ttl = ( 10 * MINUTE_IN_SECONDS );
-				}
 			}
 			if ( isset( $errors[0]['reason'] ) ) {
 				$reason = $errors[0]['reason'];
@@ -866,10 +860,6 @@ abstract class Module {
 			'status' => $status,
 			'reason' => $reason,
 		);
-
-		if ( $cache_ttl ) {
-			$data['cacheTTL'] = $cache_ttl;
-		}
 
 		if ( ! empty( $reconnect_url ) ) {
 			$data['reconnectURL'] = $reconnect_url;
