@@ -27,6 +27,7 @@ import classnames from 'classnames';
  */
 import { useCallback, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
+import { useInstanceId } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -97,6 +98,9 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 			} );
 		}
 	}, [ dimensionName, setValues ] );
+
+	// Create a unique chartID to use for this component's GoogleChart child component.
+	const chartID = useInstanceId( UserDimensionsPieChart );
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;
@@ -206,7 +210,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart">
 			<GoogleChart
-				chartID="user-dimensions-pie-chart"
+				chartID={ `user-dimensions-pie-chart-${ chartID }` }
 				chartType="pie"
 				options={ options }
 				data={ dataMap }
