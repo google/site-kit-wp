@@ -173,7 +173,6 @@ export function registerDefaults( widgetsAPI ) {
 		AREA_MODULE_SEARCH_CONSOLE_MAIN,
 		{
 			priority: 1,
-			subtitle: '',
 			style: WIDGET_AREA_STYLES.BOXES,
 			title: __( 'Overview', 'google-site-kit' ),
 		},
@@ -184,7 +183,6 @@ export function registerDefaults( widgetsAPI ) {
 		AREA_MODULE_ANALYTICS_MAIN,
 		{
 			priority: 1,
-			subtitle: '',
 			style: WIDGET_AREA_STYLES.BOXES,
 			title: __( 'Overview', 'google-site-kit' ),
 		},
@@ -195,7 +193,6 @@ export function registerDefaults( widgetsAPI ) {
 		AREA_MODULE_ADSENSE_MAIN,
 		{
 			priority: 1,
-			subtitle: '',
 			style: WIDGET_AREA_STYLES.BOXES,
 			title: __( 'Overview', 'google-site-kit' ),
 		},
