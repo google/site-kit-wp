@@ -54,6 +54,7 @@ export default function AdminBarWidgets() {
 
 	return (
 		<Row>
+			{ /* TODO: Add <Cell> components/grid-classes here rather than within widget components */ }
 			<AdminBarImpressions />
 			<AdminBarClicks />
 
