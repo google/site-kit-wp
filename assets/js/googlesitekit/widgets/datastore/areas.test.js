@@ -117,16 +117,10 @@ describe( 'core/widgets Widget areas', () => {
 				} ).toThrow( 'settings.title is required.' );
 			} );
 
-			it( 'requires a title and subtitle in settings', () => {
+			it( 'requires a title in settings', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).registerWidgetArea( 'header', {} );
 				} ).toThrow( 'settings.title is required.' );
-
-				expect( () => {
-					registry.dispatch( STORE_NAME ).registerWidgetArea( 'header', {
-						title: 'Analytics Header',
-					} );
-				} ).toThrow( 'settings.subtitle is required.' );
 
 				expect( () => {
 					registry.dispatch( STORE_NAME ).registerWidgetArea( 'header', {
