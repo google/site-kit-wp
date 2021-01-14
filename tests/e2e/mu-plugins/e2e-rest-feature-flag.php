@@ -47,23 +47,12 @@ add_action(
 	0
 );
 
-add_action(
-	'plugins_loaded',
-	function () {
-		if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
-			return;
-		}
+// Apply any overrides set in the E2E options array.
+add_filter(
+	'googlesitekit_is_feature_enabled',
+	function( $feature_name, $feature_enabled, $mode ) {
+		$features = get_option( 'googlesitekit_e2e_feature_flags', array() );
 
-		$feature_flag_overrides = get_option( 'googlesitekit_e2e_feature_flags', array() );
-
-		// Apply any overrides set in the E2E options array.
-		foreach ( $feature_flag_overrides as $name => $value ) {
-			add_filter(
-				'googlesitekit_is_feature_enabled',
-				function( $feature_name, $feature_enabled, $mode ) {
-					return $feature_name === $name ? $value : $feature_enabled;
-				}
-			);
-		}
+		return ! empty( $features[ $feature_name ] );
 	}
 );
