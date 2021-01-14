@@ -31,21 +31,56 @@ import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/
 import { STORE_NAME as MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../../analytics/datastore/constants';
 import { isZeroReport } from '../../../../analytics/util/is-zero-report';
 import GoogleChart from '../../../../../components/GoogleChart';
-import { extractAnalyticsChartData } from '../../../util';
+import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
 import ReportZero from '../../../../../components/ReportZero';
 const { useSelect } = Data;
 
+/**
+ * Extracts the data required from an analytics 'site-analytics' request for an Area chart.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {Object} reports The data returned from the Analytics API call.
+ * @return {Array} Required data from 'site-analytics' request.
+ */
+const extractUserCountAnalyticsChartData = ( reports ) => {
+	if ( ! reports || ! reports.length ) {
+		return null;
+	}
+
+	return [
+		[
+			{ type: 'date', label: 'Day' },
+			{ type: 'number', label: '' },
+			{ type: 'number', label: 'Users' },
+		],
+		...reports[ 0 ].data.rows.map( ( row ) => {
+			const { values } = row.metrics[ 0 ];
+			const dateString = row.dimensions[ 0 ];
+			const date = parseDimensionStringToDate( dateString );
+
+			return [
+				date,
+				null,
+				values[ 0 ],
+			];
+		} ),
+	];
+};
+
 export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
 
 	const args = {
-		...dateRangeDates,
+		startDate,
+		endDate,
 		dimensions: [ 'ga:date' ],
 		metrics: [
 			{
@@ -81,7 +116,7 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 		return <ReportZero moduleSlug="analytics" />;
 	}
 
-	const chartData = extractAnalyticsChartData( report, 'ga:users', dateRange );
+	const chartData = extractUserCountAnalyticsChartData( report, 'ga:users', dateRange );
 
 	return (
 		<div>
@@ -114,7 +149,7 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 							color: '#616161',
 							fontSize: 12,
 						},
-						ticks: [ new Date( dateRangeDates.startDate ), new Date( dateRangeDates.endDate ) ],
+						ticks: [ new Date( startDate ), new Date( endDate ) ],
 					},
 					vAxes: {
 						0: {

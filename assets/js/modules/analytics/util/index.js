@@ -287,39 +287,6 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 };
 
 /**
- * Extracts the data required from an analytics 'site-analytics' request for an Area chart.
- *
- * @since n.e.x.t
- *
- * @param {Object} reports The data returned from the Analytics API call.
- * @return {Array} Required data from 'site-analytics' request.
- */
-export const extractAnalyticsChartData = ( reports ) => {
-	if ( ! reports || ! reports.length ) {
-		return null;
-	}
-
-	return [
-		[
-			{ type: 'date', label: 'Day' },
-			{ type: 'number', label: '' },
-			{ type: 'number', label: 'Users' },
-		],
-		...reports[ 0 ].data.rows.map( ( row ) => {
-			const { values } = row.metrics[ 0 ];
-			const dateString = row.dimensions[ 0 ];
-			const date = parseDimensionStringToDate( dateString );
-
-			return [
-				date,
-				null,
-				values[ 0 ],
-			];
-		} ),
-	];
-};
-
-/**
  * Extracts the data required from an analytics 'site-analytics' request.
  *
  * @since 1.0.0
