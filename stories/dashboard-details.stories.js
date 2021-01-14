@@ -49,8 +49,13 @@ storiesOf( 'Dashboard Details', module )
 			} );
 		};
 
+		const enabledFeatures = [
+			'storeErrorNotifications', // Needed to enable datastore errors in the Header component.
+			'widgets.pageDashboard', // Needed to ensure the new widget area appears.
+		];
+
 		return (
-			<WithTestRegistry callback={ setupRegistry } features={ [ 'storeErrorNotifications', 'widgets.pageDashboard' ] }>
+			<WithTestRegistry callback={ setupRegistry } features={ enabledFeatures }>
 				<DashboardDetailsApp />
 			</WithTestRegistry>
 		);
