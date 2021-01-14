@@ -16,5 +16,4 @@
  * limitations under the License.
  */
 
-export { default as GoogleSitekitSearchConsoleAdminbarWidget } from './GoogleSitekitSearchConsoleAdminbarWidget';
 export { default as SearchConsoleAdminbarWidgetOverview } from './SearchConsoleAdminbarWidgetOverview';
