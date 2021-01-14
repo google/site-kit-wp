@@ -91,7 +91,14 @@ export default function AdminBarApp() {
 						mdc-layout-grid__cell--align-middle
 					">
 						<div className="mdc-layout-grid__inner">
-							{ zeroData && <AdminBarZeroData /> }
+							{ zeroData && (
+								<div className="
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-12
+								">
+									<AdminBarZeroData />
+								</div>
+							) }
 							{ ! zeroData && (
 								<Fragment>
 									{ featureFlags.widgets.adminBar.enabled && (
