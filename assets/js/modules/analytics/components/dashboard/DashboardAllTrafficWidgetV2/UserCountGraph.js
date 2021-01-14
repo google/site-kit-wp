@@ -41,24 +41,18 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
 
 	const args = {
-		startDate: dateRangeDates.startDate,
-		endDate: dateRangeDates.endDate,
+		...dateRangeDates,
 		dimensions: [ 'ga:date' ],
 		metrics: [
 			{
 				expression: 'ga:users',
-				alias: 'Users Over Time',
+				alias: 'Users',
 			},
 		],
-		orderby: {
-			fieldName: 'ga:date',
-			sortOrder: 'DESCENDING',
-		},
 	};
 
 	if ( currentEntityURL ) {
@@ -66,7 +60,6 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 	}
 
 	if ( dimensionName && dimensionValue ) {
-		args.dimensions.push( dimensionName );
 		args.dimensionFilters = {
 			[ dimensionName ]: dimensionValue,
 		};

@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
-import { readableLargeNumber, numFmt, calculateChange } from '../../../../../util';
+import { numFmt, calculateChange } from '../../../../../util';
 import { getAvailableDateRanges } from '../../../../../util/date-range';
 import { isZeroReport } from '../../../util';
 import ChangeArrow from '../../../../../components/ChangeArrow';
@@ -51,12 +51,12 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 
 	const args = {
 		...dateRangeDates,
-		metrics: [ { expression: 'ga:users' } ],
-		orderby: {
-			fieldName: 'ga:users',
-			sortOrder: 'DESCENDING',
-		},
-		limit: 1,
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Users',
+			},
+		],
 	};
 
 	if ( url ) {
@@ -64,7 +64,6 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 	}
 
 	if ( dimensionName && dimensionValue ) {
-		args.dimensions = [ dimensionName ];
 		args.dimensionFilters = {
 			[ dimensionName ]: dimensionValue,
 		};
@@ -114,7 +113,7 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 				) }
 			</h3>
 			<h2>
-				{ readableLargeNumber( current?.values?.[ 0 ] ) }
+				{ numFmt( current?.values?.[ 0 ] ) }
 			</h2>
 			<div>
 				<span className={ classnames( 'googlesitekit-widget--analyticsAllTrafficV2__totalcount--change', {
