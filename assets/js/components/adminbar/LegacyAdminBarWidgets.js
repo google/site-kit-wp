@@ -50,13 +50,13 @@ export default function LegacyAdminBarWidgets() {
 
 	// withData uses handleDataError function props for handling both errors and zero-data.
 	// If called without an error, it means zero data.
-	const handleSearchConsoleDataError = ( error ) => {
+	const handleDataErrorSearchConsole = ( error ) => {
 		if ( ! error ) {
 			setZeroDataSearchConsole( true );
 		}
 	};
 
-	const handleAnalyticsDataError = ( error ) => {
+	const handleDataErrorAnalytics = ( error ) => {
 		if ( ! error ) {
 			setZeroDataAnalytics( true );
 		}
@@ -66,12 +66,12 @@ export default function LegacyAdminBarWidgets() {
 		<Row>
 			{ /* Legacy widgets include their own grid classes */ }
 			<SearchConsoleAdminbarWidgetOverview
-				handleDataError={ handleSearchConsoleDataError }
+				handleDataError={ handleDataErrorSearchConsole }
 			/>
 
 			{ /* Due to limitations of withData, the component must always render unconditionally */ }
 			<AnalyticsAdminbarWidgetOverview
-				handleDataError={ handleAnalyticsDataError }
+				handleDataError={ handleDataErrorAnalytics }
 				analyticsActive={ analyticsModuleActive }
 			/>
 		</Row>
