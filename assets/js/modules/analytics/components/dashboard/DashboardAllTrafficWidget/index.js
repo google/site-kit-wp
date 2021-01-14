@@ -36,6 +36,7 @@ import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import SourceLink from '../../../../../components/SourceLink';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
+import { getURLPath } from '../../../../../util/getURLPath';
 const { Widget } = Widgets.components;
 const { useSelect } = Data;
 
@@ -62,7 +63,7 @@ function DashboardAllTrafficWidget() {
 	if ( entityURL ) {
 		reportArgs = {
 			'explorer-table.plotKeys': '[]',
-			'_r.drilldown': `analytics.pagePath:${ entityURL }`,
+			'_r.drilldown': `analytics.pagePath:${ getURLPath( entityURL ) }`,
 		};
 	}
 

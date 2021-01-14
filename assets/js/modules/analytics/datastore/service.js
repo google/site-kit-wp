@@ -90,7 +90,7 @@ export const selectors = {
 		let path = escapeURI`/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
 
 		if ( argsSegment ) {
-			path += escapeURI`${ argsSegment }/`;
+			path += `${ argsSegment }/`;
 		}
 
 		return selectors.getServiceURL( state, { path } );

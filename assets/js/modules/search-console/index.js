@@ -27,6 +27,7 @@ import domReady from '@wordpress/dom-ready';
 import Modules from 'googlesitekit-modules';
 import Widgets from 'googlesitekit-widgets';
 import './datastore';
+import { STORE_NAME } from './datastore/constants';
 import { SettingsView } from './components/settings';
 import DashboardImpressionsWidget from './components/dashboard/DashboardImpressionsWidget';
 import DashboardClicksWidget from './components/dashboard/DashboardClicksWidget';
@@ -45,7 +46,7 @@ domReady( () => {
 	Modules.registerModule(
 		'search-console',
 		{
-			storeName: 'modules/search-console',
+			storeName: STORE_NAME,
 			SettingsViewComponent: SettingsView,
 			Icon: SearchConsoleIcon,
 		}

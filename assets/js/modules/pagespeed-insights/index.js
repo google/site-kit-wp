@@ -28,6 +28,7 @@ import domReady from '@wordpress/dom-ready';
 import Modules from 'googlesitekit-modules';
 import Widgets from 'googlesitekit-widgets';
 import './datastore';
+import { STORE_NAME } from './datastore/constants';
 import { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-areas';
 import { getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
@@ -74,7 +75,7 @@ domReady( () => {
 	Modules.registerModule(
 		'pagespeed-insights',
 		{
-			storeName: 'modules/pagespeed-insights',
+			storeName: STORE_NAME,
 			SettingsViewComponent: SettingsView,
 			Icon: PageSpeedInsightsIcon,
 		}
