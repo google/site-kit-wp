@@ -24,16 +24,13 @@ import { useEffect, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import AnalyticsAdminbarWidgetOverview from '../../modules/analytics/components/adminbar/AnalyticsAdminbarWidgetOverview';
 import SearchConsoleAdminbarWidgetOverview from '../../modules/search-console/components/adminbar/SearchConsoleAdminbarWidgetOverview';
 import { Row } from '../../material-components';
 import AdminBarZeroData from './AdminBarZeroData';
-const { useSelect } = Data;
+import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
 
 export default function LegacyAdminBarWidgets() {
-	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const [ zeroDataSearchConsole, setZeroDataSearchConsole ] = useState( false );
 	const [ zeroDataAnalytics, setZeroDataAnalytics ] = useState( false );
 	const [ zeroData, setZeroData ] = useState( false );
@@ -72,7 +69,7 @@ export default function LegacyAdminBarWidgets() {
 			{ /* Due to limitations of withData, the component must always render unconditionally */ }
 			<AnalyticsAdminbarWidgetOverview
 				handleDataError={ handleDataErrorAnalytics }
-				analyticsActive={ analyticsModuleActive }
+				ActivateModuleComponent={ AnalyticsInactiveCTA }
 			/>
 		</Row>
 	);
