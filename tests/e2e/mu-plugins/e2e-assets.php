@@ -46,6 +46,7 @@ add_action(
 	}
 );
 
+// Allows to load e2e-workbox.js script from the root level
 add_action(
 	'template_redirect',
 	function() {
@@ -58,6 +59,7 @@ add_action(
 	}
 );
 
+// Register the service worker.
 add_action(
 	'admin_head',
 	function() {
