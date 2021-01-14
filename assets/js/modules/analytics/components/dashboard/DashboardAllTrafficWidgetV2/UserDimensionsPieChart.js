@@ -32,15 +32,16 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { DATE_RANGE_OFFSET, STORE_NAME } from '../../../datastore/constants';
+import { STORE_NAME, FORM_ALL_TRAFFIC_WIDGET, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForPieChart, isZeroReport } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
 import ReportZero from '../../../../../components/ReportZero';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function UserDimensionsPieChart( { dimensionName, entityURL, sourceLink } ) {
 	const [ chartLoaded, setChartLoaded ] = useState( false );
@@ -68,6 +69,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
 	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
 
+	const { setValues } = useDispatch( CORE_FORMS );
 	const onReady = useCallback( () => {
 		setChartLoaded( true );
 
@@ -81,12 +83,20 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 					const { dataTable } = GoogleChart.charts.get( 'user-dimensions-pie-chart' ) || {};
 					if ( dataTable ) {
 						const dimensionValue = dataTable.getValue( row, 0 );
-						global.console.info( 'Dimension Value:', dimensionValue );
+
+						setValues(
+							FORM_ALL_TRAFFIC_WIDGET,
+							{
+								dimensionValue: __( 'Others', 'google-site-kit' ) === dimensionValue ? '' : dimensionValue,
+							}
+						);
 					}
+				} else {
+					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '' } );
 				}
 			} );
 		}
-	}, [] );
+	}, [ dimensionName, setValues ] );
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;

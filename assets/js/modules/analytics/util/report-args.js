@@ -54,6 +54,7 @@ export const reportArgsToURLSegment = ( reportArgs ) => {
 	invariant( isPlainObject( reportArgs ), 'report args must be a plain object' );
 
 	return Object.entries( reportArgs )
+		.filter( ( [ , value ] ) => value !== undefined )
 		.map( ( [ key, value ] ) => `${ key }=${ encodeValue( value ) }` )
 		.join( '&' );
 };

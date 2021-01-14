@@ -938,21 +938,35 @@ final class Analytics extends Module
 					if ( in_array( $account_id, $account_ids, true ) ) {
 						$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
 					} else {
-						// Iterate over each account in reverse so if there is no match,
-						// the last $properties_profiles will be from the first account (selected by default).
-						foreach ( array_reverse( $accounts ) as $account ) {
+						$fallback_properties_profiles = null;
+						// Iterate over the first 25 accounts to avoid making too many requests.
+						foreach ( array_slice( $accounts, 0, 25 ) as $account ) {
 							/* @var Google_Service_Analytics_Account $account Analytics account object. */
 							$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account->getId() ) );
 
-							if ( ! is_wp_error( $properties_profiles ) && isset( $properties_profiles['matchedProperty'] ) ) {
+							if ( is_wp_error( $properties_profiles ) ) {
+								$properties_profiles = $fallback_properties_profiles;
+								// Stop iteration to avoid potential quota errors.
 								break;
+							}
+							// If we found a matchedProperty, we're all done.
+							if ( isset( $properties_profiles['matchedProperty'] ) ) {
+								break;
+							}
+							// If we didn't find a matched property yet,
+							// save the response as a fallback, if none set yet.
+							if ( null === $fallback_properties_profiles ) {
+								$fallback_properties_profiles = $properties_profiles;
 							}
 						}
 					}
 				}
 
-				if ( is_wp_error( $properties_profiles ) ) {
-					return $properties_profiles;
+				if ( is_wp_error( $properties_profiles ) || ! $properties_profiles ) {
+					$properties_profiles = array(
+						'properties' => array(),
+						'profiles'   => array(),
+					);
 				}
 
 				return array_merge( compact( 'accounts' ), $properties_profiles );

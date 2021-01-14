@@ -1,7 +1,7 @@
 /**
- * WPDashboardHeader component.
+ * URL pathname getter utility function.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,15 @@
  */
 
 /**
- * WordPress dependencies
+ * Returns the path from a URL, omitting its protocol, hostname, query params, and hash.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} url The URL to get the path from.
+ * @return {string} The URL path.
  */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
-
-/**
- * A single module. Keeps track of its own active state and settings.
- */
-class WPDashboardHeader extends Component {
-	render() {
-		return null;
-	}
+export function getURLPath( url ) {
+	return new URL( url ).pathname;
 }
 
-export default withFilters( 'googlesitekit.WPDashboardHeader' )( WPDashboardHeader );
+export default getURLPath;

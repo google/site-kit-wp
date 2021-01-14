@@ -52,9 +52,6 @@ function DashboardGoalsWidget() {
 		goals,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
-		const accountID = store.getAccountID();
-		const profileID = store.getProfileID();
-		const internalWebPropertyID = store.getInternalWebPropertyID();
 
 		const {
 			compareStartDate,
@@ -85,7 +82,7 @@ function DashboardGoalsWidget() {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ) || store.getErrorForSelector( 'getGoals', [] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ) || ! store.hasFinishedResolution( 'getGoals', [] ),
-			serviceURL: store.getServiceURL( { path: `/report/conversions-goals-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` } ),
+			serviceURL: store.getServiceReportURL( 'conversions-goals-overview' ),
 			goals: store.getGoals(),
 		};
 	} );

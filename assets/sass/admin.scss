@@ -136,6 +136,7 @@
 @import "components/settings/googlesitekit-settings-module";
 @import "components/settings/googlesitekit-settings-module-warning";
 @import "components/settings/googlesitekit-settings-notice";
+@import "components/settings/googlesitekit-settings-user-input";
 
 // User Input
 @import "components/user-input/googlesitekit-user-input-module";
@@ -148,6 +149,7 @@
 @import "widgets/widget-area";
 @import "widgets/widget-context";
 @import "widgets/widgets";
+@import "widgets/googlesitekit-widget-adsense-performance";
 @import "widgets/googlesitekit-widget-analyticsAllTrafficV2";
 
 // Utilities
