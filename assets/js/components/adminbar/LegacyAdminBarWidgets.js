@@ -48,15 +48,15 @@ export default function LegacyAdminBarWidgets() {
 		return <AdminBarZeroData />;
 	}
 
-	const handleSearchConsoleDataError = ( error, data ) => {
-		global.console.log( 'handleSearchConsoleDataError', error, data );
+	// withData uses handleDataError function props for handling both errors and zero-data.
+	// If called without an error, it means zero data.
+	const handleSearchConsoleDataError = ( error ) => {
 		if ( ! error ) {
 			setZeroDataSearchConsole( true );
 		}
 	};
 
-	const handleAnalyticsDataError = ( error, data ) => {
-		global.console.log( 'handleAnalyticsDataError', error, data );
+	const handleAnalyticsDataError = ( error ) => {
 		if ( ! error ) {
 			setZeroDataAnalytics( true );
 		}
