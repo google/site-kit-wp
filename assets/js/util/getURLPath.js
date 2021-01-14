@@ -19,7 +19,7 @@
 /**
  * Returns the path from a URL, omitting its protocol, hostname, query params, and hash.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  *
  * @param {string} url The URL to get the path from.
  * @return {string} The URL path.

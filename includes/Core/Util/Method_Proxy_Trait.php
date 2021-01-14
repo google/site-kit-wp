@@ -29,7 +29,7 @@ trait Method_Proxy_Trait {
 	/**
 	 * Gets a proxy function for a class method which can be executed only once.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param string $method Method name.
 	 * @return callable A proxy function.
