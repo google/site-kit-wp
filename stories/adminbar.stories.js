@@ -38,7 +38,7 @@ import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/si
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { provideModules, provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 import CollectModuleData from '../assets/js/components/data/collect-module-data';
-import { disableFeature, enableFeature } from './utils/features';
+// import { enableFeature } from './utils/features';
 
 storiesOf( 'Global', module )
 	.add( 'Admin Bar', () => {
@@ -74,8 +74,6 @@ storiesOf( 'Global', module )
 			'googlesitekit.SearchConsole',
 			addGoogleSitekitSearchConsoleAdminbarWidget );
 
-		disableFeature( 'widgets.adminBar' );
-
 		return (
 			<div id="wpadminbar">
 				<div className="googlesitekit-plugin">
@@ -96,15 +94,20 @@ storiesOf( 'Global', module )
 
 		const setupRegistry = ( registry ) => {
 			// Set some site information.
-			provideSiteInfo( registry, { currentEntityURL: '/example-page/' } );
+			provideSiteInfo( registry, {
+				currentEntityURL: 'https://www.sitekitbygoogle.com/blog/',
+				currentEntityTitle: 'Blog test post for Google Site Kit',
+			} );
 
 			// Set up the search console and analytics modules stores but provide no data.
-			provideModules( registry, [ { slug: 'search-console', active: true, connected: true } ] );
-			provideModules( registry, [ { slug: 'analytics', active: true, connected: true } ] );
+			provideModules( registry, [
+				{ slug: 'search-console', active: true, connected: true },
+				{ slug: 'analytics', active: true, connected: true },
+			] );
 		};
 
 		removeAllFilters( 'googlesitekit.AdminbarModules' );
-		enableFeature( 'widgets.adminBar' );
+		// enableFeature( 'widgets.adminBar' );
 
 		return (
 			<div id="wpadminbar">

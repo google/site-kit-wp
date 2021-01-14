@@ -33,8 +33,6 @@ use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
 use Google\Site_Kit\Modules\Search_Console\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters;
-use Google\Site_Kit_Dependencies\Google_Service_Webmasters_ApiDataRow;
-use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SearchAnalyticsQueryResponse;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SitesListResponse;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters_WmxSite;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SearchAnalyticsQueryRequest;

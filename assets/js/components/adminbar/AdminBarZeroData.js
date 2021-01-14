@@ -1,5 +1,5 @@
 /**
- * Admin Bar Clicks component.
+ * Admin Bar Zero Data component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,17 +16,16 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
 const AdminBarZeroData = () => {
 	return (
-		<div className="
-			mdc-layout-grid__cell--span-4-phone
-			mdc-layout-grid__cell--span-8-tablet
-			mdc-layout-grid__cell--span-12-desktop
-		">
-			<div className="googlesitekit-zero-data">
-				<h3 className="googlesitekit-zero-data__title">No data available yet</h3>
-				<p className="googlesitekit-zero-data__description">There is no data available for this content yet. This could be because it was recently created or because nobody has accessed it so far.</p>
-			</div>
+		<div className="mdc-layout-grid__cell--span-12">
+			<h3>{ __( 'No data available yet', 'google-site-kit' ) }</h3>
+			<p>{ __( 'There is no data available for this content yet. This could be because it was recently created or because nobody has accessed it so far.', 'google-site-kit' ) }</p>
 		</div>
 	);
 };

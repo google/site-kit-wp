@@ -124,7 +124,7 @@ AdminBarUniqueVisitors.defaultProps = {
  * @since n.e.x.t
  *
  * @param {Function} select Data store select function.
- * @return {Function} Select function for parent component to run through useSelect hook.
+ * @return {boolean} Returns true if the report has zero data.
  */
 AdminBarUniqueVisitors.selectHasZeroData = ( select ) => {
 	const reportArgs = selectReportArgs( select );
