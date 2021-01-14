@@ -48,10 +48,10 @@ export default function AdminBarApp() {
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 
 	// Check if each section has zero data.
-	const adminBarImpressionsHasZeroData = useSelect( AdminBarImpressions.hasZeroData );
-	const adminBarClicksHasZeroData = useSelect( AdminBarClicks.hasZeroData );
-	const adminBarUniqueVisitorsHasZeroData = useSelect( AdminBarUniqueVisitors.hasZeroData );
-	const adminBarSessionsHasZeroData = useSelect( AdminBarSessions.hasZeroData );
+	const adminBarImpressionsHasZeroData = useSelect( AdminBarImpressions.selectHasZeroData );
+	const adminBarClicksHasZeroData = useSelect( AdminBarClicks.selectHasZeroData );
+	const adminBarUniqueVisitorsHasZeroData = useSelect( AdminBarUniqueVisitors.selectHasZeroData );
+	const adminBarSessionsHasZeroData = useSelect( AdminBarSessions.selectHasZeroData );
 
 	// True if _all_ admin bar sections have zero data.
 	const zeroData = ( adminBarImpressionsHasZeroData === true && adminBarClicksHasZeroData === true && adminBarUniqueVisitorsHasZeroData === true && adminBarSessionsHasZeroData === true );
@@ -63,11 +63,6 @@ export default function AdminBarApp() {
 
 	// Only show the adminbar on valid pages and posts.
 	if ( ! detailsURL || ! currentEntityURL ) {
-		return null;
-	}
-
-	// Don't show the menu until we know there is data.
-	if ( zeroData === undefined ) {
 		return null;
 	}
 
@@ -97,43 +92,42 @@ export default function AdminBarApp() {
 						mdc-layout-grid__cell--align-middle
 					">
 						<div className="mdc-layout-grid__inner">
-							{ zeroData
-								? ( <AdminBarZeroData /> )
-								: (
-									<Fragment>
-										{ featureFlags.widgets.adminBar.enabled && (
-											<Fragment>
-												<AdminBarImpressions />
-												<AdminBarClicks />
+							{ zeroData && <AdminBarZeroData /> }
+							{ ! zeroData && (
+								<Fragment>
+									{ featureFlags.widgets.adminBar.enabled && (
+										<Fragment>
+											<AdminBarImpressions />
+											<AdminBarClicks />
 
-												{ analyticsModuleConnected && analyticsModuleActive && (
-													<Fragment>
-														<AdminBarUniqueVisitors />
-														<AdminBarSessions />
-													</Fragment>
-												) }
+											{ analyticsModuleConnected && analyticsModuleActive && (
+												<Fragment>
+													<AdminBarUniqueVisitors />
+													<AdminBarSessions />
+												</Fragment>
+											) }
 
-												{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
-													<div className="
+											{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+												<div className="
 														mdc-layout-grid__cell
 														mdc-layout-grid__cell--span-6-desktop
 														mdc-layout-grid__cell--span-4-tablet
 													">
-														{ ! analyticsModuleActive && (
-															<AnalyticsInactiveCTA />
-														) }
+													{ ! analyticsModuleActive && (
+														<AnalyticsInactiveCTA />
+													) }
 
-														{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
-															<CompleteModuleActivationCTA slug="analytics" />
-														) }
-													</div>
-												) }
+													{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
+														<CompleteModuleActivationCTA slug="analytics" />
+													) }
+												</div>
+											) }
 
-											</Fragment>
-										) }
-										<LegacyAdminBarModules />
-									</Fragment>
-								) }
+										</Fragment>
+									) }
+									<LegacyAdminBarModules />
+								</Fragment>
+							) }
 						</div>
 					</div>
 					<div className="

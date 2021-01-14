@@ -43,21 +43,24 @@ import { isZeroReport } from '../../modules/search-console/util/is-zero-report';
 import sumObjectListValue from '../../util/sum-object-list-value';
 const { useSelect } = Data;
 
-// reportArgs is declared in this higher scope so that it can be used by hasData.
-let reportArgs;
-
-const AdminBarClicks = ( { className } ) => {
-	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+const selectReportArgs = ( select ) => {
+	const url = select( CORE_SITE ).getCurrentEntityURL();
+	const { compareStartDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
-	reportArgs = {
+	} );
+
+	return {
 		startDate: compareStartDate,
 		endDate,
 		dimensions: 'date',
 		url,
 	};
+};
+
+const AdminBarClicks = ( { className } ) => {
+	const reportArgs = useSelect( selectReportArgs );
+
 	const searchConsoleData = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ) );
 	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
@@ -124,6 +127,10 @@ AdminBarClicks.defaultProps = {
  * @param {Function} select Data store select function.
  * @return {Function} Select function for parent component to run through useSelect hook.
  */
-AdminBarClicks.hasZeroData = ( select ) => reportArgs === undefined ? undefined : isZeroReport( select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ) );
+AdminBarClicks.selectHasZeroData = ( select ) => {
+	const reportArgs = selectReportArgs( select );
+	const data = select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs );
+	return isZeroReport( data );
+};
 
 export default AdminBarClicks;

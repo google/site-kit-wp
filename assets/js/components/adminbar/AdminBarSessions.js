@@ -42,16 +42,13 @@ import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
-// reportArgs is declared in this higher scope so that it can be used by hasData.
-let reportArgs;
-
-const AdminBarSessions = ( { className } ) => {
-	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+const selectReportArgs = ( select ) => {
+	const url = select( CORE_SITE ).getCurrentEntityURL();
+	const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
-	reportArgs = {
+	} );
+	return {
 		...dateRangeDates,
 		dimensions: 'ga:date',
 		limit: 10,
@@ -63,6 +60,11 @@ const AdminBarSessions = ( { className } ) => {
 		],
 		url,
 	};
+};
+
+const AdminBarSessions = ( { className } ) => {
+	const reportArgs = useSelect( selectReportArgs );
+
 	const analyticsData = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( reportArgs ) );
 	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
@@ -126,6 +128,10 @@ AdminBarSessions.defaultProps = {
  * @param {Function} select Data store select function.
  * @return {Function} Select function for parent component to run through useSelect hook.
  */
-AdminBarSessions.hasZeroData = ( select ) => reportArgs === undefined ? undefined : isZeroReport( select( MODULES_ANALYTICS ).getReport( reportArgs ) );
+AdminBarSessions.selectHasZeroData = ( select ) => {
+	const reportArgs = selectReportArgs( select );
+	const data = select( MODULES_ANALYTICS ).getReport( reportArgs );
+	return isZeroReport( data );
+};
 
 export default AdminBarSessions;
