@@ -45,8 +45,7 @@ import {
 	userReportDataDefaults,
 	parseTotalUsersData,
 } from '../../util';
-
-import applyEntityToReportPath from '../../util/applyEntityToReportPath';
+import { getURLPath } from '../../../../util/getURLPath';
 import Data from 'googlesitekit-data';
 import DataBlock from '../../../../components/DataBlock';
 import withData from '../../../../components/higherorder/withData';
@@ -100,23 +99,14 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 
 	const { permaLink } = global._googlesitekitLegacyData;
 
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
-	const pathIDSegment = `a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
-
-	const uniqueVisitorsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
-		{
-			path: applyEntityToReportPath( url, `/report/visitors-overview/${ pathIDSegment }` ),
-		}
-	) );
-	const goalsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
-		{
-			path: applyEntityToReportPath( url, `/report/conversions-goals-overview/${ pathIDSegment }` ),
-		}
-	) );
+	const uniqueVisitorsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( `visitors-overview`, {
+		'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+	} ) );
+	const goalsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( `conversions-goals-overview`, {
+		'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+	} ) );
 	const goalURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
 		path: '/analytics/answer/1032415',
 		hash: 'create_or_edit_goals',
