@@ -33,10 +33,8 @@ import {
 	dashboardUserDimensionsData,
 	dashboardUserTotalsArgs,
 	dashboardUserTotalsData,
-	dashboardUsersTotalV2Args,
-	dashboardUniqueVisitorsVisitorV2Args,
-	dashboardUniqueVisitorsV2Data,
-	dashboardUniqueVisitorsVisitorData,
+	dashboardUserGraphArgs,
+	dashboardUserGraphData,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import DashboardAllTrafficWidgetV2 from '../assets/js/modules/analytics/components/dashboard/DashboardAllTrafficWidgetV2';
 
@@ -191,17 +189,15 @@ generateReportBasedWidgetStories( {
 		dashboardUserDimensionsData[ 'ga:channelGrouping' ],
 		dashboardUserDimensionsData[ 'ga:country' ],
 		dashboardUserDimensionsData[ 'ga:deviceCategory' ],
-		dashboardUniqueVisitorsVisitorData,
-		dashboardUniqueVisitorsV2Data,
 		dashboardUserTotalsData,
+		dashboardUserGraphData,
 	],
 	options: [
 		dashboardUserDimensionsArgs[ 'ga:channelGrouping' ],
 		dashboardUserDimensionsArgs[ 'ga:country' ],
 		dashboardUserDimensionsArgs[ 'ga:deviceCategory' ],
-		dashboardUsersTotalV2Args,
-		dashboardUniqueVisitorsVisitorV2Args,
 		dashboardUserTotalsArgs,
+		dashboardUserGraphArgs,
 	],
 	Component: DashboardAllTrafficWidgetV2,
 	wrapWidget: false,
