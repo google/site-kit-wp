@@ -19,19 +19,39 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
-import { deactivateUtilityPlugins, resetSiteKit, setupSiteKit } from '../utils';
+import { deactivateUtilityPlugins, resetSiteKit, setupSiteKit, useRequestInterception } from '../utils';
 
 describe( 'User Input Settings', () => {
+	beforeAll( async () => {
+		await page.setRequestInterception( true );
+		useRequestInterception( ( request ) => {
+			if ( request.url().startsWith( 'https://sitekit.withgoogle.com' ) ) {
+				request.respond( {
+					status: 302,
+					headers: {
+						location: createURL( '/wp-admin/index.php', [
+							'oauth2callback=1',
+							'code=valid-test-code',
+							'scope=https://www.googleapis.com/auth/analytics.provision',
+						].join( '&' ) ),
+					},
+				} );
+			} else {
+				request.continue();
+			}
+		} );
+	} );
+
 	beforeEach( async () => {
 		await setupSiteKit();
-		await activatePlugin( 'e2e-tests-auth-plugin' );
-		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
+		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
+		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 	} );
 
 	afterEach( async () => {
