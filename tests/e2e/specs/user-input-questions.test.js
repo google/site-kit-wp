@@ -50,7 +50,6 @@ describe( 'User Input Settings', () => {
 	beforeEach( async () => {
 		await setupSiteKit();
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
-		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 	} );
 
@@ -61,6 +60,30 @@ describe( 'User Input Settings', () => {
 
 	it( 'New user flow', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
-		await page.click( '.googlesitekit-start-setup' );
+
+		await Promise.all( [
+			expect( page ).toClick( '.googlesitekit-start-setup' ),
+			page.waitForNavigation(),
+		] );
+
+		await page.waitForSelector( '.googlesitekit-user-input__question' );
+
+		await expect( page ).toClick( '#role-owner_with_team' );
+		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
+
+		await expect( page ).toClick( '#postFrequency-daily' );
+		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
+
+		await expect( page ).toClick( '#goals-publish_blog' );
+		await expect( page ).toClick( '#goals-share_portfolio' );
+		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
+
+		await expect( page ).toClick( '#helpNeeded-retaining_visitors' );
+		await expect( page ).toClick( '#helpNeeded-improving_performance' );
+		await expect( page ).toClick( '#helpNeeded-help_better_rank' );
+		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
+
+		await expect( page ).toFill( '#searchTerms-keywords', 'One,Two,Three,' );
+		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
 	} );
 } );

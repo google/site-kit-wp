@@ -86,12 +86,17 @@ export default function UserInputQuestionWrapper( props ) {
 					{ isActive && (
 						<div className="googlesitekit-user-input__buttons">
 							{ back && (
-								<Button text onClick={ back }>
+								<Button
+									className="googlesitekit-user-input__buttons--back"
+									onClick={ back }
+									text
+								>
 									{ backLabel || __( 'Back', 'google-site-kit' ) }
 								</Button>
 							) }
 							{ next && (
 								<Button
+									className="googlesitekit-user-input__buttons--next"
 									onClick={ next }
 									disabled={ values.filter( ( value ) => value.trim().length > 0 ).length === 0 }
 								>
