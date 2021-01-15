@@ -29,7 +29,6 @@ import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
 import AdminBarSessions from './AdminBarSessions';
 import AdminBarImpressions from './AdminBarImpressions';
 import AdminBarClicks from './AdminBarClicks';
-import LegacyAdminBarModules from './LegacyAdminBarModules';
 import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import Data from 'googlesitekit-data';
@@ -81,37 +80,31 @@ export default function AdminBarApp() {
 						mdc-layout-grid__cell--align-middle
 					">
 						<div className="mdc-layout-grid__inner">
-							{ featureFlags.widgets.adminBar.enabled && (
+							<AdminBarImpressions />
+							<AdminBarClicks />
+
+							{ analyticsModuleConnected && analyticsModuleActive && (
 								<Fragment>
-									<AdminBarImpressions />
-									<AdminBarClicks />
+									<AdminBarUniqueVisitors />
+									<AdminBarSessions />
+								</Fragment>
+							) }
 
-									{ analyticsModuleConnected && analyticsModuleActive && (
-										<Fragment>
-											<AdminBarUniqueVisitors />
-											<AdminBarSessions />
-										</Fragment>
-									) }
-
-									{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
-										<div className="
+							{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+								<div className="
 											mdc-layout-grid__cell
 											mdc-layout-grid__cell--span-6-desktop
 											mdc-layout-grid__cell--span-4-tablet
 										">
-											{ ! analyticsModuleActive && (
-												<AnalyticsInactiveCTA />
-											) }
-
-											{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
-												<CompleteModuleActivationCTA slug="analytics" />
-											) }
-										</div>
+									{ ! analyticsModuleActive && (
+										<AnalyticsInactiveCTA />
 									) }
-								</Fragment>
-							) }
 
-							<LegacyAdminBarModules />
+									{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
+										<CompleteModuleActivationCTA slug="analytics" />
+									) }
+								</div>
+							) }
 						</div>
 					</div>
 					<div className="
