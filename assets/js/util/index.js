@@ -176,7 +176,7 @@ export const getDaysBetweenDates = ( dateStart, dateEnd ) => {
 /**
  * Calculates the change between two values.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  *
  * @param {number} previous The previous value.
  * @param {number} current  The current value.

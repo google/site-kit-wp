@@ -161,6 +161,7 @@ export default function AdSenseDashboardWidgetSiteStats( props ) {
 			<Row>
 				<Cell size={ 12 }>
 					<GoogleChart
+						chartType="line"
 						selectedStats={ [ selectedStats ] }
 						data={ dataMap }
 						options={ options }

@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Class for AMP tag.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	/**
 	 * Internal flag for whether the AdSense tag has been printed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 * @var bool
 	 */
 	private $adsense_tag_printed = false;
@@ -35,7 +35,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	public function register() {
 		// For AMP Reader, and AMP Native and Transitional (if `wp_body_open` supported).
@@ -52,7 +52,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	/**
 	 * Outputs the <amp-auto-ads> tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	protected function render() {
 		if ( $this->adsense_tag_printed ) {
@@ -71,7 +71,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	/**
 	 * Adds the AMP auto ads tag if opted in.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param string $content The page content.
 	 * @return string Filtered $content.

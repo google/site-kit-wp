@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Tags;
 /**
  * Interface for a blockable tag.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ interface Blockable_Tag_Interface {
 	/**
 	 * Checks whether or not the tag should be blocked from rendering.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @return bool TRUE if the tag should be blocked, otherwise FALSE.
 	 */
@@ -31,7 +31,7 @@ interface Blockable_Tag_Interface {
 	/**
 	 * Gets the HTML attributes for a script tag that may potentially require user consent before loading.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @return string HTML attributes to add if the tag requires consent to load, or an empty string.
 	 */

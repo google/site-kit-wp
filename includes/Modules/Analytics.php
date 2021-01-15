@@ -1084,7 +1084,7 @@ final class Analytics extends Module
 	 * Creates a new Analytics site request for the current site and given arguments.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Added $dimension_filters
+	 * @since 1.24.0 Added $dimension_filters
 	 *
 	 * @param array $args {
 	 *     Optional. Additional arguments.
@@ -1479,7 +1479,7 @@ final class Analytics extends Module
 	/**
 	 * Registers the Analytics tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	private function register_tag() {
 		$tag             = null;

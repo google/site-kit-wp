@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Class for AMP tag.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	/**
 	 * Home domain name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 * @var string
 	 */
 	private $home_domain;
@@ -35,7 +35,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	/**
 	 * Sets the current home domain.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param string $domain Domain name.
 	 */
@@ -46,7 +46,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	public function register() {
 		$render = $this->get_method_proxy_once( 'render' );
@@ -72,7 +72,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	/**
 	 * Outputs gtag <amp-analytics> tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	protected function render() {
 		$gtag_amp_opt = array(
@@ -95,7 +95,7 @@ class AMP_Tag extends Module_AMP_Tag {
 		 *
 		 * You can use the {@see 'googlesitekit_gtag_opt'} filter to do the same for gtag in non-AMP.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.24.0
 		 * @see https://developers.google.com/gtagjs/devguide/amp
 		 *
 		 * @param array $gtag_amp_opt gtag config options for AMP.

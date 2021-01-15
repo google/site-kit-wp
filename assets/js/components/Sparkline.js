@@ -79,6 +79,7 @@ function Sparkline( {
 	return (
 		<div className="googlesitekit-analytics-sparkline-chart-wrap">
 			<GoogleChart
+				chartType="line"
 				data={ data }
 				options={ chartOptions }
 				// eslint-disable-next-line sitekit/camelcase-acronyms

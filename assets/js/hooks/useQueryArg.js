@@ -25,7 +25,7 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
 /**
  * Uses a location query param as a variable in a component.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  *
  * @param {string} key            The query param key to be used.
  * @param {string} [initialValue] Optional. The initial value for the query param to be used.
