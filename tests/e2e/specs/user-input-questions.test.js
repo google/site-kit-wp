@@ -30,7 +30,9 @@ describe( 'User Input Settings', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().startsWith( 'https://sitekit.withgoogle.com' ) ) {
+			const url = request.url();
+
+			if ( url.startsWith( 'https://sitekit.withgoogle.com' ) ) {
 				request.respond( {
 					status: 302,
 					headers: {
@@ -40,6 +42,11 @@ describe( 'User Input Settings', () => {
 							'scope=https://www.googleapis.com/auth/analytics.provision',
 						].join( '&' ) ),
 					},
+				} );
+			} else if ( url.match( 'google-site-kit/v1/core/user/data/user-input-settings' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {} ),
 				} );
 			} else {
 				request.continue();
@@ -71,7 +78,7 @@ describe( 'User Input Settings', () => {
 		await expect( page ).toClick( '#role-owner_with_team' );
 		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
 
-		await expect( page ).toClick( '#postFrequency-daily' );
+		await expect( page ).toClick( '#postFrequency-monthly' );
 		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
 
 		await expect( page ).toClick( '#goals-publish_blog' );
