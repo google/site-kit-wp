@@ -23,7 +23,7 @@ import SettingsApp from './SettingsApp';
 import { render, fireEvent, createTestRegistry, provideModules, waitFor } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import * as fixtures from '../../modules/analytics/datastore/__fixtures__';
-import { disableFeature, enableFeature } from '../../../../stories/utils/features';
+import { enableFeature } from '../../../../stories/utils/features';
 
 describe( 'SettingsApp', () => {
 	let registry;
@@ -37,11 +37,11 @@ describe( 'SettingsApp', () => {
 	beforeEach( () => {
 		global.location.hash = '';
 		enableFeature( 'storeErrorNotifications' );
-		disableFeature( 'userInput' );
 
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
+		registry.dispatch( CORE_USER ).receiveUserInputState( 'completed' );
 
 		provideModules( registry, [ {
 			slug: 'analytics',
@@ -139,6 +139,10 @@ describe( 'SettingsApp', () => {
 	} );
 
 	it( 'should change location hash & DOM correctly when tab is clicked and changed', async () => {
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/core\/user\/data\/user-input-settings/,
+			{ body: {}, status: 200 },
+		);
 		const { findByText, getAllByRole } = render( <SettingsApp />, { registry } );
 
 		fireEvent.click( getAllByRole( 'tab' )[ 1 ] );

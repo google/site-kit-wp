@@ -13,9 +13,6 @@
       "enabled": "development"
     }
   },
-  "userInput": {
-    "enabled": "development"
-  },
   "storeErrorNotifications": {
     "enabled": "development"
   },
