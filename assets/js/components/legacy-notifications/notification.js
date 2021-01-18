@@ -335,6 +335,7 @@ class Notification extends Component {
 
 							{ ctaLink &&
 								<Button
+									className="googlesitekit-notification__cta"
 									href={ ctaLink }
 									target={ ctaTarget }
 									onClick={ this.handleCTAClick }
