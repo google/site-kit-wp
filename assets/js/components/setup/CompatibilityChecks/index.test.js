@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import CompatibilityChecks from './index';
-import { render, waitFor, waitForElementToBeRemoved, getByText, act } from '../../../../../tests/js/test-utils';
+import { render, waitForElementToBeRemoved, act } from '../../../../../tests/js/test-utils';
 import { Fragment } from 'react';
 import { muteFetch } from '../../../../../tests/js/utils';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -85,10 +85,11 @@ describe( 'CompatibilityChecks', () => {
 			</CompatibilityChecks>
 		);
 
-		await waitFor( () => {
-			// Warning message shows after the compatibility checks run.
-			expect( getByText( container, 'Your site may not be ready for Site Kit' ) ).toBeInTheDocument();
-		} );
+		// Wait for progress bar to disappear.
+		await waitForElementToBeRemoved( document.querySelector( '.mdc-linear-progress' ) );
+
+		// Expect neither error nor incomplete text to be displayed.
+		expect( container ).toHaveTextContent( 'Your site may not be ready for Site Kit' );
 
 		// Expect a Google Site Kit API Error.
 		expect( console ).toHaveErrored();
