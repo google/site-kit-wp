@@ -37,6 +37,7 @@ import { getURLPath } from '../../../../util/getURLPath';
 import ReportError from '../../../../components/ReportError';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
@@ -101,6 +102,7 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero } ) {
 			sparkData: store.getReport( sparklineArgs ),
 			serviceURL: store.getServiceReportURL( 'visitors-overview', {
 				'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+				...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
 			} ),
 			visitorsData: store.getReport( args ),
 		};

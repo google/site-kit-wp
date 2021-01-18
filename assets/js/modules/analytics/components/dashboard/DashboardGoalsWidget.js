@@ -37,7 +37,7 @@ import { calculateChange } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import ReportError from '../../../../components/ReportError';
-
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
 function DashboardGoalsWidget( { WidgetReportZero } ) {
@@ -79,7 +79,9 @@ function DashboardGoalsWidget( { WidgetReportZero } ) {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ) || store.getErrorForSelector( 'getGoals', [] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ) || ! store.hasFinishedResolution( 'getGoals', [] ),
-			serviceURL: store.getServiceReportURL( 'conversions-goals-overview' ),
+			serviceURL: store.getServiceReportURL( 'conversions-goals-overview', {
+				...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
+			} ),
 			goals: store.getGoals(),
 		};
 	} );
