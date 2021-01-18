@@ -45,7 +45,7 @@ export * from './validation';
  * Extracts data required for a pie chart from the Analytics report information.
  *
  * @since 1.16.0 Added keyColumnIndex argument.
- * @since n.e.x.t Updated the function signature to use options argument instead of keyColumnIndex.
+ * @since 1.24.0 Updated the function signature to use options argument instead of keyColumnIndex.
  *
  * @param {Array}    reports                   The array with reports data.
  * @param {Object}   [options]                 Optional. Data extraction options.

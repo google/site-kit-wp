@@ -52,7 +52,7 @@ module.exports = {
 	report: [ 'browser' ],
 	scenarios,
 	viewports,
-	readyEvent: 'backstopjs_ready',
+	readySelector: 'body.backstopjs-ready',
 	misMatchThreshold: 0,
 	delay: 1000, // Default delay to ensure components render complete.
 };

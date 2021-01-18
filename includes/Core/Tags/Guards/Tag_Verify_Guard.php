@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Util\Input;
 /**
  * Guard that verifies if the "tagverify" query arg is used.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Tag_Verify_Guard implements Guard_Interface {
 	/**
 	 * Input access abstraction.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 * @var Input
 	 */
 	private $input;
@@ -33,7 +33,7 @@ class Tag_Verify_Guard implements Guard_Interface {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param Input $input Input instance.
 	 */
@@ -44,7 +44,7 @@ class Tag_Verify_Guard implements Guard_Interface {
 	/**
 	 * Determines whether the guarded tag can be activated or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @return bool|WP_Error TRUE if guarded tag can be activated, otherwise FALSE or an error.
 	 */

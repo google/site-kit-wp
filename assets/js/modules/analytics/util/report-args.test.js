@@ -28,6 +28,14 @@ describe( 'reportArgsToURLSegment', () => {
 		expect( reportArgsToURLSegment( { foo: 'bar' } ) ).toBe( 'foo=bar' );
 	} );
 
+	it( 'returns an empty string for an object with no keys', () => {
+		expect( reportArgsToURLSegment( {} ) ).toBe( '' );
+	} );
+
+	it( 'ignores keys with undefined values', () => {
+		expect( reportArgsToURLSegment( { foo: 'bar', baz: undefined } ) ).toBe( 'foo=bar' );
+	} );
+
 	it( 'joins multiple arguments with an ampersand literal', () => {
 		expect( reportArgsToURLSegment( { foo: 'bar', baz: 'buzz' } ) ).toBe( 'foo=bar&baz=buzz' );
 	} );

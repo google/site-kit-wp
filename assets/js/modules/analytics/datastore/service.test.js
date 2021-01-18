@@ -130,7 +130,7 @@ describe( 'module/analytics service store', () => {
 					expect( reportServiceURL.startsWith( baseURI ) ).toBe( true );
 					// For more details about how `reportArgs` are handled, see assets/js/modules/analytics/util/report-args.test.js.
 					expect( url.hash ).toBe(
-						`#/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }/foo%3Dbar/`
+						`#/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }/foo=bar/`
 					);
 				} );
 			} );

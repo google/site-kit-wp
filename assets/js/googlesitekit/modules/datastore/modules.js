@@ -225,7 +225,7 @@ const baseActions = {
 	 * @since 1.20.0 Introduced the ability to register settings and setup components.
 	 * @since 1.22.0 Introduced the ability to add a checkRequirements function.
 	 * @since 1.23.0 Introduced the ability to register an Icon component.
-	 * @since n.e.x.t Introduced the ability to explictly define a module store name.
+	 * @since 1.24.0 Introduced the ability to explictly define a module store name.
 	 *
 	 * @param {string}      slug                                        Module slug.
 	 * @param {Object}      [settings]                                  Optional. Module settings.
@@ -624,7 +624,7 @@ const baseSelectors = {
 	 * Returns the store name if preset or null if there is no store name for this module.
 	 * Returns `undefined` if state is still loading or if said module doesn't exist.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param {string} slug Module slug.
 	 * @return {(string|null|undefined)} `string` of the store name if a name has been set for this module.

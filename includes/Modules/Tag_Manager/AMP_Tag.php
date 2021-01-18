@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Class for AMP tag.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	public function register() {
 		$render = $this->get_method_proxy_once( 'render' );
@@ -51,7 +51,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	/**
 	 * Outputs Tag Manager <amp-analytics> tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	protected function render() {
 		// Add the optoutElementId for compatibility with our Analytics opt-out mechanism.

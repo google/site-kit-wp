@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Tags\Tag;
 /**
  * Base class for a module tag.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ abstract class Module_Tag extends Tag {
 	/**
 	 * Module slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 * @var string
 	 */
 	protected $slug;
@@ -32,7 +32,7 @@ abstract class Module_Tag extends Tag {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param string $tag_id Tag ID.
 	 * @param string $module_slug Module slug.
@@ -45,7 +45,7 @@ abstract class Module_Tag extends Tag {
 	/**
 	 * Outputs the tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	abstract protected function render();
 

@@ -26,6 +26,7 @@ import domReady from '@wordpress/dom-ready';
  */
 import Modules from 'googlesitekit-modules';
 import './datastore';
+import { STORE_NAME } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import TagManagerIcon from '../../../svg/tagmanager.svg';
@@ -36,7 +37,7 @@ domReady( () => {
 	Modules.registerModule(
 		'tagmanager',
 		{
-			storeName: 'modules/tagmanager',
+			storeName: STORE_NAME,
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,

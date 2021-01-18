@@ -59,7 +59,7 @@ describe( 'SettingsApp', () => {
 		};
 	} );
 
-	it( 'should change location hash & DOM correctly when module accordian clicked and opened', async () => {
+	it( 'should change location hash & DOM correctly when module accordion clicked and opened', async () => {
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
 			{ body: validResponse, status: 200 }
@@ -74,7 +74,7 @@ describe( 'SettingsApp', () => {
 		expect( analyticsPanel ).toHaveAttribute( 'id', 'googlesitekit-settings-module__content--analytics' );
 	} );
 
-	it( 'should change location hash & DOM correctly when module accordian clicked and closed', async () => {
+	it( 'should change location hash & DOM correctly when module accordion clicked and closed', async () => {
 		const { getByRole, findByRole, queryByRole } = render( <SettingsApp />, { registry } );
 
 		fireEvent.click( getByRole( 'tab', { name: /analytics/i } ) );
