@@ -88,8 +88,9 @@
 	.googlesitekit-widget--analyticsAllTrafficV2__totalcount {
 
 		h3 {
+			color: $c-boulder;
 			font-size: 16px;
-			font-weight: 500;
+			font-weight: 400;
 			margin: 0;
 
 			span::before {
@@ -99,8 +100,8 @@
 		}
 
 		h2 {
-			font-size: 80px;
-			font-weight: 700;
+			font-size: 58px;
+			font-weight: 400;
 			margin: 0;
 		}
 	}
@@ -111,10 +112,10 @@
 
 	.googlesitekit-widget--analyticsAllTrafficV2__totalcount--change {
 		display: inline-block;
-		font-size: 24px;
-		font-weight: 500;
+		font-size: 12px;
+		font-weight: 400;
 		margin: 0;
-		margin-right: 10px;
+		margin-right: 4px;
 
 		svg {
 			margin: 0;
