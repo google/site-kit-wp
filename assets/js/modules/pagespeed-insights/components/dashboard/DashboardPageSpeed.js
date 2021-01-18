@@ -41,8 +41,8 @@ import LabReportMetrics from '../common/LabReportMetrics';
 import FieldReportMetrics from '../common/FieldReportMetrics';
 import Recommendations from '../common/Recommendations';
 import ReportDetailsLink from '../common/ReportDetailsLink';
-import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	STORE_NAME,
 	STRATEGY_MOBILE,

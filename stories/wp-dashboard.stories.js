@@ -37,8 +37,8 @@ import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/
 import { createAddToFilter } from '../assets/js/util/helpers';
 import WPAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/wp-dashboard/WPAnalyticsDashboardWidgetOverview';
 import WPAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/wp-dashboard/WPAnalyticsDashboardWidgetTopPagesTable';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'WordPress', module )

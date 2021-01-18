@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, FORM_SETUP } from '../../datastore/constants';
-import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { TextField, HelperText, Input } from '../../../../material-components';
 import { isUniqueContainerName } from '../../util';
 const { useSelect, useDispatch } = Data;

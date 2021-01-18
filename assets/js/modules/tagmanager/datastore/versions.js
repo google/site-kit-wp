@@ -27,7 +27,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, CONTEXT_WEB } from './constants';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { isValidAccountID, isValidInternalContainerID } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../../analytics/util';

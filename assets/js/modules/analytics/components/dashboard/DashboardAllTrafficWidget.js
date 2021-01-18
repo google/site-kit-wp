@@ -22,8 +22,8 @@
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import PreviewTable from '../../../../components/PreviewTable';

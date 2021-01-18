@@ -36,8 +36,8 @@ import {
 import CTA from './legacy-notifications/cta';
 import Data from 'googlesitekit-data';
 import GenericError from './legacy-notifications/generic-error';
-import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 const ActivateModuleCTA = ( { slug, title, description } ) => {

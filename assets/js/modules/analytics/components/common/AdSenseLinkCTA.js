@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import CTA from '../../../../components/legacy-notifications/cta';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function AdSenseLinkCTA() {

@@ -36,7 +36,7 @@ import Link from '../../../../components/Link';
 import { extractAnalyticsDataForPieChart } from '../../util';
 import { getURLPath } from '../../../../util/getURLPath';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 const { useSelect } = Data;
 

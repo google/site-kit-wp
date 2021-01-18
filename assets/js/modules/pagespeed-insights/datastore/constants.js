@@ -17,6 +17,7 @@
  */
 
 export const STORE_NAME = 'modules/pagespeed-insights';
+export { STORE_NAME as MODULES_PAGESPEED_INSIGHTS };
 
 // Form ID for PageSpeed widget.
 export const FORM_DASH_WIDGET = 'pagespeedDashboardWidget';

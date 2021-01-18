@@ -17,3 +17,4 @@
  */
 
 export const STORE_NAME = 'modules/optimize';
+export { STORE_NAME as MODULES_OPTIMIZE };

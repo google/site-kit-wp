@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
-import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	muteFetch,

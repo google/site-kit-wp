@@ -35,7 +35,7 @@ import AdSenseIcon from '../../../../../svg/adsense.svg';
 import ProgressBar from '../../../../components/ProgressBar';
 import ErrorText from '../../../../components/ErrorText';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as siteStoreName } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	ACCOUNT_STATUS_NONE,
 	ACCOUNT_STATUS_MULTIPLE,
@@ -67,7 +67,7 @@ const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	// Get settings.
-	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
+	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const previousAccountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const previousClientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
 	const previousAccountStatus = useSelect( ( select ) => select( STORE_NAME ).getAccountStatus() );

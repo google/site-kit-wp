@@ -17,3 +17,4 @@
  */
 
 export const STORE_NAME = 'core/forms';
+export { STORE_NAME as CORE_FORMS };

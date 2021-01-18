@@ -21,7 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 export default function UserProfile() {

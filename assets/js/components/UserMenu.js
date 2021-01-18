@@ -32,8 +32,8 @@ import Dialog from './Dialog';
 import Button from './Button';
 import Menu from './Menu';
 import Modal from './Modal';
-import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 
 const { useSelect } = Data;
 
