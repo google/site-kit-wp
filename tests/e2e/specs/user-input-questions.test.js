@@ -33,6 +33,38 @@ import {
 } from '../utils';
 
 describe( 'User Input Settings', () => {
+	async function fillInInputSettings() {
+		await page.waitForSelector( '.googlesitekit-user-input__question' );
+
+		await expect( page ).toClick( '#role-owner_with_team' );
+		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
+
+		await expect( page ).toClick( '#postFrequency-monthly' );
+		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
+
+		await expect( page ).toClick( '#goals-publish_blog' );
+		await expect( page ).toClick( '#goals-share_portfolio' );
+		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
+
+		await expect( page ).toClick( '#helpNeeded-retaining_visitors' );
+		await expect( page ).toClick( '#helpNeeded-improving_performance' );
+		await expect( page ).toClick( '#helpNeeded-help_better_rank' );
+		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
+
+		await expect( page ).toFill( '#searchTerms-keywords', 'One,Two,Three,' );
+		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
+
+		await Promise.all( [
+			expect( page ).toClick( '.googlesitekit-user-input__buttons--next' ),
+			page.waitForNavigation(),
+		] );
+	}
+
+	async function expectSuccessNotification() {
+		await page.waitForSelector( '#user-input-success' );
+		await expect( page ).toMatchElement( '#user-input-success' );
+	}
+
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
@@ -82,70 +114,36 @@ describe( 'User Input Settings', () => {
 			page.waitForNavigation(),
 		] );
 
-		await page.waitForSelector( '.googlesitekit-user-input__question' );
-
-		await expect( page ).toClick( '#role-owner_with_team' );
-		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
-
-		await expect( page ).toClick( '#postFrequency-monthly' );
-		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
-
-		await expect( page ).toClick( '#goals-publish_blog' );
-		await expect( page ).toClick( '#goals-share_portfolio' );
-		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
-
-		await expect( page ).toClick( '#helpNeeded-retaining_visitors' );
-		await expect( page ).toClick( '#helpNeeded-improving_performance' );
-		await expect( page ).toClick( '#helpNeeded-help_better_rank' );
-		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
-
-		await expect( page ).toFill( '#searchTerms-keywords', 'One,Two,Three,' );
-		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
-
-		await Promise.all( [
-			expect( page ).toClick( '.googlesitekit-user-input__buttons--next' ),
-			page.waitForNavigation(),
-		] );
-
-		await page.waitForSelector( '#user-input-success' );
-		await expect( page ).toMatchElement( '#user-input-success' );
+		await fillInInputSettings();
+		await expectSuccessNotification();
 	} );
 
 	it( 'should offer to enter input settings for existing users', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
-		await page.waitForSelector( '.googlesitekit-user-input__notification' );
 
+		await page.waitForSelector( '.googlesitekit-user-input__notification' );
 		await Promise.all( [
 			expect( page ).toClick( '.googlesitekit-notification__cta' ),
 			page.waitForNavigation(),
 		] );
 
-		await page.waitForSelector( '.googlesitekit-user-input__question' );
+		await fillInInputSettings();
+		await expectSuccessNotification();
+	} );
 
-		await expect( page ).toClick( '#role-owner_with_team' );
-		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
+	it( 'should let existing users enter input settings from the settings page', async () => {
+		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 
-		await expect( page ).toClick( '#postFrequency-monthly' );
-		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
+		await page.waitForSelector( '.mdc-tab-bar' );
+		await expect( page ).toClick( '.mdc-tab', { text: /admin settings/i } );
 
-		await expect( page ).toClick( '#goals-publish_blog' );
-		await expect( page ).toClick( '#goals-share_portfolio' );
-		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
-
-		await expect( page ).toClick( '#helpNeeded-retaining_visitors' );
-		await expect( page ).toClick( '#helpNeeded-improving_performance' );
-		await expect( page ).toClick( '#helpNeeded-help_better_rank' );
-		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
-
-		await expect( page ).toFill( '#searchTerms-keywords', 'One,Two,Three,' );
-		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
-
+		await page.waitForSelector( '.googlesitekit-user-input__notification' );
 		await Promise.all( [
-			expect( page ).toClick( '.googlesitekit-user-input__buttons--next' ),
+			expect( page ).toClick( '.googlesitekit-notification__cta' ),
 			page.waitForNavigation(),
 		] );
 
-		await page.waitForSelector( '#user-input-success' );
-		await expect( page ).toMatchElement( '#user-input-success' );
+		await fillInInputSettings();
+		await expectSuccessNotification();
 	} );
 } );
