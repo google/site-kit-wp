@@ -37,7 +37,7 @@ describe( 'Site Kit admin bar component display', () => {
 
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
+			if ( request.url().match( 'google-site-kit/v1/modules/' ) ) {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( mockBatchResponse ),
@@ -61,7 +61,7 @@ describe( 'Site Kit admin bar component display', () => {
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/' ) ),
 		] );
 
 		const adminBarApp = await page.$( '#js-googlesitekit-adminbar' );
@@ -91,7 +91,7 @@ describe( 'Site Kit admin bar component display', () => {
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/' ) ),
 		] );
 
 		await page.evaluate( () => {
@@ -117,7 +117,7 @@ describe( 'Site Kit admin bar component display', () => {
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/' ) ),
 		] );
 
 		await expect( page ).toMatchElement(
