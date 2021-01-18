@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import CompatibilityChecks from './CompatibilityChecks';
+import CompatibilityChecks from './index';
 import { render, waitFor, waitForElementToBeRemoved, getByText, act } from '../../../../../tests/js/test-utils';
 import { Fragment } from 'react';
 import { muteFetch } from '../../../../../tests/js/utils';
