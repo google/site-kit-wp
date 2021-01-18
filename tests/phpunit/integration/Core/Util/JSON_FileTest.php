@@ -59,4 +59,15 @@ class JSON_FileTest extends TestCase {
 
 		$this->assertNotNull( $this->force_get_property( $json_file, 'data' ) );
 	}
+
+	public function test_data_is_iterable() {
+		$json_file = new JSON_File( self::$composer['path'] );
+
+		$entries = array();
+		foreach ( $json_file as $key => $value ) {
+			$entries[ $key ] = $value;
+		}
+
+		$this->assertEquals( 'google/google-site-kit', $entries['name'] );
+	}
 }
