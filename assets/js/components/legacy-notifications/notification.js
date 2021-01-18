@@ -267,6 +267,7 @@ class Notification extends Component {
 
 		return (
 			<section
+				id={ id }
 				ref={ this.cardRef }
 				className={ classnames(
 					className,

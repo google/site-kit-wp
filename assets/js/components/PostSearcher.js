@@ -70,10 +70,11 @@ function PostSearcher() {
 					<div className="mdc-layout-grid__inner">
 						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 							<div className="googlesitekit-post-searcher">
-								<label className="googlesitekit-post-searcher__label" htmlFor="autocomplete">
+								<label className="googlesitekit-post-searcher__label" htmlFor="postsearcher-autocomplete">
 									{ __( 'Title or URL', 'google-site-kit' ) }
 								</label>
 								<PostSearcherAutoSuggest
+									id="postsearcher-autocomplete"
 									setCanSubmit={ setCanSubmit }
 									setMatch={ setMatch }
 								/>

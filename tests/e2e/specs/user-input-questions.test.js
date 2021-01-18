@@ -19,12 +19,18 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
-import { deactivateUtilityPlugins, resetSiteKit, setupSiteKit, useRequestInterception } from '../utils';
+import {
+	activatePlugins,
+	deactivateUtilityPlugins,
+	resetSiteKit,
+	setupSiteKit,
+	useRequestInterception,
+} from '../utils';
 
 describe( 'User Input Settings', () => {
 	beforeAll( async () => {
@@ -43,11 +49,10 @@ describe( 'User Input Settings', () => {
 						].join( '&' ) ),
 					},
 				} );
-			} else if ( url.match( 'google-site-kit/v1/core/user/data/user-input-settings' ) ) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( {} ),
-				} );
+			} else if ( url.match( '/google-site-kit/v1/core/user/data/user-input-settings' ) ) {
+				request.continue();
+			} else if ( url.match( '/google-site-kit/v1/data' ) || url.match( '/google-site-kit/v1/modules' ) ) {
+				request.respond( { status: 200 } );
 			} else {
 				request.continue();
 			}
@@ -56,8 +61,12 @@ describe( 'User Input Settings', () => {
 
 	beforeEach( async () => {
 		await setupSiteKit();
-		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
-		await activatePlugin( 'e2e-tests-site-verification-plugin' );
+		await activatePlugins(
+			'e2e-tests-oauth-callback-plugin',
+			'e2e-tests-site-verification-plugin',
+			'e2e-tests-proxy-credentials-plugin',
+			'e2e-tests-user-input-settings-api-mock',
+		);
 	} );
 
 	afterEach( async () => {
@@ -65,7 +74,7 @@ describe( 'User Input Settings', () => {
 		await resetSiteKit();
 	} );
 
-	it( 'New user flow', async () => {
+	it( 'should require new users to enter input settings after signing in', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 
 		await Promise.all( [
@@ -92,5 +101,13 @@ describe( 'User Input Settings', () => {
 
 		await expect( page ).toFill( '#searchTerms-keywords', 'One,Two,Three,' );
 		await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
+
+		await Promise.all( [
+			expect( page ).toClick( '.googlesitekit-user-input__buttons--next' ),
+			page.waitForNavigation(),
+		] );
+
+		await page.waitForSelector( '#user-input-success' );
+		await expect( page ).toMatchElement( '#user-input-success' );
 	} );
 } );
