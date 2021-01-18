@@ -31,12 +31,14 @@ import { useEffect, useState } from '@wordpress/element';
  * @return {Object} An object containing complete and error properties.
  */
 export function useChecks( checks ) {
-	const [ complete, setComplete ] = useState( checks.length === 0 );
+	const [ stableChecks ] = useState( checks );
+	const [ complete, setComplete ] = useState( ! stableChecks?.length );
 	const [ error, setError ] = useState( undefined );
+
 	useEffect( () => {
 		const runChecks = async () => {
 			try {
-				await Promise.all( checks.map( ( check ) => check() ) );
+				await Promise.all( stableChecks.map( ( check ) => check() ) );
 			} catch ( err ) {
 				setError( err );
 			}
@@ -47,5 +49,6 @@ export function useChecks( checks ) {
 			runChecks();
 		}
 	}, [] );
+
 	return { complete, error };
 }

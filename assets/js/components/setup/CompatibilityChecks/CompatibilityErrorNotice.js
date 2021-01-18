@@ -24,19 +24,18 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { sanitizeHTML } from '../../util/sanitize';
-import Link from '../Link';
+import { sanitizeHTML } from '../../../util/sanitize';
+import Link from '../../Link';
 import { useSelect } from '@wordpress/data';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-
-const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
-const ERROR_FETCH_FAIL = 'check_fetch_failed';
-const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
-const ERROR_GOOGLE_API_CONNECTION_FAIL = 'google_api_connection_fail';
-const ERROR_AMP_CDN_RESTRICTED = 'amp_cdn_restricted';
-const ERROR_WP_PRE_V5 = 'wp_pre_v5';
-
-export const AMP_PROJECT_TEST_URL = 'https://cdn.ampproject.org/v0.js';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import {
+	ERROR_AMP_CDN_RESTRICTED,
+	ERROR_FETCH_FAIL,
+	ERROR_GOOGLE_API_CONNECTION_FAIL,
+	ERROR_INVALID_HOSTNAME,
+	ERROR_WP_PRE_V5,
+	ERROR_TOKEN_MISMATCH,
+} from './constants';
 
 const helperCTA = ( developerPlugin ) => {
 	const { installed, active, installURL, activateURL, configureURL } = developerPlugin;

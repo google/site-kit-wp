@@ -19,11 +19,12 @@
 /**
  * Internal dependencies
  */
-import CompatibilityChecks, { AMP_PROJECT_TEST_URL } from './CompatibilityChecks';
-import { render, waitFor, waitForElementToBeRemoved, getByText, act } from '../../../../tests/js/test-utils';
+import CompatibilityChecks from './CompatibilityChecks';
+import { render, waitFor, waitForElementToBeRemoved, getByText, act } from '../../../../../tests/js/test-utils';
 import { Fragment } from 'react';
-import { muteFetch } from '../../../../tests/js/utils';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { muteFetch } from '../../../../../tests/js/utils';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { AMP_PROJECT_TEST_URL } from './constants';
 
 const compatibilityChildren = ( { complete, inProgressFeedback, CTAFeedback } ) => (
 	<Fragment>
