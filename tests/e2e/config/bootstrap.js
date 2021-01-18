@@ -17,6 +17,12 @@
  */
 
 /**
+ * Node dependencies
+ */
+import { join, resolve } from 'path';
+import { writeFile } from 'fs/promises';
+
+/**
  * External dependencies
  */
 import { setDefaultOptions } from 'expect-puppeteer';
@@ -291,6 +297,47 @@ async function observeRestResponse( res ) {
 	}
 }
 
+/**
+ * Registers a screenshot reporter to take screenshots everytime a test fails.
+ *
+ * @since n.e.x.t
+ */
+function registerScreenshotReporter() {
+	/**
+	 * Jasmine reporter does not support async.
+	 * So we store the screenshot promise and wait for it before each test.
+	 */
+	let screenshotPromise = Promise.resolve();
+
+	beforeEach( () => screenshotPromise );
+	afterAll( () => screenshotPromise );
+
+	/**
+	 * Take a screenshot on Failed test.
+	 * Jest standard reporters run in a separate process so they don't have
+	 * access to the page instance. Using jasmine reporter allows us to
+	 * have access to the test result, test name and page instance at the same time.
+	 */
+	jasmine.getEnv().addReporter( {
+		specDone: ( result ) => {
+			if ( result.status !== 'failed' || ! page?.screenshot ) {
+				return;
+			}
+
+			const basepath = join(
+				resolve( __dirname, '../screenshots' ),
+				`${ new Date().toISOString() }_${ result.fullName }`.replace( /[^a-z0-9.-]+/gi, '_' ),
+			);
+
+			screenshotPromise = screenshotPromise
+				.then( () => page.evaluate( () => document.documentElement.outerHTML ) )
+				.then( ( html ) => writeFile( `${ basepath }.html`, html ) )
+				.then( () => page.screenshot( { path: `${ basepath }.png` } ) )
+				.catch( () => {} );
+		},
+	} );
+}
+
 // Before every test suite run, delete all content created by the test. This ensures
 // other posts/comments/etc. aren't dirtying tests and tests don't depend on
 // each other's side-effects.
@@ -336,3 +383,5 @@ afterAll( async () => {
 	removePageEvents();
 	await page.setRequestInterception( false );
 } );
+
+registerScreenshotReporter();

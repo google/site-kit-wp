@@ -65,8 +65,14 @@ describe( 'User Input Settings', () => {
 		await expect( page ).toMatchElement( '#user-input-success' );
 	}
 
+	async function cleanUp() {
+		await deactivateUtilityPlugins();
+		await resetSiteKit();
+	}
+
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
+
 		useRequestInterception( ( request ) => {
 			const url = request.url();
 
@@ -92,6 +98,8 @@ describe( 'User Input Settings', () => {
 	} );
 
 	beforeEach( async () => {
+		await cleanUp();
+
 		await setupSiteKit();
 		await activatePlugins(
 			'e2e-tests-oauth-callback-plugin',
@@ -101,10 +109,7 @@ describe( 'User Input Settings', () => {
 		);
 	} );
 
-	afterEach( async () => {
-		await deactivateUtilityPlugins();
-		await resetSiteKit();
-	} );
+	afterAll( cleanUp );
 
 	it( 'should require new users to enter input settings after signing in', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
