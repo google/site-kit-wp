@@ -20,10 +20,9 @@
  * Internal dependencies
  */
 import CompatibilityChecks from './index';
-import { render, waitForElementToBeRemoved, act } from '../../../../../tests/js/test-utils';
+import { render, waitForElementToBeRemoved } from '../../../../../tests/js/test-utils';
 import { Fragment } from 'react';
-import { muteFetch } from '../../../../../tests/js/utils';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { muteFetch, provideSiteInfo, createTestRegistry } from '../../../../../tests/js/utils';
 import { AMP_PROJECT_TEST_URL } from './constants';
 
 const compatibilityChildren = ( { complete, inProgressFeedback, CTAFeedback } ) => (
@@ -35,7 +34,11 @@ const compatibilityChildren = ( { complete, inProgressFeedback, CTAFeedback } ) 
 );
 
 describe( 'CompatibilityChecks', () => {
+	let registry;
+	const homeURL = 'http://example.com';
+
 	beforeEach( () => {
+		registry = createTestRegistry();
 		// Mock global.location.hostname with value that won't throw error in first check.
 		Object.defineProperty( global.window, 'location', {
 			value: {
@@ -43,6 +46,8 @@ describe( 'CompatibilityChecks', () => {
 			},
 			writable: true,
 		} );
+
+		provideSiteInfo( registry, { homeURL } );
 	} );
 
 	it( 'should initially display "Checking Compatibility..." message', async () => {
@@ -82,7 +87,8 @@ describe( 'CompatibilityChecks', () => {
 		const { container } = render(
 			<CompatibilityChecks>
 				{ compatibilityChildren }
-			</CompatibilityChecks>
+			</CompatibilityChecks>,
+			{ registry }
 		);
 
 		// Wait for progress bar to disappear.
@@ -97,11 +103,15 @@ describe( 'CompatibilityChecks', () => {
 
 	it( 'should make API requests to "setup-checks, health-checks and AMP Project test URL', async () => {
 		const token = 'test-token-value';
-		const homeURL = 'http://example.com';
 
 		// Mock request to setup-tag.
 		fetchMock.postOnce(
 			/^\/google-site-kit\/v1\/core\/site\/data\/setup-tag/,
+			{ body: { token }, status: 200 }
+		);
+
+		fetchMock.postOnce(
+			homeURL,
 			{ body: { token }, status: 200 }
 		);
 
@@ -125,13 +135,14 @@ describe( 'CompatibilityChecks', () => {
 			}
 		);
 
-		const { registry } = render(
+		render(
 			<CompatibilityChecks>
 				{ compatibilityChildren }
-			</CompatibilityChecks>
+			</CompatibilityChecks>,
+			{ registry }
 		);
 
-		await act( () => registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } ) );
+		await waitForElementToBeRemoved( document.querySelector( '.mdc-linear-progress' ) );
 
 		// Expect our progress bar for in progress checks to be gone.
 		expect( document.querySelector( '.mdc-linear-progress' ) ).not.toBeInTheDocument();
@@ -144,11 +155,16 @@ describe( 'CompatibilityChecks', () => {
 
 	it( 'should not contain incomplete or error messages if checks are successful', async () => {
 		const token = 'test-token-value';
-		const homeURL = 'http://example.com';
 
 		// Mock request to setup-tag.
 		fetchMock.postOnce(
 			/^\/google-site-kit\/v1\/core\/site\/data\/setup-tag/,
+			{ body: { token }, status: 200 }
+		);
+
+		// Mock request to setup-tag.
+		fetchMock.postOnce(
+			homeURL,
 			{ body: { token }, status: 200 }
 		);
 
@@ -172,13 +188,14 @@ describe( 'CompatibilityChecks', () => {
 			}
 		);
 
-		const { container, registry } = render(
+		const { container } = render(
 			<CompatibilityChecks>
 				{ compatibilityChildren }
-			</CompatibilityChecks>
+			</CompatibilityChecks>,
+			{ registry }
 		);
 
-		await act( () => registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } ) );
+		await waitForElementToBeRemoved( document.querySelector( '.mdc-linear-progress' ) );
 
 		// Expect our progress bar for in progress checks to be gone.
 		expect( document.querySelector( '.mdc-linear-progress' ) ).not.toBeInTheDocument();
