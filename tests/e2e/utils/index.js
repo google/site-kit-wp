@@ -1,4 +1,5 @@
 export { activateAMPWithMode, setAMPMode } from './activate-amp-and-set-mode';
+export { activatePlugins } from './activate-plugins';
 export { clearSessionStorage } from './clear-session-storage';
 export { deactivateUtilityPlugins } from './deactivate-utility-plugins';
 export { evalWithWPData } from './eval-with-wp-data';
