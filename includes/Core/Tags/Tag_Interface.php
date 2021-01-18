@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Tags;
 /**
  * Interface for a tag.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -22,14 +22,14 @@ interface Tag_Interface {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	public function register();
 
 	/**
 	 * Determines whether the tag can be register or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @return bool TRUE if the tag can be register, otherwise FALSE.
 	 */

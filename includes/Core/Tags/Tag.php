@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Guards\Guard_Interface;
 /**
  * Base class for tags.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ abstract class Tag implements Tag_Interface {
 	/**
 	 * Tag ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 * @var string
 	 */
 	protected $tag_id;
@@ -32,7 +32,7 @@ abstract class Tag implements Tag_Interface {
 	/**
 	 * Guards array.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 * @var array
 	 */
 	protected $guards = array();
@@ -40,7 +40,7 @@ abstract class Tag implements Tag_Interface {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param string $tag_id Tag ID.
 	 */
@@ -51,7 +51,7 @@ abstract class Tag implements Tag_Interface {
 	/**
 	 * Adds a new guard to the guards list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param Guard_Interface $guard A guard instance to add to the guards list.
 	 */
@@ -62,7 +62,7 @@ abstract class Tag implements Tag_Interface {
 	/**
 	 * Determines whether the tag can be register or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @return bool TRUE if the tag can be register, otherwise FALSE.
 	 */
@@ -82,7 +82,7 @@ abstract class Tag implements Tag_Interface {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	abstract public function register();
 

@@ -886,7 +886,7 @@ final class AdSense extends Module
 	/**
 	 * Registers the AdSense tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	private function register_tag() {
 		// Web Stories support neither <amp-auto-ads> nor the script.

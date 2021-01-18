@@ -473,7 +473,7 @@ export const selectors = {
 	/**
 	 * Gets external help links which includes the user's locale.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {Object} [args]       Optional arguments for the resulting URL.
