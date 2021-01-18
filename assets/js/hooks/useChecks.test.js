@@ -34,6 +34,16 @@ describe( 'useChecks', () => {
 		expect( result.current ).toStrictEqual( { complete: true, error: undefined } );
 	} );
 
+	it( 'should return { complete:true, error: undefined } with no checks to run.', async () => {
+		const checks = [];
+		let result;
+		await act( async () => {
+			( { result } = await renderHook( () => useChecks( checks ) ) );
+		} );
+
+		expect( result.current ).toStrictEqual( { complete: true, error: undefined } );
+	} );
+
 	it( 'returns the first error thrown by a check', async () => {
 		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 		const checks = [
