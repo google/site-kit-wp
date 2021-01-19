@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -60,7 +59,7 @@ export default function CompatibilityChecks( { children, ...props } ) {
 	let inProgressFeedback;
 
 	if ( error ) {
-		ctaFeedback = <Fragment>
+		ctaFeedback = (
 			<div className="googlesitekit-setup-compat mdc-layout-grid mdc-layout-grid--align-left">
 				<div className="googlesitekit-setup__warning">
 					<Warning />
@@ -71,7 +70,7 @@ export default function CompatibilityChecks( { children, ...props } ) {
 				</div>
 				{ error && <CompatibilityErrorNotice error={ error } /> }
 			</div>
-		</Fragment>;
+		);
 	}
 
 	if ( ! complete ) {
