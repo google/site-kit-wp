@@ -160,9 +160,9 @@ function SetupUsingProxy() {
 												</p>
 
 												<CompatibilityChecks>
-													{ ( { complete, inProgressFeedback, CTAFeedback } ) => (
+													{ ( { complete, inProgressFeedback, ctaFeedback } ) => (
 														<Fragment>
-															{ CTAFeedback }
+															{ ctaFeedback }
 
 															<OptIn optinAction="analytics_optin_setup_fallback" />
 

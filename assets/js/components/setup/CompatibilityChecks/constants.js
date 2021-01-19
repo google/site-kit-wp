@@ -1,7 +1,7 @@
 /**
- * Margin utility styles.
+ * Compatibility check constants.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,10 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
-
-	.googlesitekit-margin-bottom-0 {
-		margin-bottom: 0 !important;
-	}
-
-	.googlesitekit-margin-left-1rem {
-		margin-left: 1rem;
-	}
-}
+export const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
+export const ERROR_FETCH_FAIL = 'check_fetch_failed';
+export const ERROR_GOOGLE_API_CONNECTION_FAIL = 'google_api_connection_fail';
+export const ERROR_AMP_CDN_RESTRICTED = 'amp_cdn_restricted';
+export const ERROR_WP_PRE_V5 = 'wp_pre_v5';
+export const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
+export const AMP_PROJECT_TEST_URL = 'https://cdn.ampproject.org/v0.js';
