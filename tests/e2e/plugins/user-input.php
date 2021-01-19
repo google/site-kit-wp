@@ -14,6 +14,8 @@
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Authentication\User_Input_State;
+use Google\Site_Kit\Core\Storage\User_Options;
 
 register_activation_hook( __FILE__, 'e2e_user_input_settings_reset' );
 register_deactivation_hook( __FILE__, 'e2e_user_input_settings_reset' );
@@ -21,6 +23,11 @@ register_deactivation_hook( __FILE__, 'e2e_user_input_settings_reset' );
 add_filter( 'pre_http_request', 'e2e_user_input_settings_proxy_handler', 10, 3 );
 
 function e2e_user_input_settings_reset() {
+	$user_options     = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	$user_input_state = new User_Input_State( $user_options );
+
+	$user_input_state->delete();
+
 	delete_option( 'googlesitekit_temp_userinput_sitewide' );
 	delete_option( 'googlesitekit_temp_userinput_' . get_current_user_id() );
 }
