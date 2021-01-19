@@ -56,11 +56,11 @@ const createCompatibilityChecks = ( registry ) => {
 export default function CompatibilityChecks( { children, ...props } ) {
 	const registry = useRegistry();
 	const { complete, error } = useChecks( createCompatibilityChecks( registry ) );
-	let CTAFeedback;
+	let ctaFeedback;
 	let inProgressFeedback;
 
 	if ( error ) {
-		CTAFeedback = <Fragment>
+		ctaFeedback = <Fragment>
 			<div className="googlesitekit-setup-compat mdc-layout-grid mdc-layout-grid--align-left">
 				<div className="googlesitekit-setup__warning">
 					<Warning />
@@ -88,7 +88,7 @@ export default function CompatibilityChecks( { children, ...props } ) {
 		complete,
 		error,
 		inProgressFeedback,
-		CTAFeedback,
+		ctaFeedback,
 	} );
 }
 

@@ -25,9 +25,9 @@ import { Fragment } from 'react';
 import { muteFetch, provideSiteInfo, createTestRegistry } from '../../../../../tests/js/utils';
 import { AMP_PROJECT_TEST_URL } from './constants';
 
-const compatibilityChildren = ( { complete, inProgressFeedback, CTAFeedback } ) => (
+const compatibilityChildren = ( { complete, inProgressFeedback, ctaFeedback } ) => (
 	<Fragment>
-		{ CTAFeedback }
+		{ ctaFeedback }
 		{ complete }
 		{ inProgressFeedback }
 	</Fragment>
