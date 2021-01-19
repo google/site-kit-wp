@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import CTA from './legacy-notifications/cta';
 
 const { useSelect } = Data;

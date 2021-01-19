@@ -26,7 +26,7 @@ import { ENTER, ESCAPE, SPACE } from '@wordpress/keycodes';
  */
 import { render, createTestRegistry, fireEvent, provideUserInfo, provideSiteInfo, act } from '../../../tests/js/test-utils';
 import UserMenu from './UserMenu';
-import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
 describe( 'UserMenu', () => {
 	let registry;

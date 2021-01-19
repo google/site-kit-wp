@@ -31,7 +31,7 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { reportArgsToURLSegment } from '../util/report-args';
 import { escapeURI } from '../../../util/escape-uri';
 const { createRegistrySelector } = Data;

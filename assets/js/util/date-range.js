@@ -25,7 +25,7 @@ import { _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 
 /**
  * Gets the current dateRange day count.

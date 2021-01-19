@@ -36,8 +36,8 @@ import Header from '../Header';
 import Link from '../Link';
 import HelpLink from '../HelpLink';
 import { getSiteKitAdminURL } from '../../util';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
 export default function ModuleSetup( { moduleSlug } ) {

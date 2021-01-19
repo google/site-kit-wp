@@ -53,7 +53,7 @@ import { TYPE_MODULES } from '../../../../components/data';
 import Sparkline from '../../../../components/Sparkline';
 import CTA from '../../../../components/legacy-notifications/cta';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME } from '../../datastore/constants';
 
 const { useSelect } = Data;

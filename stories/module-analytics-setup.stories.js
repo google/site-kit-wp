@@ -27,8 +27,8 @@ import { storiesOf } from '@storybook/react';
 import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME, ACCOUNT_CREATE, PROFILE_CREATE, PROVISIONING_SCOPE } from '../assets/js/modules/analytics/datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import {
 	WithTestRegistry,
 	createTestRegistry,

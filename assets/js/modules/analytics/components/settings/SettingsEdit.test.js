@@ -21,8 +21,8 @@
  */
 import { render, waitFor, createTestRegistry } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import SettingsEdit from './SettingsEdit';
 import * as fixtures from '../../datastore/__fixtures__';
 

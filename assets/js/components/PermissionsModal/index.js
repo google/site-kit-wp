@@ -26,7 +26,7 @@ import { useEffect, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import Dialog from '../Dialog';
 import Modal from '../Modal';
 import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';

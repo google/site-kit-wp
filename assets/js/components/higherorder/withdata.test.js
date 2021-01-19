@@ -29,8 +29,8 @@ import { render, act } from '../../../../tests/js/test-utils';
 import dataAPI, { TYPE_MODULES } from '../data';
 import { getCacheKey } from '../data/cache';
 import { provideModules, provideSiteInfo, provideUserAuthentication } from '../../../../tests/js/utils';
-import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { createModuleStore } from '../../googlesitekit/modules/create-module-store';
 
 const collectModuleData = dataAPI.collectModuleData.bind( dataAPI );

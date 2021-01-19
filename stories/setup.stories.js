@@ -26,7 +26,7 @@ import { storiesOf } from '@storybook/react';
  */
 import SetupUsingGCP from '../assets/js/components/legacy-setup/SetupUsingGCP';
 import SetupUsingProxy from '../assets/js/components/setup/SetupUsingProxy';
-import { STORE_NAME as CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../assets/js/googlesitekit/datastore/user/constants';
+import { CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../assets/js/googlesitekit/datastore/user/constants';
 import { provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
 import { enableFeature } from './utils/features';
 

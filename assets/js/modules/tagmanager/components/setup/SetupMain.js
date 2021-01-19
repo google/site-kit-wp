@@ -35,7 +35,7 @@ import TagManagerIcon from '../../../../../svg/tagmanager.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME, ACCOUNT_CREATE, FORM_SETUP } from '../../datastore/constants';
-import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { useExistingTagEffect } from '../../hooks';
 import {
 	AccountCreate,

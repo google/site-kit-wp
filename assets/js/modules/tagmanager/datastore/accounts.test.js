@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME, ACCOUNT_CREATE, CONTEXT_WEB, CONTEXT_AMP, CONTAINER_CREATE } from './constants';
 import {
 	createTestRegistry,
