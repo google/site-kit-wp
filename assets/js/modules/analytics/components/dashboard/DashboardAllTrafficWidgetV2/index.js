@@ -26,7 +26,7 @@ import { _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME as MODULES_ANALYTICS, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { MODULES_ANALYTICS, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import whenActive from '../../../../../util/when-active';
