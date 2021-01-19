@@ -58,7 +58,11 @@ export default function DimensionTabs( { dimensionName } ) {
 	const activeTab = tabs.findIndex( ( v ) => v.dimensionName === dimensionName );
 
 	const handleTabUpdate = useCallback( ( index ) => {
-		setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionName: tabs[ index ].dimensionName, dimensionValue: '' } );
+		setValues( FORM_ALL_TRAFFIC_WIDGET, {
+			dimensionName: tabs[ index ].dimensionName,
+			dimensionValue: '',
+			dimensionColor: '',
+		} );
 	} );
 
 	return (

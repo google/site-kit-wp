@@ -75,6 +75,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 
 		const chartData = GoogleChart.charts.get( 'user-dimensions-pie-chart' );
 		const { chart, onSelect } = chartData || {};
+		const { slices } = UserDimensionsPieChart.chartOptions;
 
 		if ( chart && ! onSelect ) {
 			chartData.onSelect = global.google.visualization.events.addListener( chart, 'select', () => {
@@ -88,11 +89,12 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 							FORM_ALL_TRAFFIC_WIDGET,
 							{
 								dimensionValue: __( 'Others', 'google-site-kit' ) === dimensionValue ? '' : dimensionValue,
+								dimensionColor: slices[ row ]?.color,
 							}
 						);
 					}
 				} else {
-					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '' } );
+					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
 				}
 			} );
 		}
