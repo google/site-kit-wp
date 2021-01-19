@@ -68,7 +68,7 @@ function DashboardSummaryWidget() {
 			metrics,
 		};
 
-		// Get the first day of the month an ISO 8601 date string without the time.
+		// Get the first day of the month as an ISO 8601 date string without the time.
 		const startOfMonth = new Date(
 			new Date( referenceDate ).getFullYear(),
 			new Date( referenceDate ).getMonth(),
