@@ -68,7 +68,7 @@ export default function CompatibilityChecks( { children, ...props } ) {
 						{ __( 'Your site may not be ready for Site Kit', 'google-site-kit' ) }
 					</div>
 				</div>
-				{ error && <CompatibilityErrorNotice error={ error } /> }
+				<CompatibilityErrorNotice error={ error } />
 			</div>
 		);
 	}
