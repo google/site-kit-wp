@@ -46,14 +46,14 @@ export default function UseSnippetSwitch( props ) {
 	} = props;
 
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
-	const isDoingSaveUseSnippet = useSelect( ( select ) => select( STORE_NAME ).isDoingSaveUseSnippet() );
+	const isDoingSaveUseSnippet = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 
-	const { setUseSnippet, saveUseSnippet } = useDispatch( STORE_NAME );
+	const { setUseSnippet, saveSettings } = useDispatch( STORE_NAME );
 	const onChange = useCallback( async () => {
 		setUseSnippet( ! useSnippet );
 		trackEvent( 'adsense_setup', useSnippet ? 'adsense_tag_enabled' : 'adsense_tag_disabled' );
 		if ( saveOnChange ) {
-			await saveUseSnippet();
+			await saveSettings();
 		}
 	}, [ useSnippet ] );
 
