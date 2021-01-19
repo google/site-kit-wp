@@ -1,7 +1,7 @@
 /**
  * Tests for reporting date range utilities.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ describe( 'Search Console reporting date range arguments', () => {
 		};
 
 		describe( 'if `startDate` or `endDate` arguments are not provided', () => {
-			it( 'should return args untouched', () => {
+			it( 'should return undefined', () => {
 				const { startDate, endDate } = allArgs;
 
 				const noArgsPassed = generateDateRangeArgs();
@@ -33,8 +33,8 @@ describe( 'Search Console reporting date range arguments', () => {
 				const endDatePassed = generateDateRangeArgs( { endDate } );
 
 				expect( noArgsPassed ).toBe( undefined );
-				expect( startDatePassed ).toMatchObject( { startDate } );
-				expect( endDatePassed ).toMatchObject( { endDate } );
+				expect( startDatePassed ).toBe( undefined );
+				expect( endDatePassed ).toBe( undefined );
 			} );
 		} );
 
