@@ -55,32 +55,26 @@ const createCompatibilityChecks = ( registry ) => {
 export default function CompatibilityChecks( { children, ...props } ) {
 	const registry = useRegistry();
 	const { complete, error } = useChecks( createCompatibilityChecks( registry ) );
-	let ctaFeedback;
-	let inProgressFeedback;
 
-	if ( error ) {
-		ctaFeedback = (
-			<div className="googlesitekit-setup-compat mdc-layout-grid mdc-layout-grid--align-left">
-				<div className="googlesitekit-setup__warning">
-					<Warning />
+	const ctaFeedback = error && (
+		<div className="googlesitekit-setup-compat mdc-layout-grid mdc-layout-grid--align-left">
+			<div className="googlesitekit-setup__warning">
+				<Warning />
 
-					<div className="googlesitekit-heading-4">
-						{ __( 'Your site may not be ready for Site Kit', 'google-site-kit' ) }
-					</div>
+				<div className="googlesitekit-heading-4">
+					{ __( 'Your site may not be ready for Site Kit', 'google-site-kit' ) }
 				</div>
-				<CompatibilityErrorNotice error={ error } />
 			</div>
-		);
-	}
+			<CompatibilityErrorNotice error={ error } />
+		</div>
+	);
 
-	if ( ! complete ) {
-		inProgressFeedback = (
-			<div className="googlesitekit-margin-left-1rem googlesitekit-align-self-center">
-				<small>{ __( 'Checking Compatibility…', 'google-site-kit' ) }</small>
-				<ProgressBar small compress />
-			</div>
-		);
-	}
+	const inProgressFeedback = ( ! complete ) && (
+		<div className="googlesitekit-margin-left-1rem googlesitekit-align-self-center">
+			<small>{ __( 'Checking Compatibility…', 'google-site-kit' ) }</small>
+			<ProgressBar small compress />
+		</div>
+	);
 
 	return children( {
 		props,
