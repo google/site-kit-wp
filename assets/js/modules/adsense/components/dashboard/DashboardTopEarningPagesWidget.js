@@ -27,8 +27,8 @@ import { compose } from '@wordpress/compose';
  */
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME as ANALYTICS_STORE, DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import { getDataTableFromData } from '../../../../components/data-table';
@@ -69,11 +69,11 @@ function DashboardTopEarningPagesWidget() {
 		};
 
 		return {
-			isAdSenseLinked: select( ANALYTICS_STORE ).getAdsenseLinked(),
-			analyticsMainURL: select( ANALYTICS_STORE ).getServiceURL(),
-			data: select( ANALYTICS_STORE ).getReport( args ),
-			error: select( ANALYTICS_STORE ).getErrorForSelector( 'getReport', [ args ] ),
-			loading: ! select( ANALYTICS_STORE ).hasFinishedResolution( 'getReport', [ args ] ),
+			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
+			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceURL(),
+			data: select( MODULES_ANALYTICS ).getReport( args ),
+			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ),
+			loading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ),
 		};
 	} );
 

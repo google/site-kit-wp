@@ -23,7 +23,7 @@ import { generateReportBasedWidgetStories } from './utils/generate-widget-storie
 import DashboardSummaryWidget from '../assets/js/modules/adsense/components/dashboard/DashboardSummaryWidget';
 import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
-import { STORE_NAME as ANALYTICS_STORE } from '../assets/js/modules/analytics/datastore/constants';
+import { ANALYTICS_STORE } from '../assets/js/modules/analytics/datastore/constants';
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense' ],

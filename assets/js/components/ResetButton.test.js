@@ -25,7 +25,7 @@ import { ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import { render, createTestRegistry, fireEvent, act, provideSiteInfo } from '../../../tests/js/test-utils';
-import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import ResetButton from './ResetButton';
 import { subscribeUntil } from '../../../tests/js/utils';
 

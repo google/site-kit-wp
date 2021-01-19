@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 const { useDispatch } = Data;
 

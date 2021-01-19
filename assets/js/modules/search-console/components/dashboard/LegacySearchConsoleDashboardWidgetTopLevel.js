@@ -41,8 +41,8 @@ import {
 } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import CTA from '../../../../components/legacy-notifications/cta';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../datastore/constants';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import getNoDataComponent from '../../../../components/legacy-notifications/nodata';

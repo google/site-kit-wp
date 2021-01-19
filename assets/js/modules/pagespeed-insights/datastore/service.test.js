@@ -25,7 +25,7 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
-import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'module/pagespeed-insights service store', () => {
 	const userData = {

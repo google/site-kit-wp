@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Widget from './Widget';
-import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
+import { CORE_SITE } from '../../datastore/site/constants';
 import Button from '../../../components/Button';
 import PostSearcherAutoSuggest from '../../../components/PostSearcherAutoSuggest';
 

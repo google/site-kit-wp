@@ -27,7 +27,7 @@ import { __, _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport, reduceAdSenseData } from '../../util';
 import { getSiteKitAdminURL } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';

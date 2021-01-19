@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
-import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 

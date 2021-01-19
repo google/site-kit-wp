@@ -29,7 +29,7 @@ import Logo from './Logo';
 import UserMenu from './UserMenu';
 import LegacyErrorNotification from './legacy-notifications/error-notification';
 import ErrorNotifications from './notifications/ErrorNotifications';
-import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 const Header = ( { children } ) => {

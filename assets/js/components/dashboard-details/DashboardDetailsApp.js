@@ -33,7 +33,7 @@ import PageHeader from '../PageHeader';
 import HelpLink from '../HelpLink';
 import DashboardDetailsEntityView from './DashboardDetailsEntityView';
 import DashboardDetailsEntityNotFoundView from './DashboardDetailsEntityNotFoundView';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function DashboardDetailsApp() {

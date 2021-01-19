@@ -31,8 +31,8 @@ import Link from '../../../../components/Link';
 import { trackEvent } from '../../../../util';
 import { parseAccountID } from '../../util/parsing';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	ErrorNotices,
 	UserProfile,
