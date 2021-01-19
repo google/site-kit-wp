@@ -34,7 +34,7 @@ import { createTestRegistry } from './utils';
  */
 const customRender = ( ui, options = {} ) => {
 	const {
-		features,
+		features = [],
 		setupRegistry = ( r ) => r,
 		registry = createTestRegistry(),
 		...renderOptions
@@ -84,7 +84,7 @@ const customRender = ( ui, options = {} ) => {
  *
  * @param {Function} callback           The function that is called each render of the test component. This function should call one or more hooks for testing. The props passed into the callback will be the initialProps provided in the options to renderHook, unless new props are provided by a subsequent rerender call.
  * @param {Object}   [options]          Optional. An options object to modify the execution of the callback function. See the [renderHook Options](@link https://react-hooks-testing-library.com/reference/api#renderhook-options) section for more details.
- * @param {Array}    [options.features] Feature flags to enable for this hook render.
+ * @param {string[]} [options.features] Feature flags to enable for this hook render.
  * @param {Object}   [options.registry] Registry to use with the RegistryProvider. Default is a new test registry.
  * @return {Object} Object with `result`, `rerender`, `unmount`, and async utilities. @link https://react-hooks-testing-library.com/reference/api#renderhook-result.
  */

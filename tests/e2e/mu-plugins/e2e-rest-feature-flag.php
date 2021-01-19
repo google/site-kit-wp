@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: E2E Feature Flag Endpoint
- * Description: REST Endpoint for setting or removing Feature Flag overrides during E2E tests.
+ * Description: REST Endpoint for controlling Feature Flag activation during E2E tests.
  *
  * @package   Google\Site_Kit
  * @copyright 2021 Google LLC
@@ -47,7 +47,7 @@ add_action(
 	0
 );
 
-// Apply any overrides set in the E2E options array.
+// Enforce feature activation as defined by the E2E feature flags option.
 add_filter(
 	'googlesitekit_is_feature_enabled',
 	function( $feature_name, $feature_enabled, $mode ) {
