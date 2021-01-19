@@ -1,7 +1,7 @@
 /**
  * Report date range args utils.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@
  * @param {string} dates.endDate            End date in YYYY-MM-DD format.
  * @param {string} [dates.compareStartDate] Optional. Start date in YYYY-MM-DD format.
  * @param {string} [dates.compareEndDate]   Optional. End date in YYYY-MM-DD format.
- * @return {Object} Date range object.
+ * @return {Object|undefined} Date range object.
  */
 export const generateDateRangeArgs = ( dates ) => {
 	if ( ! dates ) {
@@ -36,7 +36,7 @@ export const generateDateRangeArgs = ( dates ) => {
 	const { startDate, endDate, compareStartDate, compareEndDate } = dates;
 
 	if ( ! startDate || ! endDate ) {
-		return dates;
+		return undefined;
 	}
 
 	const range = {

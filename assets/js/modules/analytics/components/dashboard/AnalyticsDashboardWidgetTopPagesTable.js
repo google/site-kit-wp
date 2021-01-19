@@ -33,12 +33,8 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { getTimeInSeconds, numFmt } from '../../../../util';
 import withData from '../../../../components/higherorder/withData';
-<<<<<<< HEAD
-import { MODULES_ANALYTICS } from '../../datastore/constants';
-=======
-import { STORE_NAME as MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../datastore/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
->>>>>>> Add new generateDateRangeArgs function; pass to analytics widgets that use the Widget API.
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';

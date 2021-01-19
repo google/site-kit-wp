@@ -27,7 +27,7 @@ describe( 'Analytics reporting date range arguments', () => {
 		};
 
 		describe( 'if `startDate` or `endDate` arguments are not provided', () => {
-			it( 'should return args untouched', () => {
+			it( 'should return undefined', () => {
 				const { startDate, endDate } = allArgs;
 
 				const noArgsPassed = generateDateRangeArgs();
@@ -35,8 +35,8 @@ describe( 'Analytics reporting date range arguments', () => {
 				const endDatePassed = generateDateRangeArgs( { endDate } );
 
 				expect( noArgsPassed ).toBe( undefined );
-				expect( startDatePassed ).toMatchObject( { startDate } );
-				expect( endDatePassed ).toMatchObject( { endDate } );
+				expect( startDatePassed ).toBe( undefined );
+				expect( endDatePassed ).toBe( undefined );
 			} );
 		} );
 
