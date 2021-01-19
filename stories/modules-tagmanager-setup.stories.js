@@ -35,10 +35,10 @@ import {
 } from '../tests/js/utils';
 import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
 import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { STORE_NAME as CORE_FORMS } from '../assets/js/googlesitekit/datastore/forms/constants';
+import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '../assets/js/googlesitekit/datastore/forms/constants';
 import { STORE_NAME, ACCOUNT_CREATE, CONTAINER_CREATE, FORM_SETUP } from '../assets/js/modules/tagmanager/datastore/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
 import * as modulesFixtures from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import { parseLiveContainerVersionIDs } from '../assets/js/modules/tagmanager/datastore/__factories__/utils';

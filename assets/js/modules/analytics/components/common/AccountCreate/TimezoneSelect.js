@@ -33,7 +33,7 @@ import {
 import { timeZonesByCountryCode } from '../../../util/countries-timezones';
 import Data from 'googlesitekit-data';
 import { FORM_ACCOUNT_CREATE } from '../../../datastore/constants';
-import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 
 const { useSelect, useDispatch } = Data;
 

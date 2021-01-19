@@ -50,9 +50,9 @@ export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 					</h3>
 
 					<CompatibilityChecks>
-						{ ( { complete, inProgressFeedback, CTAFeedback } ) => (
+						{ ( { complete, inProgressFeedback, ctaFeedback } ) => (
 							<Fragment>
-								{ CTAFeedback }
+								{ ctaFeedback }
 
 								<OptIn optinAction="analytics_optin_setup_banner" />
 

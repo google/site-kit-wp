@@ -30,8 +30,10 @@ import { isURL, addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { extractExistingTag } from '../../../util/tag';
 
 const { createRegistryControl } = Data;
 
@@ -77,6 +79,11 @@ const fetchHTMLForURLStore = createFetchStore( {
 // Actions
 const RESET_HTML_FOR_URL = 'RESET_HTML_FOR_URL';
 const WAIT_FOR_HTML_FOR_URL = 'WAIT_FOR_HTML_FOR_URL';
+const CHECK_FOR_SETUP_TAG = 'CHECK_FOR_SETUP_TAG';
+
+// Errors
+const ERROR_FETCH_FAIL = 'check_fetch_failed';
+const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
 
 export const baseInitialState = {
 	htmlForURL: {},
@@ -103,6 +110,13 @@ const baseActions = {
 		return dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getHTMLForURL' );
 	},
 
+	*checkForSetupTag() {
+		return yield {
+			payload: {},
+			type: CHECK_FOR_SETUP_TAG,
+		};
+	},
+
 	/**
 	 * Waits for HTML for to be resolved for the given URL.
 	 *
@@ -124,6 +138,31 @@ const baseControls = {
 	[ WAIT_FOR_HTML_FOR_URL ]: createRegistryControl( ( registry ) => ( { payload: { url } } ) => (
 		registry.__experimentalResolveSelect( STORE_NAME ).getHTMLForURL( url )
 	) ),
+	[ CHECK_FOR_SETUP_TAG ]: createRegistryControl( ( registry ) => async () => {
+		let error;
+		let response;
+		let token;
+		let tokenMatch = false;
+
+		try {
+			( { token } = await API.set( 'core', 'site', 'setup-tag' ) );
+			const homeURL = await registry.select( STORE_NAME ).getHomeURL();
+
+			( { response, error } = await registry.dispatch( STORE_NAME ).fetchGetHTMLForURL( homeURL ) );
+		} catch {
+			error = ERROR_FETCH_FAIL;
+		}
+		if ( ! error ) {
+			const scrapedTag = extractExistingTag( response, [ /<meta name="googlesitekit-setup" content="([a-z0-9-]+)"/ ] );
+			tokenMatch = token === scrapedTag;
+
+			if ( ! tokenMatch ) {
+				error = ERROR_TOKEN_MISMATCH;
+			}
+		}
+
+		return { response: tokenMatch, error };
+	} ),
 };
 
 const baseReducer = ( state, { type, payload } ) => {

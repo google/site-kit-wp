@@ -27,7 +27,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell } from '../../material-components';
 import Layout from '../layout/Layout';
 import OptIn from '../OptIn';
@@ -35,7 +35,7 @@ import VisuallyHidden from '../VisuallyHidden';
 import ResetButton from '../ResetButton';
 import UserInputPreview from '../user-input/UserInputPreview';
 import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import UserInputSettings from '../notifications/UserInputSettings';
 const { useSelect } = Data;
 

@@ -38,9 +38,9 @@ import CountrySelect from './CountrySelect';
 import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
 import GA4Notice from '../GA4Notice';
 import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { getAccountDefaults } from '../../../util/account';
 import Data from 'googlesitekit-data';
 

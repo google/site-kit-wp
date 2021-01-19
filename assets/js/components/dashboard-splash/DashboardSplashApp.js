@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import SetupUsingProxy from '../setup/SetupUsingProxy';
 import SetupUsingGCP from '../legacy-setup/SetupUsingGCP';
 const { useSelect } = Data;

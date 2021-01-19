@@ -17,6 +17,7 @@
  */
 
 export const STORE_NAME = 'core/user';
+export { STORE_NAME as CORE_USER };
 
 export const DISCONNECTED_REASON_CONNECTED_URL_MISMATCH = 'connected_url_mismatch';
 

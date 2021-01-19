@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import DateRangeIcon from '../../svg/date-range.svg';
 import Menu from './Menu';
 import { getAvailableDateRanges } from '../util/date-range';
-import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import Button from './Button';
 
 const { useSelect, useDispatch } = Data;

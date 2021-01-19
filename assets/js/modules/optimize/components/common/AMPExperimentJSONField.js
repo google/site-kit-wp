@@ -32,8 +32,8 @@ import {
 } from '../../../../material-components';
 import classnames from 'classnames';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { isValidAMPExperimentJSON } from '../../util';
 import Link from '../../../../components/Link';
 import ErrorText from '../../../../components/ErrorText';

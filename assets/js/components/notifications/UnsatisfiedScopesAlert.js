@@ -32,7 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Notification from '../legacy-notifications/notification';
 import { getModulesData, listFormat } from '../../util';
-import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 // Map of scope IDs to Site Kit module slugs.

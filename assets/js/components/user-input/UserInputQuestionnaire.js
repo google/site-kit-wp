@@ -42,8 +42,8 @@ import {
 	getUserInputAnwsers,
 } from './util/constants';
 import useQueryArg from '../../hooks/useQueryArg';
-import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Cell, Row } from '../../material-components';
 const { useSelect, useDispatch } = Data;
 

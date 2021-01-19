@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { createTestRegistry, provideModules, render } from '../../../tests/js/test-utils';
-import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import ModuleIcon from './ModuleIcon';
 import AdsenseIcon from '../../svg/adsense.svg';
 

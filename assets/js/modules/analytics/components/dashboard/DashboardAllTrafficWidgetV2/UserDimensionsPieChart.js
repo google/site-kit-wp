@@ -32,8 +32,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME, FORM_ALL_TRAFFIC_WIDGET, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForPieChart, isZeroReport } from '../../../util';

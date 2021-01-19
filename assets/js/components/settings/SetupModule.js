@@ -37,7 +37,7 @@ import Spinner from '../Spinner';
 import Link from '../Link';
 import GenericError from '../legacy-notifications/generic-error';
 import ModuleSettingsWarning from '../legacy-notifications/module-settings-warning';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import Data from 'googlesitekit-data';
 
 const { useSelect, useDispatch } = Data;

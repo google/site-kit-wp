@@ -27,7 +27,7 @@ import { storiesOf } from '@storybook/react';
 import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
 import { STORE_NAME, ACCOUNT_CREATE, CONTAINER_CREATE, FORM_SETUP } from '../assets/js/modules/tagmanager/datastore/constants';
-import { STORE_NAME as CORE_FORMS } from '../assets/js/googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '../assets/js/googlesitekit/datastore/forms/constants';
 import {
 	createTestRegistry,
 	provideSiteInfo,

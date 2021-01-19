@@ -25,7 +25,7 @@ import { storiesOf, Story } from '@storybook/react';
  * Internal dependencies
  */
 import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME as CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
 	WithTestRegistry,

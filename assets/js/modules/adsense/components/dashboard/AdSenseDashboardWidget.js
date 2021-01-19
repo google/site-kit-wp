@@ -41,7 +41,7 @@ import HelpLink from '../../../../components/HelpLink';
 import Header from '../../../../components/Header';
 import PageHeader from '../../../../components/PageHeader';
 import Layout from '../../../../components/layout/Layout';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 

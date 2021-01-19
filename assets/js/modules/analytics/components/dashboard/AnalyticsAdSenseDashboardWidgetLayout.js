@@ -25,8 +25,8 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as MODULES_ADSENSE } from '../../../adsense/datastore/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ADSENSE } from '../../../adsense/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import Layout from '../../../../components/layout/Layout';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 const { useSelect } = Data;

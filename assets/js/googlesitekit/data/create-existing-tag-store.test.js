@@ -28,7 +28,7 @@ import {
 	untilResolved,
 } from '../../../../tests/js/utils';
 import { createExistingTagStore } from './create-existing-tag-store';
-import { STORE_NAME as CORE_SITE } from '../datastore/site/constants';
+import { CORE_SITE } from '../datastore/site/constants';
 
 const STORE_NAME = 'test/store';
 const tagMatchers = [
