@@ -51,7 +51,7 @@ function DashboardSummaryWidget() {
 	} = useSelect( ( select ) => {
 		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
 
-		const referenceDate = select( CORE_USER ).getReferenceDate(); // The issues is the reference date needs to be offset to match the data...
+		const referenceDate = select( CORE_USER ).getReferenceDate();
 
 		const todayArgs = {
 			startDate: referenceDate,
