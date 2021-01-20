@@ -1,7 +1,7 @@
 /**
  * Widgets API default areas
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,10 @@ export const AREA_PAGE_DASHBOARD_SEARCH_FUNNEL = 'pageDashboardSearchFunnel';
 export const AREA_PAGE_DASHBOARD_ALL_TRAFFIC = 'pageDashboardAllTraffic';
 export const AREA_PAGE_DASHBOARD_POPULARITY = 'pageDashboardPopularity';
 export const AREA_PAGE_DASHBOARD_SPEED = 'pageDashboardSpeed';
+
+export const AREA_MODULE_SEARCH_CONSOLE_MAIN = 'moduleSearchConsoleMain';
+export const AREA_MODULE_ANALYTICS_MAIN = 'moduleAnalyticsMain';
+export const AREA_MODULE_ADSENSE_MAIN = 'moduleAdsenseMain';
 
 export default {
 	AREA_DASHBOARD_ALL_TRAFFIC,

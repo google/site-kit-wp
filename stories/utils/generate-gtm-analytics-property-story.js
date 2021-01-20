@@ -1,7 +1,7 @@
 /**
  * Analytics module utility functions.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
  */
 import * as fixtures from '../../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME } from '../../assets/js/modules/analytics/datastore/constants';
-import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../assets/js/googlesitekit/datastore/site/constants';
+import { CORE_SITE, AMP_MODE_SECONDARY } from '../../assets/js/googlesitekit/datastore/site/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,

@@ -1,7 +1,7 @@
 /**
  * TotalUserCount component
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,13 +31,14 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
-import { readableLargeNumber, numFmt, calculateChange } from '../../../../../util';
+import { numFmt, calculateChange } from '../../../../../util';
 import { getAvailableDateRanges } from '../../../../../util/date-range';
 import { isZeroReport } from '../../../util';
 import ChangeArrow from '../../../../../components/ChangeArrow';
+import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useSelect } = Data;
 
 export default function TotalUserCount( { dimensionName, dimensionValue } ) {
@@ -50,12 +51,12 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 
 	const args = {
 		...dateRangeDates,
-		metrics: [ { expression: 'ga:users' } ],
-		orderby: {
-			fieldName: 'ga:users',
-			sortOrder: 'DESCENDING',
-		},
-		limit: 1,
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Users',
+			},
+		],
 	};
 
 	if ( url ) {
@@ -63,7 +64,6 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 	}
 
 	if ( dimensionName && dimensionValue ) {
-		args.dimensions = [ dimensionName ];
 		args.dimensionFilters = {
 			[ dimensionName ]: dimensionValue,
 		};
@@ -73,8 +73,19 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
 	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
 
-	if ( ! loaded || error || isZeroReport( report ) ) {
-		// The UserCountGraph component will return appropriate PreviewBlock/ReportError/ReportZero component
+	if ( ! loaded ) {
+		return (
+			<PreviewBlock
+				className="googlesitekit-widget--analyticsAllTrafficV2__totalcount--loading"
+				width="220px"
+				height="130px"
+				shape="square"
+			/>
+		);
+	}
+
+	if ( error || isZeroReport( report ) ) {
+		// The UserCountGraph component will return appropriate ReportError/ReportZero component
 		// based on the report fetching status, so we can return just NULL here to make sure it doesn't take extra space.
 		return null;
 	}
@@ -102,7 +113,7 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 				) }
 			</h3>
 			<h2>
-				{ readableLargeNumber( current?.values?.[ 0 ] ) }
+				{ numFmt( current?.values?.[ 0 ] ) }
 			</h2>
 			<div>
 				<span className={ classnames( 'googlesitekit-widget--analyticsAllTrafficV2__totalcount--change', {

@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Modules\Tag_Manager\Web_Tag
  *
  * @package   Google\Site_Kit\Modules\Tag_Manager
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Class for Web tag.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	public function register() {
 		$render_no_js = $this->get_method_proxy_once( 'render_no_js' );
@@ -44,7 +44,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Outputs Tag Manager script.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	protected function render() {
 		?>
@@ -67,7 +67,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Outputs Tag Manager iframe for when the browser has JavaScript disabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	private function render_no_js() {
 		// Consent-based blocking requires JS to be enabled so we need to bail here if present.

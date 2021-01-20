@@ -1,7 +1,7 @@
 /**
  * `useQueryArg` hook.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
 /**
  * Uses a location query param as a variable in a component.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  *
  * @param {string} key            The query param key to be used.
  * @param {string} [initialValue] Optional. The initial value for the query param to be used.

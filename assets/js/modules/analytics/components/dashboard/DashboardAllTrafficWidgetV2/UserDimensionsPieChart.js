@@ -1,7 +1,7 @@
 /**
  * UserDimensionsPieChart component
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME, FORM_ALL_TRAFFIC_WIDGET, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForPieChart, isZeroReport } from '../../../util';
@@ -75,6 +75,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 
 		const chartData = GoogleChart.charts.get( 'user-dimensions-pie-chart' );
 		const { chart, onSelect } = chartData || {};
+		const { slices } = UserDimensionsPieChart.chartOptions;
 
 		if ( chart && ! onSelect ) {
 			chartData.onSelect = global.google.visualization.events.addListener( chart, 'select', () => {
@@ -88,11 +89,12 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 							FORM_ALL_TRAFFIC_WIDGET,
 							{
 								dimensionValue: __( 'Others', 'google-site-kit' ) === dimensionValue ? '' : dimensionValue,
+								dimensionColor: slices[ row ]?.color,
 							}
 						);
 					}
 				} else {
-					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '' } );
+					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
 				}
 			} );
 		}
