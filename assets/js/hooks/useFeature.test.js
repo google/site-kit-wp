@@ -37,6 +37,6 @@ describe( 'useFeature', () => {
 			{ features: [ 'discoLights' ] }
 		);
 
-		expect( result.current ).toEqual( false );
+		expect( result.current ).toEqual( true );
 	} );
 } );
