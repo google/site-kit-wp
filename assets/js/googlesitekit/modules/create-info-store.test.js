@@ -1,7 +1,7 @@
 /**
  * Info datastore functions tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
 import { createInfoStore } from './create-info-store';
-import { STORE_NAME as CORE_SITE } from '../datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../datastore/user/constants';
+import { CORE_SITE } from '../datastore/site/constants';
+import { CORE_USER } from '../datastore/user/constants';
 
 const MODULE_SLUG = 'test-slug';
 const TEST_STORE_NAME = `test/${ MODULE_SLUG }`;

@@ -1,7 +1,7 @@
 /**
  * Analytics Profile Name component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { TextField, HelperText, Input } from '../../../../material-components';
 import { STORE_NAME, PROFILE_CREATE, FORM_SETUP } from '../../datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';

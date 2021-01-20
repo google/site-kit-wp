@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Tests\Core\Notifications\NotificationsTest.php
  *
  * @package   Google\Site_Kit\Tests\Core\Notifications
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */

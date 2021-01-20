@@ -1,7 +1,7 @@
 /**
  * `core/site` data store: constants.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
  */
 
 export const STORE_NAME = 'core/site';
+export { STORE_NAME as CORE_SITE };
 
 export const AMP_MODE_PRIMARY = 'primary';
 export const AMP_MODE_SECONDARY = 'secondary';
