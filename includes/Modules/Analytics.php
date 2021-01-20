@@ -178,13 +178,16 @@ final class Analytics extends Module
 	 * @return bool True if module is connected, false otherwise.
 	 */
 	public function is_connected() {
-		$connection = $this->get_settings()->get();
-		if ( is_wp_error( $connection ) ) {
-			return false;
-		}
+		$required_keys = array(
+			'accountID',
+			'propertyID',
+			'profileID',
+			'internalWebPropertyID',
+		);
 
-		foreach ( (array) $connection as $value ) {
-			if ( empty( $value ) ) {
+		$options = $this->get_settings()->get();
+		foreach ( $required_keys as $required_key ) {
+			if ( empty( $options[ $required_key ] ) ) {
 				return false;
 			}
 		}
