@@ -1,7 +1,7 @@
 /**
  * `core/modules` data store: module info.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ import { WPComponent } from '@wordpress/element';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from './constants';
-import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
+import { CORE_SITE } from '../../datastore/site/constants';
+import { CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { listFormat } from '../../../util';
 import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';

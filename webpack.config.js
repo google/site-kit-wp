@@ -1,7 +1,7 @@
 /**
  * Webpack config.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -358,6 +358,7 @@ const webpackConfig = ( env, argv ) => {
 							{
 								loader: 'sass-loader',
 								options: {
+									implementation: require( 'sass' ),
 									sassOptions: {
 										includePaths: [ 'node_modules' ],
 									},

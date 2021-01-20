@@ -1,7 +1,7 @@
 /**
  * SettingsApp component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import PageHeader from '../PageHeader';
 import Layout from '../layout/Layout';
 import HelpLink from '../HelpLink';
 import SettingsModules from './SettingsModules';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../material-components';
 
 const { useSelect, useDispatch } = Data;

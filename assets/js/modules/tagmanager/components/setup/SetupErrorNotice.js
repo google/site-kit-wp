@@ -1,7 +1,7 @@
 /**
  * Tag Manager Setup Error Notice component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
-import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
