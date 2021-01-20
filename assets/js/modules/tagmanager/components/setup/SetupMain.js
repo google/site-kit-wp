@@ -1,7 +1,7 @@
 /**
  * Tag Manager Main setup component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ import TagManagerIcon from '../../../../../svg/tagmanager.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME, ACCOUNT_CREATE, FORM_SETUP } from '../../datastore/constants';
-import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { STORE_NAME as CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { useExistingTagEffect } from '../../hooks';
 import {
 	AccountCreate,

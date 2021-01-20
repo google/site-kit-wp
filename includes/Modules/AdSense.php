@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Modules\AdSense
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -886,7 +886,7 @@ final class AdSense extends Module
 	/**
 	 * Registers the AdSense tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	private function register_tag() {
 		// Web Stories support neither <amp-auto-ads> nor the script.

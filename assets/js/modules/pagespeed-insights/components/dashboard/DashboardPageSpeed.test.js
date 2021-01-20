@@ -1,7 +1,7 @@
 /**
  * DashboardPageSpeed component tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import fetchMock from 'fetch-mock';
 import DashboardPageSpeed from './DashboardPageSpeed';
 import { fireEvent, render, waitFor } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import { freezeFetch } from '../../../../../../tests/js/utils';
 

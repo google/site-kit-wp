@@ -1,7 +1,7 @@
 /**
  * AdSense Main setup component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ import AdSenseIcon from '../../../../../svg/adsense.svg';
 import ProgressBar from '../../../../components/ProgressBar';
 import ErrorText from '../../../../components/ErrorText';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import {
 	ACCOUNT_STATUS_NONE,
 	ACCOUNT_STATUS_MULTIPLE,

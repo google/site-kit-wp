@@ -1,7 +1,7 @@
 /**
  * UserMenu component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,9 @@ import Dialog from './Dialog';
 import Button from './Button';
 import Menu from './Menu';
 import Modal from './Modal';
-import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
 function UserMenu() {

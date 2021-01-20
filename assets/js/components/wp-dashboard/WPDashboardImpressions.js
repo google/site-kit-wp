@@ -1,7 +1,7 @@
 /**
  * WPDashboardImpressions component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { DATE_RANGE_OFFSET, STORE_NAME as MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../modules/search-console/util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';

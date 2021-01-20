@@ -17,3 +17,4 @@
  */
 
 export const STORE_NAME = 'core/location';
+export { STORE_NAME as CORE_LOCATION };

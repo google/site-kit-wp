@@ -1,7 +1,7 @@
 /**
  * CompleteModuleActivationCTA component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,9 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import CTA from './legacy-notifications/cta';
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { STORE_NAME as CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
 const CompleteModuleActivationCTA = ( { slug, title, description } ) => {
