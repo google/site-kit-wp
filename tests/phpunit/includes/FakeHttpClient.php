@@ -3,7 +3,7 @@
  * Fake HTTP Client
  *
  * @package   Google\Site_Kit\Tests
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
