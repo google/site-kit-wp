@@ -5,12 +5,8 @@
 	"compareEndDate": "2020-12-08",
 	"metrics": [
 		{
-			"expression": "ga:users"
+      "expression": "ga:users",
+			"alias": "Users"
 		}
-	],
-	"orderby": {
-		"fieldName": "ga:users",
-		"sortOrder": "DESCENDING"
-	},
-	"limit": 1
+	]
 }

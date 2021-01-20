@@ -1,7 +1,7 @@
 /**
  * Settings Renderer component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsRenderer( { slug, isOpen, isEditing } ) {

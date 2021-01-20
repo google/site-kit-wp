@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Modules\Tag_Manager\Tag_Guard
  *
  * @package   Google\Site_Kit\Modules\Tag_Manager
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Guard;
 /**
  * Class for the Tag Manager tag guard.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	/**
 	 * Determines AMP mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 * @var bool
 	 */
 	protected $is_amp;
@@ -33,7 +33,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param Module_Settings $settings Module settings.
 	 * @param bool            $is_amp   AMP mode.
@@ -46,7 +46,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	/**
 	 * Determines whether the guarded tag can be activated or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @return bool|WP_Error TRUE if guarded tag can be activated, otherwise FALSE or an error.
 	 */

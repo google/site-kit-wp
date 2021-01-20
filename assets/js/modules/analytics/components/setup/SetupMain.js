@@ -1,7 +1,7 @@
 /**
  * Analytics Main setup component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
 import { trackEvent } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import {
 	AccountCreate,

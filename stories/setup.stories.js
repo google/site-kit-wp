@@ -1,7 +1,7 @@
 /**
  * Setup Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import { storiesOf } from '@storybook/react';
  */
 import SetupUsingGCP from '../assets/js/components/legacy-setup/SetupUsingGCP';
 import SetupUsingProxy from '../assets/js/components/setup/SetupUsingProxy';
-import { STORE_NAME as CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../assets/js/googlesitekit/datastore/user/constants';
+import { CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../assets/js/googlesitekit/datastore/user/constants';
 import { provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
 import { enableFeature } from './utils/features';
 

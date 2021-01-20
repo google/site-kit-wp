@@ -2,7 +2,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import classnames from 'classnames';
 import ErrorIcon from '../../../svg/error.svg';
 

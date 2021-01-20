@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Modules\Tags\Module_AMP_Tag
  *
  * @package   Google\Site_Kit\Core\Tags
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Tags\Blockable_Tag_Interface;
 /**
  * Base class for AMP tag.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ abstract class Module_AMP_Tag extends Module_Tag implements Blockable_Tag_Interf
 	/**
 	 * Checks whether or not the tag should be blocked from rendering.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @return bool TRUE if the tag should be blocked, otherwise FALSE.
 	 */
@@ -32,7 +32,7 @@ abstract class Module_AMP_Tag extends Module_Tag implements Blockable_Tag_Interf
 		/**
 		 * Filters whether or not the AMP tag should be blocked from rendering.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.24.0
 		 *
 		 * @param bool $blocked Whether or not the tag output is suppressed. Default: false.
 		 */
@@ -42,7 +42,7 @@ abstract class Module_AMP_Tag extends Module_Tag implements Blockable_Tag_Interf
 	/**
 	 * Gets the HTML attributes for a script tag that may potentially require user consent before loading.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @return string HTML attributes to add if the tag requires consent to load, or an empty string.
 	 */
@@ -57,7 +57,7 @@ abstract class Module_AMP_Tag extends Module_Tag implements Blockable_Tag_Interf
 		/**
 		 * Filters whether the tag requires user consent before loading.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.24.0
 		 *
 		 * @param bool|string $blocked Whether or not the tag requires user consent to load. Alternatively, this can also be one of
 		 *                             the special string values '_till_responded', '_till_accepted', or '_auto_reject'. Default: false.
@@ -77,7 +77,7 @@ abstract class Module_AMP_Tag extends Module_Tag implements Blockable_Tag_Interf
 	/**
 	 * Enqueues a component script for AMP Reader.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param string $handle Script handle.
 	 * @param string $src Script source URL.
@@ -104,13 +104,13 @@ abstract class Module_AMP_Tag extends Module_Tag implements Blockable_Tag_Interf
 	/**
 	 * Fires the "googlesitekit_{module_slug}_init_tag_amp" action to let 3rd party plugins to perform required setup.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	protected function do_init_tag_action() {
 		/**
 		 * Fires when the tag has been initialized which means that the tag will be rendered in the current request.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.24.0
 		 *
 		 * @param string $tag_id Tag ID.
 		 */

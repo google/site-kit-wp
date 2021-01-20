@@ -1,7 +1,7 @@
 /**
  * Tag Manager Form Instructions component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,10 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import ExistingTagNotice from './ExistingTagNotice';
 import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;

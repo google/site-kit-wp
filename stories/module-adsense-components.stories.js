@@ -1,7 +1,7 @@
 /**
  * AdSense Module Component Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import { generateReportBasedWidgetStories } from './utils/generate-widget-storie
 import DashboardSummaryWidget from '../assets/js/modules/adsense/components/dashboard/DashboardSummaryWidget';
 import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
-import { STORE_NAME as ANALYTICS_STORE } from '../assets/js/modules/analytics/datastore/constants';
+import { ANALYTICS_STORE } from '../assets/js/modules/analytics/datastore/constants';
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense' ],
