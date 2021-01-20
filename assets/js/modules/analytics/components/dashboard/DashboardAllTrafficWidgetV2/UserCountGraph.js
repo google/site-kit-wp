@@ -135,7 +135,7 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 					colors: [ '#1a73e8' ],
 					chartArea: {
 						height: '80%',
-						width: '90%',
+						width: '80%',
 					},
 					legend: {
 						position: 'none',
