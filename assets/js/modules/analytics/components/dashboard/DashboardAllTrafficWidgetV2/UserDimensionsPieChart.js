@@ -32,6 +32,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME, FORM_ALL_TRAFFIC_WIDGET, DATE_RANGE_OFFSET } from '../../../datastore/constants';
@@ -68,6 +69,12 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 	const loaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
 	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
+	const othersSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/analytics/answer/1009671',
+	} ) );
+	const notSetSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/analytics/answer/2820717',
+	} ) );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onReady = useCallback( () => {
@@ -159,11 +166,27 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 				</p>`
 			);
 
-			if ( sourceLink && rowData[ 0 ].toLowerCase() === 'others' ) {
+			if ( sourceLink && othersSupportURL && rowData[ 0 ].toLowerCase() === 'others' ) {
 				tooltip += (
 					`<p>
 						<a class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit" href="${ sourceLink }" target="_blank" rel="noreferrer noopener">
 							${ __( 'See the detailed breakdown in Analytics', 'google-site-kit' ) }
+						</a>
+					</p>
+					<p>
+						<a class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit" href="${ othersSupportURL }" target="_blank" rel="noreferrer noopener">
+							${ __( 'Learn more about what "(others)" means', 'google-site-kit' ) }
+						</a>
+					</p>`
+				);
+			}
+
+			if ( notSetSupportURL && rowData[ 0 ].toLowerCase() === '(not set)' ) {
+				tooltip += (
+					`
+					<p>
+						<a class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit" href="${ notSetSupportURL }" target="_blank" rel="noreferrer noopener">
+							${ __( 'Learn more about what "(not set)" means', 'google-site-kit' ) }
 						</a>
 					</p>`
 				);
