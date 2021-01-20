@@ -19,16 +19,13 @@
 /**
  * Internal dependencies
  */
-import Widgets from 'googlesitekit-widgets';
 import DashboardPageSpeed from './DashboardPageSpeed';
 import whenActive from '../../../../util/when-active';
-const { Widget } = Widgets.components;
 
-function DashboardPageSpeedWidget() {
+function DashboardPageSpeedWidget( { Widget } ) {
 	// Pass class to omit regular widget padding and legacy widget class to use original styles.
 	return (
 		<Widget
-			slug="pagespeedInsightsWebVitals"
 			className="googlesitekit-pagespeed-widget"
 			noPadding
 		>

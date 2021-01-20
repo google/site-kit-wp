@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -32,9 +31,8 @@ import AcquisitionPieChart from '../common/AcquisitionPieChart';
 import AcquisitionSources from '../common/AcquisitionSources';
 import { isZeroReport } from '../../util';
 const { useSelect } = Data;
-const { Widget } = Widgets.components;
 
-function DashboardAllTrafficWidget( { WidgetReportZero } ) {
+function DashboardAllTrafficWidget( { Widget, WidgetReportZero } ) {
 	const {
 		loading,
 		report,
@@ -112,10 +110,7 @@ function DashboardAllTrafficWidget( { WidgetReportZero } ) {
 	}
 
 	return (
-		<Widget
-			slug="analyticsAllTraffic"
-			noPadding
-		>
+		<Widget noPadding>
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">

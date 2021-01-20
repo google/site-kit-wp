@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widget from './components/Widget';
 import { STORE_NAME, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from './datastore/constants';
 // This import has side-effects; it registers the Widgets datastore on the default
 // data store registry (eg. `googlesitekit.data`).
@@ -30,13 +29,6 @@ const { dispatch, select } = Data;
 export { registerDefaults } from './register-defaults';
 
 const Widgets = {
-	/**
-	 * Public Widget components for creating Site Kit widgets.
-	 *
-	 * @since 1.11.0
-	 */
-	components: { Widget },
-
 	/**
 	 * Supported styles for Site Kit widget areas.
 	 *

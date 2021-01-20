@@ -26,7 +26,6 @@ import { compose } from '@wordpress/compose';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME as ANALYTICS_STORE, DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
@@ -38,9 +37,8 @@ import { isZeroReport } from '../../../analytics/util';
 import ReportError from '../../../../components/ReportError';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
-const { Widget } = Widgets.components;
 
-function DashboardTopEarningPagesWidget( { WidgetReportZero } ) {
+function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero } ) {
 	const {
 		isAdSenseLinked,
 		analyticsMainURL,
@@ -128,7 +126,6 @@ function DashboardTopEarningPagesWidget( { WidgetReportZero } ) {
 
 	return (
 		<Widget
-			slug="adsenseTopEarningPages"
 			noPadding
 			footer={ () => (
 				<SourceLink

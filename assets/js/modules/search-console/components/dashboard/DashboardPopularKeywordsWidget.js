@@ -26,7 +26,6 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -40,9 +39,8 @@ import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { isZeroReport } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
-const { Widget } = Widgets.components;
 
-function DashboardPopularKeywordsWidget( { WidgetReportZero } ) {
+function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero } ) {
 	const {
 		data,
 		error,
@@ -134,7 +132,6 @@ function DashboardPopularKeywordsWidget( { WidgetReportZero } ) {
 
 	return (
 		<Widget
-			slug="searchConsolePopularKeywords"
 			noPadding
 			footer={ () => (
 				<SourceLink

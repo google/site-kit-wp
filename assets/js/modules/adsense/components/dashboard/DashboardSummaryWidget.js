@@ -25,7 +25,6 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport, reduceAdSenseData } from '../../util';
@@ -38,9 +37,8 @@ import Sparkline from '../../../../components/Sparkline';
 import ReportError from '../../../../components/ReportError';
 
 const { useSelect } = Data;
-const { Widget } = Widgets.components;
 
-function DashboardSummaryWidget( { WidgetReportZero } ) {
+function DashboardSummaryWidget( { Widget, WidgetReportZero } ) {
 	const {
 		error,
 		loading,
@@ -102,10 +100,7 @@ function DashboardSummaryWidget( { WidgetReportZero } ) {
 	const currencyCode = currencyHeader ? currencyHeader.currency : false;
 
 	return (
-		<Widget
-			slug="adsenseSummary"
-			className="googlesitekit-dashboard-adsense-stats mdc-layout-grid"
-		>
+		<Widget className="googlesitekit-dashboard-adsense-stats mdc-layout-grid">
 			<div className="mdc-layout-grid__inner">
 				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 					<DataBlock

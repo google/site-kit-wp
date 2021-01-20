@@ -25,7 +25,6 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME as MODULES_ANALYTICS, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
@@ -36,10 +35,9 @@ import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import SourceLink from '../../../../../components/SourceLink';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
-const { Widget } = Widgets.components;
 const { useSelect } = Data;
 
-function DashboardAllTrafficWidget() {
+function DashboardAllTrafficWidget( { Widget } ) {
 	const dimensionName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionName' ) || 'ga:channelGrouping' );
 	const dimensionValue = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionValue' ) );
 	const entityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
@@ -70,7 +68,6 @@ function DashboardAllTrafficWidget() {
 
 	return (
 		<Widget
-			slug="analyticsAllTrafficV2"
 			className="googlesitekit-widget--footer-v2"
 			footer={ () => (
 				<SourceLink
