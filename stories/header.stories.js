@@ -29,29 +29,57 @@ import DateRangeSelector from '../assets/js/components/DateRangeSelector';
 import { createTestRegistry, provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
 import { enableFeature } from './utils/features';
 
-storiesOf( 'Global', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		provideUserAuthentication( registry );
-		provideSiteInfo( registry );
+// storiesOf( 'Global', module )
+// 	.addDecorator( ( Story ) => {
+// 		const registry = createTestRegistry();
+// 		provideUserAuthentication( registry );
+// 		provideSiteInfo( registry );
 
-		return storyFn( registry );
-	} )
-	.add( 'Plugin Header', ( registry ) => {
-		return (
-			<WithTestRegistry registry={ registry }>
-				<Header />
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Plugin Header with Date Selector', ( registry ) => {
-		enableFeature( 'storeErrorNotifications' );
+// 		return (
+// 			<WithTestRegistry registry={ registry }>
+// 				<Story />
+// 			</WithTestRegistry>
+// 		);
+// 	} )
+// 	.add( 'Plugin Header', () => {
+// 		return (
+// 			<Header />
+// 		);
+// 	} )
+// 	.add( 'Plugin Header with Date Selector', () => {
+// 		enableFeature( 'storeErrorNotifications' );
 
-		return (
-			<WithTestRegistry registry={ registry }>
-				<Header>
-					<DateRangeSelector />
-				</Header>
-			</WithTestRegistry>
-		);
-	} );
+// 		return (
+// 			<Header>
+// 				<DateRangeSelector />
+// 			</Header>
+// 		);
+// 	} );
+
+export const PluginHeader = () => <Header />;
+export const PluginHeaderWithDateSelector = () => {
+	enableFeature( 'storeErrorNotifications' );
+
+	return (
+		<Header>
+			<DateRangeSelector />
+		</Header>
+	);
+};
+
+export default {
+	title: 'Global',
+	decorators: [
+		( Story ) => {
+			const registry = createTestRegistry();
+			provideUserAuthentication( registry );
+			provideSiteInfo( registry );
+
+			return (
+				<WithTestRegistry registry={ registry }>
+					<Story />
+				</WithTestRegistry>
+			);
+		},
+	],
+};
