@@ -38,11 +38,8 @@ const { useSelect, useDispatch } = Data;
 function ResetButton( { children } ) {
 	const postResetURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { notification: 'reset_success' } ) );
 
-	// Sketching this in for now, these selectors will be added as part of #2497
-	// useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() )
-	// useSelect( ( select ) => select( CORE_LOCATION ).getNavigationURL() )
-	const isNavigating = false;
-	const navigatingURL = postResetURL;
+	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
+	const navigatingURL = useSelect( ( select ) => select( CORE_LOCATION ).getNavigateURL() );
 
 	const [ dialogActive, setDialogActive ] = useState( false );
 
