@@ -25,6 +25,16 @@ import { STORE_NAME, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from './datastore/const
 export { registerStore } from './datastore';
 export { registerDefaults as registerWidgets } from './register-defaults';
 
+/**
+ * Creates a new instance of Widgets.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}   registry          Datastore registry.
+ * @param {Function} registry.select   Registry select function.
+ * @param {Function} registry.dispatch Registry dispatch function.
+ * @return {Object} Widgets instance.
+ */
 export function createWidgets( { dispatch, select } ) {
 	const Widgets = {
 		/**

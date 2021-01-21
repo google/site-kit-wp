@@ -26,6 +26,15 @@ import { STORE_NAME } from './datastore/constants';
 
 export { registerStore } from './datastore';
 
+/**
+ * Creates a new instance of Modules.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}   registry          Datastore registry.
+ * @param {Function} registry.dispatch Registry dispatch function.
+ * @return {Object} Modules instance.
+ */
 export function createModules( { dispatch } ) {
 	const Modules = {
 		createModuleStore,
