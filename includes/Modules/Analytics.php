@@ -794,7 +794,7 @@ final class Analytics extends Module
 						)
 					);
 				} else {
-					// Get the account ID from the saved settings - returns WP_Error if not set.
+					// Get the account ID from the saved settings.
 					$option     = $this->get_settings()->get();
 					$account_id = $option['accountID'];
 					// If the saved account ID is in the list of accounts the user has access to, it's a match.
