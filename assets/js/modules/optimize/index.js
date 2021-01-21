@@ -26,8 +26,8 @@ import { STORE_NAME } from './datastore/constants';
 
 export { registerStore } from './datastore';
 
-export const registerModule = ( Modules ) => {
-	Modules.registerModule(
+export const registerModule = ( modules ) => {
+	modules.registerModule(
 		'optimize',
 		{
 			storeName: STORE_NAME,

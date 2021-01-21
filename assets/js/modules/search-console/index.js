@@ -34,8 +34,8 @@ import { STORE_NAME } from './datastore/constants';
 
 export { registerStore } from './datastore';
 
-export const registerModule = ( Modules ) => {
-	Modules.registerModule(
+export const registerModule = ( modules ) => {
+	modules.registerModule(
 		'search-console',
 		{
 			storeName: STORE_NAME,
@@ -45,12 +45,12 @@ export const registerModule = ( Modules ) => {
 	);
 };
 
-export const registerWidgets = ( Widgets ) => {
-	Widgets.registerWidget(
+export const registerWidgets = ( widgets ) => {
+	widgets.registerWidget(
 		'searchConsoleImpressions',
 		{
 			Component: DashboardImpressionsWidget,
-			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: true,
 		},
@@ -59,11 +59,11 @@ export const registerWidgets = ( Widgets ) => {
 			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 		],
 	);
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'searchConsoleClicks',
 		{
 			Component: DashboardClicksWidget,
-			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 2,
 			wrapWidget: true,
 		},
@@ -72,11 +72,11 @@ export const registerWidgets = ( Widgets ) => {
 			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 		],
 	);
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'searchConsolePopularKeywords',
 		{
 			Component: DashboardPopularKeywordsWidget,
-			width: [ Widgets.WIDGET_WIDTHS.HALF, Widgets.WIDGET_WIDTHS.FULL ],
+			width: [ widgets.WIDGET_WIDTHS.HALF, widgets.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
 		},

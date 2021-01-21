@@ -39,8 +39,8 @@ import { STORE_NAME } from './datastore/constants';
 
 export { registerStore } from './datastore';
 
-export const registerModule = ( Modules ) => {
-	Modules.registerModule(
+export const registerModule = ( modules ) => {
+	modules.registerModule(
 		'analytics',
 		{
 			storeName: STORE_NAME,
@@ -52,12 +52,12 @@ export const registerModule = ( Modules ) => {
 	);
 };
 
-export const registerWidgets = ( Widgets ) => {
-	Widgets.registerWidget(
+export const registerWidgets = ( widgets ) => {
+	widgets.registerWidget(
 		'analyticsAllTraffic',
 		{
 			Component: DashboardAllTrafficWidget,
-			width: Widgets.WIDGET_WIDTHS.FULL,
+			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
 		},
@@ -67,11 +67,11 @@ export const registerWidgets = ( Widgets ) => {
 		],
 	);
 
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'analyticsAllTrafficV2',
 		{
 			Component: DashboardAllTrafficWidgetV2,
-			width: Widgets.WIDGET_WIDTHS.FULL,
+			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
 		},
@@ -81,11 +81,11 @@ export const registerWidgets = ( Widgets ) => {
 		],
 	);
 
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'analyticsUniqueVisitors',
 		{
 			Component: DashboardUniqueVisitorsWidget,
-			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 3,
 			wrapWidget: true,
 		},
@@ -95,11 +95,11 @@ export const registerWidgets = ( Widgets ) => {
 		],
 	);
 
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'analyticsGoals',
 		{
 			Component: DashboardGoalsWidget,
-			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 4,
 			wrapWidget: true,
 		},
@@ -108,11 +108,11 @@ export const registerWidgets = ( Widgets ) => {
 		],
 	);
 
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'analyticsBounceRate',
 		{
 			Component: DashboardBounceRateWidget,
-			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 4,
 			wrapWidget: true,
 		},
@@ -121,11 +121,11 @@ export const registerWidgets = ( Widgets ) => {
 		],
 	);
 
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'analyticsPopularPages',
 		{
 			Component: DashboardPopularPagesWidget,
-			width: Widgets.WIDGET_WIDTHS.HALF,
+			width: widgets.WIDGET_WIDTHS.HALF,
 			priority: 2,
 			wrapWidget: false,
 		},

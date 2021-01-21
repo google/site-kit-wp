@@ -57,8 +57,8 @@ export const registerStore = ( registry ) => {
 	isAdBlockerActive = () => registry.select( STORE_NAME ).isAdBlockerActive();
 };
 
-export const registerModule = ( Modules ) => {
-	Modules.registerModule(
+export const registerModule = ( modules ) => {
+	modules.registerModule(
 		'adsense',
 		{
 			storeName: STORE_NAME,
@@ -82,12 +82,12 @@ export const registerModule = ( Modules ) => {
 	);
 };
 
-export const registerWidgets = ( Widgets ) => {
-	Widgets.registerWidget(
+export const registerWidgets = ( widgets ) => {
+	widgets.registerWidget(
 		'adsenseSummary',
 		{
 			Component: DashboardSummaryWidget,
-			width: Widgets.WIDGET_WIDTHS.HALF,
+			width: widgets.WIDGET_WIDTHS.HALF,
 			priority: 1,
 			wrapWidget: false,
 
@@ -96,11 +96,11 @@ export const registerWidgets = ( Widgets ) => {
 			AREA_DASHBOARD_EARNINGS,
 		],
 	);
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'adsenseTopEarningPages',
 		{
 			Component: DashboardTopEarningPagesWidget,
-			width: Widgets.WIDGET_WIDTHS.HALF,
+			width: widgets.WIDGET_WIDTHS.HALF,
 			priority: 2,
 			wrapWidget: false,
 		},

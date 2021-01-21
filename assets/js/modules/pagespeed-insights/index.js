@@ -67,8 +67,8 @@ if ( active && setupComplete ) {
 	);
 }
 
-export const registerModule = ( Modules ) => {
-	Modules.registerModule(
+export const registerModule = ( modules ) => {
+	modules.registerModule(
 		'pagespeed-insights',
 		{
 			storeName: STORE_NAME,
@@ -78,10 +78,10 @@ export const registerModule = ( Modules ) => {
 	);
 };
 
-export const registerWidgets = ( Widgets ) => {
-	Widgets.registerWidget( 'pagespeedInsightsWebVitals', {
+export const registerWidgets = ( widgets ) => {
+	widgets.registerWidget( 'pagespeedInsightsWebVitals', {
 		Component: DashboardPageSpeedWidget,
-		width: Widgets.WIDGET_WIDTHS.FULL,
+		width: widgets.WIDGET_WIDTHS.FULL,
 		wrapWidget: false,
 	}, [ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ] );
 };
