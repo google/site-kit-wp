@@ -1,7 +1,7 @@
 /**
  * PostSearcher component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,13 +31,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import Button from './Button';
 import Layout from './layout/Layout';
-import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
-
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 function PostSearcher() {
 	const [ canSubmit, setCanSubmit ] = useState( false );
@@ -50,9 +50,8 @@ function PostSearcher() {
 		} );
 	} );
 
-	const onClick = useCallback( () => {
-		global.location.assign( detailsURL );
-	}, [ detailsURL ] );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const onClick = useCallback( () => navigateTo( detailsURL ), [ detailsURL ] );
 
 	return (
 		<div

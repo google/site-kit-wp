@@ -1,7 +1,7 @@
 /**
  * Admin Bar Component Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ import { googlesitekit as wpAdminBarData } from '../.storybook/data/blog---googl
 import AnalyticsAdminbarWidget from '../assets/js/modules/analytics/components/adminbar/AnalyticsAdminbarWidget';
 import GoogleSitekitSearchConsoleAdminbarWidget from '../assets/js/modules/search-console/components/adminbar/GoogleSitekitSearchConsoleAdminbarWidget';
 import { createAddToFilter } from '../assets/js/util/helpers';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 import CollectModuleData from '../assets/js/components/data/collect-module-data';
 

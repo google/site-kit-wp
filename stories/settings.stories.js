@@ -1,7 +1,7 @@
 /**
  * Settings stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import Layout from '../assets/js/components/layout/Layout';
 import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
 import SettingsAdmin from '../assets/js/components/settings/SettingsAdmin';
 import { provideModuleRegistrations, provideModules, provideSiteInfo, WithTestRegistry, untilResolved } from '../tests/js/utils';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 
 /**
  * Add components to the settings page.

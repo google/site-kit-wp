@@ -1,7 +1,7 @@
 /**
  * Report Args utility tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,14 @@ describe( 'reportArgsToURLSegment', () => {
 
 	it( 'encodes an object of arguments into a key-value string', () => {
 		expect( reportArgsToURLSegment( { foo: 'bar' } ) ).toBe( 'foo=bar' );
+	} );
+
+	it( 'returns an empty string for an object with no keys', () => {
+		expect( reportArgsToURLSegment( {} ) ).toBe( '' );
+	} );
+
+	it( 'ignores keys with undefined values', () => {
+		expect( reportArgsToURLSegment( { foo: 'bar', baz: undefined } ) ).toBe( 'foo=bar' );
 	} );
 
 	it( 'joins multiple arguments with an ampersand literal', () => {

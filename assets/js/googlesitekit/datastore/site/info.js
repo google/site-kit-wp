@@ -1,7 +1,7 @@
 /**
  * `core/site` data store: site info.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -473,7 +473,7 @@ export const selectors = {
 	/**
 	 * Gets external help links which includes the user's locale.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {Object} [args]       Optional arguments for the resulting URL.

@@ -1,7 +1,7 @@
 /**
  * Webpack config.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -156,6 +156,7 @@ const webpackConfig = ( env, argv ) => {
 				'googlesitekit-datastore-site': './assets/js/googlesitekit-datastore-site.js',
 				'googlesitekit-datastore-user': './assets/js/googlesitekit-datastore-user.js',
 				'googlesitekit-datastore-forms': './assets/js/googlesitekit-datastore-forms.js',
+				'googlesitekit-datastore-location': './assets/js/googlesitekit-datastore-location.js',
 				'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
 				'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
 				'googlesitekit-modules-adsense': './assets/js/googlesitekit-modules-adsense.js',
@@ -358,6 +359,7 @@ const webpackConfig = ( env, argv ) => {
 							{
 								loader: 'sass-loader',
 								options: {
+									implementation: require( 'sass' ),
 									sassOptions: {
 										includePaths: [ 'node_modules' ],
 									},

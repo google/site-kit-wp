@@ -1,7 +1,7 @@
 /**
  * DashboardAllTrafficWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,16 +26,16 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import { calculateChange } from '../../../../util';
+import { getURLPath } from '../../../../util/getURLPath';
 import ReportError from '../../../../components/ReportError';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
-import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import { isZeroReport } from '../../util';
 
 const { useSelect } = Data;
@@ -49,10 +49,6 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero } ) {
 		visitorsData,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
-
-		const accountID = store.getAccountID();
-		const profileID = store.getProfileID();
-		const internalWebPropertyID = store.getInternalWebPropertyID();
 
 		const {
 			compareStartDate,
@@ -103,11 +99,9 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero } ) {
 			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
 			// Due to the nature of these queries, we need to run them separately.
 			sparkData: store.getReport( sparklineArgs ),
-			serviceURL: store.getServiceURL(
-				{
-					path: applyEntityToReportPath( url, `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ),
-				}
-			),
+			serviceURL: store.getServiceReportURL( 'visitors-overview', {
+				'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+			} ),
 			visitorsData: store.getReport( args ),
 		};
 	} );

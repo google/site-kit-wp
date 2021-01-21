@@ -74,6 +74,7 @@ export const dashboardUniqueVisitorsVisitorData = [
 		},
 	},
 ];
+
 export const dashboardUniqueVisitorsSparkData =
 	[
 		{

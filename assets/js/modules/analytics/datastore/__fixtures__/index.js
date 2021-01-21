@@ -1,7 +1,7 @@
 /**
  * Analytics Datastore Fixtures.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,8 @@ export { default as dashboardUserDimensionsData } from './dashboard-user-dimensi
 export { default as dashboardUserDimensionsArgs } from './dashboard-user-dimensions-args.json';
 export { default as dashboardUserTotalsData } from './dashboard-user-totals-data.json';
 export { default as dashboardUserTotalsArgs } from './dashboard-user-totals-args.json';
+export { default as dashboardUserGraphData } from './dashboard-user-graph-data.json';
+export { default as dashboardUserGraphArgs } from './dashboard-user-graph-args.json';
 export * from './dashboard-unique-visitors-data';
 export * from './dashboard-unique-visitors-args';
 export { pageDashboardUniqueVisitorsSparkData, pageDashboardUniqueVisitorsVisitorData } from './page-dashboard-unique-visitors-data';

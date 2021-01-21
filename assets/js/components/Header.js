@@ -1,7 +1,7 @@
 /**
  * Header component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import Logo from './Logo';
 import UserMenu from './UserMenu';
 import LegacyErrorNotification from './legacy-notifications/error-notification';
 import ErrorNotifications from './notifications/ErrorNotifications';
-import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 const Header = ( { children } ) => {

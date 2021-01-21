@@ -1,7 +1,7 @@
 /**
  * ActivateModule component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,20 +36,23 @@ import {
 import CTA from './legacy-notifications/cta';
 import Data from 'googlesitekit-data';
 import GenericError from './legacy-notifications/generic-error';
-import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
 const ActivateModuleCTA = ( { moduleSlug, title, description } ) => {
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
+
 	const { activateModule } = useDispatch( CORE_MODULES );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const onCTAClick = useCallback( async () => {
 		const { error, response } = await activateModule( moduleSlug );
 
 		if ( ! error ) {
-			global.location.assign( response.moduleReauthURL );
+			navigateTo( response.moduleReauthURL );
 		} else {
 			showErrorNotification( GenericError, {
 				id: `${ moduleSlug }-setup-error`,

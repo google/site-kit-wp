@@ -1,7 +1,7 @@
 /**
  * DashboardSummaryWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import { __, _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport, reduceAdSenseData } from '../../util';
 import { getSiteKitAdminURL } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
@@ -36,6 +36,7 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import ReportError from '../../../../components/ReportError';
+import { getDateString } from '../../../../googlesitekit/datastore/user/utils/get-date-string';
 
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
@@ -50,8 +51,11 @@ function DashboardSummaryWidget( { WidgetReportZero } ) {
 	} = useSelect( ( select ) => {
 		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
 
+		const referenceDate = select( CORE_USER ).getReferenceDate();
+
 		const todayArgs = {
-			dateRange: 'today',
+			startDate: referenceDate,
+			endDate: referenceDate,
 			metrics,
 		};
 
@@ -64,8 +68,16 @@ function DashboardSummaryWidget( { WidgetReportZero } ) {
 			metrics,
 		};
 
+		// Get the first day of the month as an ISO 8601 date string without the time.
+		const startOfMonth = getDateString( new Date(
+			new Date( referenceDate ).getFullYear(),
+			new Date( referenceDate ).getMonth(),
+			1
+		) );
+
 		const dailyArgs = {
-			dateRange: 'this-month',
+			startDate: startOfMonth,
+			endDate: referenceDate,
 			metrics,
 			dimensions: [ 'DATE' ],
 		};

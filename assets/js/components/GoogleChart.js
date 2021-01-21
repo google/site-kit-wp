@@ -1,7 +1,7 @@
 /**
  * GoogleChart component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,9 +60,19 @@ export default function GoogleChart( props ) {
 			let googleChart;
 
 			if ( ! chartID || ! GoogleChart.charts.has( chartID ) ) {
-				googleChart = 'pie' === chartType
-					? new global.google.visualization.PieChart( chartRef.current )
-					: new global.google.visualization.LineChart( chartRef.current );
+				switch ( chartType ) {
+					case 'area':
+						googleChart = new global.google.visualization.AreaChart( chartRef.current );
+						break;
+					case 'line':
+						googleChart = new global.google.visualization.LineChart( chartRef.current );
+						break;
+					case 'pie':
+						googleChart = new global.google.visualization.PieChart( chartRef.current );
+						break;
+					default:
+						throw new Error( 'Unknown chart type' );
+				}
 
 				const chartData = { chart: googleChart };
 				if ( onReady ) {
@@ -124,7 +134,11 @@ export default function GoogleChart( props ) {
 
 	useEffect( () => {
 		const interval = setInterval( () => {
-			if ( !! global.google?.visualization?.PieChart && !! global.google?.visualization?.LineChart ) {
+			if (
+				!! global.google?.visualization?.AreaChart &&
+				!! global.google?.visualization?.PieChart &&
+				!! global.google?.visualization?.LineChart
+			) {
 				clearInterval( interval );
 				setLoading( false );
 				setVisualizationLoaded( true );
@@ -179,7 +193,7 @@ export default function GoogleChart( props ) {
 
 GoogleChart.propTypes = {
 	chartID: PropTypes.string,
-	chartType: PropTypes.oneOf( [ 'pie', 'line', '' ] ),
+	chartType: PropTypes.oneOf( [ 'area', 'pie', 'line' ] ).isRequired,
 	className: PropTypes.string,
 	data: PropTypes.arrayOf( PropTypes.array ),
 	loadCompressed: PropTypes.bool,
@@ -192,7 +206,6 @@ GoogleChart.propTypes = {
 };
 
 GoogleChart.defaultProps = {
-	chartType: 'line',
 	className: '',
 	data: [],
 	loadCompressed: false,
