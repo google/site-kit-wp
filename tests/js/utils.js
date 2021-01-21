@@ -247,7 +247,7 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 	const registeredModules = {};
 	const testRegisterModule = ( ( slug, settings ) => {
 		registeredModules[ slug ] = true;
-		return realRegisterModule( slug, { settings, ...extraDataBySlug[ slug ] } );
+		return realRegisterModule( slug, { ...settings, ...extraDataBySlug[ slug ] } );
 	} );
 	Modules.registerModule = testRegisterModule;
 
