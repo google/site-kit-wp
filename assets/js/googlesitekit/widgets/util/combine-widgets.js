@@ -21,10 +21,13 @@
  */
 import isEqual from 'lodash/isEqual';
 
-const HIDDEN_CLASS = 'googlesitekit-widget-grid-hidden';
+/**
+ * Internal dependencies
+ */
+import { HIDDEN_CLASS } from './constants';
 
 function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
-	return isEqual( stateA, stateB ) && rowA === rowB;
+	return rowA === rowB && isEqual( stateA, stateB );
 }
 
 /**

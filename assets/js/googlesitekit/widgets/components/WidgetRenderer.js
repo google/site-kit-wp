@@ -33,6 +33,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
 import Widget from './Widget';
 import { getWidgetComponentProps } from '../util';
+import { HIDDEN_CLASS } from '../util/constants';
 
 const { useSelect } = Data;
 
@@ -60,7 +61,7 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 				<Widget slug="overridden">
 					<OverrideComponent />
 				</Widget>
-				<div className="googlesitekit-widget-grid-hidden">
+				<div className={ HIDDEN_CLASS }>
 					{ widgetElement }
 				</div>
 			</Fragment>

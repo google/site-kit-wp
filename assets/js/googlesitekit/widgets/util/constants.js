@@ -44,3 +44,5 @@ export const WIDTH_GRID_CLASS_MAP = {
 		'mdc-layout-grid__cell--span-12',
 	],
 };
+
+export const HIDDEN_CLASS = 'googlesitekit-widget-grid-hidden';
