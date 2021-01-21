@@ -31,7 +31,6 @@ import { addAction, applyFilters, doAction, addFilter, removeFilter, hasAction }
 /**
  * Internal dependencies
  */
-import { getCurrentDateRangeSlug } from '../../util/date-range';
 import { fillFilterWithComponent } from '../../util/helpers';
 import { getQueryParameter } from '../../util/standalone';
 import { isWPError } from '../../util/errors';
@@ -54,7 +53,7 @@ export { TYPE_CORE, TYPE_MODULES };
  * @param {string} dateRange       Default date range slug to use if not specified in the request.
  * @return {Object} New data request object.
  */
-const requestWithDateRange = ( originalRequest, dateRange ) => {
+export const requestWithDateRange = ( originalRequest, dateRange ) => {
 	// Make copies for reference safety, ensuring data exists.
 	const request = { data: {}, ...originalRequest };
 	// Use the dateRange in request.data if passed, fallback to provided default value.
@@ -95,9 +94,7 @@ const dataAPI = {
 		// First, resolve any cache matches immediately, queue resolution of the rest.
 		let dataRequest = [];
 		let cacheDelay = 25;
-		const dateRange = getCurrentDateRangeSlug();
-		each( combinedRequest, ( originalRequest ) => {
-			const request = requestWithDateRange( originalRequest, dateRange );
+		each( combinedRequest, ( request ) => {
 			request.key = getCacheKey( request.type, request.identifier, request.datapoint, request.data );
 			const cache = getCache( request.key, request.maxAge );
 

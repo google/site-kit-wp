@@ -20,7 +20,6 @@
  * External dependencies
  */
 import castArray from 'lodash/castArray';
-import each from 'lodash/each';
 
 /**
  * WordPress dependencies
@@ -32,11 +31,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { getModulesData } from '../../util';
 import getNoDataComponent from '../legacy-notifications/nodata';
 import getDataErrorComponent from '../legacy-notifications/data-error';
 import getSetupIncompleteComponent from '../legacy-notifications/setup-incomplete';
 import { TYPE_MODULES } from '../data/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { requestWithDateRange } from '../data';
+import dateRange from '../../googlesitekit/datastore/user/date-range';
+const { withSelect } = Data;
 
 /**
  * Provides data from the API to components. (Legacy HOC.)
@@ -220,11 +224,10 @@ const withData = (
 				} );
 			};
 
-			// Resolve all selectedData.
-			each( selectData, ( data ) => {
-				const { type, identifier } = data || {};
+			const addDataRequest = ( dataRequest ) => {
+				const { type, identifier } = dataRequest || {};
 				// Handle single contexts, or arrays of contexts.
-				each( castArray( data.context ), ( context ) => {
+				castArray( dataRequest.context ).forEach( ( context ) => {
 					/**
 					 * Request data for the context.
 					 */
@@ -240,14 +243,19 @@ const withData = (
 							}
 
 							const callback = ( returnedData ) => {
-								handleReturnedData( returnedData, data );
+								handleReturnedData( returnedData, dataRequest );
 							};
 
-							return moduleData.concat( { ...data, callback } );
+							return moduleData.concat( { ...dataRequest, callback } );
 						}
 					);
 				} );
-			} );
+			};
+
+			selectData
+				// Add the current dateRange to the request if not specified.
+				.map( ( dataRequest ) => requestWithDateRange( dataRequest, dateRange ) )
+				.forEach( ( dataRequest ) => addDataRequest( dataRequest ) );
 		}
 
 		render() {
@@ -298,7 +306,11 @@ const withData = (
 	const displayName = DataDependentComponent.displayName || DataDependentComponent.name || 'AnonymousComponent';
 	NewComponent.displayName = `withData(${ displayName })`;
 
-	return NewComponent;
+	return withSelect( ( select ) => {
+		return {
+			dateRange: select( CORE_USER ).getDateRange(),
+		};
+	} )( NewComponent );
 };
 
 export default withData;
