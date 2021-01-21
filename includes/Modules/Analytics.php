@@ -1318,11 +1318,17 @@ final class Analytics extends Module
 		$error = parent::exception_to_error( $e, $datapoint );
 
 		if ( $cache_ttl && is_wp_error( $error ) ) {
-			$error->add_data(
-				array(
-					'cacheTTL' => $cache_ttl,
-				)
-			);
+			$error_code = $error->get_error_code();
+			if ( ! empty( $error->error_data[ $error_code ] ) ) {
+				$error->error_data[ $error_code ]['cacheTTL'] = $cache_ttl;
+			} else {
+				$error->add_data(
+					array(
+						'cacheTTL' => $cache_ttl,
+					),
+					$error_code
+				);
+			}
 		}
 
 		return $error;
