@@ -51,6 +51,7 @@ export const registerModule = ( Modules ) => {
 		}
 	);
 };
+
 export const registerWidgets = ( Widgets ) => {
 	Widgets.registerWidget(
 		'analyticsAllTraffic',
