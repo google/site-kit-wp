@@ -38,7 +38,7 @@ import getDataErrorComponent from '../legacy-notifications/data-error';
 import getSetupIncompleteComponent from '../legacy-notifications/setup-incomplete';
 import { TYPE_MODULES } from '../data/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { requestWithDateRange } from '../data';
+import { requestWithDateRange } from '../data/utils/request-with-date-range';
 import dateRange from '../../googlesitekit/datastore/user/date-range';
 const { withSelect } = Data;
 
