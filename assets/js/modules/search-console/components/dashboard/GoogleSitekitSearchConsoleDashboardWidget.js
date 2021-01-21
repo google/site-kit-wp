@@ -45,7 +45,7 @@ import getNoDataComponent from '../../../../components/legacy-notifications/noda
 import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
 import HelpLink from '../../../../components/HelpLink';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { untrailingslashit } from '../../../../util';
@@ -60,8 +60,8 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 	const [ errorObj, setErrorObject ] = useState();
 	const [ loading, setLoading ] = useState( true );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
+	const propertyID = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getPropertyID() );
+	const isDomainProperty = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).isDomainProperty() );
 	const referenceSiteURL = useSelect( ( select ) => {
 		return untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 	} );
@@ -73,7 +73,7 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 	if ( isDomainProperty && referenceSiteURL ) {
 		searchConsoleDeepArgs.page = `*${ referenceSiteURL }`;
 	}
-	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+	const searchConsoleDeepLink = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getServiceURL(
 		{
 			path: '/performance/search-analytics',
 			query: searchConsoleDeepArgs,

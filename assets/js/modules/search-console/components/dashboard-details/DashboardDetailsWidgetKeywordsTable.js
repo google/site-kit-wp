@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import LegacySearchConsoleDashboardWidgetKeywordTable from '../dashboard/LegacySearchConsoleDashboardWidgetKeywordTable';
 import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
 import Layout from '../../../../components/layout/Layout';
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { untrailingslashit } from '../../../../util';
@@ -38,14 +38,14 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
 const DashboardDetailsWidgetKeywordsTable = () => {
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const propertyID = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 	const footerCTALinkArgs = {
 		resource_id: propertyID,
 		...generateDateRangeArgs( { startDate, endDate } ),
 	};
-	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
+	const isDomainProperty = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).isDomainProperty() );
 	const referenceSiteURL = useSelect( ( select ) => {
 		return untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 	} );
@@ -54,7 +54,7 @@ const DashboardDetailsWidgetKeywordsTable = () => {
 	} else if ( isDomainProperty && referenceSiteURL ) {
 		footerCTALinkArgs.page = `*${ referenceSiteURL }`;
 	}
-	const footerCTALink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
+	const footerCTALink = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getServiceURL( {
 		path: '/performance/search-analytics',
 		query: footerCTALinkArgs,
 	} ) );
