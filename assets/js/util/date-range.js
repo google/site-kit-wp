@@ -31,11 +31,12 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
  * Gets the current dateRange day count.
  *
  * @since 1.19.0
+ * @since n.e.x.t `dateRange` is now a required argument.
  *
- * @param {string} [dateRange] Optional. The date range slug.
+ * @param {string} dateRange The date range slug.
  * @return {number} The number of days in the range.
  */
-export function getCurrentDateRangeDayCount( dateRange = getCurrentDateRangeSlug() ) {
+export function getCurrentDateRangeDayCount( dateRange ) {
 	const daysMatch = dateRange.match( /last-(\d+)-days/ );
 
 	if ( daysMatch && daysMatch[ 1 ] ) {
