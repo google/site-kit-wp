@@ -61,9 +61,10 @@ function DashboardPopularKeywordsWidget() {
 			limit: 10,
 		};
 
+		const dateRange = select( CORE_USER ).getDateRange();
 		const baseServiceURLArgs = {
 			resource_id: domain,
-			num_of_days: getCurrentDateRangeDayCount(),
+			num_of_days: getCurrentDateRangeDayCount( dateRange ),
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();

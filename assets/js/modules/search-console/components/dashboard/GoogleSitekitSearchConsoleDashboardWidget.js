@@ -66,7 +66,7 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 	} );
 	const searchConsoleDeepArgs = {
 		resource_id: propertyID,
-		num_of_days: getCurrentDateRangeDayCount(),
+		num_of_days: getCurrentDateRangeDayCount( dateRange ),
 	};
 	if ( isDomainProperty && referenceSiteURL ) {
 		searchConsoleDeepArgs.page = `*${ referenceSiteURL }`;

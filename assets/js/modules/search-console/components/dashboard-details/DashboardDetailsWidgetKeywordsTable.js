@@ -31,6 +31,7 @@ import DashboardModuleHeader from '../../../../components/dashboard/DashboardMod
 import Layout from '../../../../components/layout/Layout';
 import { STORE_NAME } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { untrailingslashit } from '../../../../util';
 
@@ -39,9 +40,10 @@ const { useSelect } = Data;
 const DashboardDetailsWidgetKeywordsTable = () => {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const footerCTALinkArgs = {
 		resource_id: propertyID,
-		num_of_days: getCurrentDateRangeDayCount(),
+		num_of_days: getCurrentDateRangeDayCount( dateRange ),
 	};
 	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
 	const referenceSiteURL = useSelect( ( select ) => {

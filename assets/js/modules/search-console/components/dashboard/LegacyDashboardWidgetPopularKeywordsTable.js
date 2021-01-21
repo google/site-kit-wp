@@ -42,6 +42,7 @@ import {
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { STORE_NAME } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
 
@@ -52,9 +53,10 @@ const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
 	const referenceSiteURL = useSelect( ( select ) => {
 		return untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 	} );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const baseServiceArgs = {
 		resource_id: domain,
-		num_of_days: getCurrentDateRangeDayCount(),
+		num_of_days: getCurrentDateRangeDayCount( dateRange ),
 	};
 	if ( isDomainProperty && referenceSiteURL ) {
 		baseServiceArgs.page = `*${ referenceSiteURL }`;
