@@ -22,4 +22,8 @@
 /**
  * Internal dependencies
  */
-import './googlesitekit/datastore/location';
+import Data from 'googlesitekit-data';
+import { registerStore } from './googlesitekit/datastore/location';
+
+registerStore( Data );
+
