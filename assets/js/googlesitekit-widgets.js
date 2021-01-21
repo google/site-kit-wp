@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { registerStore, createWidgets, registerDefaults } from './googlesitekit/widgets';
+import { registerStore, createWidgets, registerWidgets } from './googlesitekit/widgets';
 
 registerStore( Data );
 
 const Widgets = createWidgets( Data );
-registerDefaults( Widgets );
+registerWidgets( Widgets );
 
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};

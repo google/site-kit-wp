@@ -23,7 +23,7 @@ import Widget from './components/Widget';
 import { STORE_NAME, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from './datastore/constants';
 
 export { registerStore } from './datastore';
-export { registerDefaults } from './register-defaults';
+export { registerDefaults as registerWidgets } from './register-defaults';
 
 export function createWidgets( { dispatch, select } ) {
 	const Widgets = {
