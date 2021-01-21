@@ -34,8 +34,8 @@ import Menu from './Menu';
 import Modal from './Modal';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-
-const { useSelect } = Data;
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+const { useSelect, useDispatch } = Data;
 
 function UserMenu() {
 	const proxyPermissionsURL = useSelect( ( select ) => select( CORE_SITE ).getProxyPermissionsURL() );
@@ -47,6 +47,7 @@ function UserMenu() {
 	const [ menuOpen, toggleMenu ] = useState( false );
 	const menuButtonRef = useRef();
 	const menuRef = useRef();
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	useEffect( () => {
 		const handleMenuClose = ( e ) => {
@@ -98,7 +99,7 @@ function UserMenu() {
 				break;
 			case 1:
 				if ( proxyPermissionsURL ) {
-					global.location.assign( proxyPermissionsURL );
+					navigateTo( proxyPermissionsURL );
 				}
 				break;
 			default:
@@ -115,7 +116,7 @@ function UserMenu() {
 		clearWebStorage();
 
 		// Navigate back to the splash screen to reconnect.
-		global.location.assign( postDisconnectURL );
+		navigateTo( postDisconnectURL );
 	}, [ postDisconnectURL ] );
 
 	if ( ! userEmail ) {

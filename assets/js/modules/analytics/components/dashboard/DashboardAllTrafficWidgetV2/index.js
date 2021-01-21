@@ -88,8 +88,7 @@ function DashboardAllTrafficWidget() {
 					<Cell
 						className="googlesitekit-widget--analyticsAllTrafficV2__totals"
 						lgSize={ 7 }
-						mdSize={ 4 }
-						smSize={ 4 }
+						mdSize={ 8 }
 					>
 						<TotalUserCount
 							dimensionName={ dimensionName }
@@ -105,8 +104,7 @@ function DashboardAllTrafficWidget() {
 					<Cell
 						className="googlesitekit-widget--analyticsAllTrafficV2__dimensions"
 						lgSize={ 5 }
-						mdSize={ 4 }
-						smSize={ 4 }
+						mdSize={ 8 }
 					>
 						<DimensionTabs
 							dimensionName={ dimensionName }

@@ -28,10 +28,10 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Widget from './Widget';
 import { CORE_SITE } from '../../datastore/site/constants';
+import { CORE_LOCATION } from '../../datastore/location/constants';
 import Button from '../../../components/Button';
 import PostSearcherAutoSuggest from '../../../components/PostSearcherAutoSuggest';
-
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 function URLSearchWidget() {
 	const [ canSubmit, setCanSubmit ] = useState( false );
@@ -39,9 +39,10 @@ function URLSearchWidget() {
 
 	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: match?.permalink } ) );
 
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const onClick = useCallback( () => {
 		if ( match?.permalink ) {
-			global.location.assign( detailsURL );
+			navigateTo( detailsURL );
 		}
 	}, [ detailsURL, match ] );
 
