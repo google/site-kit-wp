@@ -52,5 +52,5 @@ export default function WidgetReportZero( { widgetSlug, moduleSlug, ...props } )
 
 WidgetReportZero.propTypes = {
 	widgetSlug: PropTypes.string.isRequired,
-	moduleSlug: PropTypes.string.isRequired,
+	...ReportZero.propTypes,
 };

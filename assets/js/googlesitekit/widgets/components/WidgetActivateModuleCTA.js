@@ -52,5 +52,5 @@ export default function WidgetActivateModuleCTA( { widgetSlug, moduleSlug, ...pr
 
 WidgetActivateModuleCTA.propTypes = {
 	widgetSlug: PropTypes.string.isRequired,
-	moduleSlug: PropTypes.string.isRequired,
+	...ActivateModuleCTA.propTypes,
 };
