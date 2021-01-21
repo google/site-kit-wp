@@ -1,7 +1,7 @@
 /**
  * Analytics module initialization.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import domReady from '@wordpress/dom-ready';
 import Modules from 'googlesitekit-modules';
 import Widgets from 'googlesitekit-widgets';
 import './datastore';
+import { STORE_NAME } from './datastore/constants';
 import {
 	AREA_DASHBOARD_ALL_TRAFFIC,
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
@@ -50,7 +51,7 @@ domReady( () => {
 	Modules.registerModule(
 		'analytics',
 		{
-			storeName: 'modules/analytics',
+			storeName: STORE_NAME,
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,

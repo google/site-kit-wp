@@ -1,7 +1,7 @@
 /**
  * User Input Question Notice.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,17 +25,20 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { sanitizeHTML } from '../../util';
 const { useSelect } = Data;
 
 export default function UserInputQuestionNotice() {
 	const settingsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
+	if ( ! settingsURL ) {
+		return null;
+	}
 
 	const notice = sprintf(
 		/* translators: %s: Settings page URL */
 		__( 'You can always edit your answers after your submission in <a href="%s">Settings</a>.', 'google-site-kit' ),
-		settingsURL,
+		`${ settingsURL }#admin`,
 	);
 
 	const sanitizeArgs = {

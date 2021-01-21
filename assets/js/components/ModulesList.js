@@ -1,7 +1,7 @@
 /**
  * ModulesList component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,12 +40,14 @@ import ModuleIcon from './ModuleIcon';
 import GenericError from './legacy-notifications/generic-error';
 import ModuleSettingsWarning from './legacy-notifications/module-settings-warning';
 import VisuallyHidden from './VisuallyHidden';
-import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
 function ModulesList( { moduleSlugs } ) {
 	const { activateModule } = useDispatch( CORE_MODULES );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
 	const modulesData = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 
 	const handleSetupModule = useCallback( async ( slug ) => {
@@ -69,7 +71,7 @@ function ModulesList( { moduleSlugs } ) {
 		);
 
 		// Redirect to ReAuthentication URL
-		global.location.assign( response.moduleReauthURL );
+		navigateTo( response.moduleReauthURL );
 	}, [ activateModule ] );
 
 	if ( ! modulesData ) {

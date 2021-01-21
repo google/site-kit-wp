@@ -1,7 +1,7 @@
 /**
  * API request functions tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,7 +191,8 @@ describe( 'googlesitekit.api', () => {
 			// Ensure the response was saved to the cache.
 			expect( setItemSpy ).toHaveBeenCalledWith(
 				createCacheKey( 'core', 'search-console', 'users' ),
-				firstResponse
+				firstResponse,
+				{ ttl: 3600 }
 			);
 
 			// Ensure `fetch()` is not called a second time, because we have a cached
@@ -203,8 +204,7 @@ describe( 'googlesitekit.api', () => {
 
 			// Ensure cache functions were used.
 			expect( getItemSpy ).toHaveBeenCalledWith(
-				createCacheKey( 'core', 'search-console', 'users' ),
-				3600
+				createCacheKey( 'core', 'search-console', 'users' )
 			);
 		} );
 
@@ -270,7 +270,8 @@ describe( 'googlesitekit.api', () => {
 			await get( 'core', 'search-console', 'cached' );
 			expect( setItemSpy ).toHaveBeenCalledWith(
 				createCacheKey( 'core', 'search-console', 'cached' ),
-				{ foo: 'bar' }
+				{ foo: 'bar' },
+				{ ttl: 3600 }
 			);
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 

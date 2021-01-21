@@ -1,7 +1,7 @@
 /**
  * Setup component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,9 +42,10 @@ import Layout from '../layout/Layout';
 import Notification from '../legacy-notifications/notification';
 import OptIn from '../OptIn';
 import CompatibilityChecks from './CompatibilityChecks';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../../googlesitekit/datastore/user/constants';
-const { useSelect } = Data;
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+const { useSelect, useDispatch } = Data;
 
 function SetupUsingProxy() {
 	const {
@@ -66,10 +67,11 @@ function SetupUsingProxy() {
 		};
 	} );
 
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const onButtonClick = useCallback( async ( event ) => {
 		event.preventDefault();
 		await trackEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
-		global.location.assign( proxySetupURL );
+		navigateTo( proxySetupURL );
 	}, [ proxySetupURL ] );
 
 	// @TODO: this needs to be migrated to the core/site datastore in the future
@@ -160,9 +162,9 @@ function SetupUsingProxy() {
 												</p>
 
 												<CompatibilityChecks>
-													{ ( { complete, inProgressFeedback, CTAFeedback } ) => (
+													{ ( { complete, inProgressFeedback, ctaFeedback } ) => (
 														<Fragment>
-															{ CTAFeedback }
+															{ ctaFeedback }
 
 															<OptIn optinAction="analytics_optin_setup_fallback" />
 

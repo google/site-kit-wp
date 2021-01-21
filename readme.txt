@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.6
 Requires PHP:      5.6
-Stable tag:        1.23.0
+Stable tag:        1.24.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -87,6 +87,46 @@ We plan to expand the plugin’s capabilities and integrations in the future; we
 If you have some ideas to improve the plugin or to solve a bug, feel free to raise an issue or submit a pull request in the [GitHub repository for the plugin](https://github.com/google/site-kit-wp). Please stick to the [contributing guidelines](https://github.com/google/site-kit-wp/blob/master/CONTRIBUTING.md). You can also contribute to the plugin by translating it. Simply visit [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/google-site-kit) to get started.
 
 == Changelog ==
+
+= 1.24.0 =
+
+**Added**
+
+* Implement `UserDimensionsPieChart` component for new Analytics All Traffic widget. See [#2425](https://github.com/google/site-kit-wp/issues/2425).
+* Implement main tabs UI for the new All Traffic widget. See [#2424](https://github.com/google/site-kit-wp/issues/2424).
+* Implement `TotalUserCount` component for new Analytics All Traffic widget. See [#2423](https://github.com/google/site-kit-wp/issues/2423).
+* Implement `UserCountGraph` component for new Analytics All Traffic widget. See [#2422](https://github.com/google/site-kit-wp/issues/2422).
+
+**Enhanced**
+
+* Add review and support links in the plugin's list table entry. See [#2516](https://github.com/google/site-kit-wp/issues/2516).
+* Rename `icon` argument of `registerWidgetArea` to `Icon` and require it to be a `WPComponent` (e.g. an SVG). See [#2505](https://github.com/google/site-kit-wp/issues/2505).
+* Improve UX for modifying user input settings, removing the requirement to click through subsequent questions when only wanting to change a specific response. See [#2499](https://github.com/google/site-kit-wp/issues/2499).
+* Implement dynamic source link in the new All Traffic widget. See [#2428](https://github.com/google/site-kit-wp/issues/2428).
+* Add interactivity to new All Traffic widget so that selecting a pie chart slice contextually updates the count and graph displayed. See [#2426](https://github.com/google/site-kit-wp/issues/2426).
+* Add support for a `dimensionFilters` argument to the Analytics `GET:report` REST datapoint in PHP and the `getReport` selector in JS. See [#2421](https://github.com/google/site-kit-wp/issues/2421).
+* Enhance `whenActive` higher-order component to accept a `FallbackComponent` as well as an `IncompleteComponent` prop. See [#2381](https://github.com/google/site-kit-wp/issues/2381).
+* Remove legacy publisher win notifications. See [#2285](https://github.com/google/site-kit-wp/issues/2285).
+* Add `storeName` argument to `registerModule` action of the `core/modules` store to specify the name of the JS datastore for the module. See [#2271](https://github.com/google/site-kit-wp/issues/2271).
+* Move date awareness for Search Console API requests to the client, allowing for more contextual date information to be available. See [#2237](https://github.com/google/site-kit-wp/issues/2237).
+* Move date awareness for Analytics API requests to the client, allowing for more contextual date information to be available. See [#2236](https://github.com/google/site-kit-wp/issues/2236).
+* Introduce `getGoogleSupportURL` selector to `core/site` store in JS. See [#2221](https://github.com/google/site-kit-wp/issues/2221).
+* Add support for an optional `SettingsSetupIncompleteComponent` argument to the `registerModule` action of the `core/modules` store, allowing developers to register a custom UI component for when the module is not fully connected. See [#2080](https://github.com/google/site-kit-wp/issues/2080).
+* Update the plugin's admin bar menu to rely on functional hook-based components using the datastore. See [#2076](https://github.com/google/site-kit-wp/issues/2076).
+* Update the plugin's WordPress dashboard widget to rely on functional hook-based components using the datastore. See [#2075](https://github.com/google/site-kit-wp/issues/2075).
+* Switch `core/user/data/user-input-settings` REST endpoint to use remote authentication service API endpoint. See [#2048](https://github.com/google/site-kit-wp/issues/2048).
+* Implement user input block to edit responses under `Site Kit > Settings > Admin Settings`. See [#2041](https://github.com/google/site-kit-wp/issues/2041).
+* Introduce reusable infrastructure for rendering tags, relying on new `Tag_Interface` and `Guard_Interface` interfaces as well as `Tag` and `Module_Tag` classes, now being used across all modules. See [#475](https://github.com/google/site-kit-wp/issues/475).
+
+**Fixed**
+
+* Fix AdSense overview graph UI so that the available space for the total numbers expands as necessary. See [#2555](https://github.com/google/site-kit-wp/issues/2555).
+* Prevent a remote notifications API request for development sites where the plugin is not using the authentication service. See [#2495](https://github.com/google/site-kit-wp/issues/2495).
+* Fix JavaScript error triggered upon resetting the plugin's data. See [#2478](https://github.com/google/site-kit-wp/issues/2478).
+* Update all Analytics deep links to use the `getServiceReportURL` selector for correct encoding of parameters and consistent behavior. See [#2405](https://github.com/google/site-kit-wp/issues/2405).
+* Fix bug in legacy API layer dealing with errors in a batch response that could result in infinite loading states on module pages. See [#2403](https://github.com/google/site-kit-wp/issues/2403).
+* Improve Analytics property matching logic so that users with many Analytics accounts do not run into user quota errors. See [#2218](https://github.com/google/site-kit-wp/issues/2218).
+* Introduce `numFmt` function for centralized Site Kit-specific number formatting, localize percentage formatting, and fix various number formatting inconsistencies. See [#2200](https://github.com/google/site-kit-wp/issues/2200).
 
 = 1.23.0 =
 

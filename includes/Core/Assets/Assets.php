@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Assets\Assets
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -310,6 +310,7 @@ final class Assets {
 			'googlesitekit-base',
 			'googlesitekit-data',
 			'googlesitekit-datastore-forms',
+			'googlesitekit-datastore-location',
 			'googlesitekit-datastore-site',
 			'googlesitekit-datastore-user',
 			'googlesitekit-widgets',
@@ -462,6 +463,16 @@ final class Assets {
 						'googlesitekit-data',
 						'googlesitekit-api',
 						'googlesitekit-user-data',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-datastore-location',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-location.js',
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-data',
 					),
 				)
 			),

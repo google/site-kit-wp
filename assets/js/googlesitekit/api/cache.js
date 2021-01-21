@@ -1,7 +1,7 @@
 /**
  * Caching functions and cache management for API requests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -161,11 +161,10 @@ export const getStorage = async () => {
  *
  * @since 1.5.0
  *
- * @param {string} key             Name of cache key.
- * @param {number} cacheTimeToLive The number of seconds before cached data will be considered stale. If the cached data is more than this many seconds old no data will be returned. If not set/set to `null`, any data will be returned.
+ * @param {string} key Name of cache key.
  * @return {Promise} A promise returned, containing an object with the cached value (if found) and whether or not there was a cache hit.
  */
-export const getItem = async ( key, cacheTimeToLive = null ) => {
+export const getItem = async ( key ) => {
 	const storage = await getStorage();
 
 	if ( storage ) {
@@ -173,17 +172,19 @@ export const getItem = async ( key, cacheTimeToLive = null ) => {
 
 		if ( cachedData ) {
 			const parsedData = JSON.parse( cachedData );
+			const { timestamp, ttl, value, isError } = parsedData;
 
 			// Ensure a timestamp is found, otherwise this isn't a valid cache hit.
 			// (We don't check for a truthy `value`, because it could be legitimately
 			// false-y if `0`, `null`, etc.)
-			if ( parsedData.timestamp && (
-				cacheTimeToLive === null || // Ensure the cached data isn't too old.
-				Math.round( Date.now() / 1000 ) - parsedData.timestamp < cacheTimeToLive
+			if ( timestamp && (
+				! ttl || // Ensure the cached data isn't too old.
+				Math.round( Date.now() / 1000 ) - timestamp < ttl
 			) ) {
 				return {
 					cacheHit: true,
-					value: parsedData.value,
+					value,
+					isError,
 				};
 			}
 		}
@@ -202,19 +203,28 @@ export const getItem = async ( key, cacheTimeToLive = null ) => {
  *
  * @since 1.5.0
  *
- * @param {string} key        Name of cache key.
- * @param {*}      value      Value to store in the cache.
- * @param {number} _timestamp Timestamp to set as the cache data save time.
+ * @param {string}  key              Name of cache key.
+ * @param {*}       value            Value to store in the cache.
+ * @param {Object}  args           	 Optional object containing ttl, timestamp and isError keys.
+ * @param {number}  [args.ttl]       Optional. Validity of the cached item in seconds.
+ * @param {number}  [args.timestamp] Optional. Timestamp when the cached item was created.
+ * @param {boolean} [args.isError]   Optional. Whether the cached item is an error.
  * @return {Promise} A promise: resolves to `true` if the value was saved; `false` if not (usually because no storage method was available).
  */
-export const setItem = async ( key, value, _timestamp = undefined ) => {
+export const setItem = async ( key, value, {
+	ttl = 3600, // One hour.
+	timestamp = Math.round( Date.now() / 1000 ),
+	isError = false,
+} = {} ) => {
 	const storage = await getStorage();
 
 	if ( storage ) {
 		try {
 			storage.setItem( `${ STORAGE_KEY_PREFIX }${ key }`, JSON.stringify( {
-				timestamp: _timestamp || Math.round( Date.now() / 1000 ),
+				timestamp,
+				ttl,
 				value,
+				isError,
 			} ) );
 
 			return true;

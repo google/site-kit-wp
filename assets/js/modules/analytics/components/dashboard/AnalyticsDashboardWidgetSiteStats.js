@@ -1,7 +1,7 @@
 /**
  * AnalyticsDashboardWidgetSiteStats component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,6 +131,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 						<GoogleChart
+							chartType="line"
 							selectedStats={ selectedStats }
 							data={ dataMap }
 							options={ options }
