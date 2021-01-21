@@ -413,19 +413,8 @@ final class AdSense extends Module
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:accounts':
-				$accounts = $response->getItems();
-				// TODO: Remove this ugly side-effect once no longer used.
-				if ( $data['maybeSetAccount'] && ! empty( $accounts ) ) {
-					$option     = $this->get_settings()->get();
-					$account_id = $option['accountID'];
-					if ( empty( $account_id ) && ! empty( $accounts[0]->id ) ) {
-						$this->get_settings()->merge( array( 'accountID' => $accounts[0]->id ) );
-					}
-				}
-				return $accounts;
-
 			// Intentional fallthrough.
+			case 'GET:accounts':
 			case 'GET:alerts':
 			case 'GET:clients':
 			case 'GET:urlchannels':
@@ -562,8 +551,8 @@ final class AdSense extends Module
 
 		$option     = $this->get_settings()->get();
 		$account_id = $option['accountID'];
-		if ( is_wp_error( $account_id ) ) {
-			return $account_id;
+		if ( empty( $account_id ) ) {
+			return new WP_Error( 'account_id_not_set', __( 'AdSense account ID not set.', 'google-site-kit' ) );
 		}
 
 		$opt_params = array(
