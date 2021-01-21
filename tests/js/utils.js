@@ -30,6 +30,23 @@ import { STORE_NAME as CORE_USER } from '../../assets/js/googlesitekit/datastore
 import { STORE_NAME as CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/fixtures.json';
 
+const allCoreStores = [
+	coreForms,
+	coreLocation,
+	coreModules,
+	coreSite,
+	coreUser,
+	coreWidgets,
+];
+const allModules = [
+	modulesAdSense,
+	modulesAnalytics,
+	modulesOptimize,
+	modulesPageSpeedInsights,
+	modulesSearchConsole,
+	modulesTagManager,
+];
+
 /**
  * Creates a registry with all available stores.
  *
@@ -234,14 +251,7 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 	} );
 	Modules.registerModule = testRegisterModule;
 
-	[
-		modulesAdSense,
-		modulesAnalytics,
-		modulesPageSpeedInsights,
-		modulesSearchConsole,
-		modulesTagManager,
-		modulesOptimize,
-	].forEach( ( { registerModule } ) => registerModule?.( Modules ) );
+	allModules.forEach( ( { registerModule } ) => registerModule?.( Modules ) );
 	// Register any additional modules provided.
 	Object.entries( extraDataBySlug )
 		.filter( ( [ slug ] ) => registeredModules[ slug ] !== true )
@@ -297,18 +307,8 @@ export const freezeFetch = ( matcher ) => {
  */
 export const registerAllStoresOn = ( registry ) => {
 	[
-		coreSite,
-		coreUser,
-		coreForms,
-		coreLocation,
-		coreModules,
-		coreWidgets,
-		modulesAdSense,
-		modulesAnalytics,
-		modulesPageSpeedInsights,
-		modulesSearchConsole,
-		modulesTagManager,
-		modulesOptimize,
+		...allCoreStores,
+		...allModules,
 	].forEach( ( { registerStore } ) => registerStore?.( registry ) );
 };
 
