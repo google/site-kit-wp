@@ -22,12 +22,6 @@
 import { _n, sprintf } from '@wordpress/i18n';
 
 /**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-
-/**
  * Gets the current dateRange day count.
  *
  * @since 1.19.0
@@ -44,17 +38,6 @@ export function getCurrentDateRangeDayCount( dateRange ) {
 	}
 
 	throw new Error( 'Unrecognized date range slug.' );
-}
-
-/**
- * Gets the current dateRange slug.
- *
- * @since 1.8.0
- *
- * @return {string} The date range slug.
- */
-export function getCurrentDateRangeSlug() {
-	return Data.select( CORE_USER ).getDateRange();
 }
 
 /**

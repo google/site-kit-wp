@@ -21,7 +21,6 @@
  */
 import dataAPI from './index';
 import { DATA_LAYER } from '../../util/tracking/constants';
-import * as DateRange from '../../util/date-range.js';
 import { getCacheKey } from './cache';
 import { enableTracking } from '../../util/tracking';
 
@@ -97,10 +96,6 @@ describe( 'dataAPI', () => {
 
 	describe( 'combinedGet', () => {
 		const combinedGet = dataAPI.combinedGet.bind( dataAPI );
-
-		const slugMock = jest.spyOn( DateRange, 'getCurrentDateRangeSlug' );
-		slugMock.mockImplementation( () => 'last-28-days' );
-
 		const combinedRequest = [
 			{
 				type: 'test-type',

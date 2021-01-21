@@ -32,9 +32,7 @@ import { provideModules, provideSiteInfo, provideUserAuthentication } from '../.
 import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { createModuleStore } from '../../googlesitekit/modules/create-module-store';
-import * as DateRangeUtils from '../../util/date-range';
 
-const getCurrentDateRangeSlugSpy = jest.spyOn( DateRangeUtils, 'getCurrentDateRangeSlug' );
 const collectModuleData = dataAPI.collectModuleData.bind( dataAPI );
 
 describe( 'withData', () => {
@@ -56,9 +54,6 @@ describe( 'withData', () => {
 		active: true,
 		setupComplete: true,
 	};
-
-	// Avoid error from hardcoded reference to `Data.select`
-	getCurrentDateRangeSlugSpy.mockImplementation( () => 'last-28-days' );
 
 	const createDataset = ( type, identifier, datapoint, data, _context = context ) => ( { type, identifier, datapoint, data, context: _context } );
 	const getCacheKeyForDataset = ( { type, identifier, datapoint, data } ) => getCacheKey( type, identifier, datapoint, data );
@@ -91,8 +86,6 @@ describe( 'withData', () => {
 		delete global._googlesitekitLegacyData.modules[ testModule.slug ];
 		delete global._googlesitekitLegacyData.modules[ testModuleAlt.slug ];
 	} );
-
-	afterAll( () => getCurrentDateRangeSlugSpy.mockRestore() );
 
 	it( 'supports datasets with single or multiple contexts', () => {
 		const datasetCommon = [ 'test', 'test-identifier', 'test-datapoint', {} ];
