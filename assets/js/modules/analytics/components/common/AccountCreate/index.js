@@ -41,9 +41,9 @@ import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../../../da
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { getAccountDefaults } from '../../../util/account';
 import Data from 'googlesitekit-data';
-
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
@@ -63,15 +63,17 @@ export default function AccountCreate() {
 
 	const [ isNavigating, setIsNavigating ] = useState( false );
 
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
 	// Redirect if the accountTicketTermsOfServiceURL is set.
 	useEffect( () => {
 		if ( accountTicketTermsOfServiceURL ) {
-			global.location.assign( accountTicketTermsOfServiceURL );
+			navigateTo( accountTicketTermsOfServiceURL );
 		}
 	}, [ accountTicketTermsOfServiceURL ] );
 
 	// Set form defaults on initial render.
-	const { setValues } = useDispatch( CORE_FORMS );
 	useEffect( () => {
 		// Only set the form if not already present in store.
 		// e.g. after a snapshot has been restored.

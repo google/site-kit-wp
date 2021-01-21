@@ -311,6 +311,7 @@ final class Assets {
 			'googlesitekit-base',
 			'googlesitekit-data',
 			'googlesitekit-datastore-forms',
+			'googlesitekit-datastore-location',
 			'googlesitekit-datastore-site',
 			'googlesitekit-datastore-user',
 			'googlesitekit-widgets',
@@ -463,6 +464,16 @@ final class Assets {
 						'googlesitekit-data',
 						'googlesitekit-api',
 						'googlesitekit-user-data',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-datastore-location',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-location.js',
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-data',
 					),
 				)
 			),

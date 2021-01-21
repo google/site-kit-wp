@@ -36,6 +36,7 @@ import ProgressBar from '../../../../components/ProgressBar';
 import ErrorText from '../../../../components/ErrorText';
 import { STORE_NAME } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import {
 	ACCOUNT_STATUS_NONE,
 	ACCOUNT_STATUS_MULTIPLE,
@@ -68,6 +69,7 @@ const { useSelect, useDispatch } = Data;
 export default function SetupMain( { finishSetup } ) {
 	// Get settings.
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
 	const previousAccountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const previousClientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
 	const previousAccountStatus = useSelect( ( select ) => select( STORE_NAME ).getAccountStatus() );
@@ -265,13 +267,6 @@ export default function SetupMain( { finishSetup } ) {
 		};
 	}, [ accountStatus ] );
 
-	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
-	const [ isNavigating, setIsNavigating ] = useState( false );
-	const finishSetupAndNavigate = ( ...args ) => {
-		finishSetup( ...args );
-		setIsNavigating( true );
-	};
-
 	// Fetch existing tag right here, to ensure the progress bar is still being
 	// shown while this is being loaded. It is technically used only by child
 	// components.
@@ -325,7 +320,7 @@ export default function SetupMain( { finishSetup } ) {
 				viewComponent = <SetupSiteAdd />;
 				break;
 			case SITE_STATUS_ADDED:
-				viewComponent = <SetupSiteAdded finishSetup={ finishSetupAndNavigate } />;
+				viewComponent = <SetupSiteAdded finishSetup={ finishSetup } />;
 				break;
 			default:
 				if ( hasErrors ) {
@@ -342,7 +337,7 @@ export default function SetupMain( { finishSetup } ) {
 		// This should never be reached because the setup is not accessible
 		// under these circumstances due to related PHP+/JS logic. But at
 		// least in theory it should show the last step, just in case.
-		viewComponent = <SetupSiteAdded finishSetup={ finishSetupAndNavigate } />;
+		viewComponent = <SetupSiteAdded finishSetup={ finishSetup } />;
 	}
 
 	return (

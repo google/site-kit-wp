@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
@@ -36,6 +35,7 @@ import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME, ACCOUNT_CREATE, FORM_SETUP } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { useExistingTagEffect } from '../../hooks';
 import {
 	AccountCreate,
@@ -51,17 +51,11 @@ export default function SetupMain( { finishSetup } ) {
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const submitInProgress = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' ) );
+	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
-
-	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
-	const [ isNavigating, setIsNavigating ] = useState( false );
-	const finishSetupAndNavigate = useCallback( ( ...args ) => {
-		setIsNavigating( true );
-		finishSetup( ...args );
-	}, [ setIsNavigating, finishSetup ] );
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
@@ -73,7 +67,7 @@ export default function SetupMain( { finishSetup } ) {
 	} else if ( isCreateAccount || ! accounts?.length ) {
 		viewComponent = <AccountCreate />;
 	} else {
-		viewComponent = <SetupForm finishSetup={ finishSetupAndNavigate } />;
+		viewComponent = <SetupForm finishSetup={ finishSetup } />;
 	}
 
 	return (

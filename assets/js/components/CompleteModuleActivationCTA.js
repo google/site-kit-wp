@@ -34,7 +34,8 @@ import CTA from './legacy-notifications/cta';
 import Data from 'googlesitekit-data';
 import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-const { useSelect } = Data;
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+const { useSelect, useDispatch } = Data;
 
 const CompleteModuleActivationCTA = ( { slug, title, description } ) => {
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
@@ -42,9 +43,8 @@ const CompleteModuleActivationCTA = ( { slug, title, description } ) => {
 	const adminReauthURL = useSelect( ( select ) => select( moduleStoreName )?.getAdminReauthURL() );
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 
-	const onCTAClick = useCallback( async () => {
-		global.location.assign( adminReauthURL );
-	}, [ adminReauthURL ] );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const onCTAClick = useCallback( () => navigateTo( adminReauthURL ), [ adminReauthURL ] );
 
 	if ( ! module?.name || ! adminReauthURL || ! canManageOptions ) {
 		return null;

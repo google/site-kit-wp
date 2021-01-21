@@ -44,8 +44,9 @@ import OptIn from '../OptIn';
 import CompatibilityChecks from './CompatibilityChecks';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { useFeature } from '../../hooks/useFeature';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 function SetupUsingProxy() {
 	const serviceSetupV2Enabled = useFeature( 'serviceSetupV2' );
@@ -69,10 +70,11 @@ function SetupUsingProxy() {
 		};
 	} );
 
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const onButtonClick = useCallback( async ( event ) => {
 		event.preventDefault();
 		await trackEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
-		global.location.assign( proxySetupURL );
+		navigateTo( proxySetupURL );
 	}, [ proxySetupURL ] );
 
 	// @TODO: this needs to be migrated to the core/site datastore in the future
