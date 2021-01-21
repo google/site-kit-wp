@@ -47,7 +47,7 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 
 	const { Component, wrapWidget } = widget;
 
-	let widgetComponent = <Component { ...widgetComponentProps } />;
+	let widgetElement = <Component { ...widgetComponentProps } />;
 
 	if ( OverrideComponent ) {
 		// If OverrideComponent passed, render it instead of the actual widget.
@@ -55,32 +55,32 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 		// widget-agnostic component.
 		// The real widget component will still be rendered, but it will be
 		// hidden via CSS.
-		widgetComponent = (
+		widgetElement = (
 			<Fragment>
 				<Widget slug="overridden">
 					<OverrideComponent />
 				</Widget>
 				<div className="googlesitekit-widget-grid-hidden">
-					{ widgetComponent }
+					{ widgetElement }
 				</div>
 			</Fragment>
 		);
 	} else if ( wrapWidget ) {
 		// Otherwise, wrap the component only if that is requested for this
 		// widget.
-		widgetComponent = <Widget slug={ slug }>{ widgetComponent }</Widget>;
+		widgetElement = <Widget slug={ slug }>{ widgetElement }</Widget>;
 	}
 
 	// Wrap the widget into a grid class.
 	if ( gridClassName ) {
-		widgetComponent = (
+		return (
 			<div className={ gridClassName }>
-				{ widgetComponent }
+				{ widgetElement }
 			</div>
 		);
 	}
 
-	return widgetComponent;
+	return widgetElement;
 };
 
 WidgetRenderer.propTypes = {
