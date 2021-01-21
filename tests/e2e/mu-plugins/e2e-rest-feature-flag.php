@@ -54,5 +54,7 @@ add_filter(
 		$features = get_option( 'googlesitekit_e2e_feature_flags', array() );
 
 		return ! empty( $features[ $feature_name ] );
-	}
+	},
+	1,
+	3
 );
