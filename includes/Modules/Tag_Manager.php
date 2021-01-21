@@ -152,7 +152,7 @@ final class Tag_Manager extends Module
 		$container_id_errors = array_filter(
 			$container_ids,
 			function( $container_id ) {
-				return is_wp_error( $container_id ) || ! $container_id;
+				return ! $container_id;
 			}
 		);
 
