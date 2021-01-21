@@ -1,7 +1,7 @@
 /**
  * `core/widgets` data store: widget tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,16 +117,10 @@ describe( 'core/widgets Widget areas', () => {
 				} ).toThrow( 'settings.title is required.' );
 			} );
 
-			it( 'requires a title and subtitle in settings', () => {
+			it( 'requires a title in settings', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).registerWidgetArea( 'header', {} );
 				} ).toThrow( 'settings.title is required.' );
-
-				expect( () => {
-					registry.dispatch( STORE_NAME ).registerWidgetArea( 'header', {
-						title: 'Analytics Header',
-					} );
-				} ).toThrow( 'settings.subtitle is required.' );
 
 				expect( () => {
 					registry.dispatch( STORE_NAME ).registerWidgetArea( 'header', {

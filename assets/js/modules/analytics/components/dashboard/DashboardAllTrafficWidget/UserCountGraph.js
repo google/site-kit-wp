@@ -2,7 +2,7 @@
 /**
  * UserCountGraph component
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,10 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../../analytics/datastore/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET, FORM_ALL_TRAFFIC_WIDGET } from '../../../../analytics/datastore/constants';
 import { isZeroReport } from '../../../../analytics/util/is-zero-report';
 import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
@@ -40,7 +41,7 @@ const { useSelect } = Data;
 /**
  * Extracts the data required from an analytics 'site-analytics' request for an Area chart.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @private
  *
  * @param {Object} reports The data returned from the Analytics API call.
@@ -77,6 +78,7 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
+	const graphLineColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) || '#1a73e8' );
 
 	const args = {
 		startDate,
@@ -133,7 +135,7 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 					colors: [ '#1a73e8' ],
 					chartArea: {
 						height: '80%',
-						width: '90%',
+						width: '80%',
 					},
 					legend: {
 						position: 'none',
@@ -186,7 +188,11 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 					},
 					series: {
 						0: { targetAxisIndex: 0, lineWidth: 0 },
-						1: { color: '#1a73e8', lineWidth: 3, targetAxisIndex: 1 },
+						1: {
+							color: graphLineColor,
+							lineWidth: 3,
+							targetAxisIndex: 1,
+						},
 					},
 					crosshair: {
 						color: '#1a73e8',

@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Modules\Analytics\Web_Tag
  *
  * @package   Google\Site_Kit\Modules\Analytics
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Class for Web tag.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Home domain name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 * @var string
 	 */
 	private $home_domain;
@@ -35,7 +35,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Whether or not to anonymize IP addresses.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 * @var bool
 	 */
 	private $anonymize_ip = false;
@@ -43,7 +43,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Sets the current home domain.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param string $domain Domain name.
 	 */
@@ -54,7 +54,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Sets whether or not to anonymize IP addresses.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param bool $anonymize_ip Anonymize or not.
 	 */
@@ -65,7 +65,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	public function register() {
 		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_gtag_script' ) );
@@ -75,7 +75,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Outputs gtag snippet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	protected function render() {
 		// Do nothing, gtag script is enqueued.
@@ -84,7 +84,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Enqueues gtag script.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	private function enqueue_gtag_script() {
 		$gtag_opt = array();
@@ -109,7 +109,7 @@ class Web_Tag extends Module_Web_Tag {
 		 *
 		 * You can use the {@see 'googlesitekit_amp_gtag_opt'} filter to do the same for gtag in AMP.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.24.0
 		 *
 		 * @see https://developers.google.com/gtagjs/devguide/configure
 		 *

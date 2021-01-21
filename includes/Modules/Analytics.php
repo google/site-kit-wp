@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Modules\Analytics
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -1084,7 +1084,7 @@ final class Analytics extends Module
 	 * Creates a new Analytics site request for the current site and given arguments.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Added $dimension_filters
+	 * @since 1.24.0 Added $dimension_filters
 	 *
 	 * @param array $args {
 	 *     Optional. Additional arguments.
@@ -1299,15 +1299,39 @@ final class Analytics extends Module
 	 * @return WP_Error WordPress error object.
 	 */
 	protected function exception_to_error( Exception $e, $datapoint ) {
+		$cache_ttl = false;
+
 		if ( 'report' === $datapoint && $e instanceof Google_Service_Exception ) {
 			$errors = $e->getErrors();
 			// If error is because of AdSense metric being requested, set adsenseLinked to false.
-			if ( isset( $errors[0]['message'] ) && $this->is_adsense_metric( substr( $errors[0]['message'], strlen( 'Restricted metric(s): ' ) ) ) ) {
-				$this->get_settings()->merge( array( 'adsenseLinked' => false ) );
+			if ( isset( $errors[0]['message'] ) ) {
+				if ( $this->is_adsense_metric( substr( $errors[0]['message'], strlen( 'Restricted metric(s): ' ) ) ) ) {
+					$this->get_settings()->merge( array( 'adsenseLinked' => false ) );
+				}
+
+				if ( preg_match( '#^Restricted metric\(s\)\:#im', $errors[0]['message'] ) ) {
+					$cache_ttl = ( 10 * MINUTE_IN_SECONDS );
+				}
 			}
 		}
 
-		return parent::exception_to_error( $e, $datapoint );
+		$error = parent::exception_to_error( $e, $datapoint );
+
+		if ( $cache_ttl && is_wp_error( $error ) ) {
+			$error_code = $error->get_error_code();
+			if ( ! empty( $error->error_data[ $error_code ] ) ) {
+				$error->error_data[ $error_code ]['cacheTTL'] = $cache_ttl;
+			} else {
+				$error->add_data(
+					array(
+						'cacheTTL' => $cache_ttl,
+					),
+					$error_code
+				);
+			}
+		}
+
+		return $error;
 	}
 
 	/**
@@ -1479,7 +1503,7 @@ final class Analytics extends Module
 	/**
 	 * Registers the Analytics tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	private function register_tag() {
 		$tag             = null;

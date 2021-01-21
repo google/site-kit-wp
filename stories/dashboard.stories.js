@@ -1,7 +1,7 @@
 /**
  * Dashboard Page Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,9 @@ import LegacySearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/sea
 import PostSearcher from '../assets/js/components/PostSearcher';
 import URLSearchWidget from '../assets/js/googlesitekit/widgets/components/URLSearchWidget';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
-import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
 import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Dashboard', module )

@@ -1,7 +1,7 @@
 /**
  * Admin Bar Impressions component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,9 @@ import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
 import ReportZero from '../ReportZero';
-import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-console/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-console/datastore/constants';
 import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/search-console/util/is-zero-report';
 import sumObjectListValue from '../../util/sum-object-list-value';
