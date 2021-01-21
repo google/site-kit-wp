@@ -79,6 +79,28 @@ export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) 
 };
 
 /**
+ * Dispatches an error to the store, whether it's a permission or auth error.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} error Error object to dispatch.
+ */
+export const dispatchAPIError = ( error ) => {
+	// Check to see if this error was a `ERROR_CODE_MISSING_REQUIRED_SCOPE` error;
+	// if so and there is a data store available to dispatch on, dispatch a
+	// `setPermissionScopeError()` action.
+	// Kind of a hack, but scales to all components.
+	const dispatch = global.googlesitekit?.data?.dispatch?.( CORE_USER );
+	if ( dispatch ) {
+		if ( error.code === ERROR_CODE_MISSING_REQUIRED_SCOPE ) {
+			dispatch.setPermissionScopeError( error );
+		} else if ( error.data?.reconnectURL ) {
+			dispatch.setAuthError( error );
+		}
+	}
+};
+
+/**
  * Makes a request to a WP REST API Site Kit endpoint.
  *
  * @since 1.5.0
@@ -113,7 +135,12 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 	const cacheKey = createCacheKey( type, identifier, datapoint, queryParams );
 
 	if ( useCacheForRequest ) {
-		const { cacheHit, value } = await getItem( cacheKey, cacheTTL );
+		const { cacheHit, value, isError } = await getItem( cacheKey );
+
+		if ( isError ) {
+			dispatchAPIError( value );
+			throw value;
+		}
 
 		if ( cacheHit ) {
 			return value;
@@ -132,26 +159,17 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 		} );
 
 		if ( useCacheForRequest ) {
-			await setItem( cacheKey, response );
+			await setItem( cacheKey, response, { ttl: cacheTTL } );
 		}
 
 		return response;
 	} catch ( error ) {
-		trackAPIError( { method, datapoint, type, identifier, error } );
-
-		// Check to see if this error was a `ERROR_CODE_MISSING_REQUIRED_SCOPE` error;
-		// if so and there is a data store available to dispatch on, dispatch a
-		// `setPermissionScopeError()` action.
-		// Kind of a hack, but scales to all components.
-		const dispatch = global.googlesitekit?.data?.dispatch?.( CORE_USER );
-		if ( dispatch ) {
-			if ( error.code === ERROR_CODE_MISSING_REQUIRED_SCOPE ) {
-				dispatch.setPermissionScopeError( error );
-			} else if ( error.data?.reconnectURL ) {
-				dispatch.setAuthError( error );
-			}
+		if ( error?.data?.cacheTTL ) {
+			await setItem( cacheKey, error, { ttl: error.data.cacheTTL, isError: true } );
 		}
 
+		trackAPIError( { method, datapoint, type, identifier, error } );
+		dispatchAPIError( error );
 		global.console.error( 'Google Site Kit API Error', error );
 
 		throw error;

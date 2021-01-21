@@ -32,11 +32,12 @@ const { useSelect } = Data;
 
 const WidgetContextRenderer = ( { slug } ) => {
 	const widgetAreas = useSelect( ( select ) => select( STORE_NAME ).getWidgetAreas( slug ) );
+	const widgetAreasLength = widgetAreas?.length;
 
 	return (
 		<div className="googlesitekit-widget-context">
 			{ widgetAreas.map( ( area ) => {
-				return <WidgetAreaRenderer slug={ area.slug } key={ area.slug } />;
+				return <WidgetAreaRenderer slug={ area.slug } key={ area.slug } totalAreas={ widgetAreasLength } />;
 			} ) }
 		</div>
 	);
