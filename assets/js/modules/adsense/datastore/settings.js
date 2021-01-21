@@ -24,7 +24,6 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import {
@@ -32,40 +31,9 @@ import {
 	isValidClientID,
 } from '../util';
 import { STORE_NAME } from './constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 
 const { commonActions, createRegistryControl } = Data;
-
-const fetchSaveUseSnippetStore = createFetchStore( {
-	baseName: 'saveUseSnippet',
-	controlCallback: ( { useSnippet } ) => {
-		return API.set( 'modules', 'adsense', 'use-snippet', { useSnippet } );
-	},
-	reducerCallback: ( state, response, { useSnippet } ) => {
-		// The server response in this case is simply `true`, so we need to
-		// rely on the originally passed parameter here.
-		return {
-			...state,
-			// Update saved settings.
-			savedSettings: {
-				...( state.savedSettings || {} ),
-				useSnippet,
-			},
-			// Also update client settings to ensure they're in sync.
-			settings: {
-				...( state.settings || {} ),
-				useSnippet,
-			},
-		};
-	},
-	argsToParams: ( useSnippet ) => {
-		return { useSnippet };
-	},
-	validateParams: ( { useSnippet } = {} ) => {
-		invariant( useSnippet !== undefined, 'useSnippet is required.' );
-	},
-} );
 
 // Invariant error messages.
 export const INVARIANT_MISSING_ACCOUNT_STATUS = 'require an account status to be present';
@@ -85,27 +53,6 @@ const baseInitialState = {
 };
 
 const baseActions = {
-	/**
-	 * Saves the current value of the 'useSnippet' setting.
-	 *
-	 * While the saveSettings action should typically be used for this, there
-	 * is a use-case where the 'useSnippet' setting (and nothing else) needs to
-	 * be saved right away when being toggled, which is what this action is
-	 * intended for.
-	 *
-	 * @since 1.9.0
-	 * @private
-	 */
-	*saveUseSnippet() {
-		const registry = yield commonActions.getRegistry();
-		const useSnippet = registry.select( STORE_NAME ).getUseSnippet();
-		if ( undefined === useSnippet ) {
-			return;
-		}
-
-		yield fetchSaveUseSnippetStore.actions.fetchSaveUseSnippet( useSnippet );
-	},
-
 	/**
 	 * Sets the accountSetupComplete flag to true and submits all changes.
 	 *
@@ -299,17 +246,14 @@ export function validateCanSubmitChanges( select ) {
 	invariant( '' === clientID || isValidClientID( clientID ), INVARIANT_INVALID_CLIENT_ID );
 }
 
-const store = Data.combineStores(
-	fetchSaveUseSnippetStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		controls: baseControls,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = Data.combineStores( {
+	initialState: baseInitialState,
+	actions: baseActions,
+	controls: baseControls,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;
