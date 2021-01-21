@@ -43,6 +43,6 @@ export function getWidgetComponentProps( widgetSlug ) {
 
 function withWidgetSlug( widgetSlug ) {
 	return ( WrappedComponent ) => {
-		return ( props ) => <WrappedComponent widgetSlug={ widgetSlug } { ...props } />;
+		return ( props ) => <WrappedComponent { ...props } widgetSlug={ widgetSlug } />;
 	};
 }
