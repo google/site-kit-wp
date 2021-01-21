@@ -78,41 +78,6 @@ const dataAPI = {
 
 	maxRequests: 10,
 
-	/**
-	 * Gets data for multiple requests from the cache in a single batch process.
-	 *
-	 * This is a replica of combinedGet but only fetching data from cache. No requests are done.
-	 * Likely this will be removed after refactoring.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param {Array.<{maxAge: Date, type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest An array of data requests to resolve.
-	 * @return {Promise} A promise for the cache lookup.
-	 */
-	combinedGetFromCache( combinedRequest ) {
-		return new Promise( ( resolve, reject ) => {
-			try {
-				const responseData = [];
-				const dateRange = getCurrentDateRangeSlug();
-				each( combinedRequest, ( originalRequest ) => {
-					const request = requestWithDateRange( originalRequest, dateRange );
-					request.key = getCacheKey( request.type, request.identifier, request.datapoint, request.data );
-					const cache = getCache( request.key, request.maxAge );
-
-					if ( 'undefined' !== typeof cache ) {
-						responseData[ request.key ] = cache;
-
-						this.resolve( request, cache );
-					}
-				} );
-
-				resolve( responseData );
-			} catch ( err ) {
-				reject();
-			}
-		} );
-	},
-
 	// Disabled because the typing of the `combinedRequest` param causes the JSDoc rules
 	// to format things quite strangely.
 	/* eslint-disable jsdoc/check-line-alignment */
