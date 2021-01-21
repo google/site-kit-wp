@@ -243,22 +243,24 @@ storiesOf( 'Analytics Module', module )
 		}, 250 );
 
 		return (
-			<Layout
-				header
-				title={ __( 'Audience overview for the last 28 days', 'google-site-kit' ) }
-				headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-				headerCTALink="http://analytics.google.com"
-			>
-				<AnalyticsDashboardWidgetOverview
-					selectedStats={ selectedStats }
-					handleDataError={ () => {} }
-				/>
-				<AnalyticsDashboardWidgetSiteStats
-					selectedStats={ selectedStats }
-					series={ series }
-					vAxes={ vAxes }
-				/>
-			</Layout>
+			<WithTestRegistry>
+				<Layout
+					header
+					title={ __( 'Audience overview for the last 28 days', 'google-site-kit' ) }
+					headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+					headerCTALink="http://analytics.google.com"
+				>
+					<AnalyticsDashboardWidgetOverview
+						selectedStats={ selectedStats }
+						handleDataError={ () => {} }
+					/>
+					<AnalyticsDashboardWidgetSiteStats
+						selectedStats={ selectedStats }
+						series={ series }
+						vAxes={ vAxes }
+					/>
+				</Layout>
+			</WithTestRegistry>
 		);
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
