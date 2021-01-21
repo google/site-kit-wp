@@ -368,7 +368,7 @@ final class AdSense extends Module
 				return function() {
 					$option     = $this->get_settings()->get();
 					$account_id = $option['accountID'];
-					if ( ! is_wp_error( $account_id ) && $account_id && $this->authentication->profile()->has() ) {
+					if ( $account_id && $this->authentication->profile()->has() ) {
 						$profile_email = $this->authentication->profile()->get()['email'];
 						return add_query_arg(
 							array( 'authuser' => $profile_email ),
