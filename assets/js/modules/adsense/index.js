@@ -51,10 +51,10 @@ addFilter(
 
 let isAdBlockerActive = () => {};
 
-export const registerStore = ( Data ) => {
-	registerDataStore( Data );
+export const registerStore = ( registry ) => {
+	registerDataStore( registry );
 	// TODO: fix hack
-	isAdBlockerActive = () => Data.select( STORE_NAME ).isAdBlockerActive();
+	isAdBlockerActive = () => registry.select( STORE_NAME ).isAdBlockerActive();
 };
 
 export const registerModule = ( Modules ) => {
