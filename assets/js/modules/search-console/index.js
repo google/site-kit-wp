@@ -1,7 +1,7 @@
 /**
  * Search Console module initialization.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import {
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/search-console.svg';
+import { STORE_NAME } from './datastore/constants';
 
 export { registerStore } from './datastore';
 
@@ -37,7 +38,7 @@ export const registerModule = ( Modules ) => {
 	Modules.registerModule(
 		'search-console',
 		{
-			storeName: 'modules/search-console',
+			storeName: STORE_NAME,
 			SettingsViewComponent: SettingsView,
 			Icon: SearchConsoleIcon,
 		}

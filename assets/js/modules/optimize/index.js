@@ -1,7 +1,7 @@
 /**
  * Optimize module initialization.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import OptimizeIcon from '../../../svg/optimize.svg';
+import { STORE_NAME } from './datastore/constants';
 
 export { registerStore } from './datastore';
 
@@ -29,7 +30,7 @@ export const registerModule = ( Modules ) => {
 	Modules.registerModule(
 		'optimize',
 		{
-			storeName: 'modules/optimize',
+			storeName: STORE_NAME,
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,

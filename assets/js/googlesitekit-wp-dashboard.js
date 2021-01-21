@@ -1,7 +1,7 @@
 /**
  * WPDashboard component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,13 @@ import { render } from '@wordpress/element';
  */
 import './components/data';
 import Root from './components/Root';
-import WPDashboardMain from './components/wp-dashboard/WPDashboardMain';
+import WPDashboardApp from './components/wp-dashboard/WPDashboardApp';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-wp-dashboard' );
 
 	if ( renderTarget ) {
-		render( <Root dataAPIContext="WPDashboard"><WPDashboardMain /></Root>, renderTarget );
+		render( <Root dataAPIContext="WPDashboard"><WPDashboardApp /></Root>, renderTarget );
 	}
 } );

@@ -1,7 +1,7 @@
 /**
  * ResetButton component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import { clearWebStorage } from '../util';
 import Dialog from './Dialog';
 import Modal from './Modal';
 import Link from './Link';
-import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
-
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
 function ResetButton( { children } ) {
@@ -63,12 +63,12 @@ function ResetButton( { children } ) {
 	}, [ dialogActive ] );
 
 	const { reset } = useDispatch( CORE_SITE );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const handleUnlinkConfirm = useCallback( async () => {
 		await reset();
 		clearWebStorage();
-		setDialogActive( false );
-		global.location.assign( postResetURL );
+		navigateTo( postResetURL );
 	}, [ reset, postResetURL ] );
 
 	const toggleDialogActive = useCallback( () => {

@@ -1,7 +1,7 @@
 /**
  * SettingsApp component tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,9 @@
  */
 import SettingsApp from './SettingsApp';
 import { render, fireEvent, createTestRegistry, provideModules, waitFor } from '../../../../tests/js/test-utils';
-import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import * as fixtures from '../../modules/analytics/datastore/__fixtures__';
+import { disableFeature, enableFeature } from '../../../../stories/utils/features';
 
 describe( 'SettingsApp', () => {
 	let registry;
@@ -35,7 +36,8 @@ describe( 'SettingsApp', () => {
 
 	beforeEach( () => {
 		global.location.hash = '';
-		global.featureFlags = { storeErrorNotifications: { enabled: true } };
+		enableFeature( 'storeErrorNotifications' );
+		disableFeature( 'userInput' );
 
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
@@ -57,7 +59,7 @@ describe( 'SettingsApp', () => {
 		};
 	} );
 
-	it( 'should change location hash & DOM correctly when module accordian clicked and opened', async () => {
+	it( 'should change location hash & DOM correctly when module accordion clicked and opened', async () => {
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
 			{ body: validResponse, status: 200 }
@@ -72,7 +74,7 @@ describe( 'SettingsApp', () => {
 		expect( analyticsPanel ).toHaveAttribute( 'id', 'googlesitekit-settings-module__content--analytics' );
 	} );
 
-	it( 'should change location hash & DOM correctly when module accordian clicked and closed', async () => {
+	it( 'should change location hash & DOM correctly when module accordion clicked and closed', async () => {
 		const { getByRole, findByRole, queryByRole } = render( <SettingsApp />, { registry } );
 
 		fireEvent.click( getByRole( 'tab', { name: /analytics/i } ) );

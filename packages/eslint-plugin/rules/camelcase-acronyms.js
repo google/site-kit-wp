@@ -1,7 +1,7 @@
 /**
  * ESLint rules: Camelcase acronyms.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,16 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+const { isImported } = require( '../utils' );
+
 module.exports = {
 	create( context ) {
 		const options = context.options[ 0 ] || {};
 		let properties = options.properties || '';
+		const importedNames = [];
 
 		if ( properties !== 'always' && properties !== 'never' ) {
 			properties = 'always';
@@ -66,14 +72,8 @@ module.exports = {
 				const name = node.name;
 
 				// Ignore imports, because they may not respect our rules.
-				if ( node.parent && (
-					node.parent.type === 'ImportDefaultSpecifier' ||
-							node.parent.type === 'ImportSpecifier' ||
-							( node.parent.parent && (
-								node.parent.parent.type === 'ExportDefaultDeclaration' ||
-								node.parent.parent.type === 'ExportDeclaration'
-							) )
-				) ) {
+				if ( isImported( node ) ) {
+					importedNames.push( node.name );
 					return;
 				}
 
@@ -136,6 +136,11 @@ module.exports = {
 							acronymMatches.input[ acronymMatches.index + acronym.length ] &&
 									acronymMatches.input[ acronymMatches.index + acronym.length ].match( /[a-z]/ )
 						) {
+							return;
+						}
+
+						// Ignore known imported names.
+						if ( importedNames.includes( name ) ) {
 							return;
 						}
 

@@ -16,6 +16,7 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
 import * as coreSite from '../../assets/js/googlesitekit/datastore/site';
 import * as coreUser from '../../assets/js/googlesitekit/datastore/user';
 import * as coreForms from '../../assets/js/googlesitekit/datastore/forms';
+import * as coreLocation from '../../assets/js/googlesitekit/datastore/location';
 import * as coreModules from '../../assets/js/googlesitekit/modules';
 import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
 import * as modulesAdSense from '../../assets/js/modules/adsense';
@@ -117,7 +118,7 @@ export const provideUserAuthentication = ( registry, extraData = {} ) => {
 		requiredScopes: [],
 		grantedScopes: [],
 		unsatisfiedScopes: [],
-		needsReauthentication: [],
+		needsReauthentication: false,
 	};
 
 	const mergedData = { ...defaults, ...extraData };
@@ -206,8 +207,7 @@ export const provideModules = ( registry, extraData = [] ) => {
 		} )
 		.concat(
 			extraData.filter( ( { slug } ) => ! moduleSlugs.includes( slug ) ),
-		)
-    ;
+		);
 
 	registry.dispatch( CORE_MODULES ).receiveGetModules( modules );
 };
@@ -300,6 +300,7 @@ export const registerAllStoresOn = ( registry ) => {
 		coreSite,
 		coreUser,
 		coreForms,
+		coreLocation,
 		coreModules,
 		coreWidgets,
 		modulesAdSense,

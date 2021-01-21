@@ -1,7 +1,7 @@
 /**
  * Utility functions.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import { _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 
 /**
  * Gets the current dateRange day count.
@@ -74,18 +74,22 @@ export function getAvailableDateRanges() {
 		'last-7-days': {
 			slug: 'last-7-days',
 			label: label( 7 ),
+			days: 7,
 		},
 		'last-14-days': {
 			slug: 'last-14-days',
 			label: label( 14 ),
+			days: 14,
 		},
 		'last-28-days': {
 			slug: 'last-28-days',
 			label: label( 28 ),
+			days: 28,
 		},
 		'last-90-days': {
 			slug: 'last-90-days',
 			label: label( 90 ),
+			days: 90,
 		},
 	};
 }

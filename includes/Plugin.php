@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Plugin
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -214,8 +214,11 @@ final class Plugin {
 
 		// WP CLI Commands.
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			( new \Google\Site_Kit\Core\CLI\CLI_Commands( $this->context ) )->register();
+			( new Core\CLI\CLI_Commands( $this->context ) )->register();
 		}
+
+		// Add Plugin Row Meta.
+		( new Core\Admin\Plugin_Row_Meta() )->register();
 	}
 
 	/**

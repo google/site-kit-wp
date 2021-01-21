@@ -1,7 +1,7 @@
 /**
- * WPDashboardModule component.
+ * Entrypoint for the `core/location` data store.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,10 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
+// This import has side effects; it registers the core/forms datastore
+// on the default data store (`googlesitekit.data`).
 
 /**
- * A single module. Keeps track of its own active state and settings.
+ * Internal dependencies
  */
-class WPDashboardModule extends Component {
-	render() {
-		return null;
-	}
-}
-
-export default withFilters( 'googlesitekit.WPDashboardModule' )( WPDashboardModule );
+import './googlesitekit/datastore/location';

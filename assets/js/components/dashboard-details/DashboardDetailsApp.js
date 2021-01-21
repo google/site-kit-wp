@@ -1,7 +1,7 @@
 /**
  * DashboardDetailsApp component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import PageHeader from '../PageHeader';
 import HelpLink from '../HelpLink';
 import DashboardDetailsEntityView from './DashboardDetailsEntityView';
 import DashboardDetailsEntityNotFoundView from './DashboardDetailsEntityNotFoundView';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function DashboardDetailsApp() {

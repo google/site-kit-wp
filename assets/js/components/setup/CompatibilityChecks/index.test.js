@@ -1,7 +1,7 @@
 /**
  * CompatibilityChecks component tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,21 +19,26 @@
 /**
  * Internal dependencies
  */
-import CompatibilityChecks, { AMP_PROJECT_TEST_URL } from './CompatibilityChecks';
-import { render, waitFor } from '../../../../tests/js/test-utils';
+import CompatibilityChecks from './index';
+import { render, waitForElementToBeRemoved } from '../../../../../tests/js/test-utils';
 import { Fragment } from 'react';
-import { muteFetch } from '../../../../tests/js/utils';
+import { muteFetch, provideSiteInfo, createTestRegistry } from '../../../../../tests/js/utils';
+import { AMP_PROJECT_TEST_URL } from './constants';
 
-const compatibilityChildren = ( { complete, inProgressFeedback, CTAFeedback } ) => (
+const compatibilityChildren = ( { complete, inProgressFeedback, ctaFeedback } ) => (
 	<Fragment>
-		{ CTAFeedback }
+		{ ctaFeedback }
 		{ complete }
 		{ inProgressFeedback }
 	</Fragment>
 );
 
 describe( 'CompatibilityChecks', () => {
+	let registry;
+	const homeURL = 'http://example.com';
+
 	beforeEach( () => {
+		registry = createTestRegistry();
 		// Mock global.location.hostname with value that won't throw error in first check.
 		Object.defineProperty( global.window, 'location', {
 			value: {
@@ -41,12 +46,20 @@ describe( 'CompatibilityChecks', () => {
 			},
 			writable: true,
 		} );
+
+		provideSiteInfo( registry, { homeURL } );
 	} );
 
 	it( 'should initially display "Checking Compatibility..." message', async () => {
+		// Mock request to setup-tag
 		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/setup-tag/ );
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/developer-plugin/ );
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/health-checks/ );
 		muteFetch( { query: { tagverify: '1' } } );
+		// Mock request to AMP project.
+		muteFetch( AMP_PROJECT_TEST_URL );
+
 		const { container } = render(
 			<CompatibilityChecks>
 				{ compatibilityChildren }
@@ -54,6 +67,7 @@ describe( 'CompatibilityChecks', () => {
 		);
 
 		expect( container ).toHaveTextContent( 'Checking Compatibility…' );
+		await waitForElementToBeRemoved( document.querySelector( '.mdc-linear-progress' ) );
 	} );
 
 	it( 'should display "Your site may not be ready for Site Kit" if a check throws an error', async () => {
@@ -63,21 +77,27 @@ describe( 'CompatibilityChecks', () => {
 			{ body: {}, status: 500 }
 		);
 
-		// Mock request to develop-plugin when error is thrown.
+		// Mock request to developer-plugin when error is thrown.
 		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/developer-plugin/ );
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/health-checks/ );
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
+		// Mock request to AMP project.
+		muteFetch( AMP_PROJECT_TEST_URL );
 
 		const { container } = render(
 			<CompatibilityChecks>
 				{ compatibilityChildren }
-			</CompatibilityChecks>
+			</CompatibilityChecks>,
+			{ registry }
 		);
 
-		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
-		} );
+		// Wait for progress bar to disappear.
+		await waitForElementToBeRemoved( document.querySelector( '.mdc-linear-progress' ) );
 
 		// Expect neither error nor incomplete text to be displayed.
 		expect( container ).toHaveTextContent( 'Your site may not be ready for Site Kit' );
+
+		// Expect a Google Site Kit API Error.
 		expect( console ).toHaveErrored();
 	} );
 
@@ -90,6 +110,11 @@ describe( 'CompatibilityChecks', () => {
 			{ body: { token }, status: 200 }
 		);
 
+		fetchMock.postOnce(
+			homeURL,
+			{ body: { token }, status: 200 }
+		);
+
 		// Mock request to health-checks.
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/core\/site\/data\/health-checks/,
@@ -98,6 +123,8 @@ describe( 'CompatibilityChecks', () => {
 
 		// Mock request to AMP project.
 		muteFetch( AMP_PROJECT_TEST_URL );
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/developer-plugin/ );
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 
 		// Mock getExistingTag request.
 		fetchMock.get(
@@ -111,12 +138,14 @@ describe( 'CompatibilityChecks', () => {
 		render(
 			<CompatibilityChecks>
 				{ compatibilityChildren }
-			</CompatibilityChecks>
+			</CompatibilityChecks>,
+			{ registry }
 		);
 
-		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 4 );
-		} );
+		await waitForElementToBeRemoved( document.querySelector( '.mdc-linear-progress' ) );
+
+		// Expect our progress bar for in progress checks to be gone.
+		expect( document.querySelector( '.mdc-linear-progress' ) ).not.toBeInTheDocument();
 
 		// Expect to have made requests to the setup-checks and health-checks endpoints and the AMP Project test URL.
 		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/core\/site\/data\/setup-tag/ );
@@ -133,6 +162,12 @@ describe( 'CompatibilityChecks', () => {
 			{ body: { token }, status: 200 }
 		);
 
+		// Mock request to setup-tag.
+		fetchMock.postOnce(
+			homeURL,
+			{ body: { token }, status: 200 }
+		);
+
 		// Mock request to health-checks.
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/core\/site\/data\/health-checks/,
@@ -141,6 +176,8 @@ describe( 'CompatibilityChecks', () => {
 
 		// Mock request to AMP project.
 		muteFetch( AMP_PROJECT_TEST_URL );
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/developer-plugin/ );
+		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 
 		// Mock getExistingTag request
 		fetchMock.get(
@@ -154,12 +191,14 @@ describe( 'CompatibilityChecks', () => {
 		const { container } = render(
 			<CompatibilityChecks>
 				{ compatibilityChildren }
-			</CompatibilityChecks>
+			</CompatibilityChecks>,
+			{ registry }
 		);
 
-		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 4 );
-		} );
+		await waitForElementToBeRemoved( document.querySelector( '.mdc-linear-progress' ) );
+
+		// Expect our progress bar for in progress checks to be gone.
+		expect( document.querySelector( '.mdc-linear-progress' ) ).not.toBeInTheDocument();
 
 		// Expect neither error nor incomplete text to be displayed.
 		expect( container ).not.toHaveTextContent( 'Your site may not be ready for Site Kit' );

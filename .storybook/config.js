@@ -1,7 +1,7 @@
 /**
  * Storybook config.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ const resetFeatures = () => {
 	disableFeature( 'widgets.adminBar' );
 	disableFeature( 'widgets.dashboard' );
 	disableFeature( 'widgets.pageDashboard' );
+	disableFeature( 'widgets.wpDashboard' );
 	disableFeature( 'userInput' );
 	disableFeature( 'storeErrorNotifications' );
 	disableFeature( 'serviceSetupV2' );

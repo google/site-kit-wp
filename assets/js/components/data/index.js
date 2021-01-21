@@ -1,7 +1,7 @@
 /**
  * Data API.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -196,33 +196,35 @@ const dataAPI = {
 			data: { request: currentRequest },
 			method: 'POST',
 		} ).then( ( results ) => {
-			each( results, ( result, key ) => {
-				if ( ! keyIndexesMap[ key ] ) {
-					console.debug( 'data_error', 'unknown response key ' + key ); // eslint-disable-line no-console
+			Object.entries( results ).forEach( ( [ requestKey, response ] ) => {
+				if ( ! keyIndexesMap[ requestKey ] ) {
+					console.debug( 'data_error', 'unknown response key ' + requestKey ); // eslint-disable-line no-console
 					return;
 				}
 
-				const isError = isWPError( result );
-				if ( isError ) {
-					const { datapoint, type, identifier } = dataRequest[ keyIndexesMap[ key ] ];
+				if ( isWPError( response ) ) {
+					// These variables will be the same for each request so use the first
+					// to avoid handling/reporting the same error multiple times.
+					const requestIndex = keyIndexesMap[ requestKey ][ 0 ];
+					const { datapoint, type, identifier } = dataRequest[ requestIndex ];
 
 					this.handleWPError( {
 						method: 'POST',
 						datapoint,
 						type,
 						identifier,
-						error: result,
+						error: response,
 					} );
+				} else {
+					setCache( requestKey, response );
 				}
 
-				each( keyIndexesMap[ key ], ( index ) => {
-					const request = dataRequest[ index ];
+				// Each request is only made once, but may have been requested more than once.
+				// Iterate over each request object for the key to resolve it.
+				keyIndexesMap[ requestKey ].forEach( ( requestIndex ) => {
+					const request = dataRequest[ requestIndex ];
 
-					if ( ! isError ) {
-						setCache( request.key, result );
-					}
-
-					this.resolve( request, result );
+					this.resolve( request, response );
 				} );
 
 				// Trigger an action indicating this data load completed from the API.

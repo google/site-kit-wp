@@ -1,7 +1,7 @@
 /**
  * ESLint plugin: utils used in multiple rules.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,46 @@ function isDependencyBlock( jsdoc ) {
 	);
 }
 
+function isImported( node ) {
+	if ( ! node?.type ) {
+		return false;
+	}
+
+	const importTypes = [
+		'ImportDefaultSpecifier',
+		'ImportSpecifier',
+		'ExportDefaultDeclaration',
+		'ExportDeclaration',
+		'ImportDeclaration',
+	];
+
+	if ( importTypes.includes( node.type ) || importTypes.includes( node.parent?.type ) ) {
+		return true;
+	}
+
+	for ( const attribute in [ 'parent', 'init', 'imported' ] ) {
+		if ( node[ attribute ] ) {
+			return isImported( node[ attribute ] );
+		}
+	}
+
+	if ( node.declarations?.length ) {
+		const hasImportedDeclarations = node.specifiers.some( ( importedNode ) => {
+			return isImported( importedNode );
+		} );
+
+		if ( hasImportedDeclarations ) {
+			return true;
+		}
+	}
+
+	if ( node.declaration ) {
+		return isImported( node.declaration );
+	}
+
+	return false;
+}
+
 function isFunction( node ) {
 	if ( ! node ) {
 		return false;
@@ -106,4 +146,5 @@ module.exports = {
 	findTagInGroup,
 	isDependencyBlock,
 	isFunction,
+	isImported,
 };

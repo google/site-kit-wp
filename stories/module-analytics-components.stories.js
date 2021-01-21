@@ -1,7 +1,7 @@
 /**
  * Analytics Module Component Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,10 @@ import {
 	goals,
 	dashboardUserDimensionsArgs,
 	dashboardUserDimensionsData,
+	dashboardUserTotalsArgs,
+	dashboardUserTotalsData,
+	dashboardUserGraphArgs,
+	dashboardUserGraphData,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import DashboardAllTrafficWidgetV2 from '../assets/js/modules/analytics/components/dashboard/DashboardAllTrafficWidgetV2';
 
@@ -185,11 +189,15 @@ generateReportBasedWidgetStories( {
 		dashboardUserDimensionsData[ 'ga:channelGrouping' ],
 		dashboardUserDimensionsData[ 'ga:country' ],
 		dashboardUserDimensionsData[ 'ga:deviceCategory' ],
+		dashboardUserTotalsData,
+		dashboardUserGraphData,
 	],
 	options: [
 		dashboardUserDimensionsArgs[ 'ga:channelGrouping' ],
 		dashboardUserDimensionsArgs[ 'ga:country' ],
 		dashboardUserDimensionsArgs[ 'ga:deviceCategory' ],
+		dashboardUserTotalsArgs,
+		dashboardUserGraphArgs,
 	],
 	Component: DashboardAllTrafficWidgetV2,
 	wrapWidget: false,

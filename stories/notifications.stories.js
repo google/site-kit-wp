@@ -1,7 +1,7 @@
 /**
  * Notification Component Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ import UserInputSuccessNotification from '../assets/js/components/notifications/
 import ModulesList from '../assets/js/components/ModulesList';
 import Notification from '../assets/js/components/legacy-notifications/notification';
 import UserInputSettings from '../assets/js/components/notifications/UserInputSettings';
-import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
-import { STORE_NAME as MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 import rocketImage from '../assets/images/rocket.png';
 import thumbsUpImage from '../assets/images/thumbs-up.png';
 

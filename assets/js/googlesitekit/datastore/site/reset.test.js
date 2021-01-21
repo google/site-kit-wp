@@ -1,7 +1,7 @@
 /**
  * `core/site` data store: reset connection tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ describe( 'core/site reset', () => {
 				} ).not.toThrow();
 			} );
 
-			it( 'resets connection ', async () => {
+			it( 'resets connection on server only', async () => {
 				const response = true;
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
@@ -83,9 +83,9 @@ describe( 'core/site reset', () => {
 					{ body: { connected: false, resettable: false }, status: 200 }
 				);
 
-				// After a successful reset, `connection` should be `undefined` again.
+				// After a successful reset, `connection` state will be updated on the next page load.
 				const connection = await registry.select( STORE_NAME ).getConnection();
-				expect( connection ).toEqual( undefined );
+				expect( connection ).toEqual( { connected: true, resettable: true } );
 			} );
 
 			it( 'does not reset local connection if reset request fails', async () => {

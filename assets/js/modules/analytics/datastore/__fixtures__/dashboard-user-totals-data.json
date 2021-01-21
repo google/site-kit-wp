@@ -1,0 +1,76 @@
+[
+	{
+		"nextPageToken": null,
+		"columnHeader": {
+			"dimensions": null,
+			"metricHeader": {
+				"metricHeaderEntries": [
+					{
+						"name": "Users",
+						"type": "INTEGER"
+					}
+				]
+			}
+		},
+		"data": {
+			"dataLastRefreshed": null,
+			"isDataGolden": null,
+			"rowCount": 1,
+			"samplesReadCounts": null,
+			"samplingSpaceSizes": null,
+			"rows": [
+				{
+					"dimensions": null,
+					"metrics": [
+						{
+							"values": [
+								"1348"
+							]
+						},
+						{
+							"values": [
+								"1572"
+							]
+						}
+					]
+				}
+			],
+			"totals": [
+				{
+					"values": [
+						"1348"
+					]
+				},
+				{
+					"values": [
+						"1572"
+					]
+				}
+			],
+			"minimums": [
+				{
+					"values": [
+						"1348"
+					]
+				},
+				{
+					"values": [
+						"1572"
+					]
+				}
+			],
+			"maximums": [
+				{
+					"values": [
+						"1348"
+					]
+				},
+				{
+					"values": [
+						"1572"
+					]
+				}
+			]
+		}
+	}
+]

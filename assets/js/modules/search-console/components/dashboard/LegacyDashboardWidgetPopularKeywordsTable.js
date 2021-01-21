@@ -1,7 +1,7 @@
 /**
  * LegacyDashboardWidgetPopularKeywordsTable component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import {
 } from '../../util';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
 

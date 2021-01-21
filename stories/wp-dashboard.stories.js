@@ -1,7 +1,7 @@
 /**
  * WP Dashboard Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,14 +31,14 @@ import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
  */
 import GoogleLogoIcon from '../assets/svg/logo-g.svg';
 import SiteKitLogoIcon from '../assets/svg/logo-sitekit.svg';
-import WPDashboardMain from '../assets/js/components/wp-dashboard/WPDashboardMain';
+import WPDashboardApp from '../assets/js/components/wp-dashboard/WPDashboardApp';
 import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
 import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/components/wp-dashboard/WPSearchConsoleDashboardWidget';
 import { createAddToFilter } from '../assets/js/util/helpers';
 import WPAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/wp-dashboard/WPAnalyticsDashboardWidgetOverview';
 import WPAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/wp-dashboard/WPAnalyticsDashboardWidgetTopPagesTable';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'WordPress', module )
@@ -99,7 +99,7 @@ storiesOf( 'WordPress', module )
 						<div className="inside">
 							<div id="js-googlesitekit-wp-dashboard">
 								<WithTestRegistry callback={ setupRegistry }>
-									<WPDashboardMain />
+									<WPDashboardApp />
 								</WithTestRegistry>
 							</div>
 						</div>
