@@ -55,6 +55,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 			return false;
 		}
 		const widgetComponentProps = getWidgetComponentProps( widget.slug );
+		// NOTE: this causes a "Failed prop type: The prop `widgetSlug` is marked as required in `Widget`" error.
 		const isActive = widget.Component.prototype.render
 			? new widget.Component( widgetComponentProps ).render()
 			: widget.Component( widgetComponentProps );
