@@ -80,9 +80,9 @@ describe( 'Site Kit admin bar component display', () => {
 	} );
 
 	it( 'loads when editing a post with data in Search Console', async () => {
-		const { searchConsole } = adminBarMockResponses;
+		const { analytics, searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
-		mockBatchResponse = searchConsole;
+		mockBatchResponse = Object.assign( {}, analytics, searchConsole );
 
 		// Navigate to edit view for this post
 		await Promise.all( [
@@ -116,9 +116,9 @@ describe( 'Site Kit admin bar component display', () => {
 	} );
 
 	it( 'links "More details" to the dashboard details view for the current post', async () => {
-		const { searchConsole } = adminBarMockResponses;
+		const { analytics, searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
-		mockBatchResponse = searchConsole;
+		mockBatchResponse = Object.assign( {}, analytics, searchConsole );
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
