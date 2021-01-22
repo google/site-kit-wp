@@ -50,11 +50,10 @@ add_action(
 // Enforce feature activation as defined by the E2E feature flags option.
 add_filter(
 	'googlesitekit_is_feature_enabled',
-	function( $feature_name, $feature_enabled, $mode ) {
+	function ( $feature_name ) {
 		$features = get_option( 'googlesitekit_e2e_feature_flags', array() );
 
 		return ! empty( $features[ $feature_name ] );
 	},
-	999,
-	3
+	999
 );
