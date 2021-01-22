@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * WordPress dependencies
  */
-import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
+import { doAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -33,10 +33,6 @@ import GoogleLogoIcon from '../assets/svg/logo-g.svg';
 import SiteKitLogoIcon from '../assets/svg/logo-sitekit.svg';
 import WPDashboardApp from '../assets/js/components/wp-dashboard/WPDashboardApp';
 import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
-import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/components/wp-dashboard/WPSearchConsoleDashboardWidget';
-import { createAddToFilter } from '../assets/js/util/helpers';
-import WPAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/wp-dashboard/WPAnalyticsDashboardWidgetOverview';
-import WPAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/wp-dashboard/WPAnalyticsDashboardWidgetTopPagesTable';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
@@ -60,24 +56,6 @@ storiesOf( 'WordPress', module )
 				grantedScopes: [],
 			} );
 		};
-
-		const addWPSearchConsoleDashboardWidget = createAddToFilter( <WPSearchConsoleDashboardWidget /> );
-		const addWPAnalyticsDashboardWidgetOverview = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
-		const addWPAnalyticsDashboardWidgetTopPagesTable = createAddToFilter( <WPAnalyticsDashboardWidgetTopPagesTable /> );
-
-		removeAllFilters( 'googlesitekit.WPDashboardHeader' );
-		removeAllFilters( 'googlesitekit.WPDashboardModule' );
-
-		addFilter( 'googlesitekit.WPDashboardHeader',
-			'googlesitekit.SearchConsole',
-			addWPSearchConsoleDashboardWidget, 11 );
-
-		addFilter( 'googlesitekit.WPDashboardHeader',
-			'googlesitekit.Analytics',
-			addWPAnalyticsDashboardWidgetOverview, 1 );
-		addFilter( 'googlesitekit.WPDashboardModule',
-			'googlesitekit.Analytics',
-			addWPAnalyticsDashboardWidgetTopPagesTable );
 
 		setTimeout( () => {
 			doAction(

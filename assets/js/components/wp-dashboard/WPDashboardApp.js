@@ -32,7 +32,6 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import Link from '../Link';
-import LegacyWPDashboardModules from './LegacyWPDashboardModules';
 import WPDashboardImpressions from './WPDashboardImpressions';
 import WPDashboardClicks from './WPDashboardClicks';
 import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
@@ -59,8 +58,7 @@ const WPDashboardApp = () => {
 					{ __( 'Visit your Site Kit Dashboard', 'google-site-kit' ) }
 				</Link>
 			</div>
-			(
-			<div className={ classnames(
+			( <div className={ classnames(
 				'googlesitekit-wp-dashboard-stats',
 				{ 'googlesitekit-wp-dashboard-stats--fourup': analyticsModuleActive && analyticsModuleConnected }
 			) }>
@@ -82,9 +80,7 @@ const WPDashboardApp = () => {
 						) }
 					</div>
 				) }
-			</div>
-			)
-			<LegacyWPDashboardModules />
+			</div> )
 		</div>
 	);
 };
