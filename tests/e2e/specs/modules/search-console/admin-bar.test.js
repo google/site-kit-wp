@@ -42,11 +42,6 @@ describe( 'Site Kit admin bar component display', () => {
 					status: 200,
 					body: JSON.stringify( mockBatchResponse[ 'modules::search-console::searchanalytics::e74216dd17533dcb67fa2d433c23467c' ] ),
 				} );
-			} else if ( request.url().match( 'google-site-kit/v1/modules/analytics/data/report?' ) ) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( mockBatchResponse[ 'modules::analytics::report::db20ba9afa3000cd79e2888048a1700c' ] ),
-				} );
 			} else {
 				request.continue();
 			}
@@ -60,9 +55,9 @@ describe( 'Site Kit admin bar component display', () => {
 	} );
 
 	it( 'loads when viewing the front end of a post with data in Search Console', async () => {
-		const { analytics, searchConsole } = adminBarMockResponses;
+		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
-		mockBatchResponse = Object.assign( {}, analytics, searchConsole );
+		mockBatchResponse = Object.assign( {}, searchConsole );
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
@@ -80,9 +75,9 @@ describe( 'Site Kit admin bar component display', () => {
 	} );
 
 	it( 'loads when editing a post with data in Search Console', async () => {
-		const { analytics, searchConsole } = adminBarMockResponses;
+		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
-		mockBatchResponse = Object.assign( {}, analytics, searchConsole );
+		mockBatchResponse = Object.assign( {}, searchConsole );
 
 		// Navigate to edit view for this post
 		await Promise.all( [
@@ -116,9 +111,9 @@ describe( 'Site Kit admin bar component display', () => {
 	} );
 
 	it( 'links "More details" to the dashboard details view for the current post', async () => {
-		const { analytics, searchConsole } = adminBarMockResponses;
+		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
-		mockBatchResponse = Object.assign( {}, analytics, searchConsole );
+		mockBatchResponse = Object.assign( {}, searchConsole );
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
