@@ -1,5 +1,5 @@
 /**
- * Widgets API default contexts
+ * Entrypoint for the `core/location` data store.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,16 +16,10 @@
  * limitations under the License.
  */
 
-export const CONTEXT_DASHBOARD = 'dashboard';
-export const CONTEXT_PAGE_DASHBOARD = 'pageDashboard';
-export const CONTEXT_MODULE_SEARCH_CONSOLE = 'moduleSearchConsole';
-export const CONTEXT_MODULE_ANALYTICS = 'moduleAnalytics';
-export const CONTEXT_MODULE_ADSENSE = 'moduleAdsense';
+// This import has side effects; it registers the core/forms datastore
+// on the default data store (`googlesitekit.data`).
 
-export default {
-	CONTEXT_DASHBOARD,
-	CONTEXT_PAGE_DASHBOARD,
-	CONTEXT_MODULE_SEARCH_CONSOLE,
-	CONTEXT_MODULE_ANALYTICS,
-	CONTEXT_MODULE_ADSENSE,
-};
+/**
+ * Internal dependencies
+ */
+import './googlesitekit/datastore/location';

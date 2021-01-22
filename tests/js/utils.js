@@ -19,6 +19,8 @@ import coreUserStore from '../../assets/js/googlesitekit/datastore/user';
 import { CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
 import coreFormsStore from '../../assets/js/googlesitekit/datastore/forms';
 import { CORE_FORMS } from '../../assets/js/googlesitekit/datastore/forms/constants';
+import coreLocationStore from '../../assets/js/googlesitekit/datastore/location';
+import { CORE_LOCATION } from '../../assets/js/googlesitekit/datastore/location/constants';
 import coreModulesStore from '../../assets/js/googlesitekit/modules/datastore';
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import coreWidgetsStore from '../../assets/js/googlesitekit/widgets/datastore';
@@ -370,6 +372,7 @@ export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( CORE_SITE, coreSiteStore );
 	registry.registerStore( CORE_USER, coreUserStore );
 	registry.registerStore( CORE_FORMS, coreFormsStore );
+	registry.registerStore( CORE_LOCATION, coreLocationStore );
 	registry.registerStore( CORE_MODULES, coreModulesStore );
 	registry.registerStore( CORE_WIDGETS, coreWidgetsStore );
 	registry.registerStore( MODULES_ADSENSE, modulesAdSenseStore );

@@ -32,7 +32,7 @@ import Dialog from './Dialog';
 import Modal from './Modal';
 import Link from './Link';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
 function ResetButton( { children } ) {
@@ -63,11 +63,12 @@ function ResetButton( { children } ) {
 	}, [ dialogActive ] );
 
 	const { reset } = useDispatch( CORE_SITE );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const handleUnlinkConfirm = useCallback( async () => {
 		await reset();
 		clearWebStorage();
-		global.location.assign( postResetURL );
+		navigateTo( postResetURL );
 	}, [ reset, postResetURL ] );
 
 	const toggleDialogActive = useCallback( () => {

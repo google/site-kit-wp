@@ -28,6 +28,8 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { Cell } from '../../material-components';
 import Layout from '../layout/Layout';
 import OptIn from '../OptIn';
@@ -35,16 +37,16 @@ import VisuallyHidden from '../VisuallyHidden';
 import ResetButton from '../ResetButton';
 import UserInputPreview from '../user-input/UserInputPreview';
 import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import UserInputSettings from '../notifications/UserInputSettings';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 const SettingsAdmin = () => {
 	const isUserInputCompleted = useSelect( ( select ) => featureFlags.userInput.enabled && select( CORE_USER ).getUserInputState() === 'completed' );
 	const userInputURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
 
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const goTo = ( questionIndex = 1 ) => {
-		global.location.assign( addQueryArgs( userInputURL, {
+		navigateTo( addQueryArgs( userInputURL, {
 			question: USER_INPUT_QUESTIONS_LIST[ questionIndex - 1 ],
 			redirect_url: global.location.href,
 			single: 'settings', // Allows the user to edit a single question then return to the settings page.
