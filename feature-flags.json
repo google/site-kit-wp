@@ -8,9 +8,6 @@
     },
     "adminBar": {
       "enabled": "development"
-    },
-    "wpDashboard": {
-      "enabled": "development"
     }
   },
   "userInput": {

@@ -59,31 +59,31 @@ const WPDashboardApp = () => {
 					{ __( 'Visit your Site Kit Dashboard', 'google-site-kit' ) }
 				</Link>
 			</div>
-			{ featureFlags.widgets.wpDashboard.enabled && (
-				<div className={ classnames(
-					'googlesitekit-wp-dashboard-stats',
-					{ 'googlesitekit-wp-dashboard-stats--fourup': analyticsModuleActive && analyticsModuleConnected }
-				) }>
-					{ analyticsModuleActive && analyticsModuleConnected && (
-						<Fragment>
-							<WPDashboardUniqueVisitors />
-							<WPDashboardSessionDuration />
-						</Fragment>
-					) }
-					<WPDashboardImpressions />
-					<WPDashboardClicks />
-					{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
-						<div className="googlesitekit-wp-dashboard-stats__cta">
-							{ ! analyticsModuleActive && (
-								<AnalyticsInactiveCTA />
-							) }
-							{ analyticsModuleActive && (
-								<CompleteModuleActivationCTA slug="analytics" />
-							) }
-						</div>
-					) }
-				</div>
-			) }
+			(
+			<div className={ classnames(
+				'googlesitekit-wp-dashboard-stats',
+				{ 'googlesitekit-wp-dashboard-stats--fourup': analyticsModuleActive && analyticsModuleConnected }
+			) }>
+				{ analyticsModuleActive && analyticsModuleConnected && (
+					<Fragment>
+						<WPDashboardUniqueVisitors />
+						<WPDashboardSessionDuration />
+					</Fragment>
+				) }
+				<WPDashboardImpressions />
+				<WPDashboardClicks />
+				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+					<div className="googlesitekit-wp-dashboard-stats__cta">
+						{ ! analyticsModuleActive && (
+							<AnalyticsInactiveCTA />
+						) }
+						{ analyticsModuleActive && (
+							<CompleteModuleActivationCTA slug="analytics" />
+						) }
+					</div>
+				) }
+			</div>
+			)
 			<LegacyWPDashboardModules />
 		</div>
 	);
