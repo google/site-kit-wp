@@ -63,7 +63,7 @@ Widget.defaultProps = {
 
 Widget.propTypes = {
 	children: PropTypes.node,
-	widgetSlug: PropTypes.string.isRequired,
+	widgetSlug: PropTypes.string,
 	noPadding: PropTypes.bool,
 	header: PropTypes.elementType,
 	footer: PropTypes.elementType,
