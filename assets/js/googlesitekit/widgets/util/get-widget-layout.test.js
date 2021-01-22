@@ -32,13 +32,21 @@ describe( 'getWidgetLayout', () => {
 
 	it( 'computes expected class names', () => {
 		const widgets = [
+			// First row.
 			quarter,
 			quarter,
 			half,
+			// Second row.
 			half,
 			quarter,
+			// Third row.
 			full,
 		];
+
+		// Phone and tablet column widths are static based on the widget width.
+		// Desktop column widths usually are as well, except for the case where
+		// an entire row spans exactly 9 columns, in which case each widget
+		// will be expanded by a third to fill the entire 12 columns.
 		const expectedClassNames = [
 			[
 				'mdc-layout-grid__cell',

@@ -45,4 +45,4 @@ export const WIDTH_GRID_CLASS_MAP = {
 	],
 };
 
-export const HIDDEN_CLASS = 'googlesitekit-widget-grid-hidden';
+export const HIDDEN_CLASS = 'googlesitekit-hidden';
