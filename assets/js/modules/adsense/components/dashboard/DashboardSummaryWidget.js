@@ -36,13 +36,12 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
 import { getDateString } from '../../../../googlesitekit/datastore/user/utils/get-date-string';
 
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
-function DashboardSummaryWidget() {
+function DashboardSummaryWidget( { WidgetReportZero } ) {
 	const {
 		error,
 		loading,
@@ -105,7 +104,7 @@ function DashboardSummaryWidget() {
 	}
 
 	if ( isZeroReport( today ) && isZeroReport( period ) && isZeroReport( daily ) ) {
-		return <ReportZero moduleSlug="adsense" />;
+		return <WidgetReportZero moduleSlug="adsense" />;
 	}
 
 	const processedData = reduceAdSenseData( daily.rows );

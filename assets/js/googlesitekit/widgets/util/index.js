@@ -16,4 +16,6 @@
  * limitations under the License.
  */
 
-export * from './get-widget-class-names';
+export * from './get-widget-layout';
+export * from './combine-widgets';
+export * from './get-widget-component-props';

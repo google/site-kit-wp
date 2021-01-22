@@ -59,4 +59,19 @@ class JSON_FileTest extends TestCase {
 
 		$this->assertNotNull( $this->force_get_property( $json_file, 'data' ) );
 	}
+
+	public function test_data_is_iterable() {
+		$json_file = new JSON_File( self::$composer['path'] );
+
+		// Note: WP's polyfill of `is_iterable` introduced in PHP 7.1
+		// is only available in WP 4.9.6+. Otherwise this works:
+		// $this->assertTrue( is_iterable( $json_file ) );
+
+		$entries = array();
+		foreach ( $json_file as $key => $value ) {
+			$entries[ $key ] = $value;
+		}
+
+		$this->assertEquals( 'google/google-site-kit', $entries['name'] );
+	}
 }

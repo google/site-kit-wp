@@ -30,21 +30,11 @@ import '../assets/sass/adminbar.scss';
 import '../assets/sass/admin.scss';
 import './assets/sass/wp-admin.scss';
 import { bootstrapFetchMocks } from './fetch-mocks';
-import { disableFeature } from '../stories/utils/features';
 // TODO: Remove when legacy data API is removed.
 import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
 
 bootstrapFetchMocks();
 
-const resetFeatures = () => {
-	disableFeature( 'widgets.adminBar' );
-	disableFeature( 'widgets.dashboard' );
-	disableFeature( 'widgets.pageDashboard' );
-	disableFeature( 'widgets.wpDashboard' );
-	disableFeature( 'userInput' );
-	disableFeature( 'storeErrorNotifications' );
-	disableFeature( 'serviceSetupV2' );
-};
 const resetGlobals = () => {
 	global._googlesitekitLegacyData = cloneDeep( dashboardData );
 	global._googlesitekitLegacyData.admin.assetsRoot = '';
@@ -77,7 +67,6 @@ resetGlobals();
 
 addDecorator( ( story ) => {
 	resetGlobals();
-	resetFeatures();
 	return story();
 } );
 
