@@ -1,5 +1,5 @@
 /**
- * Widgets API default contexts
+ * `core/location` data store.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,16 +16,26 @@
  * limitations under the License.
  */
 
-export const CONTEXT_DASHBOARD = 'dashboard';
-export const CONTEXT_PAGE_DASHBOARD = 'pageDashboard';
-export const CONTEXT_MODULE_SEARCH_CONSOLE = 'moduleSearchConsole';
-export const CONTEXT_MODULE_ANALYTICS = 'moduleAnalytics';
-export const CONTEXT_MODULE_ADSENSE = 'moduleAdsense';
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from './constants';
+import navigation from './navigation';
 
-export default {
-	CONTEXT_DASHBOARD,
-	CONTEXT_PAGE_DASHBOARD,
-	CONTEXT_MODULE_SEARCH_CONSOLE,
-	CONTEXT_MODULE_ANALYTICS,
-	CONTEXT_MODULE_ADSENSE,
-};
+const store = Data.combineStores(
+	Data.commonStore,
+	navigation,
+);
+
+export const initialState = store.initialState;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+// Register this store on the global registry.
+Data.registerStore( STORE_NAME, store );
+
+export default store;
