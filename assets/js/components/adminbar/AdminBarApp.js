@@ -29,7 +29,7 @@ import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
 import AdminBarSessions from './AdminBarSessions';
 import AdminBarImpressions from './AdminBarImpressions';
 import AdminBarClicks from './AdminBarClicks';
-import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
+import ActivateModuleCTA from '../ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import Data from 'googlesitekit-data';
 import Link from '../Link';
@@ -92,19 +92,20 @@ export default function AdminBarApp() {
 
 							{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 								<div className="
-											mdc-layout-grid__cell
-											mdc-layout-grid__cell--span-6-desktop
-											mdc-layout-grid__cell--span-4-tablet
-										">
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-6-desktop
+									mdc-layout-grid__cell--span-4-tablet
+								">
 									{ ! analyticsModuleActive && (
-										<AnalyticsInactiveCTA />
+										<ActivateModuleCTA moduleSlug="analytics" />
 									) }
 
 									{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
-										<CompleteModuleActivationCTA slug="analytics" />
+										<CompleteModuleActivationCTA moduleSlug="analytics" />
 									) }
 								</div>
 							) }
+
 						</div>
 					</div>
 					<div className="

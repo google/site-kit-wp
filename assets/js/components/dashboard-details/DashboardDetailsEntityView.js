@@ -31,9 +31,11 @@ import WidgetContextRenderer from '../../googlesitekit/widgets/components/Widget
 import DashboardDetailsModules from './DashboardDetailsModules';
 import DashboardDetailsEntityHeaderContainer from './DashboardDetailsEntityHeaderContainer';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function DashboardDetailsEntityView() {
+	const pageDashboardWidgetsEnabled = useFeature( 'widgets.pageDashboard' );
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
 
@@ -51,7 +53,7 @@ export default function DashboardDetailsEntityView() {
 				</Link>
 			</DashboardDetailsEntityHeaderContainer>
 
-			{ featureFlags.widgets.pageDashboard.enabled && (
+			{ pageDashboardWidgetsEnabled && (
 				<div className="
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-12

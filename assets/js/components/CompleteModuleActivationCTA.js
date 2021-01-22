@@ -37,9 +37,9 @@ import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
-const CompleteModuleActivationCTA = ( { slug, title, description } ) => {
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
-	const moduleStoreName = useSelect( ( select ) => select( CORE_MODULES ).getModuleStoreName( slug ) );
+const CompleteModuleActivationCTA = ( { moduleSlug, title, description } ) => {
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
+	const moduleStoreName = useSelect( ( select ) => select( CORE_MODULES ).getModuleStoreName( moduleSlug ) );
 	const adminReauthURL = useSelect( ( select ) => select( moduleStoreName )?.getAdminReauthURL() );
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 
@@ -82,7 +82,7 @@ const CompleteModuleActivationCTA = ( { slug, title, description } ) => {
 };
 
 CompleteModuleActivationCTA.propTypes = {
-	slug: PropTypes.string.isRequired,
+	moduleSlug: PropTypes.string.isRequired,
 	title: PropTypes.string,
 	description: PropTypes.string,
 };
