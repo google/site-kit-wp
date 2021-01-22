@@ -76,7 +76,7 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 	if ( ! loaded ) {
 		return (
 			<PreviewBlock
-				className="googlesitekit-widget--analyticsAllTrafficV2__totalcount--loading"
+				className="googlesitekit-widget--analyticsAllTraffic__totalcount--loading"
 				width="220px"
 				height="130px"
 				shape="square"
@@ -105,30 +105,31 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 	}
 
 	return (
-		<div className="googlesitekit-widget--analyticsAllTraffic__totalcount">
-			<h3>
+		<div className="googlesitekit-widget--analyticsAllTraffic__totalcount googlesitekit-data-block">
+			<h3 className="googlesitekit-subheading-1 googlesitekit-data-block__title">
 				{ __( 'Users', 'google-site-kit' ) }
 				{ dimensionValue && (
 					<span>{ dimensionValue[ 0 ].toUpperCase() }{ dimensionValue.substring( 1 ) }</span>
 				) }
 			</h3>
-			<h2>
+			<div className="googlesitekit-data-block__datapoint">
 				{ numFmt( current?.values?.[ 0 ] ) }
-			</h2>
-			<div>
-				<span className={ classnames( 'googlesitekit-widget--analyticsAllTraffic__totalcount--change', {
-					'googlesitekit-widget--analyticsAllTraffic__totalcount--up-change': 0 <= change,
-					'googlesitekit-widget--analyticsAllTraffic__totalcount--down-change': 0 > change,
-				} ) }>
+			</div>
+			<div className="googlesitekit-data-block__change">
+				<span className="googlesitekit-data-block__arrow">
 					<ChangeArrow
 						direction={ 0 <= change ? 'up' : 'down' }
-						width={ 18 }
-						height={ 17 }
+						width={ 9 }
+						height={ 9 }
 					/>
-
+				</span>
+				<span className={ classnames(
+					'googlesitekit-data-block__value',
+					`googlesitekit-data-block__value--${ 0 <= change ? 'up' : 'down' }`
+				) }>
 					{ numFmt( Math.abs( change ), { style: 'percent', maximumFractionDigits: 1 } ) }
 				</span>
-				<span className="googlesitekit-widget--analyticsAllTraffic__totalcount--daterange">
+				<span className="googlesitekit-data-block__suffix">
 					{ currentDateRangeLabel }
 				</span>
 			</div>

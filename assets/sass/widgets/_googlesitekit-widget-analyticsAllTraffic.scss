@@ -88,52 +88,15 @@
 	.googlesitekit-widget--analyticsAllTraffic__totalcount {
 
 		h3 {
-			font-size: 16px;
-			font-weight: 500;
-			margin: 0;
 
 			span::before {
 				content: ">";
 				margin: 0 0.5rem;
 			}
 		}
-
-		h2 {
-			font-size: 80px;
-			font-weight: 700;
-			margin: 0;
-		}
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__totalcount--loading {
 		margin: 0 0 10px;
-	}
-
-	.googlesitekit-widget--analyticsAllTraffic__totalcount--change {
-		display: inline-block;
-		font-size: 24px;
-		font-weight: 500;
-		margin: 0;
-		margin-right: 10px;
-
-		svg {
-			margin: 0;
-			margin-right: 5px;
-		}
-	}
-
-	.googlesitekit-widget--analyticsAllTraffic__totalcount--up-change {
-		color: $c-chateau-green;
-	}
-
-	.googlesitekit-widget--analyticsAllTraffic__totalcount--down-change {
-		color: $c-thunderbird;
-	}
-
-	.googlesitekit-widget--analyticsAllTraffic__totalcount--daterange {
-		display: inline-block;
-		font-size: 12px;
-		font-weight: 400;
-		margin: 0;
 	}
 }

@@ -57,12 +57,10 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
 		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
 
-		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+				'useSnippet'     => true,
+				'ampContainerID' => 'GTM-999999',
 			)
 		);
 
@@ -113,12 +111,10 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertFalse( has_action( 'wp_body_open' ) );
 		$this->assertFalse( has_action( 'wp_footer' ) );
 
-		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+				'useSnippet'  => true,
+				'containerID' => 'GTM-999999',
 			)
 		);
 
@@ -155,12 +151,10 @@ class Tag_ManagerTest extends TestCase {
 	 */
 	public function test_block_on_consent_amp( $enabled ) {
 		$tagmanager = new Tag_Manager( $this->get_amp_primary_context() );
-		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+				'useSnippet'     => true,
+				'ampContainerID' => 'GTM-999999',
 			)
 		);
 
@@ -192,14 +186,13 @@ class Tag_ManagerTest extends TestCase {
 	 */
 	public function test_block_on_consent_non_amp( $enabled ) {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+				'useSnippet'  => true,
+				'containerID' => 'GTM-999999',
 			)
 		);
+
 		remove_all_actions( 'template_redirect' );
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'wp_footer' );
@@ -243,11 +236,9 @@ class Tag_ManagerTest extends TestCase {
 
 		$this->assertFalse( $tagmanager->is_connected() );
 
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+				'containerID' => 'GTM-999999',
 			)
 		);
 
@@ -260,11 +251,9 @@ class Tag_ManagerTest extends TestCase {
 
 		$this->assertFalse( $tagmanager->is_connected() );
 
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+				'ampContainerID' => 'GTM-999999',
 			)
 		);
 
@@ -277,22 +266,18 @@ class Tag_ManagerTest extends TestCase {
 
 		$this->assertFalse( $tagmanager->is_connected() );
 
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+				'containerID' => 'GTM-999999',
 			)
 		);
 
 		// Should still fail because both 'web' and 'amp' containers are required.
 		$this->assertFalse( $tagmanager->is_connected() );
 
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+				'ampContainerID' => 'GTM-999999',
 			)
 		);
 
@@ -354,9 +339,6 @@ class Tag_ManagerTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'connection',
-				'account-id',
-				'container-id',
 				'accounts-containers',
 				'containers',
 				'tag-permission',
