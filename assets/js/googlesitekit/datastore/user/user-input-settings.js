@@ -56,9 +56,11 @@ const fetchSaveUserInputSettingsStore = createFetchStore( {
 // Actions
 const SET_USER_INPUT_SETTINGS = 'SET_USER_INPUT_SETTINGS';
 const SET_USER_INPUT_SETTING = 'SET_USER_INPUT_SETTING';
+const SET_USER_INPUT_SETTINGS_SAVING_FLAG = 'SET_USER_INPUT_SETTINGS_SAVING_FLAG';
 
 const baseInitialState = {
 	inputSettings: undefined,
+	isSavingInputSettings: false,
 };
 
 const baseActions = {
@@ -113,11 +115,21 @@ const baseActions = {
 			[ key ]: settings[ key ]?.values || [],
 		} ), {} );
 
+		yield {
+			type: SET_USER_INPUT_SETTINGS_SAVING_FLAG,
+			payload: { isSaving: true },
+		};
+
 		const { response, error } = yield fetchSaveUserInputSettingsStore.actions.fetchSaveUserInputSettings( values );
 		if ( error ) {
 			// Store error manually since saveUserInputSettings signature differs from fetchSaveUserInputSettings.
 			yield receiveError( error, 'saveUserInputSettings', [] );
 		}
+
+		yield {
+			type: SET_USER_INPUT_SETTINGS_SAVING_FLAG,
+			payload: { isSaving: false },
+		};
 
 		return { response, error };
 	},
@@ -143,6 +155,12 @@ export const baseReducer = ( state, { type, payload } ) => {
 				},
 			};
 		}
+		case SET_USER_INPUT_SETTINGS_SAVING_FLAG: {
+			return {
+				...state,
+				isSavingInputSettings: payload.isSaving,
+			};
+		}
 		default: {
 			return state;
 		}
@@ -159,6 +177,18 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
+	/**
+	 * Determines whether the user input settings are being saved or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the user input settings are being saved, otherwise FALSE.
+	 */
+	isSavingUserInputSettings( state ) {
+		return !! state?.isSavingInputSettings;
+	},
+
 	/**
 	 * Gets input settings info for this user.
 	 *

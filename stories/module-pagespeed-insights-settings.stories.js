@@ -33,21 +33,36 @@ import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper'
 
 const Settings = createLegacySettingsWrapper( 'pagespeed-insights' );
 
-storiesOf( 'PageSpeed Insights Module/Settings', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		provideModules( registry );
-		provideModuleRegistrations( registry );
+const withRegistry = ( Story ) => {
+	const registry = createTestRegistry();
+	provideModules( registry );
+	provideModuleRegistrations( registry );
 
-		return storyFn( registry );
-	} )
-	.add( 'View, closed', ( registry ) => {
+	return (
+		<Story registry={ registry } />
+	);
+};
+
+storiesOf( 'PageSpeed Insights Module/Settings', module )
+	.add( 'View, closed', ( args, { registry } ) => {
 		return <Settings isOpen={ false } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'View, open with all settings', ( registry ) => {
+	.add( 'View, open with all settings', ( args, { registry } ) => {
 		return <Settings isOpen={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, open with all settings', ( registry ) => {
+	.add( 'Edit, open with all settings', ( args, { registry } ) => {
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
 ;

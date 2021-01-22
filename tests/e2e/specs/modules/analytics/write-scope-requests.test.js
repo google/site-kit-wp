@@ -39,6 +39,11 @@ describe( 'Analytics write scope requests', () => {
 	let interceptCreatePropertyRequest;
 	let interceptCreateProfileRequest;
 
+	// Custom helper to click the "Configure Analytics" button.
+	// For some reason, using normal methods of clicking are less reliable in this test.
+	// See https://github.com/puppeteer/puppeteer/issues/1805
+	const submitForm = () => page.$eval( '.googlesitekit-setup-module__action button', ( el ) => el.click() );
+
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
@@ -154,8 +159,7 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForRequest( ( req ) => req.url().match( 'analytics.google.com/analytics/web' ) );
 	} );
 
-	// TODO: Fix instability to remove skip.
-	it.skip( 'prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
+	it( 'prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
 		scope = 'https://www.googleapis.com/auth/analytics.edit';
 		interceptCreateProfileRequest = true;
 
@@ -179,8 +183,8 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /set up a new property/i } );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
-		await expect( page ).toClick( '.mdc-button:not(:disabled)', { text: /configure analytics/i } );
-		await page.waitForSelector( '.mdc-dialog--open' );
+		await submitForm();
+		await page.waitForSelector( '.mdc-dialog--open', { timeout: 3000 } );
 
 		// Click on proceed button and wait for oauth request.
 		await Promise.all( [
@@ -201,8 +205,7 @@ describe( 'Analytics write scope requests', () => {
 		expect( console ).toHaveErrored(); // Permission scope error.
 	} );
 
-	// TODO: Fix instability to remove skip.
-	it.skip( 'prompts for additional permissions during a new Analytics profile creation if the user has not granted the Analytics edit scope', async () => {
+	it( 'prompts for additional permissions during a new Analytics profile creation if the user has not granted the Analytics edit scope', async () => {
 		scope = 'https://www.googleapis.com/auth/analytics.edit';
 
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
@@ -229,8 +232,8 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /set up a new view/i } );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
-		await expect( page ).toClick( '.mdc-button:not(:disabled)', { text: /configure analytics/i } );
-		await page.waitForSelector( '.mdc-dialog--open' );
+		await submitForm();
+		await page.waitForSelector( '.mdc-dialog--open', { timeout: 3000 } );
 
 		// Click on proceed button and wait for oauth request.
 		await Promise.all( [

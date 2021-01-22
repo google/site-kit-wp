@@ -44,7 +44,8 @@ import OptIn from '../OptIn';
 import CompatibilityChecks from './CompatibilityChecks';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../../googlesitekit/datastore/user/constants';
-const { useSelect } = Data;
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+const { useSelect, useDispatch } = Data;
 
 function SetupUsingProxy() {
 	const {
@@ -66,10 +67,11 @@ function SetupUsingProxy() {
 		};
 	} );
 
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const onButtonClick = useCallback( async ( event ) => {
 		event.preventDefault();
 		await trackEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
-		global.location.assign( proxySetupURL );
+		navigateTo( proxySetupURL );
 	}, [ proxySetupURL ] );
 
 	// @TODO: this needs to be migrated to the core/site datastore in the future

@@ -57,24 +57,31 @@ function usingGenerateGTMAnalyticsPropertyStory( args ) {
 	} );
 }
 
-storiesOf( 'Analytics Module/Settings', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		provideModules( registry, [ {
-			slug: 'analytics',
-			active: true,
-			connected: true,
-		} ] );
-		provideModuleRegistrations( registry );
+const withRegistry = ( Story ) => {
+	const registry = createTestRegistry();
+	registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+	provideModules( registry, [ {
+		slug: 'analytics',
+		active: true,
+		connected: true,
+	} ] );
+	provideModuleRegistrations( registry );
 
-		return storyFn( registry );
-	} )
-	.add( 'View, closed', ( registry ) => {
+	return (
+		<Story registry={ registry } />
+	);
+};
+
+storiesOf( 'Analytics Module/Settings', module )
+	.add( 'View, closed', ( args, { registry } ) => {
 		return <Settings isOpen={ false } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'View, open with all settings', ( registry ) => {
+	.add( 'View, open with all settings', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
 			accountID: '1234567890',
@@ -84,8 +91,12 @@ storiesOf( 'Analytics Module/Settings', module )
 		} );
 
 		return <Settings isOpen={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'View, open with all settings, no snippet with existing tag', ( registry ) => {
+	.add( 'View, open with all settings, no snippet with existing tag', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
 			accountID: '1234567890',
@@ -101,8 +112,12 @@ storiesOf( 'Analytics Module/Settings', module )
 		}, { propertyID: 'UA-1234567890-1' } );
 
 		return <Settings isOpen={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, open with all settings', ( registry ) => {
+	.add( 'Edit, open with all settings', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
@@ -124,8 +139,12 @@ storiesOf( 'Analytics Module/Settings', module )
 		} );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, open when creating new view', ( registry ) => {
+	.add( 'Edit, open when creating new view', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
@@ -151,14 +170,22 @@ storiesOf( 'Analytics Module/Settings', module )
 		} );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, open with no accounts', ( registry ) => {
+	.add( 'Edit, open with no accounts', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, with existing tag w/ access', ( registry ) => {
+	.add( 'Edit, with existing tag w/ access', ( args, { registry } ) => {
 		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
 			// eslint-disable-next-line sitekit/camelcase-acronyms
@@ -180,8 +207,12 @@ storiesOf( 'Analytics Module/Settings', module )
 		}, { propertyID: existingTag.propertyID } );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, with existing tag w/o access', ( registry ) => {
+	.add( 'Edit, with existing tag w/o access', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 
 		const existingTag = {
@@ -203,6 +234,10 @@ storiesOf( 'Analytics Module/Settings', module )
 		}, { propertyID: existingTag.propertyID } );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
 	.add( 'No Tag, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: true } ) )
 	.add( 'No Tag, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: false } ) )

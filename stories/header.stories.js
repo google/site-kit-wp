@@ -29,57 +29,38 @@ import DateRangeSelector from '../assets/js/components/DateRangeSelector';
 import { createTestRegistry, provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
 import { enableFeature } from './utils/features';
 
-// storiesOf( 'Global', module )
-// 	.addDecorator( ( Story ) => {
-// 		const registry = createTestRegistry();
-// 		provideUserAuthentication( registry );
-// 		provideSiteInfo( registry );
-
-// 		return (
-// 			<WithTestRegistry registry={ registry }>
-// 				<Story />
-// 			</WithTestRegistry>
-// 		);
-// 	} )
-// 	.add( 'Plugin Header', () => {
-// 		return (
-// 			<Header />
-// 		);
-// 	} )
-// 	.add( 'Plugin Header with Date Selector', () => {
-// 		enableFeature( 'storeErrorNotifications' );
-
-// 		return (
-// 			<Header>
-// 				<DateRangeSelector />
-// 			</Header>
-// 		);
-// 	} );
-
-export const PluginHeader = () => <Header />;
-export const PluginHeaderWithDateSelector = () => {
-	enableFeature( 'storeErrorNotifications' );
+const withRegistry = ( Story ) => {
+	const registry = createTestRegistry();
+	provideUserAuthentication( registry );
+	provideSiteInfo( registry );
 
 	return (
-		<Header>
-			<DateRangeSelector />
-		</Header>
+		<WithTestRegistry registry={ registry }>
+			<Story />
+		</WithTestRegistry>
 	);
 };
 
-export default {
-	title: 'Global',
-	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
-			provideUserAuthentication( registry );
-			provideSiteInfo( registry );
+storiesOf( 'Global', module )
+	.add( 'Plugin Header', () => {
+		return (
+			<Header />
+		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
+	} )
+	.add( 'Plugin Header with Date Selector', () => {
+		enableFeature( 'storeErrorNotifications' );
 
-			return (
-				<WithTestRegistry registry={ registry }>
-					<Story />
-				</WithTestRegistry>
-			);
-		},
-	],
-};
+		return (
+			<Header>
+				<DateRangeSelector />
+			</Header>
+		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
+	} );

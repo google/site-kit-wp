@@ -47,31 +47,42 @@ const defaultSettings = {
 
 const Settings = createLegacySettingsWrapper( 'optimize' );
 
-storiesOf( 'Optimize Module/Settings', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		provideModules( registry, [ {
-			slug: 'optimize',
-			active: true,
-			connected: true,
-		} ] );
-		provideModuleRegistrations( registry );
+const withRegistry = ( Story ) => {
+	const registry = createTestRegistry();
+	registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+	provideModules( registry, [ {
+		slug: 'optimize',
+		active: true,
+		connected: true,
+	} ] );
+	provideModuleRegistrations( registry );
 
-		return storyFn( registry );
-	} )
-	.add( 'View, closed', ( registry ) => {
+	return (
+		<Story registry={ registry } />
+	);
+};
+
+storiesOf( 'Optimize Module/Settings', module )
+	.add( 'View, closed', ( args, { registry } ) => {
 		return <Settings isOpen={ false } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'View, open with all settings', ( registry ) => {
+	.add( 'View, open with all settings', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
 			optimizeID: 'OPT-1234567',
 		} );
 
 		return <Settings isOpen={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, open with all settings', ( registry ) => {
+	.add( 'Edit, open with all settings', ( args, { registry } ) => {
 		registry.dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -81,15 +92,23 @@ storiesOf( 'Optimize Module/Settings', module )
 		} );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, open with no optimize ID', ( registry ) => {
+	.add( 'Edit, open with no optimize ID', ( args, { registry } ) => {
 		registry.dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, open with all settings and AMP Experiment JSON Field', ( registry ) => {
+	.add( 'Edit, open with all settings and AMP Experiment JSON Field', ( args, { registry } ) => {
 		provideSiteInfo( registry, { ampMode: AMP_MODE_PRIMARY } );
 		registry.dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
@@ -100,5 +119,9 @@ storiesOf( 'Optimize Module/Settings', module )
 		} );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
 ;

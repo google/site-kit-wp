@@ -102,6 +102,16 @@ function createWidgetArea( registry, areaName, widgets ) {
 	return <WidgetAreaRenderer slug={ areaName } key={ areaName } />;
 }
 
+const withRegistry = ( Story ) => {
+	const registry = createTestRegistry();
+
+	return (
+		<WithTestRegistry registry={ registry }>
+			<Story />
+		</WithTestRegistry>
+	);
+};
+
 storiesOf( 'Global/Widgets', module )
 	.add( 'Widgets in boxes layout', () => (
 		<BoxesWidgets>
@@ -189,31 +199,34 @@ storiesOf( 'Global/Widgets', module )
 	) );
 
 storiesOf( 'Global/Widgets/Widget Area', module )
-	.addDecorator( ( storyFn ) => storyFn( createTestRegistry() ) )
 	.add( 'Regular sizes', ( registry ) => (
-		<WithTestRegistry registry={ registry }>
-			{ createWidgetAreas(
-				registry,
-				[ QUARTER, QUARTER, QUARTER, QUARTER ],
-				[ HALF, QUARTER, QUARTER ],
-				[ QUARTER, HALF, QUARTER ],
-				[ QUARTER, QUARTER, HALF ],
-				[ HALF, HALF ],
-				[ FULL ],
-			) }
-		</WithTestRegistry>
-	) )
+		createWidgetAreas(
+			registry,
+			[ QUARTER, QUARTER, QUARTER, QUARTER ],
+			[ HALF, QUARTER, QUARTER ],
+			[ QUARTER, HALF, QUARTER ],
+			[ QUARTER, QUARTER, HALF ],
+			[ HALF, HALF ],
+			[ FULL ],
+		)
+	), {
+		decorators: [
+			withRegistry,
+		],
+	} )
 	.add( 'Irregular sizes', ( registry ) => (
-		<WithTestRegistry registry={ registry }>
-			{ createWidgetAreas(
-				registry,
-				[ QUARTER, QUARTER, QUARTER, HALF, QUARTER ],
-				[ QUARTER, QUARTER, HALF, [ QUARTER, FULL ] ],
-				[ HALF, [ QUARTER, HALF ], FULL ],
-				[ [ HALF, FULL ], QUARTER, QUARTER ],
-				[ QUARTER, [ FULL, HALF ], QUARTER ],
-				[ QUARTER, QUARTER, [ HALF, FULL ] ],
-			) }
-		</WithTestRegistry>
-	) )
+		createWidgetAreas(
+			registry,
+			[ QUARTER, QUARTER, QUARTER, HALF, QUARTER ],
+			[ QUARTER, QUARTER, HALF, [ QUARTER, FULL ] ],
+			[ HALF, [ QUARTER, HALF ], FULL ],
+			[ [ HALF, FULL ], QUARTER, QUARTER ],
+			[ QUARTER, [ FULL, HALF ], QUARTER ],
+			[ QUARTER, QUARTER, [ HALF, FULL ] ],
+		)
+	), {
+		decorators: [
+			withRegistry,
+		],
+	} )
 ;

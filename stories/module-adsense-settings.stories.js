@@ -62,26 +62,33 @@ const completeSettings = {
 
 const Settings = createLegacySettingsWrapper( 'adsense' );
 
-storiesOf( 'AdSense Module/Settings', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
-		provideUserAuthentication( registry );
-		provideModules( registry, [ {
-			slug: 'adsense',
-			active: true,
-			connected: true,
-		} ] );
-		provideModuleRegistrations( registry );
+const withRegistry = ( Story ) => {
+	const registry = createTestRegistry();
+	registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+	registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
+	provideUserAuthentication( registry );
+	provideModules( registry, [ {
+		slug: 'adsense',
+		active: true,
+		connected: true,
+	} ] );
+	provideModuleRegistrations( registry );
 
-		return storyFn( registry );
+	return (
+		<Story registry={ registry } />
+	);
+};
+
+storiesOf( 'AdSense Module/Settings', module )
+	.add( 'View, closed', () => {
+		return <Settings isOpen={ false } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'View, closed', ( registry ) => {
-		return <Settings isOpen={ false } registry={ registry } />;
-	} )
-	.add( 'View, open with setup incomplete', ( registry ) => {
+	.add( 'View, open with setup incomplete', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...completeSettings,
 			accountStatus: ACCOUNT_STATUS_PENDING,
@@ -95,28 +102,48 @@ storiesOf( 'AdSense Module/Settings', module )
 			setupComplete: false,
 		};
 
-		return <Settings isOpen={ true } registry={ registry } module={ module } />;
+		return <Settings isOpen={ true } module={ module } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'View, open with all settings', ( registry ) => {
+	.add( 'View, open with all settings', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
 
 		return <Settings isOpen={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, open', ( registry ) => {
+	.add( 'Edit, open', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, open with existing tag (same account)', ( registry ) => {
+	.add( 'Edit, open with existing tag (same account)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( completeSettings.clientID );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, open with existing tag (different account)', ( registry ) => {
+	.add( 'Edit, open with existing tag (different account)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'ca-pub-12345678' );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
 ;
