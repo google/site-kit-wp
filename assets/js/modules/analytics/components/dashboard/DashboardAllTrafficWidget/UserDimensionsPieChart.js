@@ -71,13 +71,13 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
 
 	// Create a unique chartID to use for this component's GoogleChart child component.
-	const chartID = useInstanceId( UserDimensionsPieChart );
+	const chartID = `user-dimensions-pie-chart-${ useInstanceId( UserDimensionsPieChart ) }`;
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onReady = useCallback( () => {
 		setChartLoaded( true );
 
-		const chartData = GoogleChart.charts.get( `user-dimensions-pie-chart-${ chartID }` );
+		const chartData = GoogleChart.charts.get( chartID );
 		const { chart, onSelect } = chartData || {};
 		const { slices } = UserDimensionsPieChart.chartOptions;
 
@@ -85,7 +85,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 			chartData.onSelect = global.google.visualization.events.addListener( chart, 'select', () => {
 				const { row } = chart.getSelection()?.[ 0 ] || {};
 				if ( row !== null && row !== undefined ) {
-					const { dataTable } = GoogleChart.charts.get( `user-dimensions-pie-chart-${ chartID }` ) || {};
+					const { dataTable } = GoogleChart.charts.get( chartID ) || {};
 					if ( dataTable ) {
 						const dimensionValue = dataTable.getValue( row, 0 );
 						const isOthers = __( 'Others', 'google-site-kit' ) === dimensionValue;
@@ -213,7 +213,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart">
 			<GoogleChart
-				chartID={ `user-dimensions-pie-chart-${ chartID }` }
+				chartID={ chartID }
 				chartType="pie"
 				options={ options }
 				data={ dataMap }
