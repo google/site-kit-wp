@@ -55,6 +55,6 @@ add_filter(
 
 		return ! empty( $features[ $feature_name ] );
 	},
-	1,
+	999,
 	3
 );
