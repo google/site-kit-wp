@@ -38,7 +38,7 @@ trait Method_Proxy_Trait {
 		static $calls = array();
 
 		return function ( ...$args ) use ( $method, &$calls ) {
-			$key = get_class( $this ) . '::' . $method;
+			$key = get_class( $this ) . '::' . spl_object_hash( $this ) . '::' . $method;
 			if ( ! array_key_exists( $key, $calls ) ) {
 				$calls[ $key ] = $this->{ $method }( ...$args );
 			}
