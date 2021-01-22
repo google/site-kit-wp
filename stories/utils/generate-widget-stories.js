@@ -24,7 +24,7 @@ import { storiesOf, Story } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Widgets from 'googlesitekit-widgets';
+// import Widgets from 'googlesitekit-widgets'; TODO:
 import { CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
@@ -32,8 +32,10 @@ import {
 	provideModules,
 	provideSiteInfo,
 } from '../../tests/js/utils';
+import Widget from '../../assets/js/googlesitekit/widgets/components/Widget';
+import { getWidgetComponentProps } from '../../assets/js/googlesitekit/widgets/util';
 
-const { components: { Widget } } = Widgets;
+// const { components: { Widget } } = Widgets; TODO:
 
 /**
  * Generates stories for a report based widget using provided data.
@@ -210,24 +212,27 @@ export function generateReportBasedWidgetStories( {
 		...customVariants,
 	};
 
-	let widget;
+	const slugs = moduleSlugs.map( ( slug ) => {
+		return `${ slug }-widget`;
+	} );
+	const slug = slugs.join( ' ' );
+
+	const widgetComponentProps = getWidgetComponentProps( slug );
+
+	let widgetElement = <Component { ...widgetComponentProps } />;
+
 	if ( wrapWidget ) {
-		const slugs = moduleSlugs.map( ( slug ) => {
-			return `${ slug }-widget`;
-		} );
-		widget = (
-			<Widget slug={ slugs.join( ' ' ) }>
-				<Component />
+		widgetElement = (
+			<Widget widgetSlug={ slug }>
+				{ widgetElement }
 			</Widget>
 		);
-	} else {
-		widget = <Component />;
 	}
 
 	Object.keys( variants ).forEach( ( variant ) => {
 		stories.add( variant, ( registry ) => (
 			<WithTestRegistry registry={ registry } callback={ variants[ variant ] }>
-				{ widget }
+				{ widgetElement }
 			</WithTestRegistry>
 		) );
 	} );
