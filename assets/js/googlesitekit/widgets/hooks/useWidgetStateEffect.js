@@ -1,5 +1,5 @@
 /**
- * Widget Area styles.
+ * `useWidgetStateEffect` hook.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,27 +16,25 @@
  * limitations under the License.
  */
 
-.googlesitekit-widget-area--composite .googlesitekit-widget-area-widgets {
+/**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
 
-	@include shadow;
-	background: $c-base;
-}
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../datastore/constants';
+const { useDispatch } = Data;
 
-.googlesitekit-widget-area-header {
-	margin: 0 0 1rem 0;
+export default function useWidgetStateEffect( widgetSlug, Component, metadata ) {
+	const { setWidgetState, unsetWidgetState } = useDispatch( STORE_NAME );
 
-	.googlesitekit-widget-area-header__title {
-		color: $c-tertiary;
-		font-weight: 400;
-		margin: 0;
-	}
-
-	.googlesitekit-widget-area-header__subtitle {
-		color: $c-boulder;
-		font-family: $f-primary;
-		font-size: 0.75rem;
-		font-weight: 400;
-		line-height: 1.2;
-		margin: 0;
-	}
+	useEffect( () => {
+		setWidgetState( widgetSlug, Component, metadata );
+		return () => {
+			unsetWidgetState( widgetSlug, Component, metadata );
+		};
+	}, [ widgetSlug, Component, metadata ] );
 }

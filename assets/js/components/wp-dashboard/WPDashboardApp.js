@@ -37,7 +37,7 @@ import WPDashboardImpressions from './WPDashboardImpressions';
 import WPDashboardClicks from './WPDashboardClicks';
 import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
 import WPDashboardSessionDuration from './WPDashboardSessionDuration';
-import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
+import ActivateModuleCTA from '../ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -77,10 +77,10 @@ const WPDashboardApp = () => {
 					{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 						<div className="googlesitekit-wp-dashboard-stats__cta">
 							{ ! analyticsModuleActive && (
-								<AnalyticsInactiveCTA />
+								<ActivateModuleCTA moduleSlug="analytics" />
 							) }
 							{ analyticsModuleActive && (
-								<CompleteModuleActivationCTA slug="analytics" />
+								<CompleteModuleActivationCTA moduleSlug="analytics" />
 							) }
 						</div>
 					) }

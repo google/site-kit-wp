@@ -28,6 +28,8 @@ import { WIDGET_WIDTHS } from './constants';
 
 const ASSIGN_WIDGET = 'ASSIGN_WIDGET';
 const REGISTER_WIDGET = 'REGISTER_WIDGET';
+const SET_WIDGET_STATE = 'SET_WIDGET_STATE';
+const UNSET_WIDGET_STATE = 'UNSET_WIDGET_STATE';
 
 const WidgetWidthKeys = Object.keys( WIDGET_WIDTHS ).map( ( ( key ) => `WIDGET_WIDTHS.${ key }` ) ).join( ', ' );
 
@@ -35,6 +37,7 @@ export const initialState = {
 	areaAssignments: {},
 	registryKey: undefined,
 	widgets: {},
+	widgetStates: {},
 };
 
 export const actions = {
@@ -98,6 +101,61 @@ export const actions = {
 			type: REGISTER_WIDGET,
 		};
 	},
+
+	/**
+	 * Sets widget state for a given widget.
+	 *
+	 * Used internally by various components that can be returned by
+	 * registered widget components.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string}      slug       Widget slug.
+	 * @param {WPComponent} Component  Component returned by the widget.
+	 * @param {Object}      [metadata] Relevant metadata / props passed to
+	 *                                 the Component instance.
+	 * @return {Object} Redux-style action.
+	 */
+	setWidgetState( slug, Component, metadata = {} ) {
+		return {
+			payload: {
+				slug,
+				Component,
+				metadata,
+			},
+			type: SET_WIDGET_STATE,
+		};
+	},
+
+	/**
+	 * Unsets widget state for a given widget.
+	 *
+	 * The widget state will only be unset if the current widget state matches
+	 * exactly the passed parameters.
+	 *
+	 * Used internally by various components that can be returned by
+	 * registered widget components.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string}      slug       Widget slug.
+	 * @param {WPComponent} Component  Component returned by the widget.
+	 * @param {Object}      [metadata] Relevant metadata / props passed to
+	 *                                 the Component instance.
+	 * @return {Object} Redux-style action.
+	 */
+	unsetWidgetState( slug, Component, metadata = {} ) {
+		return {
+			payload: {
+				slug,
+				Component,
+				metadata,
+			},
+			type: UNSET_WIDGET_STATE,
+		};
+	},
 };
 
 export const controls = {};
@@ -142,6 +200,35 @@ export const reducer = ( state, { type, payload } ) => {
 						slug,
 					},
 				},
+			};
+		}
+
+		case SET_WIDGET_STATE: {
+			const { slug, Component, metadata } = payload;
+
+			return {
+				...state,
+				widgetStates: {
+					...state.widgetStates,
+					[ slug ]: {
+						Component,
+						metadata,
+					},
+				},
+			};
+		}
+
+		case UNSET_WIDGET_STATE: {
+			const { slug, Component, metadata } = payload;
+
+			const widgetStates = { ...state.widgetStates };
+			if ( widgetStates?.[ slug ]?.Component === Component && widgetStates?.[ slug ]?.metadata === metadata ) {
+				delete widgetStates[ slug ];
+			}
+
+			return {
+				...state,
+				widgetStates,
 			};
 		}
 
@@ -210,6 +297,24 @@ export const selectors = {
 		invariant( slug, 'slug is required to get a widget.' );
 
 		return state.widgets[ slug ] || null;
+	},
+
+	/**
+	 * Returns the state data of a widget by its slug.
+	 *
+	 * Used internally by the WidgetAreaRenderer component to recognize
+	 * widgets in special states.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Widget slug.
+	 * @return {Object|null} Object with `Component` and `metadata` properties,
+	 *                       if the widget has a special state, or `null`.
+	 */
+	getWidgetState( state, slug ) {
+		return state.widgetStates[ slug ] || null;
 	},
 };
 
