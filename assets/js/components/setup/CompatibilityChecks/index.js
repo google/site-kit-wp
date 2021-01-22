@@ -35,7 +35,7 @@ import Warning from '../../legacy-notifications/warning';
 import ProgressBar from '../../ProgressBar';
 import { useChecks } from '../../../hooks/useChecks';
 import CompatibilityErrorNotice from './CompatibilityErrorNotice';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { checkAMPConnectivity, checkHealthChecks, checkHostname, checkWPVersion, registryCheckSetupTag } from './checks';
 
 const createCompatibilityChecks = ( registry ) => {
