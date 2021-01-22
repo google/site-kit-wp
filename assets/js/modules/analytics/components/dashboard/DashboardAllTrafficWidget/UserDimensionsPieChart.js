@@ -246,7 +246,7 @@ UserDimensionsPieChart.chartOptions = {
 		width: '100%',
 	},
 	backgroundColor: 'transparent',
-	fontName: 'Roboto',
+	// fontName: 'Roboto',
 	fontSize: 12,
 	height: 410,
 	legend: {
@@ -260,7 +260,7 @@ UserDimensionsPieChart.chartOptions = {
 	pieHole: 0.6,
 	pieSliceTextStyle: {
 		color: 'black',
-		fontName: 'Roboto',
+		// fontName: 'Roboto',
 		fontSize: 12,
 	},
 	slices: {
