@@ -169,16 +169,21 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 				</p>`
 			);
 
-			if ( sourceLink && othersSupportURL && rowData[ 0 ].toLowerCase() === 'others' ) {
+			if ( sourceLink && rowData[ 0 ].toLowerCase() === 'others' ) {
 				tooltip += (
 					`<p>
 						<a class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit" href="${ sourceLink }" target="_blank" rel="noreferrer noopener">
 							${ __( 'See the detailed breakdown in Analytics', 'google-site-kit' ) }
 						</a>
-					</p>
-					<p>
+					</p>`
+				);
+			}
+
+			if ( othersSupportURL && rowData[ 0 ].toLowerCase() === '(other)' ) {
+				tooltip += (
+					`<p>
 						<a class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit" href="${ othersSupportURL }" target="_blank" rel="noreferrer noopener">
-							${ __( 'Learn more about what "(others)" means', 'google-site-kit' ) }
+							${ /* translators: %s: pie slice label */ sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowData[ 0 ].toLowerCase() ) }
 						</a>
 					</p>`
 				);
@@ -186,10 +191,9 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 
 			if ( notSetSupportURL && rowData[ 0 ].toLowerCase() === '(not set)' ) {
 				tooltip += (
-					`
-					<p>
+					`<p>
 						<a class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit" href="${ notSetSupportURL }" target="_blank" rel="noreferrer noopener">
-							${ __( 'Learn more about what "(not set)" means', 'google-site-kit' ) }
+							${ /* translators: %s: pie slice label */ sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowData[ 0 ].toLowerCase() ) }
 						</a>
 					</p>`
 				);
