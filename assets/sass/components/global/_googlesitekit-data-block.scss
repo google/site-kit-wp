@@ -17,6 +17,9 @@
  */
 
 .googlesitekit-data-block {
+	--color-up: #{$c-chateau-green};
+	--color-down: #{$c-thunderbird};
+
 	position: relative;
 	text-align: left;
 
@@ -224,7 +227,12 @@
 		width: 9px;
 	}
 
-	.googlesitekit-data-block__value {
+	.googlesitekit-data-block__suffix {
+		margin-left: 4px;
+	}
+
+	.googlesitekit-data-block__value,
+	.googlesitekit-data-block__suffix {
 		color: $c-primary;
 		display: inline-block;
 		font-size: 0.75rem;
@@ -234,6 +242,14 @@
 
 		.googlesitekit-adminbar & {
 			font-size: 16px;
+		}
+
+		&--up {
+			color: var(--color-up);
+		}
+
+		&--down {
+			color: var(--color-down);
 		}
 	}
 
