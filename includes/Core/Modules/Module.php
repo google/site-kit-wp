@@ -85,9 +85,10 @@ abstract class Module {
 	 * Module information.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t The default value is NULL.
 	 * @var array
 	 */
-	private $info = array();
+	private $info;
 
 	/**
 	 * Google API client instance.
@@ -125,7 +126,6 @@ abstract class Module {
 		$this->options        = $options ?: new Options( $this->context );
 		$this->user_options   = $user_options ?: new User_Options( $this->context );
 		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
-		$this->info           = $this->parse_info( (array) $this->setup_info() );
 	}
 
 	/**
@@ -134,6 +134,21 @@ abstract class Module {
 	 * @since 1.0.0
 	 */
 	abstract public function register();
+
+	/**
+	 * Gets an array with module information.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array The array with module information.
+	 */
+	private function get_module_info() {
+		if ( is_null( $this->info ) ) {
+			$this->info = $this->parse_info( (array) $this->setup_info() );
+		}
+
+		return $this->info;
+	}
 
 	/**
 	 * Magic isset-er.
@@ -146,7 +161,8 @@ abstract class Module {
 	 * @return bool True if value for $key is available, false otherwise.
 	 */
 	final public function __isset( $key ) {
-		return isset( $this->info[ $key ] );
+		$info = $this->get_module_info();
+		return isset( $info[ $key ] );
 	}
 
 	/**
@@ -160,11 +176,13 @@ abstract class Module {
 	 * @return mixed Value for $key, or null if not available.
 	 */
 	final public function __get( $key ) {
-		if ( ! isset( $this->info[ $key ] ) ) {
+		$info = $this->get_module_info();
+
+		if ( ! isset( $info[ $key ] ) ) {
 			return null;
 		}
 
-		return $this->info[ $key ];
+		return $info[ $key ];
 	}
 
 	/**
