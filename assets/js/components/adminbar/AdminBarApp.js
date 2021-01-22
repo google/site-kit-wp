@@ -30,7 +30,7 @@ import AdminBarSessions from './AdminBarSessions';
 import AdminBarImpressions from './AdminBarImpressions';
 import AdminBarClicks from './AdminBarClicks';
 import LegacyAdminBarModules from './LegacyAdminBarModules';
-import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
+import ActivateModuleCTA from '../ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import Data from 'googlesitekit-data';
 import Link from '../Link';
@@ -100,11 +100,11 @@ export default function AdminBarApp() {
 											mdc-layout-grid__cell--span-4-tablet
 										">
 											{ ! analyticsModuleActive && (
-												<AnalyticsInactiveCTA />
+												<ActivateModuleCTA moduleSlug="analytics" />
 											) }
 
 											{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
-												<CompleteModuleActivationCTA slug="analytics" />
+												<CompleteModuleActivationCTA moduleSlug="analytics" />
 											) }
 										</div>
 									) }

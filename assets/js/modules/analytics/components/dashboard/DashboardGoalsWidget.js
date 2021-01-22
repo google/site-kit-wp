@@ -33,17 +33,14 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import CTA from '../../../../components/legacy-notifications/cta';
-import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import { calculateChange } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
-import CompleteModuleActivationCTA from '../../../../components/CompleteModuleActivationCTA';
 
 const { useSelect } = Data;
 
-function DashboardGoalsWidget() {
+function DashboardGoalsWidget( { WidgetReportZero } ) {
 	const {
 		data,
 		error,
@@ -112,7 +109,7 @@ function DashboardGoalsWidget() {
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	const sparkLineData = [
@@ -165,6 +162,6 @@ function DashboardGoalsWidget() {
 
 export default whenActive( {
 	moduleName: 'analytics',
-	FallbackComponent: () => <AnalyticsInactiveCTA />,
-	IncompleteComponent: () => <CompleteModuleActivationCTA slug="analytics" />,
+	FallbackComponent: ( { WidgetActivateModuleCTA } ) => <WidgetActivateModuleCTA moduleSlug="analytics" />,
+	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => <WidgetCompleteModuleActivationCTA moduleSlug="analytics" />,
 } )( DashboardGoalsWidget );
