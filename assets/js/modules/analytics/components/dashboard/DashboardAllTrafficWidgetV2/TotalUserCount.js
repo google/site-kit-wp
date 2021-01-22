@@ -1,7 +1,7 @@
 /**
  * TotalUserCount component
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { numFmt, calculateChange } from '../../../../../util';
 import { getAvailableDateRanges } from '../../../../../util/date-range';
@@ -105,30 +105,31 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 	}
 
 	return (
-		<div className="googlesitekit-widget--analyticsAllTrafficV2__totalcount">
-			<h3>
+		<div className="googlesitekit-widget--analyticsAllTrafficV2__totalcount googlesitekit-data-block">
+			<h3 className="googlesitekit-subheading-1 googlesitekit-data-block__title">
 				{ __( 'Users', 'google-site-kit' ) }
 				{ dimensionValue && (
 					<span>{ dimensionValue[ 0 ].toUpperCase() }{ dimensionValue.substring( 1 ) }</span>
 				) }
 			</h3>
-			<h2>
+			<div className="googlesitekit-data-block__datapoint">
 				{ numFmt( current?.values?.[ 0 ] ) }
-			</h2>
-			<div>
-				<span className={ classnames( 'googlesitekit-widget--analyticsAllTrafficV2__totalcount--change', {
-					'googlesitekit-widget--analyticsAllTrafficV2__totalcount--up-change': 0 <= change,
-					'googlesitekit-widget--analyticsAllTrafficV2__totalcount--down-change': 0 > change,
-				} ) }>
+			</div>
+			<div className="googlesitekit-data-block__change">
+				<span className="googlesitekit-data-block__arrow">
 					<ChangeArrow
 						direction={ 0 <= change ? 'up' : 'down' }
-						width={ 18 }
-						height={ 17 }
+						width={ 9 }
+						height={ 9 }
 					/>
-
+				</span>
+				<span className={ classnames(
+					'googlesitekit-data-block__value',
+					`googlesitekit-data-block__value--${ 0 <= change ? 'up' : 'down' }`
+				) }>
 					{ numFmt( Math.abs( change ), { style: 'percent', maximumFractionDigits: 1 } ) }
 				</span>
-				<span className="googlesitekit-widget--analyticsAllTrafficV2__totalcount--daterange">
+				<span className="googlesitekit-data-block__suffix">
 					{ currentDateRangeLabel }
 				</span>
 			</div>

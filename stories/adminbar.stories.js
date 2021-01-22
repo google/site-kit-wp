@@ -1,7 +1,7 @@
 /**
  * Admin Bar Component Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import { storiesOf } from '@storybook/react';
  */
 import { GoogleSitekitAdminbar } from '../assets/js/googlesitekit-adminbar';
 import { googlesitekit as wpAdminBarData } from '../.storybook/data/blog---googlesitekit';
-import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { provideModules, provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';

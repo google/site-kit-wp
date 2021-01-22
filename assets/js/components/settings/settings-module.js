@@ -1,7 +1,7 @@
 /**
  * SettingsModule component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ import GenericError from '../legacy-notifications/generic-error';
 import SetupModule from './SetupModule';
 import Dialog from '../../components/Dialog';
 import ModuleIcon from '../ModuleIcon';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import SettingsRenderer from '../settings/SettingsRenderer';
 import VisuallyHidden from '../VisuallyHidden';
 import { Grid, Row, Cell } from '../../material-components/layout';
