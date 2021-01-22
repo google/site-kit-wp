@@ -24,28 +24,18 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore/constants';
+import useWidgetStateEffect from '../hooks/useWidgetStateEffect';
 import ActivateModuleCTA from '../../../components/ActivateModuleCTA';
-
-const { useDispatch } = Data;
 
 // The supported props must match `ActivateModuleCTA` (except `widgetSlug`).
 export default function WidgetActivateModuleCTA( { widgetSlug, moduleSlug, ...props } ) {
-	const { setWidgetState, unsetWidgetState } = useDispatch( STORE_NAME );
-
-	useEffect( () => {
-		const metadata = { moduleSlug };
-		setWidgetState( widgetSlug, ActivateModuleCTA, metadata );
-		return () => {
-			unsetWidgetState( widgetSlug, ActivateModuleCTA, metadata );
-		};
-	}, [ widgetSlug, moduleSlug ] );
+	const metadata = useMemo( () => ( { moduleSlug } ), [ moduleSlug ] );
+	useWidgetStateEffect( widgetSlug, ActivateModuleCTA, metadata );
 
 	return <ActivateModuleCTA moduleSlug={ moduleSlug } { ...props } />;
 }
