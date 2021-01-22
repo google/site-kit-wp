@@ -1,5 +1,5 @@
 /**
- * Widgets class names utilities.
+ * Widgets layout utilities.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,49 +19,29 @@
 /**
  * Internal dependencies
  */
-import { WIDGET_WIDTHS } from '../datastore/constants';
-
-const WIDTH_GRID_COUNTER_MAP = {
-	[ WIDGET_WIDTHS.QUARTER ]: 3,
-	[ WIDGET_WIDTHS.HALF ]: 6,
-	[ WIDGET_WIDTHS.FULL ]: 12,
-};
-
-const WIDTH_GRID_CLASS_MAP = {
-	[ WIDGET_WIDTHS.QUARTER ]: [
-		'mdc-layout-grid__cell',
-		'mdc-layout-grid__cell--span-2-phone',
-		'mdc-layout-grid__cell--span-3-desktop',
-		'mdc-layout-grid__cell--span-4-tablet',
-	],
-	[ WIDGET_WIDTHS.HALF ]: [
-		'mdc-layout-grid__cell',
-		'mdc-layout-grid__cell--span-6-desktop',
-		'mdc-layout-grid__cell--span-8-tablet',
-	],
-	[ WIDGET_WIDTHS.FULL ]: [
-		'mdc-layout-grid__cell',
-		'mdc-layout-grid__cell--span-12',
-	],
-};
+import { WIDTH_GRID_COUNTER_MAP, WIDTH_GRID_CLASS_MAP } from './constants';
 
 /**
  * Adjusts class names to better fit into the current row knowing that the default sizes don't fill the row completely.
  *
  * @since 1.21.0
  *
- * @param {Array.<string>} classNames Current class names.
- * @param {number}         counter    Current counter.
- * @return {Array} Array where the first element is the updated list of class names
- *                 and the second element is the resulting counter after the update.
+ * @param {Array.<string>} classNames   Current class names.
+ * @param {Array.<number>} columnWidths Current column widths.
+ * @param {number}         counter      Current counter.
+ * @return {Array} Array where the first element is the updated list of class
+ *                 names, the second element is the updated list of column
+ *                 widths, and the third element is the resulting counter
+ *                 after the update.
  */
-function resizeClasses( classNames, counter ) {
+function resizeClasses( classNames, columnWidths, counter ) {
 	// Safeguard: counter must always be 9 for this to work.
 	if ( counter !== 9 ) {
-		return [ classNames, counter ];
+		return [ classNames, columnWidths, counter ];
 	}
 
 	classNames = [ ...classNames ];
+	columnWidths = [ ...columnWidths ];
 
 	// Start counting backwards from the last item.
 	let i = classNames.length - 1;
@@ -79,25 +59,24 @@ function resizeClasses( classNames, counter ) {
 
 		const singleWidgetClassNames = [ ...classNames[ i ] ];
 
-		// Replace the 3-column class with a 4-column class so this element goes from 1/4
-		// to 1/3 on desktop.
+		// Replace the 3-column class with a 4-column class, or the 6-column
+		// class with an 8-column class so that the overall row expands from
+		// 9 to the full 12 columns.
 		if ( singleWidgetClassNames.includes( 'mdc-layout-grid__cell--span-3-desktop' ) ) {
 			singleWidgetClassNames[ singleWidgetClassNames.indexOf( 'mdc-layout-grid__cell--span-3-desktop' ) ] = 'mdc-layout-grid__cell--span-4-desktop';
 			counter -= 3;
-		}
-
-		// Replace the 6-column class with a 8-column class so this element goes from 1/2
-		// to 2/3 on desktop.
-		if ( singleWidgetClassNames.includes( 'mdc-layout-grid__cell--span-6-desktop' ) ) {
+			columnWidths[ i ] = 4; // Correct the column width.
+		} else if ( singleWidgetClassNames.includes( 'mdc-layout-grid__cell--span-6-desktop' ) ) {
 			singleWidgetClassNames[ singleWidgetClassNames.indexOf( 'mdc-layout-grid__cell--span-6-desktop' ) ] = 'mdc-layout-grid__cell--span-8-desktop';
 			counter -= 6;
+			columnWidths[ i ] = 8; // Correct the column width.
 		}
 
-		classNames[ i ] = singleWidgetClassNames;
+		classNames[ i ] = singleWidgetClassNames; // Correct the class names.
 		i--;
 	}
 
-	return [ classNames, counter ];
+	return [ classNames, columnWidths, counter ];
 }
 
 /**
@@ -118,16 +97,22 @@ function getWidgetSizes( counter, widget ) {
 }
 
 /**
- * Gets widget class names for an area.
+ * Gets widget class names as well as column widths and row indexes for an area.
  *
- * @since 1.21.0
+ * @since n.e.x.t
  *
  * @param {Array.<Object>} activeWidgets List of active widgets.
- * @return {Array.<string>} List of class names for active widgets.
+ * @return {Object} Object with `classNames`, `columnWidths` and `rowIndexes`
+ *                  properties, each of which is an array with one item for
+ *                  each active widget.
  */
-export function getWidgetClassNames( activeWidgets ) {
+export function getWidgetLayout( activeWidgets ) {
 	let counter = 0;
+	let rowIndex = 0;
+
 	let classNames = [].fill( null, 0, activeWidgets.length );
+	let columnWidths = [];
+	const rowIndexes = [];
 
 	const ascending = ( { counter: a }, { counter: b } ) => a - b;
 	const descending = ( { counter: a }, { counter: b } ) => b - a;
@@ -156,27 +141,36 @@ export function getWidgetClassNames( activeWidgets ) {
 		// Grab the width of the first size in the sizes list, it's either the default one or the best suiting to the current row.
 		const width = sizes[ 0 ].width;
 
+		// Populate initial column width and row index for the widget.
+		// These may be corrected below in certain situations.
+		columnWidths.push( WIDTH_GRID_COUNTER_MAP[ width ] );
+		rowIndexes.push( rowIndex );
+
 		// Increase column counter based on width.
 		counter += WIDTH_GRID_COUNTER_MAP[ width ];
-
-		// If counter is exactly 12, the next widget is going to be in a new row.
-		if ( counter % 12 === 0 ) {
-			counter = 0;
-		}
 
 		// If counter is going above 12, this widget is too wide for the current row.
 		// So it's going to be the first widget in the next row instead.
 		if ( counter > 12 ) {
 			counter -= WIDTH_GRID_COUNTER_MAP[ width ];
 
+			// Correct the previously added row index for this widget as it
+			// will end up in the following row.
+			rowIndexes[ i ]++;
+
 			// If the column count without the overflowing widget is exactly 9, expand
 			// the widths of these widgets slightly to fill the entire 12 columns.
 			if ( counter === 9 ) {
-				[ classNames, counter ] = resizeClasses( classNames, counter );
+				[ classNames, columnWidths, counter ] = resizeClasses( classNames, columnWidths, counter );
 			}
 
 			// See above, initial counter for the next row of widgets.
 			counter = WIDTH_GRID_COUNTER_MAP[ width ];
+			rowIndex++;
+		} else if ( counter === 12 ) {
+			// Or if the counter is exactly 12, the next widget is going to be in a new row.
+			counter = 0;
+			rowIndex++;
 		}
 
 		// Actually set the class for the current widget. This must be set after
@@ -186,8 +180,8 @@ export function getWidgetClassNames( activeWidgets ) {
 	} );
 
 	if ( counter === 9 ) {
-		[ classNames, counter ] = resizeClasses( classNames, counter );
+		[ classNames, columnWidths, counter ] = resizeClasses( classNames, columnWidths, counter );
 	}
 
-	return classNames;
+	return { classNames, columnWidths, rowIndexes };
 }

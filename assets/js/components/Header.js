@@ -30,9 +30,11 @@ import UserMenu from './UserMenu';
 import LegacyErrorNotification from './legacy-notifications/error-notification';
 import ErrorNotifications from './notifications/ErrorNotifications';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { useFeature } from '../hooks/useFeature';
 const { useSelect } = Data;
 
 const Header = ( { children } ) => {
+	const storeErrorNotificationsEnabled = useFeature( 'storeErrorNotifications' );
 	const isAuthenticated = useSelect( ( select ) => select( CORE_USER ).isAuthenticated() );
 
 	return (
@@ -65,7 +67,7 @@ const Header = ( { children } ) => {
 				</section>
 			</header>
 			<LegacyErrorNotification />
-			{ featureFlags.storeErrorNotifications.enabled && <ErrorNotifications /> }
+			{ storeErrorNotificationsEnabled && <ErrorNotifications /> }
 		</Fragment>
 	);
 };
