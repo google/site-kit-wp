@@ -103,7 +103,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 				}
 			} );
 		}
-	}, [ dimensionName, setValues ] );
+	}, [ chartID, dimensionName, setValues ] );
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;
