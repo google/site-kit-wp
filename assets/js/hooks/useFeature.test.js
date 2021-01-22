@@ -1,5 +1,5 @@
 /**
- * User Input Component Stories.
+ * `useFeature` hook tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,21 +17,26 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
-import UserInputApp from '../assets/js/components/user-input/UserInputApp';
-import { WithTestRegistry } from '../tests/js/utils';
+import { renderHook } from '../../../tests/js/test-utils';
+import { useFeature } from './useFeature';
 
-storiesOf( 'User Input', module )
-	.add( 'UserInputApp', () => {
-		return (
-			<WithTestRegistry features={ [ 'userInput' ] }>
-				<UserInputApp />
-			</WithTestRegistry>
+describe( 'useFeature', () => {
+	it( 'should return false when a flag is not in the enabled features list', () => {
+		const { result } = renderHook(
+			() => useFeature( 'maxMode' )
 		);
+
+		expect( result.current ).toEqual( false );
 	} );
+
+	it( 'should return true for a flag set in the features context', () => {
+		const { result } = renderHook(
+			() => useFeature( 'discoLights' ),
+			{ features: [ 'discoLights' ] }
+		);
+
+		expect( result.current ).toEqual( true );
+	} );
+} );

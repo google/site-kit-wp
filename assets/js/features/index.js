@@ -1,5 +1,5 @@
 /**
- * Feature control utilities.
+ * Feature flags.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,33 +16,17 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import set from 'lodash/set';
-
-function setFeatureActive( feature, active ) {
-	set( global, `featureFlags.${ feature }.enabled`, active );
-}
+export const enabledFeatures = global?._googlesitekitBaseData?.enabledFeatures || [];
 
 /**
- * Enables a feature.
+ * Returns true if a feature is enabled; false otherwise.
  *
- * @since 1.22.0
+ * @since n.e.x.t
  *
- * @param {string} feature Feature to enable.
+ * @param {string} feature          The name of the feature to check.
+ * @param {?Array} _enabledFeatures Optional. The list of enabled features. Uses `enabledFeatures` set by the server in a global JS variable, by default.
+ * @return {boolean} `true` if a feature is enabled; `false` otherwise.
  */
-export function enableFeature( feature ) {
-	setFeatureActive( feature, true );
-}
-
-/**
- * Disables a feature.
- *
- * @since 1.22.0
- *
- * @param {string} feature Feature to disable.
- */
-export function disableFeature( feature ) {
-	setFeatureActive( feature, false );
-}
+export const isFeatureEnabled = ( feature, _enabledFeatures = enabledFeatures ) => {
+	return _enabledFeatures.includes( feature );
+};

@@ -1,5 +1,5 @@
 /**
- * User Input Component Stories.
+ * Feature Flags context for React components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,21 +17,15 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import { storiesOf } from '@storybook/react';
+import { createContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import UserInputApp from '../assets/js/components/user-input/UserInputApp';
-import { WithTestRegistry } from '../tests/js/utils';
+import { enabledFeatures } from '../../features';
 
-storiesOf( 'User Input', module )
-	.add( 'UserInputApp', () => {
-		return (
-			<WithTestRegistry features={ [ 'userInput' ] }>
-				<UserInputApp />
-			</WithTestRegistry>
-		);
-	} );
+const FeaturesContext = createContext( enabledFeatures );
+
+export default FeaturesContext;

@@ -1,7 +1,7 @@
 /**
- * User Input Component Stories.
+ * Feature Flags Provider component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,12 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
-import UserInputApp from '../assets/js/components/user-input/UserInputApp';
-import { WithTestRegistry } from '../tests/js/utils';
+import FeaturesContext from './FeaturesContext';
 
-storiesOf( 'User Input', module )
-	.add( 'UserInputApp', () => {
-		return (
-			<WithTestRegistry features={ [ 'userInput' ] }>
-				<UserInputApp />
-			</WithTestRegistry>
-		);
-	} );
+export const { Consumer, Provider } = FeaturesContext;
+
+const FeaturesProvider = Provider;
+
+export default FeaturesProvider;
