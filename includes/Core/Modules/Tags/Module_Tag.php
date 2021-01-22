@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Modules\Tags\Module_Tag
  *
  * @package   Google\Site_Kit\Core\Tags
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Tags\Tag;
 /**
  * Base class for a module tag.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ abstract class Module_Tag extends Tag {
 	/**
 	 * Module slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 * @var string
 	 */
 	protected $slug;
@@ -32,7 +32,7 @@ abstract class Module_Tag extends Tag {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param string $tag_id Tag ID.
 	 * @param string $module_slug Module slug.
@@ -45,7 +45,7 @@ abstract class Module_Tag extends Tag {
 	/**
 	 * Outputs the tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	abstract protected function render();
 

@@ -1,7 +1,7 @@
 /**
  * ModuleSetup component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { delay } from 'lodash';
 import PropTypes from 'prop-types';
 
 /**
@@ -36,11 +35,14 @@ import Header from '../Header';
 import Link from '../Link';
 import HelpLink from '../HelpLink';
 import { getSiteKitAdminURL } from '../../util';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-const { useSelect } = Data;
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+const { useSelect, useDispatch } = Data;
 
 export default function ModuleSetup( { moduleSlug } ) {
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
 	const settingsPageURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 
@@ -65,9 +67,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 			redirectURL = getSiteKitAdminURL( 'googlesitekit-dashboard', args );
 		}
 
-		delay( function() {
-			global.location.replace( redirectURL );
-		}, 500, 'later' );
+		navigateTo( redirectURL );
 	}, [ moduleSlug ] );
 
 	if ( ! module?.SetupComponent ) {

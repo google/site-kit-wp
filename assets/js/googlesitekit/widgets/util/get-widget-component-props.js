@@ -45,6 +45,11 @@ export function getWidgetComponentProps( widgetSlug ) {
 
 function withWidgetSlug( widgetSlug ) {
 	return ( WrappedComponent ) => {
-		return ( props ) => <WrappedComponent widgetSlug={ widgetSlug } { ...props } />;
+		const WithWidgetSlug = ( props ) => <WrappedComponent { ...props } widgetSlug={ widgetSlug } />;
+		WithWidgetSlug.displayName = 'WithWidgetSlug';
+		if ( WrappedComponent.displayName || WrappedComponent.name ) {
+			WithWidgetSlug.displayName += `(${ WrappedComponent.displayName || WrappedComponent.name })`;
+		}
+		return WithWidgetSlug;
 	};
 }

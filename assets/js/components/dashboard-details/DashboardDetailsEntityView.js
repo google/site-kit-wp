@@ -1,7 +1,7 @@
 /**
  * DashboardDetailsEntityView component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,12 @@ import Link from '../Link';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import DashboardDetailsModules from './DashboardDetailsModules';
 import DashboardDetailsEntityHeaderContainer from './DashboardDetailsEntityHeaderContainer';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function DashboardDetailsEntityView() {
+	const pageDashboardWidgetsEnabled = useFeature( 'widgets.pageDashboard' );
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
 
@@ -51,7 +53,7 @@ export default function DashboardDetailsEntityView() {
 				</Link>
 			</DashboardDetailsEntityHeaderContainer>
 
-			{ featureFlags.widgets.pageDashboard.enabled && (
+			{ pageDashboardWidgetsEnabled && (
 				<div className="
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-12

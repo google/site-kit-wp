@@ -1,7 +1,7 @@
 /**
  * DashboardAllTrafficWidget component
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as MODULES_ANALYTICS, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
-import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import whenActive from '../../../../../util/when-active';
 import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
@@ -35,6 +35,7 @@ import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import SourceLink from '../../../../../components/SourceLink';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
+import { getURLPath } from '../../../../../util/getURLPath';
 const { useSelect } = Data;
 
 function DashboardAllTrafficWidget( { Widget } ) {
@@ -60,7 +61,7 @@ function DashboardAllTrafficWidget( { Widget } ) {
 	if ( entityURL ) {
 		reportArgs = {
 			'explorer-table.plotKeys': '[]',
-			'_r.drilldown': `analytics.pagePath:${ entityURL }`,
+			'_r.drilldown': `analytics.pagePath:${ getURLPath( entityURL ) }`,
 		};
 	}
 
@@ -84,8 +85,7 @@ function DashboardAllTrafficWidget( { Widget } ) {
 					<Cell
 						className="googlesitekit-widget--analyticsAllTrafficV2__totals"
 						lgSize={ 7 }
-						mdSize={ 4 }
-						smSize={ 4 }
+						mdSize={ 8 }
 					>
 						<TotalUserCount
 							dimensionName={ dimensionName }
@@ -101,8 +101,7 @@ function DashboardAllTrafficWidget( { Widget } ) {
 					<Cell
 						className="googlesitekit-widget--analyticsAllTrafficV2__dimensions"
 						lgSize={ 5 }
-						mdSize={ 4 }
-						smSize={ 4 }
+						mdSize={ 8 }
 					>
 						<DimensionTabs
 							dimensionName={ dimensionName }

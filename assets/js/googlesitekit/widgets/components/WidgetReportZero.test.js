@@ -1,7 +1,7 @@
 /**
  * WidgetReportZero component tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
  */
 import { render, createTestRegistry, provideModules } from '../../../../../tests/js/test-utils';
 import WidgetReportZero from './WidgetReportZero';
-import { STORE_NAME as CORE_WIDGETS } from '../datastore/constants';
+import { STORE_NAME } from '../datastore/constants';
 import ReportZero from '../../../components/ReportZero';
 
 describe( 'WidgetReportZero', () => {
@@ -37,18 +37,18 @@ describe( 'WidgetReportZero', () => {
 		const moduleSlug = 'analytics';
 
 		// Initial state should be null.
-		expect( registry.select( CORE_WIDGETS ).getWidgetState( widgetSlug ) ).toBe( null );
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toBe( null );
 
 		// Special state should be set upon render.
 		const widget = render( <WidgetReportZero widgetSlug={ widgetSlug } moduleSlug={ moduleSlug } />, { registry } );
-		expect( registry.select( CORE_WIDGETS ).getWidgetState( widgetSlug ) ).toMatchObject( {
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toMatchObject( {
 			Component: ReportZero,
 			metadata: { moduleSlug },
 		} );
 
 		// Special state should be unset again upon unmount.
 		widget.unmount();
-		expect( registry.select( CORE_WIDGETS ).getWidgetState( widgetSlug ) ).toBe( null );
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toBe( null );
 	} );
 
 	it( 'only considers moduleSlug prop for widget state', () => {
@@ -58,7 +58,7 @@ describe( 'WidgetReportZero', () => {
 		// Pass extraProp (which should not be included in metadata).
 		render( <WidgetReportZero widgetSlug={ widgetSlug } moduleSlug={ moduleSlug } extraProp="propValue" />, { registry } );
 
-		expect( registry.select( CORE_WIDGETS ).getWidgetState( widgetSlug ) ).toMatchObject( {
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toMatchObject( {
 			Component: ReportZero,
 			metadata: { moduleSlug },
 		} );

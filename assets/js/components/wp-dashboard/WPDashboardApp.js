@@ -1,7 +1,7 @@
 /**
  * WPDashboardApp component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,11 +39,13 @@ import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
 import WPDashboardSessionDuration from './WPDashboardSessionDuration';
 import ActivateModuleCTA from '../ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 const WPDashboardApp = () => {
+	const widgetsWPDashboardEnabled = useFeature( 'widgets.wpDashboard' );
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
@@ -59,7 +61,7 @@ const WPDashboardApp = () => {
 					{ __( 'Visit your Site Kit Dashboard', 'google-site-kit' ) }
 				</Link>
 			</div>
-			{ featureFlags.widgets.wpDashboard.enabled && (
+			{ widgetsWPDashboardEnabled && (
 				<div className={ classnames(
 					'googlesitekit-wp-dashboard-stats',
 					{ 'googlesitekit-wp-dashboard-stats--fourup': analyticsModuleActive && analyticsModuleConnected }

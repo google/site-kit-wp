@@ -1,7 +1,7 @@
 /**
  * Optimize Setup stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/optimize/datastore/constants';
 import {
 	WithTestRegistry,

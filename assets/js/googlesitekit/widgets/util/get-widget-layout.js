@@ -1,7 +1,7 @@
 /**
  * Widgets layout utilities.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,7 +167,7 @@ export function getWidgetLayout( activeWidgets ) {
 			// See above, initial counter for the next row of widgets.
 			counter = WIDTH_GRID_COUNTER_MAP[ width ];
 			rowIndex++;
-		} else if ( counter % 12 === 0 ) {
+		} else if ( counter === 12 ) {
 			// Or if the counter is exactly 12, the next widget is going to be in a new row.
 			counter = 0;
 			rowIndex++;

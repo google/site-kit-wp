@@ -1,7 +1,7 @@
 /**
  * Widgets layout utilities tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,13 +32,21 @@ describe( 'getWidgetLayout', () => {
 
 	it( 'computes expected class names', () => {
 		const widgets = [
+			// First row.
 			quarter,
 			quarter,
 			half,
+			// Second row.
 			half,
 			quarter,
+			// Third row.
 			full,
 		];
+
+		// Phone and tablet column widths are static based on the widget width.
+		// Desktop column widths usually are as well, except for the case where
+		// an entire row spans exactly 9 columns, in which case each widget
+		// will be expanded by a third to fill the entire 12 columns.
 		const expectedClassNames = [
 			[
 				'mdc-layout-grid__cell',

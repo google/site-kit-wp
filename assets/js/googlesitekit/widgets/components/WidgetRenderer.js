@@ -1,7 +1,7 @@
 /**
  * WidgetRenderer component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
 import Widget from './Widget';
 import { getWidgetComponentProps } from '../util';
+import { HIDDEN_CLASS } from '../util/constants';
 
 const { useSelect } = Data;
 
@@ -47,7 +48,7 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 
 	const { Component, wrapWidget } = widget;
 
-	let widgetComponent = <Component { ...widgetComponentProps } />;
+	let widgetElement = <Component { ...widgetComponentProps } />;
 
 	if ( OverrideComponent ) {
 		// If OverrideComponent passed, render it instead of the actual widget.
@@ -55,32 +56,32 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 		// widget-agnostic component.
 		// The real widget component will still be rendered, but it will be
 		// hidden via CSS.
-		widgetComponent = (
+		widgetElement = (
 			<Fragment>
 				<Widget slug="overridden">
 					<OverrideComponent />
 				</Widget>
-				<div className="googlesitekit-widget-grid-hidden">
-					{ widgetComponent }
+				<div className={ HIDDEN_CLASS }>
+					{ widgetElement }
 				</div>
 			</Fragment>
 		);
 	} else if ( wrapWidget ) {
 		// Otherwise, wrap the component only if that is requested for this
 		// widget.
-		widgetComponent = <Widget slug={ slug }>{ widgetComponent }</Widget>;
+		widgetElement = <Widget slug={ slug }>{ widgetElement }</Widget>;
 	}
 
 	// Wrap the widget into a grid class.
 	if ( gridClassName ) {
-		widgetComponent = (
+		return (
 			<div className={ gridClassName }>
-				{ widgetComponent }
+				{ widgetElement }
 			</div>
 		);
 	}
 
-	return widgetComponent;
+	return widgetElement;
 };
 
 WidgetRenderer.propTypes = {

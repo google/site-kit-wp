@@ -1,7 +1,7 @@
 /**
  * Utility functions.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -176,7 +176,7 @@ export const getDaysBetweenDates = ( dateStart, dateEnd ) => {
 /**
  * Calculates the change between two values.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  *
  * @param {number} previous The previous value.
  * @param {number} current  The current value.

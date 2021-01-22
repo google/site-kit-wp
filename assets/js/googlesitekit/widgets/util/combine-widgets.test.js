@@ -1,7 +1,7 @@
 /**
  * Widgets combination utilities tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
  */
 import { combineWidgets } from './combine-widgets';
 import { getWidgetLayout } from './get-widget-layout';
-import { WIDTH_GRID_CLASS_MAP } from './constants';
+import { WIDTH_GRID_CLASS_MAP, HIDDEN_CLASS } from './constants';
 import { WIDGET_WIDTHS } from '../datastore/constants';
 import ReportZero from '../../../components/ReportZero';
 import ActivateModuleCTA from '../../../components/ActivateModuleCTA';
@@ -88,9 +88,9 @@ describe( 'combineWidgets', () => {
 		};
 		const expected = {
 			gridClassNames: [
-				[ 'googlesitekit-widget-grid-hidden' ],
+				[ HIDDEN_CLASS ],
 				[ 'mdc-layout-grid__cell', 'mdc-layout-grid__cell--span-6' ],
-				[ 'googlesitekit-widget-grid-hidden' ],
+				[ HIDDEN_CLASS ],
 				[ 'mdc-layout-grid__cell', 'mdc-layout-grid__cell--span-6' ],
 			],
 			overrideComponents: [
@@ -124,7 +124,7 @@ describe( 'combineWidgets', () => {
 			gridClassNames: [
 				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.HALF ],
 				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.HALF ],
-				[ 'googlesitekit-widget-grid-hidden' ],
+				[ HIDDEN_CLASS ],
 				[ 'mdc-layout-grid__cell', 'mdc-layout-grid__cell--span-12' ],
 			],
 			overrideComponents: [
@@ -160,7 +160,7 @@ describe( 'combineWidgets', () => {
 		};
 		const expected = {
 			gridClassNames: [
-				[ 'googlesitekit-widget-grid-hidden' ],
+				[ HIDDEN_CLASS ],
 				[ 'mdc-layout-grid__cell', 'mdc-layout-grid__cell--span-12' ],
 				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
 				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],

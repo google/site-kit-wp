@@ -1,7 +1,7 @@
 /**
  * PreviewBlock component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,12 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-function PreviewBlock( { width, height, shape, padding } ) {
+function PreviewBlock( { className, width, height, shape, padding } ) {
 	return (
 		<div
 			className={ classnames(
 				'googlesitekit-preview-block',
+				className,
 				{ 'googlesitekit-preview-block--padding': padding }
 			) }
 			style={ {
@@ -43,6 +44,7 @@ function PreviewBlock( { width, height, shape, padding } ) {
 	);
 }
 PreviewBlock.propTypes = {
+	className: PropTypes.string,
 	width: PropTypes.string,
 	height: PropTypes.string,
 	shape: PropTypes.string,
@@ -50,6 +52,7 @@ PreviewBlock.propTypes = {
 };
 
 PreviewBlock.defaultProps = {
+	className: undefined,
 	width: '100px',
 	height: '100px',
 	shape: 'square',

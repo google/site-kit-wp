@@ -1,7 +1,7 @@
 /**
  * Search Console module initialization.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import domReady from '@wordpress/dom-ready';
 import Modules from 'googlesitekit-modules';
 import Widgets from 'googlesitekit-widgets';
 import './datastore';
+import { STORE_NAME } from './datastore/constants';
 import { SettingsView } from './components/settings';
 import DashboardImpressionsWidget from './components/dashboard/DashboardImpressionsWidget';
 import DashboardClicksWidget from './components/dashboard/DashboardClicksWidget';
@@ -45,7 +46,7 @@ domReady( () => {
 	Modules.registerModule(
 		'search-console',
 		{
-			storeName: 'modules/search-console',
+			storeName: STORE_NAME,
 			SettingsViewComponent: SettingsView,
 			Icon: SearchConsoleIcon,
 		}

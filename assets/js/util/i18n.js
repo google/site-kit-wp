@@ -1,7 +1,7 @@
 /**
  * Internationalization Utilities.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,7 +136,7 @@ export const readableLargeNumber = ( number ) => {
  * Another differentiation in behavior is that by default the function will use 'metric' formatting instead
  * of 'decimal' formatting.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  *
  * @param {number|string}                     number    The number to format.
  * @param {(Intl.NumberFormatOptions|string)} [options] Formatting options or unit shorthand.

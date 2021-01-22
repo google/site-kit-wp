@@ -1,7 +1,7 @@
 /**
  * Tag Manager module initialization.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import domReady from '@wordpress/dom-ready';
  */
 import Modules from 'googlesitekit-modules';
 import './datastore';
+import { STORE_NAME } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import TagManagerIcon from '../../../svg/tagmanager.svg';
@@ -36,7 +37,7 @@ domReady( () => {
 	Modules.registerModule(
 		'tagmanager',
 		{
-			storeName: 'modules/tagmanager',
+			storeName: STORE_NAME,
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,

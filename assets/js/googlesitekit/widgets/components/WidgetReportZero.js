@@ -1,7 +1,7 @@
 /**
  * WidgetReportZero component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,33 +24,23 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore/constants';
+import useWidgetStateEffect from '../hooks/useWidgetStateEffect';
 import ReportZero from '../../../components/ReportZero';
-
-const { useDispatch } = Data;
 
 // The supported props must match `ReportZero` (except `widgetSlug`).
 export default function WidgetReportZero( { widgetSlug, moduleSlug, ...props } ) {
-	const { setWidgetState, unsetWidgetState } = useDispatch( STORE_NAME );
-
-	useEffect( () => {
-		const metadata = { moduleSlug };
-		setWidgetState( widgetSlug, ReportZero, metadata );
-		return () => {
-			unsetWidgetState( widgetSlug, ReportZero, metadata );
-		};
-	}, [ widgetSlug, moduleSlug ] );
+	const metadata = useMemo( () => ( { moduleSlug } ), [ moduleSlug ] );
+	useWidgetStateEffect( widgetSlug, ReportZero, metadata );
 
 	return <ReportZero moduleSlug={ moduleSlug } { ...props } />;
 }
 
 WidgetReportZero.propTypes = {
 	widgetSlug: PropTypes.string.isRequired,
-	moduleSlug: PropTypes.string.isRequired,
+	...ReportZero.propTypes,
 };

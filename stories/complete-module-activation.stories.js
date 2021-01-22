@@ -1,7 +1,7 @@
 /**
  * CompleteModuleActivationCTA Component Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@ import { storiesOf } from '@storybook/react';
 import CompleteModuleActivationCTA from '../assets/js/components/CompleteModuleActivationCTA';
 import {
 	PERMISSION_MANAGE_OPTIONS,
-	STORE_NAME as CORE_USER,
+	CORE_USER,
 } from '../assets/js/googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Global', module )

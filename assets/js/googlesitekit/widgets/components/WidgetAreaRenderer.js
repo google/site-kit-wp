@@ -1,7 +1,7 @@
 /**
  * WidgetAreaRenderer component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import { getWidgetLayout, combineWidgets, getWidgetComponentProps } from '../uti
 import { Cell, Grid, Row } from '../../../material-components';
 const { useSelect } = Data;
 
-export default function WidgetAreaRenderer( { slug } ) {
+export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const widgetArea = useSelect( ( select ) => select( STORE_NAME ).getWidgetArea( slug ) );
 
 	const { widgets, widgetStates } = useSelect( ( select ) => {
@@ -105,25 +105,27 @@ export default function WidgetAreaRenderer( { slug } ) {
 
 	return (
 		<Grid className={ `googlesitekit-widget-area googlesitekit-widget-area--${ slug } googlesitekit-widget-area--${ style }` }>
-			<Row>
-				<Cell className="googlesitekit-widget-area-header" size={ 12 }>
-					{ Icon && (
-						<Icon width={ 33 } height={ 33 } />
-					) }
+			{ totalAreas > 1 && (
+				<Row>
+					<Cell className="googlesitekit-widget-area-header" size={ 12 }>
+						{ Icon && (
+							<Icon width={ 33 } height={ 33 } />
+						) }
 
-					{ title && (
-						<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
-							{ title }
-						</h3>
-					) }
+						{ title && (
+							<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
+								{ title }
+							</h3>
+						) }
 
-					{ subtitle && (
-						<h4 className="googlesitekit-widget-area-header__subtitle">
-							{ subtitle }
-						</h4>
-					) }
-				</Cell>
-			</Row>
+						{ subtitle && (
+							<h4 className="googlesitekit-widget-area-header__subtitle">
+								{ subtitle }
+							</h4>
+						) }
+					</Cell>
+				</Row>
+			) }
 
 			<div className="googlesitekit-widget-area-widgets">
 				<Row>

@@ -1,7 +1,7 @@
 /**
  * Widgets layout constants.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,3 +44,5 @@ export const WIDTH_GRID_CLASS_MAP = {
 		'mdc-layout-grid__cell--span-12',
 	],
 };
+
+export const HIDDEN_CLASS = 'googlesitekit-hidden';

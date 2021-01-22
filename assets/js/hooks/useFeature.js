@@ -1,5 +1,5 @@
 /**
- * Feature control utilities.
+ * Feature Flags hook.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,32 +17,29 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import set from 'lodash/set';
-
-function setFeatureActive( feature, active ) {
-	set( global, `featureFlags.${ feature }.enabled`, active );
-}
+import { useContext } from '@wordpress/element';
 
 /**
- * Enables a feature.
- *
- * @since 1.22.0
- *
- * @param {string} feature Feature to enable.
+ * Internal dependencies
  */
-export function enableFeature( feature ) {
-	setFeatureActive( feature, true );
-}
+import FeaturesContext from '../components/FeaturesProvider/FeaturesContext';
 
 /**
- * Disables a feature.
+ * Returns the enabled state of a feature flag.
  *
- * @since 1.22.0
+ * @since n.e.x.t
  *
- * @param {string} feature Feature to disable.
+ * @param {string} feature The feature flag name to check enabled state for.
+ * @return {boolean} `true` if the feature is enabled, `false` otherwise.
  */
-export function disableFeature( feature ) {
-	setFeatureActive( feature, false );
-}
+export const useFeature = ( feature ) => {
+	const enabledFeatures = useContext( FeaturesContext );
+
+	if ( ! Array.isArray( enabledFeatures ) ) {
+		return false;
+	}
+
+	return enabledFeatures.includes( feature );
+};
