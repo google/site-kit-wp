@@ -27,6 +27,7 @@ import classnames from 'classnames';
  */
 import { useCallback, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
+import { useInstanceId } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -69,11 +70,14 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
 	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
 
+	// Create a unique chartID to use for this component's GoogleChart child component.
+	const chartID = useInstanceId( UserDimensionsPieChart );
+
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onReady = useCallback( () => {
 		setChartLoaded( true );
 
-		const chartData = GoogleChart.charts.get( 'user-dimensions-pie-chart' );
+		const chartData = GoogleChart.charts.get( `user-dimensions-pie-chart-${ chartID }` );
 		const { chart, onSelect } = chartData || {};
 		const { slices } = UserDimensionsPieChart.chartOptions;
 
@@ -81,7 +85,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 			chartData.onSelect = global.google.visualization.events.addListener( chart, 'select', () => {
 				const { row } = chart.getSelection()?.[ 0 ] || {};
 				if ( row !== null && row !== undefined ) {
-					const { dataTable } = GoogleChart.charts.get( 'user-dimensions-pie-chart' ) || {};
+					const { dataTable } = GoogleChart.charts.get( `user-dimensions-pie-chart-${ chartID }` ) || {};
 					if ( dataTable ) {
 						const dimensionValue = dataTable.getValue( row, 0 );
 						const isOthers = __( 'Others', 'google-site-kit' ) === dimensionValue;
@@ -209,6 +213,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart">
 			<GoogleChart
+				chartID={ `user-dimensions-pie-chart-${ chartID }` }
 				chartType="pie"
 				options={ options }
 				data={ dataMap }
