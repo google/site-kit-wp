@@ -124,7 +124,6 @@ const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 			'mdc-layout-grid__cell',
 			`mdc-layout-grid__cell--span-${ colspan }`
 		) }>
-			zoe mamaa
 			<TableOverflowContainer>
 				{ dataTable }
 			</TableOverflowContainer>

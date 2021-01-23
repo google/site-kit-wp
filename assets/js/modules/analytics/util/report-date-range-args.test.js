@@ -20,10 +20,10 @@ import { generateDateRangeArgs } from './report-date-range-args';
 describe( 'Analytics reporting date range arguments', () => {
 	describe( 'generateDateRangeArgs', () => {
 		const allArgs = {
-			startDate: 'start-date',
-			endDate: 'end-date',
-			compareStartDate: 'compare-start-date',
-			compareEndDate: 'compare-end-date',
+			startDate: '2020-01-12',
+			endDate: '2021-01-12',
+			compareStartDate: '2020-01-12',
+			compareEndDate: '2021-01-12',
 		};
 
 		describe( 'if `startDate` or `endDate` arguments are not provided', () => {
@@ -43,31 +43,25 @@ describe( 'Analytics reporting date range arguments', () => {
 		it( 'should return an object containing a `_u.date00` key, the value of which is the `startDate` argument with "-" stripped', () => {
 			const { startDate, endDate } = allArgs;
 			const result = generateDateRangeArgs( { startDate, endDate } );
-			const expected = startDate.replace( /-/g, '' );
 
-			expect( result[ '_u.date00' ] ).toBe( expected );
+			expect( result[ '_u.date00' ] ).toBe( '20200112' );
 		} );
 
 		it( 'should return an object containing a `_u.date01` key, the value of which is the `endDate` argument with "-" stripped', () => {
 			const { startDate, endDate } = allArgs;
 			const result = generateDateRangeArgs( { startDate, endDate } );
-			const expected = endDate.replace( /-/g, '' );
 
-			expect( result[ '_u.date01' ] ).toBe( expected );
+			expect( result[ '_u.date01' ] ).toBe( '20210112' );
 		} );
 
 		describe( 'if `compareStartDate` and `compareEndDate` keys are passed', () => {
 			it( 'should return an object containing a `_u.date10` key, the value of which is the `compareStartDate` argument with "-" stripped', () => {
 				const result = generateDateRangeArgs( allArgs );
-				const expected = allArgs.compareStartDate.replace( /-/g, '' );
-
-				expect( result[ '_u.date10' ] ).toBe( expected );
+				expect( result[ '_u.date10' ] ).toBe( '20200112' );
 			} );
 			it( 'should return an object containing a `_u.date11` key, the value of which is the `compareEndDate` argument with "-" stripped', () => {
 				const result = generateDateRangeArgs( allArgs );
-				const expected = allArgs.compareEndDate.replace( /-/g, '' );
-
-				expect( result[ '_u.date11' ] ).toBe( expected );
+				expect( result[ '_u.date11' ] ).toBe( '20210112' );
 			} );
 		} );
 	} );
