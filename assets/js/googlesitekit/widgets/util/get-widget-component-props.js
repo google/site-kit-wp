@@ -22,6 +22,7 @@
 import WidgetReportZero from '../components/WidgetReportZero';
 import WidgetActivateModuleCTA from '../components/WidgetActivateModuleCTA';
 import WidgetCompleteModuleActivationCTA from '../components/WidgetCompleteModuleActivationCTA';
+import WidgetNull from '../components/WidgetNull';
 
 /**
  * Gets the props to pass to a widget's component.
@@ -38,6 +39,7 @@ export function getWidgetComponentProps( widgetSlug ) {
 		WidgetReportZero: withWidgetSlug( widgetSlug )( WidgetReportZero ),
 		WidgetActivateModuleCTA: withWidgetSlug( widgetSlug )( WidgetActivateModuleCTA ),
 		WidgetCompleteModuleActivationCTA: withWidgetSlug( widgetSlug )( WidgetCompleteModuleActivationCTA ),
+		WidgetNull: withWidgetSlug( widgetSlug )( WidgetNull ),
 	};
 }
 
