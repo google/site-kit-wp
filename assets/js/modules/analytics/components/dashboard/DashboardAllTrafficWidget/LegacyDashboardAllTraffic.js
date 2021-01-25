@@ -28,27 +28,22 @@ import { __ } from '@wordpress/i18n';
 import Layout from '../../../../../components/layout/Layout';
 import DashboardModuleHeader from '../../../../../components/dashboard/DashboardModuleHeader';
 import DashboardAllTrafficWidget from '.';
+import { Cell } from '../../../../../material-components';
 
 function LegacyDashboardAllTraffic() {
 	return (
 		<Fragment>
-			<div id="googlesitekit-pagespeed-header" className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-				">
+			<Cell id="googlesitekit-pagespeed-header" size={ 12 }>
 				<DashboardModuleHeader
 					title={ __( 'Your Traffic at a Glance', 'google-site-kit' ) }
 					description={ __( 'How people found your site.', 'google-site-kit' ) }
 				/>
-			</div>
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-12
-			">
+			</Cell>
+			<Cell size={ 12 }>
 				<Layout className="googlesitekit-pagespeed-widget">
 					<DashboardAllTrafficWidget />
 				</Layout>
-			</div>
+			</Cell>
 		</Fragment>
 	);
 }
