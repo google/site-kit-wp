@@ -26,9 +26,15 @@ import { _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import { MODULES_ANALYTICS, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import {
+	MODULES_ANALYTICS,
+	FORM_ALL_TRAFFIC_WIDGET,
+	DATE_RANGE_OFFSET,
+	STORE_NAME,
+} from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../../util/when-active';
 import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
@@ -44,6 +50,70 @@ function DashboardAllTrafficWidget() {
 	const dimensionName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionName' ) || 'ga:channelGrouping' );
 	const dimensionValue = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionValue' ) );
 	const entityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+
+	const dateRangeDatesWithCompare = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		compare: true,
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
+
+	const dateRangeDatesWithoutCompare = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
+
+	const pieArgs = {
+		...dateRangeDatesWithCompare,
+		metrics: [ { expression: 'ga:users' } ],
+		dimensions: [ dimensionName ],
+		orderby: {
+			fieldName: 'ga:users',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 6,
+	};
+
+	const graphArgs = {
+		...dateRangeDatesWithoutCompare,
+		dimensions: [ 'ga:date' ],
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Users',
+			},
+		],
+	};
+
+	const totalsArgs = {
+		...dateRangeDatesWithCompare,
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Users',
+			},
+		],
+	};
+
+	if ( entityURL ) {
+		pieArgs.url = entityURL;
+		graphArgs.url = entityURL;
+		totalsArgs.url = entityURL;
+	}
+
+	if ( dimensionName && dimensionValue ) {
+		graphArgs.dimensionFilters = { [ dimensionName ]: dimensionValue };
+		totalsArgs.dimensionFilters = { [ dimensionName ]: dimensionValue };
+	}
+
+	const pieLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ pieArgs ] ) );
+	const pieError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ pieArgs ] ) );
+	const pieReport = useSelect( ( select ) => select( STORE_NAME ).getReport( pieArgs ) );
+
+	const graphLoaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ graphArgs ] ) );
+	const graphError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ graphArgs ] ) );
+	const graphReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( graphArgs ) );
+
+	const totalsLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ totalsArgs ] ) );
+	const totalsError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ totalsArgs ] ) );
+	const totalsReport = useSelect( ( select ) => select( STORE_NAME ).getReport( totalsArgs ) );
 
 	let reportType;
 	switch ( dimensionName ) {
@@ -91,13 +161,16 @@ function DashboardAllTrafficWidget() {
 						mdSize={ 8 }
 					>
 						<TotalUserCount
-							dimensionName={ dimensionName }
+							loaded={ totalsLoaded }
+							error={ totalsError }
+							report={ totalsReport }
 							dimensionValue={ dimensionValue }
 						/>
 
 						<UserCountGraph
-							dimensionName={ dimensionName }
-							dimensionValue={ dimensionValue }
+							loaded={ graphLoaded }
+							error={ graphError }
+							report={ graphReport }
 						/>
 					</Cell>
 
@@ -112,8 +185,10 @@ function DashboardAllTrafficWidget() {
 
 						<UserDimensionsPieChart
 							dimensionName={ dimensionName }
-							entityURL={ entityURL }
 							sourceLink={ serviceReportURL }
+							loaded={ pieLoaded }
+							error={ pieError }
+							report={ pieReport }
 						/>
 					</Cell>
 				</Row>

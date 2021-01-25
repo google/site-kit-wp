@@ -33,41 +33,17 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME, FORM_ALL_TRAFFIC_WIDGET, DATE_RANGE_OFFSET } from '../../../datastore/constants';
+import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForPieChart, isZeroReport } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
 import ReportZero from '../../../../../components/ReportZero';
-const { useSelect, useDispatch } = Data;
+const { useDispatch } = Data;
 
-export default function UserDimensionsPieChart( { dimensionName, entityURL, sourceLink } ) {
+export default function UserDimensionsPieChart( { dimensionName, sourceLink, loaded, error, report } ) {
 	const [ chartLoaded, setChartLoaded ] = useState( false );
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		compare: true,
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
-
-	const args = {
-		...dateRangeDates,
-		metrics: [ { expression: 'ga:users' } ],
-		dimensions: [ dimensionName ],
-		orderby: {
-			fieldName: 'ga:users',
-			sortOrder: 'DESCENDING',
-		},
-		limit: 6,
-	};
-
-	if ( entityURL ) {
-		args.url = entityURL;
-	}
-
-	const loaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
-	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onReady = useCallback( () => {
@@ -227,7 +203,9 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 UserDimensionsPieChart.propTypes = {
 	sourceLink: PropTypes.string,
 	dimensionName: PropTypes.string.isRequired,
-	entityURL: PropTypes.string,
+	report: PropTypes.shape( {} ),
+	error: PropTypes.shape( {} ),
+	loaded: PropTypes.bool,
 };
 
 UserDimensionsPieChart.defaultProps = {

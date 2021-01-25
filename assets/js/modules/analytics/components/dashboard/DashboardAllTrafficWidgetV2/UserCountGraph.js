@@ -26,10 +26,9 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS, DATE_RANGE_OFFSET, FORM_ALL_TRAFFIC_WIDGET } from '../../../../analytics/datastore/constants';
+import { DATE_RANGE_OFFSET, FORM_ALL_TRAFFIC_WIDGET } from '../../../../analytics/datastore/constants';
 import { isZeroReport } from '../../../../analytics/util/is-zero-report';
 import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
@@ -72,39 +71,9 @@ const extractUserCountAnalyticsChartData = ( reports ) => {
 	];
 };
 
-export default function UserCountGraph( { dimensionName, dimensionValue } ) {
-	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
+export default function UserCountGraph( { loaded, error, report } ) {
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 	const graphLineColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) || '#1a73e8' );
-
-	const args = {
-		startDate,
-		endDate,
-		dimensions: [ 'ga:date' ],
-		metrics: [
-			{
-				expression: 'ga:users',
-				alias: 'Users',
-			},
-		],
-	};
-
-	if ( currentEntityURL ) {
-		args.url = currentEntityURL;
-	}
-
-	if ( dimensionName && dimensionValue ) {
-		args.dimensionFilters = {
-			[ dimensionName ]: dimensionValue,
-		};
-	}
-
-	const loaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ) );
-	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ) );
-	const report = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( args ) );
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="100%" height="300px" shape="square" />;
@@ -118,94 +87,97 @@ export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 		return <ReportZero moduleSlug="analytics" />;
 	}
 
-	const chartData = extractUserCountAnalyticsChartData( report, 'ga:users', dateRange );
+	const chartData = extractUserCountAnalyticsChartData( report );
+	const chartOptions = { ...UserCountGraph.chartOptions };
+
+	chartOptions.hAxis.ticks = [ new Date( startDate ), new Date( endDate ) ];
+	chartOptions.series[ 1 ].color = graphLineColor;
 
 	return (
-		<div>
-			<GoogleChart
-				chartType="line"
-				data={ chartData }
-				options={ {
-					animation: {
-						startup: true,
-					},
-					curveType: 'function',
-					height: 340,
-					width: '100%',
-					colors: [ '#1a73e8' ],
-					chartArea: {
-						height: '80%',
-						width: '80%',
-					},
-					legend: {
-						position: 'none',
-					},
-					hAxis: {
-						backgroundColor: '#eef4fd', // rgba(26, 115, 232, 0.08) over the white background.
-						format: 'MMM d',
-						gridlines: {
-							color: '#ffffff',
-						},
-						textPosition: 'out',
-						textStyle: {
-							color: '#616161',
-							fontSize: 12,
-						},
-						ticks: [ new Date( startDate ), new Date( endDate ) ],
-					},
-					vAxes: {
-						0: {
-							baseline: 0,
-							gridlines: {
-								color: '#ffffff',
-							},
-							viewWindow: {
-								max: 1,
-								min: 0,
-							},
-							viewWindowMode: 'explicit',
-							textPosition: 'none',
-							ticks: [],
-						},
-						1: {
-							gridlines: {
-								color: '#ece9f1',
-							},
-							lineWidth: 3,
-							minorGridlines: {
-								color: '#ffffff',
-							},
-							minValue: 0,
-							textStyle: {
-								color: '#616161',
-								fontSize: 12,
-							},
-							textPosition: 'out',
-							viewWindow: {
-								min: 0,
-							},
-						},
-					},
-					series: {
-						0: { targetAxisIndex: 0, lineWidth: 0 },
-						1: {
-							color: graphLineColor,
-							lineWidth: 3,
-							targetAxisIndex: 1,
-						},
-					},
-					crosshair: {
-						color: '#1a73e8',
-						opacity: 0.1,
-						orientation: 'vertical',
-					},
-				} }
-			/>
-		</div>
+		<GoogleChart
+			chartType="line"
+			data={ chartData }
+			options={ chartOptions }
+		/>
 	);
 }
 
 UserCountGraph.propTypes = {
-	dimensionName: PropTypes.string,
-	dimensionValue: PropTypes.string,
+	loaded: PropTypes.bool,
+	error: PropTypes.shape( {} ),
+	report: PropTypes.shape( {} ),
+};
+
+UserCountGraph.chartOptions = {
+	animation: {
+		startup: true,
+	},
+	curveType: 'function',
+	height: 340,
+	width: '100%',
+	colors: [ '#1a73e8' ],
+	chartArea: {
+		height: '80%',
+		width: '80%',
+	},
+	legend: {
+		position: 'none',
+	},
+	hAxis: {
+		backgroundColor: '#eef4fd', // rgba(26, 115, 232, 0.08) over the white background.
+		format: 'MMM d',
+		gridlines: {
+			color: '#ffffff',
+		},
+		textPosition: 'out',
+		textStyle: {
+			color: '#616161',
+			fontSize: 12,
+		},
+	},
+	vAxes: {
+		0: {
+			baseline: 0,
+			gridlines: {
+				color: '#ffffff',
+			},
+			viewWindow: {
+				max: 1,
+				min: 0,
+			},
+			viewWindowMode: 'explicit',
+			textPosition: 'none',
+			ticks: [],
+		},
+		1: {
+			gridlines: {
+				color: '#ece9f1',
+			},
+			lineWidth: 3,
+			minorGridlines: {
+				color: '#ffffff',
+			},
+			minValue: 0,
+			textStyle: {
+				color: '#616161',
+				fontSize: 12,
+			},
+			textPosition: 'out',
+			viewWindow: {
+				min: 0,
+			},
+		},
+	},
+	series: {
+		0: { targetAxisIndex: 0, lineWidth: 0 },
+		1: {
+			lineWidth: 3,
+			targetAxisIndex: 1,
+		},
+	},
+	crosshair: {
+		color: '#1a73e8',
+		opacity: 0.1,
+		orientation: 'vertical',
+	},
 };

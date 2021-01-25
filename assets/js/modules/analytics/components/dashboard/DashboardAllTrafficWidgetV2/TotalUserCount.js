@@ -31,9 +31,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { numFmt, calculateChange } from '../../../../../util';
 import { getAvailableDateRanges } from '../../../../../util/date-range';
 import { isZeroReport } from '../../../util';
@@ -41,37 +39,8 @@ import ChangeArrow from '../../../../../components/ChangeArrow';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useSelect } = Data;
 
-export default function TotalUserCount( { dimensionName, dimensionValue } ) {
-	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+export default function TotalUserCount( { loaded, error, report, dimensionValue } ) {
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		compare: true,
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
-
-	const args = {
-		...dateRangeDates,
-		metrics: [
-			{
-				expression: 'ga:users',
-				alias: 'Users',
-			},
-		],
-	};
-
-	if ( url ) {
-		args.url = url;
-	}
-
-	if ( dimensionName && dimensionValue ) {
-		args.dimensionFilters = {
-			[ dimensionName ]: dimensionValue,
-		};
-	}
-
-	const loaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
-	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
 
 	if ( ! loaded ) {
 		return (
@@ -138,6 +107,8 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 }
 
 TotalUserCount.propTypes = {
-	dimensionName: PropTypes.string.isRequired,
+	loaded: PropTypes.bool,
+	error: PropTypes.shape( {} ),
+	report: PropTypes.shape( {} ),
 	dimensionValue: PropTypes.string,
 };
