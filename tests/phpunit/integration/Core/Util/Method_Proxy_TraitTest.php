@@ -28,20 +28,20 @@ class Method_Proxy_TraitTest extends TestCase {
 		$this->calls = 0;
 		$callback    = $this->get_method_proxy( 'hidden_function' );
 
-		call_user_func( $callback );
-		call_user_func( $callback );
+		$callback();
+		$callback();
 
-		$this->assertEquals( $this->calls, 2 );
+		$this->assertEquals( 2, $this->calls );
 	}
 
 	public function test_method_proxy_once() {
 		$this->calls = 0;
 		$callback    = $this->get_method_proxy_once( 'hidden_function' );
 
-		call_user_func( $callback );
-		call_user_func( $callback );
+		$callback();
+		$callback();
 
-		$this->assertEquals( $this->calls, 1 );
+		$this->assertEquals( 1, $this->calls );
 	}
 
 	private function hidden_function() {
