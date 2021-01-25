@@ -365,18 +365,7 @@ final class AdSense extends Module
 					);
 				};
 			case 'GET:reports-url':
-				return function() {
-					$option     = $this->get_settings()->get();
-					$account_id = $option['accountID'];
-					if ( $account_id && $this->authentication->profile()->has() ) {
-						$profile_email = $this->authentication->profile()->get()['email'];
-						return add_query_arg(
-							array( 'authuser' => $profile_email ),
-							sprintf( 'https://www.google.com/adsense/new/%s/main/viewreports', $account_id )
-						);
-					}
-					return 'https://www.google.com/adsense/start';
-				};
+				return array( $this, 'get_reports_url' );
 			case 'GET:urlchannels':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -598,15 +587,38 @@ final class AdSense extends Module
 			'url'    => $this->context->get_reference_site_url(),
 		);
 
-		return array(
+		$info = array(
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'AdSense', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Earn money by placing ads on your website. It’s free and easy.', 'google-site-kit' ),
 			'cta'         => __( 'Monetize Your Site.', 'google-site-kit' ),
 			'order'       => 2,
-			'homepage'    => add_query_arg( $idenfifier_args, $this->get_data( 'reports-url' ) ),
+			'homepage'    => add_query_arg( $idenfifier_args, $this->get_reports_url() ),
 			'learn_more'  => __( 'https://www.google.com/intl/en_us/adsense/start/', 'google-site-kit' ),
 		);
+
+		return $info;
+	}
+
+	/**
+	 * Gets reports URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Reports URL.
+	 */
+	private function get_reports_url() {
+		$option     = $this->get_settings()->get();
+		$account_id = $option['accountID'];
+		if ( $account_id && $this->authentication->profile()->has() ) {
+			$profile_email = $this->authentication->profile()->get()['email'];
+			return add_query_arg(
+				array( 'authuser' => $profile_email ),
+				sprintf( 'https://www.google.com/adsense/new/%s/main/viewreports', $account_id )
+			);
+		}
+
+		return 'https://www.google.com/adsense/start';
 	}
 
 	/**
