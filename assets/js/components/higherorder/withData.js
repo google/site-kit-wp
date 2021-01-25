@@ -35,8 +35,9 @@ import { __ } from '@wordpress/i18n';
 import { getModulesData } from '../../util';
 import getNoDataComponent from '../legacy-notifications/nodata';
 import getDataErrorComponent from '../legacy-notifications/data-error';
-import getSetupIncompleteComponent from '../legacy-notifications/setup-incomplete';
+import getSetupIncompleteComponent, { getModuleInactiveComponent } from '../legacy-notifications/setup-incomplete';
 import { TYPE_MODULES } from '../data/constants';
+import ctaWrapper from '../legacy-notifications/cta-wrapper';
 
 /**
  * Provides data from the API to components. (Legacy HOC.)
@@ -232,10 +233,14 @@ const withData = (
 						`googlesitekit.module${ context }DataRequest`,
 						`googlesitekit.data${ context }`,
 						( moduleData ) => {
+							const modulesData = getModulesData();
 							// If any module in the selectData requires setup, set it in the state.
 							// This will cause the setup incomplete component to be rendered in all cases.
-							if ( TYPE_MODULES === type && ! getModulesData()[ identifier ]?.setupComplete ) {
-								this.setState( { moduleRequiringSetup: identifier } );
+							if ( TYPE_MODULES === type && ! modulesData[ identifier ]?.setupComplete ) {
+								this.setState( {
+									moduleRequiringSetup: identifier,
+									moduleRequiringActivation: ! modulesData[ identifier ]?.active,
+								} );
 								return moduleData;
 							}
 
@@ -260,7 +265,16 @@ const withData = (
 				errorObj,
 				requestDataToState,
 				moduleRequiringSetup,
+				moduleRequiringActivation,
 			} = this.state;
+			const { ActivateModuleComponent } = this.props;
+
+			if ( moduleRequiringActivation ) {
+				if ( ActivateModuleComponent ) {
+					return ctaWrapper( <ActivateModuleComponent />, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
+				}
+				return getModuleInactiveComponent( moduleRequiringSetup, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
+			}
 
 			if ( moduleRequiringSetup ) {
 				return getSetupIncompleteComponent( moduleRequiringSetup, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
