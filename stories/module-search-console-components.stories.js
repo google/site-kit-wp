@@ -548,7 +548,7 @@ generateReportBasedWidgetStories( {
 			position: 0,
 		},
 	],
-	referenceDate: '2020-08-27',
+	referenceDate: '2020-08-26',
 	options: {
 		dimensions: 'date',
 		startDate: '2020-07-01',
@@ -1068,7 +1068,7 @@ generateReportBasedWidgetStories( {
 			position: 0,
 		},
 	],
-	referenceDate: '2020-08-27',
+	referenceDate: '2020-08-26',
 	options: {
 		dimensions: 'date',
 		startDate: '2020-07-01',
@@ -1589,7 +1589,7 @@ generateReportBasedWidgetStories( {
 			position: 0,
 		},
 	],
-	referenceDate: '2020-08-27',
+	referenceDate: '2020-08-26',
 	options: {
 		dimensions: 'date',
 		startDate: '2020-07-01',
@@ -2109,7 +2109,7 @@ generateReportBasedWidgetStories( {
 			position: 0,
 		},
 	],
-	referenceDate: '2020-08-27',
+	referenceDate: '2020-08-26',
 	options: {
 		dimensions: 'date',
 		startDate: '2020-07-01',
@@ -2216,7 +2216,7 @@ generateReportBasedWidgetStories( {
 			position: 4.25,
 		},
 	],
-	referenceDate: '2020-08-27',
+	referenceDate: '2020-08-26',
 	options: {
 		startDate: '2020-07-29',
 		endDate: '2020-08-25',
@@ -2324,7 +2324,7 @@ generateReportBasedWidgetStories( {
 			position: 4.25,
 		},
 	],
-	referenceDate: '2020-08-27',
+	referenceDate: '2020-08-26',
 	options: {
 		startDate: '2020-07-29',
 		endDate: '2020-08-25',

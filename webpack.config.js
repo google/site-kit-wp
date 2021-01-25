@@ -33,6 +33,7 @@ const { DefinePlugin, ProvidePlugin } = require( 'webpack' );
 const CreateFileWebpack = require( 'create-file-webpack' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
 const ImageminPlugin = require( 'imagemin-webpack' );
+const features = require( './feature-flags.json' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
@@ -236,7 +237,7 @@ const webpackConfig = ( env, argv ) => {
 				new CreateFileWebpack( {
 					path: './dist',
 					fileName: 'config.json',
-					content: JSON.stringify( { flagMode } ),
+					content: JSON.stringify( { flagMode, features } ),
 				} ),
 				new ManifestPlugin( {
 					fileName: path.resolve( __dirname, 'includes/Core/Assets/Manifest.php' ),
