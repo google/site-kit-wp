@@ -35,15 +35,16 @@ trait Method_Proxy_Trait {
 	 * @return callable A proxy function.
 	 */
 	private function get_method_proxy_once( $method ) {
-		static $calls = array();
+		return function ( ...$args ) use ( $method ) {
+			static $called;
+			static $return_value;
 
-		return function ( ...$args ) use ( $method, &$calls ) {
-			$key = get_class( $this ) . '::' . spl_object_hash( $this ) . '::' . $method;
-			if ( ! array_key_exists( $key, $calls ) ) {
-				$calls[ $key ] = $this->{ $method }( ...$args );
+			if ( ! $called ) {
+				$called       = true;
+				$return_value = $this->{ $method }( ...$args );
 			}
 
-			return $calls[ $key ];
+			return $return_value;
 		};
 	}
 
