@@ -587,7 +587,7 @@ final class AdSense extends Module
 			'url'    => $this->context->get_reference_site_url(),
 		);
 
-		$info = array(
+		return array(
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'AdSense', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Earn money by placing ads on your website. It’s free and easy.', 'google-site-kit' ),
@@ -596,8 +596,6 @@ final class AdSense extends Module
 			'homepage'    => add_query_arg( $idenfifier_args, $this->get_reports_url() ),
 			'learn_more'  => __( 'https://www.google.com/intl/en_us/adsense/start/', 'google-site-kit' ),
 		);
-
-		return $info;
 	}
 
 	/**
