@@ -1,7 +1,7 @@
 /**
  * User Input App.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { useFeature } from '../../hooks/useFeature';
 import { Grid, Row, Cell } from '../../material-components';
 import Header from '../Header';
 import PageHeader from '../PageHeader';
@@ -35,12 +36,13 @@ import UserInputQuestionnaire from './UserInputQuestionnaire';
 const { useSelect } = Data;
 
 export default function UserInputApp() {
+	const userInputEnabled = useFeature( 'userInput' );
 	const { hasFinishedGettingInputSettings } = useSelect( ( select ) => ( {
 		userInputSettings: select( CORE_USER ).getUserInputSettings(), // This will be used in the children components.
 		hasFinishedGettingInputSettings: select( CORE_USER ).hasFinishedResolution( 'getUserInputSettings' ),
 	} ) );
 
-	if ( ! featureFlags.userInput.enabled ) {
+	if ( ! userInputEnabled ) {
 		return <div>{ __( 'Something went wrong.', 'google-site-kit' ) }</div>;
 	}
 

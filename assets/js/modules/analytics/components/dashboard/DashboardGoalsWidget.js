@@ -1,7 +1,7 @@
 /**
  * DashboardAllTrafficWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,24 +26,21 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import CTA from '../../../../components/legacy-notifications/cta';
-import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import { calculateChange } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
-import CompleteModuleActivationCTA from '../../../../components/CompleteModuleActivationCTA';
 
 const { useSelect } = Data;
 
-function DashboardGoalsWidget() {
+function DashboardGoalsWidget( { WidgetReportZero } ) {
 	const {
 		data,
 		error,
@@ -112,7 +109,7 @@ function DashboardGoalsWidget() {
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	const sparkLineData = [
@@ -165,6 +162,6 @@ function DashboardGoalsWidget() {
 
 export default whenActive( {
 	moduleName: 'analytics',
-	FallbackComponent: () => <AnalyticsInactiveCTA />,
-	IncompleteComponent: () => <CompleteModuleActivationCTA slug="analytics" />,
+	FallbackComponent: ( { WidgetActivateModuleCTA } ) => <WidgetActivateModuleCTA moduleSlug="analytics" />,
+	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => <WidgetCompleteModuleActivationCTA moduleSlug="analytics" />,
 } )( DashboardGoalsWidget );

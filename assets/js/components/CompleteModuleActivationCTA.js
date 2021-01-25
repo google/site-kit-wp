@@ -1,7 +1,7 @@
 /**
  * CompleteModuleActivationCTA component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,19 +32,19 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import CTA from './legacy-notifications/cta';
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
-import { STORE_NAME as MODULES_STORE } from '../googlesitekit/modules/datastore/constants';
-const { useSelect } = Data;
+import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+const { useSelect, useDispatch } = Data;
 
-const CompleteModuleActivationCTA = ( { slug, title, description } ) => {
-	const module = useSelect( ( select ) => select( MODULES_STORE ).getModule( slug ) );
-	const moduleStoreName = useSelect( ( select ) => select( MODULES_STORE ).getModuleStoreName( slug ) );
+const CompleteModuleActivationCTA = ( { moduleSlug, title, description } ) => {
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
+	const moduleStoreName = useSelect( ( select ) => select( CORE_MODULES ).getModuleStoreName( moduleSlug ) );
 	const adminReauthURL = useSelect( ( select ) => select( moduleStoreName )?.getAdminReauthURL() );
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 
-	const onCTAClick = useCallback( async () => {
-		global.location.assign( adminReauthURL );
-	}, [ adminReauthURL ] );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const onCTAClick = useCallback( () => navigateTo( adminReauthURL ), [ adminReauthURL ] );
 
 	if ( ! module?.name || ! adminReauthURL || ! canManageOptions ) {
 		return null;
@@ -82,7 +82,7 @@ const CompleteModuleActivationCTA = ( { slug, title, description } ) => {
 };
 
 CompleteModuleActivationCTA.propTypes = {
-	slug: PropTypes.string.isRequired,
+	moduleSlug: PropTypes.string.isRequired,
 	title: PropTypes.string,
 	description: PropTypes.string,
 };

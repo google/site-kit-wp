@@ -3,7 +3,7 @@
  * JSON_FileTest
  *
  * @package   Google\Site_Kit\Tests\Core\Util
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -58,5 +58,20 @@ class JSON_FileTest extends TestCase {
 		$json_file['description']; // Data is loaded once, on-demand.
 
 		$this->assertNotNull( $this->force_get_property( $json_file, 'data' ) );
+	}
+
+	public function test_data_is_iterable() {
+		$json_file = new JSON_File( self::$composer['path'] );
+
+		// Note: WP's polyfill of `is_iterable` introduced in PHP 7.1
+		// is only available in WP 4.9.6+. Otherwise this works:
+		// $this->assertTrue( is_iterable( $json_file ) );
+
+		$entries = array();
+		foreach ( $json_file as $key => $value ) {
+			$entries[ $key ] = $value;
+		}
+
+		$this->assertEquals( 'google/google-site-kit', $entries['name'] );
 	}
 }

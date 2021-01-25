@@ -13,19 +13,31 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
 /**
  * Internal dependencies
  */
+import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import coreSiteStore from '../../assets/js/googlesitekit/datastore/site';
-import { STORE_NAME as CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import coreUserStore from '../../assets/js/googlesitekit/datastore/user';
-import { STORE_NAME as CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
+import {
+	PERMISSION_AUTHENTICATE,
+	PERMISSION_SETUP,
+	PERMISSION_VIEW_POSTS_INSIGHTS,
+	PERMISSION_VIEW_DASHBOARD,
+	PERMISSION_VIEW_MODULE_DETAILS,
+	PERMISSION_MANAGE_OPTIONS,
+	PERMISSION_PUBLISH_POSTS,
+	CORE_USER,
+} from '../../assets/js/googlesitekit/datastore/user/constants';
 import coreFormsStore from '../../assets/js/googlesitekit/datastore/forms';
-import { STORE_NAME as CORE_FORMS } from '../../assets/js/googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '../../assets/js/googlesitekit/datastore/forms/constants';
+import coreLocationStore from '../../assets/js/googlesitekit/datastore/location';
+import { CORE_LOCATION } from '../../assets/js/googlesitekit/datastore/location/constants';
 import coreModulesStore from '../../assets/js/googlesitekit/modules/datastore';
-import { STORE_NAME as CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import coreWidgetsStore from '../../assets/js/googlesitekit/widgets/datastore';
-import { STORE_NAME as CORE_WIDGETS } from '../../assets/js/googlesitekit/widgets/datastore/constants';
+import { CORE_WIDGETS } from '../../assets/js/googlesitekit/widgets/datastore/constants';
 // AdSense.
 import modulesAdSenseStore from '../../assets/js/modules/adsense/datastore';
-import { STORE_NAME as MODULES_ADSENSE } from '../../assets/js/modules/adsense/datastore/constants';
+import { MODULES_ADSENSE } from '../../assets/js/modules/adsense/datastore/constants';
 import { SetupMain as AdSenseSetupMain } from '../../assets/js/modules/adsense/components/setup';
 import {
 	SettingsEdit as AdSenseSettingsEdit,
@@ -36,7 +48,7 @@ import AdSenseIcon from '../../assets/svg/adsense.svg';
 import { ERROR_CODE_ADBLOCKER_ACTIVE } from '../../assets/js/modules/adsense/constants';
 // Analytics.
 import modulesAnalyticsStore from '../../assets/js/modules/analytics/datastore';
-import { STORE_NAME as MODULES_ANALYTICS } from '../../assets/js/modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS } from '../../assets/js/modules/analytics/datastore/constants';
 import { SetupMain as AnalyticsSetupMain } from '../../assets/js/modules/analytics/components/setup';
 import {
 	SettingsEdit as AnalyticsSettingsEdit,
@@ -45,17 +57,17 @@ import {
 import AnalyticsIcon from '../../assets/svg/analytics.svg';
 // PageSpeed Insights.
 import modulesPageSpeedInsightsStore from '../../assets/js/modules/pagespeed-insights/datastore';
-import { STORE_NAME as MODULES_PAGESPEED_INSIGHTS } from '../../assets/js/modules/pagespeed-insights/datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from '../../assets/js/modules/pagespeed-insights/datastore/constants';
 import { SettingsView as PageSpeedInsightsSettingsView } from '../../assets/js/modules/pagespeed-insights/components/settings';
 import PageSpeedInsightsIcon from '../../assets/svg/pagespeed-insights.svg';
 // Search Console.
 import modulesSearchConsoleStore from '../../assets/js/modules/search-console/datastore';
-import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/datastore/constants';
 import { SettingsView as SearchConsoleSettingsView } from '../../assets/js/modules/search-console/components/settings';
 import SearchConsoleIcon from '../../assets/svg/search-console.svg';
 // Tag Manager.
 import modulesTagManagerStore from '../../assets/js/modules/tagmanager/datastore';
-import { STORE_NAME as MODULES_TAGMANAGER } from '../../assets/js/modules/tagmanager/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../assets/js/modules/tagmanager/datastore/constants';
 import { SetupMain as TagManagerSetupMain } from '../../assets/js/modules/tagmanager/components/setup';
 import {
 	SettingsEdit as TagManagerSettingsEdit,
@@ -64,7 +76,7 @@ import {
 import TagManagerIcon from '../../assets/svg/tagmanager.svg';
 // Optimize.
 import modulesOptimizeStore from '../../assets/js/modules/optimize/datastore';
-import { STORE_NAME as MODULES_OPTIMIZE } from '../../assets/js/modules/optimize/datastore/constants';
+import { MODULES_OPTIMIZE } from '../../assets/js/modules/optimize/datastore/constants';
 import { SetupMain as OptimizeSetupMain } from '../../assets/js/modules/optimize/components/setup';
 import {
 	SettingsEdit as OptimizeSettingsEdit,
@@ -97,12 +109,14 @@ export const createTestRegistry = () => {
  * @since 1.7.1
  * @private
  *
- * @param {?Object}   props          Component props.
- * @param {?Function} props.callback Function which receives the registry instance.
- * @param {?Object}   props.registry Registry object; uses `createTestRegistry()` by default.
+ * @param {Object}    [props]          Component props.
+ * @param {Function}  [props.callback] Function which receives the registry instance.
+ * @param {WPElement} [props.children] Children components.
+ * @param {string[]}  [props.features] Feature flags to enable for this test registry provider.
+ * @param {Object}    [props.registry] Registry object; uses `createTestRegistry()` by default.
  * @return {WPElement} Wrapped components.
  */
-export function WithTestRegistry( { children, callback, registry = createTestRegistry() } = {} ) {
+export function WithTestRegistry( { children, callback, features = [], registry = createTestRegistry() } = {} ) {
 	// Populate most basic data which should not affect any tests.
 	provideUserInfo( registry );
 
@@ -112,7 +126,9 @@ export function WithTestRegistry( { children, callback, registry = createTestReg
 
 	return (
 		<RegistryProvider value={ registry }>
-			{ children }
+			<FeaturesProvider value={ features }>
+				{ children }
+			</FeaturesProvider>
 		</RegistryProvider>
 	);
 }
@@ -227,6 +243,32 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
 };
 
 /**
+ * Provides user capabilities data to the given registry.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {Object} registry    Registry object to dispatch to.
+ * @param {Object} [extraData] Custom capability mappings to set, will be merged with defaults. Default empty object.
+ */
+export const provideUserCapabilities = ( registry, extraData = {} ) => {
+	const defaults = {
+		[ PERMISSION_AUTHENTICATE ]: true,
+		[ PERMISSION_SETUP ]: true,
+		[ PERMISSION_VIEW_POSTS_INSIGHTS ]: true,
+		[ PERMISSION_VIEW_DASHBOARD ]: true,
+		[ PERMISSION_VIEW_MODULE_DETAILS ]: true,
+		[ PERMISSION_MANAGE_OPTIONS ]: true,
+		[ PERMISSION_PUBLISH_POSTS ]: true,
+	};
+
+	registry.dispatch( CORE_USER ).receiveCapabilities( {
+		...defaults,
+		...extraData,
+	} );
+};
+
+/**
  * Provides modules data to the given registry.
  *
  * @since 1.17.0
@@ -250,8 +292,7 @@ export const provideModules = ( registry, extraData = [] ) => {
 		} )
 		.concat(
 			extraData.filter( ( { slug } ) => ! moduleSlugs.includes( slug ) ),
-		)
-    ;
+		);
 
 	registry.dispatch( CORE_MODULES ).receiveGetModules( modules );
 };
@@ -371,6 +412,7 @@ export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( CORE_SITE, coreSiteStore );
 	registry.registerStore( CORE_USER, coreUserStore );
 	registry.registerStore( CORE_FORMS, coreFormsStore );
+	registry.registerStore( CORE_LOCATION, coreLocationStore );
 	registry.registerStore( CORE_MODULES, coreModulesStore );
 	registry.registerStore( CORE_WIDGETS, coreWidgetsStore );
 	registry.registerStore( MODULES_ADSENSE, modulesAdSenseStore );

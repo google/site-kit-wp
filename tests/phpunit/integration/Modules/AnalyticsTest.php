@@ -3,7 +3,7 @@
  * AnalyticsTest
  *
  * @package   Google\Site_Kit\Tests\Modules
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -91,8 +91,12 @@ class AnalyticsTest extends TestCase {
 		$this->assertFalse( has_action( 'web_stories_print_analytics' ) );
 		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
 
-		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
+		$analytics->get_settings()->merge(
+			array(
+				'propertyID' => 'UA-12345678-1',
+				'useSnippet' => true,
+			)
+		);
 
 		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'amp_print_analytics' ) );
@@ -139,8 +143,12 @@ class AnalyticsTest extends TestCase {
 		do_action( 'template_redirect' );
 		$this->assertFalse( has_action( 'wp_enqueue_scripts' ) );
 
-		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
+		$analytics->get_settings()->merge(
+			array(
+				'propertyID' => 'UA-12345678-1',
+				'useSnippet' => true,
+			)
+		);
 
 		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
@@ -164,8 +172,12 @@ class AnalyticsTest extends TestCase {
 	 */
 	public function test_block_on_consent_non_amp( $enabled ) {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
+		$analytics->get_settings()->merge(
+			array(
+				'propertyID' => 'UA-12345678-1',
+				'useSnippet' => true,
+			)
+		);
 
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
@@ -201,8 +213,12 @@ class AnalyticsTest extends TestCase {
 	 */
 	public function test_block_on_consent_amp( $enabled ) {
 		$analytics = new Analytics( $this->get_amp_primary_context() );
-		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
+		$analytics->get_settings()->merge(
+			array(
+				'propertyID' => 'UA-12345678-1',
+				'useSnippet' => true,
+			)
+		);
 
 		remove_all_actions( 'template_redirect' );
 		remove_all_actions( 'wp_footer' );
@@ -304,12 +320,6 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'connection',
-				'account-id',
-				'property-id',
-				'profile-id',
-				'internal-web-property-id',
-				'use-snippet',
 				'create-account-ticket',
 				'goals',
 				'accounts-properties-profiles',
@@ -317,8 +327,6 @@ class AnalyticsTest extends TestCase {
 				'profiles',
 				'tag-permission',
 				'report',
-				'tracking-disabled',
-				'anonymize-ip',
 				'create-property',
 				'create-profile',
 			),

@@ -1,7 +1,7 @@
 /**
  * Notification initialization.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import { isFeatureEnabled } from '../../features';
 import { createAddToFilter } from '../../util/helpers';
 import { getQueryParameter } from '../../util';
 import DashboardCoreSiteAlerts from './dashboard-core-site-alerts';
@@ -51,7 +52,7 @@ if ( setup.needReauthenticate ) {
 		addAuthNotification, 1 );
 }
 
-if ( featureFlags.userInput.enabled ) {
+if ( isFeatureEnabled( 'userInput' ) ) {
 	addFilter( 'googlesitekit.DashboardNotifications',
 		'googlesitekit.UserInputSettings',
 		addUserInputSettings, 1 );

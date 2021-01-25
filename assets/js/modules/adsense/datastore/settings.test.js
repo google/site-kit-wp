@@ -1,7 +1,7 @@
 /**
  * `modules/adsense` data store: settings tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,99 +67,6 @@ describe( 'modules/adsense settings', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( 'saveUseSnippet', () => {
-			it( 'does not require any params', () => {
-				expect( async () => {
-					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/,
-						{ body: JSON.stringify( true ), status: 200 }
-					);
-					// Ensure initial settings from server are present.
-					registry.dispatch( STORE_NAME ).receiveGetSettings( { useSnippet: false } );
-
-					registry.dispatch( STORE_NAME ).setUseSnippet( true );
-					await registry.dispatch( STORE_NAME ).saveUseSnippet();
-				} ).not.toThrow();
-			} );
-
-			it( 'updates useSnippet setting from server', async () => {
-				fetchMock.post(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/,
-					{ body: JSON.stringify( true ), status: 200 }
-				);
-
-				// Update setting and ensure this flags a settings change.
-				registry.dispatch( STORE_NAME ).setUseSnippet( true );
-				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( true );
-
-				await registry.dispatch( STORE_NAME ).saveUseSnippet();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-
-				// Ensure settings now no longer need to be updated because
-				// server-side and client-side settings now match.
-				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
-			} );
-		} );
-
-		describe( 'fetchSaveUseSnippet', () => {
-			it( 'requires the useSnippet param', () => {
-				expect( () => {
-					registry.dispatch( STORE_NAME ).fetchSaveUseSnippet();
-				} ).toThrow( 'useSnippet is required.' );
-			} );
-
-			it( 'sets isDoingSaveUseSnippet', () => {
-				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/,
-					{ body: JSON.stringify( true ), status: 200 }
-				);
-
-				registry.dispatch( STORE_NAME ).fetchSaveUseSnippet( true );
-				expect( registry.select( STORE_NAME ).isDoingSaveUseSnippet() ).toEqual( true );
-			} );
-		} );
-
-		describe( 'receiveSaveUseSnippet', () => {
-			it( 'requires the response param', () => {
-				expect( () => {
-					registry.dispatch( STORE_NAME ).receiveSaveUseSnippet();
-				} ).toThrow( 'response is required.' );
-			} );
-
-			it( 'requires the params param', () => {
-				expect( () => {
-					registry.dispatch( STORE_NAME ).receiveSaveUseSnippet( true );
-				} ).toThrow( 'params is required.' );
-			} );
-
-			it( 'receives useSnippet and integrates into settings store', () => {
-				// Simulate having loaded settings (useSnippet as false).
-				registry.dispatch( STORE_NAME ).receiveGetSettings( {
-					useSnippet: false,
-					accountStatus: 'test-status',
-				} );
-				expect( registry.select( STORE_NAME ).getUseSnippet() ).toBe( false );
-
-				// Simulate having saved useSnippet as true.
-				registry.dispatch( STORE_NAME ).receiveSaveUseSnippet( true, { useSnippet: true } );
-
-				// getUseSnippet comes from settings store. Account status should be unmodified.
-				expect( registry.select( STORE_NAME ).getUseSnippet() ).toBe( true );
-				expect( registry.select( STORE_NAME ).getAccountStatus() ).toEqual( 'test-status' );
-			} );
-
-			it( 'receives and sets useSnippet from parameter', () => {
-				registry.dispatch( STORE_NAME ).setUseSnippet( true );
-
-				// Fake a request saving the useSnippet as false.
-				registry.dispatch( STORE_NAME ).receiveSaveUseSnippet( true, { useSnippet: false } );
-
-				// Make sure the saved false is now in place.
-				expect( registry.select( STORE_NAME ).getUseSnippet() ).toBe( false );
-			} );
-		} );
-
 		describe( 'submitChanges', () => {
 			it( 'dispatches saveSettings', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );

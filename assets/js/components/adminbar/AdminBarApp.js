@@ -1,7 +1,7 @@
 /**
  * Admin Bar App component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,17 +30,19 @@ import AdminBarSessions from './AdminBarSessions';
 import AdminBarImpressions from './AdminBarImpressions';
 import AdminBarClicks from './AdminBarClicks';
 import LegacyAdminBarModules from './LegacyAdminBarModules';
-import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
+import ActivateModuleCTA from '../ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import Data from 'googlesitekit-data';
 import Link from '../Link';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { decodeHTMLEntity, trackEvent } from '../../util';
 import AdminBarZeroData from './AdminBarZeroData';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function AdminBarApp() {
+	const widgetsAdminBarEnabled = useFeature( 'widgets.adminBar' );
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
 	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: currentEntityURL } ) );
@@ -94,7 +96,7 @@ export default function AdminBarApp() {
 							{ zeroData && <AdminBarZeroData /> }
 							{ ! zeroData && (
 								<Fragment>
-									{ featureFlags.widgets.adminBar.enabled && (
+									{ widgetsAdminBarEnabled && (
 										<Fragment>
 											<AdminBarImpressions />
 											<AdminBarClicks />
@@ -113,7 +115,7 @@ export default function AdminBarApp() {
 														mdc-layout-grid__cell--span-4-tablet
 													">
 													{ ! analyticsModuleActive && (
-														<AnalyticsInactiveCTA />
+														<ActivateModuleCTA moduleSlug="analytics" />
 													) }
 
 													{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
@@ -121,7 +123,6 @@ export default function AdminBarApp() {
 													) }
 												</div>
 											) }
-
 										</Fragment>
 									) }
 									<LegacyAdminBarModules />

@@ -1,7 +1,7 @@
 /**
  * AccountCreate component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,12 +38,12 @@ import CountrySelect from './CountrySelect';
 import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
 import GA4Notice from '../GA4Notice';
 import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { getAccountDefaults } from '../../../util/account';
 import Data from 'googlesitekit-data';
-
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
@@ -63,15 +63,17 @@ export default function AccountCreate() {
 
 	const [ isNavigating, setIsNavigating ] = useState( false );
 
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
 	// Redirect if the accountTicketTermsOfServiceURL is set.
 	useEffect( () => {
 		if ( accountTicketTermsOfServiceURL ) {
-			global.location.assign( accountTicketTermsOfServiceURL );
+			navigateTo( accountTicketTermsOfServiceURL );
 		}
 	}, [ accountTicketTermsOfServiceURL ] );
 
 	// Set form defaults on initial render.
-	const { setValues } = useDispatch( CORE_FORMS );
 	useEffect( () => {
 		// Only set the form if not already present in store.
 		// e.g. after a snapshot has been restored.

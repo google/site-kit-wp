@@ -1,7 +1,7 @@
 /**
  * PermissionsModal component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@ import { useEffect, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
 import Dialog from '../Dialog';
 import Modal from '../Modal';
-import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
-
 const { useSelect, useDispatch, useRegistry } = Data;
 
 const PermissionsModal = () => {
@@ -42,7 +42,9 @@ const PermissionsModal = () => {
 			redirectURL: global.location.href,
 		} )
 	);
+
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const onCancel = useCallback( () => {
 		clearPermissionScopeError();
@@ -52,8 +54,7 @@ const PermissionsModal = () => {
 		// If we have a datastores to snapshot before navigating away to the
 		// authorization page, do that first.
 		await snapshotAllStores( registry );
-
-		global.location.assign( connectURL );
+		navigateTo( connectURL );
 	}, [ registry, connectURL ] );
 
 	useEffect( () => {

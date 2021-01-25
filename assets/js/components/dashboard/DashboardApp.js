@@ -1,7 +1,7 @@
 /**
  * DashboardApp component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,11 @@ import Header from '../Header';
 import DateRangeSelector from '../DateRangeSelector';
 import PageHeader from '../PageHeader';
 import { Cell, Grid, Row } from '../../material-components';
+import { useFeature } from '../../hooks/useFeature';
 
 export default function DashboardApp() {
+	const dashboardWidgetsEnabled = useFeature( 'widgets.dashboard' );
+
 	return (
 		<Fragment>
 			<Header>
@@ -53,7 +56,7 @@ export default function DashboardApp() {
 								/>
 							</Cell>
 
-							{ featureFlags.widgets.dashboard.enabled && (
+							{ dashboardWidgetsEnabled && (
 								<Cell size={ 12 }>
 									<WidgetContextRenderer slug="dashboard" />
 								</Cell>

@@ -1,7 +1,7 @@
 /**
  * DashboardClicksWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import { untrailingslashit, calculateChange } from '../../../../util';
 import { trackEvent } from '../../../../util/tracking';
@@ -37,13 +37,12 @@ import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import sumObjectListValue from '../../../../util/sum-object-list-value';
 
 const { useSelect } = Data;
 
-function DashboardClicksWidget() {
+function DashboardClicksWidget( { WidgetReportZero } ) {
 	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
@@ -89,7 +88,7 @@ function DashboardClicksWidget() {
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="search-console" />;
+		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 	// Split the data in two chunks.
 	const half = Math.floor( data.length / 2 );

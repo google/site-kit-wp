@@ -1,7 +1,7 @@
 /**
  * LegacyWPDashboardModules component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { getModulesData } from '../../util';
-import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
+import ActivateModuleCTA from '../ActivateModuleCTA';
 import LegacyWPDashboardModule from './LegacyWPDashboardModule';
 import LegacyWPDashboardHeader from './LegacyWPDashboardHeader';
 
@@ -50,7 +50,7 @@ class LegacyWPDashboardModules extends Component {
 					{ // Show the Analytics CTA if analytics is not enabled.
 						( ! modulesData.analytics.active ) &&
 						<div className="googlesitekit-wp-dashboard-stats__cta">
-							<AnalyticsInactiveCTA />
+							<ActivateModuleCTA moduleSlug="analytics" />
 						</div>
 					}
 				</div>

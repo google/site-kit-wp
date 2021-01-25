@@ -3,7 +3,7 @@
  * Feature_FlagsTest
  *
  * @package   Google\Site_Kit\Tests\Core\Util
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -70,7 +70,7 @@ class Feature_FlagsTest extends TestCase {
 		return array(
 			'no feature given'                             => array(
 				array(
-					'test_feature' => array( 'enabled' => 'production' ),
+					'test_feature' => 'production',
 				),
 				'production',
 				'',
@@ -78,7 +78,7 @@ class Feature_FlagsTest extends TestCase {
 			),
 			'non-string truthy feature given'              => array(
 				array(
-					'test_feature' => array( 'enabled' => 'production' ),
+					'test_feature' => 'production',
 				),
 				'production',
 				(object) array( 'foo' => 'bar' ),
@@ -86,62 +86,26 @@ class Feature_FlagsTest extends TestCase {
 			),
 			'feature enabled for production in production' => array(
 				array(
-					'test_feature' => array( 'enabled' => 'production' ),
+					'test_feature' => 'production',
 				),
 				'production',
 				'test_feature',
-				true,
-			),
-			'sub-feature enabled for production in production' => array(
-				array(
-					'test_feature' => array(
-						'sub_feature' => array( 'enabled' => 'production' ),
-					),
-				),
-				'production',
-				'test_feature.sub_feature',
 				true,
 			),
 			'feature enabled for development in production' => array(
 				array(
-					'test_feature' => array( 'enabled' => 'development' ),
+					'test_feature' => 'development',
 				),
 				'production',
 				'test_feature',
-				false,
-			),
-			'sub-feature enabled for development in production' => array(
-				array(
-					'test_feature' => array(
-						'sub_feature' => array( 'enabled' => 'development' ),
-					),
-				),
-				'production',
-				'test_feature.sub_feature',
 				false,
 			),
 			'feature enabled for development and production in development' => array(
 				array(
-					'test_feature' => array(
-						'enabled' => array( 'development', 'production' ),
-					),
+					'test_feature' => array( 'development', 'production' ),
 				),
 				'development',
 				'test_feature',
-				true,
-			),
-			'deeply nested test feature for test in test'  => array(
-				array(
-					'test_feature' => array(
-						'sub_feature' => array(
-							'third_level' => array(
-								'fourth' => array( 'enabled' => 'test' ),
-							),
-						),
-					),
-				),
-				'test',
-				'test_feature.sub_feature.third_level.fourth',
 				true,
 			),
 		);
