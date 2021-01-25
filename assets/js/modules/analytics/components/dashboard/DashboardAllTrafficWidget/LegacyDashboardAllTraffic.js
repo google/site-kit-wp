@@ -38,10 +38,7 @@ function LegacyDashboardAllTraffic() {
 					description={ __( 'How people found your site.', 'google-site-kit' ) }
 				/>
 			</div>
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-12
-			">
+			<Cell size={ 12 }>
 				<Layout className="googlesitekit-pagespeed-widget">
 					<DashboardAllTrafficWidget />
 				</Layout>
