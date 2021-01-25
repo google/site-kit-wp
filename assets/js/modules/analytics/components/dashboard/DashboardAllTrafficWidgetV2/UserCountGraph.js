@@ -105,7 +105,7 @@ export default function UserCountGraph( { loaded, error, report } ) {
 UserCountGraph.propTypes = {
 	loaded: PropTypes.bool,
 	error: PropTypes.shape( {} ),
-	report: PropTypes.shape( {} ),
+	report: PropTypes.arrayOf( PropTypes.object ),
 };
 
 UserCountGraph.chartOptions = {

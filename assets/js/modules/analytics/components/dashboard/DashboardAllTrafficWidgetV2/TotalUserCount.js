@@ -109,6 +109,6 @@ export default function TotalUserCount( { loaded, error, report, dimensionValue 
 TotalUserCount.propTypes = {
 	loaded: PropTypes.bool,
 	error: PropTypes.shape( {} ),
-	report: PropTypes.shape( {} ),
+	report: PropTypes.arrayOf( PropTypes.object ),
 	dimensionValue: PropTypes.string,
 };

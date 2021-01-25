@@ -203,7 +203,7 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 UserDimensionsPieChart.propTypes = {
 	sourceLink: PropTypes.string,
 	dimensionName: PropTypes.string.isRequired,
-	report: PropTypes.shape( {} ),
+	report: PropTypes.arrayOf( PropTypes.object ),
 	error: PropTypes.shape( {} ),
 	loaded: PropTypes.bool,
 };
