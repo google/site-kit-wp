@@ -20,10 +20,10 @@
  * A single module. Keeps track of its own active state and settings.
  */
 
-function Spinner( { isSaving, className } ) {
+function Spinner( { isSaving } ) {
 	return (
 		<span
-			className={ [ 'spinner', className ].join( ' ' ) }
+			className="spinner"
 			style={ {
 				display: ( isSaving ? 'inline-block' : 'none' ),
 				float: 'none',

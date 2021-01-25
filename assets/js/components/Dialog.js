@@ -48,7 +48,7 @@ const Dialog = ( {
 	confirmButton,
 	dependentModules,
 	danger,
-	showSpinner = false,
+	inProgress = false,
 } ) => {
 	const dialogRef = useCallback( ( el ) => {
 		if ( el !== null ) {
@@ -111,18 +111,18 @@ const Dialog = ( {
 								<Button
 									onClick={ handleConfirm }
 									danger={ danger }
-									disabled={ showSpinner }
+									disabled={ inProgress }
 								>
 									{ confirmButton ? confirmButton : __( 'Disconnect', 'google-site-kit' ) }
 								</Button>
 								<Spinner
-									className="googlesitekit-margin-right-auto"
-									isSaving={ showSpinner }
+									isSaving={ inProgress }
 								/>
 								<Link
-									className="mdc-dialog__cancel-button"
+									className="googlesitekit-margin-left-auto mdc-dialog__cancel-button"
 									onClick={ handleDialog }
 									inherit
+									disabled={ inProgress }
 								>
 									{ __( 'Cancel', 'google-site-kit' ) }
 								</Link>
