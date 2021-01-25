@@ -37,6 +37,7 @@ import WPDashboardImpressions from './WPDashboardImpressions';
 import WPDashboardClicks from './WPDashboardClicks';
 import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
 import WPDashboardSessionDuration from './WPDashboardSessionDuration';
+import WPDashboardPopularPages from './WPDashboardPopularPages';
 import ActivateModuleCTA from '../ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -84,6 +85,7 @@ const WPDashboardApp = () => {
 							) }
 						</div>
 					) }
+					<WPDashboardPopularPages />
 				</div>
 			) }
 			<LegacyWPDashboardModules />
