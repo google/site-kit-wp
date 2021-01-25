@@ -32,10 +32,7 @@ import DashboardAllTrafficWidget from '.';
 function LegacyDashboardAllTraffic() {
 	return (
 		<Fragment>
-			<div id="googlesitekit-pagespeed-header" className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-				">
+			<Cell id="googlesitekit-pagespeed-header" size={ 12 }>
 				<DashboardModuleHeader
 					title={ __( 'Your Traffic at a Glance', 'google-site-kit' ) }
 					description={ __( 'How people found your site.', 'google-site-kit' ) }
