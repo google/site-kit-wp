@@ -41,6 +41,7 @@ import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
+import { isZeroReport } from '../../../util';
 const { Widget } = Widgets.components;
 const { useSelect } = Data;
 
@@ -158,8 +159,8 @@ function DashboardAllTrafficWidget() {
 		return <ReportError moduleSlug="analytics" error={ pieChartError } />;
 	}
 
-	const totalUsers = parseInt( pieChartReport?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ] );
-	if ( pieChartLoaded && ( Number.isNaN( totalUsers ) || totalUsers < 1 ) ) {
+	if ( isZeroReport( pieChartReport ) ) {
+		// TODO: Replace with `props.WidgetReportZero` once legacy dashboard UI has been removed.
 		return <ReportZero moduleSlug="analytics" />;
 	}
 
