@@ -320,6 +320,26 @@ final class AdSense extends Module
 	}
 
 	/**
+	 * Gets the service URL for the current account or signup if none.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string
+	 */
+	protected function get_account_url() {
+		$option = $this->get_settings()->get();
+
+		if ( ! empty( $option['accountID'] ) && $this->authentication->profile()->has() ) {
+			return add_query_arg(
+				array( 'authuser' => $this->authentication->profile()->get()['email'] ),
+				sprintf( 'https://www.google.com/adsense/new/%s/home', $option['accountID'] )
+			);
+		}
+
+		return 'https://www.google.com/adsense/signup/new';
+	}
+
+	/**
 	 * Parses a response for the given datapoint.
 	 *
 	 * @since 1.0.0
