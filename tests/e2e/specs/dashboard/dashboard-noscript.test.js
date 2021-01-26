@@ -2,15 +2,21 @@
  * WordPress dependencies
  */
 import { visitAdminPage } from '@wordpress/e2e-test-utils';
+import { createWaitForFetchRequests } from '../../utils';
 
 describe( 'Site Kit noscript notice', () => {
+	let waitForFetchRequests;
 	beforeEach( async () => {
+		waitForFetchRequests = createWaitForFetchRequests();
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 	} );
+
+	afterEach( () => waitForFetchRequests() ); // Clean up request listeners.
 
 	describe( 'When Javascript is enabled', () => {
 		it( 'Should not display noscript notice', async () => {
 			await expect( page ).not.toMatchElement( '.googlesitekit-noscript' );
+			await waitForFetchRequests(); // Wait for compatibility checks to finish.
 		} );
 	} );
 
