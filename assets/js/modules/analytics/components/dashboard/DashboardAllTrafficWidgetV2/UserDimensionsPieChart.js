@@ -130,6 +130,19 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 		absOthers.previous -= metrics[ 1 ].values[ 0 ];
 	} );
 
+	const getTooltipHelp = ( url, label ) => (
+		`<p>
+			<a
+				href=${ url }
+				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit"
+				target="_blank"
+				rel="noreferrer noopener"
+			>
+				${ label }
+			</a>
+		</p>`
+	);
+
 	const dataMap = extractAnalyticsDataForPieChart( report, {
 		keyColumnIndex: 0,
 		maxSlices: 5,
@@ -156,8 +169,8 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 				</svg>`,
 				numberFormat( Math.abs( difference ), { maximumFractionDigits: 2 } ),
 			);
-
-			const dimensionClassName = `googlesitekit-visualization-tooltip-${ rowData[ 0 ].toLowerCase().replace( /\W+/, '_' ) }`;
+			const rowLabel = rowData[ 0 ].toLowerCase();
+			const dimensionClassName = `googlesitekit-visualization-tooltip-${ rowLabel.replace( /\W+/, '_' ) }`;
 
 			let tooltip = (
 				`<p>
@@ -169,33 +182,24 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 				</p>`
 			);
 
-			if ( sourceLink && rowData[ 0 ].toLowerCase() === 'others' ) {
-				tooltip += (
-					`<p>
-						<a class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit" href="${ sourceLink }" target="_blank" rel="noreferrer noopener">
-							${ __( 'See the detailed breakdown in Analytics', 'google-site-kit' ) }
-						</a>
-					</p>`
+			if ( sourceLink && rowLabel === 'others' ) {
+				tooltip += getTooltipHelp(
+					sourceLink,
+					__( 'See the detailed breakdown in Analytics', 'google-site-kit' )
 				);
 			}
 
-			if ( othersSupportURL && rowData[ 0 ].toLowerCase() === '(other)' ) {
-				tooltip += (
-					`<p>
-						<a class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit" href="${ othersSupportURL }" target="_blank" rel="noreferrer noopener">
-							${ /* translators: %s: pie slice label */ sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowData[ 0 ].toLowerCase() ) }
-						</a>
-					</p>`
+			if ( othersSupportURL && rowLabel === '(other)' ) {
+				tooltip += getTooltipHelp(
+					othersSupportURL,
+					/* translators: %s: pie slice label */ sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel )
 				);
 			}
 
-			if ( notSetSupportURL && rowData[ 0 ].toLowerCase() === '(not set)' ) {
-				tooltip += (
-					`<p>
-						<a class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit" href="${ notSetSupportURL }" target="_blank" rel="noreferrer noopener">
-							${ /* translators: %s: pie slice label */ sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowData[ 0 ].toLowerCase() ) }
-						</a>
-					</p>`
+			if ( notSetSupportURL && rowLabel === '(not set)' ) {
+				tooltip += getTooltipHelp(
+					notSetSupportURL,
+					/* translators: %s: pie slice label */ sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel )
 				);
 			}
 
