@@ -45,6 +45,7 @@ const { useSelect, useDispatch } = Data;
 
 export default function UserDimensionsPieChart( { dimensionName, entityURL, sourceLink } ) {
 	const [ chartLoaded, setChartLoaded ] = useState( false );
+	const selectedRow = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'selectedRow' ) );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
@@ -77,6 +78,10 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 		const { chart, onSelect } = chartData || {};
 		const { slices } = UserDimensionsPieChart.chartOptions;
 
+		if ( selectedRow !== undefined ) {
+			chart.setSelection( [ { row: selectedRow } ] );
+		}
+
 		if ( chart && ! onSelect ) {
 			chartData.onSelect = global.google.visualization.events.addListener( chart, 'select', () => {
 				const { row } = chart.getSelection()?.[ 0 ] || {};
@@ -91,15 +96,23 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 							{
 								dimensionValue: isOthers ? '' : dimensionValue,
 								dimensionColor: isOthers ? '' : slices[ row ]?.color,
+								selectedRow: row,
 							}
 						);
 					}
 				} else {
-					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
+					setValues(
+						FORM_ALL_TRAFFIC_WIDGET,
+						{
+							dimensionValue: '',
+							dimensionColor: '',
+							selectedRow: undefined,
+						}
+					);
 				}
 			} );
 		}
-	}, [ dimensionName, setValues ] );
+	}, [ dimensionName, selectedRow, setValues ] );
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;
