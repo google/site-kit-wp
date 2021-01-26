@@ -69,7 +69,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 	const loaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
 	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
-	const othersSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+	const otherSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
 		path: '/analytics/answer/1009671',
 	} ) );
 	const notSetSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
@@ -190,9 +190,9 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 				);
 			}
 
-			if ( othersSupportURL && rowLabel === '(other)' ) {
+			if ( otherSupportURL && rowLabel === '(other)' ) {
 				tooltip += getTooltipHelp(
-					othersSupportURL,
+					otherSupportURL,
 					/* translators: %s: pie slice label */
 					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel )
 				);
