@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -45,7 +39,7 @@ const { useSelect } = Data;
 
 const WIDGET_SLUG = 'adminBarUniqueVisitors';
 
-const AdminBarUniqueVisitors = ( { className, WidgetReportZero } ) => {
+const AdminBarUniqueVisitors = ( { WidgetReportZero } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
@@ -76,12 +70,7 @@ const AdminBarUniqueVisitors = ( { className, WidgetReportZero } ) => {
 
 	if ( ! hasFinishedResolution ) {
 		return (
-			<div className={ classnames(
-				'mdc-layout-grid__cell',
-				className,
-			) }>
-				<PreviewBlock width="auto" height="59px" />
-			</div>
+			<PreviewBlock width="auto" height="59px" />
 		);
 	}
 
@@ -96,27 +85,14 @@ const AdminBarUniqueVisitors = ( { className, WidgetReportZero } ) => {
 	const previousTotalUsers = previousMonth[ 0 ];
 
 	return (
-		<div className={ classnames(
-			'mdc-layout-grid__cell',
-			className,
-		) }>
-			<DataBlock
-				className="overview-total-users"
-				title={ __( 'Total Users', 'google-site-kit' ) }
-				datapoint={ totalUsers }
-				change={ calculateChange( previousTotalUsers, totalUsers ) }
-				changeDataUnit="%"
-			/>
-		</div>
+		<DataBlock
+			className="overview-total-users"
+			title={ __( 'Total Users', 'google-site-kit' ) }
+			datapoint={ totalUsers }
+			change={ calculateChange( previousTotalUsers, totalUsers ) }
+			changeDataUnit="%"
+		/>
 	);
-};
-
-AdminBarUniqueVisitors.propTypes = {
-	className: PropTypes.string,
-};
-
-AdminBarUniqueVisitors.defaultProps = {
-	className: 'mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
 };
 
 export default passWidgetComponentProps( { widgetSlug: WIDGET_SLUG } )( AdminBarUniqueVisitors );

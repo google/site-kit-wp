@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -46,7 +40,7 @@ const { useSelect } = Data;
 
 const WIDGET_SLUG = 'adminBarClicks';
 
-function AdminBarClicks( { className, WidgetReportZero } ) {
+function AdminBarClicks( { WidgetReportZero } ) {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
@@ -73,12 +67,7 @@ function AdminBarClicks( { className, WidgetReportZero } ) {
 
 	if ( ! hasFinishedResolution ) {
 		return (
-			<div className={ classnames(
-				'mdc-layout-grid__cell',
-				className,
-			) }>
-				<PreviewBlock width="auto" height="59px" />
-			</div>
+			<PreviewBlock width="auto" height="59px" />
 		);
 	}
 
@@ -96,27 +85,14 @@ function AdminBarClicks( { className, WidgetReportZero } ) {
 	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
 
 	return (
-		<div className={ classnames(
-			'mdc-layout-grid__cell',
-			className,
-		) }>
-			<DataBlock
-				className="overview-total-clicks"
-				title={ __( 'Total Clicks', 'google-site-kit' ) }
-				datapoint={ totalClicks }
-				change={ totalClicksChange }
-				changeDataUnit="%"
-			/>
-		</div>
+		<DataBlock
+			className="overview-total-clicks"
+			title={ __( 'Total Clicks', 'google-site-kit' ) }
+			datapoint={ totalClicks }
+			change={ totalClicksChange }
+			changeDataUnit="%"
+		/>
 	);
 }
-
-AdminBarClicks.propTypes = {
-	className: PropTypes.string,
-};
-
-AdminBarClicks.defaultProps = {
-	className: 'mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
-};
 
 export default passWidgetComponentProps( { widgetSlug: WIDGET_SLUG } )( AdminBarClicks );

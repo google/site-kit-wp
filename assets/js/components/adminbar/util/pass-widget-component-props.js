@@ -27,7 +27,7 @@ import { createElement } from '@wordpress/element';
 import { getWidgetComponentProps } from '../../../googlesitekit/widgets/util';
 
 /**
- * Gets the props to pass to a widget's component.
+ * Gets the props and pass them to the widget's component.
  *
  * @since n.e.x.t
  *

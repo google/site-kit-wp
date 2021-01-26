@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -46,7 +40,7 @@ const { useSelect } = Data;
 
 const WIDGET_SLUG = 'adminBarImpressions';
 
-function AdminBarImpressions( { className, WidgetReportZero } ) {
+function AdminBarImpressions( { WidgetReportZero } ) {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
@@ -70,15 +64,9 @@ function AdminBarImpressions( { className, WidgetReportZero } ) {
 		// Return the received WidgetReportZero from props, using the Widget API.
 		return zeroDataComponent;
 	}
-
 	if ( ! hasFinishedResolution ) {
 		return (
-			<div className={ classnames(
-				'mdc-layout-grid__cell',
-				className,
-			) }>
-				<PreviewBlock width="auto" height="59px" />
-			</div>
+			<PreviewBlock width="auto" height="59px" />
 		);
 	}
 
@@ -95,27 +83,14 @@ function AdminBarImpressions( { className, WidgetReportZero } ) {
 	const totalImpressionsChange = calculateChange( totalOlderImpressions, totalImpressions );
 
 	return (
-		<div className={ classnames(
-			'mdc-layout-grid__cell',
-			className,
-		) }>
-			<DataBlock
-				className="overview-total-impressions"
-				title={ __( 'Total Impressions', 'google-site-kit' ) }
-				datapoint={ totalImpressions }
-				change={ totalImpressionsChange }
-				changeDataUnit="%"
-			/>
-		</div>
+		<DataBlock
+			className="overview-total-impressions"
+			title={ __( 'Total Impressions', 'google-site-kit' ) }
+			datapoint={ totalImpressions }
+			change={ totalImpressionsChange }
+			changeDataUnit="%"
+		/>
 	);
 }
-
-AdminBarImpressions.propTypes = {
-	className: PropTypes.string,
-};
-
-AdminBarImpressions.defaultProps = {
-	className: 'mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
-};
 
 export default passWidgetComponentProps( { widgetSlug: WIDGET_SLUG } )( AdminBarImpressions );

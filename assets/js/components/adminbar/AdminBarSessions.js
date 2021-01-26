@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -46,7 +40,7 @@ const { useSelect } = Data;
 
 const WIDGET_SLUG = 'adminBarSessions';
 
-const AdminBarSessions = ( { className, WidgetReportZero } ) => {
+const AdminBarSessions = ( { WidgetReportZero } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
@@ -79,12 +73,7 @@ const AdminBarSessions = ( { className, WidgetReportZero } ) => {
 
 	if ( ! hasFinishedResolution ) {
 		return (
-			<div className={ classnames(
-				'mdc-layout-grid__cell',
-				className,
-			) }>
-				<PreviewBlock width="auto" height="59px" />
-			</div>
+			<PreviewBlock width="auto" height="59px" />
 		);
 	}
 
@@ -103,27 +92,14 @@ const AdminBarSessions = ( { className, WidgetReportZero } ) => {
 	const totalSessionsChange = calculateChange( previousMonth[ 0 ], lastMonth[ 0 ] );
 
 	return (
-		<div className={ classnames(
-			'mdc-layout-grid__cell',
-			className,
-		) }>
-			<DataBlock
-				className="overview-total-sessions"
-				title={ __( 'Total Sessions', 'google-site-kit' ) }
-				datapoint={ totalSessions }
-				change={ totalSessionsChange }
-				changeDataUnit="%"
-			/>
-		</div>
+		<DataBlock
+			className="overview-total-sessions"
+			title={ __( 'Total Sessions', 'google-site-kit' ) }
+			datapoint={ totalSessions }
+			change={ totalSessionsChange }
+			changeDataUnit="%"
+		/>
 	);
-};
-
-AdminBarSessions.propTypes = {
-	className: PropTypes.string,
-};
-
-AdminBarSessions.defaultProps = {
-	className: 'mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
 };
 
 export default passWidgetComponentProps( { widgetSlug: WIDGET_SLUG } )( AdminBarSessions );
