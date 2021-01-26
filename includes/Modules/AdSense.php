@@ -359,26 +359,6 @@ final class AdSense extends Module
 	}
 
 	/**
-	 * Gets the service URL for the current account or signup if none.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string
-	 */
-	protected function get_account_url() {
-		$option = $this->get_settings()->get();
-
-		if ( ! empty( $option['accountID'] ) && $this->authentication->profile()->has() ) {
-			return add_query_arg(
-				array( 'authuser' => $this->authentication->profile()->get()['email'] ),
-				sprintf( 'https://www.google.com/adsense/new/%s/home', $option['accountID'] )
-			);
-		}
-
-		return 'https://www.google.com/adsense/signup/new';
-	}
-
-	/**
 	 * Parses a response for the given datapoint.
 	 *
 	 * @since 1.0.0
@@ -401,6 +381,36 @@ final class AdSense extends Module
 		}
 
 		return parent::parse_data_response( $data, $response );
+	}
+
+	/**
+	 * Gets the service URL for the current account or signup if none.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string
+	 */
+	protected function get_account_url() {
+		$profile = $this->authentication->profile();
+		$option  = $this->get_settings()->get();
+		$query   = array(
+			'source'     => 'site-kit',
+			'utm_source' => 'site-kit',
+			'utm_medium' => 'wordpress_signup',
+			'url'        => $this->context->get_reference_site_url(),
+		);
+
+		if ( ! empty( $option['accountID'] ) ) {
+			$url = sprintf( 'https://www.google.com/adsense/new/%s/home', $option['accountID'] );
+		} else {
+			$url = 'https://www.google.com/adsense/signup/new';
+		}
+
+		if ( $profile->has() ) {
+			$query['authuser'] = $profile->get()['email'];
+		}
+
+		return add_query_arg( $url, $query );
 	}
 
 	/**
