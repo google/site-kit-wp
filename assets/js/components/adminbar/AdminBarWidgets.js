@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -25,57 +30,86 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
-import AdminBarSessions from './AdminBarSessions';
 import AdminBarImpressions from './AdminBarImpressions';
 import AdminBarClicks from './AdminBarClicks';
+import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
+import AdminBarSessions from './AdminBarSessions';
 import ActivateModuleCTA from '../ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Row, Cell } from '../../material-components';
 import AdminBarZeroData from './AdminBarZeroData';
+import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
+import { HIDDEN_CLASS } from '../../googlesitekit/widgets/util/constants';
 const { useSelect } = Data;
 
 export default function AdminBarWidgets() {
 	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 
+	// const adminBarImpressionsZeroData = useSelect( ( select ) => select( CORE_WIDGETS ).getWidgetState( 'adminBarImpressions' )?.Component.name === 'ReportZero' );
+
+	// // TODO: In AdminBarWidgets here, we need to call getWidgetState for each (active, see comment below) widget. If state.Component is ReportZero for every one, we know the admin bar is in zeroData state.
+	// const [ zeroData, setZeroData ] = useState( false );
+
 	// True if _all_ admin bar sections have zero data.
 	const zeroData = useSelect( ( select ) => {
-		return AdminBarImpressions.selectHasZeroData( select ) &&
-			AdminBarClicks.selectHasZeroData( select ) &&
-			AdminBarUniqueVisitors.selectHasZeroData( select ) &&
-			AdminBarSessions.selectHasZeroData( select );
+		return select( CORE_WIDGETS ).getWidgetState( 'adminBarImpressions' )?.Component.name === 'ReportZero';
+		// TODO: check all components and only check analytics if active
 	} );
 
-	if ( zeroData ) {
-		return <AdminBarZeroData />;
-	}
+	// useEffect( () => {
+	// 	if ( adminBarImpressionsZeroData ) {
+	// 		setZeroData( true );
+	// 	}
+	// }, [ adminBarImpressionsZeroData ] );
+
+	// // True if _all_ admin bar sections have zero data.
+	// const zeroData = useSelect( ( select ) => {
+	// 	return select( CORE_WIDGETS ).getWidgetState( 'adminBarImpressions' )?.Component.name === 'ReportZero';
+	// 	// return AdminBarImpressions.selectHasZeroData( select ) &&
+	// 	// 	AdminBarClicks.selectHasZeroData( select ) &&
+	// 	// 	AdminBarUniqueVisitors.selectHasZeroData( select ) &&
+	// 	// 	AdminBarSessions.selectHasZeroData( select );
+	// } );
+
+	// if ( zeroData ) {
+	// 	return <AdminBarZeroData />;
+	// }
 
 	return (
-		<Row>
-			{ /* TODO: Add <Cell> components/grid-classes here rather than within widget components */ }
-			<AdminBarImpressions />
-			<AdminBarClicks />
-
-			{ analyticsModuleConnected && analyticsModuleActive && (
-				<Fragment>
-					<AdminBarUniqueVisitors />
-					<AdminBarSessions />
-				</Fragment>
+		<Fragment>
+			{ zeroData && (
+				<Row>
+					<AdminBarZeroData />
+				</Row>
 			) }
+			<div className={ classnames( { [ HIDDEN_CLASS ]: zeroData } ) }>
+				<Row>
+					{ /* TODO: Add <Cell> components/grid-classes here rather than within widget components */ }
+					<AdminBarImpressions />
+					<AdminBarClicks />
 
-			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
-				<Cell lgSize={ 6 } mdSize={ 4 }>
-					{ ! analyticsModuleActive && (
-						<ActivateModuleCTA moduleSlug="analytics" />
+					{ analyticsModuleConnected && analyticsModuleActive && (
+						<Fragment>
+							<AdminBarUniqueVisitors />
+							<AdminBarSessions />
+						</Fragment>
 					) }
 
-					{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
-						<CompleteModuleActivationCTA slug="analytics" />
+					{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+						<Cell lgSize={ 6 } mdSize={ 4 }>
+							{ ! analyticsModuleActive && (
+								<ActivateModuleCTA moduleSlug="analytics" />
+							) }
+
+							{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
+								<CompleteModuleActivationCTA slug="analytics" />
+							) }
+						</Cell>
 					) }
-				</Cell>
-			) }
-		</Row>
+				</Row>
+			</div>
+		</Fragment>
 	);
 }
