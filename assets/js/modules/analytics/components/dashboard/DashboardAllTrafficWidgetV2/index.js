@@ -158,7 +158,8 @@ function DashboardAllTrafficWidget() {
 		return <ReportError moduleSlug="analytics" error={ pieError || graphError || totalsError } />;
 	}
 
-	if ( pieLoaded && pieReport?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ] < 1 ) {
+	const totalUsers = parseInt( pieReport?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ] );
+	if ( pieLoaded && ( Number.isNaN( totalUsers ) || totalUsers < 1 ) ) {
 		return <ReportZero moduleSlug="analytics" />;
 	}
 
