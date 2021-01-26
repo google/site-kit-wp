@@ -32,12 +32,12 @@ export function createWaitForFetchRequests() {
 			const promise = page.waitForResponse(
 				// eslint-disable-next-line sitekit/camelcase-acronyms
 				( res ) => res.request()._requestId === req._requestId
-			).catch( () => {} );
+			);
 			// A promise may be rejected if the execution context it was
 			// captured in no longer exists (e.g. previous page) which
 			// is necessary in some cases, and can be ignored since
 			// there is nothing to wait for any more.
-			responsePromises.push( promise );
+			responsePromises.push( promise.catch( () => {} ) );
 		}
 	};
 
