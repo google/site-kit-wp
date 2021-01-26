@@ -182,7 +182,8 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 				</p>`
 			);
 
-			if ( sourceLink && rowLabel === 'others' ) {
+			const othersLabel = __( 'Others', 'google-site-kit' ).toLowerCase();
+			if ( sourceLink && rowLabel === othersLabel ) {
 				tooltip += getTooltipHelp(
 					sourceLink,
 					__( 'See the detailed breakdown in Analytics', 'google-site-kit' )
@@ -192,14 +193,16 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 			if ( othersSupportURL && rowLabel === '(other)' ) {
 				tooltip += getTooltipHelp(
 					othersSupportURL,
-					/* translators: %s: pie slice label */ sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel )
+					/* translators: %s: pie slice label */
+					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel )
 				);
 			}
 
 			if ( notSetSupportURL && rowLabel === '(not set)' ) {
 				tooltip += getTooltipHelp(
 					notSetSupportURL,
-					/* translators: %s: pie slice label */ sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel )
+					/* translators: %s: pie slice label */
+					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel )
 				);
 			}
 
