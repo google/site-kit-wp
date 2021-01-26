@@ -410,7 +410,7 @@ final class AdSense extends Module
 			$query['authuser'] = $profile->get()['email'];
 		}
 
-		return add_query_arg( $url, $query );
+		return add_query_arg( $query, $url );
 	}
 
 	/**
