@@ -134,7 +134,7 @@ final class AdSense extends Module
 			'utm_medium' => 'wordpress_signup',
 		);
 
-		$info['accountURL'] = add_query_arg( $idenfifier_args, $this->get_data( 'account-url' ) );
+		$info['accountURL'] = add_query_arg( $idenfifier_args, $this->get_account_url() );
 		$info['signupURL']  = add_query_arg( $signup_args, $info['accountURL'] );
 		$info['rootURL']    = add_query_arg( $idenfifier_args, 'https://www.google.com/adsense/' );
 
@@ -211,7 +211,6 @@ final class AdSense extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:account-url'    => array( 'service' => '' ),
 			'GET:accounts'       => array( 'service' => 'adsense' ),
 			'GET:alerts'         => array( 'service' => 'adsense' ),
 			'GET:clients'        => array( 'service' => 'adsense' ),
@@ -234,19 +233,6 @@ final class AdSense extends Module
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:account-url':
-				return function() {
-					$option     = $this->get_settings()->get();
-					$account_id = $option['accountID'];
-					if ( $account_id && $this->authentication->profile()->has() ) {
-						$profile_email = $this->authentication->profile()->get()['email'];
-						return add_query_arg(
-							array( 'authuser' => $profile_email ),
-							sprintf( 'https://www.google.com/adsense/new/%s/home', $account_id )
-						);
-					}
-					return 'https://www.google.com/adsense/signup/new';
-				};
 			case 'GET:accounts':
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts->listAccounts();
@@ -341,7 +327,7 @@ final class AdSense extends Module
 							'winImage'      => 'sun-small.png',
 							'format'        => 'large',
 							'severity'      => 'win-info',
-							'ctaURL'        => $this->get_data( 'account-url' ),
+							'ctaURL'        => $this->get_account_url(),
 							'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
 							'ctaTarget'     => '_blank',
 						),
@@ -385,6 +371,26 @@ final class AdSense extends Module
 		}
 
 		return parent::create_data_request( $data );
+	}
+
+	/**
+	 * Gets the service URL for the current account or signup if none.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string
+	 */
+	protected function get_account_url() {
+		$option = $this->get_settings()->get();
+
+		if ( ! empty( $option['accountID'] ) && $this->authentication->profile()->has() ) {
+			return add_query_arg(
+				array( 'authuser' => $this->authentication->profile()->get()['email'] ),
+				sprintf( 'https://www.google.com/adsense/new/%s/home', $option['accountID'] )
+			);
+		}
+
+		return 'https://www.google.com/adsense/signup/new';
 	}
 
 	/**
