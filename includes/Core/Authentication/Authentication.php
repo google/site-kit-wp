@@ -183,6 +183,15 @@ final class Authentication {
 	protected $google_proxy;
 
 	/**
+	 * Initial_Version instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var User_Input_State
+	 */
+	private $initial_version = null;
+
+	/**
 	 * Flag set when site fields are synchronized during the current request.
 	 *
 	 * @var bool
@@ -221,6 +230,7 @@ final class Authentication {
 		$this->has_connected_admins = new Has_Connected_Admins( $this->options, $this->user_options );
 		$this->connected_proxy_url  = new Connected_Proxy_URL( $this->options );
 		$this->disconnected_reason  = new Disconnected_Reason( $this->user_options );
+		$this->initial_version      = new Initial_Version( $this->user_options );
 	}
 
 	/**
@@ -238,6 +248,7 @@ final class Authentication {
 		$this->connected_proxy_url->register();
 		$this->disconnected_reason->register();
 		$this->user_input_state->register();
+		$this->initial_version->register();
 
 		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
 		add_filter( 'googlesitekit_admin_data', $this->get_method_proxy( 'inline_js_admin_data' ) );
@@ -353,6 +364,15 @@ final class Authentication {
 				$this->cron_refresh_profile_data( $user_id );
 			}
 		);
+
+		// If no initial version set for the current user, set it when getting a new access token.
+		if ( ! $this->initial_version->get() ) {
+			$set_initial_version = function() {
+				$this->initial_version->set( GOOGLESITEKIT_VERSION );
+			};
+			add_action( 'googlesitekit_authorize_user', $set_initial_version );
+			add_action( 'googlesitekit_reauthorize_user', $set_initial_version );
+		}
 	}
 
 	/**

@@ -99,6 +99,42 @@ class AuthenticationTest extends TestCase {
 		$this->assertTrue( has_action( 'shutdown' ), $option );
 	}
 
+	public function test_register_set_initial_version_if_not_set() {
+		$auth            = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$initial_version = $this->force_get_property( $auth, 'initial_version' );
+
+		// Ensure no version is set yet.
+		$initial_version->delete();
+		remove_all_actions( 'googlesitekit_authorize_user' );
+		remove_all_actions( 'googlesitekit_reauthorize_user' );
+		$auth->register();
+
+		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ) );
+		$this->assertTrue( has_action( 'googlesitekit_reauthorize_user' ) );
+
+		// Response is not used here, so just pass an array.
+		do_action( 'googlesitekit_reauthorize_user', array() );
+		$this->assertEquals( GOOGLESITEKIT_VERSION, $this->initial_version->get() );
+	}
+
+	public function test_register_do_not_set_initial_version_if_already_set() {
+		$auth            = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$initial_version = $this->force_get_property( $auth, 'initial_version' );
+
+		// Ensure a version is already set.
+		$initial_version->set( '1.1.0' );
+		remove_all_actions( 'googlesitekit_authorize_user' );
+		remove_all_actions( 'googlesitekit_reauthorize_user' );
+		$auth->register();
+
+		$this->assertFalse( has_action( 'googlesitekit_authorize_user' ) );
+		$this->assertFalse( has_action( 'googlesitekit_reauthorize_user' ) );
+
+		// Response is not used here, so just pass an array.
+		do_action( 'googlesitekit_reauthorize_user', array() );
+		$this->assertEquals( '1.1.0', $this->initial_version->get() );
+	}
+
 	public function option_action_provider() {
 		return array(
 			array( 'blogname', 'example.com', 'new.example.com' ),
