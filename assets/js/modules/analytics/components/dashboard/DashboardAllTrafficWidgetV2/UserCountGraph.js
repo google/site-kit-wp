@@ -37,14 +37,19 @@ import { DATE_RANGE_OFFSET, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/c
 import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import PreviewBlock from '../../../../../components/PreviewBlock';
+import ReportError from '../../../../../components/ReportError';
 const { useSelect } = Data;
 
-export default function UserCountGraph( { loaded, report } ) {
+export default function UserCountGraph( { loaded, error, report } ) {
 	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 	const graphLineColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) || '#1a73e8' );
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="100%" height="300px" shape="square" />;
+	}
+
+	if ( error ) {
+		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	const rows = Array.isArray( report?.[ 0 ]?.data?.rows )
@@ -86,6 +91,7 @@ export default function UserCountGraph( { loaded, report } ) {
 
 UserCountGraph.propTypes = {
 	loaded: PropTypes.bool,
+	error: PropTypes.shape( {} ),
 	report: PropTypes.arrayOf( PropTypes.object ),
 };
 

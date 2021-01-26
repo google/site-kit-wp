@@ -36,9 +36,10 @@ import { numFmt, calculateChange } from '../../../../../util';
 import { getAvailableDateRanges } from '../../../../../util/date-range';
 import ChangeArrow from '../../../../../components/ChangeArrow';
 import PreviewBlock from '../../../../../components/PreviewBlock';
+import ReportError from '../../../../../components/ReportError';
 const { useSelect } = Data;
 
-export default function TotalUserCount( { loaded, report, dimensionValue } ) {
+export default function TotalUserCount( { loaded, error, report, dimensionValue } ) {
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
 	if ( ! loaded ) {
@@ -50,6 +51,10 @@ export default function TotalUserCount( { loaded, report, dimensionValue } ) {
 				shape="square"
 			/>
 		);
+	}
+
+	if ( error ) {
+		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	const { totals } = report?.[ 0 ]?.data || {};

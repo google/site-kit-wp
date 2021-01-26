@@ -154,8 +154,8 @@ function DashboardAllTrafficWidget() {
 		currentRange,
 	] );
 
-	if ( pieChartError || userCountGraphError || totalUsersError ) {
-		return <ReportError moduleSlug="analytics" error={ pieChartError || userCountGraphError || totalUsersError } />;
+	if ( pieChartError ) {
+		return <ReportError moduleSlug="analytics" error={ pieChartError } />;
 	}
 
 	const totalUsers = parseInt( pieChartReport?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ] );
@@ -187,11 +187,13 @@ function DashboardAllTrafficWidget() {
 						<TotalUserCount
 							loaded={ totalUsersLoaded && ! firstLoad }
 							report={ totalUsersReport }
+							error={ totalUsersError }
 							dimensionValue={ dimensionValue }
 						/>
 
 						<UserCountGraph
 							loaded={ userCountGraphLoaded && ! firstLoad }
+							error={ userCountGraphError }
 							report={ userCountGraphReport }
 						/>
 					</Cell>
