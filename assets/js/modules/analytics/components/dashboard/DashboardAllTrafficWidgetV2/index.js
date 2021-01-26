@@ -46,7 +46,9 @@ const { useSelect } = Data;
 
 function DashboardAllTrafficWidget() {
 	const [ firstLoad, setFirstLoad ] = useState( true );
+	const [ currentRange, setCurrentRange ] = useState( '' );
 
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const dimensionName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionName' ) || 'ga:channelGrouping' );
 	const dimensionValue = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionValue' ) );
 	const entityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
@@ -138,10 +140,19 @@ function DashboardAllTrafficWidget() {
 	const serviceReportURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( reportType, reportArgs ) );
 
 	useEffect( () => {
-		if ( pieLoaded && totalsLoaded && graphLoaded ) {
+		if ( dateRange !== currentRange ) {
+			setFirstLoad( true );
+			setCurrentRange( dateRange );
+		} else if ( pieLoaded && totalsLoaded && graphLoaded ) {
 			setFirstLoad( false );
 		}
-	}, [ pieLoaded, totalsLoaded, graphLoaded ] );
+	}, [
+		pieLoaded,
+		totalsLoaded,
+		graphLoaded,
+		dateRange,
+		currentRange,
+	] );
 
 	if ( pieError || graphError || totalsError ) {
 		return <ReportError moduleSlug="analytics" error={ pieError || graphError || totalsError } />;
