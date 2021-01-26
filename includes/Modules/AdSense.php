@@ -397,7 +397,7 @@ final class AdSense extends Module
 			'source'     => 'site-kit',
 			'utm_source' => 'site-kit',
 			'utm_medium' => 'wordpress_signup',
-			'url'        => $this->context->get_reference_site_url(),
+			'url'        => rawurlencode( $this->context->get_reference_site_url() ),
 		);
 
 		if ( ! empty( $option['accountID'] ) ) {
