@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createElement, useMemo } from '@wordpress/element';
+import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -41,29 +41,23 @@ import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-
 import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/search-console/util/is-zero-report';
 import sumObjectListValue from '../../util/sum-object-list-value';
-import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { passWidgetComponentProps } from './util/pass-widget-component-props';
 const { useSelect } = Data;
 
-const selectReportArgs = ( select ) => {
-	const url = select( CORE_SITE ).getCurrentEntityURL();
-	const { compareStartDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+const WIDGET_SLUG = 'adminBarImpressions';
+
+function AdminBarImpressions( { className, WidgetReportZero } ) {
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
-	} );
-
-	return {
+	} ) );
+	const reportArgs = {
 		startDate: compareStartDate,
 		endDate,
 		dimensions: 'date',
 		url,
 	};
-};
-
-function AdminBarImpressions( { className, WidgetReportZero } ) {
-	// TODO: Update the four components to return the received WidgetReportZero from props instead of the imported ReportZero. That component will set necessary state in the datastore (via setWidgetState).
-	// WidgetZeroReport set's the widget state in the store automatically!
-
-	const reportArgs = useSelect( selectReportArgs );
 
 	const searchConsoleData = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ) );
 	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
@@ -71,11 +65,10 @@ function AdminBarImpressions( { className, WidgetReportZero } ) {
 
 	const reportZero = isZeroReport( searchConsoleData );
 	// Memoise the WidgetReportZero component to avoid render loop caused by it's conditional render in AdminBarWidgets.
-	const zeroDataComponent = useMemo( () => <WidgetReportZero moduleSlug="search-console" widgetSlug="adminBarImpressions" />, [ reportZero ] );
+	const zeroDataComponent = useMemo( () => <WidgetReportZero moduleSlug="search-console" widgetSlug={ WIDGET_SLUG } />, [ reportZero ] );
 	if ( reportZero ) {
-		// TODO: Return the received WidgetReportZero from props, using the Widget API.
+		// Return the received WidgetReportZero from props, using the Widget API.
 		return zeroDataComponent;
-		// return <ReportZero moduleSlug="search-console" />;
 	}
 
 	if ( ! hasFinishedResolution ) {
@@ -125,34 +118,4 @@ AdminBarImpressions.defaultProps = {
 	className: 'mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
 };
 
-/**
- * Has Zero Data
- *
- * Allows parent component to check if this component has zero data.
- *
- * @since n.e.x.t
- *
- * @param {Function} select Data store select function.
- * @return {boolean} Returns true if the report has zero data.
- */
-// TODO: remove
-AdminBarImpressions.selectHasZeroData = ( select ) => {
-	const reportArgs = selectReportArgs( select );
-	const data = select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs );
-	return isZeroReport( data );
-};
-
-const passWidgetComponentProps = ( ) => {
-	return ( wrappedComponent ) => {
-		const AdminBarWidgetComponent = ( props ) => {
-			// TODO: clean and make general to the app.
-			// Add the widget component props to the component so that we can use the WidgetReportZero component when there is zero data.
-			const widgetComponentProps = getWidgetComponentProps( 'adminBarImpressions' );
-
-			return createElement( wrappedComponent, { ...props, ...widgetComponentProps } );
-		};
-		return AdminBarWidgetComponent;
-	};
-};
-
-export default passWidgetComponentProps()( AdminBarImpressions );
+export default passWidgetComponentProps( { widgetSlug: WIDGET_SLUG } )( AdminBarImpressions );

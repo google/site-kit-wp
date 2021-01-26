@@ -47,35 +47,16 @@ export default function AdminBarWidgets() {
 	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 
-	// const adminBarImpressionsZeroData = useSelect( ( select ) => select( CORE_WIDGETS ).getWidgetState( 'adminBarImpressions' )?.Component.name === 'ReportZero' );
-
-	// // TODO: In AdminBarWidgets here, we need to call getWidgetState for each (active, see comment below) widget. If state.Component is ReportZero for every one, we know the admin bar is in zeroData state.
-	// const [ zeroData, setZeroData ] = useState( false );
-
 	// True if _all_ admin bar sections have zero data.
 	const zeroData = useSelect( ( select ) => {
-		return select( CORE_WIDGETS ).getWidgetState( 'adminBarImpressions' )?.Component.name === 'ReportZero';
-		// TODO: check all components and only check analytics if active
+		// TODO: Only check for analytics report data if analytics is enabled.
+		return (
+			select( CORE_WIDGETS ).getWidgetState( 'adminBarImpressions' )?.Component.name === 'ReportZero' &&
+			select( CORE_WIDGETS ).getWidgetState( 'adminBarClicks' )?.Component.name === 'ReportZero' &&
+			select( CORE_WIDGETS ).getWidgetState( 'adminBarUniqueVisitors' )?.Component.name === 'ReportZero' &&
+			select( CORE_WIDGETS ).getWidgetState( 'adminBarSessions' )?.Component.name === 'ReportZero'
+		);
 	} );
-
-	// useEffect( () => {
-	// 	if ( adminBarImpressionsZeroData ) {
-	// 		setZeroData( true );
-	// 	}
-	// }, [ adminBarImpressionsZeroData ] );
-
-	// // True if _all_ admin bar sections have zero data.
-	// const zeroData = useSelect( ( select ) => {
-	// 	return select( CORE_WIDGETS ).getWidgetState( 'adminBarImpressions' )?.Component.name === 'ReportZero';
-	// 	// return AdminBarImpressions.selectHasZeroData( select ) &&
-	// 	// 	AdminBarClicks.selectHasZeroData( select ) &&
-	// 	// 	AdminBarUniqueVisitors.selectHasZeroData( select ) &&
-	// 	// 	AdminBarSessions.selectHasZeroData( select );
-	// } );
-
-	// if ( zeroData ) {
-	// 	return <AdminBarZeroData />;
-	// }
 
 	return (
 		<Fragment>

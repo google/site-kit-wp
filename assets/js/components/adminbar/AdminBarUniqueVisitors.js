@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,21 +35,23 @@ import DataBlock from '../DataBlock';
 import Data from 'googlesitekit-data';
 import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
-import ReportZero from '../ReportZero';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
 import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
+import { passWidgetComponentProps } from './util/pass-widget-component-props';
 const { useSelect } = Data;
 
-const selectReportArgs = ( select ) => {
-	const url = select( CORE_SITE ).getCurrentEntityURL();
-	const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+const WIDGET_SLUG = 'adminBarUniqueVisitors';
+
+const AdminBarUniqueVisitors = ( { className, WidgetReportZero } ) => {
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
-	} );
-	return {
+	} ) );
+	const reportArgs = {
 		...dateRangeDates,
 		metrics: [
 			{
@@ -58,14 +61,18 @@ const selectReportArgs = ( select ) => {
 		],
 		url,
 	};
-};
-
-const AdminBarUniqueVisitors = ( { className } ) => {
-	const reportArgs = useSelect( selectReportArgs );
 
 	const analyticsData = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( reportArgs ) );
 	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
+
+	const reportZero = isZeroReport( analyticsData );
+	// Memoise the WidgetReportZero component to avoid render loop caused by it's conditional render in AdminBarWidgets.
+	const zeroDataComponent = useMemo( () => <WidgetReportZero moduleSlug="analytics" widgetSlug={ WIDGET_SLUG } />, [ reportZero ] );
+	if ( reportZero ) {
+		// Return the received WidgetReportZero from props, using the Widget API.
+		return zeroDataComponent;
+	}
 
 	if ( ! hasFinishedResolution ) {
 		return (
@@ -80,10 +87,6 @@ const AdminBarUniqueVisitors = ( { className } ) => {
 
 	if ( error ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
-	}
-
-	if ( isZeroReport( analyticsData ) ) {
-		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const { totals } = analyticsData[ 0 ].data;
@@ -116,20 +119,4 @@ AdminBarUniqueVisitors.defaultProps = {
 	className: 'mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
 };
 
-/**
- * Has Zero Data
- *
- * Allows parent component to check if this component has zero data.
- *
- * @since n.e.x.t
- *
- * @param {Function} select Data store select function.
- * @return {boolean} Returns true if the report has zero data.
- */
-AdminBarUniqueVisitors.selectHasZeroData = ( select ) => {
-	const reportArgs = selectReportArgs( select );
-	const data = select( MODULES_ANALYTICS ).getReport( reportArgs );
-	return isZeroReport( data );
-};
-
-export default AdminBarUniqueVisitors;
+export default passWidgetComponentProps( { widgetSlug: WIDGET_SLUG } )( AdminBarUniqueVisitors );
