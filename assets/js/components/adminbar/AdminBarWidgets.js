@@ -61,9 +61,7 @@ export default function AdminBarWidgets() {
 	return (
 		<Fragment>
 			{ zeroData && (
-				<Row>
-					<AdminBarZeroData />
-				</Row>
+				<AdminBarZeroData />
 			) }
 			<div className={ classnames( { [ HIDDEN_CLASS ]: zeroData } ) }>
 				<Row>
