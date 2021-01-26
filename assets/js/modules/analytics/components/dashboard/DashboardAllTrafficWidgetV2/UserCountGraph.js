@@ -47,6 +47,10 @@ export default function UserCountGraph( { loaded, report } ) {
 		return <PreviewBlock width="100%" height="300px" shape="square" />;
 	}
 
+	const rows = Array.isArray( report?.[ 0 ]?.data?.rows )
+		? report?.[ 0 ]?.data?.rows
+		: [];
+
 	const chartData = [
 		[
 			{
@@ -58,16 +62,10 @@ export default function UserCountGraph( { loaded, report } ) {
 				label: __( 'Users', 'google-site-kit' ),
 			},
 		],
-		...report[ 0 ].data.rows.map( ( row ) => {
-			const { values } = row.metrics[ 0 ];
-			const dateString = row.dimensions[ 0 ];
-			const date = parseDimensionStringToDate( dateString );
-
-			return [
-				date,
-				values[ 0 ],
-			];
-		} ),
+		...rows.map( ( { metrics, dimensions } ) => [
+			parseDimensionStringToDate( dimensions[ 0 ] ),
+			metrics[ 0 ].values[ 0 ],
+		] ),
 	];
 
 	const chartOptions = { ...UserCountGraph.chartOptions };
