@@ -23,6 +23,11 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -36,40 +41,6 @@ import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportZero from '../../../../../components/ReportZero';
 const { useSelect } = Data;
 
-/**
- * Extracts the data required from an analytics 'site-analytics' request for an Area chart.
- *
- * @since 1.24.0
- * @private
- *
- * @param {Object} reports The data returned from the Analytics API call.
- * @return {Array} Required data from 'site-analytics' request.
- */
-const extractUserCountAnalyticsChartData = ( reports ) => {
-	if ( ! reports || ! reports.length ) {
-		return null;
-	}
-
-	return [
-		[
-			{ type: 'date', label: 'Day' },
-			{ type: 'number', label: '' },
-			{ type: 'number', label: 'Users' },
-		],
-		...reports[ 0 ].data.rows.map( ( row ) => {
-			const { values } = row.metrics[ 0 ];
-			const dateString = row.dimensions[ 0 ];
-			const date = parseDimensionStringToDate( dateString );
-
-			return [
-				date,
-				null,
-				values[ 0 ],
-			];
-		} ),
-	];
-};
-
 export default function UserCountGraph( { loaded, report } ) {
 	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 	const graphLineColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) || '#1a73e8' );
@@ -82,17 +53,39 @@ export default function UserCountGraph( { loaded, report } ) {
 		return <ReportZero moduleSlug="analytics" />;
 	}
 
-	const chartData = extractUserCountAnalyticsChartData( report );
-	const chartOptions = { ...UserCountGraph.chartOptions };
+	const chartData = [
+		[
+			{
+				type: 'date',
+				label: __( 'Day', 'google-site-kit' ),
+			},
+			{
+				type: 'number',
+				label: __( 'Users', 'google-site-kit' ),
+			},
+		],
+		...report[ 0 ].data.rows.map( ( row ) => {
+			const { values } = row.metrics[ 0 ];
+			const dateString = row.dimensions[ 0 ];
+			const date = parseDimensionStringToDate( dateString );
 
+			return [
+				date,
+				values[ 0 ],
+			];
+		} ),
+	];
+
+	const chartOptions = { ...UserCountGraph.chartOptions };
 	chartOptions.hAxis.ticks = [ new Date( startDate ), new Date( endDate ) ];
-	chartOptions.series[ 1 ].color = graphLineColor;
+	chartOptions.series[ 0 ].color = graphLineColor;
 
 	return (
 		<GoogleChart
 			chartType="line"
 			data={ chartData }
 			options={ chartOptions }
+			loadHeight={ 205 }
 		/>
 	);
 }
@@ -163,8 +156,7 @@ UserCountGraph.chartOptions = {
 		},
 	},
 	series: {
-		0: { targetAxisIndex: 0, lineWidth: 0 },
-		1: {
+		0: {
 			lineWidth: 3,
 			targetAxisIndex: 1,
 		},

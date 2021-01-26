@@ -51,19 +51,31 @@ function DashboardAllTrafficWidget() {
 	const dimensionName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionName' ) || 'ga:channelGrouping' );
 	const dimensionValue = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionValue' ) );
 	const entityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-
-	const dateRangeDatesWithCompare = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+	const {
+		startDate,
+		endDate,
+		compareStartDate,
+		compareEndDate,
+	} = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
 
-	const dateRangeDatesWithoutCompare = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
+	const baseArgs = {
+		startDate,
+		endDate,
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Users',
+			},
+		],
+	};
 
 	const pieArgs = {
-		...dateRangeDatesWithCompare,
-		metrics: [ { expression: 'ga:users' } ],
+		...baseArgs,
+		compareStartDate,
+		compareEndDate,
 		dimensions: [ dimensionName ],
 		orderby: {
 			fieldName: 'ga:users',
@@ -73,24 +85,14 @@ function DashboardAllTrafficWidget() {
 	};
 
 	const graphArgs = {
-		...dateRangeDatesWithoutCompare,
+		...baseArgs,
 		dimensions: [ 'ga:date' ],
-		metrics: [
-			{
-				expression: 'ga:users',
-				alias: 'Users',
-			},
-		],
 	};
 
 	const totalsArgs = {
-		...dateRangeDatesWithCompare,
-		metrics: [
-			{
-				expression: 'ga:users',
-				alias: 'Users',
-			},
-		],
+		...baseArgs,
+		compareStartDate,
+		compareEndDate,
 	};
 
 	if ( entityURL ) {
