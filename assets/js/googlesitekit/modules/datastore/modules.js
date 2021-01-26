@@ -72,18 +72,24 @@ const moduleDefaults = {
 };
 
 const normalizeModules = memize(
-	( modules ) => Object.keys( modules )
-		.map( ( slug ) => {
-			const module = { ...modules[ slug ], slug };
-			// Fill any `undefined` values with defaults.
-			defaults( module, { name: slug }, moduleDefaults );
+	( serverDefinitions, clientDefinitions ) => {
+		// Module properties in `clientDefinitions` will overwrite `serverDefinitions`
+		// but only for keys whose values are not `undefined`.
+		const modules = merge( {}, serverDefinitions, clientDefinitions );
 
-			return module;
-		} )
-		.sort( ( a, b ) => a.order - b.order )
-		.reduce( ( acc, module ) => {
-			return { ...acc, [ module.slug ]: module };
-		}, {} )
+		return Object.keys( modules )
+			.map( ( slug ) => {
+				const module = { ...modules[ slug ], slug };
+				// Fill any `undefined` values with defaults.
+				defaults( module, { name: slug }, moduleDefaults );
+
+				return module;
+			} )
+			.sort( ( a, b ) => a.order - b.order )
+			.reduce( ( acc, module ) => {
+				return { ...acc, [ module.slug ]: module };
+			}, {} );
+	}
 );
 
 const fetchGetModulesStore = createFetchStore( {
@@ -488,11 +494,9 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		// Module properties in `clientDefinitions` will overwrite `serverDefinitions`
-		// but only for keys whose values are not `undefined`.
-		const modules = merge( {}, serverDefinitions, clientDefinitions );
-
-		return normalizeModules( modules );
+		// `normalizeModules` must be called with stable arguments directly from state.
+		// Redefining/spreading these will undermine the memoization!
+		return normalizeModules( serverDefinitions, clientDefinitions );
 	},
 
 	/**
