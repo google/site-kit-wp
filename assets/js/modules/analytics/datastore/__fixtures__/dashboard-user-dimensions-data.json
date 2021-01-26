@@ -189,6 +189,23 @@
           },
           {
             "dimensions": [
+              "(other)"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "39"
+                ]
+              },
+              {
+                "values": [
+                  "2"
+                ]
+              }
+            ]
+          },
+          {
+            "dimensions": [
               "(not set)"
             ],
             "metrics": [
