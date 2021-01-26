@@ -37,7 +37,6 @@ import { getWidgetComponentProps } from '../../../googlesitekit/widgets/util';
 export const passWidgetComponentProps = ( { widgetSlug } ) => {
 	return ( wrappedComponent ) => {
 		const AdminBarWidgetComponent = ( props ) => {
-			// TODO: clean and make general to the app.
 			// Add the widget component props to the component so that we can use the WidgetReportZero component when there is zero data.
 			const widgetComponentProps = getWidgetComponentProps( widgetSlug );
 

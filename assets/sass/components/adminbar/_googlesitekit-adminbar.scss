@@ -116,4 +116,9 @@
 			pointer-events: auto;
 		}
 	}
+
+	// Hides Widgets in No Data state
+	.googlesitekit-plugin .googlesitekit-adminbar .mdc-layout-grid__inner .googlesitekit-hidden {
+		display: none;
+	}
 }

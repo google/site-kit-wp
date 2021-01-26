@@ -20,6 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -109,5 +110,13 @@ function AdminBarClicks( { className, WidgetReportZero } ) {
 		</div>
 	);
 }
+
+AdminBarClicks.propTypes = {
+	className: PropTypes.string,
+};
+
+AdminBarClicks.defaultProps = {
+	className: 'mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
+};
 
 export default passWidgetComponentProps( { widgetSlug: WIDGET_SLUG } )( AdminBarClicks );

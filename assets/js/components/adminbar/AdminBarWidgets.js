@@ -53,8 +53,11 @@ export default function AdminBarWidgets() {
 		return (
 			select( CORE_WIDGETS ).getWidgetState( 'adminBarImpressions' )?.Component.name === 'ReportZero' &&
 			select( CORE_WIDGETS ).getWidgetState( 'adminBarClicks' )?.Component.name === 'ReportZero' &&
-			select( CORE_WIDGETS ).getWidgetState( 'adminBarUniqueVisitors' )?.Component.name === 'ReportZero' &&
-			select( CORE_WIDGETS ).getWidgetState( 'adminBarSessions' )?.Component.name === 'ReportZero'
+			( analyticsModuleConnected && analyticsModuleActive && (
+				select( CORE_WIDGETS ).getWidgetState( 'adminBarUniqueVisitors' )?.Component.name === 'ReportZero' &&
+				select( CORE_WIDGETS ).getWidgetState( 'adminBarSessions' )?.Component.name === 'ReportZero'
+			)
+			)
 		);
 	} );
 
@@ -63,32 +66,30 @@ export default function AdminBarWidgets() {
 			{ zeroData && (
 				<AdminBarZeroData />
 			) }
-			<div className={ classnames( { [ HIDDEN_CLASS ]: zeroData } ) }>
-				<Row>
-					{ /* TODO: Add <Cell> components/grid-classes here rather than within widget components */ }
-					<AdminBarImpressions />
-					<AdminBarClicks />
+			<Row className={ classnames( { [ HIDDEN_CLASS ]: zeroData } ) }>
+				{ /* TODO: Add <Cell> components/grid-classes here rather than within widget components */ }
+				<AdminBarImpressions />
+				<AdminBarClicks />
 
-					{ analyticsModuleConnected && analyticsModuleActive && (
-						<Fragment>
-							<AdminBarUniqueVisitors />
-							<AdminBarSessions />
-						</Fragment>
-					) }
+				{ analyticsModuleConnected && analyticsModuleActive && (
+					<Fragment>
+						<AdminBarUniqueVisitors />
+						<AdminBarSessions />
+					</Fragment>
+				) }
 
-					{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
-						<Cell lgSize={ 6 } mdSize={ 4 }>
-							{ ! analyticsModuleActive && (
-								<ActivateModuleCTA moduleSlug="analytics" />
-							) }
+				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+					<Cell lgSize={ 6 } mdSize={ 4 }>
+						{ ! analyticsModuleActive && (
+							<ActivateModuleCTA moduleSlug="analytics" />
+						) }
 
-							{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
-								<CompleteModuleActivationCTA slug="analytics" />
-							) }
-						</Cell>
-					) }
-				</Row>
-			</div>
+						{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
+							<CompleteModuleActivationCTA slug="analytics" />
+						) }
+					</Cell>
+				) }
+			</Row>
 		</Fragment>
 	);
 }
