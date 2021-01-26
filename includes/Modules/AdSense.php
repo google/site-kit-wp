@@ -123,21 +123,6 @@ final class AdSense extends Module
 			__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
 		);
 
-		// Clear datapoints that don't need to be localized.
-		$idenfifier_args = array(
-			'source' => 'site-kit',
-			'url'    => rawurlencode( $this->context->get_reference_site_url() ),
-		);
-
-		$signup_args = array(
-			'utm_source' => 'site-kit',
-			'utm_medium' => 'wordpress_signup',
-		);
-
-		$info['accountURL'] = add_query_arg( $idenfifier_args, $this->get_account_url() );
-		$info['signupURL']  = add_query_arg( $signup_args, $info['accountURL'] );
-		$info['rootURL']    = add_query_arg( $idenfifier_args, 'https://www.google.com/adsense/' );
-
 		return $info;
 	}
 
