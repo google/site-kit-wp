@@ -35,10 +35,9 @@ import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
-import { extractAnalyticsDataForPieChart, isZeroReport } from '../../../util';
+import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import PreviewBlock from '../../../../../components/PreviewBlock';
-import ReportZero from '../../../../../components/ReportZero';
 const { useDispatch } = Data;
 
 export default function UserDimensionsPieChart( { dimensionName, sourceLink, loaded, report } ) {
@@ -78,10 +77,6 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;
-	}
-
-	if ( isZeroReport( report ) ) {
-		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const absOthers = {

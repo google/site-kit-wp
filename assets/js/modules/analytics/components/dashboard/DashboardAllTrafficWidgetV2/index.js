@@ -35,15 +35,16 @@ import {
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { Grid, Row, Cell } from '../../../../../material-components/layout';
+import { getURLPath } from '../../../../../util/getURLPath';
 import whenActive from '../../../../../util/when-active';
+import SourceLink from '../../../../../components/SourceLink';
+import ReportError from '../../../../../components/ReportError';
+import ReportZero from '../../../../../components/ReportZero';
 import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
-import SourceLink from '../../../../../components/SourceLink';
-import ReportError from '../../../../../components/ReportError';
-import { Grid, Row, Cell } from '../../../../../material-components/layout';
-import { getURLPath } from '../../../../../util/getURLPath';
 const { Widget } = Widgets.components;
 const { useSelect } = Data;
 
@@ -144,6 +145,10 @@ function DashboardAllTrafficWidget() {
 
 	if ( pieError || graphError || totalsError ) {
 		return <ReportError moduleSlug="analytics" error={ pieError || graphError || totalsError } />;
+	}
+
+	if ( pieLoaded && pieReport?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ] < 1 ) {
+		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	return (

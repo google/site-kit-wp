@@ -34,11 +34,9 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { DATE_RANGE_OFFSET, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
-import { isZeroReport } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import PreviewBlock from '../../../../../components/PreviewBlock';
-import ReportZero from '../../../../../components/ReportZero';
 const { useSelect } = Data;
 
 export default function UserCountGraph( { loaded, report } ) {
@@ -47,10 +45,6 @@ export default function UserCountGraph( { loaded, report } ) {
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="100%" height="300px" shape="square" />;
-	}
-
-	if ( isZeroReport( report ) ) {
-		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const chartData = [

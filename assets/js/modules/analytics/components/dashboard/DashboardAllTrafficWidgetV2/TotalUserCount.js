@@ -34,7 +34,6 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { numFmt, calculateChange } from '../../../../../util';
 import { getAvailableDateRanges } from '../../../../../util/date-range';
-import { isZeroReport } from '../../../util';
 import ChangeArrow from '../../../../../components/ChangeArrow';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useSelect } = Data;
@@ -51,12 +50,6 @@ export default function TotalUserCount( { loaded, report, dimensionValue } ) {
 				shape="square"
 			/>
 		);
-	}
-
-	if ( isZeroReport( report ) ) {
-		// The UserCountGraph component will return appropriate ReportError/ReportZero component
-		// based on the report fetching status, so we can return just NULL here to make sure it doesn't take extra space.
-		return null;
 	}
 
 	const { totals } = report?.[ 0 ]?.data || {};
@@ -94,7 +87,10 @@ export default function TotalUserCount( { loaded, report, dimensionValue } ) {
 				</span>
 				<span className={ classnames(
 					'googlesitekit-data-block__value',
-					`googlesitekit-data-block__value--${ 0 <= change ? 'up' : 'down' }`
+					{
+						'googlesitekit-data-block__value--up': 0 <= change,
+						'googlesitekit-data-block__value--down': 0 > change,
+					},
 				) }>
 					{ numFmt( Math.abs( change ), { style: 'percent', maximumFractionDigits: 1 } ) }
 				</span>
