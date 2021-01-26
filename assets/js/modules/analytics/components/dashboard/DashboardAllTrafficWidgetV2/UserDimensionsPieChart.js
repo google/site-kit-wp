@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -120,6 +120,12 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 			} );
 		}
 	}, [ dimensionName, selectedRow, setValues ] );
+
+	useEffect( () => {
+		if ( selectedRow ) {
+			setValues( FORM_ALL_TRAFFIC_WIDGET, { selectedRow: undefined } );
+		}
+	}, [ dimensionName ] );
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;
