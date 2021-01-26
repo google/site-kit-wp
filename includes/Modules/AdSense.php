@@ -200,6 +200,7 @@ final class AdSense extends Module
 			'GET:alerts'         => array( 'service' => 'adsense' ),
 			'GET:clients'        => array( 'service' => 'adsense' ),
 			'GET:earnings'       => array( 'service' => 'adsense' ),
+			'GET:notifications'  => array( 'service' => '' ),
 			'GET:tag-permission' => array( 'service' => '' ),
 			'GET:urlchannels'    => array( 'service' => 'adsense' ),
 		);
@@ -279,6 +280,44 @@ final class AdSense extends Module
 				}
 
 				return $this->create_adsense_earning_data_request( array_filter( $args ) );
+			case 'GET:notifications':
+				return function() {
+					$alerts = $this->get_data( 'alerts' );
+					if ( is_wp_error( $alerts ) || empty( $alerts ) ) {
+						return array();
+					}
+					$alerts = array_filter(
+						$alerts,
+						function( Google_Service_AdSense_Alert $alert ) {
+							return 'SEVERE' === $alert->getSeverity();
+						}
+					);
+
+					// There is no SEVERE alert, return empty.
+					if ( empty( $alerts ) ) {
+						return array();
+					}
+
+					/**
+					 * First Alert
+					 *
+					 * @var Google_Service_AdSense_Alert $alert
+					 */
+					$alert = array_shift( $alerts );
+					return array(
+						array(
+							'id'            => 'adsense-notification',
+							'description'   => $alert->getMessage(),
+							'isDismissible' => true,
+							'winImage'      => 'sun-small.png',
+							'format'        => 'large',
+							'severity'      => 'win-info',
+							'ctaURL'        => $this->get_account_url(),
+							'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
+							'ctaTarget'     => '_blank',
+						),
+					);
+				};
 			case 'GET:tag-permission':
 				return function() use ( $data ) {
 					if ( ! isset( $data['clientID'] ) ) {
