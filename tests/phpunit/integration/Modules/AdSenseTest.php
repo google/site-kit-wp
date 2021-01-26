@@ -321,17 +321,11 @@ class AdSenseTest extends TestCase {
 				'screenID',
 				'settings',
 				'provides',
-				'accountURL',
-				'signupURL',
-				'rootURL',
 			),
 			array_keys( $info )
 		);
 
 		$this->assertEquals( 'adsense', $info['slug'] );
-		$this->assertStringStartsWith( 'https://www.google.com/adsense/', $info['accountURL'] );
-		$this->assertStringStartsWith( 'https://www.google.com/adsense/', $info['signupURL'] );
-		$this->assertStringStartsWith( 'https://www.google.com/adsense/', $info['rootURL'] );
 	}
 
 	public function test_is_connected() {
