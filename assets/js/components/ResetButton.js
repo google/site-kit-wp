@@ -37,8 +37,9 @@ const { useSelect, useDispatch } = Data;
 
 function ResetButton( { children } ) {
 	const postResetURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { notification: 'reset_success' } ) );
+	const isDoingReset = useSelect( ( select ) => select( CORE_SITE ).isDoingReset() );
 
-	const isNavigatingToPostResetURL = useSelect( ( select ) => select( CORE_LOCATION ).isNavigatingTo( postResetURL ) );
+	const isNavigatingToPostResetURL = useSelect( ( select ) => select( CORE_LOCATION ).isNavigatingTo( postResetURL || '' ) );
 
 	const [ dialogActive, setDialogActive ] = useState( false );
 
@@ -81,6 +82,8 @@ function ResetButton( { children } ) {
 		setDialogActive( true );
 	}, [] );
 
+	const inProgress = isDoingReset || isNavigatingToPostResetURL;
+
 	return (
 		<Fragment>
 			<Link
@@ -103,7 +106,7 @@ function ResetButton( { children } ) {
 						} ) }
 					confirmButton={ __( 'Reset', 'google-site-kit' ) }
 					danger
-					inProgress={ isNavigatingToPostResetURL }
+					inProgress={ inProgress }
 				/>
 			</Modal>
 		</Fragment>
