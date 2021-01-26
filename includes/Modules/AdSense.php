@@ -604,7 +604,7 @@ final class AdSense extends Module
 			'description' => __( 'Earn money by placing ads on your website. It’s free and easy.', 'google-site-kit' ),
 			'cta'         => __( 'Monetize Your Site.', 'google-site-kit' ),
 			'order'       => 2,
-			'homepage'    => add_query_arg( $idenfifier_args, $this->get_data( 'reports-url' ) ),
+			'homepage'    => add_query_arg( $idenfifier_args, 'https://www.google.com/adsense/start' ),
 			'learn_more'  => __( 'https://www.google.com/intl/en_us/adsense/start/', 'google-site-kit' ),
 		);
 	}
