@@ -62,6 +62,7 @@ export default function DimensionTabs( { dimensionName } ) {
 			dimensionName: tabs[ index ].dimensionName,
 			dimensionValue: '',
 			dimensionColor: '',
+			selectedRow: undefined,
 		} );
 	} );
 

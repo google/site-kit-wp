@@ -122,10 +122,13 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 	}, [ dimensionName, selectedRow, setValues ] );
 
 	useEffect( () => {
-		if ( selectedRow ) {
-			setValues( FORM_ALL_TRAFFIC_WIDGET, { selectedRow: undefined } );
+		const chartData = GoogleChart.charts.get( 'user-dimensions-pie-chart' );
+		const { chart } = chartData || {};
+
+		if ( chart !== undefined && selectedRow !== undefined ) {
+			chart.setSelection( [ { row: selectedRow } ] );
 		}
-	}, [ dimensionName ] );
+	}, [ selectedRow ] );
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;
