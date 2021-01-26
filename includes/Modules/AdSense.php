@@ -217,7 +217,6 @@ final class AdSense extends Module
 			'GET:clients'        => array( 'service' => 'adsense' ),
 			'GET:earnings'       => array( 'service' => 'adsense' ),
 			'GET:notifications'  => array( 'service' => '' ),
-			'GET:reports-url'    => array( 'service' => '' ),
 			'GET:tag-permission' => array( 'service' => '' ),
 			'GET:urlchannels'    => array( 'service' => 'adsense' ),
 		);
@@ -363,19 +362,6 @@ final class AdSense extends Module
 						array( 'clientID' => $data['clientID'] ),
 						$this->has_access_to_client( $data['clientID'] )
 					);
-				};
-			case 'GET:reports-url':
-				return function() {
-					$option     = $this->get_settings()->get();
-					$account_id = $option['accountID'];
-					if ( $account_id && $this->authentication->profile()->has() ) {
-						$profile_email = $this->authentication->profile()->get()['email'];
-						return add_query_arg(
-							array( 'authuser' => $profile_email ),
-							sprintf( 'https://www.google.com/adsense/new/%s/main/viewreports', $account_id )
-						);
-					}
-					return 'https://www.google.com/adsense/start';
 				};
 			case 'GET:urlchannels':
 				if ( ! isset( $data['accountID'] ) ) {

@@ -371,7 +371,6 @@ class AdSenseTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'account-url',
-				'reports-url',
 				'notifications',
 				'tag-permission',
 				'accounts',
