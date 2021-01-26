@@ -30,15 +30,10 @@ const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { DefinePlugin, ProvidePlugin } = require( 'webpack' );
-const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
 const CreateFileWebpack = require( 'create-file-webpack' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
 const ImageminPlugin = require( 'imagemin-webpack' );
-
-/**
- * Internal dependencies
- */
-const featureFlags = require( './feature-flags.json' );
+const features = require( './feature-flags.json' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
@@ -239,17 +234,10 @@ const webpackConfig = ( env, argv ) => {
 					allowAsyncCycles: false,
 					cwd: process.cwd(),
 				} ),
-				new FeatureFlagsPlugin(
-					{ featureFlags },
-					{
-						modes: [ 'development', 'production' ],
-						mode: flagMode, // Default: mode; override with --flag-mode={mode}
-					},
-				),
 				new CreateFileWebpack( {
 					path: './dist',
 					fileName: 'config.json',
-					content: JSON.stringify( { flagMode } ),
+					content: JSON.stringify( { flagMode, features } ),
 				} ),
 				new ManifestPlugin( {
 					fileName: path.resolve( __dirname, 'includes/Core/Assets/Manifest.php' ),

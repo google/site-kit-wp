@@ -30,16 +30,18 @@ import AdminBarSessions from './AdminBarSessions';
 import AdminBarImpressions from './AdminBarImpressions';
 import AdminBarClicks from './AdminBarClicks';
 import LegacyAdminBarModules from './LegacyAdminBarModules';
-import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
+import ActivateModuleCTA from '../ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import Data from 'googlesitekit-data';
 import Link from '../Link';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { decodeHTMLEntity, trackEvent } from '../../util';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function AdminBarApp() {
+	const widgetsAdminBarEnabled = useFeature( 'widgets.adminBar' );
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
 	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: currentEntityURL } ) );
@@ -81,7 +83,7 @@ export default function AdminBarApp() {
 						mdc-layout-grid__cell--align-middle
 					">
 						<div className="mdc-layout-grid__inner">
-							{ featureFlags.widgets.adminBar.enabled && (
+							{ widgetsAdminBarEnabled && (
 								<Fragment>
 									<AdminBarImpressions />
 									<AdminBarClicks />
@@ -100,11 +102,11 @@ export default function AdminBarApp() {
 											mdc-layout-grid__cell--span-4-tablet
 										">
 											{ ! analyticsModuleActive && (
-												<AnalyticsInactiveCTA />
+												<ActivateModuleCTA moduleSlug="analytics" />
 											) }
 
 											{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
-												<CompleteModuleActivationCTA slug="analytics" />
+												<CompleteModuleActivationCTA moduleSlug="analytics" />
 											) }
 										</div>
 									) }

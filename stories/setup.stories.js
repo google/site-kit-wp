@@ -28,7 +28,6 @@ import SetupUsingGCP from '../assets/js/components/legacy-setup/SetupUsingGCP';
 import SetupUsingProxy from '../assets/js/components/setup/SetupUsingProxy';
 import { CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../assets/js/googlesitekit/datastore/user/constants';
 import { provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
-import { enableFeature } from './utils/features';
 
 storiesOf( 'Setup / Using GCP', module )
 	.add( 'Step one', () => {
@@ -37,7 +36,6 @@ storiesOf( 'Setup / Using GCP', module )
 		global._googlesitekitLegacyData.setup.isVerified = false;
 		global._googlesitekitLegacyData.setup.hasSearchConsoleProperty = false;
 		global._googlesitekitLegacyData.permissions.canSetup = true;
-		enableFeature( 'storeErrorNotifications' );
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_USER ).receiveGetAuthentication( {
@@ -48,7 +46,7 @@ storiesOf( 'Setup / Using GCP', module )
 		};
 
 		return (
-			<WithTestRegistry callback={ setupRegistry }>
+			<WithTestRegistry callback={ setupRegistry } features={ [ 'storeErrorNotifications' ] }>
 				<SetupUsingGCP />
 			</WithTestRegistry>
 		);
@@ -71,22 +69,17 @@ storiesOf( 'Setup / Using Proxy', module )
 		);
 	} )
 	.add( 'Start [User Input]', () => {
-		enableFeature( 'userInput' );
-		enableFeature( 'serviceSetupV2' );
-
 		return (
-			<WithTestRegistry>
+			<WithTestRegistry features={ [ 'serviceSetupV2', 'userInput' ] }>
 				<SetupUsingProxy />
 			</WithTestRegistry>
 		);
 	} )
 	.add( 'Start – with error [User Input]', () => {
 		global._googlesitekitLegacyData.setup.isSiteKitConnected = false;
-		enableFeature( 'userInput' );
-		enableFeature( 'serviceSetupV2' );
 
 		return (
-			<WithTestRegistry>
+			<WithTestRegistry features={ [ 'serviceSetupV2', 'userInput' ] }>
 				<SetupUsingProxy />
 			</WithTestRegistry>
 		);
@@ -105,9 +98,6 @@ storiesOf( 'Setup / Using Proxy', module )
 		);
 	} )
 	.add( 'Disconnected - URL Mismatch [User Input]', () => {
-		enableFeature( 'userInput' );
-		enableFeature( 'serviceSetupV2' );
-
 		const setupRegistry = ( registry ) => {
 			provideUserAuthentication( registry, {
 				authenticated: false,
@@ -115,7 +105,10 @@ storiesOf( 'Setup / Using Proxy', module )
 			} );
 		};
 		return (
-			<WithTestRegistry callback={ setupRegistry }>
+			<WithTestRegistry
+				callback={ setupRegistry }
+				features={ [ 'serviceSetupV2', 'userInput' ] }
+			>
 				<SetupUsingProxy />
 			</WithTestRegistry>
 		);

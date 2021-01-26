@@ -41,21 +41,21 @@ import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
-const ActivateModuleCTA = ( { slug, title, description } ) => {
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
+const ActivateModuleCTA = ( { moduleSlug, title, description } ) => {
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const onCTAClick = useCallback( async () => {
-		const { error, response } = await activateModule( slug );
+		const { error, response } = await activateModule( moduleSlug );
 
 		if ( ! error ) {
 			navigateTo( response.moduleReauthURL );
 		} else {
 			showErrorNotification( GenericError, {
-				id: `${ slug }-setup-error`,
+				id: `${ moduleSlug }-setup-error`,
 				title: __( 'Internal Server Error', 'google-site-kit' ),
 				description: error.message,
 				format: 'small',
@@ -66,6 +66,24 @@ const ActivateModuleCTA = ( { slug, title, description } ) => {
 
 	if ( ! module?.name || ! canManageOptions ) {
 		return null;
+	}
+
+	// Special-cases for default title and description.
+	// TODO: Solve these in a more appropriate way, e.g. by updating module registration data.
+	switch ( moduleSlug ) {
+		case 'analytics':
+			if ( ! title ) {
+				title = __( 'Learn more about what visitors do on your site.', 'google-site-kit' );
+			}
+			if ( ! description ) {
+				description = __( 'Connect with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' );
+			}
+			break;
+		case 'pagespeed-insights':
+			if ( ! description ) {
+				description = __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA.', 'google-site-kit' );
+			}
+			break;
 	}
 
 	return (
@@ -97,7 +115,7 @@ const ActivateModuleCTA = ( { slug, title, description } ) => {
 };
 
 ActivateModuleCTA.propTypes = {
-	slug: PropTypes.string.isRequired,
+	moduleSlug: PropTypes.string.isRequired,
 	title: PropTypes.string,
 	description: PropTypes.string,
 };

@@ -38,10 +38,12 @@ import ResetButton from '../ResetButton';
 import UserInputPreview from '../user-input/UserInputPreview';
 import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
 import UserInputSettings from '../notifications/UserInputSettings';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 const SettingsAdmin = () => {
-	const isUserInputCompleted = useSelect( ( select ) => featureFlags.userInput.enabled && select( CORE_USER ).getUserInputState() === 'completed' );
+	const userInputEnabled = useFeature( 'userInput' );
+	const isUserInputCompleted = useSelect( ( select ) => userInputEnabled && select( CORE_USER ).getUserInputState() === 'completed' );
 	const userInputURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -55,7 +57,7 @@ const SettingsAdmin = () => {
 
 	return (
 		<Fragment>
-			{ featureFlags.userInput.enabled && (
+			{ userInputEnabled && (
 				<Cell size={ 12 }>
 					{ isUserInputCompleted && (
 						<Layout>
