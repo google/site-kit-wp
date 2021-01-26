@@ -39,7 +39,7 @@ import ChangeArrow from '../../../../../components/ChangeArrow';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useSelect } = Data;
 
-export default function TotalUserCount( { loaded, error, report, dimensionValue } ) {
+export default function TotalUserCount( { loaded, report, dimensionValue } ) {
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
 	if ( ! loaded ) {
@@ -53,7 +53,7 @@ export default function TotalUserCount( { loaded, error, report, dimensionValue 
 		);
 	}
 
-	if ( error || isZeroReport( report ) ) {
+	if ( isZeroReport( report ) ) {
 		// The UserCountGraph component will return appropriate ReportError/ReportZero component
 		// based on the report fetching status, so we can return just NULL here to make sure it doesn't take extra space.
 		return null;
@@ -108,7 +108,6 @@ export default function TotalUserCount( { loaded, error, report, dimensionValue 
 
 TotalUserCount.propTypes = {
 	loaded: PropTypes.bool,
-	error: PropTypes.shape( {} ),
 	report: PropTypes.arrayOf( PropTypes.object ),
 	dimensionValue: PropTypes.string,
 };

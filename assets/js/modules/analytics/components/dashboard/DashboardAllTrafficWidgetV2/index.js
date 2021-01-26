@@ -41,6 +41,7 @@ import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import SourceLink from '../../../../../components/SourceLink';
+import ReportError from '../../../../../components/ReportError';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
 import { getURLPath } from '../../../../../util/getURLPath';
 const { Widget } = Widgets.components;
@@ -139,6 +140,10 @@ function DashboardAllTrafficWidget() {
 
 	const serviceReportURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( reportType, reportArgs ) );
 
+	if ( pieError || graphError || totalsError ) {
+		return <ReportError moduleSlug="analytics" error={ pieError || graphError || totalsError } />;
+	}
+
 	return (
 		<Widget
 			slug="analyticsAllTrafficV2"
@@ -162,14 +167,12 @@ function DashboardAllTrafficWidget() {
 					>
 						<TotalUserCount
 							loaded={ totalsLoaded }
-							error={ totalsError }
 							report={ totalsReport }
 							dimensionValue={ dimensionValue }
 						/>
 
 						<UserCountGraph
 							loaded={ graphLoaded }
-							error={ graphError }
 							report={ graphReport }
 						/>
 					</Cell>
@@ -187,7 +190,6 @@ function DashboardAllTrafficWidget() {
 							dimensionName={ dimensionName }
 							sourceLink={ serviceReportURL }
 							loaded={ pieLoaded }
-							error={ pieError }
 							report={ pieReport }
 						/>
 					</Cell>

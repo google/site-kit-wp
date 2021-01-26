@@ -38,11 +38,10 @@ import { numberFormat, sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForPieChart, isZeroReport } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import PreviewBlock from '../../../../../components/PreviewBlock';
-import ReportError from '../../../../../components/ReportError';
 import ReportZero from '../../../../../components/ReportZero';
 const { useDispatch } = Data;
 
-export default function UserDimensionsPieChart( { dimensionName, sourceLink, loaded, error, report } ) {
+export default function UserDimensionsPieChart( { dimensionName, sourceLink, loaded, report } ) {
 	const [ chartLoaded, setChartLoaded ] = useState( false );
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -79,10 +78,6 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;
-	}
-
-	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( report ) ) {
@@ -204,7 +199,6 @@ UserDimensionsPieChart.propTypes = {
 	sourceLink: PropTypes.string,
 	dimensionName: PropTypes.string.isRequired,
 	report: PropTypes.arrayOf( PropTypes.object ),
-	error: PropTypes.shape( {} ),
 	loaded: PropTypes.bool,
 };
 

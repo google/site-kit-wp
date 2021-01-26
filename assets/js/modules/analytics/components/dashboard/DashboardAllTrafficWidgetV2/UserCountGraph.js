@@ -28,12 +28,11 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { DATE_RANGE_OFFSET, FORM_ALL_TRAFFIC_WIDGET } from '../../../../analytics/datastore/constants';
-import { isZeroReport } from '../../../../analytics/util/is-zero-report';
+import { DATE_RANGE_OFFSET, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { isZeroReport } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import PreviewBlock from '../../../../../components/PreviewBlock';
-import ReportError from '../../../../../components/ReportError';
 import ReportZero from '../../../../../components/ReportZero';
 const { useSelect } = Data;
 
@@ -71,16 +70,12 @@ const extractUserCountAnalyticsChartData = ( reports ) => {
 	];
 };
 
-export default function UserCountGraph( { loaded, error, report } ) {
+export default function UserCountGraph( { loaded, report } ) {
 	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 	const graphLineColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) || '#1a73e8' );
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="100%" height="300px" shape="square" />;
-	}
-
-	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( report ) ) {
@@ -104,7 +99,6 @@ export default function UserCountGraph( { loaded, error, report } ) {
 
 UserCountGraph.propTypes = {
 	loaded: PropTypes.bool,
-	error: PropTypes.shape( {} ),
 	report: PropTypes.arrayOf( PropTypes.object ),
 };
 
