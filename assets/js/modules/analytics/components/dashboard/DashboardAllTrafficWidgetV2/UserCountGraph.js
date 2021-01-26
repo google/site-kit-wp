@@ -75,12 +75,14 @@ export default function UserCountGraph( { loaded, report } ) {
 	chartOptions.series[ 0 ].color = graphLineColor;
 
 	return (
-		<GoogleChart
-			chartType="line"
-			data={ chartData }
-			options={ chartOptions }
-			loadHeight={ 205 }
-		/>
+		<div className="googlesitekit-widget--analyticsAllTrafficV2__user-count-chart">
+			<GoogleChart
+				chartType="line"
+				data={ chartData }
+				options={ chartOptions }
+				loadHeight={ 50 }
+			/>
+		</div>
 	);
 }
 

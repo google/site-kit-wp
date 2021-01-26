@@ -179,7 +179,7 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 				chartType="pie"
 				options={ options }
 				data={ dataMap }
-				loadHeight={ 205 }
+				loadHeight={ 50 }
 				onReady={ onReady }
 			/>
 			<div

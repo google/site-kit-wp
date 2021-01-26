@@ -20,18 +20,14 @@
  * WordPress dependencies
  */
 import { _x } from '@wordpress/i18n';
+import { useState, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import {
-	MODULES_ANALYTICS,
-	FORM_ALL_TRAFFIC_WIDGET,
-	DATE_RANGE_OFFSET,
-	STORE_NAME,
-} from '../../../datastore/constants';
+import { FORM_ALL_TRAFFIC_WIDGET, DATE_RANGE_OFFSET, STORE_NAME } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -49,9 +45,12 @@ const { Widget } = Widgets.components;
 const { useSelect } = Data;
 
 function DashboardAllTrafficWidget() {
+	const [ firstLoad, setFirstLoad ] = useState( true );
+
 	const dimensionName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionName' ) || 'ga:channelGrouping' );
 	const dimensionValue = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionValue' ) );
 	const entityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+
 	const {
 		startDate,
 		endDate,
@@ -65,12 +64,7 @@ function DashboardAllTrafficWidget() {
 	const baseArgs = {
 		startDate,
 		endDate,
-		metrics: [
-			{
-				expression: 'ga:users',
-				alias: 'Users',
-			},
-		],
+		metrics: [ { expression: 'ga:users' } ],
 	};
 
 	const pieArgs = {
@@ -111,9 +105,9 @@ function DashboardAllTrafficWidget() {
 	const pieError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ pieArgs ] ) );
 	const pieReport = useSelect( ( select ) => select( STORE_NAME ).getReport( pieArgs ) );
 
-	const graphLoaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ graphArgs ] ) );
-	const graphError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ graphArgs ] ) );
-	const graphReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( graphArgs ) );
+	const graphLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ graphArgs ] ) );
+	const graphError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ graphArgs ] ) );
+	const graphReport = useSelect( ( select ) => select( STORE_NAME ).getReport( graphArgs ) );
 
 	const totalsLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ totalsArgs ] ) );
 	const totalsError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ totalsArgs ] ) );
@@ -141,7 +135,13 @@ function DashboardAllTrafficWidget() {
 		};
 	}
 
-	const serviceReportURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( reportType, reportArgs ) );
+	const serviceReportURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( reportType, reportArgs ) );
+
+	useEffect( () => {
+		if ( pieLoaded && totalsLoaded && graphLoaded ) {
+			setFirstLoad( false );
+		}
+	}, [ pieLoaded, totalsLoaded, graphLoaded ] );
 
 	if ( pieError || graphError || totalsError ) {
 		return <ReportError moduleSlug="analytics" error={ pieError || graphError || totalsError } />;
@@ -173,13 +173,13 @@ function DashboardAllTrafficWidget() {
 						mdSize={ 8 }
 					>
 						<TotalUserCount
-							loaded={ totalsLoaded }
+							loaded={ totalsLoaded && ! firstLoad }
 							report={ totalsReport }
 							dimensionValue={ dimensionValue }
 						/>
 
 						<UserCountGraph
-							loaded={ graphLoaded }
+							loaded={ graphLoaded && ! firstLoad }
 							report={ graphReport }
 						/>
 					</Cell>
@@ -190,13 +190,14 @@ function DashboardAllTrafficWidget() {
 						mdSize={ 8 }
 					>
 						<DimensionTabs
+							loaded={ ! firstLoad }
 							dimensionName={ dimensionName }
 						/>
 
 						<UserDimensionsPieChart
 							dimensionName={ dimensionName }
 							sourceLink={ serviceReportURL }
-							loaded={ pieLoaded }
+							loaded={ pieLoaded && ! firstLoad }
 							report={ pieReport }
 						/>
 					</Cell>
