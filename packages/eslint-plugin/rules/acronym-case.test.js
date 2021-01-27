@@ -55,9 +55,29 @@ export function FancyComponent() {
 		},
 		{
 			code: `
-// name starts with acronym, must be lower cased
 const htmlNode = '<div></div>';
 			`,
+		},
+		{
+			code: `
+const HTMLButtonComponent = () => {
+	return '<Button />';
+};
+function urlParser(url) {
+	return new URL(url);
+}
+function JSONParser(json) {
+	return JSON.parse(json);
+}
+const getElementByID = ( id ) => {
+	return document.getElementById(id);
+};
+export default function AMPExperimentJSONField() {}
+export { default as AMPExperimentJSONField } from './AMPExperimentJSONField';
+			`,
+		},
+		{
+			code: `const AMP_PROJECT_TEST_URL = 'foo';`,
 		},
 	],
 	invalid: [
