@@ -35,9 +35,10 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useDispatch } = Data;
 
-export default function DimensionTabs( { dimensionName } ) {
+export default function DimensionTabs( { dimensionName, loaded } ) {
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const tabs = [
@@ -65,6 +66,16 @@ export default function DimensionTabs( { dimensionName } ) {
 		} );
 	} );
 
+	if ( ! loaded ) {
+		return (
+			<div className="googlesitekit-widget--analyticsAllTrafficV2__tabs--loading">
+				<PreviewBlock width="100px" height="40px" shape="square" />
+				<PreviewBlock width="100px" height="40px" shape="square" />
+				<PreviewBlock width="100px" height="40px" shape="square" />
+			</div>
+		);
+	}
+
 	return (
 		<TabBar
 			activeIndex={ activeTab }
@@ -83,4 +94,5 @@ export default function DimensionTabs( { dimensionName } ) {
 
 DimensionTabs.propTypes = {
 	dimensionName: PropTypes.string.isRequired,
+	loaded: PropTypes.bool,
 };
