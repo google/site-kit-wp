@@ -1,7 +1,7 @@
 /**
  * Root component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import ErrorHandler from '../ErrorHandler';
+import FeaturesProvider from '../FeaturesProvider';
+import { enabledFeatures } from '../../features';
 import PermissionsModal from '../PermissionsModal';
 import RestoreSnapshots from '../RestoreSnapshots';
 import CollectModuleData from '../data/collect-module-data';
@@ -39,16 +41,18 @@ export default function Root( {
 } ) {
 	return (
 		<Data.RegistryProvider value={ registry }>
-			<ErrorHandler>
-				<RestoreSnapshots>
-					{ children }
-					{ dataAPIContext && (
+			<FeaturesProvider value={ enabledFeatures }>
+				<ErrorHandler>
+					<RestoreSnapshots>
+						{ children }
+						{ dataAPIContext && (
 						// Legacy dataAPI support.
-						<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
-					) }
-				</RestoreSnapshots>
-				<PermissionsModal />
-			</ErrorHandler>
+							<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
+						) }
+					</RestoreSnapshots>
+					<PermissionsModal />
+				</ErrorHandler>
+			</FeaturesProvider>
 		</Data.RegistryProvider>
 	);
 }

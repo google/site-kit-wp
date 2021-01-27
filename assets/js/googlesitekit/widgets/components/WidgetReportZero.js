@@ -1,7 +1,7 @@
 /**
- * AnalyticsInactiveCTA component.
+ * WidgetReportZero component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,31 +24,23 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import ActivateModuleCTA from './ActivateModuleCTA';
+import useWidgetStateEffect from '../hooks/useWidgetStateEffect';
+import ReportZero from '../../../components/ReportZero';
 
-function AnalyticsInactiveCTA( props ) {
-	const {
-		title = __( 'Learn more about what visitors do on your site.', 'google-site-kit' ),
-		description = __( 'Connect with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' ),
-	} = props;
+// The supported props must match `ReportZero` (except `widgetSlug`).
+export default function WidgetReportZero( { widgetSlug, moduleSlug, ...props } ) {
+	const metadata = useMemo( () => ( { moduleSlug } ), [ moduleSlug ] );
+	useWidgetStateEffect( widgetSlug, ReportZero, metadata );
 
-	return (
-		<ActivateModuleCTA
-			slug="analytics"
-			title={ title }
-			description={ description }
-		/>
-	);
+	return <ReportZero moduleSlug={ moduleSlug } { ...props } />;
 }
 
-AnalyticsInactiveCTA.propTypes = {
-	title: PropTypes.string,
-	description: PropTypes.string,
+WidgetReportZero.propTypes = {
+	widgetSlug: PropTypes.string.isRequired,
+	...ReportZero.propTypes,
 };
-
-export default AnalyticsInactiveCTA;

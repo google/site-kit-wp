@@ -1,7 +1,7 @@
 /**
  * DashboardSummaryWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,12 +36,12 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
+import { getDateString } from '../../../../googlesitekit/datastore/user/utils/get-date-string';
 
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
-function DashboardSummaryWidget() {
+function DashboardSummaryWidget( { WidgetReportZero } ) {
 	const {
 		error,
 		loading,
@@ -51,8 +51,11 @@ function DashboardSummaryWidget() {
 	} = useSelect( ( select ) => {
 		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
 
+		const referenceDate = select( CORE_USER ).getReferenceDate();
+
 		const todayArgs = {
-			dateRange: 'today',
+			startDate: referenceDate,
+			endDate: referenceDate,
 			metrics,
 		};
 
@@ -65,8 +68,16 @@ function DashboardSummaryWidget() {
 			metrics,
 		};
 
+		// Get the first day of the month as an ISO 8601 date string without the time.
+		const startOfMonth = getDateString( new Date(
+			new Date( referenceDate ).getFullYear(),
+			new Date( referenceDate ).getMonth(),
+			1
+		) );
+
 		const dailyArgs = {
-			dateRange: 'this-month',
+			startDate: startOfMonth,
+			endDate: referenceDate,
 			metrics,
 			dimensions: [ 'DATE' ],
 		};
@@ -93,7 +104,7 @@ function DashboardSummaryWidget() {
 	}
 
 	if ( isZeroReport( today ) && isZeroReport( period ) && isZeroReport( daily ) ) {
-		return <ReportZero moduleSlug="adsense" />;
+		return <WidgetReportZero moduleSlug="adsense" />;
 	}
 
 	const processedData = reduceAdSenseData( daily.rows );

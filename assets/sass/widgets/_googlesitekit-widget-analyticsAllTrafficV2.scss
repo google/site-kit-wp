@@ -1,7 +1,7 @@
 /**
  * Analytics AllTraffic V2 styles.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,18 +46,22 @@
 		}
 	}
 
+	.googlesitekit-widget--analyticsAllTrafficV2__user-count-chart,
 	.googlesitekit-widget--analyticsAllTrafficV2__dimensions {
-		padding-top: 30px;
 
 		.googlesitekit-line-chart {
 			align-items: center;
 			display: flex;
-			min-height: 410px;
+			min-height: 350px;
 
 			& .googlesitekit-chart-loading {
-				padding: 0 40px;
+				padding: 0 15%;
 			}
 		}
+	}
+
+	.googlesitekit-widget--analyticsAllTrafficV2__dimensions {
+		padding-top: 30px;
 
 		.googlesitekit-preview-block {
 			margin: 62px auto;
@@ -88,20 +92,11 @@
 	.googlesitekit-widget--analyticsAllTrafficV2__totalcount {
 
 		h3 {
-			font-size: 16px;
-			font-weight: 500;
-			margin: 0;
 
 			span::before {
 				content: ">";
 				margin: 0 0.5rem;
 			}
-		}
-
-		h2 {
-			font-size: 80px;
-			font-weight: 700;
-			margin: 0;
 		}
 	}
 
@@ -109,31 +104,13 @@
 		margin: 0 0 10px;
 	}
 
-	.googlesitekit-widget--analyticsAllTrafficV2__totalcount--change {
-		display: inline-block;
-		font-size: 24px;
-		font-weight: 500;
-		margin: 0;
-		margin-right: 10px;
+	.googlesitekit-widget--analyticsAllTrafficV2__tabs--loading {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
 
-		svg {
-			margin: 0;
-			margin-right: 5px;
+		.googlesitekit-preview-block {
+			margin: 0 10px;
 		}
-	}
-
-	.googlesitekit-widget--analyticsAllTrafficV2__totalcount--up-change {
-		color: $c-chateau-green;
-	}
-
-	.googlesitekit-widget--analyticsAllTrafficV2__totalcount--down-change {
-		color: $c-thunderbird;
-	}
-
-	.googlesitekit-widget--analyticsAllTrafficV2__totalcount--daterange {
-		display: inline-block;
-		font-size: 12px;
-		font-weight: 400;
-		margin: 0;
 	}
 }

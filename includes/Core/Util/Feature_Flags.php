@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Util\Feature_Flags
  *
  * @package   Google\Site_Kit\Core\Util
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -52,21 +52,44 @@ class Feature_Flags {
 			return false;
 		}
 
-		// In JS, the key always ends in `enabled`, but we add that here to eliminate
-		// semantic redundancy with the name of the method.
-		$feature_path  = explode( '.', "$feature.enabled" );
-		$feature_modes = array_reduce(
-			$feature_path,
-			function ( $value, $key ) {
-				if ( isset( $value[ $key ] ) ) {
-					return $value[ $key ];
-				}
-				return null;
-			},
-			static::$features
-		);
+		$feature_modes = is_array( static::$features[ $feature ] ) ?
+			static::$features[ $feature ] :
+			array( static::$features[ $feature ] );
 
-		return in_array( static::get_mode(), (array) $feature_modes, true );
+		$feature_enabled = in_array( static::get_mode(), $feature_modes, true );
+
+		/**
+		 * Filters a feature flag's status (on or off).
+		 *
+		 * Mainly this is used by E2E tests to allow certain features to be disabled or
+		 * enabled for testing, but is also useful to switch features on/off on-the-fly.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param bool   $feature_enabled The current status of this feature flag (`true` or `false`).
+		 * @param string $feature         The feature name.
+		 * @param string $mode            Site mode for loading features ('development' or 'production').
+		 */
+		return apply_filters( 'googlesitekit_is_feature_enabled', $feature_enabled, $feature, static::get_mode() );
+	}
+
+	/**
+	 * Gets all enabled feature flags.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] An array of all enabled features.
+	 */
+	public static function get_enabled_features() {
+		$enabled_features = array();
+
+		foreach ( static::$features as $feature_name => $value ) {
+			if ( static::enabled( $feature_name ) ) {
+				$enabled_features[] = $feature_name;
+			}
+		}
+
+		return $enabled_features;
 	}
 
 	/**

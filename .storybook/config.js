@@ -1,7 +1,7 @@
 /**
  * Storybook config.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,21 +30,11 @@ import '../assets/sass/adminbar.scss';
 import '../assets/sass/admin.scss';
 import './assets/sass/wp-admin.scss';
 import { bootstrapFetchMocks } from './fetch-mocks';
-import { disableFeature } from '../stories/utils/features';
 // TODO: Remove when legacy data API is removed.
 import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
 
 bootstrapFetchMocks();
 
-const resetFeatures = () => {
-	disableFeature( 'widgets.adminBar' );
-	disableFeature( 'widgets.dashboard' );
-	disableFeature( 'widgets.pageDashboard' );
-	disableFeature( 'widgets.wpDashboard' );
-	disableFeature( 'userInput' );
-	disableFeature( 'storeErrorNotifications' );
-	disableFeature( 'serviceSetupV2' );
-};
 const resetGlobals = () => {
 	global._googlesitekitLegacyData = cloneDeep( dashboardData );
 	global._googlesitekitLegacyData.admin.assetsRoot = '';
@@ -77,7 +67,6 @@ resetGlobals();
 
 addDecorator( ( story ) => {
 	resetGlobals();
-	resetFeatures();
 	return story();
 } );
 

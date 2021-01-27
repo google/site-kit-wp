@@ -2,7 +2,7 @@
 /**
  * `getSetupIncompleteComponents` function.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
  * @return {WPElement} Returns CTA component with configuration CTA.
  */
 const getSetupIncompleteComponent = ( module, inGrid = false, fullWidth = false, createGrid = false ) => {
-	const cta = <CompleteModuleActivationCTA slug={ module } />;
+	const cta = <CompleteModuleActivationCTA moduleSlug={ module } />;
 
 	return ctaWrapper( cta, inGrid, fullWidth, createGrid );
 };

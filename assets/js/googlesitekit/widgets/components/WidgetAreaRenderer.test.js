@@ -1,7 +1,7 @@
 /**
  * WidgetAreaRenderer component tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -286,6 +286,34 @@ describe( 'WidgetAreaRenderer', () => {
 		await waitFor( () => {
 			expect( widgets ).toHaveLength( 1 );
 			expect( container.querySelectorAll( '.googlesitekit-widget-area' ) ).toHaveLength( 0 );
+		} );
+	} );
+
+	it( 'should not render the widget area title, subtitle and icon if there is only widget area', async () => {
+		createWidgets( registry, areaName, [
+			{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
+		] );
+
+		const widgets = registry.select( STORE_NAME ).getWidgets( areaName );
+		const { container } = render( <WidgetAreaRenderer slug={ areaName } totalAreas={ 1 } />, { registry } );
+
+		await waitFor( () => {
+			expect( widgets ).toHaveLength( 1 );
+			expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-header' ) ).toHaveLength( 0 );
+		} );
+	} );
+
+	it( 'should render the widget area title, subtitle and icon if there is more than widget area', async () => {
+		createWidgets( registry, areaName, [
+			{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
+		] );
+
+		const widgets = registry.select( STORE_NAME ).getWidgets( areaName );
+		const { container } = render( <WidgetAreaRenderer slug={ areaName } totalAreas={ 3 } />, { registry } );
+
+		await waitFor( () => {
+			expect( widgets ).toHaveLength( 1 );
+			expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-header' ) ).toHaveLength( 1 );
 		} );
 	} );
 } );

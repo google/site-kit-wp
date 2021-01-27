@@ -1,7 +1,7 @@
 /**
  * DashboardAllTrafficWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import PreviewTable from '../../../../components/PreviewTable';
-import ReportZero from '../../../../components/ReportZero';
 import ReportError from '../../../../components/ReportError';
 import AcquisitionPieChart from '../common/AcquisitionPieChart';
 import AcquisitionSources from '../common/AcquisitionSources';
@@ -35,7 +34,7 @@ import { isZeroReport } from '../../util';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
-function DashboardAllTrafficWidget() {
+function DashboardAllTrafficWidget( { WidgetReportZero } ) {
 	const {
 		loading,
 		report,
@@ -107,7 +106,7 @@ function DashboardAllTrafficWidget() {
 				mdc-layout-grid__cell
 				mdc-layout-grid__cell--span-12
 			">
-				<ReportZero moduleSlug="analytics" />
+				<WidgetReportZero moduleSlug="analytics" />
 			</div>
 		);
 	}

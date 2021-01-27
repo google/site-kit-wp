@@ -1,7 +1,7 @@
 /**
  * AnalyticsAdminbarWidget component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import AnalyticsAdminbarWidgetOverview from './AnalyticsAdminbarWidgetOverview';
-import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
+import ActivateModuleCTA from '../../../../components/ActivateModuleCTA';
 import { getModulesData } from '../../../../util';
 
 class AnalyticsAdminbarWidget extends Component {
@@ -42,7 +42,7 @@ class AnalyticsAdminbarWidget extends Component {
 						mdc-layout-grid__cell--span-4-tablet
 						mdc-layout-grid__cell--span-6-desktop
 					">
-						<AnalyticsInactiveCTA />
+						<ActivateModuleCTA moduleSlug="analytics" />
 					</div>
 				</Fragment>
 			);

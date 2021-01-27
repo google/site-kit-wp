@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Modules\Search_Console
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -33,14 +33,14 @@ use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
 use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
 use Google\Site_Kit\Modules\Search_Console\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
-use Google\Site_Kit_Dependencies\Google_Service_Webmasters;
-use Google\Site_Kit_Dependencies\Google_Service_Webmasters_ApiDataRow;
-use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SearchAnalyticsQueryResponse;
-use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SitesListResponse;
-use Google\Site_Kit_Dependencies\Google_Service_Webmasters_WmxSite;
-use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SearchAnalyticsQueryRequest;
-use Google\Site_Kit_Dependencies\Google_Service_Webmasters_ApiDimensionFilter;
-use Google\Site_Kit_Dependencies\Google_Service_Webmasters_ApiDimensionFilterGroup;
+use Google\Site_Kit_Dependencies\Google_Service_SearchConsole;
+use Google\Site_Kit_Dependencies\Google_Service_SearchConsole_ApiDataRow;
+use Google\Site_Kit_Dependencies\Google_Service_SearchConsole_SearchAnalyticsQueryResponse;
+use Google\Site_Kit_Dependencies\Google_Service_SearchConsole_SitesListResponse;
+use Google\Site_Kit_Dependencies\Google_Service_SearchConsole_WmxSite;
+use Google\Site_Kit_Dependencies\Google_Service_SearchConsole_SearchAnalyticsQueryRequest;
+use Google\Site_Kit_Dependencies\Google_Service_SearchConsole_ApiDimensionFilter;
+use Google\Site_Kit_Dependencies\Google_Service_SearchConsole_ApiDimensionFilterGroup;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -127,7 +127,7 @@ final class Search_Console extends Module
 	 */
 	public function get_scopes() {
 		return array(
-			'https://www.googleapis.com/auth/webmasters',
+			'https://www.googleapis.com/auth/webmasters', // The scope for the Search Console remains the legacy webmasters scope.
 		);
 	}
 
@@ -172,10 +172,10 @@ final class Search_Console extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:matched-sites'   => array( 'service' => 'webmasters' ),
-			'GET:searchanalytics' => array( 'service' => 'webmasters' ),
-			'POST:site'           => array( 'service' => 'webmasters' ),
-			'GET:sites'           => array( 'service' => 'webmasters' ),
+			'GET:matched-sites'   => array( 'service' => 'searchconsole' ),
+			'GET:searchanalytics' => array( 'service' => 'searchconsole' ),
+			'POST:site'           => array( 'service' => 'searchconsole' ),
+			'GET:sites'           => array( 'service' => 'searchconsole' ),
 		);
 	}
 
@@ -192,7 +192,7 @@ final class Search_Console extends Module
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:matched-sites':
-				return $this->get_webmasters_service()->sites->listSites();
+				return $this->get_searchconsole_service()->sites->listSites();
 			case 'GET:searchanalytics':
 				$start_date = $data['startDate'];
 				$end_date   = $data['endDate'];
@@ -200,7 +200,7 @@ final class Search_Console extends Module
 					list ( $start_date, $end_date ) = $this->parse_date_range(
 						$data['dateRange'] ?: 'last-28-days',
 						$data['compareDateRanges'] ? 2 : 1,
-						2 // Offset.
+						1 // Offset.
 					);
 				}
 
@@ -247,11 +247,11 @@ final class Search_Console extends Module
 
 					try {
 						// If the site does not exist in the account, an exception will be thrown.
-						$site = $this->get_webmasters_service()->sites->get( $site_url );
+						$site = $this->get_searchconsole_service()->sites->get( $site_url );
 					} catch ( Google_Service_Exception $exception ) {
 						// If we got here, the site does not exist in the account, so we will add it.
 						/* @var ResponseInterface $response Response object. */
-						$response = $this->get_webmasters_service()->sites->add( $site_url );
+						$response = $this->get_searchconsole_service()->sites->add( $site_url );
 
 						if ( 204 !== $response->getStatusCode() ) {
 							return new WP_Error(
@@ -262,7 +262,7 @@ final class Search_Console extends Module
 						}
 
 						// Fetch the site again now that it exists.
-						$site = $this->get_webmasters_service()->sites->get( $site_url );
+						$site = $this->get_searchconsole_service()->sites->get( $site_url );
 					}
 
 					$restore_defer();
@@ -274,7 +274,7 @@ final class Search_Console extends Module
 					);
 				};
 			case 'GET:sites':
-				return $this->get_webmasters_service()->sites->listSites();
+				return $this->get_searchconsole_service()->sites->listSites();
 		}
 
 		return parent::create_data_request( $data );
@@ -293,7 +293,7 @@ final class Search_Console extends Module
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:matched-sites':
-				/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
+				/* @var Google_Service_SearchConsole_SitesListResponse $response Response object. */
 				$entries = $this->map_sites( (array) $response->getSiteEntry() );
 
 				$current_url                  = $this->context->get_reference_site_url();
@@ -319,7 +319,7 @@ final class Search_Console extends Module
 			case 'GET:searchanalytics':
 				return $response->getRows();
 			case 'GET:sites':
-				/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
+				/* @var Google_Service_SearchConsole_SitesListResponse $response Response object. */
 				return $this->map_sites( (array) $response->getSiteEntry() );
 		}
 
@@ -335,7 +335,7 @@ final class Search_Console extends Module
 	 */
 	private function map_sites( $sites ) {
 		return array_map(
-			function ( Google_Service_Webmasters_WmxSite $site ) {
+			function ( Google_Service_SearchConsole_WmxSite $site ) {
 				return array(
 					'siteURL'         => $site->getSiteUrl(),
 					'permissionLevel' => $site->getPermissionLevel(),
@@ -375,7 +375,7 @@ final class Search_Console extends Module
 
 		$property_id = $this->get_property_id();
 
-		$request = new Google_Service_Webmasters_SearchAnalyticsQueryRequest();
+		$request = new Google_Service_SearchConsole_SearchAnalyticsQueryRequest();
 		if ( ! empty( $args['dimensions'] ) ) {
 			$request->setDimensions( (array) $args['dimensions'] );
 		}
@@ -386,11 +386,13 @@ final class Search_Console extends Module
 			$request->setEndDate( $args['end_date'] );
 		}
 
+		$request->setDataState( 'all' );
+
 		$filters = array();
 
 		// If domain property, limit data to URLs that are part of the current site.
 		if ( 0 === strpos( $property_id, 'sc-domain:' ) ) {
-			$scope_site_filter = new Google_Service_Webmasters_ApiDimensionFilter();
+			$scope_site_filter = new Google_Service_SearchConsole_ApiDimensionFilter();
 			$scope_site_filter->setDimension( 'page' );
 			$scope_site_filter->setOperator( 'contains' );
 			$scope_site_filter->setExpression( esc_url_raw( $this->context->get_reference_site_url() ) );
@@ -399,7 +401,7 @@ final class Search_Console extends Module
 
 		// If specific URL requested, limit data to that URL.
 		if ( ! empty( $args['page'] ) ) {
-			$single_url_filter = new Google_Service_Webmasters_ApiDimensionFilter();
+			$single_url_filter = new Google_Service_SearchConsole_ApiDimensionFilter();
 			$single_url_filter->setDimension( 'page' );
 			$single_url_filter->setOperator( 'equals' );
 			$single_url_filter->setExpression( rawurldecode( esc_url_raw( $args['page'] ) ) );
@@ -408,7 +410,7 @@ final class Search_Console extends Module
 
 		// If there are relevant filters, add them to the request.
 		if ( ! empty( $filters ) ) {
-			$filter_group = new Google_Service_Webmasters_ApiDimensionFilterGroup();
+			$filter_group = new Google_Service_SearchConsole_ApiDimensionFilterGroup();
 			$filter_group->setGroupType( 'and' );
 			$filter_group->setFilters( $filters );
 			$request->setDimensionFilterGroups( array( $filter_group ) );
@@ -418,7 +420,7 @@ final class Search_Console extends Module
 			$request->setRowLimit( $args['row_limit'] );
 		}
 
-		return $this->get_webmasters_service()
+		return $this->get_searchconsole_service()
 			->searchanalytics
 			->query( $property_id, $request );
 	}
@@ -442,7 +444,7 @@ final class Search_Console extends Module
 		$has_data      = get_transient( $transient_key );
 
 		if ( false === $has_data ) {
-			/* @var Google_Service_Webmasters_ApiDataRow[]|WP_Error $response_rows Array of data rows. */
+			/* @var Google_Service_SearchConsole_ApiDataRow[]|WP_Error $response_rows Array of data rows. */
 			$response_rows = $this->get_data(
 				'searchanalytics',
 				array(
@@ -457,7 +459,7 @@ final class Search_Console extends Module
 			}
 
 			foreach ( $response_rows as $data_row ) {
-				/* @var Google_Service_Webmasters_ApiDataRow $data_row Data row instance. */
+				/* @var Google_Service_SearchConsole_ApiDataRow $data_row Data row instance. */
 				if ( 0 < $data_row->getImpressions() ) {
 					$has_data = true;
 					break;
@@ -538,12 +540,14 @@ final class Search_Console extends Module
 	}
 
 	/**
-	 * Get the configured Webmasters service instance.
+	 * Get the configured SearchConsole service instance.
 	 *
-	 * @return Google_Service_Webmasters The Search Console API service.
+	 * @since n.e.x.t
+	 *
+	 * @return Google_Service_SearchConsole The Search Console API service.
 	 */
-	private function get_webmasters_service() {
-		return $this->get_service( 'webmasters' );
+	private function get_searchconsole_service() {
+		return $this->get_service( 'searchconsole' );
 	}
 
 	/**
@@ -561,7 +565,7 @@ final class Search_Console extends Module
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
-			'webmasters' => new Google_Service_Webmasters( $client ),
+			'searchconsole' => new Google_Service_SearchConsole( $client ),
 		);
 	}
 

@@ -1,7 +1,7 @@
 /**
  * Dashboard PageSpeed Widget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@
 import Widgets from 'googlesitekit-widgets';
 import DashboardPageSpeed from './DashboardPageSpeed';
 import whenActive from '../../../../util/when-active';
-import ActivateModuleCTA from '../../../../components/ActivateModuleCTA';
-import CompleteModuleActivationCTA from '../../../../components/CompleteModuleActivationCTA';
 const { Widget } = Widgets.components;
 
 function DashboardPageSpeedWidget() {
@@ -41,6 +39,6 @@ function DashboardPageSpeedWidget() {
 
 export default whenActive( {
 	moduleName: 'pagespeed-insights',
-	FallbackComponent: () => <ActivateModuleCTA slug="pagespeed-insights" />,
-	IncompleteComponent: () => <CompleteModuleActivationCTA slug="pagespeed-insights" />,
+	FallbackComponent: ( { WidgetActivateModuleCTA } ) => <WidgetActivateModuleCTA moduleSlug="pagespeed-insights" />,
+	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => <WidgetCompleteModuleActivationCTA moduleSlug="pagespeed-insights" />,
 } )( DashboardPageSpeedWidget );

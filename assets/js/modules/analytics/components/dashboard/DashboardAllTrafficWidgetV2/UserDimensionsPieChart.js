@@ -1,7 +1,7 @@
 /**
  * UserDimensionsPieChart component
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,42 +32,24 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME, FORM_ALL_TRAFFIC_WIDGET, DATE_RANGE_OFFSET } from '../../../datastore/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
-import { extractAnalyticsDataForPieChart, isZeroReport } from '../../../util';
+import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import PreviewBlock from '../../../../../components/PreviewBlock';
-import ReportError from '../../../../../components/ReportError';
-import ReportZero from '../../../../../components/ReportZero';
-const { useSelect, useDispatch } = Data;
+const { useDispatch, useSelect } = Data;
 
-export default function UserDimensionsPieChart( { dimensionName, entityURL, sourceLink } ) {
+export default function UserDimensionsPieChart( { dimensionName, sourceLink, loaded, report } ) {
 	const [ chartLoaded, setChartLoaded ] = useState( false );
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		compare: true,
-		offsetDays: DATE_RANGE_OFFSET,
+
+	const otherSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/analytics/answer/1009671',
 	} ) );
-
-	const args = {
-		...dateRangeDates,
-		metrics: [ { expression: 'ga:users' } ],
-		dimensions: [ dimensionName ],
-		orderby: {
-			fieldName: 'ga:users',
-			sortOrder: 'DESCENDING',
-		},
-		limit: 6,
-	};
-
-	if ( entityURL ) {
-		args.url = entityURL;
-	}
-
-	const loaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
-	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
+	const notSetSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/analytics/answer/2820717',
+	} ) );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onReady = useCallback( () => {
@@ -75,6 +57,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 
 		const chartData = GoogleChart.charts.get( 'user-dimensions-pie-chart' );
 		const { chart, onSelect } = chartData || {};
+		const { slices } = UserDimensionsPieChart.chartOptions;
 
 		if ( chart && ! onSelect ) {
 			chartData.onSelect = global.google.visualization.events.addListener( chart, 'select', () => {
@@ -83,16 +66,18 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 					const { dataTable } = GoogleChart.charts.get( 'user-dimensions-pie-chart' ) || {};
 					if ( dataTable ) {
 						const dimensionValue = dataTable.getValue( row, 0 );
+						const isOthers = __( 'Others', 'google-site-kit' ) === dimensionValue;
 
 						setValues(
 							FORM_ALL_TRAFFIC_WIDGET,
 							{
-								dimensionValue: __( 'Others', 'google-site-kit' ) === dimensionValue ? '' : dimensionValue,
+								dimensionValue: isOthers ? '' : dimensionValue,
+								dimensionColor: isOthers ? '' : slices[ row ]?.color,
 							}
 						);
 					}
 				} else {
-					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '' } );
+					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
 				}
 			} );
 		}
@@ -100,14 +85,6 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;
-	}
-
-	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
-	}
-
-	if ( isZeroReport( report ) ) {
-		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const absOthers = {
@@ -119,6 +96,19 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 		absOthers.current -= metrics[ 0 ].values[ 0 ];
 		absOthers.previous -= metrics[ 1 ].values[ 0 ];
 	} );
+
+	const getTooltipHelp = ( url, label ) => (
+		`<p>
+			<a
+				href=${ url }
+				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit"
+				target="_blank"
+				rel="noreferrer noopener"
+			>
+				${ label }
+			</a>
+		</p>`
+	);
 
 	const dataMap = extractAnalyticsDataForPieChart( report, {
 		keyColumnIndex: 0,
@@ -147,7 +137,8 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 				numberFormat( Math.abs( difference ), { maximumFractionDigits: 2 } ),
 			);
 
-			const dimensionClassName = `googlesitekit-visualization-tooltip-${ rowData[ 0 ].toLowerCase().replace( /\W+/, '_' ) }`;
+			const rowLabel = rowData[ 0 ].toLowerCase();
+			const dimensionClassName = `googlesitekit-visualization-tooltip-${ rowLabel.replace( /\W+/, '_' ) }`;
 
 			let tooltip = (
 				`<p>
@@ -159,13 +150,27 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 				</p>`
 			);
 
-			if ( sourceLink && rowData[ 0 ].toLowerCase() === 'others' ) {
-				tooltip += (
-					`<p>
-						<a class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit" href="${ sourceLink }" target="_blank" rel="noreferrer noopener">
-							${ __( 'See the detailed breakdown in Analytics', 'google-site-kit' ) }
-						</a>
-					</p>`
+			const othersLabel = __( 'Others', 'google-site-kit' ).toLowerCase();
+			if ( sourceLink && rowLabel === othersLabel ) {
+				tooltip += getTooltipHelp(
+					sourceLink,
+					__( 'See the detailed breakdown in Analytics', 'google-site-kit' )
+				);
+			}
+
+			if ( otherSupportURL && rowLabel === '(other)' ) {
+				tooltip += getTooltipHelp(
+					otherSupportURL,
+					/* translators: %s: pie slice label */
+					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel )
+				);
+			}
+
+			if ( notSetSupportURL && rowLabel === '(not set)' ) {
+				tooltip += getTooltipHelp(
+					notSetSupportURL,
+					/* translators: %s: pie slice label */
+					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel )
 				);
 			}
 
@@ -210,7 +215,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 				chartType="pie"
 				options={ options }
 				data={ dataMap }
-				loadHeight={ 205 }
+				loadHeight={ 50 }
 				onReady={ onReady }
 			/>
 			<div
@@ -224,7 +229,8 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 UserDimensionsPieChart.propTypes = {
 	sourceLink: PropTypes.string,
 	dimensionName: PropTypes.string.isRequired,
-	entityURL: PropTypes.string,
+	report: PropTypes.arrayOf( PropTypes.object ),
+	loaded: PropTypes.bool,
 };
 
 UserDimensionsPieChart.defaultProps = {

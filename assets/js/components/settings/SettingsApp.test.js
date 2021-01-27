@@ -1,7 +1,7 @@
 /**
  * SettingsApp component tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ import SettingsApp from './SettingsApp';
 import { render, fireEvent, createTestRegistry, provideModules, waitFor } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import * as fixtures from '../../modules/analytics/datastore/__fixtures__';
-import { disableFeature, enableFeature } from '../../../../stories/utils/features';
 
 describe( 'SettingsApp', () => {
 	let registry;
 
+	const features = [ 'storeErrorNotifications' ];
 	const validResponse = {
 		accountID: 'pub-12345678',
 		clientID: 'ca-pub-12345678',
@@ -36,8 +36,6 @@ describe( 'SettingsApp', () => {
 
 	beforeEach( () => {
 		global.location.hash = '';
-		enableFeature( 'storeErrorNotifications' );
-		disableFeature( 'userInput' );
 
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
@@ -65,7 +63,7 @@ describe( 'SettingsApp', () => {
 			{ body: validResponse, status: 200 }
 		);
 
-		const { getByRole, findByRole } = render( <SettingsApp />, { registry } );
+		const { getByRole, findByRole } = render( <SettingsApp />, { features, registry } );
 
 		fireEvent.click( getByRole( 'tab', { name: /analytics/i } ) );
 		expect( global.location.hash ).toEqual( '#settings/analytics/view' );
@@ -75,7 +73,7 @@ describe( 'SettingsApp', () => {
 	} );
 
 	it( 'should change location hash & DOM correctly when module accordion clicked and closed', async () => {
-		const { getByRole, findByRole, queryByRole } = render( <SettingsApp />, { registry } );
+		const { getByRole, findByRole, queryByRole } = render( <SettingsApp />, { features, registry } );
 
 		fireEvent.click( getByRole( 'tab', { name: /analytics/i } ) );
 
@@ -99,7 +97,7 @@ describe( 'SettingsApp', () => {
 			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 		);
 
-		const { getByRole, findByRole, queryByTestID } = render( <SettingsApp />, { registry } );
+		const { getByRole, findByRole, queryByTestID } = render( <SettingsApp />, { features, registry } );
 
 		fireEvent.click( getByRole( 'tab', { name: /analytics/i } ) );
 
@@ -121,7 +119,7 @@ describe( 'SettingsApp', () => {
 			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 		);
 
-		const { getByRole, findByRole } = render( <SettingsApp />, { registry } );
+		const { getByRole, findByRole } = render( <SettingsApp />, { features, registry } );
 
 		fireEvent.click( getByRole( 'tab', { name: /analytics/i } ) );
 
@@ -139,7 +137,7 @@ describe( 'SettingsApp', () => {
 	} );
 
 	it( 'should change location hash & DOM correctly when tab is clicked and changed', async () => {
-		const { findByText, getAllByRole } = render( <SettingsApp />, { registry } );
+		const { findByText, getAllByRole } = render( <SettingsApp />, { features, registry } );
 
 		fireEvent.click( getAllByRole( 'tab' )[ 1 ] );
 		expect( global.location.hash ).toEqual( '#connect' );

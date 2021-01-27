@@ -1,7 +1,7 @@
 /**
  * Widget components.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,3 +20,6 @@ export { default as WidgetAreaRenderer } from './WidgetAreaRenderer';
 export { default as WidgetContextRenderer } from './WidgetContextRenderer';
 export { default as WidgetRenderer } from './WidgetRenderer';
 export { default as Widget } from './Widget';
+export { default as WidgetReportZero } from './WidgetReportZero';
+export { default as WidgetActivateModuleCTA } from './WidgetActivateModuleCTA';
+export { default as WidgetCompleteModuleActivationCTA } from './WidgetCompleteModuleActivationCTA';

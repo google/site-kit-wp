@@ -1,7 +1,7 @@
 /**
  * DashboardPopularPagesWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,12 +35,11 @@ import { getDataTableFromData } from '../../../../components/data-table';
 import { numFmt } from '../../../../util';
 import { isZeroReport } from '../../util';
 import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
-function DashboardPopularPagesWidget() {
+function DashboardPopularPagesWidget( { WidgetReportZero } ) {
 	const {
 		data,
 		error,
@@ -89,7 +88,7 @@ function DashboardPopularPagesWidget() {
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	const headers = [

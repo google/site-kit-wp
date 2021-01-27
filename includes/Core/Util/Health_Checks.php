@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Util\Health_Checks
  *
  * @package   Google\Site_Kit\Core\Util
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -14,7 +14,7 @@ use Exception;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
-use Google\Site_Kit_Dependencies\Google_Service_Webmasters;
+use Google\Site_Kit_Dependencies\Google_Service_SearchConsole;
 use WP_REST_Server;
 
 /**
@@ -106,7 +106,7 @@ class Health_Checks {
 		// the server is capable of connecting to the Google API (at all)
 		// regardless of valid authentication, which will likely be missing here.
 		try {
-			( new Google_Service_Webmasters( $client ) )->sites->listSites();
+			( new Google_Service_SearchConsole( $client ) )->sites->listSites();
 			$pass = true;
 		} catch ( Exception $e ) {
 			if ( $e->getCode() === 401 ) {

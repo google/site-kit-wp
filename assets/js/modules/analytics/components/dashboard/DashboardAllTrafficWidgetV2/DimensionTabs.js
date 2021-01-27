@@ -1,7 +1,7 @@
 /**
  * DimensionTabs component
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,10 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useDispatch } = Data;
 
-export default function DimensionTabs( { dimensionName } ) {
+export default function DimensionTabs( { dimensionName, loaded } ) {
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const tabs = [
@@ -58,8 +59,22 @@ export default function DimensionTabs( { dimensionName } ) {
 	const activeTab = tabs.findIndex( ( v ) => v.dimensionName === dimensionName );
 
 	const handleTabUpdate = useCallback( ( index ) => {
-		setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionName: tabs[ index ].dimensionName, dimensionValue: '' } );
+		setValues( FORM_ALL_TRAFFIC_WIDGET, {
+			dimensionName: tabs[ index ].dimensionName,
+			dimensionValue: '',
+			dimensionColor: '',
+		} );
 	} );
+
+	if ( ! loaded ) {
+		return (
+			<div className="googlesitekit-widget--analyticsAllTrafficV2__tabs--loading">
+				<PreviewBlock width="100px" height="40px" shape="square" />
+				<PreviewBlock width="100px" height="40px" shape="square" />
+				<PreviewBlock width="100px" height="40px" shape="square" />
+			</div>
+		);
+	}
 
 	return (
 		<TabBar
@@ -79,4 +94,5 @@ export default function DimensionTabs( { dimensionName } ) {
 
 DimensionTabs.propTypes = {
 	dimensionName: PropTypes.string.isRequired,
+	loaded: PropTypes.bool,
 };

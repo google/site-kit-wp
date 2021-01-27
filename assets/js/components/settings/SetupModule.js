@@ -1,7 +1,7 @@
 /**
  * SetupModule component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import { useState, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { showErrorNotification } from '../../util';
 import ModuleIcon from '../ModuleIcon';
 import Spinner from '../Spinner';
@@ -38,8 +39,7 @@ import Link from '../Link';
 import GenericError from '../legacy-notifications/generic-error';
 import ModuleSettingsWarning from '../legacy-notifications/module-settings-warning';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import Data from 'googlesitekit-data';
-
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupModule( {
@@ -50,13 +50,14 @@ export default function SetupModule( {
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const { activateModule } = useDispatch( CORE_MODULES );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const onSetup = useCallback( async () => {
 		setIsSaving( true );
 		const { error, response } = await activateModule( slug );
 
 		if ( ! error ) {
-			global.location.assign( response.moduleReauthURL );
+			navigateTo( response.moduleReauthURL );
 		} else {
 			showErrorNotification( GenericError, {
 				id: 'activate-module-error',
