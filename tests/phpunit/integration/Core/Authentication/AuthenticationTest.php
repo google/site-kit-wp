@@ -100,6 +100,9 @@ class AuthenticationTest extends TestCase {
 	}
 
 	public function test_register_set_initial_version_if_not_set() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
 		$auth            = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$initial_version = $auth->get_initial_version();
 
@@ -118,6 +121,9 @@ class AuthenticationTest extends TestCase {
 	}
 
 	public function test_register_do_not_set_initial_version_if_already_set() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
 		$auth            = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$initial_version = $auth->get_initial_version();
 
