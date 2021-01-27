@@ -35,7 +35,7 @@ import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
 import DataBlock from '../DataBlock';
 import sumObjectListValue from '../../util/sum-object-list-value';
-import { passWidgetComponentProps } from './util/pass-widget-component-props';
+import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 const { useSelect } = Data;
 
 const WIDGET_SLUG = 'adminBarClicks';
@@ -58,10 +58,9 @@ function AdminBarClicks( { WidgetReportZero } ) {
 	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
 
 	const reportZero = isZeroReport( searchConsoleData );
-	// Memoise the WidgetReportZero component to avoid render loop caused by it's conditional render in AdminBarWidgets.
+	// Memoise the WidgetReportZero component to avoid Maximum update depth exceeded error.
 	const zeroDataComponent = useMemo( () => <WidgetReportZero moduleSlug="search-console" widgetSlug={ WIDGET_SLUG } />, [ reportZero ] );
 	if ( reportZero ) {
-		// Return the received WidgetReportZero from props, using the Widget API.
 		return zeroDataComponent;
 	}
 
@@ -95,4 +94,4 @@ function AdminBarClicks( { WidgetReportZero } ) {
 	);
 }
 
-export default passWidgetComponentProps( { widgetSlug: WIDGET_SLUG } )( AdminBarClicks );
+export default withWidgetComponentProps( { widgetSlug: WIDGET_SLUG } )( AdminBarClicks );

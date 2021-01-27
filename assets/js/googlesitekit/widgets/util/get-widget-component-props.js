@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { createElement } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import WidgetReportZero from '../components/WidgetReportZero';
@@ -51,3 +56,27 @@ function withWidgetSlug( widgetSlug ) {
 		return WithWidgetSlug;
 	};
 }
+
+/**
+ * Gets the props and passes them to the widget's component through a HOC.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} widgetSlug The slug of the widget.
+ * @return {Function} Enhancing function that adds the getWidgetComponentProps to the passed component.
+ */
+export const withWidgetComponentProps = ( { widgetSlug } ) => {
+	return ( WrappedComponent ) => {
+		const WidgetWithProps = ( props ) => {
+			// Add the widget component props to the component so that we can use the WidgetReportZero component when there is zero data.
+			const widgetComponentProps = getWidgetComponentProps( widgetSlug );
+
+			return createElement( WrappedComponent, { ...props, ...widgetComponentProps } );
+		};
+		WidgetWithProps.displayName = 'WidgetWithProps';
+		if ( WrappedComponent.displayName || WrappedComponent.name ) {
+			WidgetWithProps.displayName += `(${ WrappedComponent.displayName || WrappedComponent.name })`;
+		}
+		return WidgetWithProps;
+	};
+};
