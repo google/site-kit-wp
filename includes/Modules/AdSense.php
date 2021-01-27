@@ -123,21 +123,6 @@ final class AdSense extends Module
 			__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
 		);
 
-		// Clear datapoints that don't need to be localized.
-		$idenfifier_args = array(
-			'source' => 'site-kit',
-			'url'    => rawurlencode( $this->context->get_reference_site_url() ),
-		);
-
-		$signup_args = array(
-			'utm_source' => 'site-kit',
-			'utm_medium' => 'wordpress_signup',
-		);
-
-		$info['accountURL'] = add_query_arg( $idenfifier_args, $this->get_data( 'account-url' ) );
-		$info['signupURL']  = add_query_arg( $signup_args, $info['accountURL'] );
-		$info['rootURL']    = add_query_arg( $idenfifier_args, 'https://www.google.com/adsense/' );
-
 		return $info;
 	}
 
@@ -211,26 +196,13 @@ final class AdSense extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:account-id'      => array( 'service' => '' ),
-			'POST:account-id'     => array( 'service' => '' ),
-			'GET:account-status'  => array( 'service' => '' ),
-			'POST:account-status' => array( 'service' => '' ),
-			'GET:account-url'     => array( 'service' => '' ),
-			'GET:accounts'        => array( 'service' => 'adsense' ),
-			'GET:alerts'          => array( 'service' => 'adsense' ),
-			'GET:client-id'       => array( 'service' => '' ),
-			'POST:client-id'      => array( 'service' => '' ),
-			'GET:clients'         => array( 'service' => 'adsense' ),
-			'GET:connection'      => array( 'service' => '' ),
-			'POST:connection'     => array( 'service' => '' ),
-			'GET:earnings'        => array( 'service' => 'adsense' ),
-			'GET:notifications'   => array( 'service' => '' ),
-			'GET:reports-url'     => array( 'service' => '' ),
-			'POST:setup-complete' => array( 'service' => '' ),
-			'GET:tag-permission'  => array( 'service' => '' ),
-			'GET:urlchannels'     => array( 'service' => 'adsense' ),
-			'GET:use-snippet'     => array( 'service' => '' ),
-			'POST:use-snippet'    => array( 'service' => '' ),
+			'GET:accounts'       => array( 'service' => 'adsense' ),
+			'GET:alerts'         => array( 'service' => 'adsense' ),
+			'GET:clients'        => array( 'service' => 'adsense' ),
+			'GET:earnings'       => array( 'service' => 'adsense' ),
+			'GET:notifications'  => array( 'service' => '' ),
+			'GET:tag-permission' => array( 'service' => '' ),
+			'GET:urlchannels'    => array( 'service' => 'adsense' ),
 		);
 	}
 
@@ -246,82 +218,20 @@ final class AdSense extends Module
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:account-id':
-				return function() {
-					$option = $this->get_settings()->get();
-					if ( empty( $option['accountID'] ) ) {
-						return new WP_Error( 'account_id_not_set', __( 'AdSense account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-					}
-					return $option['accountID'];
-				};
-			case 'POST:account-id':
-				if ( ! isset( $data['accountID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$this->get_settings()->merge( array( 'accountID' => $data['accountID'] ) );
-					return true;
-				};
-			case 'GET:account-status':
-				return function() {
-					$option = $this->get_settings()->get();
-					if ( empty( $option['accountStatus'] ) ) {
-						return new WP_Error( 'account_status_not_set', __( 'AdSense account status not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-					}
-					return $option['accountStatus'];
-				};
-			case 'POST:account-status':
-				if ( ! isset( $data['accountStatus'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountStatus' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$this->get_settings()->merge( array( 'accountStatus' => $data['accountStatus'] ) );
-					return true;
-				};
-			case 'GET:account-url':
-				return function() {
-					$account_id = $this->get_data( 'account-id' );
-					if ( ! is_wp_error( $account_id ) && $account_id && $this->authentication->profile()->has() ) {
-						$profile_email = $this->authentication->profile()->get()['email'];
-						return add_query_arg(
-							array( 'authuser' => $profile_email ),
-							sprintf( 'https://www.google.com/adsense/new/%s/home', $account_id )
-						);
-					}
-					return 'https://www.google.com/adsense/signup/new';
-				};
 			case 'GET:accounts':
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts->listAccounts();
 			case 'GET:alerts':
 				if ( ! isset( $data['accountID'] ) ) {
-					$data['accountID'] = $this->get_data( 'account-id' );
-					if ( is_wp_error( $data['accountID'] ) || ! $data['accountID'] ) {
+					$option            = $this->get_settings()->get();
+					$data['accountID'] = $option['accountID'];
+					if ( empty( $data['accountID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_alerts->listAccountsAlerts( $data['accountID'] );
-			case 'GET:client-id':
-				return function() {
-					$option = $this->get_settings()->get();
-					if ( empty( $option['clientID'] ) ) {
-						return new WP_Error( 'client_id_not_set', __( 'AdSense client ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-					}
-					return $option['clientID'];
-				};
-			case 'POST:client-id':
-				if ( ! isset( $data['clientID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$this->get_settings()->merge( array( 'clientID' => $data['clientID'] ) );
-					return true;
-				};
 			case 'GET:clients':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -333,27 +243,6 @@ final class AdSense extends Module
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_adclients->listAccountsAdclients( $data['accountID'] );
-			case 'GET:connection':
-				return function() {
-					$option   = $this->get_settings()->get();
-					$defaults = array(
-						'accountID'     => '',
-						'clientID'      => '',
-						'accountStatus' => '',
-					);
-					return array_intersect_key( array_merge( $defaults, $option ), $defaults );
-				};
-			case 'POST:connection':
-				return function() use ( $data ) {
-					$this->get_settings()->merge(
-						array(
-							'accountID'     => $data['accountID'],
-							'clientID'      => $data['clientID'],
-							'accountStatus' => $data['accountStatus'],
-						)
-					);
-					return true;
-				};
 			case 'GET:earnings':
 				$start_date = $data['startDate'];
 				$end_date   = $data['endDate'];
@@ -423,7 +312,7 @@ final class AdSense extends Module
 							'winImage'      => 'sun-small.png',
 							'format'        => 'large',
 							'severity'      => 'win-info',
-							'ctaURL'        => $this->get_data( 'account-url' ),
+							'ctaURL'        => $this->get_account_url(),
 							'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
 							'ctaTarget'     => '_blank',
 						),
@@ -445,35 +334,6 @@ final class AdSense extends Module
 						$this->has_access_to_client( $data['clientID'] )
 					);
 				};
-			case 'GET:reports-url':
-				return function() {
-					$account_id = $this->get_data( 'account-id' );
-					if ( ! is_wp_error( $account_id ) && $account_id && $this->authentication->profile()->has() ) {
-						$profile_email = $this->authentication->profile()->get()['email'];
-						return add_query_arg(
-							array( 'authuser' => $profile_email ),
-							sprintf( 'https://www.google.com/adsense/new/%s/main/viewreports', $account_id )
-						);
-					}
-					return 'https://www.google.com/adsense/start';
-				};
-			case 'POST:setup-complete':
-				if ( ! isset( $data['clientID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$this->get_settings()->merge(
-						array(
-							'accountSetupComplete' => true,
-							'siteSetupComplete'    => true,
-							'clientID'             => $data['clientID'],
-							'useSnippet'           => $data['useSnippet'],
-						)
-					);
-
-					return true;
-				};
 			case 'GET:urlchannels':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -493,30 +353,6 @@ final class AdSense extends Module
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_urlchannels->listAccountsUrlchannels( $data['accountID'], $data['clientID'] );
-			case 'GET:use-snippet':
-				return function() {
-					$option = $this->get_settings()->get();
-
-					return ! empty( $option['useSnippet'] );
-				};
-			case 'POST:use-snippet':
-				if ( ! isset( $data['useSnippet'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						sprintf(
-						/* translators: %s: Missing parameter name */
-							__( 'Request parameter is empty: %s.', 'google-site-kit' ),
-							'useSnippet'
-						),
-						array( 'status' => 400 )
-					);
-				}
-
-				return function() use ( $data ) {
-					$this->get_settings()->merge( array( 'useSnippet' => $data['useSnippet'] ) );
-
-					return true;
-				};
 		}
 
 		return parent::create_data_request( $data );
@@ -534,18 +370,8 @@ final class AdSense extends Module
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:accounts':
-				$accounts = $response->getItems();
-				// TODO: Remove this ugly side-effect once no longer used.
-				if ( $data['maybeSetAccount'] && ! empty( $accounts ) ) {
-					$account_id = $this->get_data( 'account-id' );
-					if ( is_wp_error( $account_id ) || ! $account_id ) {
-						$this->set_data( 'account-id', array( 'accountID' => $accounts[0]->id ) );
-					}
-				}
-				return $accounts;
-
 			// Intentional fallthrough.
+			case 'GET:accounts':
 			case 'GET:alerts':
 			case 'GET:clients':
 			case 'GET:urlchannels':
@@ -555,6 +381,36 @@ final class AdSense extends Module
 		}
 
 		return parent::parse_data_response( $data, $response );
+	}
+
+	/**
+	 * Gets the service URL for the current account or signup if none.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string
+	 */
+	protected function get_account_url() {
+		$profile = $this->authentication->profile();
+		$option  = $this->get_settings()->get();
+		$query   = array(
+			'source'     => 'site-kit',
+			'utm_source' => 'site-kit',
+			'utm_medium' => 'wordpress_signup',
+			'url'        => rawurlencode( $this->context->get_reference_site_url() ),
+		);
+
+		if ( ! empty( $option['accountID'] ) ) {
+			$url = sprintf( 'https://www.google.com/adsense/new/%s/home', $option['accountID'] );
+		} else {
+			$url = 'https://www.google.com/adsense/signup/new';
+		}
+
+		if ( $profile->has() ) {
+			$query['authuser'] = $profile->get()['email'];
+		}
+
+		return add_query_arg( $query, $url );
 	}
 
 	/**
@@ -680,9 +536,10 @@ final class AdSense extends Module
 			)
 		);
 
-		$account_id = $this->get_data( 'account-id' );
-		if ( is_wp_error( $account_id ) ) {
-			return $account_id;
+		$option     = $this->get_settings()->get();
+		$account_id = $option['accountID'];
+		if ( empty( $account_id ) ) {
+			return new WP_Error( 'account_id_not_set', __( 'AdSense account ID not set.', 'google-site-kit' ) );
 		}
 
 		$opt_params = array(
@@ -734,7 +591,7 @@ final class AdSense extends Module
 			'description' => __( 'Earn money by placing ads on your website. It’s free and easy.', 'google-site-kit' ),
 			'cta'         => __( 'Monetize Your Site.', 'google-site-kit' ),
 			'order'       => 2,
-			'homepage'    => add_query_arg( $idenfifier_args, $this->get_data( 'reports-url' ) ),
+			'homepage'    => add_query_arg( $idenfifier_args, 'https://www.google.com/adsense/start' ),
 			'learn_more'  => __( 'https://www.google.com/intl/en_us/adsense/start/', 'google-site-kit' ),
 		);
 	}

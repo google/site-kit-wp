@@ -65,8 +65,12 @@ class AdSenseTest extends TestCase {
 		$this->assertFalse( has_filter( 'the_content' ) );
 		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
 
-		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+		$adsense->get_settings()->merge(
+			array(
+				'clientID'   => 'ca-pub-12345678',
+				'useSnippet' => true,
+			)
+		);
 
 		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'wp_body_open' ) );
@@ -105,8 +109,12 @@ class AdSenseTest extends TestCase {
 		do_action( 'template_redirect' );
 		$this->assertFalse( has_action( 'wp_head' ) );
 
-		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+		$adsense->get_settings()->merge(
+			array(
+				'clientID'   => 'ca-pub-12345678',
+				'useSnippet' => true,
+			)
+		);
 
 		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'wp_head' ) );
@@ -133,8 +141,12 @@ class AdSenseTest extends TestCase {
 	 */
 	public function test_block_on_consent_non_amp( $enabled ) {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+		$adsense->get_settings()->merge(
+			array(
+				'clientID'   => 'ca-pub-12345678',
+				'useSnippet' => true,
+			)
+		);
 
 		remove_all_actions( 'template_redirect' );
 		remove_all_actions( 'wp_head' );
@@ -162,8 +174,12 @@ class AdSenseTest extends TestCase {
 	 */
 	public function test_block_on_consent_amp( $enabled ) {
 		$adsense = new AdSense( $this->get_amp_primary_context() );
-		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+		$adsense->get_settings()->merge(
+			array(
+				'clientID'   => 'ca-pub-12345678',
+				'useSnippet' => true,
+			)
+		);
 
 		remove_all_actions( 'template_redirect' );
 		remove_all_actions( 'wp_body_open' );
@@ -191,8 +207,12 @@ class AdSenseTest extends TestCase {
 	 */
 	public function test_block_on_consent_amp_content( $enabled ) {
 		$adsense = new AdSense( $this->get_amp_primary_context() );
-		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+		$adsense->get_settings()->merge(
+			array(
+				'clientID'   => 'ca-pub-12345678',
+				'useSnippet' => true,
+			)
+		);
 
 		remove_all_actions( 'template_redirect' );
 		remove_all_actions( 'the_content' );
@@ -235,8 +255,12 @@ class AdSenseTest extends TestCase {
 	 */
 	public function test_amp_auto_ads_tag_in_the_loop( $context ) {
 		$adsense = new AdSense( $context );
-		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+		$adsense->get_settings()->merge(
+			array(
+				'clientID'   => 'ca-pub-12345678',
+				'useSnippet' => true,
+			)
+		);
 
 		remove_all_actions( 'template_redirect' );
 		remove_all_actions( 'the_content' );
@@ -297,17 +321,11 @@ class AdSenseTest extends TestCase {
 				'screenID',
 				'settings',
 				'provides',
-				'accountURL',
-				'signupURL',
-				'rootURL',
 			),
 			array_keys( $info )
 		);
 
 		$this->assertEquals( 'adsense', $info['slug'] );
-		$this->assertStringStartsWith( 'https://www.google.com/adsense/', $info['accountURL'] );
-		$this->assertStringStartsWith( 'https://www.google.com/adsense/', $info['signupURL'] );
-		$this->assertStringStartsWith( 'https://www.google.com/adsense/', $info['rootURL'] );
 	}
 
 	public function test_is_connected() {
@@ -346,13 +364,6 @@ class AdSenseTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'connection',
-				'account-id',
-				'client-id',
-				'use-snippet',
-				'account-status',
-				'account-url',
-				'reports-url',
 				'notifications',
 				'tag-permission',
 				'accounts',
@@ -360,7 +371,6 @@ class AdSenseTest extends TestCase {
 				'clients',
 				'urlchannels',
 				'earnings',
-				'setup-complete',
 			),
 			$adsense->get_datapoints()
 		);

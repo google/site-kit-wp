@@ -9,8 +9,7 @@
     "es6": true
   },
   "globals": {
-    "fetchMock": false,
-    "featureFlags": false
+    "fetchMock": false
   },
   "rules": {
     "jsdoc/check-tag-names": "error",
