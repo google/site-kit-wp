@@ -42,3 +42,4 @@ export { testClientConfig } from './test-client-config';
 export { testSiteNotification } from './test-site-notification';
 export { useRequestInterception } from './use-request-interception';
 export { wpApiFetch } from './wp-api-fetch';
+export * from './features';
