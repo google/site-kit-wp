@@ -104,7 +104,7 @@ class AuthenticationTest extends TestCase {
 		wp_set_current_user( $user_id );
 
 		$auth            = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$initial_version = $auth->get_initial_version();
+		$initial_version = $this->force_get_property( $auth, 'initial_version' );
 
 		// Ensure no version is set yet.
 		$initial_version->delete();
@@ -125,7 +125,7 @@ class AuthenticationTest extends TestCase {
 		wp_set_current_user( $user_id );
 
 		$auth            = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$initial_version = $auth->get_initial_version();
+		$initial_version = $this->force_get_property( $auth, 'initial_version' );
 
 		// Ensure a version is already set.
 		$initial_version->set( '1.1.0' );
@@ -141,7 +141,7 @@ class AuthenticationTest extends TestCase {
 		// Response is not used here, so just pass an array.
 		do_action( 'googlesitekit_authorize_user', array() );
 		do_action( 'googlesitekit_reauthorize_user', array() );
-		$this->assertEquals( '1.1.0', $this->initial_version->get() );
+		$this->assertEquals( '1.1.0', $initial_version->get() );
 	}
 
 	public function option_action_provider() {

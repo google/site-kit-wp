@@ -480,17 +480,6 @@ final class Authentication {
 	}
 
 	/**
-	 * Gets the Initial_Version instance.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return Initial_Version An instance of the Initial_Version class.
-	 */
-	public function get_initial_version() {
-		return $this->initial_version;
-	}
-
-	/**
 	 * Revokes authentication along with user options settings.
 	 *
 	 * @since 1.0.0
