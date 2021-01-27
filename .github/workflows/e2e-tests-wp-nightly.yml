@@ -74,10 +74,3 @@ jobs:
 
       - name: Run the tests
         run: npm run test:e2e
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: e2e-screenshots
-          path: tests/e2e/screenshots
