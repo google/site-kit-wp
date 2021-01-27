@@ -33,7 +33,10 @@ export async function disableFeature( feature ) {
 	return await wpApiFetch( {
 		path: 'google-site-kit/v1/e2e/feature/set-flag',
 		method: 'post',
-		data: { [ feature ]: false },
+		data: {
+			feature_name: feature,
+			feature_value: false,
+		},
 	} );
 }
 
@@ -49,6 +52,9 @@ export async function enableFeature( feature ) {
 	return await wpApiFetch( {
 		path: 'google-site-kit/v1/e2e/feature/set-flag',
 		method: 'post',
-		data: { [ feature ]: true },
+		data: {
+			feature_name: feature,
+			feature_value: true,
+		},
 	} );
 }
