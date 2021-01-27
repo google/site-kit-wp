@@ -123,21 +123,6 @@ final class AdSense extends Module
 			__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
 		);
 
-		// Clear datapoints that don't need to be localized.
-		$idenfifier_args = array(
-			'source' => 'site-kit',
-			'url'    => rawurlencode( $this->context->get_reference_site_url() ),
-		);
-
-		$signup_args = array(
-			'utm_source' => 'site-kit',
-			'utm_medium' => 'wordpress_signup',
-		);
-
-		$info['accountURL'] = add_query_arg( $idenfifier_args, $this->get_data( 'account-url' ) );
-		$info['signupURL']  = add_query_arg( $signup_args, $info['accountURL'] );
-		$info['rootURL']    = add_query_arg( $idenfifier_args, 'https://www.google.com/adsense/' );
-
 		return $info;
 	}
 
@@ -211,13 +196,11 @@ final class AdSense extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:account-url'    => array( 'service' => '' ),
 			'GET:accounts'       => array( 'service' => 'adsense' ),
 			'GET:alerts'         => array( 'service' => 'adsense' ),
 			'GET:clients'        => array( 'service' => 'adsense' ),
 			'GET:earnings'       => array( 'service' => 'adsense' ),
 			'GET:notifications'  => array( 'service' => '' ),
-			'GET:reports-url'    => array( 'service' => '' ),
 			'GET:tag-permission' => array( 'service' => '' ),
 			'GET:urlchannels'    => array( 'service' => 'adsense' ),
 		);
@@ -235,19 +218,6 @@ final class AdSense extends Module
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:account-url':
-				return function() {
-					$option     = $this->get_settings()->get();
-					$account_id = $option['accountID'];
-					if ( $account_id && $this->authentication->profile()->has() ) {
-						$profile_email = $this->authentication->profile()->get()['email'];
-						return add_query_arg(
-							array( 'authuser' => $profile_email ),
-							sprintf( 'https://www.google.com/adsense/new/%s/home', $account_id )
-						);
-					}
-					return 'https://www.google.com/adsense/signup/new';
-				};
 			case 'GET:accounts':
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts->listAccounts();
@@ -342,7 +312,7 @@ final class AdSense extends Module
 							'winImage'      => 'sun-small.png',
 							'format'        => 'large',
 							'severity'      => 'win-info',
-							'ctaURL'        => $this->get_data( 'account-url' ),
+							'ctaURL'        => $this->get_account_url(),
 							'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
 							'ctaTarget'     => '_blank',
 						),
@@ -363,19 +333,6 @@ final class AdSense extends Module
 						array( 'clientID' => $data['clientID'] ),
 						$this->has_access_to_client( $data['clientID'] )
 					);
-				};
-			case 'GET:reports-url':
-				return function() {
-					$option     = $this->get_settings()->get();
-					$account_id = $option['accountID'];
-					if ( $account_id && $this->authentication->profile()->has() ) {
-						$profile_email = $this->authentication->profile()->get()['email'];
-						return add_query_arg(
-							array( 'authuser' => $profile_email ),
-							sprintf( 'https://www.google.com/adsense/new/%s/main/viewreports', $account_id )
-						);
-					}
-					return 'https://www.google.com/adsense/start';
 				};
 			case 'GET:urlchannels':
 				if ( ! isset( $data['accountID'] ) ) {
@@ -424,6 +381,36 @@ final class AdSense extends Module
 		}
 
 		return parent::parse_data_response( $data, $response );
+	}
+
+	/**
+	 * Gets the service URL for the current account or signup if none.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string
+	 */
+	protected function get_account_url() {
+		$profile = $this->authentication->profile();
+		$option  = $this->get_settings()->get();
+		$query   = array(
+			'source'     => 'site-kit',
+			'utm_source' => 'site-kit',
+			'utm_medium' => 'wordpress_signup',
+			'url'        => rawurlencode( $this->context->get_reference_site_url() ),
+		);
+
+		if ( ! empty( $option['accountID'] ) ) {
+			$url = sprintf( 'https://www.google.com/adsense/new/%s/home', $option['accountID'] );
+		} else {
+			$url = 'https://www.google.com/adsense/signup/new';
+		}
+
+		if ( $profile->has() ) {
+			$query['authuser'] = $profile->get()['email'];
+		}
+
+		return add_query_arg( $query, $url );
 	}
 
 	/**
@@ -604,7 +591,7 @@ final class AdSense extends Module
 			'description' => __( 'Earn money by placing ads on your website. It’s free and easy.', 'google-site-kit' ),
 			'cta'         => __( 'Monetize Your Site.', 'google-site-kit' ),
 			'order'       => 2,
-			'homepage'    => add_query_arg( $idenfifier_args, $this->get_data( 'reports-url' ) ),
+			'homepage'    => add_query_arg( $idenfifier_args, 'https://www.google.com/adsense/start' ),
 			'learn_more'  => __( 'https://www.google.com/intl/en_us/adsense/start/', 'google-site-kit' ),
 		);
 	}
