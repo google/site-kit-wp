@@ -166,7 +166,7 @@ function DashboardAllTrafficWidget() {
 
 	return (
 		<Widget
-			slug="analyticsAllTrafficV2"
+			slug="analyticsAllTraffic"
 			className="googlesitekit-widget--footer-v2"
 			footer={ () => (
 				<SourceLink
@@ -181,7 +181,7 @@ function DashboardAllTrafficWidget() {
 			<Grid>
 				<Row>
 					<Cell
-						className="googlesitekit-widget--analyticsAllTrafficV2__totals"
+						className="googlesitekit-widget--analyticsAllTraffic__totals"
 						lgSize={ 7 }
 						mdSize={ 8 }
 					>
@@ -200,7 +200,7 @@ function DashboardAllTrafficWidget() {
 					</Cell>
 
 					<Cell
-						className="googlesitekit-widget--analyticsAllTrafficV2__dimensions"
+						className="googlesitekit-widget--analyticsAllTraffic__dimensions"
 						lgSize={ 5 }
 						mdSize={ 8 }
 					>
