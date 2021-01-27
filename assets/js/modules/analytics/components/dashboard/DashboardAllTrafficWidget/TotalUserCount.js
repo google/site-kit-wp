@@ -25,6 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -66,7 +67,7 @@ export default function TotalUserCount( { loaded, error, report, dimensionValue 
 	if ( currentDateRangeDays ) {
 		currentDateRangeLabel = sprintf(
 			/* translators: %s number of days */
-			__( 'in the last %s days', 'google-site-kit' ),
+			__( 'compared to the last %s days', 'google-site-kit' ),
 			currentDateRangeDays,
 		);
 	}
@@ -74,9 +75,12 @@ export default function TotalUserCount( { loaded, error, report, dimensionValue 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__totalcount googlesitekit-data-block">
 			<h3 className="googlesitekit-subheading-1 googlesitekit-data-block__title">
-				{ __( 'Users', 'google-site-kit' ) }
+				{ ! dimensionValue && __( 'All Users', 'google-site-kit' ) }
 				{ dimensionValue && (
-					<span>{ dimensionValue[ 0 ].toUpperCase() }{ dimensionValue.substring( 1 ) }</span>
+					<Fragment>
+						{ __( 'Users', 'google-site-kit' ) }
+						<span>{ dimensionValue[ 0 ].toUpperCase() }{ dimensionValue.substring( 1 ) }</span>
+					</Fragment>
 				) }
 			</h3>
 			<div className="googlesitekit-data-block__datapoint">
