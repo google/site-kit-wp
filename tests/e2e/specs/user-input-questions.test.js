@@ -31,7 +31,6 @@ import {
 	setupSiteKit,
 	useRequestInterception,
 	enableFeature,
-	disableFeature,
 } from '../utils';
 
 describe( 'User Input Settings', () => {
@@ -68,7 +67,6 @@ describe( 'User Input Settings', () => {
 	}
 
 	beforeAll( async () => {
-		await enableFeature( 'userInput' );
 		await page.setRequestInterception( true );
 
 		useRequestInterception( ( request ) => {
@@ -96,6 +94,7 @@ describe( 'User Input Settings', () => {
 	} );
 
 	beforeEach( async () => {
+		await enableFeature( 'userInput' );
 		await setupSiteKit();
 		await activatePlugins(
 			'e2e-tests-oauth-callback-plugin',
@@ -108,10 +107,6 @@ describe( 'User Input Settings', () => {
 	afterEach( async () => {
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
-	} );
-
-	afterAll( async () => {
-		await disableFeature( 'userInput' );
 	} );
 
 	it( 'should require new users to enter input settings after signing in', async () => {
