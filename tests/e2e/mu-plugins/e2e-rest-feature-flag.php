@@ -26,7 +26,7 @@ add_action(
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
 				'callback'            => function ( WP_REST_Request $request ) {
-					$feature_flag_overrides = get_option( 'googlesitekit_e2e_feature_flags', array() );
+					$feature_flag_overrides = get_option( '_e2e_feature_flags', array() );
 
 					if ( $request['feature_value'] ) {
 						$feature_flag_overrides[ $request['feature_name'] ] = (bool) $request['feature_value'];
@@ -34,7 +34,7 @@ add_action(
 						unset( $feature_flag_overrides[ $request['feature_name'] ] );
 					}
 
-					update_option( 'googlesitekit_e2e_feature_flags', $feature_flag_overrides );
+					update_option( '_e2e_feature_flags', $feature_flag_overrides );
 
 					return array(
 						'success' => true,
@@ -50,10 +50,11 @@ add_action(
 // Enforce feature activation as defined by the E2E feature flags option.
 add_filter(
 	'googlesitekit_is_feature_enabled',
-	function ( $feature_name ) {
-		$features = get_option( 'googlesitekit_e2e_feature_flags', array() );
+	function ( $feature_enabled, $feature_name ) {
+		$features = get_option( '_e2e_feature_flags', array() );
 
 		return ! empty( $features[ $feature_name ] );
 	},
-	999
+	999,
+	2
 );
