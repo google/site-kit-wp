@@ -186,10 +186,9 @@ final class Authentication {
 	 * Initial_Version instance.
 	 *
 	 * @since n.e.x.t
-	 *
-	 * @var User_Input_State
+	 * @var Initial_Version
 	 */
-	private $initial_version = null;
+	protected $initial_version;
 
 	/**
 	 * Flag set when site fields are synchronized during the current request.
