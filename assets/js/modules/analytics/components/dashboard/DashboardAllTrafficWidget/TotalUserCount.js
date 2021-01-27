@@ -67,7 +67,7 @@ export default function TotalUserCount( { loaded, error, report, dimensionValue 
 	if ( currentDateRangeDays ) {
 		currentDateRangeLabel = sprintf(
 			/* translators: %s number of days */
-			__( 'compared to the last %s days', 'google-site-kit' ),
+			__( 'compared to the previous %s days', 'google-site-kit' ),
 			currentDateRangeDays,
 		);
 	}
