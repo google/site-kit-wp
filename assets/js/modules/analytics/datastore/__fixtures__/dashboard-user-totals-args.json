@@ -5,8 +5,7 @@
 	"compareEndDate": "2020-12-08",
 	"metrics": [
 		{
-      "expression": "ga:users",
-			"alias": "Users"
+      "expression": "ga:users"
 		}
 	]
 }
