@@ -97,7 +97,7 @@ export default function AdminBarWidgets() {
 						) }
 
 						{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
-							<CompleteModuleActivationCTA slug="analytics" />
+							<CompleteModuleActivationCTA moduleSlug="analytics" />
 						) }
 					</Cell>
 				) }

@@ -36,7 +36,7 @@ import ActivateModuleCTA from '../ActivateModuleCTA';
  * @return {WPElement} Returns CTA component with configuration CTA.
  */
 export const getSetupIncompleteComponent = ( module, inGrid = false, fullWidth = false, createGrid = false ) => {
-	const cta = <CompleteModuleActivationCTA slug={ module } />;
+	const cta = <CompleteModuleActivationCTA moduleSlug={ module } />;
 
 	return ctaWrapper( cta, inGrid, fullWidth, createGrid );
 };
@@ -55,7 +55,7 @@ export default getSetupIncompleteComponent;
  * @return {WPElement} Returns CTA component with configuration CTA.
  */
 export const getModuleInactiveComponent = ( module, inGrid = false, fullWidth = false, createGrid = false ) => {
-	const cta = <ActivateModuleCTA slug={ module } />;
+	const cta = <ActivateModuleCTA moduleSlug={ module } />;
 
 	return ctaWrapper( cta, inGrid, fullWidth, createGrid );
 };
