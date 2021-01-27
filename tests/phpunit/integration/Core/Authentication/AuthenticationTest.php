@@ -114,7 +114,7 @@ class AuthenticationTest extends TestCase {
 
 		// Response is not used here, so just pass an array.
 		do_action( 'googlesitekit_reauthorize_user', array() );
-		$this->assertEquals( GOOGLESITEKIT_VERSION, $this->initial_version->get() );
+		$this->assertEquals( GOOGLESITEKIT_VERSION, $initial_version->get() );
 	}
 
 	public function test_register_do_not_set_initial_version_if_already_set() {
@@ -127,10 +127,13 @@ class AuthenticationTest extends TestCase {
 		remove_all_actions( 'googlesitekit_reauthorize_user' );
 		$auth->register();
 
-		$this->assertFalse( has_action( 'googlesitekit_authorize_user' ) );
+		// We cannot test that the hook has not been added to 'googlesitekit_authorize_user'
+		// since the `register` method also adds another unrelated callback to it unconditionally.
+		// That should be fine though since we're covering the integration below.
 		$this->assertFalse( has_action( 'googlesitekit_reauthorize_user' ) );
 
 		// Response is not used here, so just pass an array.
+		do_action( 'googlesitekit_authorize_user', array() );
 		do_action( 'googlesitekit_reauthorize_user', array() );
 		$this->assertEquals( '1.1.0', $this->initial_version->get() );
 	}
