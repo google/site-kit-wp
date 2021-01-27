@@ -31,6 +31,7 @@ import {
 	setupSiteKit,
 	useRequestInterception,
 } from '../utils';
+import { disableFeature, enableFeature } from '../utils/features';
 
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
@@ -65,12 +66,8 @@ describe( 'User Input Settings', () => {
 		await expect( page ).toMatchElement( '#user-input-success' );
 	}
 
-	async function cleanUp() {
-		await deactivateUtilityPlugins();
-		await resetSiteKit();
-	}
-
 	beforeAll( async () => {
+		await enableFeature( 'userInput' );
 		await page.setRequestInterception( true );
 
 		useRequestInterception( ( request ) => {
@@ -98,8 +95,6 @@ describe( 'User Input Settings', () => {
 	} );
 
 	beforeEach( async () => {
-		await cleanUp();
-
 		await setupSiteKit();
 		await activatePlugins(
 			'e2e-tests-oauth-callback-plugin',
@@ -109,7 +104,14 @@ describe( 'User Input Settings', () => {
 		);
 	} );
 
-	afterAll( cleanUp );
+	afterEach( async () => {
+		await deactivateUtilityPlugins();
+		await resetSiteKit();
+	} );
+
+	afterAll( async () => {
+		await disableFeature( 'userInput' );
+	} );
 
 	it( 'should require new users to enter input settings after signing in', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
