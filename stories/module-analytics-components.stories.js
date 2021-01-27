@@ -47,11 +47,11 @@ import {
 const setup = ( registry ) => {
 	const [ property ] = accountsPropertiesProfiles.properties;
 	registry.dispatch( STORE_NAME ).receiveGetSettings( {
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		accountID: property.accountId,
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		internalWebPropertyID: property.internalWebPropertyId,
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		profileID: property.defaultProfileId,
 	} );
 };

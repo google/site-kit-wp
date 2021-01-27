@@ -24,7 +24,7 @@ import { RuleTester } from 'eslint';
 /**
  * Internal dependencies
  */
-import rule from './camelcase-acronyms';
+import rule from './acronym-case';
 
 const ruleTester = new RuleTester( {
 	parserOptions: {
@@ -33,7 +33,7 @@ const ruleTester = new RuleTester( {
 	},
 } );
 
-ruleTester.run( 'camelcase-acronyms', rule, {
+ruleTester.run( 'acronym-case', rule, {
 	valid: [
 		{
 			code: `
@@ -51,6 +51,12 @@ export function FancyComponent() {
 
 	return \`myId-\${instanceID}\`;
 }
+			`,
+		},
+		{
+			code: `
+// name starts with acronym, must be lower cased
+const htmlNode = '<div></div>';
 			`,
 		},
 	],
@@ -96,6 +102,16 @@ export function FancyComponent() {
 				{
 					message:
 								'`useInstanceId` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: `
+const HTMLNode = '<div></div>';
+`,
+			errors: [
+				{
+					message: '`HTMLNode` violates naming rules.',
 				},
 			],
 		},
