@@ -85,141 +85,36 @@ generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Page Dashboard/All Traffic Widget',
+	referenceDate: '2021-01-06',
 	data: [
+		dashboardUserDimensionsData[ 'ga:channelGrouping' ],
+		dashboardUserDimensionsData[ 'ga:country' ],
+		dashboardUserDimensionsData[ 'ga:deviceCategory' ],
+		dashboardUserTotalsData,
+		dashboardUserGraphData,
+	],
+	options: [
 		{
-			nextPageToken: null,
-			columnHeader: {
-				dimensions: [
-					'ga:channelGrouping',
-				],
-				metricHeader: {
-					metricHeaderEntries: [
-						{
-							name: 'ga:users',
-							type: 'INTEGER',
-						},
-					],
-				},
-			},
-			data: {
-				dataLastRefreshed: null,
-				isDataGolden: null,
-				rowCount: 3,
-				samplesReadCounts: null,
-				samplingSpaceSizes: null,
-				rows: [
-					{
-						dimensions: [
-							'Organic Search',
-						],
-						metrics: [
-							{
-								values: [
-									'77',
-								],
-							},
-							{
-								values: [
-									'129',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Direct',
-						],
-						metrics: [
-							{
-								values: [
-									'58',
-								],
-							},
-							{
-								values: [
-									'80',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Referral',
-						],
-						metrics: [
-							{
-								values: [
-									'51',
-								],
-							},
-							{
-								values: [
-									'59',
-								],
-							},
-						],
-					},
-				],
-				totals: [
-					{
-						values: [
-							'186',
-						],
-					},
-					{
-						values: [
-							'268',
-						],
-					},
-				],
-				minimums: [
-					{
-						values: [
-							'51',
-						],
-					},
-					{
-						values: [
-							'59',
-						],
-					},
-				],
-				maximums: [
-					{
-						values: [
-							'77',
-						],
-					},
-					{
-						values: [
-							'129',
-						],
-					},
-				],
-			},
+			...dashboardUserDimensionsArgs[ 'ga:channelGrouping' ],
+			url: 'https://www.elasticpress.io/features/',
+		},
+		{
+			...dashboardUserDimensionsArgs[ 'ga:country' ],
+			url: 'https://www.elasticpress.io/features/',
+		},
+		{
+			...dashboardUserDimensionsArgs[ 'ga:deviceCategory' ],
+			url: 'https://www.elasticpress.io/features/',
+		},
+		{
+			...dashboardUserTotalsArgs,
+			url: 'https://www.elasticpress.io/features/',
+		},
+		{
+			...dashboardUserGraphArgs,
+			url: 'https://www.elasticpress.io/features/',
 		},
 	],
-	referenceDate: '2021-01-13',
-	options: {
-		startDate: '2020-12-16',
-		endDate: '2021-01-12',
-		compareStartDate: '2020-11-18',
-		compareEndDate: '2020-12-15',
-		metrics: [
-			{
-				expression: 'ga:users',
-			},
-		],
-		dimensions: [
-			'ga:channelGrouping',
-		],
-		orderby: {
-			fieldName: 'ga:users',
-			sortOrder: 'DESCENDING',
-		},
-		limit: 6,
-		url: 'https://www.elasticpress.io/features/',
-	},
 	Component: DashboardAllTrafficWidget,
 	wrapWidget: false,
 	setup,
