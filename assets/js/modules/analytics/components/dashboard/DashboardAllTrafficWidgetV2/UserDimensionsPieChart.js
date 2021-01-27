@@ -34,41 +34,16 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME, FORM_ALL_TRAFFIC_WIDGET, DATE_RANGE_OFFSET } from '../../../datastore/constants';
+import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
-import { extractAnalyticsDataForPieChart, isZeroReport } from '../../../util';
+import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import PreviewBlock from '../../../../../components/PreviewBlock';
-import ReportError from '../../../../../components/ReportError';
-import ReportZero from '../../../../../components/ReportZero';
-const { useSelect, useDispatch } = Data;
+const { useDispatch, useSelect } = Data;
 
-export default function UserDimensionsPieChart( { dimensionName, entityURL, sourceLink } ) {
+export default function UserDimensionsPieChart( { dimensionName, sourceLink, loaded, report } ) {
 	const [ chartLoaded, setChartLoaded ] = useState( false );
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		compare: true,
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
 
-	const args = {
-		...dateRangeDates,
-		metrics: [ { expression: 'ga:users' } ],
-		dimensions: [ dimensionName ],
-		orderby: {
-			fieldName: 'ga:users',
-			sortOrder: 'DESCENDING',
-		},
-		limit: 6,
-	};
-
-	if ( entityURL ) {
-		args.url = entityURL;
-	}
-
-	const loaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
-	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
 	const otherSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
 		path: '/analytics/answer/1009671',
 	} ) );
@@ -110,14 +85,6 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;
-	}
-
-	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
-	}
-
-	if ( isZeroReport( report ) ) {
-		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const absOthers = {
@@ -169,6 +136,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 				</svg>`,
 				numberFormat( Math.abs( difference ), { maximumFractionDigits: 2 } ),
 			);
+
 			const rowLabel = rowData[ 0 ].toLowerCase();
 			const dimensionClassName = `googlesitekit-visualization-tooltip-${ rowLabel.replace( /\W+/, '_' ) }`;
 
@@ -247,7 +215,7 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 				chartType="pie"
 				options={ options }
 				data={ dataMap }
-				loadHeight={ 205 }
+				loadHeight={ 50 }
 				onReady={ onReady }
 			/>
 			<div
@@ -261,7 +229,8 @@ export default function UserDimensionsPieChart( { dimensionName, entityURL, sour
 UserDimensionsPieChart.propTypes = {
 	sourceLink: PropTypes.string,
 	dimensionName: PropTypes.string.isRequired,
-	entityURL: PropTypes.string,
+	report: PropTypes.arrayOf( PropTypes.object ),
+	loaded: PropTypes.bool,
 };
 
 UserDimensionsPieChart.defaultProps = {
