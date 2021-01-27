@@ -28,8 +28,8 @@ function e2e_user_input_settings_reset() {
 
 	$user_input_state->delete();
 
-	delete_option( 'googlesitekit_temp_userinput_sitewide' );
-	delete_option( 'googlesitekit_temp_userinput_' . get_current_user_id() );
+	delete_option( '_userinput_sitewide' );
+	delete_option( '_userinput_' . get_current_user_id() );
 }
 
 function e2e_user_input_settings_proxy_handler( $pre, $args, $url ) {
@@ -71,7 +71,7 @@ function e2e_user_input_settings_proxy_handler( $pre, $args, $url ) {
 	if ( ! empty( $args['body'] ) ) {
 		$body = json_decode( $args['body'], true );
 		if ( ! empty( $body ) ) {
-			$original_site_settings = get_option( 'googlesitekit_temp_userinput_sitewide', array() );
+			$original_site_settings = get_option( '_userinput_sitewide', array() );
 			$user_settings          = array();
 			$site_settings          = array();
 
@@ -112,14 +112,14 @@ function e2e_user_input_settings_proxy_handler( $pre, $args, $url ) {
 				}
 			}
 
-			update_option( 'googlesitekit_temp_userinput_sitewide', $site_settings, 'no' );
-			update_option( 'googlesitekit_temp_userinput_' . $user_id, $user_settings, 'no' );
+			update_option( '_userinput_sitewide', $site_settings, 'no' );
+			update_option( '_userinput_' . $user_id, $user_settings, 'no' );
 		}
 	}
 
 	$user_input    = array();
-	$user_settings = get_option( 'googlesitekit_temp_userinput_' . $user_id, array() );
-	$site_settings = get_option( 'googlesitekit_temp_userinput_sitewide', array() );
+	$user_settings = get_option( '_userinput_' . $user_id, array() );
+	$site_settings = get_option( '_userinput_sitewide', array() );
 
 	foreach ( $defaults as $key => $values ) {
 		if ( isset( $user_settings[ $key ] ) ) {

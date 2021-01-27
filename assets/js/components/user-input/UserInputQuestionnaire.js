@@ -74,8 +74,6 @@ export default function UserInputQuestionnaire() {
 		};
 	} );
 
-	global.console.log( isSavingSettings );
-
 	useEffect( () => {
 		if ( answeredUntilIndex === -1 ) {
 			return;
