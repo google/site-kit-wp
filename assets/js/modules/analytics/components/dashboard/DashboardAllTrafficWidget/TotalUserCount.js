@@ -31,47 +31,16 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { numFmt, calculateChange } from '../../../../../util';
 import { getAvailableDateRanges } from '../../../../../util/date-range';
-import { isZeroReport } from '../../../util';
 import ChangeArrow from '../../../../../components/ChangeArrow';
 import PreviewBlock from '../../../../../components/PreviewBlock';
+import ReportError from '../../../../../components/ReportError';
 const { useSelect } = Data;
 
-export default function TotalUserCount( { dimensionName, dimensionValue } ) {
-	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+export default function TotalUserCount( { loaded, error, report, dimensionValue } ) {
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		compare: true,
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
-
-	const args = {
-		...dateRangeDates,
-		metrics: [
-			{
-				expression: 'ga:users',
-				alias: 'Users',
-			},
-		],
-	};
-
-	if ( url ) {
-		args.url = url;
-	}
-
-	if ( dimensionName && dimensionValue ) {
-		args.dimensionFilters = {
-			[ dimensionName ]: dimensionValue,
-		};
-	}
-
-	const loaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) );
-	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( args ) );
 
 	if ( ! loaded ) {
 		return (
@@ -84,10 +53,8 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 		);
 	}
 
-	if ( error || isZeroReport( report ) ) {
-		// The UserCountGraph component will return appropriate ReportError/ReportZero component
-		// based on the report fetching status, so we can return just NULL here to make sure it doesn't take extra space.
-		return null;
+	if ( error ) {
+		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	const { totals } = report?.[ 0 ]?.data || {};
@@ -125,7 +92,10 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 				</span>
 				<span className={ classnames(
 					'googlesitekit-data-block__value',
-					`googlesitekit-data-block__value--${ 0 <= change ? 'up' : 'down' }`
+					{
+						'googlesitekit-data-block__value--up': 0 <= change,
+						'googlesitekit-data-block__value--down': 0 > change,
+					},
 				) }>
 					{ numFmt( Math.abs( change ), { style: 'percent', maximumFractionDigits: 1 } ) }
 				</span>
@@ -138,6 +108,7 @@ export default function TotalUserCount( { dimensionName, dimensionValue } ) {
 }
 
 TotalUserCount.propTypes = {
-	dimensionName: PropTypes.string.isRequired,
+	loaded: PropTypes.bool,
+	report: PropTypes.arrayOf( PropTypes.object ),
 	dimensionValue: PropTypes.string,
 };

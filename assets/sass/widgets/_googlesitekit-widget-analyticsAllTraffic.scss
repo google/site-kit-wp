@@ -46,18 +46,22 @@
 		}
 	}
 
+	.googlesitekit-widget--analyticsAllTraffic__user-count-chart,
 	.googlesitekit-widget--analyticsAllTraffic__dimensions {
-		padding-top: 30px;
 
 		.googlesitekit-line-chart {
 			align-items: center;
 			display: flex;
-			min-height: 410px;
+			min-height: 350px;
 
 			& .googlesitekit-chart-loading {
-				padding: 0 40px;
+				padding: 0 15%;
 			}
 		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__dimensions {
+		padding-top: 30px;
 
 		.googlesitekit-preview-block {
 			margin: 62px auto;
@@ -98,5 +102,15 @@
 
 	.googlesitekit-widget--analyticsAllTraffic__totalcount--loading {
 		margin: 0 0 10px;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__tabs--loading {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+
+		.googlesitekit-preview-block {
+			margin: 0 10px;
+		}
 	}
 }

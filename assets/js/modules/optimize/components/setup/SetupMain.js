@@ -34,7 +34,7 @@ import OptimizeIcon from '../../../../../svg/optimize.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
