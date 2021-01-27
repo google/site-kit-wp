@@ -41,6 +41,7 @@ import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastor
 import { Row, Cell } from '../../material-components';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { HIDDEN_CLASS } from '../../googlesitekit/widgets/util/constants';
+import ReportZero from '../ReportZero';
 const { useSelect } = Data;
 
 export default function AdminBarWidgets() {
@@ -48,13 +49,13 @@ export default function AdminBarWidgets() {
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 
 	const searchConsoleZeroData = useSelect( ( select ) => {
-		return select( CORE_WIDGETS ).getWidgetState( 'adminBarImpressions' )?.Component.name === 'ReportZero' &&
-		select( CORE_WIDGETS ).getWidgetState( 'adminBarClicks' )?.Component.name === 'ReportZero';
+		return select( CORE_WIDGETS ).getWidgetState( 'adminBarImpressions' )?.Component === ReportZero &&
+		select( CORE_WIDGETS ).getWidgetState( 'adminBarClicks' )?.Component === ReportZero;
 	} );
 
 	const analyticsZeroData = useSelect( ( select ) => {
-		return select( CORE_WIDGETS ).getWidgetState( 'adminBarUniqueVisitors' )?.Component.name === 'ReportZero' &&
-			select( CORE_WIDGETS ).getWidgetState( 'adminBarSessions' )?.Component.name === 'ReportZero';
+		return select( CORE_WIDGETS ).getWidgetState( 'adminBarUniqueVisitors' )?.Component === ReportZero &&
+			select( CORE_WIDGETS ).getWidgetState( 'adminBarSessions' )?.Component === ReportZero;
 	} );
 
 	// True if _all_ admin bar widgets have zero data.
