@@ -30,8 +30,9 @@ import {
 	resetSiteKit,
 	setupSiteKit,
 	useRequestInterception,
+	enableFeature,
+	disableFeature,
 } from '../utils';
-import { disableFeature, enableFeature } from '../utils/features';
 
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
