@@ -101,7 +101,7 @@ class AuthenticationTest extends TestCase {
 
 	public function test_register_set_initial_version_if_not_set() {
 		$auth            = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$initial_version = $this->force_get_property( $auth, 'initial_version' );
+		$initial_version = $auth->get_initial_version();
 
 		// Ensure no version is set yet.
 		$initial_version->delete();
@@ -119,7 +119,7 @@ class AuthenticationTest extends TestCase {
 
 	public function test_register_do_not_set_initial_version_if_already_set() {
 		$auth            = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$initial_version = $this->force_get_property( $auth, 'initial_version' );
+		$initial_version = $auth->get_initial_version();
 
 		// Ensure a version is already set.
 		$initial_version->set( '1.1.0' );
