@@ -26,7 +26,6 @@ import { useState, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
 import { FORM_ALL_TRAFFIC_WIDGET, DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
@@ -42,10 +41,9 @@ import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import { isZeroReport } from '../../../util';
-const { Widget } = Widgets.components;
 const { useSelect } = Data;
 
-function DashboardAllTrafficWidget() {
+function DashboardAllTrafficWidget( { Widget } ) {
 	const [ firstLoad, setFirstLoad ] = useState( true );
 	const [ currentRange, setCurrentRange ] = useState( '' );
 
