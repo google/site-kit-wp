@@ -42,7 +42,7 @@ import GoogleChart from '../../../../../components/GoogleChart';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useDispatch, useSelect } = Data;
 
-export default function UserDimensionsPieChart( { dimensionName, sourceLink, loaded, report } ) {
+export default function UserDimensionsPieChart( { dimensionName, dimensionValue, sourceLink, loaded, report } ) {
 	const [ chartLoaded, setChartLoaded ] = useState( false );
 
 	const otherSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
@@ -63,19 +63,38 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 		const { chart, onSelect } = chartData || {};
 		const { slices } = UserDimensionsPieChart.chartOptions;
 
+		if ( chart && report?.[ 0 ]?.data?.rows ) {
+			// If there is a dimension value set but the initialized chart does not have a selection yet,
+			// find the matching row index and initially select it in the chart.
+			if ( dimensionValue && ! chart.getSelection().length ) {
+				const selectedRow = report[ 0 ].data.rows.findIndex( ( row ) => row.dimensions.includes( dimensionValue ) );
+				if ( selectedRow && slices[ selectedRow ]?.color ) {
+					chart.setSelection( [ { row: selectedRow } ] );
+					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: slices[ selectedRow ]?.color } );
+				}
+			}
+
+			// If there is no dimension value set but the initialized chart does have a selection,
+			// ensure it is no longer selected in the chart.
+			if ( ! dimensionValue && chart.getSelection().length ) {
+				chart.setSelection( [] );
+				setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: '' } );
+			}
+		}
+
 		if ( chart && ! onSelect ) {
 			chartData.onSelect = global.google.visualization.events.addListener( chart, 'select', () => {
 				const { row } = chart.getSelection()?.[ 0 ] || {};
 				if ( row !== null && row !== undefined ) {
 					const { dataTable } = GoogleChart.charts.get( chartID ) || {};
 					if ( dataTable ) {
-						const dimensionValue = dataTable.getValue( row, 0 );
-						const isOthers = __( 'Others', 'google-site-kit' ) === dimensionValue;
+						const newDimensionValue = dataTable.getValue( row, 0 );
+						const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
 
 						setValues(
 							FORM_ALL_TRAFFIC_WIDGET,
 							{
-								dimensionValue: isOthers ? '' : dimensionValue,
+								dimensionValue: isOthers ? '' : newDimensionValue,
 								dimensionColor: isOthers ? '' : slices[ row ]?.color,
 							}
 						);
@@ -85,7 +104,7 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 				}
 			} );
 		}
-	}, [ chartID, dimensionName, setValues ] );
+	}, [ chartID, dimensionName, dimensionValue, report, setValues ] );
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;
@@ -233,6 +252,7 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 UserDimensionsPieChart.propTypes = {
 	sourceLink: PropTypes.string,
 	dimensionName: PropTypes.string.isRequired,
+	dimensionValue: PropTypes.string.isRequired,
 	report: PropTypes.arrayOf( PropTypes.object ),
 	loaded: PropTypes.bool,
 };
