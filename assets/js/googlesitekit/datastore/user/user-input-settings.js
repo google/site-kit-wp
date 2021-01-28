@@ -180,7 +180,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the user input settings are being saved or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.25.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the user input settings are being saved, otherwise FALSE.

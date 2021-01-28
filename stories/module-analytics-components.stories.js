@@ -36,7 +36,6 @@ import {
 	dashboardUserGraphArgs,
 	dashboardUserGraphData,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
-import DashboardAllTrafficWidgetV2 from '../assets/js/modules/analytics/components/dashboard/DashboardAllTrafficWidgetV2';
 
 /**
  * Defines some additional setup for all stories.
@@ -61,128 +60,6 @@ generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/All Traffic Widget',
-	data: [
-		{
-			nextPageToken: null,
-			columnHeader: {
-				dimensions: [
-					'ga:channelGrouping',
-				],
-				metricHeader: {
-					metricHeaderEntries: [
-						{
-							name: 'Users',
-							type: 'INTEGER',
-						},
-					],
-				},
-			},
-			data: {
-				dataLastRefreshed: null,
-				isDataGolden: null,
-				rowCount: 4,
-				samplesReadCounts: null,
-				samplingSpaceSizes: null,
-				rows: [
-					{
-						dimensions: [
-							'Direct',
-						],
-						metrics: [
-							{
-								values: [
-									'866',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Organic Search',
-						],
-						metrics: [
-							{
-								values: [
-									'412',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Referral',
-						],
-						metrics: [
-							{
-								values: [
-									'47',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Social',
-						],
-						metrics: [
-							{
-								values: [
-									'4',
-								],
-							},
-						],
-					},
-				],
-				totals: [
-					{
-						values: [
-							'1329',
-						],
-					},
-				],
-				minimums: [
-					{
-						values: [
-							'4',
-						],
-					},
-				],
-				maximums: [
-					{
-						values: [
-							'866',
-						],
-					},
-				],
-			},
-		},
-	],
-	referenceDate: '2020-08-29',
-	options: {
-		startDate: '2020-08-01',
-		endDate: '2020-08-28',
-		dimensions: 'ga:channelGrouping',
-		orderby: {
-			fieldName: 'ga:users',
-			sortOrder: 'DESCENDING',
-		},
-		limit: 10,
-		metrics: [
-			{
-				expression: 'ga:users',
-				alias: 'Users',
-			},
-		],
-	},
-	Component: DashboardAllTrafficWidget,
-	wrapWidget: false,
-	setup,
-} );
-
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'analytics' ],
-	datastore: STORE_NAME,
-	group: 'Analytics Module/Components/Dashboard/All Traffic Widget V2',
 	referenceDate: '2021-01-06',
 	// The following fixtures need to be based on the above reference date.
 	data: [
@@ -199,7 +76,7 @@ generateReportBasedWidgetStories( {
 		dashboardUserTotalsArgs,
 		dashboardUserGraphArgs,
 	],
-	Component: DashboardAllTrafficWidgetV2,
+	Component: DashboardAllTrafficWidget,
 	wrapWidget: false,
 	setup,
 } );
@@ -208,150 +85,36 @@ generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Page Dashboard/All Traffic Widget',
+	referenceDate: '2021-01-06',
 	data: [
+		dashboardUserDimensionsData[ 'ga:channelGrouping' ],
+		dashboardUserDimensionsData[ 'ga:country' ],
+		dashboardUserDimensionsData[ 'ga:deviceCategory' ],
+		dashboardUserTotalsData,
+		dashboardUserGraphData,
+	],
+	options: [
 		{
-			nextPageToken: null,
-			columnHeader: {
-				dimensions: [
-					'ga:channelGrouping',
-				],
-				metricHeader: {
-					metricHeaderEntries: [
-						{
-							name: 'Sessions',
-							type: 'INTEGER',
-						},
-						{
-							name: 'Users',
-							type: 'INTEGER',
-						},
-						{
-							name: 'New Users',
-							type: 'INTEGER',
-						},
-					],
-				},
-			},
-			data: {
-				dataLastRefreshed: null,
-				isDataGolden: null,
-				rowCount: 4,
-				samplesReadCounts: null,
-				samplingSpaceSizes: null,
-				rows: [
-					{
-						dimensions: [
-							'Direct',
-						],
-						metrics: [
-							{
-								values: [
-									'48',
-									'247',
-									'32',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Organic Search',
-						],
-						metrics: [
-							{
-								values: [
-									'14',
-									'170',
-									'2',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Referral',
-						],
-						metrics: [
-							{
-								values: [
-									'4',
-									'28',
-									'0',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Social',
-						],
-						metrics: [
-							{
-								values: [
-									'2',
-									'2',
-									'0',
-								],
-							},
-						],
-					},
-				],
-				totals: [
-					{
-						values: [
-							'68',
-							'447',
-							'34',
-						],
-					},
-				],
-				minimums: [
-					{
-						values: [
-							'2',
-							'2',
-							'0',
-						],
-					},
-				],
-				maximums: [
-					{
-						values: [
-							'48',
-							'247',
-							'32',
-						],
-					},
-				],
-			},
+			...dashboardUserDimensionsArgs[ 'ga:channelGrouping' ],
+			url: 'https://www.elasticpress.io/features/',
+		},
+		{
+			...dashboardUserDimensionsArgs[ 'ga:country' ],
+			url: 'https://www.elasticpress.io/features/',
+		},
+		{
+			...dashboardUserDimensionsArgs[ 'ga:deviceCategory' ],
+			url: 'https://www.elasticpress.io/features/',
+		},
+		{
+			...dashboardUserTotalsArgs,
+			url: 'https://www.elasticpress.io/features/',
+		},
+		{
+			...dashboardUserGraphArgs,
+			url: 'https://www.elasticpress.io/features/',
 		},
 	],
-	referenceDate: '2020-08-29',
-	options: {
-		startDate: '2020-08-01',
-		endDate: '2020-08-28',
-		dimensions: 'ga:channelGrouping',
-		orderby: {
-			fieldName: 'ga:users',
-			sortOrder: 'DESCENDING',
-		},
-		limit: 10,
-		url: 'https://www.example.com/example-page/',
-		metrics: [
-			{
-				expression: 'ga:sessions',
-				alias: 'Sessions',
-			},
-			{
-				expression: 'ga:users',
-				alias: 'Users',
-			},
-			{
-				expression: 'ga:newUsers',
-				alias: 'New Users',
-			},
-		],
-	},
 	Component: DashboardAllTrafficWidget,
 	wrapWidget: false,
 	setup,
