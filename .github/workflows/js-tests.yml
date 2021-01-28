@@ -40,10 +40,14 @@ jobs:
       - name: Build JS (Production Version, with tests)
         run: npm run build:test
       - name: Bundlesize
-        run: npm run test:bundlesize
-        env:
-          BUNDLESIZE_GITHUB_TOKEN: ${{ secrets.BUNDLESIZE_GITHUB_TOKEN }}
-          CI_REPO_OWNER: 'google'
-          CI_REPO_NAME: 'site-kit-wp'
-          CI_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-          CI_COMMIT_SHA: ${{ github.sha }}
+        # run: npm run test:bundlesize
+        - uses: preactjs/compressed-size-action@v2
+        with:
+          repo-token: "${{ secrets.BUNDLESIZE_GITHUB_TOKEN }}"
+          pattern: "{build/**/*.js,build/**/*.css}"
+        # env:
+        #   BUNDLESIZE_GITHUB_TOKEN: ${{ secrets.BUNDLESIZE_GITHUB_TOKEN }}
+        #   CI_REPO_OWNER: 'google'
+        #   CI_REPO_NAME: 'site-kit-wp'
+        #   CI_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        #   CI_COMMIT_SHA: ${{ github.sha }}
