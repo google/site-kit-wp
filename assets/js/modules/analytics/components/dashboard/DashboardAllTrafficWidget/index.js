@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { _x } from '@wordpress/i18n';
-import { useState, useEffect } from '@wordpress/element';
+import { useState, useEffect, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -155,71 +155,75 @@ function DashboardAllTrafficWidget() {
 		currentRange,
 	] );
 
-	if ( pieChartError ) {
-		return <ReportError moduleSlug="analytics" error={ pieChartError } />;
-	}
-
-	if ( isZeroReport( pieChartReport ) ) {
-		// TODO: Replace with `props.WidgetReportZero` once legacy dashboard UI has been removed.
-		return <ReportZero moduleSlug="analytics" />;
-	}
+	const isZero = isZeroReport( pieChartReport );
 
 	return (
-		<Widget
-			slug="analyticsAllTraffic"
-			className="googlesitekit-widget--footer-v2"
-			footer={ () => (
-				<SourceLink
-					className="googlesitekit-data-block__source"
-					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					href={ serviceReportURL }
-					external
-				/>
-			) }
-			noPadding
-		>
-			<Grid>
-				<Row>
-					<Cell
-						className="googlesitekit-widget--analyticsAllTraffic__totals"
-						lgSize={ 7 }
-						mdSize={ 8 }
-					>
-						<TotalUserCount
-							loaded={ totalUsersLoaded && ! firstLoad }
-							report={ totalUsersReport }
-							error={ totalUsersError }
-							dimensionValue={ dimensionValue }
+		<Fragment>
+			<div style={ { display: pieChartError ? 'block' : 'none' } }>
+				<ReportError moduleSlug="analytics" error={ pieChartError || {} } />
+			</div>
+			<div style={ { display: isZero && ! pieChartError ? 'block' : 'none' } }>
+				{ /* TODO: Replace with `props.WidgetReportZero` once legacy dashboard UI has been removed. */ }
+				<ReportZero moduleSlug="analytics" />
+			</div>
+			<div style={ { display: pieChartError || isZero ? 'none' : 'block' } }>
+				<Widget
+					slug="analyticsAllTraffic"
+					className="googlesitekit-widget--footer-v2"
+					footer={ () => (
+						<SourceLink
+							className="googlesitekit-data-block__source"
+							name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+							href={ serviceReportURL }
+							external
 						/>
+					) }
+					noPadding
+				>
+					<Grid>
+						<Row>
+							<Cell
+								className="googlesitekit-widget--analyticsAllTraffic__totals"
+								lgSize={ 7 }
+								mdSize={ 8 }
+							>
+								<TotalUserCount
+									loaded={ totalUsersLoaded && ! firstLoad }
+									report={ totalUsersReport }
+									error={ totalUsersError }
+									dimensionValue={ dimensionValue }
+								/>
 
-						<UserCountGraph
-							loaded={ userCountGraphLoaded && ! firstLoad }
-							error={ userCountGraphError }
-							report={ userCountGraphReport }
-						/>
-					</Cell>
+								<UserCountGraph
+									loaded={ userCountGraphLoaded && ! firstLoad }
+									error={ userCountGraphError }
+									report={ userCountGraphReport }
+								/>
+							</Cell>
 
-					<Cell
-						className="googlesitekit-widget--analyticsAllTraffic__dimensions"
-						lgSize={ 5 }
-						mdSize={ 8 }
-					>
-						<DimensionTabs
-							loaded={ ! firstLoad }
-							dimensionName={ dimensionName }
-						/>
+							<Cell
+								className="googlesitekit-widget--analyticsAllTraffic__dimensions"
+								lgSize={ 5 }
+								mdSize={ 8 }
+							>
+								<DimensionTabs
+									loaded={ ! firstLoad }
+									dimensionName={ dimensionName }
+								/>
 
-						<UserDimensionsPieChart
-							dimensionName={ dimensionName }
-							dimensionValue={ dimensionValue }
-							sourceLink={ serviceReportURL }
-							loaded={ pieChartLoaded && ! firstLoad }
-							report={ pieChartReport }
-						/>
-					</Cell>
-				</Row>
-			</Grid>
-		</Widget>
+								<UserDimensionsPieChart
+									dimensionName={ dimensionName }
+									dimensionValue={ dimensionValue }
+									sourceLink={ serviceReportURL }
+									loaded={ pieChartLoaded && ! firstLoad }
+									report={ pieChartReport }
+								/>
+							</Cell>
+						</Row>
+					</Grid>
+				</Widget>
+			</div>
+		</Fragment>
 	);
 }
 
