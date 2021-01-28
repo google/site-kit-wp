@@ -99,7 +99,7 @@ function getWidgetSizes( counter, widget ) {
 /**
  * Gets widget class names as well as column widths and row indexes for an area.
  *
- * @since n.e.x.t
+ * @since 1.25.0
  *
  * @param {Array.<Object>} activeWidgets List of active widgets.
  * @return {Object} Object with `classNames`, `columnWidths` and `rowIndexes`

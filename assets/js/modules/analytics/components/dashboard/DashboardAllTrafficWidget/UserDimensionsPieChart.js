@@ -27,6 +27,7 @@ import classnames from 'classnames';
  */
 import { useCallback, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
+import { useInstanceId } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -51,11 +52,14 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 		path: '/analytics/answer/2820717',
 	} ) );
 
+	// Create a unique chartID to use for this component's GoogleChart child component.
+	const chartID = `user-dimensions-pie-chart-${ useInstanceId( UserDimensionsPieChart ) }`;
+
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onReady = useCallback( () => {
 		setChartLoaded( true );
 
-		const chartData = GoogleChart.charts.get( 'user-dimensions-pie-chart' );
+		const chartData = GoogleChart.charts.get( chartID );
 		const { chart, onSelect } = chartData || {};
 		const { slices } = UserDimensionsPieChart.chartOptions;
 
@@ -63,7 +67,7 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 			chartData.onSelect = global.google.visualization.events.addListener( chart, 'select', () => {
 				const { row } = chart.getSelection()?.[ 0 ] || {};
 				if ( row !== null && row !== undefined ) {
-					const { dataTable } = GoogleChart.charts.get( 'user-dimensions-pie-chart' ) || {};
+					const { dataTable } = GoogleChart.charts.get( chartID ) || {};
 					if ( dataTable ) {
 						const dimensionValue = dataTable.getValue( row, 0 );
 						const isOthers = __( 'Others', 'google-site-kit' ) === dimensionValue;
@@ -81,7 +85,7 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 				}
 			} );
 		}
-	}, [ dimensionName, setValues ] );
+	}, [ chartID, dimensionName, setValues ] );
 
 	if ( ! loaded ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;
@@ -209,9 +213,9 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 	}
 
 	return (
-		<div className="googlesitekit-widget--analyticsAllTrafficV2__dimensions-chart">
+		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart">
 			<GoogleChart
-				chartID="user-dimensions-pie-chart"
+				chartID={ chartID }
 				chartType="pie"
 				options={ options }
 				data={ dataMap }
@@ -219,7 +223,7 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 				onReady={ onReady }
 			/>
 			<div
-				className="googlesitekit-widget--analyticsAllTrafficV2__dimensions-chart-title"
+				className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
 				dangerouslySetInnerHTML={ title }
 			/>
 		</div>
@@ -245,7 +249,6 @@ UserDimensionsPieChart.chartOptions = {
 		width: '100%',
 	},
 	backgroundColor: 'transparent',
-	fontName: 'Roboto',
 	fontSize: 12,
 	height: 410,
 	legend: {
@@ -259,7 +262,6 @@ UserDimensionsPieChart.chartOptions = {
 	pieHole: 0.6,
 	pieSliceTextStyle: {
 		color: 'black',
-		fontName: 'Roboto',
 		fontSize: 12,
 	},
 	slices: {

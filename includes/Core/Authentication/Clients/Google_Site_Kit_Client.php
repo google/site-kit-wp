@@ -194,7 +194,7 @@ class Google_Site_Kit_Client extends Google_Client {
 				 * the refresh token for the current user, which typically happens once every hour when using Site Kit,
 				 * since that is the lifetime of every access token.
 				 *
-				 * @since n.e.x.t
+				 * @since 1.25.0
 				 *
 				 * @param array $token_response Token response data.
 				 */
