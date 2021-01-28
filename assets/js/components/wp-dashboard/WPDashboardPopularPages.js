@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+
 /**
  * Internal dependencies
  */
@@ -31,6 +32,8 @@ import ReportError from '../ReportError';
 import { numFmt } from '../../util';
 import TableOverflowContainer from '../../components/TableOverflowContainer';
 import { getDataTableFromData } from '../../components/data-table';
+import ReportZero from '../../components/ReportZero';
+import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
 const WPDashboardPopularPages = () => {
@@ -70,6 +73,10 @@ const WPDashboardPopularPages = () => {
 
 	if ( error ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
+	}
+
+	if ( isZeroReport( data ) ) {
+		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const headers = [
