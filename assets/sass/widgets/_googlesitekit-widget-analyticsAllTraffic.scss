@@ -103,12 +103,12 @@
 
 	.googlesitekit-widget--analyticsAllTraffic__totalcount {
 
-		h3 {
+		.googlesitekit-data-block__title {
+			text-transform: capitalize;
+		}
 
-			span::before {
-				content: ">";
-				margin: 0 0.5rem;
-			}
+		svg {
+			vertical-align: bottom;
 		}
 	}
 
