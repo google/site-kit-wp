@@ -74,7 +74,14 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	];
 
 	const chartOptions = { ...UserCountGraph.chartOptions };
-	chartOptions.hAxis.ticks = [ new Date( startDate ), new Date( endDate ) ];
+
+	// Putting the actual start and end dates in the ticks causes the charts not to render
+	// them. See: https://github.com/google/site-kit-wp/issues/2708.
+	const startTick = new Date( startDate );
+	startTick.setDate( new Date( startDate ).getDate() + 1 );
+	const endTick = new Date( endDate );
+	endTick.setDate( new Date( endDate ).getDate() - 1 );
+	chartOptions.hAxis.ticks = [ startTick, endTick ];
 	chartOptions.series[ 0 ].color = graphLineColor;
 
 	return (
@@ -104,8 +111,10 @@ UserCountGraph.chartOptions = {
 	width: '100%',
 	colors: [ '#1a73e8' ],
 	chartArea: {
-		height: '80%',
-		width: '80%',
+		height: '90%',
+		left: '-5%',
+		top: '5%',
+		width: '90%',
 	},
 	legend: {
 		position: 'none',
