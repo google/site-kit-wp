@@ -245,7 +245,7 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
 /**
  * Provides user capabilities data to the given registry.
  *
- * @since n.e.x.t
+ * @since 1.25.0
  * @private
  *
  * @param {Object} registry    Registry object to dispatch to.
