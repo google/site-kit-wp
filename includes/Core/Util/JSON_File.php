@@ -141,7 +141,7 @@ class JSON_File implements ArrayAccess, IteratorAggregate, JsonSerializable {
 	/**
 	 * Retrieve an iterator instance for the JSON data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.25.0
 	 *
 	 * @return ArrayIterator|\Traversable
 	 */
