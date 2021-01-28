@@ -31,8 +31,4 @@
 	.googlesitekit-chart--pie & > div > div > div > svg {
 		overflow: visible !important; // Accounts for hover border cutoff.
 	}
-
-	.google-visualization-tooltip {
-		pointer-events: none; // Removes label hover flicker from Google Charts.
-	}
 }
