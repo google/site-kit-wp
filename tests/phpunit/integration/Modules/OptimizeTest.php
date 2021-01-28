@@ -28,16 +28,27 @@ class OptimizeTest extends TestCase {
 	use Module_With_Owner_ContractTests;
 
 	public function test_register() {
-		$this->markTestSkipped( 'All register method implementation currently depends on get_data.' );
+		remove_all_filters( 'googlesitekit_gtag_opt' );
+		remove_all_actions( 'wp_footer' );
+		remove_all_actions( 'amp_post_template_footer' );
+		remove_all_filters( 'amp_post_template_data' );
 		$optimize = new Optimize( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$optimize->register();
+
+		$this->assertTrue( has_filter( 'googlesitekit_gtag_opt' ) );
+		$this->assertTrue( has_action( 'wp_footer' ) );
+		$this->assertTrue( has_action( 'amp_post_template_footer' ) );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
 	}
 
 	public function test_is_connected() {
 		$optimize = new Optimize( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		// Depends on get_data
 		$this->assertFalse( $optimize->is_connected() );
+
+		$optimize->get_settings()->merge( array( 'optimizeID' => 'GTM-XXXXX' ) );
+
+		$this->assertTrue( $optimize->is_connected() );
 	}
 
 	public function test_prepare_info_for_js() {
@@ -82,11 +93,7 @@ class OptimizeTest extends TestCase {
 		$optimize = new Optimize( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertEqualSets(
-			array(
-				'optimize-id',
-				'amp-experiment-json',
-				'settings',
-			),
+			array(),
 			$optimize->get_datapoints()
 		);
 	}
