@@ -68,8 +68,32 @@
 		}
 	}
 
+	.googlesitekit-widget--analyticsAllTraffic__totalcount {
+
+		.googlesitekit-data-block__title {
+			text-transform: capitalize;
+		}
+
+		svg {
+			vertical-align: bottom;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__totalcount--loading {
+		margin: 0 0 10px;
+	}
+
 	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart {
 		position: relative;
+
+		// Use pointer when hovering over chart slice or legend entry.
+		.googlesitekit-line-chart > div > div > div > svg {
+
+			& > g > path,
+			& > g > g {
+				cursor: pointer;
+			}
+		}
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title {
@@ -87,21 +111,6 @@
 		& span {
 			font-weight: 300;
 		}
-	}
-
-	.googlesitekit-widget--analyticsAllTraffic__totalcount {
-
-		.googlesitekit-data-block__title {
-			text-transform: capitalize;
-		}
-
-		svg {
-			vertical-align: bottom;
-		}
-	}
-
-	.googlesitekit-widget--analyticsAllTraffic__totalcount--loading {
-		margin: 0 0 10px;
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__tabs--loading {
