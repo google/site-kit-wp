@@ -33,7 +33,7 @@ export const actions = {
 	/**
 	 * Sets navigating URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.25.0
 	 *
 	 * @param {string} url The navigation URL.
 	 * @return {Object} Redux-style action.
@@ -89,7 +89,7 @@ export const selectors = {
 	/**
 	 * Determines whether the navigation is happening or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.25.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if navigating, otherwise FALSE.
@@ -101,7 +101,7 @@ export const selectors = {
 	/**
 	 * Determines whether navigating to the specific URL or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.25.0
 	 *
 	 * @param {Object}        state Data store's state.
 	 * @param {string|RegExp} url   An URL or a regular expression to test.
@@ -122,7 +122,7 @@ export const selectors = {
 	/**
 	 * Gets navigation URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.25.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string|null} The current navigating URL if doing navigation, otherwise NULL.

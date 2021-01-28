@@ -108,7 +108,7 @@ export const actions = {
 	 * Used internally by various components that can be returned by
 	 * registered widget components.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.25.0
 	 * @private
 	 *
 	 * @param {string}      slug       Widget slug.
@@ -137,7 +137,7 @@ export const actions = {
 	 * Used internally by various components that can be returned by
 	 * registered widget components.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.25.0
 	 * @private
 	 *
 	 * @param {string}      slug       Widget slug.
@@ -305,7 +305,7 @@ export const selectors = {
 	 * Used internally by the WidgetAreaRenderer component to recognize
 	 * widgets in special states.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.25.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.

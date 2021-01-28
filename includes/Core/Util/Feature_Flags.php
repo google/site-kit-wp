@@ -64,7 +64,7 @@ class Feature_Flags {
 		 * Mainly this is used by E2E tests to allow certain features to be disabled or
 		 * enabled for testing, but is also useful to switch features on/off on-the-fly.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.25.0
 		 *
 		 * @param bool   $feature_enabled The current status of this feature flag (`true` or `false`).
 		 * @param string $feature         The feature name.
@@ -76,7 +76,7 @@ class Feature_Flags {
 	/**
 	 * Gets all enabled feature flags.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.25.0
 	 *
 	 * @return string[] An array of all enabled features.
 	 */
