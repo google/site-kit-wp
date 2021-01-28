@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState, useEffect, Fragment } from '@wordpress/element';
+import { useCallback, useState, useEffect } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { useInstanceId } from '@wordpress/compose';
 
@@ -237,11 +237,22 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 	}
 
 	return (
-		<Fragment>
-			<div style={ { display: loaded ? 'none' : 'block' } }>
-				<PreviewBlock width="282px" height="282px" shape="circular" />
-			</div>
-			<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart" style={ { display: loaded ? 'block' : 'none' } }>
+		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
+			<PreviewBlock
+				className={ classnames( {
+					'googlesitekit-widget--analyticsAllTraffic__dimensions--not-loading': loaded,
+					'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
+				} ) }
+				width="282px"
+				height="282px"
+				shape="circular"
+			/>
+			<div className={ classnames(
+				'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
+				{
+					'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
+				}
+			) }>
 				<GoogleChart
 					chartID={ chartID }
 					chartType="pie"
@@ -255,7 +266,7 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 					dangerouslySetInnerHTML={ title }
 				/>
 			</div>
-		</Fragment>
+		</div>
 	);
 }
 

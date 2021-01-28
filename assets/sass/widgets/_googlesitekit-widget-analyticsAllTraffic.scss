@@ -62,9 +62,24 @@
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions {
 		padding-top: 30px;
+		position: relative;
 
 		.googlesitekit-preview-block {
-			margin: 62px auto;
+
+			&.googlesitekit-widget--analyticsAllTraffic__dimensions--not-loading {
+				display: none;
+			}
+
+			&.googlesitekit-widget--analyticsAllTraffic__dimensions--loading {
+				left: 50%;
+				position: absolute;
+				top: 50%;
+				transform: translate(-50%, -50%);
+			}
+		}
+
+		.googlesitekit-widget--analyticsAllTraffic__dimensions-container {
+			position: relative;
 		}
 	}
 
@@ -85,6 +100,10 @@
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart {
 		position: relative;
+
+		&.googlesitekit-widget--analyticsAllTraffic__dimensions--loading {
+			visibility: hidden;
+		}
 
 		// Use pointer when hovering over chart slice or legend entry.
 		.googlesitekit-line-chart > div > div > div > svg {
