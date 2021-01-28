@@ -386,7 +386,7 @@ final class AdSense extends Module
 	/**
 	 * Gets the service URL for the current account or signup if none.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.25.0
 	 *
 	 * @return string
 	 */

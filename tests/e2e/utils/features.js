@@ -24,7 +24,7 @@ import { wpApiFetch } from './wp-api-fetch';
 /**
  * Disables a feature flag during E2E tests.
  *
- * @since n.e.x.t
+ * @since 1.25.0
  *
  * @param {string} feature The feature flag to disable.
  * @return {Promise} Promise from `page.evaluate()` call.
@@ -43,7 +43,7 @@ export async function disableFeature( feature ) {
 /**
  * Enables a feature flag during E2E tests.
  *
- * @since n.e.x.t
+ * @since 1.25.0
  *
  * @param {string} feature The feature flag to enable.
  * @return {Promise} Promise from `page.evaluate()` call.
