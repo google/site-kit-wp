@@ -274,7 +274,7 @@ UserDimensionsPieChart.chartOptions = {
 	title: null,
 	tooltip: {
 		isHtml: true, // eslint-disable-line sitekit/camelcase-acronyms
-		trigger: 'both',
+		trigger: 'focus',
 	},
 	width: '100%',
 };
