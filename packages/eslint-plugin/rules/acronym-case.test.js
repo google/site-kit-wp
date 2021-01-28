@@ -74,6 +74,7 @@ const getElementByID = ( id ) => {
 };
 export default function AMPExperimentJSONField() {}
 export { default as AMPExperimentJSONField } from './AMPExperimentJSONField';
+export const HTML = () => {};
 			`,
 		},
 		{
@@ -131,6 +132,8 @@ const HTMLNode = '<div></div>';
 `,
 			errors: [
 				{
+					// Acronyms at the beginning of an identifer should be entirely _lowercased_ instead
+					// of uppercased.
 					message: '`HTMLNode` violates naming rules.',
 				},
 			],
