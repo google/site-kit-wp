@@ -25,7 +25,7 @@ import { useEffect, useState } from '@wordpress/element';
  * Runs a series of asynchronous checks returning the first encountered error.
  * All checks should be functions that throw their respective errors.
  *
- * @since n.e.x.t
+ * @since 1.25.0
  *
  * @param {Function[]} checks Array of functions to run.
  * @return {Object} An object containing complete and error properties.

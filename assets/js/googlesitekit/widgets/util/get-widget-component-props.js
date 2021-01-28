@@ -27,7 +27,7 @@ import WidgetCompleteModuleActivationCTA from '../components/WidgetCompleteModul
 /**
  * Gets the props to pass to a widget's component.
  *
- * @since n.e.x.t
+ * @since 1.25.0
  *
  * @param {string} widgetSlug The widget's slug.
  * @return {Object} Props to pass to the widget component.

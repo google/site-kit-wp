@@ -20,7 +20,7 @@
  * Creates a function that waits for all fetch requests dispatched
  * since the function was called to complete.
  *
- * @since n.e.x.t
+ * @since 1.25.0
  *
  * @return {Function} Wait function.
  */

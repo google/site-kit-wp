@@ -68,7 +68,7 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 
 	if ( ! loaded ) {
 		return (
-			<div className="googlesitekit-widget--analyticsAllTrafficV2__tabs--loading">
+			<div className="googlesitekit-widget--analyticsAllTraffic__tabs--loading">
 				<PreviewBlock width="100px" height="40px" shape="square" />
 				<PreviewBlock width="100px" height="40px" shape="square" />
 				<PreviewBlock width="100px" height="40px" shape="square" />
@@ -83,7 +83,11 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 		>
 			{
 				tabs.map( ( tab ) => (
-					<Tab key={ tab.dimensionName } className="mdc-tab--min-width">
+					<Tab
+						key={ tab.dimensionName }
+						className="mdc-tab--min-width"
+						focusOnActivate={ false }
+					>
 						<span className="mdc-tab__text-label">{ tab.tabText }</span>
 					</Tab>
 				) )
