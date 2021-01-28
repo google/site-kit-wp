@@ -212,10 +212,7 @@ export function generateReportBasedWidgetStories( {
 		...customVariants,
 	};
 
-	const slugs = moduleSlugs.map( ( slug ) => {
-		return `${ slug }-widget`;
-	} );
-	const slug = slugs.join( ' ' );
+	const slug = moduleSlugs.map( ( slug ) => `${ slug }-widget` ).join( ' ' );
 
 	const widgetComponentProps = getWidgetComponentProps( slug );
 
