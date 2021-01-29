@@ -19,12 +19,13 @@
 /**
  * External dependencies
  */
-import { each } from 'lodash';
+import each from 'lodash/each';
+import round from 'lodash/round';
 
 /**
  * Internal dependencies
  */
-import { calculateChange, numFmt } from '../../../util';
+import { calculateChange } from '../../../util';
 export * from './is-zero-report';
 
 function reduceSearchConsoleData( rows ) {
@@ -43,14 +44,15 @@ function reduceSearchConsoleData( rows ) {
 	let totalCTR = 0;
 	let totalPosition = 0;
 	const count = rows.length;
+
 	each( rows, ( row ) => {
 		const date = new Date( row.keys[ 0 ] );
 		dataMap.push( [
 			( date.getMonth() + 1 ) + '/' + date.getUTCDate(),
 			row.clicks,
 			row.impressions,
-			numFmt( row.ctr, { style: 'decimal', maximumFractionDigits: 3 } ),
-			numFmt( row.position, { style: 'decimal', maximumFractionDigits: 3 } ),
+			round( row.ctr, 3 ),
+			round( row.position, 3 ),
 		] );
 		totalClicks += row.clicks;
 		totalImpressions += row.impressions;
