@@ -30,7 +30,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	 */
 	public function can_activate() {
 		$settings = $this->settings->get();
-		return ! empty( $settings['useSnippet'] ) && ! empty( $settings['propertyID'] );
+		return apply_filters( 'googlesitekit_analytics_can_use_snippet', ! empty( $settings['useSnippet'] ) && ! empty( $settings['propertyID'] ) );
 	}
 
 }

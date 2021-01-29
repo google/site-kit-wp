@@ -33,7 +33,7 @@ import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function useExistingTagEffect() {
-	const { setAccountID, selectProperty, setUseSnippet } = useDispatch( STORE_NAME );
+	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
 	const gtmModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'tagmanager' ) );
 
 	const {
@@ -86,7 +86,6 @@ export default function useExistingTagEffect() {
 			// GTM container has GA tag and user has access to it, force select it.
 			setAccountID( gtmAnalyticsAccountID );
 			selectProperty( gtmAnalyticsPropertyID );
-			setUseSnippet( false );
 		}
 	}, [
 		existingTag,

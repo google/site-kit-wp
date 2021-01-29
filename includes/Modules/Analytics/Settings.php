@@ -121,9 +121,22 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				 * @param bool $adsense_linked Null by default, will fallback to the option value if not set.
 				 */
 				$adsense_linked = apply_filters( 'googlesitekit_analytics_adsense_linked', null );
-
 				if ( is_bool( $adsense_linked ) ) {
 					$option['adsenseLinked'] = $adsense_linked;
+				}
+
+				/**
+				 * Filters the state of the can use snipped setting.
+				 *
+				 * This filter exists so that useSnippet can be restored to true when the Tag Manager module
+				 * is disconnected, ensuring the analytics snippet is always included.
+				 *
+				 * @since n.e.x.t
+				 * @param bool $can_use_snippet Null by default, will fallback to the option value if not set.
+				 */
+				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', null );
+				if ( is_bool( $can_use_snippet ) ) {
+					$option['canUseSnippet'] = $can_use_snippet;
 				}
 
 				return $option;
@@ -165,6 +178,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'propertyID'            => '',
 			'trackingDisabled'      => array( 'loggedinUsers' ),
 			'useSnippet'            => true,
+			'canUseSnippet'         => true,
 		);
 	}
 
