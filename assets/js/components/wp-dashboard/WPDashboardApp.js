@@ -58,7 +58,7 @@ const WPDashboardApp = () => {
 					{ __( 'Visit your Site Kit Dashboard', 'google-site-kit' ) }
 				</Link>
 			</div>
-			( <div className={ classnames(
+			<div className={ classnames(
 				'googlesitekit-wp-dashboard-stats',
 				{ 'googlesitekit-wp-dashboard-stats--fourup': analyticsModuleActive && analyticsModuleConnected }
 			) }>
@@ -80,7 +80,7 @@ const WPDashboardApp = () => {
 						) }
 					</div>
 				) }
-			</div> )
+			</div>
 		</div>
 	);
 };
