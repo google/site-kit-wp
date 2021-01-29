@@ -27,7 +27,6 @@ import { storiesOf } from '@storybook/react';
 import Header from '../assets/js/components/Header';
 import DateRangeSelector from '../assets/js/components/DateRangeSelector';
 import { createTestRegistry, provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
-import { enableFeature } from './utils/features';
 
 const withRegistry = ( Story ) => {
 	const registry = createTestRegistry();
@@ -52,8 +51,6 @@ storiesOf( 'Global', module )
 		],
 	} )
 	.add( 'Plugin Header with Date Selector', () => {
-		enableFeature( 'storeErrorNotifications' );
-
 		return (
 			<Header>
 				<DateRangeSelector />

@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import { getModulesData } from '../../../../util';
 import Layout from '../../../../components/layout/Layout';
 import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
-import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
+import ActivateModuleCTA from '../../../../components/ActivateModuleCTA';
 import LegacyDashboardSearchFunnelInner from './LegacyDashboardSearchFunnelInner';
 
 class LegacyDashboardSearchFunnel extends Component {
@@ -71,7 +71,7 @@ class LegacyDashboardSearchFunnel extends Component {
 										mdc-layout-grid__cell--span-4-tablet
 										mdc-layout-grid__cell--span-6-desktop
 									">
-										<AnalyticsInactiveCTA />
+										<ActivateModuleCTA moduleSlug="analytics" />
 									</div>
 								}
 							</div>

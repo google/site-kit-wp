@@ -60,7 +60,7 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea(
 		AREA_DASHBOARD_ALL_TRAFFIC,
 		{
-			title: __( 'All Traffic', 'google-site-kit' ),
+			title: __( 'Your Traffic at a Glance', 'google-site-kit' ),
 			subtitle: __( 'How people found your site.', 'google-site-kit' ),
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
@@ -126,7 +126,7 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea(
 		AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
 		{
-			title: __( 'All Traffic', 'google-site-kit' ),
+			title: __( 'Your Traffic at a Glance', 'google-site-kit' ),
 			subtitle: __( 'How people found your page.', 'google-site-kit' ),
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 2,

@@ -73,12 +73,5 @@ module.exports = async ( { config } ) => {
 
 	config.module.rules.push( mainConfig.svgRule );
 
-	config.module.rules.push(
-		{
-			test: /\.(png|woff|woff2|eot|ttf|gif)$/,
-			use: { loader: 'url-loader?limit=100000' },
-		}
-	);
-
 	return config;
 };

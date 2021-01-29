@@ -17,7 +17,7 @@
  */
 
 import API from 'googlesitekit-api';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	AMP_PROJECT_TEST_URL,
 	ERROR_AMP_CDN_RESTRICTED,
