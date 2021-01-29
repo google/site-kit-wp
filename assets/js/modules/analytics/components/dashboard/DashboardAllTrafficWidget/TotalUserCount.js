@@ -79,7 +79,7 @@ export default function TotalUserCount( { loaded, error, report, dimensionValue 
 				{ ! dimensionValue && __( 'All Users', 'google-site-kit' ) }
 				{ dimensionValue && (
 					<Fragment>
-						{ __( 'Users', 'google-site-kit' ) }
+						{ __( 'All Users', 'google-site-kit' ) }
 						<Icon icon={ chevronRight } size="18" fill="currentColor" />
 						{ dimensionValue }
 					</Fragment>
