@@ -24,7 +24,7 @@ import { each } from 'lodash';
 /**
  * Internal dependencies
  */
-import { calculateChange } from '../../../util';
+import { calculateChange, numFmt } from '../../../util';
 export * from './is-zero-report';
 
 function reduceSearchConsoleData( rows ) {
@@ -49,8 +49,8 @@ function reduceSearchConsoleData( rows ) {
 			( date.getMonth() + 1 ) + '/' + date.getUTCDate(),
 			row.clicks,
 			row.impressions,
-			row.ctr,
-			row.position,
+			numFmt( row.ctr, { style: 'decimal', maximumFractionDigits: 3 } ),
+			numFmt( row.position, { style: 'decimal', maximumFractionDigits: 3 } ),
 		] );
 		totalClicks += row.clicks;
 		totalImpressions += row.impressions;
