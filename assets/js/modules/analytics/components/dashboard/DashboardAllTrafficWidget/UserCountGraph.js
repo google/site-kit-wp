@@ -45,7 +45,8 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	const graphLineColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) || '#1a73e8' );
 
 	if ( ! loaded ) {
-		return <PreviewBlock width="100%" height="300px" shape="square" />;
+		// On desktop, the real graph height is 350px, so match that here.
+		return <PreviewBlock width="100%" height="350px" shape="square" />;
 	}
 
 	if ( error ) {

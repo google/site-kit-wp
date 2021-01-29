@@ -108,6 +108,13 @@
 
 	.googlesitekit-widget--analyticsAllTraffic__totalcount--loading {
 		margin: 0 0 10px;
+
+		@media (min-width: $bp-xlarge) {
+			// Override `PreviewBlock` height definition, since it doesn't
+			// support flexible sizes per breakpoint.
+			// TODO: Remove and achieve via `PreviewBlock` extra props instead.
+			min-height: 106px;
+		}
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart {
