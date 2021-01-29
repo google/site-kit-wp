@@ -46,10 +46,14 @@ export default function TotalUserCount( { loaded, error, report, dimensionValue 
 
 	if ( ! loaded ) {
 		return (
+			// Height is based on real count desktop height (100px), minus 10px for the extra margin.
+			// For extra large desktop viewports, it is increased via CSS to 106px, to match the respective
+			// real count height for those devices (116px).
+			// TODO: Modify `PreviewBlock` to allow for different sizes per breakpoint.
 			<PreviewBlock
 				className="googlesitekit-widget--analyticsAllTraffic__totalcount--loading"
 				width="220px"
-				height="130px"
+				height="90px"
 				shape="square"
 			/>
 		);

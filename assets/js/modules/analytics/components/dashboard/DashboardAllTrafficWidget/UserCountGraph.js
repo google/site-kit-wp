@@ -45,7 +45,8 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	const graphLineColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) || '#1a73e8' );
 
 	if ( ! loaded ) {
-		return <PreviewBlock width="100%" height="300px" shape="square" />;
+		// On desktop, the real graph height is 350px, so match that here.
+		return <PreviewBlock width="100%" height="350px" shape="square" />;
 	}
 
 	if ( error ) {
@@ -74,7 +75,14 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	];
 
 	const chartOptions = { ...UserCountGraph.chartOptions };
-	chartOptions.hAxis.ticks = [ new Date( startDate ), new Date( endDate ) ];
+
+	// Putting the actual start and end dates in the ticks causes the charts not to render
+	// them. See: https://github.com/google/site-kit-wp/issues/2708.
+	const startTick = new Date( startDate );
+	startTick.setDate( new Date( startDate ).getDate() + 1 );
+	const endTick = new Date( endDate );
+	endTick.setDate( new Date( endDate ).getDate() - 1 );
+	chartOptions.hAxis.ticks = [ startTick, endTick ];
 	chartOptions.series[ 0 ].color = graphLineColor;
 
 	return (
@@ -104,8 +112,11 @@ UserCountGraph.chartOptions = {
 	width: '100%',
 	colors: [ '#1a73e8' ],
 	chartArea: {
-		height: '80%',
-		width: '80%',
+		left: '1%',
+		height: 300,
+		right: '9%',
+		top: 21,
+		width: '100%',
 	},
 	legend: {
 		position: 'none',
