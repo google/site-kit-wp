@@ -55,7 +55,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
       - name: Composer Install
-        run: docker run --rm -v "$PWD:/app" -v "${{ steps.composer-cache.outputs.dir }}:/tmp/cache" composer:1 install --no-interaction --no-progress # Run inside docker so composer install doesn't error...
+        run: docker run --rm -v "$PWD:/app" -v "${{ steps.composer-cache.outputs.dir }}:/tmp/cache" composer install --no-interaction --no-progress # Run inside docker so composer install doesn't error...
       - name: Set up PHP test data
         run: tests/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
       - name: Run Unit Tests
