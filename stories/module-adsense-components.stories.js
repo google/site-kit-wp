@@ -22,12 +22,12 @@
 import { generateReportBasedWidgetStories } from './utils/generate-widget-stories';
 import DashboardSummaryWidget from '../assets/js/modules/adsense/components/dashboard/DashboardSummaryWidget';
 import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
-import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
+import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense' ],
-	datastore: MODULES_ADSENSE,
+	datastore: STORE_NAME,
 	group: 'AdSense Module/Components/Dashboard/Summary Widget',
 	referenceDate: '2020-09-12',
 	data: [
