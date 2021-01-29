@@ -22,6 +22,7 @@
 import { __ } from '@wordpress/i18n';
 import { Fragment, useState, useEffect, useCallback, createInterpolateElement } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
+import { useDebounce } from '../hooks/useDebounce';
 
 /**
  * Internal dependencies
@@ -38,10 +39,17 @@ const { useSelect, useDispatch } = Data;
 function ResetButton( { children } ) {
 	const postResetURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { notification: 'reset_success' } ) );
 	const isDoingReset = useSelect( ( select ) => select( CORE_SITE ).isDoingReset() );
-
 	const isNavigatingToPostResetURL = useSelect( ( select ) => select( CORE_LOCATION ).isNavigatingTo( postResetURL || '' ) );
-
+	const [ isInProgress, setIsInProgress ] = useState( false );
 	const [ dialogActive, setDialogActive ] = useState( false );
+
+	const debouncedInProgress = useDebounce( setIsInProgress, 3000 );
+
+	const mediatedSetInProgress = ( bool ) => bool ? setIsInProgress( true ) : debouncedInProgress( false );
+
+	useEffect( () => {
+		mediatedSetInProgress( isDoingReset || isNavigatingToPostResetURL );
+	}, [ isDoingReset, isNavigatingToPostResetURL ] );
 
 	useEffect( () => {
 		const handleCloseModal = ( event ) => {
@@ -82,8 +90,6 @@ function ResetButton( { children } ) {
 		setDialogActive( true );
 	}, [] );
 
-	const inProgress = isDoingReset || isNavigatingToPostResetURL;
-
 	return (
 		<Fragment>
 			<Link
@@ -106,7 +112,7 @@ function ResetButton( { children } ) {
 						} ) }
 					confirmButton={ __( 'Reset', 'google-site-kit' ) }
 					danger
-					inProgress={ inProgress }
+					inProgress={ isInProgress }
 				/>
 			</Modal>
 		</Fragment>
