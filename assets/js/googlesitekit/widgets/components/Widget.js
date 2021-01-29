@@ -27,8 +27,8 @@ const Widget = ( {
 	className,
 	slug,
 	noPadding,
-	header: Header,
-	footer: Footer,
+	Header,
+	Footer,
 } ) => {
 	return (
 		<div
