@@ -74,14 +74,57 @@
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions {
 		padding-top: 30px;
+		position: relative;
 
 		.googlesitekit-preview-block {
-			margin: 62px auto;
+
+			&.googlesitekit-widget--analyticsAllTraffic__dimensions--not-loading {
+				display: none;
+			}
+
+			&.googlesitekit-widget--analyticsAllTraffic__dimensions--loading {
+				left: 50%;
+				position: absolute;
+				top: 50%;
+				transform: translate(-50%, -50%);
+			}
 		}
+
+		.googlesitekit-widget--analyticsAllTraffic__dimensions-container {
+			position: relative;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__totalcount {
+
+		.googlesitekit-data-block__title {
+			text-transform: capitalize;
+		}
+
+		svg {
+			vertical-align: bottom;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__totalcount--loading {
+		margin: 0 0 10px;
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart {
 		position: relative;
+
+		&.googlesitekit-widget--analyticsAllTraffic__dimensions--loading {
+			visibility: hidden;
+		}
+
+		// Use pointer when hovering over chart slice or legend entry.
+		.googlesitekit-line-chart > div > div > div > svg {
+
+			& > g > path,
+			& > g > g {
+				cursor: pointer;
+			}
+		}
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title {
@@ -99,21 +142,6 @@
 		& span {
 			font-weight: 300;
 		}
-	}
-
-	.googlesitekit-widget--analyticsAllTraffic__totalcount {
-
-		.googlesitekit-data-block__title {
-			text-transform: capitalize;
-		}
-
-		svg {
-			vertical-align: bottom;
-		}
-	}
-
-	.googlesitekit-widget--analyticsAllTraffic__totalcount--loading {
-		margin: 0 0 10px;
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__tabs--loading {
