@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
 import {
