@@ -107,7 +107,7 @@ UserCountGraph.chartOptions = {
 		startup: true,
 	},
 	curveType: 'function',
-	height: 410,
+	height: 340,
 	width: '100%',
 	colors: [ '#1a73e8' ],
 	chartArea: {

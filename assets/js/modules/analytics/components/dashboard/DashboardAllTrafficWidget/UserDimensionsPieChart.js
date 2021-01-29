@@ -250,7 +250,7 @@ UserDimensionsPieChart.chartOptions = {
 	},
 	backgroundColor: 'transparent',
 	fontSize: 12,
-	height: 410,
+	height: 380,
 	legend: {
 		alignment: 'center',
 		position: 'bottom',
