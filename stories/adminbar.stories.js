@@ -557,12 +557,6 @@ storiesOf( 'Global', module )
 					position: 2.564102564102564,
 				},
 			];
-			// "options": {
-			// 	"startDate": "2020-12-03",
-			// 	"endDate": "2021-01-27",
-			// 	"dimensions": "date",
-			// 	"url": "https://www.elasticpress.io/features/"
-			// }
 			const searchConsoleOptions = {
 				startDate: '2020-12-03',
 				endDate: '2021-01-27',
