@@ -99,6 +99,51 @@ class AuthenticationTest extends TestCase {
 		$this->assertTrue( has_action( 'shutdown' ), $option );
 	}
 
+	public function test_register_set_initial_version_if_not_set() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$auth            = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$initial_version = $this->force_get_property( $auth, 'initial_version' );
+
+		// Ensure no version is set yet.
+		$initial_version->delete();
+		remove_all_actions( 'googlesitekit_authorize_user' );
+		remove_all_actions( 'googlesitekit_reauthorize_user' );
+		$auth->register();
+
+		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ) );
+		$this->assertTrue( has_action( 'googlesitekit_reauthorize_user' ) );
+
+		// Response is not used here, so just pass an array.
+		do_action( 'googlesitekit_reauthorize_user', array() );
+		$this->assertEquals( GOOGLESITEKIT_VERSION, $initial_version->get() );
+	}
+
+	public function test_register_do_not_set_initial_version_if_already_set() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$auth            = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$initial_version = $this->force_get_property( $auth, 'initial_version' );
+
+		// Ensure a version is already set.
+		$initial_version->set( '1.1.0' );
+		remove_all_actions( 'googlesitekit_authorize_user' );
+		remove_all_actions( 'googlesitekit_reauthorize_user' );
+		$auth->register();
+
+		// We cannot test that the hook has not been added to 'googlesitekit_authorize_user'
+		// since the `register` method also adds another unrelated callback to it unconditionally.
+		// That should be fine though since we're covering the integration below.
+		$this->assertFalse( has_action( 'googlesitekit_reauthorize_user' ) );
+
+		// Response is not used here, so just pass an array.
+		do_action( 'googlesitekit_authorize_user', array() );
+		do_action( 'googlesitekit_reauthorize_user', array() );
+		$this->assertEquals( '1.1.0', $initial_version->get() );
+	}
+
 	public function option_action_provider() {
 		return array(
 			array( 'blogname', 'example.com', 'new.example.com' ),

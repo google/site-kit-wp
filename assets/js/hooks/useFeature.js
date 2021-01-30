@@ -29,7 +29,7 @@ import FeaturesContext from '../components/FeaturesProvider/FeaturesContext';
 /**
  * Returns the enabled state of a feature flag.
  *
- * @since n.e.x.t
+ * @since 1.25.0
  *
  * @param {string} feature The feature flag name to check enabled state for.
  * @return {boolean} `true` if the feature is enabled, `false` otherwise.

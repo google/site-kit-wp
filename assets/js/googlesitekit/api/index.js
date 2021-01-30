@@ -81,7 +81,7 @@ export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) 
 /**
  * Dispatches an error to the store, whether it's a permission or auth error.
  *
- * @since n.e.x.t
+ * @since 1.25.0
  *
  * @param {Object} error Error object to dispatch.
  */
