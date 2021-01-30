@@ -27,6 +27,7 @@ import { createElement } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { kebabCaseToPascalCase } from '../googlesitekit/data/transform-case';
+import WidgetNull from '../googlesitekit/widgets/components/WidgetNull';
 const { useSelect } = Data;
 
 /**
@@ -45,7 +46,7 @@ const { useSelect } = Data;
  * @param {WPComponent|null} [options.IncompleteComponent] Optional. Fallback component to render when the module is active but not connected.
  * @return {Function} Enhancing function.
  */
-export default function whenActive( { moduleName, FallbackComponent = null, IncompleteComponent = null } ) {
+export default function whenActive( { moduleName, FallbackComponent = WidgetNull, IncompleteComponent = null } ) {
 	return ( wrappedComponent ) => {
 		const whenActiveComponent = ( props ) => {
 			// The following eslint rule is disabled because it treats the following hook as such that doesn't adhere
@@ -61,7 +62,7 @@ export default function whenActive( { moduleName, FallbackComponent = null, Inco
 
 			// Return a fallback if the module is not active.
 			if ( module.active === false ) {
-				return FallbackComponent !== null ? <FallbackComponent { ...props } /> : null;
+				return <FallbackComponent { ...props } />;
 			}
 
 			// Return a fallback if the module is active but not connected yet.
