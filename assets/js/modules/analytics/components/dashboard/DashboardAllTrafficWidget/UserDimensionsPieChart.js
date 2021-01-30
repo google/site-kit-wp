@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useState, useEffect } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { useInstanceId } from '@wordpress/compose';
 
@@ -42,7 +42,7 @@ import GoogleChart from '../../../../../components/GoogleChart';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useDispatch, useSelect } = Data;
 
-export default function UserDimensionsPieChart( { dimensionName, sourceLink, loaded, report } ) {
+export default function UserDimensionsPieChart( { dimensionName, dimensionValue, sourceLink, loaded, report } ) {
 	const [ chartLoaded, setChartLoaded ] = useState( false );
 
 	const otherSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
@@ -69,13 +69,13 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 				if ( row !== null && row !== undefined ) {
 					const { dataTable } = GoogleChart.charts.get( chartID ) || {};
 					if ( dataTable ) {
-						const dimensionValue = dataTable.getValue( row, 0 );
-						const isOthers = __( 'Others', 'google-site-kit' ) === dimensionValue;
+						const newDimensionValue = dataTable.getValue( row, 0 );
+						const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
 
 						setValues(
 							FORM_ALL_TRAFFIC_WIDGET,
 							{
-								dimensionValue: isOthers ? '' : dimensionValue,
+								dimensionValue: isOthers ? '' : newDimensionValue,
 								dimensionColor: isOthers ? '' : slices[ row ]?.color,
 							}
 						);
@@ -87,16 +87,40 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 		}
 	}, [ chartID, dimensionName, setValues ] );
 
-	if ( ! loaded ) {
-		return <PreviewBlock width="282px" height="282px" shape="circular" />;
-	}
+	useEffect( () => {
+		if ( ! chartLoaded ) {
+			return;
+		}
+
+		const chartData = GoogleChart.charts.get( chartID );
+		const { chart } = chartData || {};
+		if ( chart && report?.[ 0 ]?.data?.rows ) {
+			// If there is a dimension value set but the initialized chart does not have a selection yet,
+			// find the matching row index and initially select it in the chart.
+			if ( dimensionValue && ! chart.getSelection().length ) {
+				const { slices } = UserDimensionsPieChart.chartOptions;
+				const selectedRow = report[ 0 ].data.rows.findIndex( ( row ) => row.dimensions.includes( dimensionValue ) );
+				if ( selectedRow && slices[ selectedRow ]?.color ) {
+					chart.setSelection( [ { row: selectedRow } ] );
+					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: slices[ selectedRow ]?.color } );
+				}
+			}
+
+			// If there is no dimension value set but the initialized chart does have a selection,
+			// ensure it is no longer selected in the chart.
+			if ( ! dimensionValue && chart.getSelection().length ) {
+				chart.setSelection( [] );
+				setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: '' } );
+			}
+		}
+	}, [ chartLoaded, chartID, dimensionValue, JSON.stringify( report ) ] );
 
 	const absOthers = {
-		current: report[ 0 ].data.totals[ 0 ].values[ 0 ],
-		previous: report[ 0 ].data.totals[ 1 ].values[ 0 ],
+		current: report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],
+		previous: report?.[ 0 ]?.data?.totals?.[ 1 ]?.values?.[ 0 ],
 	};
 
-	report[ 0 ].data.rows.forEach( ( { metrics } ) => {
+	( report?.[ 0 ]?.data?.rows || [] ).forEach( ( { metrics } ) => {
 		absOthers.current -= metrics[ 0 ].values[ 0 ];
 		absOthers.previous -= metrics[ 1 ].values[ 0 ];
 	} );
@@ -207,25 +231,41 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 		: { __html: '' };
 
 	const options = { ...UserDimensionsPieChart.chartOptions };
-	if ( report[ 0 ].data.rows.length < 2 ) {
+	if ( report?.[ 0 ]?.data?.rows?.length < 2 ) {
 		// Hide pie slice text when there is just one slice because it will overlap with the chart title.
 		options.pieSliceTextStyle.color = 'transparent';
 	}
 
 	return (
-		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart">
-			<GoogleChart
-				chartID={ chartID }
-				chartType="pie"
-				options={ options }
-				data={ dataMap }
-				loadHeight={ 50 }
-				onReady={ onReady }
+		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
+			<PreviewBlock
+				className={ classnames( {
+					'googlesitekit-widget--analyticsAllTraffic__dimensions--not-loading': loaded,
+					'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
+				} ) }
+				width="282px"
+				height="282px"
+				shape="circular"
 			/>
-			<div
-				className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
-				dangerouslySetInnerHTML={ title }
-			/>
+			<div className={ classnames(
+				'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
+				{
+					'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
+				}
+			) }>
+				<GoogleChart
+					chartID={ chartID }
+					chartType="pie"
+					options={ options }
+					data={ dataMap || [] }
+					loadHeight={ 50 }
+					onReady={ onReady }
+				/>
+				<div
+					className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
+					dangerouslySetInnerHTML={ title }
+				/>
+			</div>
 		</div>
 	);
 }
@@ -233,6 +273,7 @@ export default function UserDimensionsPieChart( { dimensionName, sourceLink, loa
 UserDimensionsPieChart.propTypes = {
 	sourceLink: PropTypes.string,
 	dimensionName: PropTypes.string.isRequired,
+	dimensionValue: PropTypes.string,
 	report: PropTypes.arrayOf( PropTypes.object ),
 	loaded: PropTypes.bool,
 };
@@ -250,7 +291,7 @@ UserDimensionsPieChart.chartOptions = {
 	},
 	backgroundColor: 'transparent',
 	fontSize: 12,
-	height: 410,
+	height: 380,
 	legend: {
 		alignment: 'center',
 		position: 'bottom',
@@ -274,7 +315,7 @@ UserDimensionsPieChart.chartOptions = {
 	title: null,
 	tooltip: {
 		isHtml: true, // eslint-disable-line sitekit/camelcase-acronyms
-		trigger: 'both',
+		trigger: 'focus',
 	},
 	width: '100%',
 };
