@@ -93,6 +93,8 @@ final class Tag_Manager extends Module
 
 		// Tag Manager tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
+		// Filter the useSnippet value .
+		add_action( 'googlesitekit_analytics_can_use_snippet', $this->get_method_proxy( 'can_analytics_use_snippet' ) );
 	}
 
 	/**
@@ -636,6 +638,31 @@ final class Tag_Manager extends Module
 				$tag->register();
 			}
 		}
+	}
+
+	/**
+	 * Can the Analytics module insert it's own snippet.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param boolean $original_value Original value of useSnippet setting.
+	 *
+	 * @return boolean Filtered value.
+	 */
+	private function can_analytics_use_snippet( $original_value ) {
+		$is_amp          = $this->context->is_amp();
+		$module_settings = $this->get_settings();
+		$settings        = $module_settings->get();
+
+		$property_id = $is_amp
+			? $settings['gaAmpPropertyID ']
+			: $settings['ampContainerID'];
+
+		if ( ! empty( $property_id ) && $settings['useSnippet'] ) {
+			return false;
+		}
+
+		return $original_value;
 	}
 
 }
