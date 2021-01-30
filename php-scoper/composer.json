@@ -2,6 +2,11 @@
     "require": {
         "humbug/php-scoper": "^0.13.0"
     },
+    "config": {
+      "platform": {
+        "php": "7.4"
+      }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }

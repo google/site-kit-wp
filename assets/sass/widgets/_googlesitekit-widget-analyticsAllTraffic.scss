@@ -46,6 +46,18 @@
 		}
 	}
 
+	.googlesitekit-widget--analyticsAllTraffic__user-count-chart {
+
+		@media (min-width: $bp-desktop) {
+			position: relative;
+			top: 16px;
+		}
+
+		@media (min-width: $bp-xlarge) {
+			top: 0;
+		}
+	}
+
 	.googlesitekit-widget--analyticsAllTraffic__user-count-chart,
 	.googlesitekit-widget--analyticsAllTraffic__dimensions {
 
@@ -62,14 +74,64 @@
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions {
 		padding-top: 30px;
+		position: relative;
 
 		.googlesitekit-preview-block {
-			margin: 62px auto;
+
+			&.googlesitekit-widget--analyticsAllTraffic__dimensions--not-loading {
+				display: none;
+			}
+
+			&.googlesitekit-widget--analyticsAllTraffic__dimensions--loading {
+				left: 50%;
+				position: absolute;
+				top: 50%;
+				transform: translate(-50%, -50%);
+			}
+		}
+
+		.googlesitekit-widget--analyticsAllTraffic__dimensions-container {
+			position: relative;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__totalcount {
+
+		.googlesitekit-data-block__title {
+			text-transform: capitalize;
+		}
+
+		svg {
+			vertical-align: bottom;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__totalcount--loading {
+		margin: 0 0 10px;
+
+		@media (min-width: $bp-xlarge) {
+			// Override `PreviewBlock` height definition, since it doesn't
+			// support flexible sizes per breakpoint.
+			// TODO: Remove and achieve via `PreviewBlock` extra props instead.
+			min-height: 106px;
 		}
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart {
 		position: relative;
+
+		&.googlesitekit-widget--analyticsAllTraffic__dimensions--loading {
+			visibility: hidden;
+		}
+
+		// Use pointer when hovering over chart slice or legend entry.
+		.googlesitekit-line-chart > div > div > div > svg {
+
+			& > g > path,
+			& > g > g {
+				cursor: pointer;
+			}
+		}
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title {
@@ -87,21 +149,6 @@
 		& span {
 			font-weight: 300;
 		}
-	}
-
-	.googlesitekit-widget--analyticsAllTraffic__totalcount {
-
-		h3 {
-
-			span::before {
-				content: ">";
-				margin: 0 0.5rem;
-			}
-		}
-	}
-
-	.googlesitekit-widget--analyticsAllTraffic__totalcount--loading {
-		margin: 0 0 10px;
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__tabs--loading {

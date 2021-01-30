@@ -208,6 +208,7 @@ function DashboardAllTrafficWidget( { Widget } ) {
 
 						<UserDimensionsPieChart
 							dimensionName={ dimensionName }
+							dimensionValue={ dimensionValue }
 							sourceLink={ serviceReportURL }
 							loaded={ pieChartLoaded && ! firstLoad }
 							report={ pieChartReport }
