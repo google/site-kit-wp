@@ -49,31 +49,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		};
 	} );
 
-	// TODO: Solve this in a better way.
-	/*
-	const activeWidgets = widgets.filter( ( widget ) => {
-		const widgetExists = widgets.some( ( item ) => item.slug === widget.slug );
-		const isComponent = typeof widget.Component === 'function';
-		if ( ! widgetExists || ! isComponent ) {
-			return false;
-		}
-		const widgetComponentProps = getWidgetComponentProps( widget.slug );
-		console.log( widgetComponentProps ); // eslint-disable-line no-console
-		const isActive = widget.Component.prototype.render
-			? new widget.Component( widgetComponentProps ).render()
-			: widget.Component( widgetComponentProps );
-
-		return Boolean( isActive );
-	} );
-	*/
-
 	const { activeWidgets, inactiveWidgets } = separateNullWidgets( widgets, widgetStates );
-
-	/*
-	if ( activeWidgets.length === 0 ) {
-		return null;
-	}
-	 */
 
 	// Compute the layout.
 	const {
