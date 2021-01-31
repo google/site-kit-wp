@@ -22,11 +22,6 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { useMemo } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import useWidgetStateEffect from '../hooks/useWidgetStateEffect';
@@ -34,8 +29,7 @@ import Null from '../../../components/Null';
 
 // The supported props must match `Null` (except `widgetSlug`).
 export default function WidgetNull( { widgetSlug, moduleSlug, ...props } ) {
-	const metadata = useMemo( () => ( { moduleSlug } ), [ moduleSlug ] );
-	useWidgetStateEffect( widgetSlug, Null, metadata );
+	useWidgetStateEffect( widgetSlug, Null, {} );
 
 	return <Null moduleSlug={ moduleSlug } { ...props } />;
 }
