@@ -28,8 +28,10 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, WIDGET_AREA_STYLES } from '../datastore/constants';
 import WidgetRenderer from './WidgetRenderer';
-import { getWidgetLayout, combineWidgets, getWidgetComponentProps } from '../util';
+import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
+import { separateNullWidgets } from '../util/separate-null-widgets';
+import { HIDDEN_CLASS } from '../util/constants';
 const { useSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
@@ -48,6 +50,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	} );
 
 	// TODO: Solve this in a better way.
+	/*
 	const activeWidgets = widgets.filter( ( widget ) => {
 		const widgetExists = widgets.some( ( item ) => item.slug === widget.slug );
 		const isComponent = typeof widget.Component === 'function';
@@ -55,16 +58,22 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 			return false;
 		}
 		const widgetComponentProps = getWidgetComponentProps( widget.slug );
+		console.log( widgetComponentProps ); // eslint-disable-line no-console
 		const isActive = widget.Component.prototype.render
 			? new widget.Component( widgetComponentProps ).render()
 			: widget.Component( widgetComponentProps );
 
 		return Boolean( isActive );
 	} );
+	*/
 
+	const { activeWidgets, inactiveWidgets } = separateNullWidgets( widgets, widgetStates );
+
+	/*
 	if ( activeWidgets.length === 0 ) {
 		return null;
 	}
+	 */
 
 	// Compute the layout.
 	const {
@@ -141,6 +150,19 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 					) }
 				</Row>
 			</div>
+
+			{ inactiveWidgets.length &&
+			(
+				<div className="googlesitekit-widget-area-widgets">
+					{ inactiveWidgets.map( ( widget ) => (
+						<div className={ HIDDEN_CLASS } key={ widget.slug }>
+
+							<widget.Component />
+						</div>
+					) ) }
+				</div>
+			)
+			}
 		</Grid>
 	);
 }
