@@ -1,8 +1,12 @@
 version: "3.2"
 
 services:
+  memcached:
+    image: memcached:latest
+
   wordpress:
-    image: wordpress
+    build:
+      context: ./wordpress
     restart: always
     ports:
       - 9002:80
@@ -15,9 +19,15 @@ services:
         define( 'SCRIPT_DEBUG', true );
     volumes:
       - wordpress_data:/var/www/html
-      - ../../:/var/www/html/wp-content/plugins/google-site-kit
-      - ../../tests/e2e/plugins:/var/www/html/wp-content/plugins/google-site-kit-test-plugins
-      - ../../tests/e2e/mu-plugins:/var/www/html/wp-content/mu-plugins
+      - ../../dist:/var/www/html/wp-content/plugins/google-site-kit/dist
+      - ../../includes:/var/www/html/wp-content/plugins/google-site-kit/includes
+      - ../../third-party:/var/www/html/wp-content/plugins/google-site-kit/third-party
+      - ../../vendor:/var/www/html/wp-content/plugins/google-site-kit/vendor
+      - ../../google-site-kit.php:/var/www/html/wp-content/plugins/google-site-kit/google-site-kit.php
+      - ../../uninstall.php:/var/www/html/wp-content/plugins/google-site-kit/uninstall.php
+      - ../../tests/e2e/wp-content/plugins:/var/www/html/wp-content/plugins/google-site-kit-test-plugins
+      - ../../tests/e2e/wp-content/mu-plugins:/var/www/html/wp-content/mu-plugins
+      - ../../tests/e2e/wp-content/object-cache.php:/var/www/html/wp-content/object-cache.php
     depends_on:
       - mysql
 
@@ -37,14 +47,9 @@ services:
   mysql:
     image: mysql:5.7
     restart: always
-    volumes:
-      - type: tmpfs
-        # source: mysql_data
-        target: /var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: example
       MYSQL_DATABASE: wordpress_test
 
 volumes:
   wordpress_data:
-  # mysql_data:
