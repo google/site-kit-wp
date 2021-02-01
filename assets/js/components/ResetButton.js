@@ -40,12 +40,16 @@ function ResetButton( { children } ) {
 	const postResetURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { notification: 'reset_success' } ) );
 	const isDoingReset = useSelect( ( select ) => select( CORE_SITE ).isDoingReset() );
 	const isNavigatingToPostResetURL = useSelect( ( select ) => select( CORE_LOCATION ).isNavigatingTo( postResetURL || '' ) );
-	const [ isInProgress, setIsInProgress ] = useState( false );
+	const [ inProgress, setInProgress ] = useState( false );
 	const [ dialogActive, setDialogActive ] = useState( false );
 
-	const debouncedInProgress = useDebounce( setIsInProgress, 3000 );
-
-	const mediatedSetInProgress = ( bool ) => bool ? setIsInProgress( true ) : debouncedInProgress( false );
+	/*
+	 * Using debounce here because the spinner has to render across two separate calls.
+	 * Rather than risk it flickering on and off in between the reset call completing and
+	 * the navigate call starting, we will just set a debounce to keep the spinner for 3 seconds.
+	 */
+	const debouncedSetInProgress = useDebounce( setInProgress, 3000 );
+	const mediatedSetInProgress = ( bool ) => bool ? setInProgress( true ) : debouncedSetInProgress( false );
 
 	useEffect( () => {
 		mediatedSetInProgress( isDoingReset || isNavigatingToPostResetURL );
@@ -112,7 +116,7 @@ function ResetButton( { children } ) {
 						} ) }
 					confirmButton={ __( 'Reset', 'google-site-kit' ) }
 					danger
-					inProgress={ isInProgress }
+					inProgress={ inProgress }
 				/>
 			</Modal>
 		</Fragment>
