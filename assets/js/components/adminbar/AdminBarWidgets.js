@@ -59,13 +59,7 @@ export default function AdminBarWidgets() {
 	} );
 
 	// True if _all_ admin bar widgets have zero data.
-	const zeroData = (
-		searchConsoleZeroData &&
-			// Only check analytics module widgets if the module is active.
-			( analyticsModuleConnected && analyticsModuleActive && (
-				analyticsZeroData
-			) )
-	);
+	const zeroData = ( searchConsoleZeroData && analyticsZeroData ) || ( searchConsoleZeroData && ! analyticsModuleConnected );
 
 	return (
 		<Fragment>
@@ -73,10 +67,17 @@ export default function AdminBarWidgets() {
 				<AdminBarZeroData />
 			) }
 			<Row className={ classnames( { [ HIDDEN_CLASS ]: zeroData } ) }>
-				<Cell lgSize={ searchConsoleZeroData ? 6 : 3 } mdSize={ searchConsoleZeroData ? 4 : 2 }>
+				<Cell
+					lgSize={ searchConsoleZeroData ? 6 : 3 }
+					mdSize={ searchConsoleZeroData ? 4 : 2 }
+				>
 					<AdminBarImpressions />
 				</Cell>
-				<Cell lgSize={ 3 } mdSize={ 2 } className={ classnames( { [ HIDDEN_CLASS ]: searchConsoleZeroData } ) } >
+				<Cell
+					lgSize={ 3 }
+					mdSize={ 2 }
+					className={ classnames( { [ HIDDEN_CLASS ]: searchConsoleZeroData } ) }
+				>
 					<AdminBarClicks />
 				</Cell>
 

@@ -56,13 +56,9 @@ function AdminBarClicks( { WidgetReportZero } ) {
 	const searchConsoleData = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ) );
 	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
-
 	const reportZero = isZeroReport( searchConsoleData );
-	// Memoise the WidgetReportZero component to avoid Maximum update depth exceeded error.
+	// Store the WidgetReportZero component with useMenmo to avoid maximum update depth exceeded error.
 	const zeroDataComponent = useMemo( () => <WidgetReportZero moduleSlug="search-console" widgetSlug={ WIDGET_SLUG } />, [ reportZero ] );
-	if ( reportZero ) {
-		return zeroDataComponent;
-	}
 
 	if ( ! hasFinishedResolution ) {
 		return (
@@ -72,6 +68,10 @@ function AdminBarClicks( { WidgetReportZero } ) {
 
 	if ( error ) {
 		return <ReportError moduleSlug="search-console" error={ error } />;
+	}
+
+	if ( reportZero ) {
+		return zeroDataComponent;
 	}
 
 	// Split the data in two chunks.
