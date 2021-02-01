@@ -185,7 +185,7 @@ final class Authentication {
 	/**
 	 * Initial_Version instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.25.0
 	 * @var Initial_Version
 	 */
 	protected $initial_version;

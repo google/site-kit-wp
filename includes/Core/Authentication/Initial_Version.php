@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
 /**
  * Class representing the initial Site Kit version the user started with.
  *
- * @since n.e.x.t
+ * @since 1.25.0
  * @access private
  * @ignore
  */

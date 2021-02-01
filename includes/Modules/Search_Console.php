@@ -475,7 +475,7 @@ final class Search_Console extends Module
 	/**
 	 * Get the configured SearchConsole service instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.25.0
 	 *
 	 * @return Google_Service_SearchConsole The Search Console API service.
 	 */
