@@ -33,7 +33,7 @@ function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
 /**
  * Combines consecutive widgets with similar states within the same row.
  *
- * @since n.e.x.t
+ * @since 1.25.0
  *
  * @param {Array.<Object>} activeWidgets       List of active widgets.
  * @param {Object}         widgetStates        Map of widget slug and their

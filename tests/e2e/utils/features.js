@@ -24,7 +24,7 @@ import { wpApiFetch } from './wp-api-fetch';
 /**
  * Disables a feature flag during E2E tests.
  *
- * @since n.e.x.t
+ * @since 1.25.0
  *
  * @param {string} feature The feature flag to disable.
  * @return {Promise} Promise from `page.evaluate()` call.
@@ -33,14 +33,17 @@ export async function disableFeature( feature ) {
 	return await wpApiFetch( {
 		path: 'google-site-kit/v1/e2e/feature/set-flag',
 		method: 'post',
-		data: { [ feature ]: false },
+		data: {
+			feature_name: feature,
+			feature_value: false,
+		},
 	} );
 }
 
 /**
  * Enables a feature flag during E2E tests.
  *
- * @since n.e.x.t
+ * @since 1.25.0
  *
  * @param {string} feature The feature flag to enable.
  * @return {Promise} Promise from `page.evaluate()` call.
@@ -49,6 +52,9 @@ export async function enableFeature( feature ) {
 	return await wpApiFetch( {
 		path: 'google-site-kit/v1/e2e/feature/set-flag',
 		method: 'post',
-		data: { [ feature ]: true },
+		data: {
+			feature_name: feature,
+			feature_value: true,
+		},
 	} );
 }

@@ -4,8 +4,7 @@
 	"dimensions": [ "ga:date" ],
 	"metrics": [
 		{
-			"expression": "ga:users",
-			"alias": "Users"
+			"expression": "ga:users"
 		}
 	]
 }

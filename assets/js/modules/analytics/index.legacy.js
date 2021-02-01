@@ -28,12 +28,12 @@ import { getSiteKitAdminURL, getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
 import AnalyticsDashboardWidget from './components/dashboard/AnalyticsDashboardWidget';
 import AnalyticsAdminbarWidget from './components/adminbar/AnalyticsAdminbarWidget';
-import LegacyAnalyticsAllTraffic from './components/dashboard/LegacyAnalyticsAllTraffic';
 import LegacyAnalyticsDashboardWidgetTopLevel from './components/dashboard/LegacyAnalyticsDashboardWidgetTopLevel';
 import AnalyticsDashboardDetailsWidgetTopAcquisitionSources from './components/dashboard-details/AnalyticsDashboardDetailsWidgetTopAcquisitionSources';
 import AnalyticsAdSenseDashboardWidgetTopPagesTable from './components/dashboard/AnalyticsAdSenseDashboardWidgetTopPagesTable';
 import LegacyAnalyticsDashboardWidgetPopularPagesTable from './components/dashboard/LegacyAnalyticsDashboardWidgetPopularPagesTable';
 import LegacyAdSenseDashboardWidgetTopPagesTableSmall from './components/dashboard/LegacyAdSenseDashboardWidgetTopPagesTableSmall';
+import LegacyDashboardAllTraffic from './components/dashboard/DashboardAllTrafficWidget/LegacyDashboardAllTraffic';
 
 const slug = 'analytics';
 
@@ -69,7 +69,7 @@ if ( ! modulesData[ slug ].setupComplete ) {
 
 if ( modulesData.analytics.active ) {
 	const addAnalyticsDashboardWidget = createAddToFilter( <AnalyticsDashboardWidget /> );
-	const addAnalyticsAllTraffic = createAddToFilter( <LegacyAnalyticsAllTraffic /> );
+	const legacyDashboardAllTraffic = createAddToFilter( <LegacyDashboardAllTraffic /> );
 	const addLegacyAnalyticsDashboardWidgetTopLevel = createAddToFilter( <LegacyAnalyticsDashboardWidgetTopLevel /> );
 	const addAnalyticsDashboardDetailsWidget = createAddToFilter( <AnalyticsDashboardDetailsWidgetTopAcquisitionSources /> );
 	const addAnalyticsAdSenseTopPagesWidget = createAddToFilter( <AnalyticsAdSenseDashboardWidgetTopPagesTable /> );
@@ -81,7 +81,7 @@ if ( modulesData.analytics.active ) {
 	 */
 	addFilter( 'googlesitekit.DashboardModule',
 		'googlesitekit.Analytics',
-		addAnalyticsAllTraffic, 9 );
+		legacyDashboardAllTraffic, 9 );
 	addFilter( 'googlesitekit.DashboardSearchFunnel',
 		'googlesitekit.Analytics',
 		addLegacyAnalyticsDashboardWidgetTopLevel, 11 );
