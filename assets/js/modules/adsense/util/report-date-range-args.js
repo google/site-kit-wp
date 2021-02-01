@@ -31,7 +31,9 @@ import invariant from 'invariant';
  * @param {string} dates.endDate   End date in YYYY-MM-DD format.
  * @return {Object|undefined} Date range object.
  */
-export const generateDateRangeArgs = ( { startDate, endDate } ) => {
+export const generateDateRangeArgs = ( dates ) => {
+	invariant( dates, 'dates object is required' );
+	const { startDate, endDate } = dates;
 	invariant( startDate, 'startDate is required' );
 	invariant( endDate, 'endDate is required' );
 
