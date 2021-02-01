@@ -73,7 +73,7 @@ export const withWidgetComponentProps = ( { widgetSlug } ) => {
 
 			return createElement( WrappedComponent, { ...props, ...widgetComponentProps } );
 		};
-		WidgetWithProps.displayName = 'WidgetWithProps';
+		WidgetWithProps.displayName = 'WidgetWithComponentProps';
 		if ( WrappedComponent.displayName || WrappedComponent.name ) {
 			WidgetWithProps.displayName += `(${ WrappedComponent.displayName || WrappedComponent.name })`;
 		}
