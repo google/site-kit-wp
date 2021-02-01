@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { HashRouter } from 'react-router-dom';
 
 /**
  * Internal dependencies
@@ -44,11 +45,13 @@ export default function Root( {
 			<FeaturesProvider value={ enabledFeatures }>
 				<ErrorHandler>
 					<RestoreSnapshots>
-						{ children }
-						{ dataAPIContext && (
-						// Legacy dataAPI support.
-							<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
-						) }
+						<HashRouter>
+							{ children }
+							{ dataAPIContext && (
+							// Legacy dataAPI support.
+								<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
+							) }
+						</HashRouter>
 					</RestoreSnapshots>
 					<PermissionsModal />
 				</ErrorHandler>

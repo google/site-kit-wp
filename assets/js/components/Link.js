@@ -21,6 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { Link as RouterLink } from 'react-router-dom';
 
 /**
  * WordPress dependencies
@@ -40,13 +41,17 @@ function Link( {
 	caps,
 	danger,
 	disabled,
+	to,
 	'aria-label': ariaLabel,
 	...extraProps
 } ) {
 	// Note: the disabled attribute does not alter behavior of anchor tags,
 	// so if disabled we force it to be a button.
 	const isAnchor = href && ! disabled;
-	const SemanticLink = isAnchor ? 'a' : 'button';
+	const element = isAnchor ? 'a' : 'button';
+	// If `to` prop is set, a `react-router` link is expected
+	const isRouterLink = typeof to !== 'undefined';
+	const SemanticLink = isRouterLink ? RouterLink : element;
 
 	const getAriaLabel = () => {
 		let label = ariaLabel;
@@ -82,6 +87,7 @@ function Link( {
 				},
 			) }
 			href={ isAnchor ? href : undefined }
+			to={ isRouterLink ? to : undefined }
 			target={ isAnchor && external ? '_blank' : undefined }
 			rel={ external ? 'noopener noreferrer' : undefined }
 			disabled={ disabled }
@@ -114,6 +120,7 @@ Link.propTypes = {
 	caps: PropTypes.bool,
 	danger: PropTypes.bool,
 	disabled: PropTypes.bool,
+	to: PropTypes.string,
 };
 
 Link.defaultProps = {

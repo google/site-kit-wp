@@ -19,283 +19,84 @@
 /**
  * External dependencies
  */
-import { map, filter, sortBy } from 'lodash';
-
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-import { Component, Fragment } from '@wordpress/element';
+import { useEffect } from 'react';
+import { useHistory, Redirect, Route, Switch } from 'react-router-dom';
 
 /**
  * Internal dependencies
  */
-import { clearWebStorage, getModulesData } from '../../util';
-import Layout from '../layout/Layout';
-import Notification from '../legacy-notifications/notification';
-import SettingsModule from './settings-module';
-import SettingsOverlay from './SettingsOverlay';
-import { isPermissionScopeError } from '../../util/errors';
-import thumbsUpImage from '../../../images/thumbs-up.png';
+import { getModulesData, listFormat } from '../../util';
+import SettingsAdmin from './SettingsAdmin';
+import SettingsConnectedServices from './SettingsConnectedServices';
+import SettingsConnectMoreServices from './SettingsConnectMoreServices';
 
-class SettingsModules extends Component {
-	constructor( props ) {
-		super( props );
+function SettingsModules() {
+	const modulesData = getModulesData();
+	const history = useHistory();
 
-		this.state = {
-			error: false,
-			isSaving: false,
-		};
-
-		this.mapToModule = this.mapToModule.bind( this );
-		this.updateModulesList = this.updateModulesList.bind( this );
-		this.handleButtonAction = this.handleButtonAction.bind( this );
-		this.handleAccordion = this.handleAccordion.bind( this );
-	}
-
-	componentDidMount() {
-		const modulesData = getModulesData();
+	useEffect( () => {
 		if ( global._googlesitekitLegacyData.editmodule && modulesData[ global._googlesitekitLegacyData.editmodule ].active ) {
-			this.handleButtonAction( `${ global._googlesitekitLegacyData.editmodule }-module`, 'edit' );
+			history.push( `/connected-services/${ global._googlesitekitLegacyData.editmodule }/edit` );
 		}
+	}, [] );
+
+	if ( ! Object.values( modulesData ).length ) {
+		return null;
 	}
 
-	updateModulesList() {
-		this.forceUpdate();
-	}
+	const toDependantModules = ( dependantModules, dependantSlug ) => {
+		const dependantModule = modulesData[ dependantSlug ];
+		return dependantModule
+			?	[ ...dependantModules, dependantModule.name ]
+			: dependantModules;
+	};
 
-	handleAccordion( module, e ) {
-		const { activeModule, moduleState } = this.props;
-		// Set focus on heading when clicked.
-		e.target.closest( '.googlesitekit-settings-module__header' ).focus();
+	const getDependantModulesText = ( { dependants } ) =>
+		dependants && dependants.length > 0
+			? listFormat( dependants.reduce( toDependantModules, [] ) )
+			: '';
 
-		// If same as activeModule, toggle closed, otherwise it is open.
-		const isOpen = module !== activeModule || moduleState === 'closed';
+	const withDependantModulesText = ( module ) => ( {
+		...module,
+		dependantModulesText: getDependantModulesText( module ),
+	} );
 
-		this.props.setModuleState(
-			module,
-			isOpen ? 'view' : 'closed',
-		);
-	}
+	const byActiveNoInternals = ( active ) => ( module ) =>
+		! module.internal && active === module.active;
 
-	/**
-	 * Handle clicks on the Edit, Cancel and Confirm buttons.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param {string}   module        The module slug.
-	 * @param {string}   action        The action being performed, one of 'edit', 'cancel' or 'confirm'.
-	 * @param {Function} submitChanges The action dispatcher to submit the changes.
-	 */
-	async handleButtonAction( module, action, submitChanges ) {
-		if ( 'confirm' === action ) {
-			this.setState( { isSaving: module } );
-			const { error } = await submitChanges( module );
+	const getModulesByActive = ( active ) =>
+		Object.values( modulesData )
+			.filter( byActiveNoInternals( active ) )
+			.sort( ( a, b ) => a.sort - b.sort )
+			.map( withDependantModulesText );
 
-			if ( error ) {
-				if ( isPermissionScopeError( error ) ) {
-					this.setState( {
-						isSaving: false,
-						error: false,
-					} );
-				} else {
-					this.setState( {
-						isSaving: false,
-						error: {
-							errorCode: error.code,
-							errorMsg: error.message,
-						},
-					} );
-				}
-				return;
-			}
+	const activeModules = getModulesByActive( true );
+	const inactiveModules = getModulesByActive( false );
 
-			// Clears session and local storage on every successful setting.
-			clearWebStorage();
+	return (
+		<Switch>
+			{ /* Settings Module Routes */ }
+			<Route path={ [ '/connected-services/:moduleSlug/:action', '/connected-services/:moduleSlug', '/connected-services' ] }>
+				<SettingsConnectedServices modules={ activeModules } />
+			</Route>
+			<Route path="/connect-more-services">
+				<SettingsConnectMoreServices modules={ inactiveModules } />
+			</Route>
+			<Route path="/admin-settings">
+				<SettingsAdmin />
+			</Route>
 
-			this.setState( {
-				isSaving: false,
-				error: false,
-			} );
+			{ /* Redirects for routes that existed before React Router implementation. */ }
+			<Redirect from="/settings/:moduleSlug/edit" to="/connected-services/:moduleSlug/edit" />
+			<Redirect from="/settings/:moduleSlug" to="/connected-services/:moduleSlug" />
+			<Redirect from="/settings" to="/connected-services" />
+			<Redirect from="/connect" to="/connect-more-services" />
+			<Redirect from="/admin" to="/admin-settings" />
 
-			this.props.setModuleState( module, 'view' );
-		} else {
-			this.setState( {
-				error: false, // Reset error state when switching modules.
-			} );
-			this.props.setModuleState(
-				module,
-				this.props.moduleState === 'edit' ? 'view' : 'edit',
-			);
-		}
-	}
-
-	settingsModuleComponent( module, isSaving ) {
-		const { activeModule, moduleState } = this.props;
-		const modulesData = getModulesData();
-		const isCurrentModule = activeModule === module.slug;
-
-		const { provides } = modulesData[ module.slug ];
-		const { error } = this.state;
-
-		return (
-			<SettingsModule
-				key={ module.slug + '-module' }
-				slug={ module.slug }
-				name={ module.name }
-				description={ module.description }
-				homepage={ module.homepage }
-				learnmore={ module.learnMore }
-				active={ module.active }
-				setupComplete={ module.setupComplete }
-				autoActivate={ module.autoActivate }
-				updateModulesList={ this.updateModulesList }
-				handleEdit={ this.handleButtonAction }
-				handleConfirm
-				isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
-				isOpen={ isCurrentModule && moduleState !== 'closed' }
-				handleAccordion={ this.handleAccordion }
-				handleDialog={ this.handleDialog }
-				provides={ provides }
-				isSaving={ isSaving }
-				error={ error }
-			/>
-		);
-	}
-
-	/**
-	 * Return list of modules markup.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param {Object}  modules List of modules.
-	 * @param {boolean} active  Sets styling for active modules, helps with parent/child grouping.
-	 * @return {HTMLElement} HTML markup with modules.
-	 */
-	mapToModule( modules, active = false ) {
-		const { isSaving } = this.state;
-
-		if ( active ) {
-			return map( modules, function mapFn( module ) {
-				return (
-					<Fragment key={ module.slug + '-module-wrapper' }>
-						{ this.settingsModuleComponent( module, isSaving ) }
-					</Fragment>
-				);
-			}.bind( this ) );
-		}
-
-		return map( modules, function mapFn( module ) {
-			return (
-				<div
-					className="mdc-layout-grid__cell mdc-layout-grid__cell--span-4"
-					key={ module.slug + '-module-wrapper' }
-				>
-					{ this.settingsModuleComponent( module, isSaving ) }
-				</div>
-			);
-		}.bind( this ) );
-	}
-
-	render() {
-		const modulesData = getModulesData();
-
-		const { isEditing } = this.state;
-		const { activeTab } = this.props;
-		const modulesBeingEdited = filter( isEditing, ( module ) => module );
-		const editActive = 0 < modulesBeingEdited.length;
-		if ( ! Object.values( modulesData ).length ) {
-			return null;
-		}
-
-		// Filter out internal modules.
-		const modules = filter( modulesData, ( module ) => ! module.internal );
-
-		const activeModules = this.mapToModule(
-			sortBy(
-				filter(
-					modules,
-					function( module ) {
-						return module.active;
-					}
-				),
-				'sort'
-			),
-			true
-		);
-
-		const inactiveModules = this.mapToModule(
-			sortBy(
-				filter(
-					modules,
-					{
-						active: false,
-					}
-				),
-				'sort'
-			)
-		);
-
-		const inactiveModulesAvailable = 0 < inactiveModules.length;
-
-		return (
-			<Fragment>
-				{ /* Active Modules*/ }
-				{ (
-					0 < activeModules.length && // If we have active modules.
-					0 === activeTab ) && // If <SettingsApp/> is on the Connected tab. TODO this could be removed after refactoring this into separate components.
-					<div className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--span-12
-					">
-						<Layout>
-							{ activeModules }
-						</Layout>
-					</div>
-				}
-
-				{ /* Inactive Modules */ }
-				{ 1 === activeTab && // If <SettingsApp/> is on the Add tab. TODO this could be removed after refactoring this into separate components.
-					inactiveModulesAvailable && // We have inactive modules available.
-
-					<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-							">
-						<Layout
-							header
-							title={ __( 'Connect More Services to Gain More Insights', 'google-site-kit' ) }
-							relative
-						>
-							<div className="mdc-layout-grid">
-								<div className="mdc-layout-grid__inner">
-									{ 0 < inactiveModules.length && inactiveModules }
-								</div>
-							</div>
-							{ /* TODO: Need some input here with regards to changing state */ }
-							{ editActive && <SettingsOverlay /> }
-						</Layout>
-					</div>
-				}
-				{ 1 === activeTab && // If <SettingsApp/> is on the Add tab. TODO this could be removed after refactoring this into separate components.
-					! inactiveModulesAvailable && // If we have no active modules.
-					<div className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--span-12
-					">
-						<Notification
-							id="no-more-modules"
-							title={ __( 'Congrats, you’ve connected all services!', 'google-site-kit' ) }
-							description={ __( 'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future.', 'google-site-kit' ) }
-							format="small"
-							smallImage={ global._googlesitekitLegacyData.admin.assetsRoot + thumbsUpImage }
-							type="win-success"
-						/>
-					</div>
-				}
-			</Fragment>
-		);
-	}
+			{ /* Fallback to `/connected-services` route if no match found. */ }
+			<Redirect to="/connected-services" />
+		</Switch>
+	);
 }
 
 export default SettingsModules;

@@ -1,0 +1,68 @@
+/**
+ * SettingsConnectedServices component.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import SettingsModule from './SettingsModule';
+import Layout from '../layout/Layout';
+
+function SettingsConnectedServices( { modules } ) {
+	if ( modules.length === 0 ) {
+		return null;
+	}
+
+	return (
+		<div className="
+			mdc-layout-grid__cell
+			mdc-layout-grid__cell--span-12
+		">
+			<Layout>
+				{ modules.map( ( module ) => (
+					<SettingsModule
+						module={ module }
+						key={ module.slug + '-module-wrapper' }
+					/>
+				) ) }
+			</Layout>
+		</div>
+	);
+}
+
+SettingsConnectedServices.propTypes = {
+	modules: PropTypes.arrayOf(
+		PropTypes.shape( {
+			active: PropTypes.bool,
+			autoActivate: PropTypes.bool,
+			dependantModulesText: PropTypes.string.isRequired,
+			description: PropTypes.string,
+			homepage: PropTypes.string,
+			name: PropTypes.string,
+			provides: PropTypes.arrayOf( PropTypes.string ),
+			setupComplete: PropTypes.bool,
+			slug: PropTypes.string,
+		} ).isRequired,
+	).isRequired,
+};
+
+export default SettingsConnectedServices;

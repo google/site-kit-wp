@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import SettingsModule from '../../assets/js/components/settings/settings-module';
+import SettingsModule from '../../assets/js/components/settings/SettingsModule';
 import { WithTestRegistry } from '../../tests/js/utils';
 
 /**
