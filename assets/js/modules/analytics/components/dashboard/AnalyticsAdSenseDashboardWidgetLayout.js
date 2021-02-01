@@ -25,14 +25,20 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ADSENSE } from '../../../adsense/datastore/constants';
+import { MODULES_ADSENSE, DATE_RANGE_OFFSET } from '../../../adsense/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import Layout from '../../../../components/layout/Layout';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
+import { generateDateRangeArgs } from '../../../adsense/util/report-date-range-args';
 const { useSelect } = Data;
 
 const AnalyticsAdSenseDashboardWidgetLayout = ( { children } ) => {
-	const accountSiteURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceAccountSiteURL() );
+	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
+	const accountSiteURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceAccountSiteURL(
+		{ ...generateDateRangeArgs( dateRangeDates ) }
+	) );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 
