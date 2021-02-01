@@ -1,4 +1,4 @@
-version: '3.1'
+version: "3.2"
 
 services:
   wordpress:
@@ -37,9 +37,14 @@ services:
   mysql:
     image: mysql:5.7
     restart: always
+    volumes:
+      - type: tmpfs
+        # source: mysql_data
+        target: /var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: example
       MYSQL_DATABASE: wordpress_test
 
 volumes:
   wordpress_data:
+  # mysql_data:
