@@ -21,75 +21,13 @@
 /**
  * External dependencies
  */
-import { useRef, useState } from 'react';
+import { useMemoOne } from 'use-memo-one';
 import { debounce } from 'lodash';
 
 /**
  * WordPress dependencies
  */
 import { useEffect } from '@wordpress/element';
-
-/**
- * Compares input arrays.
- *
- * This is a dependency of @wordpress/compose/useDebounce.
- *
- * @since n.e.x.t
- * @see https://github.com/alexreardon/use-memo-one
- *
- * @param {Array} newInputs  Array of new inputs to compare.
- * @param {Array} lastInputs Array of previouse inputs.
- * @return {boolean} Whether the two sets of inputs are the same.
- */
-function areInputsEqual( newInputs, lastInputs ) {
-	if ( newInputs.length !== lastInputs.length ) {
-		return false;
-	}
-
-	for ( let i = 0; i < newInputs.length; i++ ) {
-		if ( newInputs[ i ] !== lastInputs[ i ] ) {
-			return false;
-		}
-	}
-	return true;
-}
-
-/**
- * Provides UseMemo with a semantic guarantee.
- *
- * This is a dependency of @wordpress/compose/useDebounce.
- *
- * @since n.e.x.t
- * @see https://github.com/alexreardon/use-memo-one
- *
- * @param {Function} getResult Returns a cache object.
- * @param {Array}    inputs    Array of inputs.
- * @return {Object} Cache object.
- */
-function useMemoOne( getResult, inputs ) {
-	const initial = useState( () => ( {
-		inputs,
-		result: getResult(),
-	} ) )[ 0 ];
-	const isFirstRun = useRef( true );
-	const committed = useRef( initial );
-
-	const useCache = isFirstRun.current || Boolean( inputs && committed.current.inputs && areInputsEqual( inputs, committed.current.inputs ) );
-
-	const cache = useCache
-		? committed.current
-		: {
-			inputs,
-			result: getResult(),
-		};
-
-	useEffect( () => {
-		isFirstRun.current = false;
-		committed.current = cache;
-	}, [ cache ] );
-
-	return cache.result;
-}
 
 /**
  * Debounces a function with Lodash's `debounce`.
