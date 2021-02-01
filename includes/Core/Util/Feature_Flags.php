@@ -119,6 +119,17 @@ class Feature_Flags {
 	}
 
 	/**
+	 * Gets the keys from the features array.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Array of feature keys.
+	 */
+	public static function get_available_features() {
+		return array_keys( static::$features );
+	}
+
+	/**
 	 * Gets the current feature flag mode.
 	 *
 	 * @since 1.22.0
