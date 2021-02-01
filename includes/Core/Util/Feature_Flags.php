@@ -126,11 +126,13 @@ class Feature_Flags {
 	 * @return array Array of feature keys.
 	 */
 	public static function get_available_features() {
+		$feature_keys = array();
+
 		if ( is_array( static::$features ) ) {
-			return array_keys( static::$features );
+			$feature_keys = array_keys( static::$features );
 		}
 
-		return false;
+		return $feature_keys;
 	}
 
 	/**
