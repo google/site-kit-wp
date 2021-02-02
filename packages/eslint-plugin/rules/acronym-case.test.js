@@ -80,6 +80,18 @@ export const HTML = () => {};
 		{
 			code: `const AMP_PROJECT_TEST_URL = 'foo';`,
 		},
+		{
+			code: `const amp = '';`,
+		},
+		{
+			code: `const json = false;`,
+		},
+		{
+			code: `const html = () => {};`,
+		},
+		{
+			code: `const HTML = () => {};`,
+		},
 	],
 	invalid: [
 		{
@@ -135,6 +147,30 @@ const HTMLNode = '<div></div>';
 					// Acronyms at the beginning of an identifer should be entirely _lowercased_ instead
 					// of uppercased.
 					message: '`HTMLNode` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: `const Amp = '';`,
+			errors: [
+				{
+					message: '`Amp` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: `const Json = false;`,
+			errors: [
+				{
+					message: '`Json` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: `const Html = () => {};`,
+			errors: [
+				{
+					message: '`Html` violates naming rules.',
 				},
 			],
 		},
