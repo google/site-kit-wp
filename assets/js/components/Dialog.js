@@ -36,6 +36,7 @@ import { __ } from '@wordpress/i18n';
 import Button from './Button';
 import Link from './Link';
 import { MDCDialog } from '../material-components';
+import Spinner from './Spinner.js';
 
 const Dialog = ( {
 	dialogActive,
@@ -47,6 +48,7 @@ const Dialog = ( {
 	confirmButton,
 	dependentModules,
 	danger,
+	inProgress = false,
 } ) => {
 	const dialogRef = useCallback( ( el ) => {
 		if ( el !== null ) {
@@ -109,13 +111,18 @@ const Dialog = ( {
 								<Button
 									onClick={ handleConfirm }
 									danger={ danger }
+									disabled={ inProgress }
 								>
 									{ confirmButton ? confirmButton : __( 'Disconnect', 'google-site-kit' ) }
 								</Button>
+								<Spinner
+									isSaving={ inProgress }
+								/>
 								<Link
-									className="mdc-dialog__cancel-button"
+									className="googlesitekit-margin-left-auto mdc-dialog__cancel-button"
 									onClick={ handleDialog }
 									inherit
+									disabled={ inProgress }
 								>
 									{ __( 'Cancel', 'google-site-kit' ) }
 								</Link>
