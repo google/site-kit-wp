@@ -52,21 +52,44 @@ class Feature_Flags {
 			return false;
 		}
 
-		// In JS, the key always ends in `enabled`, but we add that here to eliminate
-		// semantic redundancy with the name of the method.
-		$feature_path  = explode( '.', "$feature.enabled" );
-		$feature_modes = array_reduce(
-			$feature_path,
-			function ( $value, $key ) {
-				if ( isset( $value[ $key ] ) ) {
-					return $value[ $key ];
-				}
-				return null;
-			},
-			static::$features
-		);
+		$feature_modes = is_array( static::$features[ $feature ] ) ?
+			static::$features[ $feature ] :
+			array( static::$features[ $feature ] );
 
-		return in_array( static::get_mode(), (array) $feature_modes, true );
+		$feature_enabled = in_array( static::get_mode(), $feature_modes, true );
+
+		/**
+		 * Filters a feature flag's status (on or off).
+		 *
+		 * Mainly this is used by E2E tests to allow certain features to be disabled or
+		 * enabled for testing, but is also useful to switch features on/off on-the-fly.
+		 *
+		 * @since 1.25.0
+		 *
+		 * @param bool   $feature_enabled The current status of this feature flag (`true` or `false`).
+		 * @param string $feature         The feature name.
+		 * @param string $mode            Site mode for loading features ('development' or 'production').
+		 */
+		return apply_filters( 'googlesitekit_is_feature_enabled', $feature_enabled, $feature, static::get_mode() );
+	}
+
+	/**
+	 * Gets all enabled feature flags.
+	 *
+	 * @since 1.25.0
+	 *
+	 * @return string[] An array of all enabled features.
+	 */
+	public static function get_enabled_features() {
+		$enabled_features = array();
+
+		foreach ( static::$features as $feature_name => $value ) {
+			if ( static::enabled( $feature_name ) ) {
+				$enabled_features[] = $feature_name;
+			}
+		}
+
+		return $enabled_features;
 	}
 
 	/**
@@ -93,6 +116,23 @@ class Feature_Flags {
 		if ( $mode && is_string( $mode ) ) {
 			static::$mode = $mode;
 		}
+	}
+
+	/**
+	 * Gets all available feature flags.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array An array of all available features.
+	 */
+	public static function get_available_features() {
+		$feature_keys = array();
+
+		if ( is_array( static::$features ) ) {
+			$feature_keys = array_keys( static::$features );
+		}
+
+		return $feature_keys;
 	}
 
 	/**

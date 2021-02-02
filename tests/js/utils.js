@@ -26,8 +26,18 @@ import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
 import * as modulesOptimize from '../../assets/js/modules/optimize';
 import { STORE_NAME as CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
+import {
+	PERMISSION_AUTHENTICATE,
+	PERMISSION_SETUP,
+	PERMISSION_VIEW_POSTS_INSIGHTS,
+	PERMISSION_VIEW_DASHBOARD,
+	PERMISSION_VIEW_MODULE_DETAILS,
+	PERMISSION_MANAGE_OPTIONS,
+	PERMISSION_PUBLISH_POSTS,
+	STORE_NAME as CORE_USER,
+} from '../../assets/js/googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
+import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/fixtures.json';
 
 const allCoreStores = [
@@ -71,12 +81,14 @@ export const createTestRegistry = () => {
  * @since 1.7.1
  * @private
  *
- * @param {?Object}   props          Component props.
- * @param {?Function} props.callback Function which receives the registry instance.
- * @param {?Object}   props.registry Registry object; uses `createTestRegistry()` by default.
+ * @param {Object}    [props]          Component props.
+ * @param {Function}  [props.callback] Function which receives the registry instance.
+ * @param {WPElement} [props.children] Children components.
+ * @param {string[]}  [props.features] Feature flags to enable for this test registry provider.
+ * @param {Object}    [props.registry] Registry object; uses `createTestRegistry()` by default.
  * @return {WPElement} Wrapped components.
  */
-export function WithTestRegistry( { children, callback, registry = createTestRegistry() } = {} ) {
+export function WithTestRegistry( { children, callback, features = [], registry = createTestRegistry() } = {} ) {
 	// Populate most basic data which should not affect any tests.
 	provideUserInfo( registry );
 
@@ -86,7 +98,9 @@ export function WithTestRegistry( { children, callback, registry = createTestReg
 
 	return (
 		<RegistryProvider value={ registry }>
-			{ children }
+			<FeaturesProvider value={ features }>
+				{ children }
+			</FeaturesProvider>
 		</RegistryProvider>
 	);
 }
@@ -195,6 +209,32 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
 	};
 
 	registry.dispatch( CORE_USER ).receiveUserInfo( {
+		...defaults,
+		...extraData,
+	} );
+};
+
+/**
+ * Provides user capabilities data to the given registry.
+ *
+ * @since 1.25.0
+ * @private
+ *
+ * @param {Object} registry    Registry object to dispatch to.
+ * @param {Object} [extraData] Custom capability mappings to set, will be merged with defaults. Default empty object.
+ */
+export const provideUserCapabilities = ( registry, extraData = {} ) => {
+	const defaults = {
+		[ PERMISSION_AUTHENTICATE ]: true,
+		[ PERMISSION_SETUP ]: true,
+		[ PERMISSION_VIEW_POSTS_INSIGHTS ]: true,
+		[ PERMISSION_VIEW_DASHBOARD ]: true,
+		[ PERMISSION_VIEW_MODULE_DETAILS ]: true,
+		[ PERMISSION_MANAGE_OPTIONS ]: true,
+		[ PERMISSION_PUBLISH_POSTS ]: true,
+	};
+
+	registry.dispatch( CORE_USER ).receiveCapabilities( {
 		...defaults,
 		...extraData,
 	} );

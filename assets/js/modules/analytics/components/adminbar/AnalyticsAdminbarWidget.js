@@ -25,7 +25,7 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import AnalyticsAdminbarWidgetOverview from './AnalyticsAdminbarWidgetOverview';
-import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
+import ActivateModuleCTA from '../../../../components/ActivateModuleCTA';
 import { getModulesData } from '../../../../util';
 
 class AnalyticsAdminbarWidget extends Component {
@@ -42,7 +42,7 @@ class AnalyticsAdminbarWidget extends Component {
 						mdc-layout-grid__cell--span-4-tablet
 						mdc-layout-grid__cell--span-6-desktop
 					">
-						<AnalyticsInactiveCTA />
+						<ActivateModuleCTA moduleSlug="analytics" />
 					</div>
 				</Fragment>
 			);

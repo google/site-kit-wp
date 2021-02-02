@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Dependencies;
 
 /**
@@ -390,7 +391,8 @@ final class Assets {
 					'src'          => 'https://www.gstatic.com/charts/loader.js',
 					'in_footer'    => false,
 					'before_print' => function( $handle ) {
-						wp_add_inline_script( $handle, 'google.charts.load( "current", { packages: [ "corechart" ] } );' );
+						// The "42" version is important because it contains a fix for the tooltip flickering issue.
+						wp_add_inline_script( $handle, 'google.charts.load( "42", { packages: [ "corechart" ] } );' );
 					},
 				)
 			),
@@ -652,6 +654,7 @@ final class Assets {
 			'isNetworkMode'    => $this->context->is_network_mode(),
 			'timezone'         => get_option( 'timezone_string' ),
 			'siteName'         => get_bloginfo( 'name' ),
+			'enabledFeatures'  => Feature_Flags::get_enabled_features(),
 		);
 
 		/**

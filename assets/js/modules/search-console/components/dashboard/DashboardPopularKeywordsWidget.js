@@ -36,14 +36,13 @@ import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
 import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { isZeroReport } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
-function DashboardPopularKeywordsWidget() {
+function DashboardPopularKeywordsWidget( { WidgetReportZero } ) {
 	const {
 		data,
 		error,
@@ -96,7 +95,7 @@ function DashboardPopularKeywordsWidget() {
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="search-console" />;
+		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
 	const headers = [
@@ -138,7 +137,7 @@ function DashboardPopularKeywordsWidget() {
 		<Widget
 			slug="searchConsolePopularKeywords"
 			noPadding
-			footer={ () => (
+			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
 					name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }

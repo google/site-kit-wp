@@ -34,7 +34,6 @@ import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
 import AnalyticsIcon from '../../../svg/analytics.svg';
-import DashboardAllTrafficWidgetV2 from './components/dashboard/DashboardAllTrafficWidgetV2';
 import { STORE_NAME } from './datastore/constants';
 
 export { registerStore } from './datastore';
@@ -57,20 +56,6 @@ export const registerWidgets = ( widgets ) => {
 		'analyticsAllTraffic',
 		{
 			Component: DashboardAllTrafficWidget,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 1,
-			wrapWidget: false,
-		},
-		[
-			AREA_DASHBOARD_ALL_TRAFFIC,
-			AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
-		],
-	);
-
-	widgets.registerWidget(
-		'analyticsAllTrafficV2',
-		{
-			Component: DashboardAllTrafficWidgetV2,
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,

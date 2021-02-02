@@ -30,7 +30,7 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { getModulesData } from '../../util';
-import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
+import ActivateModuleCTA from '../ActivateModuleCTA';
 import LegacyWPDashboardModule from './LegacyWPDashboardModule';
 import LegacyWPDashboardHeader from './LegacyWPDashboardHeader';
 
@@ -50,7 +50,7 @@ class LegacyWPDashboardModules extends Component {
 					{ // Show the Analytics CTA if analytics is not enabled.
 						( ! modulesData.analytics.active ) &&
 						<div className="googlesitekit-wp-dashboard-stats__cta">
-							<AnalyticsInactiveCTA />
+							<ActivateModuleCTA moduleSlug="analytics" />
 						</div>
 					}
 				</div>

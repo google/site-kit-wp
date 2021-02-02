@@ -31,7 +31,7 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
-function DashboardPageSpeedCTA() {
+function LegacyDashboardPageSpeedCTA() {
 	const pagespeedInsightsModule = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'pagespeed-insights' ) );
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 
@@ -56,13 +56,13 @@ function DashboardPageSpeedCTA() {
 				( ! active )
 					? (
 						<ActivateModuleCTA
-							slug="pagespeed-insights"
+							moduleSlug="pagespeed-insights"
 							description={ description }
 						/>
 					)
 					: (
 						<CompleteModuleActivationCTA
-							slug="pagespeed-insights"
+							moduleSlug="pagespeed-insights"
 							description={ description }
 						/>
 					)
@@ -71,4 +71,4 @@ function DashboardPageSpeedCTA() {
 	);
 }
 
-export default DashboardPageSpeedCTA;
+export default LegacyDashboardPageSpeedCTA;

@@ -37,13 +37,15 @@ import WPDashboardImpressions from './WPDashboardImpressions';
 import WPDashboardClicks from './WPDashboardClicks';
 import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
 import WPDashboardSessionDuration from './WPDashboardSessionDuration';
-import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
+import ActivateModuleCTA from '../ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 const WPDashboardApp = () => {
+	const widgetsWPDashboardEnabled = useFeature( 'widgets.wpDashboard' );
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
@@ -59,7 +61,7 @@ const WPDashboardApp = () => {
 					{ __( 'Visit your Site Kit Dashboard', 'google-site-kit' ) }
 				</Link>
 			</div>
-			{ featureFlags.widgets.wpDashboard.enabled && (
+			{ widgetsWPDashboardEnabled && (
 				<div className={ classnames(
 					'googlesitekit-wp-dashboard-stats',
 					{ 'googlesitekit-wp-dashboard-stats--fourup': analyticsModuleActive && analyticsModuleConnected }
@@ -75,10 +77,10 @@ const WPDashboardApp = () => {
 					{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 						<div className="googlesitekit-wp-dashboard-stats__cta">
 							{ ! analyticsModuleActive && (
-								<AnalyticsInactiveCTA />
+								<ActivateModuleCTA moduleSlug="analytics" />
 							) }
 							{ analyticsModuleActive && (
-								<CompleteModuleActivationCTA slug="analytics" />
+								<CompleteModuleActivationCTA moduleSlug="analytics" />
 							) }
 						</div>
 					) }

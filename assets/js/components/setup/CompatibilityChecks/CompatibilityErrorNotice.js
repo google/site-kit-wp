@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import { sanitizeHTML } from '../../../util/sanitize';
 import Link from '../../Link';
 const { useSelect } = Data;
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	ERROR_AMP_CDN_RESTRICTED,
 	ERROR_FETCH_FAIL,

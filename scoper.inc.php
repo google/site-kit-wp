@@ -19,9 +19,9 @@ $google_services = implode(
 		'AdSense',
 		'Pagespeedonline',
 		'PeopleService',
+		'SearchConsole',
 		'SiteVerification',
 		'TagManager',
-		'Webmasters',
 	)
 );
 

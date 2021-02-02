@@ -1,5 +1,5 @@
 /**
- * Feature control utilities.
+ * `useWidgetStateEffect` hook.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,32 +17,24 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import set from 'lodash/set';
-
-function setFeatureActive( feature, active ) {
-	set( global, `featureFlags.${ feature }.enabled`, active );
-}
+import { useEffect } from '@wordpress/element';
 
 /**
- * Enables a feature.
- *
- * @since 1.22.0
- *
- * @param {string} feature Feature to enable.
+ * Internal dependencies
  */
-export function enableFeature( feature ) {
-	setFeatureActive( feature, true );
-}
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../datastore/constants';
+const { useDispatch } = Data;
 
-/**
- * Disables a feature.
- *
- * @since 1.22.0
- *
- * @param {string} feature Feature to disable.
- */
-export function disableFeature( feature ) {
-	setFeatureActive( feature, false );
+export default function useWidgetStateEffect( widgetSlug, Component, metadata ) {
+	const { setWidgetState, unsetWidgetState } = useDispatch( STORE_NAME );
+
+	useEffect( () => {
+		setWidgetState( widgetSlug, Component, metadata );
+		return () => {
+			unsetWidgetState( widgetSlug, Component, metadata );
+		};
+	}, [ widgetSlug, Component, metadata ] );
 }
