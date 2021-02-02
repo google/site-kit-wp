@@ -20,17 +20,13 @@ import { generateDateRangeArgs } from './report-date-range-args';
 describe( 'Search Console reporting date range arguments', () => {
 	describe( 'generateDateRangeArgs', () => {
 		it( 'should throw if `startDate` or `endDate` arguments are not provided', () => {
-			try {
-				generateDateRangeArgs( { startDate: '2020-12-18' } );
-			} catch ( error ) {
-				expect( error.message ).toEqual( 'A valid endDate is required.' );
-			}
+			expect(
+				() => generateDateRangeArgs( { startDate: '2020-12-18' } )
+			).toThrow( 'A valid endDate is required' )
 
-			try {
-				generateDateRangeArgs( { endDate: '2021-01-14' } );
-			} catch ( error ) {
-				expect( error.message ).toEqual( 'A valid startDate is required.' );
-			}
+			expect(
+				() => generateDateRangeArgs( { endDate: '2021-01-14' } )
+			).toThrow( 'A valid startDate is required' );
 		} );
 
 		it( 'should return an object containing a `start_date` key, the value of which is the `startDate` argument with "-" stripped', () => {
