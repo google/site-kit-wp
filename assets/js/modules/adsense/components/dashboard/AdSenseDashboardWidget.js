@@ -20,11 +20,7 @@
  * WordPress dependencies
  */
 import { withFilters } from '@wordpress/components';
-import {
-	// Component,
-	Fragment,
-	useState,
-} from '@wordpress/element';
+import { Fragment, useState } from '@wordpress/element';
 import { __, _x, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -39,24 +35,19 @@ import getNoDataComponent from '../../../../components/legacy-notifications/noda
 import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
 import ProgressBar from '../../../../components/ProgressBar';
 import ModuleSettingsWarning from '../../../../components/legacy-notifications/module-settings-warning';
-//import { getModulesData } from '../../../../util';
 import DateRangeSelector from '../../../../components/DateRangeSelector';
 import HelpLink from '../../../../components/HelpLink';
 import Header from '../../../../components/Header';
 import PageHeader from '../../../../components/PageHeader';
 import Layout from '../../../../components/layout/Layout';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { Cell, Grid, Row } from '../../../../material-components';
-import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
-
-const {
-	// withSelect,
-	useSelect,
-} = Data;
-
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ADSENSE, DATE_RANGE_OFFSET } from '../../../adsense/datastore/constants';
+import { Cell, Grid, Row } from '../../../../material-components';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { generateDateRangeArgs } from '../../../adsense/util/report-date-range-args';
+
+const { useSelect } = Data;
 
 // Empty component to allow filtering in refactored version.
 const AdSenseDashboardZeroData = withFilters( 'googlesitekit.AdSenseDashboardZeroData' )( () => null );
