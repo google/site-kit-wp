@@ -61,6 +61,7 @@ describe( 'Analytics reporting date range arguments', () => {
 				} );
 				expect( result[ '_u.date10' ] ).toBe( '20200112' );
 			} );
+
 			it( 'should return an object containing a `_u.date11` key, the value of which is the `compareEndDate` argument with "-" stripped', () => {
 				const result = generateDateRangeArgs( {
 					startDate: '2020-01-12',
