@@ -136,7 +136,7 @@ function DashboardPopularKeywordsWidget( { WidgetReportZero } ) {
 		<Widget
 			slug="searchConsolePopularKeywords"
 			noPadding
-			footer={ () => (
+			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
 					name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }

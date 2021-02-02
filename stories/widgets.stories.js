@@ -191,8 +191,8 @@ storiesOf( 'Global/Widgets', module )
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
 					slug={ `widget${ count }` }
-					header={ () => <div>Widget header</div> }
-					footer={ () => <div>Widget footer</div> }
+					Header={ () => <div>Widget header</div> }
+					Footer={ () => <div>Widget footer</div> }
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
 					{ count !== 4 && <div>Widget body content.</div> }
@@ -206,8 +206,8 @@ storiesOf( 'Global/Widgets', module )
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
 					slug={ `widget${ count }` }
-					header={ () => <div>Widget header</div> }
-					footer={ () => <div>Widget footer</div> }
+					Header={ () => <div>Widget header</div> }
+					Footer={ () => <div>Widget footer</div> }
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
 					{ count !== 4 && <div>Widget body content.</div> }
