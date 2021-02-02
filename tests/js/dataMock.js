@@ -94,12 +94,37 @@ export function makeFactory( {
 
 		const { compareStartDate, compareEndDate } = args;
 		const valuesCount = compareStartDate && compareEndDate ? 2 : 1;
+		const validMetrics = ( args.metrics || [] ).filter( filterMetrics );
+
+		let stream$;
+
+		// Generate a stream of dimension values.
+		const keyDimension = dimensions?.[ 0 ];
+		if ( keyDimension === 'ga:date' ) {
+			stream$ = new Observable( ( observer ) => {
+				const currentDate = stringToDate( args.startDate );
+				const end = stringToDate( args.endDate );
+
+				while ( +currentDate <= +end ) {
+					observer.next( currentDate.toISOString().split( 'T' )[ 0 ].replace( /\D/g, '' ) );
+					currentDate.setDate( currentDate.getDate() + 1 );
+				}
+
+				observer.complete();
+			} );
+		} else if ( Array.isArray( dimensionOptions?.[ keyDimension ] ) ) {
+			stream$ = from( dimensionOptions[ keyDimension ] );
+		} else {
+			stream$ = from( [ null ] );
+		}
 
 		const ops = [
+			// Convert a dimension value to a row object.
 			map( ( dimensionValue ) => ( {
 				dimensions: [ dimensionValue ],
 				metrics: [],
 			} ) ),
+			// Add metric values to the row.
 			map( ( row ) => {
 				for ( let i = 0; i < valuesCount; i++ ) {
 					const values = [];
@@ -122,32 +147,13 @@ export function makeFactory( {
 
 				return row;
 			} ),
+			// Make sure we take the appropriate number of rows.
 			take( args.limit > 0 ? +args.limit : 999999 ),
+			// Accumulate all rows into a single array.
 			reduce( ( acc, val ) => [ ...acc, val ], [] ),
 		];
 
-		let stream$;
-
-		const validMetrics = ( args.metrics || [] ).filter( filterMetrics );
-		const keyDimension = dimensions?.[ 0 ];
-		if ( keyDimension === 'ga:date' ) {
-			stream$ = new Observable( ( observer ) => {
-				const currentDate = stringToDate( args.startDate );
-				const end = stringToDate( args.endDate );
-
-				while ( +currentDate <= +end ) {
-					observer.next( currentDate.toISOString().split( 'T' )[ 0 ].replace( /\D/g, '' ) );
-					currentDate.setDate( currentDate.getDate() + 1 );
-				}
-
-				observer.complete();
-			} );
-		} else if ( Array.isArray( dimensionOptions?.[ keyDimension ] ) ) {
-			stream$ = from( dimensionOptions[ keyDimension ] );
-		} else {
-			stream$ = from( [ null ] );
-		}
-
+		// Process the stream of dimension values and add generated rows to the report data object.
 		stream$.pipe( ...ops ).subscribe( ( rows ) => {
 			data.rows = rows;
 			data.rowCount = rows.length;
