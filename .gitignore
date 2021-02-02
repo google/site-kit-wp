@@ -1,6 +1,7 @@
 node_modules
 bower_components
 vendor
+!/assets/sass/vendor
 /php-scoper/*
 !/php-scoper/composer.*
 !/php-scoper/README.md
