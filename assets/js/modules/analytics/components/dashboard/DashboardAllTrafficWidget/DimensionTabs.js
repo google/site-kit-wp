@@ -33,13 +33,17 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import {
+	DIMENSION_NAME_ALL_TRAFFIC_WIDGET,
+	DIMENSION_VALUE_ALL_TRAFFIC_WIDGET,
+	DIMENSION_COLOR_ALL_TRAFFIC_WIDGET,
+} from '../../../datastore/constants';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useDispatch } = Data;
 
 export default function DimensionTabs( { dimensionName, loaded } ) {
-	const { setValues } = useDispatch( CORE_FORMS );
+	const { setValues } = useDispatch( CORE_UI );
 
 	const tabs = [
 		{
@@ -59,10 +63,10 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 	const activeTab = tabs.findIndex( ( v ) => v.dimensionName === dimensionName );
 
 	const handleTabUpdate = useCallback( ( index ) => {
-		setValues( FORM_ALL_TRAFFIC_WIDGET, {
-			dimensionName: tabs[ index ].dimensionName,
-			dimensionValue: '',
-			dimensionColor: '',
+		setValues( {
+			[ DIMENSION_NAME_ALL_TRAFFIC_WIDGET ]: tabs[ index ].dimensionName,
+			[ DIMENSION_VALUE_ALL_TRAFFIC_WIDGET ]: '',
+			[ DIMENSION_COLOR_ALL_TRAFFIC_WIDGET ]: '',
 		} );
 	} );
 

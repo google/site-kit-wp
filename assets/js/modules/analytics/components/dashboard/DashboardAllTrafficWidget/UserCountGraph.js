@@ -32,8 +32,11 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { DATE_RANGE_OFFSET, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import {
+	DATE_RANGE_OFFSET,
+	DIMENSION_COLOR_ALL_TRAFFIC_WIDGET,
+} from '../../../datastore/constants';
 import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import PreviewBlock from '../../../../../components/PreviewBlock';
@@ -42,7 +45,7 @@ const { useSelect } = Data;
 
 export default function UserCountGraph( { loaded, error, report } ) {
 	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
-	const graphLineColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) || '#1a73e8' );
+	const graphLineColor = useSelect( ( select ) => select( CORE_UI ).getValue( DIMENSION_COLOR_ALL_TRAFFIC_WIDGET ) || '#1a73e8' );
 
 	if ( ! loaded ) {
 		// On desktop, the real graph height is 350px, so match that here.

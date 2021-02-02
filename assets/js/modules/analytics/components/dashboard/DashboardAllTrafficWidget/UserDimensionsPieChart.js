@@ -34,8 +34,11 @@ import { useInstanceId } from '@wordpress/compose';
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import {
+	DIMENSION_VALUE_ALL_TRAFFIC_WIDGET,
+	DIMENSION_COLOR_ALL_TRAFFIC_WIDGET,
+} from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
@@ -55,7 +58,7 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 	// Create a unique chartID to use for this component's GoogleChart child component.
 	const chartID = `user-dimensions-pie-chart-${ useInstanceId( UserDimensionsPieChart ) }`;
 
-	const { setValues } = useDispatch( CORE_FORMS );
+	const { setValues } = useDispatch( CORE_UI );
 	const onReady = useCallback( () => {
 		setChartLoaded( true );
 
@@ -72,16 +75,16 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 						const newDimensionValue = dataTable.getValue( row, 0 );
 						const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
 
-						setValues(
-							FORM_ALL_TRAFFIC_WIDGET,
-							{
-								dimensionValue: isOthers ? '' : newDimensionValue,
-								dimensionColor: isOthers ? '' : slices[ row ]?.color,
-							}
-						);
+						setValues( {
+							[ DIMENSION_VALUE_ALL_TRAFFIC_WIDGET ]: isOthers ? '' : newDimensionValue,
+							[ DIMENSION_COLOR_ALL_TRAFFIC_WIDGET ]: isOthers ? '' : slices[ row ]?.color,
+						} );
 					}
 				} else {
-					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
+					setValues( {
+						[ DIMENSION_VALUE_ALL_TRAFFIC_WIDGET ]: '',
+						[ DIMENSION_COLOR_ALL_TRAFFIC_WIDGET ]: '',
+					} );
 				}
 			} );
 		}
@@ -102,7 +105,9 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 				const selectedRow = report[ 0 ].data.rows.findIndex( ( row ) => row.dimensions.includes( dimensionValue ) );
 				if ( selectedRow && slices[ selectedRow ]?.color ) {
 					chart.setSelection( [ { row: selectedRow } ] );
-					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: slices[ selectedRow ]?.color } );
+					setValues( {
+						[ DIMENSION_COLOR_ALL_TRAFFIC_WIDGET ]: slices[ selectedRow ]?.color,
+					} );
 				}
 			}
 
@@ -110,7 +115,9 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 			// ensure it is no longer selected in the chart.
 			if ( ! dimensionValue && chart.getSelection().length ) {
 				chart.setSelection( [] );
-				setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: '' } );
+				setValues( {
+					[ DIMENSION_COLOR_ALL_TRAFFIC_WIDGET ]: '',
+				} );
 			}
 		}
 	}, [ chartLoaded, chartID, dimensionValue, JSON.stringify( report ) ] );

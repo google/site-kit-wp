@@ -27,10 +27,15 @@ import { useState, useEffect } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import { FORM_ALL_TRAFFIC_WIDGET, DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import {
+	DIMENSION_NAME_ALL_TRAFFIC_WIDGET,
+	DIMENSION_VALUE_ALL_TRAFFIC_WIDGET,
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS,
+} from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
 import { getURLPath } from '../../../../../util/getURLPath';
 import whenActive from '../../../../../util/when-active';
@@ -50,8 +55,8 @@ function DashboardAllTrafficWidget() {
 	const [ currentRange, setCurrentRange ] = useState( '' );
 
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const dimensionName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionName' ) || 'ga:channelGrouping' );
-	const dimensionValue = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionValue' ) );
+	const dimensionName = useSelect( ( select ) => select( CORE_UI ).getValue( DIMENSION_NAME_ALL_TRAFFIC_WIDGET ) || 'ga:channelGrouping' );
+	const dimensionValue = useSelect( ( select ) => select( CORE_UI ).getValue( DIMENSION_VALUE_ALL_TRAFFIC_WIDGET ) );
 	const entityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
 	const {

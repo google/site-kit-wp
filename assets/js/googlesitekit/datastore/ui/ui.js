@@ -31,14 +31,14 @@ export const actions = {
 	/**
 	 * Stores site ui information.
 	 *
-	 * @since 1.9.0
+	 * @since n.e.x.t
 	 * @private
 	 *
 	 * @param {Object} values Ui data supplied as a map of keys to set and their respective values.
 	 * @return {Object} Redux-style action.
 	 */
 	setValues( values ) {
-		invariant( isPlainObject( values ), 'formData must be an object.' );
+		invariant( isPlainObject( values ), 'values must be an object.' );
 
 		return {
 			payload: { values },
@@ -49,7 +49,7 @@ export const actions = {
 	/**
 	 * Sets a particular value for a key.
 	 *
-	 * @since 1.9.0
+	 * @since n.e.x.t
 	 * @private
 	 *
 	 * @param {string} key   Ui key to set the value for.
@@ -99,9 +99,9 @@ export const resolvers = {};
 
 export const selectors = {
 	/**
-	 * Gets the existing form by formName and key.
+	 * Gets the existing data by key.
 	 *
-	 * @since 1.9.0
+	 * @since n.e.x.t
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
