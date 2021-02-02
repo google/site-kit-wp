@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { getTimeInSeconds, numFmt } from '../../../../util';
 import withData from '../../../../components/higherorder/withData';
-import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
@@ -41,8 +41,9 @@ import PreviewTable from '../../../../components/PreviewTable';
 import { getTopPagesReportDataDefaults } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import Link from '../../../../components/Link';
-const { useSelect, withSelect } = Data;
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
+
+const { useSelect, withSelect } = Data;
 
 const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 	const { data, colspan } = props;
@@ -104,7 +105,7 @@ const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 			mobile: [ 2, 3 ],
 		},
 		PrimaryLink: withSelect( ( select, { href = '/' } ) => {
-			const serviceURL = select( MODULES_ANALYTICS ).getServiceReportURL( 'content-drilldown', {
+			const serviceURL = select( STORE_NAME ).getServiceReportURL( 'content-drilldown', {
 				'explorer-table.plotKeys': '[]',
 				'_r.drilldown': `analytics.pagePath:${ href }`,
 				...generateDateRangeArgs( dateRangeDates ),
