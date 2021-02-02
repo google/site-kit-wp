@@ -117,9 +117,8 @@ UserCountGraph.chartOptions = {
 	chartArea: {
 		left: '1%',
 		height: 300,
-		right: '9%',
 		top: 21,
-		width: '100%',
+		width: '90%',
 	},
 	legend: {
 		position: 'none',
