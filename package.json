@@ -211,6 +211,7 @@
     "postcss-preset-env": "^6.7.0",
     "puppeteer": "^1.20.0",
     "rimraf": "^3.0.2",
+    "rxjs": "^6.6.3",
     "sanitize-filename": "^1.6.3",
     "sass": "^1.30.0",
     "sass-loader": "^9.0.2",

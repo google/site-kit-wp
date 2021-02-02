@@ -32,6 +32,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 } from '../../tests/js/utils';
+import { getWidgetComponentProps } from '../../assets/js/googlesitekit/widgets/util';
 
 const { components: { Widget } } = Widgets;
 
@@ -211,17 +212,18 @@ export function generateReportBasedWidgetStories( {
 	};
 
 	let widget;
+
+	const slug = moduleSlugs.map( ( mapSlug ) => `${ mapSlug }-widget` ).join( ' ' );
+	const widgetComponentProps = getWidgetComponentProps( slug );
+
 	if ( wrapWidget ) {
-		const slugs = moduleSlugs.map( ( slug ) => {
-			return `${ slug }-widget`;
-		} );
 		widget = (
-			<Widget slug={ slugs.join( ' ' ) }>
-				<Component />
+			<Widget slug={ slug }>
+				<Component { ...widgetComponentProps } />
 			</Widget>
 		);
 	} else {
-		widget = <Component />;
+		widget = <Component { ...widgetComponentProps } />;
 	}
 
 	Object.keys( variants ).forEach( ( variant ) => {
@@ -233,4 +235,29 @@ export function generateReportBasedWidgetStories( {
 	} );
 
 	return stories;
+}
+
+/**
+ * Creates and returns a new report data generator using provided factory function.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} factory The factory function.
+ * @return {Function} The report data generator.
+ */
+export function makeReportDataGenerator( factory ) {
+	return ( options ) => {
+		const results = { options };
+
+		if ( Array.isArray( options ) ) {
+			results.data = [];
+			for ( let i = 0; i < options.length; i++ ) {
+				results.data.push( factory( options[ i ] ) );
+			}
+		} else {
+			results.data = factory( options );
+		}
+
+		return results;
+	};
 }

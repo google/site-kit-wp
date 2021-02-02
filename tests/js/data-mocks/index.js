@@ -1,33 +1,44 @@
 import faker from 'faker';
+import { from, Observable } from 'rxjs';
+import { map, reduce, take } from 'rxjs/operators';
+
+function getObjectHash( obj ) {
+	const msg = JSON.stringify( obj );
+	let hash = 0;
+
+	for ( let i = 0; i < msg.length; i++ ) {
+		hash = ( ( hash << 5 ) - hash ) + msg.charCodeAt( i ); // eslint-disable-line no-bitwise
+		hash |= 0; // eslint-disable-line no-bitwise
+	}
+
+	return hash;
+}
+
+function stringToDate( dateString ) {
+	return new Date( `${ dateString } 00:00:00` );
+}
 
 export function makeFactory( options ) {
 	const {
-		metrics: allMetrics,
+		metricTypes,
+		dimensionOptions,
 	} = options;
 
 	const metricKey = ( metric ) => metric?.expression || metric.toString();
-	const getMetricType = ( metric ) => allMetrics[ metricKey( metric ) ];
+	const getMetricType = ( metric ) => metricTypes[ metricKey( metric ) ];
 	const filterMetrics = ( metric ) => !! getMetricType( metric );
 
-	const stringToDate = ( dateString ) => new Date( `${ dateString } 00:00:00` );
+	return ( args ) => {
+		faker.seed( getObjectHash( args ) );
 
-	return ( { startDate, endDate, dimensions, metrics } ) => {
-		const validMetrics = metrics.filter( filterMetrics );
-
-		const columnHeader = {
-			dimensions,
-			metricHeader: {
-				metricHeaderEntries: validMetrics.map( ( metric ) => ( {
-					name: metric?.alias || metric?.expression || metric.toString(),
-					type: getMetricType( metric ),
-				} ) ),
-			},
-		};
+		const dimensions = Array.isArray( args.dimensions )
+			? args.dimensions
+			: [ args.dimensions ].filter( ( item ) => !! item );
 
 		const data = {
 			dataLastRefreshed: null,
 			isDataGolden: null,
-			rowCount: 0, // should be real number of rows
+			rowCount: 0,
 			samplesReadCounts: null,
 			samplingSpaceSizes: null,
 			rows: [],
@@ -36,63 +47,101 @@ export function makeFactory( options ) {
 			maximums: [],
 		};
 
-		const report = {
-			nextPageToken: null,
-			columnHeader,
-			data,
-		};
+		const { compareStartDate, compareEndDate } = args;
+		const valuesCount = compareStartDate && compareEndDate ? 2 : 1;
 
-		const currentDate = stringToDate( startDate );
-		const end = stringToDate( endDate );
-
-		while ( +currentDate <= +end ) {
-			const row = {
-				dimensions: [],
+		const ops = [
+			map( ( dimensionValue ) => ( {
+				dimensions: [ dimensionValue ],
 				metrics: [],
-			};
+			} ) ),
+			map( ( row ) => {
+				for ( let i = 0; i < valuesCount; i++ ) {
+					const values = [];
 
-			dimensions.forEach( ( dimension ) => {
-				switch ( dimension ) {
-					case 'ga:date':
-						row.dimensions.push(
-							currentDate.toISOString().split( 'T' )[ 0 ].replace( /\D/g, '' )
-						);
-						break;
-				}
-			} );
+					switch ( getMetricType( validMetrics[ 0 ] ) ) {
+						case 'INTEGER':
+							values.push( faker.random.number( { min: 0, max: 100 } ).toString() );
+							break;
+						case 'PERCENT':
+							values.push( faker.random.float( { min: 0, max: 100 } ).toString() );
+							break;
+						case 'TIME':
+							break;
+						case 'CURRENCY':
+							break;
+					}
 
-			validMetrics.forEach( ( metric ) => {
-				const values = [];
-
-				switch ( getMetricType( metric ) ) {
-					case 'INTEGER':
-						dimensions.forEach( () => {
-							values.push( faker.random.number( 100 ) );
-						} );
-						break;
-					case 'PERCENT':
-						break;
-					case 'TIME':
-						break;
-					case 'CURRENCY':
-						break;
+					row.metrics.push( { values } );
 				}
 
-				row.metrics.push( { values } );
+				return row;
+			} ),
+			take( args.limit > 0 ? +args.limit : 999999 ),
+			reduce( ( acc, val ) => [ ...acc, val ], [] ),
+		];
+
+		let stream$;
+
+		const validMetrics = ( args.metrics || [] ).filter( filterMetrics );
+		const keyDimension = dimensions?.[ 0 ];
+		if ( keyDimension === 'ga:date' ) {
+			stream$ = new Observable( ( observer ) => {
+				const currentDate = stringToDate( args.startDate );
+				const end = stringToDate( args.endDate );
+
+				while ( +currentDate <= +end ) {
+					observer.next( currentDate.toISOString().split( 'T' )[ 0 ].replace( /\D/g, '' ) );
+					currentDate.setDate( currentDate.getDate() + 1 );
+				}
+
+				observer.complete();
 			} );
-
-			data.rows.push( row );
-			data.rowCount++;
-
-			currentDate.setDate( currentDate.getDate() + 1 );
+		} else if ( Array.isArray( dimensionOptions?.[ keyDimension ] ) ) {
+			stream$ = from( dimensionOptions[ keyDimension ] );
+		} else {
+			stream$ = from( [ null ] );
 		}
 
-		return [ report ];
+		stream$.pipe( ...ops ).subscribe( ( rows ) => {
+			data.rows = rows;
+			data.rowCount = rows.length;
+
+			data.minimums = [ ...( rows[ 0 ]?.metrics || [] ) ];
+			data.maximums = [ ...( rows[ rows.length - 1 ]?.metrics || [] ) ];
+
+			if ( getMetricType( validMetrics[ 0 ] ) === 'INTEGER' ) {
+				data.totals = [];
+				for ( let i = 0; i < valuesCount; i++ ) {
+					data.totals.push( {
+						values: [
+							data.rows.reduce( ( acc, row ) => acc + parseFloat( row.metrics[ i ].values[ 0 ] ), 0 ).toString(),
+						],
+					} );
+				}
+			} else {
+				data.totals = [ ...( rows[ rows.length - 1 ]?.metrics || [] ) ];
+			}
+		} );
+
+		return [ {
+			nextPageToken: null,
+			columnHeader: {
+				dimensions,
+				metricHeader: {
+					metricHeaderEntries: validMetrics.map( ( metric ) => ( {
+						name: metric?.alias || metric?.expression || metric.toString(),
+						type: getMetricType( metric ),
+					} ) ),
+				},
+			},
+			data,
+		} ];
 	};
 }
 
 export const analyticsFactory = makeFactory( {
-	metrics: {
+	metricTypes: {
 		'ga:users': 'INTEGER',
 		'ga:newUsers': 'INTEGER',
 		'ga:sessions': 'INTEGER',
@@ -105,5 +154,28 @@ export const analyticsFactory = makeFactory( {
 		'ga:adsenseCTR': 'PERCENT',
 		'ga:adsenseRevenue': 'CURRENCY',
 		'ga:adsenseECPM': 'CURRENCY',
+	},
+	dimensionOptions: {
+		'ga:channelGrouping': [
+			'Organic Search',
+			'Referral',
+			'Direct',
+			'(other)',
+		],
+		'ga:country': [
+			'United States',
+			'United Kingdom',
+			'India',
+			'(not set)',
+			'France',
+			'Ukraine',
+			'Italy',
+			'Mexico',
+		],
+		'ga:deviceCategory': [
+			'desktop',
+			'tablet',
+			'mobile',
+		],
 	},
 } );
