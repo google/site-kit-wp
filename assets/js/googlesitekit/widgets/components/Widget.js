@@ -65,8 +65,8 @@ Widget.propTypes = {
 	children: PropTypes.node,
 	slug: PropTypes.string.isRequired,
 	noPadding: PropTypes.bool,
-	header: PropTypes.elementType,
-	footer: PropTypes.elementType,
+	Header: PropTypes.elementType,
+	Footer: PropTypes.elementType,
 };
 
 export default Widget;
