@@ -141,7 +141,7 @@ module.exports = {
 
 						// If the name of this variable is the same length as the acronym,
 						// it should be lowercase or uppercase.
-						if ( name.length === acronym.length && ( acronymMatch === acronym.toLowerCase() || acronymMatch !== acronym ) ) {
+						if ( name.length === acronym.length && ( acronymMatch === acronym.toLowerCase() || acronymMatch === acronym.toUpperCase() ) ) {
 							return;
 						}
 
