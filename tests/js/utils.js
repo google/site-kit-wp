@@ -35,6 +35,8 @@ import coreModulesStore from '../../assets/js/googlesitekit/modules/datastore';
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import coreWidgetsStore from '../../assets/js/googlesitekit/widgets/datastore';
 import { CORE_WIDGETS } from '../../assets/js/googlesitekit/widgets/datastore/constants';
+import coreUiStore from '../../assets/js/googlesitekit/datastore/ui';
+import { CORE_UI } from '../../assets/js/googlesitekit/datastore/ui/constants';
 // AdSense.
 import modulesAdSenseStore from '../../assets/js/modules/adsense/datastore';
 import { MODULES_ADSENSE } from '../../assets/js/modules/adsense/datastore/constants';
@@ -412,6 +414,7 @@ export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( CORE_SITE, coreSiteStore );
 	registry.registerStore( CORE_USER, coreUserStore );
 	registry.registerStore( CORE_FORMS, coreFormsStore );
+	registry.registerStore( CORE_UI, coreUiStore );
 	registry.registerStore( CORE_LOCATION, coreLocationStore );
 	registry.registerStore( CORE_MODULES, coreModulesStore );
 	registry.registerStore( CORE_WIDGETS, coreWidgetsStore );

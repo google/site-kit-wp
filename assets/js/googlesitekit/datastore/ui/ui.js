@@ -85,7 +85,7 @@ export const reducer = ( state, { type, payload } ) => {
 
 			return {
 				...state,
-				[ key ]: { ...( state[ key ] || {} ), value },
+				[ key ]: value,
 			};
 		}
 
