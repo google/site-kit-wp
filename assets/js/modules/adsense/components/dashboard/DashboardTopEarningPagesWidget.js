@@ -130,7 +130,7 @@ function DashboardTopEarningPagesWidget( { WidgetReportZero } ) {
 		<Widget
 			slug="adsenseTopEarningPages"
 			noPadding
-			footer={ () => (
+			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
 					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
