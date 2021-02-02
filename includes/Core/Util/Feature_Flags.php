@@ -119,11 +119,11 @@ class Feature_Flags {
 	}
 
 	/**
-	 * Gets the keys from the features array.
+	 * Gets all available feature flags.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array Array of feature keys.
+	 * @return array An array of all available features.
 	 */
 	public static function get_available_features() {
 		$feature_keys = array();
