@@ -17,6 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
+ * Internal dependencies
+ */
+import { isValidDateString } from '../../../googlesitekit/datastore/user/utils/is-valid-date-string';
+/**
  * Generates an object with the appropriate structure to pass to report selectors.
  *
  * @since n.e.x.t
@@ -26,25 +35,20 @@
  * @param {string} dates.endDate            End date in YYYY-MM-DD format.
  * @param {string} [dates.compareStartDate] Optional. Start date in YYYY-MM-DD format.
  * @param {string} [dates.compareEndDate]   Optional. End date in YYYY-MM-DD format.
- * @return {Object|undefined} Date range object.
+ * @return {Object} Date range object.
  */
 export const generateDateRangeArgs = ( dates ) => {
-	if ( ! dates ) {
-		return undefined;
-	}
-
 	const { startDate, endDate, compareStartDate, compareEndDate } = dates;
 
-	if ( ! startDate || ! endDate ) {
-		return undefined;
-	}
+	invariant( isValidDateString( startDate ), 'A valid startDate is required.' );
+	invariant( isValidDateString( endDate ), 'A valid endDate is required.' );
 
 	const range = {
 		'_u.date00': startDate.replace( /-/g, '' ),
 		'_u.date01': endDate.replace( /-/g, '' ),
 	};
 
-	if ( compareStartDate && compareEndDate ) {
+	if ( isValidDateString( compareStartDate ) && isValidDateString( compareEndDate ) ) {
 		range[ '_u.date10' ] = compareStartDate.replace( /-/g, '' );
 		range[ '_u.date11' ] = compareEndDate.replace( /-/g, '' );
 	}
