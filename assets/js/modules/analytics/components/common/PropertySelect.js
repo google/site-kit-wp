@@ -63,7 +63,7 @@ export default function PropertySelect() {
 	const onChange = useCallback( ( index, item ) => {
 		const newPropertyID = item.dataset.value;
 		if ( propertyID !== newPropertyID ) {
-			selectProperty( newPropertyID, item.dataset.internalId ); // eslint-disable-line sitekit/camelcase-acronyms
+			selectProperty( newPropertyID, item.dataset.internalId ); // eslint-disable-line sitekit/acronym-case
 			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
 		}
 	}, [ propertyID ] );
@@ -87,11 +87,11 @@ export default function PropertySelect() {
 					id: PROPERTY_CREATE,
 					name: __( 'Set up a new property', 'google-site-kit' ),
 				} )
-				.map( ( { id, name, internalWebPropertyId }, index ) => ( // eslint-disable-line sitekit/camelcase-acronyms
+				.map( ( { id, name, internalWebPropertyId }, index ) => ( // eslint-disable-line sitekit/acronym-case
 					<Option
 						key={ index }
 						value={ id }
-						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/camelcase-acronyms
+						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
 					>
 						{ name }
 					</Option>

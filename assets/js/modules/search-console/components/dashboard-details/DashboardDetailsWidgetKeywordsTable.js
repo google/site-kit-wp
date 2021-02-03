@@ -29,19 +29,21 @@ import Data from 'googlesitekit-data';
 import LegacySearchConsoleDashboardWidgetKeywordTable from '../dashboard/LegacySearchConsoleDashboardWidgetKeywordTable';
 import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
 import Layout from '../../../../components/layout/Layout';
-import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { untrailingslashit } from '../../../../util';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
 const DashboardDetailsWidgetKeywordsTable = () => {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 	const footerCTALinkArgs = {
 		resource_id: propertyID,
-		num_of_days: getCurrentDateRangeDayCount(),
+		...generateDateRangeArgs( { startDate, endDate } ),
 	};
 	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
 	const referenceSiteURL = useSelect( ( select ) => {

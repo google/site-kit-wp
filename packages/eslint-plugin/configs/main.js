@@ -18,7 +18,7 @@
 
 module.exports = {
 	rules: {
-		'sitekit/camelcase-acronyms': [ 'error' ],
+		'sitekit/acronym-case': [ 'error' ],
 		'sitekit/jsdoc-third-person': [ 'error' ],
 		'sitekit/jsdoc-fullstop': [ 'error' ],
 		'sitekit/jsdoc-newlines': [ 'error' ],

@@ -42,7 +42,7 @@ describe( 'SetupMain', () => {
 		};
 
 		const { account, containers } = buildAccountWithContainers( args );
-		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 
 		registry = createTestRegistry();
 

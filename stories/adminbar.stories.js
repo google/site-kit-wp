@@ -26,31 +26,44 @@ import { storiesOf } from '@storybook/react';
  */
 import { GoogleSitekitAdminbar } from '../assets/js/googlesitekit-adminbar';
 import { googlesitekit as wpAdminBarData } from '../.storybook/data/blog---googlesitekit';
-import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+// import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+// import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+// import { provideModules, provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
+// import CollectModuleData from '../assets/js/components/data/collect-module-data';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { provideModules, provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
-import CollectModuleData from '../assets/js/components/data/collect-module-data';
+import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
+import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import { adminbarSearchConsoleMockData, adminbarSearchConsoleOptions } from '../assets/js/modules/search-console/datastore/__fixtures__';
+import { adminBarAnalyticsTotalUsersMockData, adminBarAnalyticsTotalUsersOptions, adminBarAnalyticsSessionsMockData, adminBarAnalyticsSessionsOptions } from '../assets/js/modules/analytics/datastore/__fixtures__';
 
 storiesOf( 'Global', module )
 	.add( 'Admin Bar', () => {
 		global._googlesitekitLegacyData = wpAdminBarData;
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {
-				usingProxy: true,
-				referenceSiteURL: 'https://example.com',
-				adminURL: 'https://example.com/wp-admin/',
-				siteName: 'My Site Name',
+		const setupRegistry = ( registry ) => {
+			// Set some site information.
+			provideSiteInfo( registry, {
 				currentEntityURL: 'https://www.sitekitbygoogle.com/blog/',
 				currentEntityTitle: 'Blog test post for Google Site Kit',
-				currentEntityType: 'blog',
-				currentEntityID: 2,
 			} );
-			dispatch( CORE_USER ).receiveGetAuthentication( {
-				authenticated: true,
-				requiredScopes: [],
-				grantedScopes: [],
-			} );
+
+			// Set up the search console and analytics modules stores but provide no data.
+			provideModules( registry, [
+				{ slug: 'search-console', active: true, connected: true },
+				{ slug: 'analytics', active: true, connected: true },
+			] );
+
+			registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+
+			// Mock both Search Console widgets data
+			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( adminbarSearchConsoleMockData, { options: adminbarSearchConsoleOptions } );
+
+			// Mock Total Users widget data
+			registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( adminBarAnalyticsTotalUsersMockData, { options: adminBarAnalyticsTotalUsersOptions } );
+
+			// Mock Sessions widget data
+			registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( adminBarAnalyticsSessionsMockData, { options: adminBarAnalyticsSessionsOptions } );
 		};
 
 		return (
@@ -60,7 +73,6 @@ storiesOf( 'Global', module )
 						<section id="js-googlesitekit-adminbar-modules" className="googlesitekit-adminbar-modules">
 							<WithTestRegistry callback={ setupRegistry }>
 								<GoogleSitekitAdminbar />
-								<CollectModuleData context="Adminbar" />
 							</WithTestRegistry>
 						</section>
 					</div>
@@ -72,17 +84,11 @@ storiesOf( 'Global', module )
 		global._googlesitekitLegacyData = wpAdminBarData;
 
 		const setupRegistry = ( registry ) => {
-		// Set some site information.
+			// Set the Story site information.
 			provideSiteInfo( registry, {
 				currentEntityURL: 'https://www.sitekitbygoogle.com/blog/',
 				currentEntityTitle: 'Blog test post for Google Site Kit',
 			} );
-
-			// Set up the search console and analytics modules stores but provide no data.
-			provideModules( registry, [
-				{ slug: 'search-console', active: true, connected: true },
-				{ slug: 'analytics', active: true, connected: true },
-			] );
 		};
 
 		return (

@@ -36,9 +36,9 @@ import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
 import ReportError from '../../../../components/ReportError';
-import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { isZeroReport } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
@@ -62,7 +62,7 @@ function DashboardPopularKeywordsWidget( { WidgetReportZero } ) {
 
 		const baseServiceURLArgs = {
 			resource_id: domain,
-			num_of_days: getCurrentDateRangeDayCount(),
+			...generateDateRangeArgs( { startDate, endDate } ),
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();

@@ -29,13 +29,10 @@ import Data from 'googlesitekit-data';
 import Link from '../Link';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { decodeHTMLEntity, trackEvent } from '../../util';
-import { useFeature } from '../../hooks/useFeature';
 import AdminBarWidgets from './AdminBarWidgets';
-import LegacyAdminBarWidgets from './LegacyAdminBarWidgets';
 const { useSelect } = Data;
 
 export default function AdminBarApp() {
-	const widgetsAdminBarEnabled = useFeature( 'widgets.adminBar' );
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
 	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: currentEntityURL } ) );
@@ -76,8 +73,7 @@ export default function AdminBarApp() {
 						mdc-layout-grid__cell--span-7-desktop
 						mdc-layout-grid__cell--align-middle
 					">
-						{ widgetsAdminBarEnabled && <AdminBarWidgets /> }
-						<LegacyAdminBarWidgets />
+						<AdminBarWidgets />
 					</div>
 
 					<div className="

@@ -42,7 +42,7 @@ export default function WebContainerSelect() {
 	const onSelect = useCallback( ( index, item ) => {
 		const {
 			value: newContainerID,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			internalId: newInternalContainerID,
 		} = item.dataset;
 		if ( containerID !== newContainerID ) {
