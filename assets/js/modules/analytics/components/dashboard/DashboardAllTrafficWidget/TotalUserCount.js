@@ -41,15 +41,14 @@ import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import Link from '../../../../../components/Link';
 const { useSelect, useDispatch } = Data;
 
 export default function TotalUserCount( { loaded, error, report, dimensionValue } ) {
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const showAllUsers = ( e ) => {
-		e.preventDefault();
-
+	const showAllUsers = () => {
 		setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
 	};
 
@@ -92,7 +91,7 @@ export default function TotalUserCount( { loaded, error, report, dimensionValue 
 				{ ! dimensionValue && __( 'All Users', 'google-site-kit' ) }
 				{ dimensionValue && (
 					<Fragment>
-						{ dimensionValue && <button onClick={ showAllUsers }>{ __( 'All Users', 'google-site-kit' ) }</button> }
+						{ dimensionValue && <Link onClick={ showAllUsers }>{ __( 'All Users', 'google-site-kit' ) }</Link> }
 						{ ! dimensionValue && __( 'All Users', 'google-site-kit' ) }
 						<Icon icon={ chevronRight } size="18" fill="currentColor" />
 						{ dimensionValue }
