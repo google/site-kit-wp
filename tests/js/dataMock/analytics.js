@@ -1,5 +1,5 @@
 /**
- * Test data mock.
+ * Analytics test data mock.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

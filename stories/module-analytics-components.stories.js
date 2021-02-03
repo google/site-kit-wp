@@ -33,7 +33,7 @@ import {
 	dashboardUserTotalsArgs,
 	dashboardUserGraphArgs,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
-import { analyticsFactory } from '../tests/js/dataMock';
+import { analyticsFactory } from '../tests/js/dataMock/analytics';
 
 /**
  * Defines some additional setup for all stories.
