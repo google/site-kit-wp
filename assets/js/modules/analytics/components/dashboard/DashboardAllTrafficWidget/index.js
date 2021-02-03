@@ -168,7 +168,7 @@ function DashboardAllTrafficWidget() {
 		<Widget
 			slug="analyticsAllTraffic"
 			className="googlesitekit-widget--footer-v2"
-			footer={ () => (
+			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
 					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
@@ -211,6 +211,7 @@ function DashboardAllTrafficWidget() {
 
 						<UserDimensionsPieChart
 							dimensionName={ dimensionName }
+							dimensionValue={ dimensionValue }
 							sourceLink={ serviceReportURL }
 							loaded={ pieChartLoaded && ! firstLoad }
 							report={ pieChartReport }

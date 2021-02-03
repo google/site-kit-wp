@@ -50,7 +50,7 @@ function URLSearchWidget() {
 		<div className="mdc-layout-grid__cell">
 			<Widget
 				slug="urlSearchWidget"
-				header={ () => (
+				Header={ () => (
 					<h3 className="googlesitekit-subheading-1 googlesitekit-widget__header-title">
 						{ __( 'Search for individual page or post information', 'google-site-kit' ) }
 					</h3>
