@@ -13,18 +13,18 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import * as coreSite from '../../assets/js/googlesitekit/datastore/site';
-import * as coreUser from '../../assets/js/googlesitekit/datastore/user';
 import * as coreForms from '../../assets/js/googlesitekit/datastore/forms';
 import * as coreLocation from '../../assets/js/googlesitekit/datastore/location';
 import * as coreModules from '../../assets/js/googlesitekit/modules';
+import * as coreSite from '../../assets/js/googlesitekit/datastore/site';
+import * as coreUser from '../../assets/js/googlesitekit/datastore/user';
 import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
 import * as modulesAdSense from '../../assets/js/modules/adsense';
 import * as modulesAnalytics from '../../assets/js/modules/analytics';
+import * as modulesOptimize from '../../assets/js/modules/optimize';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
-import * as modulesOptimize from '../../assets/js/modules/optimize';
 import { STORE_NAME as CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import {
 	PERMISSION_AUTHENTICATE,
