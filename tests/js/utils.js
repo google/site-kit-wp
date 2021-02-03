@@ -48,7 +48,7 @@ const allCoreStores = [
 	coreUser,
 	coreWidgets,
 ];
-const allModules = [
+const allCoreModules = [
 	modulesAdSense,
 	modulesAnalytics,
 	modulesOptimize,
@@ -291,7 +291,7 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 	} );
 	Modules.registerModule = testRegisterModule;
 
-	allModules.forEach( ( { registerModule } ) => registerModule?.( Modules ) );
+	allCoreModules.forEach( ( { registerModule } ) => registerModule?.( Modules ) );
 	// Register any additional modules provided.
 	Object.entries( extraDataBySlug )
 		.filter( ( [ slug ] ) => registeredModules[ slug ] !== true )
@@ -348,7 +348,7 @@ export const freezeFetch = ( matcher ) => {
 export const registerAllStoresOn = ( registry ) => {
 	[
 		...allCoreStores,
-		...allModules,
+		...allCoreModules,
 	].forEach( ( { registerStore } ) => registerStore?.( registry ) );
 };
 
