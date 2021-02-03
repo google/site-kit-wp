@@ -30,7 +30,7 @@ export function createWaitForFetchRequests() {
 	const listener = ( req ) => {
 		if ( req.resourceType() === 'fetch' ) {
 			const promise = page.waitForResponse(
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				( res ) => res.request()._requestId === req._requestId
 			);
 			// A promise may be rejected if the execution context it was
