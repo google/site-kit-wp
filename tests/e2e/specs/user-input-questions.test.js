@@ -79,7 +79,6 @@ describe( 'User Input Settings', () => {
 						location: createURL( '/wp-admin/index.php', [
 							'oauth2callback=1',
 							'code=valid-test-code',
-							'scope=https://www.googleapis.com/auth/analytics.provision',
 						].join( '&' ) ),
 					},
 				} );
