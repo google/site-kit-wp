@@ -33,7 +33,7 @@ import {
 	dashboardUserTotalsArgs,
 	dashboardUserGraphArgs,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
-import { analyticsFactory } from '../tests/js/dataMock/analytics';
+import { getAnalyticsMockResponse } from '../tests/js/dataMock/analytics';
 
 /**
  * Defines some additional setup for all stories.
@@ -54,7 +54,7 @@ const setup = ( registry ) => {
 	} );
 };
 
-const generateData = makeReportDataGenerator( analyticsFactory );
+const generateData = makeReportDataGenerator( getAnalyticsMockResponse );
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'analytics' ],

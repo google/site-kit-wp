@@ -164,7 +164,7 @@ function generateMetricValues( type, max ) {
  * @param {Object} args Report options.
  * @return {Array.<Object>} An array with generated report.
  */
-export function analyticsFactory( args ) {
+export function getAnalyticsMockResponse( args ) {
 	faker.seed( getObjectHash( args ) );
 
 	const data = {
