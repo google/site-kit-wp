@@ -34,7 +34,7 @@ import GoogleChart from './GoogleChart';
 function Sparkline( {
 	data,
 	change,
-	// eslint-disable-next-line sitekit/camelcase-acronyms
+	// eslint-disable-next-line sitekit/acronym-case
 	instanceId,
 	invertChangeColor,
 	loadSmall,
@@ -82,7 +82,7 @@ function Sparkline( {
 				chartType="line"
 				data={ data }
 				options={ chartOptions }
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				id={ `googlesitekit-sparkline-${ instanceId }` }
 				loadSmall={ loadSmall }
 				loadCompressed={ loadCompressed }
@@ -94,7 +94,7 @@ function Sparkline( {
 }
 
 Sparkline.propTypes = {
-	// eslint-disable-next-line sitekit/camelcase-acronyms
+	// eslint-disable-next-line sitekit/acronym-case
 	instanceId: PropTypes.number.isRequired,
 	invertChangeColor: PropTypes.bool,
 	loadSmall: PropTypes.bool,

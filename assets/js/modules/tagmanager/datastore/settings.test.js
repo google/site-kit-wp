@@ -168,9 +168,9 @@ describe( 'modules/tagmanager settings', () => {
 					);
 
 					expect( result.error ).toBeFalsy();
-					// eslint-disable-next-line sitekit/camelcase-acronyms
+					// eslint-disable-next-line sitekit/acronym-case
 					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( createdContainer.publicId );
-					// eslint-disable-next-line sitekit/camelcase-acronyms
+					// eslint-disable-next-line sitekit/acronym-case
 					expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( createdContainer.containerId );
 				} );
 
@@ -278,7 +278,7 @@ describe( 'modules/tagmanager settings', () => {
 						ampContainerName: 'Sitekit AMP',
 					} );
 
-					// eslint-disable-next-line sitekit/camelcase-acronyms
+					// eslint-disable-next-line sitekit/acronym-case
 					const createdAMPContainer = containerBuilder( { accountId: '12345', usageContext: [ CONTEXT_AMP ] } );
 
 					fetchMock.postOnce(
@@ -310,7 +310,7 @@ describe( 'modules/tagmanager settings', () => {
 						}
 					);
 
-					// eslint-disable-next-line sitekit/camelcase-acronyms
+					// eslint-disable-next-line sitekit/acronym-case
 					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( createdAMPContainer.publicId );
 				} );
 			} );
@@ -331,9 +331,9 @@ describe( 'modules/tagmanager settings', () => {
 					} );
 
 					const account = accountBuilder();
-					// eslint-disable-next-line sitekit/camelcase-acronyms
+					// eslint-disable-next-line sitekit/acronym-case
 					const createdWebContainer = containerBuilder( { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } );
-					// eslint-disable-next-line sitekit/camelcase-acronyms
+					// eslint-disable-next-line sitekit/acronym-case
 					const createdAMPContainer = containerBuilder( { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] } );
 
 					fetchMock.postOnce(
@@ -364,9 +364,9 @@ describe( 'modules/tagmanager settings', () => {
 					const { error } = await registry.dispatch( STORE_NAME ).submitChanges();
 
 					expect( error ).toBe( undefined );
-					// eslint-disable-next-line sitekit/camelcase-acronyms
+					// eslint-disable-next-line sitekit/acronym-case
 					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( createdWebContainer.publicId );
-					// eslint-disable-next-line sitekit/camelcase-acronyms
+					// eslint-disable-next-line sitekit/acronym-case
 					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( createdAMPContainer.publicId );
 				} );
 			} );
@@ -456,7 +456,7 @@ describe( 'modules/tagmanager settings', () => {
 						container: { usageContext: [ CONTEXT_WEB ] },
 						count: 2,
 					} );
-					const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+					const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 
 					registry.dispatch( STORE_NAME ).setAccountID( accountID );
 					registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
@@ -474,7 +474,7 @@ describe( 'modules/tagmanager settings', () => {
 						container: { usageContext: [ CONTEXT_WEB ] },
 						count: 2,
 					} );
-					const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+					const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 
 					registry.dispatch( STORE_NAME ).setAccountID( accountID );
 					registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
@@ -575,7 +575,7 @@ describe( 'modules/tagmanager settings', () => {
 					const { accountID } = buildAndReceiveWebAndAMP( { webPropertyID: 'UA-12345-1', ampPropertyID: 'UA-12345-1' } );
 
 					const { containers } = buildAccountWithContainers( {
-						account: { accountId: accountID }, // eslint-disable-line sitekit/camelcase-acronyms
+						account: { accountId: accountID }, // eslint-disable-line sitekit/acronym-case
 						container: { usageContext: [ CONTEXT_AMP ] },
 						count: 2,
 					} );
@@ -596,7 +596,7 @@ describe( 'modules/tagmanager settings', () => {
 					const { accountID } = buildAndReceiveWebAndAMP( { webPropertyID: 'UA-12345-1', ampPropertyID: 'UA-12345-1' } );
 
 					const { containers } = buildAccountWithContainers( {
-						account: { accountId: accountID }, // eslint-disable-line sitekit/camelcase-acronyms
+						account: { accountId: accountID }, // eslint-disable-line sitekit/acronym-case
 						container: { usageContext: [ CONTEXT_AMP ] },
 						count: 2,
 					} );
@@ -771,7 +771,7 @@ describe( 'modules/tagmanager settings', () => {
 						container: { usageContext: [ CONTEXT_WEB, CONTEXT_AMP ] },
 						count: 2,
 					} );
-					const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+					const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 
 					registry.dispatch( STORE_NAME ).setAccountID( accountID );
 					registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );

@@ -39,8 +39,8 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 const setupRegistry = ( { dispatch } ) => {
 	const {
 		id,
-		webPropertyId: propertyID, // eslint-disable-line sitekit/camelcase-acronyms
-		accountId: accountID, // eslint-disable-line sitekit/camelcase-acronyms
+		webPropertyId: propertyID, // eslint-disable-line sitekit/acronym-case
+		accountId: accountID, // eslint-disable-line sitekit/acronym-case
 	} = fixtures.propertiesProfiles.profiles[ 0 ];
 
 	dispatch( STORE_NAME ).setAccountID( accountID );
@@ -59,8 +59,8 @@ const setupRegistry = ( { dispatch } ) => {
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	const existingTag = {
-		accountID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId, // eslint-disable-line sitekit/camelcase-acronyms
-		propertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+		accountID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId, // eslint-disable-line sitekit/acronym-case
+		propertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
 	};
 	const { id } = fixtures.propertiesProfiles.profiles[ 0 ];
 
@@ -80,8 +80,8 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
-	const accountID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
-	const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
+	const accountID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+	const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/acronym-case
 
 	dispatch( STORE_NAME ).setSettings( {} );
 	dispatch( STORE_NAME ).setAccountID( accountID );
@@ -118,7 +118,7 @@ describe( 'ProfileSelect', () => {
 		expect( existingTagPropertyID ).toEqual( currentPropertyID );
 
 		const existingTagProfiles = fixtures.accountsPropertiesProfiles.profiles
-			.filter( ( { webPropertyId } ) => webPropertyId === existingTagPropertyID ); // eslint-disable-line sitekit/camelcase-acronyms
+			.filter( ( { webPropertyId } ) => webPropertyId === existingTagPropertyID ); // eslint-disable-line sitekit/acronym-case
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( existingTagProfiles.length + 1 );
