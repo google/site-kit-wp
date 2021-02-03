@@ -157,7 +157,7 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero } ) {
 	}
 
 	if ( isZeroReport( pieChartReport ) ) {
-		return <WidgetReportZero />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	return (
