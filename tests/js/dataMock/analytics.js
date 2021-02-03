@@ -157,6 +157,45 @@ function generateMetricValues( type, max ) {
 }
 
 /**
+ * Sorts report rows and returns it.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<Object>}        rows    Array of rows to sort.
+ * @param {Array.<Object>}        metrics Array of report metrics.
+ * @param {Object|Array.<Object>} orderby Sorting options.
+ * @return {Array.<Object>} Sorted rows.
+ */
+function sortRows( rows, metrics, orderby ) {
+	let sorted = rows;
+
+	const orders = Array.isArray( orderby ) ? orderby : [ orderby ];
+	for ( const order of orders ) {
+		const direction = order?.sortOrder === 'DESCENDING' ? -1 : 1;
+		const index = metrics.findIndex( ( metric ) => getMetricKey( metric ) === order?.fieldName );
+		if ( index < 0 ) {
+			continue;
+		}
+
+		sorted = sorted.sort( ( a, b ) => {
+			let valA = parseFloat( a.metrics[ index ]?.values?.[ 0 ] );
+			if ( Number.isNaN( valA ) ) {
+				valA = 0;
+			}
+
+			let valB = parseFloat( b.metrics[ index ]?.values?.[ 0 ] );
+			if ( Number.isNaN( valB ) ) {
+				valB = 0;
+			}
+
+			return ( valA - valB ) * direction;
+		} );
+	}
+
+	return sorted;
+}
+
+/**
  * Generates mock data for Analytics reports.
  *
  * @since n.e.x.t
@@ -229,7 +268,9 @@ export function getAnalyticsMockResponse( args ) {
 		// Make sure we take the appropriate number of rows.
 		take( args.limit > 0 ? +args.limit : 90 ),
 		// Accumulate all rows into a single array.
-		reduce( ( acc, val ) => [ ...acc, val ], [] ),
+		reduce( ( rows, row ) => [ ...rows, row ], [] ),
+		// Sort rows if args.orderby is provided.
+		map( ( rows ) => args.orderby ? sortRows( rows, validMetrics, args.orderby ) : rows ),
 	];
 
 	// Process the stream of dimension values and add generated rows to the report data object.
