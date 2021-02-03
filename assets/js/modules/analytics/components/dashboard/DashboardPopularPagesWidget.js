@@ -76,7 +76,7 @@ function DashboardPopularPagesWidget( { WidgetReportZero } ) {
 		return {
 			analyticsMainURL: store.getServiceReportURL(
 				'content-pages',
-				{ ...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ) }
+				generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
 			),
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),

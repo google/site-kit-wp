@@ -42,6 +42,8 @@ import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import { isZeroReport } from '../../../util';
+import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
+
 const { Widget } = Widgets.components;
 const { useSelect } = Data;
 
@@ -135,6 +137,7 @@ function DashboardAllTrafficWidget() {
 		reportArgs = {
 			'explorer-table.plotKeys': '[]',
 			'_r.drilldown': `analytics.pagePath:${ getURLPath( entityURL ) }`,
+			...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
 		};
 	}
 
