@@ -26,13 +26,7 @@ import DashboardBounceRateWidget from '../assets/js/modules/analytics/components
 import DashboardGoalsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardUniqueVisitorsWidget';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
-import {
-	accountsPropertiesProfiles,
-	goals,
-	dashboardUserDimensionsArgs,
-	dashboardUserTotalsArgs,
-	dashboardUserGraphArgs,
-} from '../assets/js/modules/analytics/datastore/__fixtures__';
+import { accountsPropertiesProfiles, goals } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { getAnalyticsMockResponse } from '../tests/js/dataMock/analytics';
 
 /**
@@ -62,11 +56,86 @@ generateReportBasedWidgetStories( {
 	group: 'Analytics Module/Components/Dashboard/All Traffic Widget',
 	referenceDate: '2021-01-06',
 	...generateData( [
-		dashboardUserDimensionsArgs[ 'ga:channelGrouping' ],
-		dashboardUserDimensionsArgs[ 'ga:country' ],
-		dashboardUserDimensionsArgs[ 'ga:deviceCategory' ],
-		dashboardUserTotalsArgs,
-		dashboardUserGraphArgs,
+		{
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			compareStartDate: '2020-11-11',
+			compareEndDate: '2020-12-08',
+			metrics: [
+				{
+					expression: 'ga:users',
+				},
+			],
+			dimensions: [
+				'ga:channelGrouping',
+			],
+			orderby: {
+				fieldName: 'ga:users',
+				sortOrder: 'DESCENDING',
+			},
+			limit: 6,
+		},
+		{
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			compareStartDate: '2020-11-11',
+			compareEndDate: '2020-12-08',
+			metrics: [
+				{
+					expression: 'ga:users',
+				},
+			],
+			dimensions: [
+				'ga:country',
+			],
+			orderby: {
+				fieldName: 'ga:users',
+				sortOrder: 'DESCENDING',
+			},
+			limit: 6,
+		},
+		{
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			compareStartDate: '2020-11-11',
+			compareEndDate: '2020-12-08',
+			metrics: [
+				{
+					expression: 'ga:users',
+				},
+			],
+			dimensions: [
+				'ga:deviceCategory',
+			],
+			orderby: {
+				fieldName: 'ga:users',
+				sortOrder: 'DESCENDING',
+			},
+			limit: 6,
+		},
+		{
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			compareStartDate: '2020-11-11',
+			compareEndDate: '2020-12-08',
+			metrics: [
+				{
+					expression: 'ga:users',
+				},
+			],
+		},
+		{
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			dimensions: [
+				'ga:date',
+			],
+			metrics: [
+				{
+					expression: 'ga:users',
+				},
+			],
+		},
 	] ),
 	Component: DashboardAllTrafficWidget,
 	wrapWidget: false,
@@ -80,23 +149,88 @@ generateReportBasedWidgetStories( {
 	referenceDate: '2021-01-06',
 	...generateData( [
 		{
-			...dashboardUserDimensionsArgs[ 'ga:channelGrouping' ],
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			compareStartDate: '2020-11-11',
+			compareEndDate: '2020-12-08',
+			metrics: [
+				{
+					expression: 'ga:users',
+				},
+			],
+			dimensions: [
+				'ga:channelGrouping',
+			],
+			orderby: {
+				fieldName: 'ga:users',
+				sortOrder: 'DESCENDING',
+			},
+			limit: 6,
 			url: 'https://www.elasticpress.io/features/',
 		},
 		{
-			...dashboardUserDimensionsArgs[ 'ga:country' ],
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			compareStartDate: '2020-11-11',
+			compareEndDate: '2020-12-08',
+			metrics: [
+				{
+					expression: 'ga:users',
+				},
+			],
+			dimensions: [
+				'ga:country',
+			],
+			orderby: {
+				fieldName: 'ga:users',
+				sortOrder: 'DESCENDING',
+			},
+			limit: 6,
 			url: 'https://www.elasticpress.io/features/',
 		},
 		{
-			...dashboardUserDimensionsArgs[ 'ga:deviceCategory' ],
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			compareStartDate: '2020-11-11',
+			compareEndDate: '2020-12-08',
+			metrics: [
+				{
+					expression: 'ga:users',
+				},
+			],
+			dimensions: [
+				'ga:deviceCategory',
+			],
+			orderby: {
+				fieldName: 'ga:users',
+				sortOrder: 'DESCENDING',
+			},
+			limit: 6,
 			url: 'https://www.elasticpress.io/features/',
 		},
 		{
-			...dashboardUserTotalsArgs,
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			compareStartDate: '2020-11-11',
+			compareEndDate: '2020-12-08',
+			metrics: [
+				{
+					expression: 'ga:users',
+				},
+			],
 			url: 'https://www.elasticpress.io/features/',
 		},
 		{
-			...dashboardUserGraphArgs,
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			dimensions: [
+				'ga:date',
+			],
+			metrics: [
+				{
+					expression: 'ga:users',
+				},
+			],
 			url: 'https://www.elasticpress.io/features/',
 		},
 	] ),
