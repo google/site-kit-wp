@@ -31,9 +31,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { DATE_RANGE_OFFSET, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import PreviewBlock from '../../../../../components/PreviewBlock';
@@ -41,7 +40,6 @@ import ReportError from '../../../../../components/ReportError';
 const { useSelect } = Data;
 
 export default function UserCountGraph( { loaded, error, report } ) {
-	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 	const graphLineColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) || '#1a73e8' );
 
 	if ( ! loaded ) {
@@ -75,14 +73,6 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	];
 
 	const chartOptions = { ...UserCountGraph.chartOptions };
-
-	// Putting the actual start and end dates in the ticks causes the charts not to render
-	// them. See: https://github.com/google/site-kit-wp/issues/2708.
-	const startTick = new Date( startDate );
-	startTick.setDate( new Date( startDate ).getDate() + 1 );
-	const endTick = new Date( endDate );
-	endTick.setDate( new Date( endDate ).getDate() - 1 );
-	chartOptions.hAxis.ticks = [ startTick, endTick ];
 	chartOptions.series[ 0 ].color = graphLineColor;
 
 	return (

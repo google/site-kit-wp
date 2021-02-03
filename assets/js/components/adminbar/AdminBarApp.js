@@ -29,7 +29,6 @@ import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
 import AdminBarSessions from './AdminBarSessions';
 import AdminBarImpressions from './AdminBarImpressions';
 import AdminBarClicks from './AdminBarClicks';
-import LegacyAdminBarModules from './LegacyAdminBarModules';
 import ActivateModuleCTA from '../ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import Data from 'googlesitekit-data';
@@ -37,11 +36,9 @@ import Link from '../Link';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { decodeHTMLEntity, trackEvent } from '../../util';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function AdminBarApp() {
-	const widgetsAdminBarEnabled = useFeature( 'widgets.adminBar' );
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
 	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: currentEntityURL } ) );
@@ -83,37 +80,32 @@ export default function AdminBarApp() {
 						mdc-layout-grid__cell--align-middle
 					">
 						<div className="mdc-layout-grid__inner">
-							{ widgetsAdminBarEnabled && (
+							<AdminBarImpressions />
+							<AdminBarClicks />
+
+							{ analyticsModuleConnected && analyticsModuleActive && (
 								<Fragment>
-									<AdminBarImpressions />
-									<AdminBarClicks />
-
-									{ analyticsModuleConnected && analyticsModuleActive && (
-										<Fragment>
-											<AdminBarUniqueVisitors />
-											<AdminBarSessions />
-										</Fragment>
-									) }
-
-									{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
-										<div className="
-											mdc-layout-grid__cell
-											mdc-layout-grid__cell--span-6-desktop
-											mdc-layout-grid__cell--span-4-tablet
-										">
-											{ ! analyticsModuleActive && (
-												<ActivateModuleCTA moduleSlug="analytics" />
-											) }
-
-											{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
-												<CompleteModuleActivationCTA moduleSlug="analytics" />
-											) }
-										</div>
-									) }
+									<AdminBarUniqueVisitors />
+									<AdminBarSessions />
 								</Fragment>
 							) }
 
-							<LegacyAdminBarModules />
+							{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+								<div className="
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-6-desktop
+									mdc-layout-grid__cell--span-4-tablet
+								">
+									{ ! analyticsModuleActive && (
+										<ActivateModuleCTA moduleSlug="analytics" />
+									) }
+
+									{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
+										<CompleteModuleActivationCTA moduleSlug="analytics" />
+									) }
+								</div>
+							) }
+
 						</div>
 					</div>
 					<div className="
