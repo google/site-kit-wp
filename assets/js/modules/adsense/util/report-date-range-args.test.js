@@ -17,37 +17,22 @@
  */
 import { generateDateRangeArgs } from './report-date-range-args';
 
-describe( 'AdSense reporting date range arguments', () => {
-	describe( 'generateDateRangeArgs', () => {
-		const allArgs = {
-			startDate: '2021-01-01',
-			endDate: '2021-01-27',
-		};
+describe( 'AdSense report date range: generateDateRangeArgs', () => {
+	it( 'should throw if a `dates` object is not provided', () => {
+		expect( () => generateDateRangeArgs() ).toThrow( 'dates object is required' );
+	} );
 
-		it( 'should throw if `startDate` or `endDate` arguments are not provided', () => {
-			const { startDate, endDate } = allArgs;
-			try {
-				generateDateRangeArgs();
-			} catch ( error ) {
-				expect( error.message ).toEqual( 'dates object is required' );
-			}
-			try {
-				generateDateRangeArgs( { startDate } );
-			} catch ( error ) {
-				expect( error.message ).toEqual( 'endDate is required' );
-			}
-			try {
-				generateDateRangeArgs( { endDate } );
-			} catch ( error ) {
-				expect( error.message ).toEqual( 'startDate is required' );
-			}
-		} );
+	it( 'should throw if `startDate` argument is not provided', () => {
+		expect( () => generateDateRangeArgs( { endDate: '2021-01-27' } ) ).toThrow( 'startDate is required' );
+	} );
 
-		it( 'should return an object containing a `d` key, the value of which is the `startDate` argument with "-" replaced with "/", concatenated to the `endDate` argument also with "-" replaced with "/", using `-` to join the two strings', () => {
-			const { startDate, endDate } = allArgs;
-			const result = generateDateRangeArgs( { startDate, endDate } );
+	it( 'should throw if `endDate` argument is not provided', () => {
+		expect( () => generateDateRangeArgs( { startDate: '2021-01-01' } ) ).toThrow( 'endDate is required' );
+	} );
 
-			expect( result.d ).toBe( '2021/01/01-2021/01/27' );
-		} );
+	it( 'should return an object containing a `d` key, the value of which is the `startDate` argument with "-" replaced with "/", concatenated to the `endDate` argument also with "-" replaced with "/", using `-` to join the two strings', () => {
+		const result = generateDateRangeArgs( { startDate: '2021-01-01', endDate: '2021-01-27' } );
+
+		expect( result.d ).toBe( '2021/01/01-2021/01/27' );
 	} );
 } );

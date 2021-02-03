@@ -101,9 +101,15 @@ describe( 'module/adsense service store', () => {
 				registry.dispatch( STORE_NAME ).setSettings( settings );
 			} );
 
-			it( 'should return undefined if accountID or referenceSiteURL are undefined', () => {
-				registry.dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: undefined } );
+			it( 'should return undefined if accountID is undefined', () => {
 				registry.dispatch( STORE_NAME ).setSettings( { accountID: undefined } );
+
+				const url = registry.select( STORE_NAME ).getServiceAccountSiteURL();
+				expect( url ).toBeUndefined();
+			} );
+
+			it( 'should return undefined if referenceSiteURL is undefined', () => {
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: undefined } );
 
 				const url = registry.select( STORE_NAME ).getServiceAccountSiteURL();
 				expect( url ).toBeUndefined();
@@ -115,7 +121,7 @@ describe( 'module/adsense service store', () => {
 				const resultingURL = registry.select( STORE_NAME ).getServiceAccountSiteURL();
 				const { pathname } = new URL( resultingURL );
 
-				expect( pathname.endsWith( correctPath ) ).toEqual( true );
+				expect( pathname.endsWith( correctPath ) ).toBe( true );
 			} );
 
 			it( 'should construct the correct query params for the URL', () => {

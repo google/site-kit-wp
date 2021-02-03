@@ -63,16 +63,14 @@ export default function AdSenseDashboardWidget() {
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
-	const accountSiteURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceAccountSiteURL(
-		{ ...generateDateRangeArgs( dateRangeDates ) }
-	) );
+	const accountSiteURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceAccountSiteURL( generateDateRangeArgs( dateRangeDates ) ) );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 
 	/**
-	 * Handles data errors from the contained Analytics component(s).
+	 * Handles data errors from the contained AdSense component(s).
 	 *
-	 * Currently handled in the AnalyticsDashboardWidget component.
+	 * Currently handled in the AdSenseEstimateEarningsWidget component.
 	 *
 	 * If this component's API data calls returns an error, the error message is passed to this callback, resulting in the display of an error Notification.
 	 *
