@@ -27,4 +27,3 @@ import { registerStore, registerModule, registerWidgets } from './modules/analyt
 registerStore( Data );
 registerModule( Modules );
 registerWidgets( Widgets );
-

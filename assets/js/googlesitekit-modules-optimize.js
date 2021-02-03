@@ -25,4 +25,3 @@ import { registerStore, registerModule } from './modules/optimize';
 
 registerStore( Data );
 registerModule( Modules );
-
