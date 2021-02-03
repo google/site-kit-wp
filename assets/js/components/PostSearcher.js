@@ -42,7 +42,7 @@ const { useSelect, useDispatch } = Data;
 function PostSearcher() {
 	const [ canSubmit, setCanSubmit ] = useState( false );
 	const [ match, setMatch ] = useState( {} );
-	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
+	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
 
 	const detailsURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
@@ -56,9 +56,9 @@ function PostSearcher() {
 	return (
 		<div
 			className={ classnames( 'mdc-layout-grid__cell', {
-				'mdc-layout-grid__cell--span-12': analyticsModuleActive,
-				'mdc-layout-grid__cell--span-4-tablet': ! analyticsModuleActive,
-				'mdc-layout-grid__cell--span-6-desktop': ! analyticsModuleActive,
+				'mdc-layout-grid__cell--span-12': analyticsModuleConnected,
+				'mdc-layout-grid__cell--span-4-tablet': ! analyticsModuleConnected,
+				'mdc-layout-grid__cell--span-6-desktop': ! analyticsModuleConnected,
 			} ) }
 		>
 			<Layout

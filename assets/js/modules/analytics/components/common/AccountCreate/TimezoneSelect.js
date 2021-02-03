@@ -58,11 +58,11 @@ export default function TimezoneSelect() {
 		>
 			{
 				( timeZonesByCountryCode[ countryCode ] || [] ).map(
-					// eslint-disable-next-line sitekit/camelcase-acronyms
+					// eslint-disable-next-line sitekit/acronym-case
 					( { timeZoneId, displayName }, i ) => (
 						<Option
 							key={ i }
-							// eslint-disable-next-line sitekit/camelcase-acronyms
+							// eslint-disable-next-line sitekit/acronym-case
 							value={ timeZoneId }
 						>
 							{ displayName }

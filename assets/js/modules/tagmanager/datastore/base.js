@@ -40,21 +40,21 @@ let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 
 // Rename generated pieces to adhere to our convention.
 baseModuleStore = ( ( { actions, selectors, ...store } ) => {
-	// eslint-disable-next-line sitekit/camelcase-acronyms
+	// eslint-disable-next-line sitekit/acronym-case
 	const { setAmpContainerID, ...restActions } = actions;
-	// eslint-disable-next-line sitekit/camelcase-acronyms
+	// eslint-disable-next-line sitekit/acronym-case
 	const { getAmpContainerID, ...restSelectors } = selectors;
 
 	return {
 		...store,
 		actions: {
 			...restActions,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			setAMPContainerID: setAmpContainerID,
 		},
 		selectors: {
 			...restSelectors,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			getAMPContainerID: getAmpContainerID,
 		},
 	};
