@@ -39,9 +39,6 @@ const store = Data.combineStores(
 	service
 );
 
-// Register this store on the global registry.
-Data.registerStore( STORE_NAME, store );
-
 export const {
 	initialState,
 	actions,
@@ -50,5 +47,9 @@ export const {
 	resolvers,
 	selectors,
 } = store;
+
+export const registerStore = ( registry ) => {
+	registry.registerStore( STORE_NAME, store );
+};
 
 export default store;

@@ -22,20 +22,15 @@
 import { _n, sprintf } from '@wordpress/i18n';
 
 /**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-
-/**
  * Gets the current dateRange day count.
  *
  * @since 1.19.0
+ * @since n.e.x.t `dateRange` is now a required argument.
  *
- * @param {string} [dateRange] Optional. The date range slug.
+ * @param {string} dateRange The date range slug.
  * @return {number} The number of days in the range.
  */
-export function getCurrentDateRangeDayCount( dateRange = getCurrentDateRangeSlug() ) {
+export function getCurrentDateRangeDayCount( dateRange ) {
 	const daysMatch = dateRange.match( /last-(\d+)-days/ );
 
 	if ( daysMatch && daysMatch[ 1 ] ) {
@@ -43,17 +38,6 @@ export function getCurrentDateRangeDayCount( dateRange = getCurrentDateRangeSlug
 	}
 
 	throw new Error( 'Unrecognized date range slug.' );
-}
-
-/**
- * Gets the current dateRange slug.
- *
- * @since 1.8.0
- *
- * @return {string} The date range slug.
- */
-export function getCurrentDateRangeSlug() {
-	return Data.select( CORE_USER ).getDateRange();
 }
 
 /**

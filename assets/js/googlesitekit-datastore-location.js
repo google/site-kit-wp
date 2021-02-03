@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-// This import has side effects; it registers the core/forms datastore
-// on the default data store (`googlesitekit.data`).
-
 /**
  * Internal dependencies
  */
-import './googlesitekit/datastore/location';
+import Data from 'googlesitekit-data';
+import { registerStore } from './googlesitekit/datastore/location';
+
+registerStore( Data );
