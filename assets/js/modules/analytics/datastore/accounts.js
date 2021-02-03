@@ -236,14 +236,14 @@ const baseResolvers = {
 			if ( response ) {
 				dispatch( STORE_NAME ).receiveGetAccounts( response.accounts );
 
-				if ( response.properties?.[ 0 ]?.accountId ) { // eslint-disable-line sitekit/camelcase-acronyms
-					const accountID = response.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+				if ( response.properties?.[ 0 ]?.accountId ) { // eslint-disable-line sitekit/acronym-case
+					const accountID = response.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 					dispatch( STORE_NAME ).receiveGetProperties( response.properties, { accountID } );
 				}
 
-				if ( response.profiles?.[ 0 ]?.webPropertyId ) { // eslint-disable-line sitekit/camelcase-acronyms
-					const propertyID = response.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
-					const accountID = response.profiles[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+				if ( response.profiles?.[ 0 ]?.webPropertyId ) { // eslint-disable-line sitekit/acronym-case
+					const propertyID = response.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/acronym-case
+					const accountID = response.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { accountID, propertyID } );
 				}
 
@@ -265,8 +265,8 @@ const baseResolvers = {
 		const accountID = registry.select( STORE_NAME ).getAccountID();
 		// Pre-select values from the matched property if no account is selected.
 		if ( matchedProperty && ! accountID ) {
-			registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId ); // eslint-disable-line sitekit/camelcase-acronyms
-			registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
+			registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId ); // eslint-disable-line sitekit/acronym-case
+			registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 		}
 	},
 };

@@ -56,7 +56,7 @@ const Dialog = ( {
 		}
 	}, [] );
 
-	// eslint-disable-next-line sitekit/camelcase-acronyms
+	// eslint-disable-next-line sitekit/acronym-case
 	const instanceID = useInstanceId( Dialog );
 	const labelledByID = `googlesitekit-dialog-label-${ instanceID }`;
 	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
