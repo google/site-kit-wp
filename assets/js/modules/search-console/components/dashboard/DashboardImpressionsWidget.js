@@ -50,6 +50,7 @@ function DashboardImpressionsWidget( { WidgetReportZero } ) {
 		const url = select( CORE_SITE ).getCurrentEntityURL();
 		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
 		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
+		const dateRange = select( CORE_USER ).getDateRange();
 
 		const { compareStartDate, endDate } = select( CORE_USER ).getDateRangeDates( { compare: true, offsetDays: DATE_RANGE_OFFSET } );
 		const args = {
@@ -61,7 +62,7 @@ function DashboardImpressionsWidget( { WidgetReportZero } ) {
 
 		const serviceBaseURLArgs = {
 			resource_id: propertyID,
-			num_of_days: getCurrentDateRangeDayCount( args.dateRange ),
+			num_of_days: getCurrentDateRangeDayCount( dateRange ),
 		};
 		if ( url ) {
 			args.url = url;
