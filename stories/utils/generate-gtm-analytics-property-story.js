@@ -63,10 +63,10 @@ export function generateGTMAnalyticsPropertyStory( {
 			const properties = [
 				...fixtures.accountsPropertiesProfiles.properties,
 				{
-					accountId: existingTagAccountID, // eslint-disable-line sitekit/camelcase-acronyms
-					defaultProfileId: '206512257', // eslint-disable-line sitekit/camelcase-acronyms
+					accountId: existingTagAccountID, // eslint-disable-line sitekit/acronym-case
+					defaultProfileId: '206512257', // eslint-disable-line sitekit/acronym-case
 					id: existingTagPropertyID,
-					internalWebPropertyId: existingTagWebPropertyID, // eslint-disable-line sitekit/camelcase-acronyms
+					internalWebPropertyId: existingTagWebPropertyID, // eslint-disable-line sitekit/acronym-case
 					name: 'qwerty',
 				},
 			];
@@ -74,11 +74,11 @@ export function generateGTMAnalyticsPropertyStory( {
 			const profiles = [
 				...fixtures.accountsPropertiesProfiles.profiles,
 				{
-					accountId: existingTagAccountID, // eslint-disable-line sitekit/camelcase-acronyms
+					accountId: existingTagAccountID, // eslint-disable-line sitekit/acronym-case
 					id: '206512258',
-					internalWebPropertyId: existingTagWebPropertyID, // eslint-disable-line sitekit/camelcase-acronyms
+					internalWebPropertyId: existingTagWebPropertyID, // eslint-disable-line sitekit/acronym-case
 					name: 'All Web Site Data',
-					webPropertyId: existingTagPropertyID, // eslint-disable-line sitekit/camelcase-acronyms
+					webPropertyId: existingTagPropertyID, // eslint-disable-line sitekit/acronym-case
 				},
 			];
 
@@ -102,7 +102,7 @@ export function generateGTMAnalyticsPropertyStory( {
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 
 			[ gtmAccountID, existingTagAccountID ].forEach( ( accountID ) => {
-				const accountProperties = properties.filter( ( { accountId } ) => accountId === accountID ); // eslint-disable-line sitekit/camelcase-acronyms
+				const accountProperties = properties.filter( ( { accountId } ) => accountId === accountID ); // eslint-disable-line sitekit/acronym-case
 
 				registry.dispatch( STORE_NAME ).receiveGetProperties(
 					accountProperties,
@@ -111,7 +111,7 @@ export function generateGTMAnalyticsPropertyStory( {
 
 				accountProperties.forEach( ( { id: propertyID } ) => {
 					registry.dispatch( STORE_NAME ).receiveGetProfiles(
-						profiles.filter( ( { webPropertyId } ) => webPropertyId === propertyID ), // eslint-disable-line sitekit/camelcase-acronyms
+						profiles.filter( ( { webPropertyId } ) => webPropertyId === propertyID ), // eslint-disable-line sitekit/acronym-case
 						{ accountID, propertyID }
 					);
 				} );

@@ -35,11 +35,12 @@ import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
-import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
+
 const { useSelect } = Data;
 
 const LegacySearchConsoleDashboardWidgetKeywordTable = ( props ) => {
@@ -50,10 +51,11 @@ const LegacySearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 	const referenceSiteURL = useSelect( ( select ) => {
 		return untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 	} );
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
+
 	const baseServiceURLArgs = {
 		resource_id: domain,
-		num_of_days: getCurrentDateRangeDayCount( dateRange ),
+		...generateDateRangeArgs( { startDate, endDate } ),
 	};
 	if ( url ) {
 		baseServiceURLArgs.page = `!${ url }`;

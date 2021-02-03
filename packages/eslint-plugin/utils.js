@@ -70,6 +70,7 @@ function isImported( node ) {
 		'ImportSpecifier',
 		'ExportDefaultDeclaration',
 		'ExportDeclaration',
+		'ExportSpecifier',
 		'ImportDeclaration',
 	];
 
@@ -100,9 +101,20 @@ function isImported( node ) {
 	return false;
 }
 
+const isTypeFunction = ( type ) => {
+	const functionTypes = [ 'ArrowFunctionExpression', 'FunctionDeclaration', 'FunctionExpression' ];
+	return functionTypes.includes( type );
+};
+
 function isFunction( node ) {
 	if ( ! node ) {
 		return false;
+	}
+
+	if ( node?.type === 'Identifier' ) {
+		if ( isTypeFunction( node?.parent?.type ) || isTypeFunction( node?.parent?.init?.type ) ) {
+			return true;
+		}
 	}
 
 	const isFunctionDeclaration = node.type && (

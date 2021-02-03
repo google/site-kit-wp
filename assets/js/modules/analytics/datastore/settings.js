@@ -63,7 +63,7 @@ export async function submitChanges( { select, dispatch } ) {
 
 		propertyID = property.id;
 		await dispatch( STORE_NAME ).setPropertyID( property.id );
-		await dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
+		await dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 	}
 
 	const profileID = select( STORE_NAME ).getProfileID();
