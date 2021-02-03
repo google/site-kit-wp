@@ -25,7 +25,7 @@ import * as modulesOptimize from '../../assets/js/modules/optimize';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
-import { STORE_NAME as CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import {
 	PERMISSION_AUTHENTICATE,
 	PERMISSION_SETUP,
@@ -34,9 +34,9 @@ import {
 	PERMISSION_VIEW_MODULE_DETAILS,
 	PERMISSION_MANAGE_OPTIONS,
 	PERMISSION_PUBLISH_POSTS,
-	STORE_NAME as CORE_USER,
+	CORE_USER,
 } from '../../assets/js/googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/fixtures.json';
 
