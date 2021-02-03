@@ -210,11 +210,17 @@ export function generateReportBasedWidgetStories( {
 
 	let widgetElement;
 
+	const slug = moduleSlugs.map( ( mapSlug ) => `${ mapSlug }-widget` ).join( ' ' );
+	const widgetComponentProps = getWidgetComponentProps( slug );
+
 	if ( wrapWidget ) {
-		widgetElement = <Component />;
+		const { Widget } = widgetComponentProps;
+		widgetElement = (
+			<Widget>
+				<Component { ...widgetComponentProps } />
+			</Widget>
+		);
 	} else {
-		const slug = moduleSlugs.map( ( mapSlug ) => `${ mapSlug }-widget` ).join( ' ' );
-		const widgetComponentProps = getWidgetComponentProps( slug );
 		widgetElement = <Component { ...widgetComponentProps } />;
 	}
 
