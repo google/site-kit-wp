@@ -185,7 +185,7 @@ export function getAnalyticsMockResponse( args ) {
 	const validMetrics = ( args.metrics || [] ).filter( ( metric ) => !! getMetricType( metric ) );
 	const streams = [];
 
-	// Generate a stream of dimension values.
+	// Generate streams of dimension values.
 	const dimensions = Array.isArray( args.dimensions ) ? args.dimensions : [ args.dimensions ];
 	dimensions.forEach( ( dimension ) => {
 		if ( dimension === 'ga:date' ) {

@@ -50,6 +50,18 @@ const setup = ( registry ) => {
 
 const generateData = makeReportDataGenerator( getAnalyticsMockResponse );
 
+const baseAllTrafficArgs = {
+	startDate: '2020-12-09',
+	endDate: '2021-01-05',
+	compareStartDate: '2020-11-11',
+	compareEndDate: '2020-12-08',
+	metrics: [
+		{
+			expression: 'ga:users',
+		},
+	],
+};
+
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
@@ -57,15 +69,7 @@ generateReportBasedWidgetStories( {
 	referenceDate: '2021-01-06',
 	...generateData( [
 		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			compareStartDate: '2020-11-11',
-			compareEndDate: '2020-12-08',
-			metrics: [
-				{
-					expression: 'ga:users',
-				},
-			],
+			...baseAllTrafficArgs,
 			dimensions: [
 				'ga:channelGrouping',
 			],
@@ -76,15 +80,7 @@ generateReportBasedWidgetStories( {
 			limit: 6,
 		},
 		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			compareStartDate: '2020-11-11',
-			compareEndDate: '2020-12-08',
-			metrics: [
-				{
-					expression: 'ga:users',
-				},
-			],
+			...baseAllTrafficArgs,
 			dimensions: [
 				'ga:country',
 			],
@@ -95,15 +91,7 @@ generateReportBasedWidgetStories( {
 			limit: 6,
 		},
 		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			compareStartDate: '2020-11-11',
-			compareEndDate: '2020-12-08',
-			metrics: [
-				{
-					expression: 'ga:users',
-				},
-			],
+			...baseAllTrafficArgs,
 			dimensions: [
 				'ga:deviceCategory',
 			],
@@ -113,17 +101,7 @@ generateReportBasedWidgetStories( {
 			},
 			limit: 6,
 		},
-		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			compareStartDate: '2020-11-11',
-			compareEndDate: '2020-12-08',
-			metrics: [
-				{
-					expression: 'ga:users',
-				},
-			],
-		},
+		baseAllTrafficArgs,
 		{
 			startDate: '2020-12-09',
 			endDate: '2021-01-05',
@@ -149,15 +127,7 @@ generateReportBasedWidgetStories( {
 	referenceDate: '2021-01-06',
 	...generateData( [
 		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			compareStartDate: '2020-11-11',
-			compareEndDate: '2020-12-08',
-			metrics: [
-				{
-					expression: 'ga:users',
-				},
-			],
+			...baseAllTrafficArgs,
 			dimensions: [
 				'ga:channelGrouping',
 			],
@@ -169,15 +139,7 @@ generateReportBasedWidgetStories( {
 			url: 'https://www.elasticpress.io/features/',
 		},
 		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			compareStartDate: '2020-11-11',
-			compareEndDate: '2020-12-08',
-			metrics: [
-				{
-					expression: 'ga:users',
-				},
-			],
+			...baseAllTrafficArgs,
 			dimensions: [
 				'ga:country',
 			],
@@ -189,15 +151,7 @@ generateReportBasedWidgetStories( {
 			url: 'https://www.elasticpress.io/features/',
 		},
 		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			compareStartDate: '2020-11-11',
-			compareEndDate: '2020-12-08',
-			metrics: [
-				{
-					expression: 'ga:users',
-				},
-			],
+			...baseAllTrafficArgs,
 			dimensions: [
 				'ga:deviceCategory',
 			],
@@ -209,15 +163,7 @@ generateReportBasedWidgetStories( {
 			url: 'https://www.elasticpress.io/features/',
 		},
 		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			compareStartDate: '2020-11-11',
-			compareEndDate: '2020-12-08',
-			metrics: [
-				{
-					expression: 'ga:users',
-				},
-			],
+			...baseAllTrafficArgs,
 			url: 'https://www.elasticpress.io/features/',
 		},
 		{
