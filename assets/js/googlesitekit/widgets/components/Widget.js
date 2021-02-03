@@ -27,8 +27,8 @@ const Widget = ( {
 	className,
 	widgetSlug,
 	noPadding,
-	header: Header,
-	footer: Footer,
+	Header,
+	Footer,
 } ) => {
 	return (
 		<div
@@ -65,8 +65,8 @@ Widget.propTypes = {
 	children: PropTypes.node,
 	widgetSlug: PropTypes.string.isRequired,
 	noPadding: PropTypes.bool,
-	header: PropTypes.elementType,
-	footer: PropTypes.elementType,
+	Header: PropTypes.elementType,
+	Footer: PropTypes.elementType,
 };
 
 export default Widget;

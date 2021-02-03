@@ -165,7 +165,7 @@ function DashboardAllTrafficWidget( { Widget } ) {
 	return (
 		<Widget
 			className="googlesitekit-widget--footer-v2"
-			footer={ () => (
+			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
 					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }

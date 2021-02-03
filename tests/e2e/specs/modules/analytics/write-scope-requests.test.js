@@ -64,13 +64,13 @@ describe( 'Analytics write scope requests', () => {
 					request.respond( {
 						status: 200,
 						body: JSON.stringify( {
-							accountId: '100', // eslint-disable-line sitekit/camelcase-acronyms
+							accountId: '100', // eslint-disable-line sitekit/acronym-case
 							id: 'UA-100-1',
-							internalWebPropertyId: '200', // eslint-disable-line sitekit/camelcase-acronyms
+							internalWebPropertyId: '200', // eslint-disable-line sitekit/acronym-case
 							kind: 'analytics#webproperty',
 							level: 'STANDARD',
 							name: 'Test Property X',
-							websiteUrl: '/wp-admin/', // eslint-disable-line sitekit/camelcase-acronyms
+							websiteUrl: '/wp-admin/', // eslint-disable-line sitekit/acronym-case
 							permissions: {
 								effective: [
 									'READ_AND_ANALYZE',
@@ -88,14 +88,14 @@ describe( 'Analytics write scope requests', () => {
 						status: 200,
 						body: JSON.stringify( {
 							id: '300',
-							accountId: '100', // eslint-disable-line sitekit/camelcase-acronyms
-							webPropertyId: 'UA-100-1', // eslint-disable-line sitekit/camelcase-acronyms
-							internalWebPropertyId: '200', // eslint-disable-line sitekit/camelcase-acronyms
+							accountId: '100', // eslint-disable-line sitekit/acronym-case
+							webPropertyId: 'UA-100-1', // eslint-disable-line sitekit/acronym-case
+							internalWebPropertyId: '200', // eslint-disable-line sitekit/acronym-case
 							kind: 'analytics#profile',
 							level: 'STANDARD',
 							name: 'Test Profile X',
 							type: 'WEB',
-							websiteUrl: '/wp-admin/', // eslint-disable-line sitekit/camelcase-acronyms
+							websiteUrl: '/wp-admin/', // eslint-disable-line sitekit/acronym-case
 							permissions: {
 								effective: [
 									'READ_AND_ANALYZE',
