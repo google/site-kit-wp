@@ -26,7 +26,6 @@ import { useState, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
 import { FORM_ALL_TRAFFIC_WIDGET, DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
@@ -36,16 +35,14 @@ import { getURLPath } from '../../../../../util/getURLPath';
 import whenActive from '../../../../../util/when-active';
 import SourceLink from '../../../../../components/SourceLink';
 import ReportError from '../../../../../components/ReportError';
-import ReportZero from '../../../../../components/ReportZero';
 import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import { isZeroReport } from '../../../util';
-const { Widget } = Widgets.components;
 const { useSelect } = Data;
 
-function DashboardAllTrafficWidget() {
+function DashboardAllTrafficWidget( { Widget, WidgetReportZero } ) {
 	const [ firstLoad, setFirstLoad ] = useState( true );
 	const [ currentRange, setCurrentRange ] = useState( '' );
 
@@ -160,13 +157,11 @@ function DashboardAllTrafficWidget() {
 	}
 
 	if ( isZeroReport( pieChartReport ) ) {
-		// TODO: Replace with `props.WidgetReportZero` once legacy dashboard UI has been removed.
-		return <ReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	return (
 		<Widget
-			slug="analyticsAllTraffic"
 			className="googlesitekit-widget--footer-v2"
 			Footer={ () => (
 				<SourceLink

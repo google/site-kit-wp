@@ -28,8 +28,8 @@ import { GoogleSitekitAdminbar } from '../assets/js/googlesitekit-adminbar';
 import { googlesitekit as wpAdminBarData } from '../.storybook/data/blog---googlesitekit';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { provideModules, provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
-import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { adminbarSearchConsoleMockData, adminbarSearchConsoleOptions } from '../assets/js/modules/search-console/datastore/__fixtures__';
 import { adminBarAnalyticsTotalUsersMockData, adminBarAnalyticsTotalUsersOptions, adminBarAnalyticsSessionsMockData, adminBarAnalyticsSessionsOptions } from '../assets/js/modules/analytics/datastore/__fixtures__';
 
