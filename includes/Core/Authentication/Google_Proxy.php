@@ -89,7 +89,7 @@ class Google_Proxy {
 	 * @param array       $args Array of request arguments.
 	 * @return array|WP_Error The response as an associative array or WP_Error on failure.
 	 */
-	public function request( $uri, Credentials $credentials, array $args = array() ) {
+	private function request( $uri, Credentials $credentials, array $args = array() ) {
 		$request_args = array(
 			'headers' => ! empty( $args['headers'] ) && is_array( $args['headers'] ) ? $args['headers'] : array(),
 			'body'    => ! empty( $args['body'] ) && is_array( $args['body'] ) ? $args['body'] : array(),
@@ -231,6 +231,36 @@ class Google_Proxy {
 			array(
 				'mode' => $mode,
 				'body' => $this->get_site_fields(),
+			)
+		);
+	}
+
+	/**
+	 * Synchronizes user input settings with the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @param string      $access_token Access token.
+	 * @param array|null  $settings     Settings array.
+	 * @return array|WP_Error Response of the wp_remote_post request.
+	 */
+	public function sync_user_input_settings( Credentials $credentials, $access_token, $settings = null ) {
+		$body = array();
+		if ( ! empty( $settings ) ) {
+			$body = array(
+				'settings'       => $settings,
+				'client_user_id' => (string) get_current_user_id(),
+			);
+		}
+
+		return $this->request(
+			self::USER_INPUT_SETTINGS_URI,
+			$credentials,
+			array(
+				'json_request' => true,
+				'access_token' => $access_token,
+				'body'         => $body,
 			)
 		);
 	}
