@@ -25,7 +25,6 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
@@ -39,9 +38,8 @@ import TableOverflowContainer from '../../../../components/TableOverflowContaine
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
-const { Widget } = Widgets.components;
 
-function DashboardPopularPagesWidget( { WidgetReportZero } ) {
+function DashboardPopularPagesWidget( { Widget, WidgetReportZero } ) {
 	const {
 		data,
 		error,
@@ -129,7 +127,6 @@ function DashboardPopularPagesWidget( { WidgetReportZero } ) {
 
 	return (
 		<Widget
-			slug="analyticsPopularPages"
 			noPadding
 			Footer={ () => (
 				<SourceLink

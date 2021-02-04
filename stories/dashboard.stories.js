@@ -45,6 +45,7 @@ import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
 import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
+import { getWidgetComponentProps } from '../assets/js/googlesitekit/widgets/util';
 
 storiesOf( 'Dashboard', module )
 	.add( 'Module Header', () => (
@@ -119,10 +120,11 @@ storiesOf( 'Dashboard', module )
 	} )
 	.add( 'URL Search Widget', () => {
 		const setupRegistry = ( registry ) => provideSiteInfo( registry );
+		const widgetComponentProps = getWidgetComponentProps( 'urlSearch' );
 
 		return (
 			<WithTestRegistry callback={ setupRegistry } >
-				<URLSearchWidget />
+				<URLSearchWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
 	} )
