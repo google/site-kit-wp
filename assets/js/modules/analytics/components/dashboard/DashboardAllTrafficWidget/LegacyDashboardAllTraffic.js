@@ -33,7 +33,7 @@ import { Cell } from '../../../../../material-components';
 function LegacyDashboardAllTraffic() {
 	return (
 		<Fragment>
-			<Cell id="googlesitekit-pagespeed-header" size={ 12 }>
+			<Cell size={ 12 }>
 				<DashboardModuleHeader
 					title={ __( 'Your Traffic at a Glance', 'google-site-kit' ) }
 					description={ __( 'How people found your site.', 'google-site-kit' ) }

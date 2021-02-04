@@ -85,7 +85,9 @@ const WPDashboardApp = () => {
 							) }
 						</div>
 					) }
-					<WPDashboardPopularPages />
+					{ analyticsModuleActive && analyticsModuleConnected && (
+						<WPDashboardPopularPages />
+					) }
 				</div>
 			) }
 			<LegacyWPDashboardModules />

@@ -17,7 +17,7 @@
  */
 
 module.exports = {
-	'camelcase-acronyms': require( './camelcase-acronyms' ),
+	'acronym-case': require( './acronym-case' ),
 	'jsdoc-capitalization': require( './jsdoc-capitalization' ),
 	'jsdoc-fullstop': require( './jsdoc-fullstop' ),
 	'jsdoc-newlines': require( './jsdoc-newlines' ),

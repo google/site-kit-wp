@@ -44,6 +44,7 @@ class Debug_DataTest extends TestCase {
 				'search_console_property',
 				'required_scopes',
 				'capabilities',
+				'enabled_features',
 			),
 			array_keys( $info['google-site-kit']['fields'] )
 		);

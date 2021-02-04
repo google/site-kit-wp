@@ -100,14 +100,15 @@ const WPDashboardPopularPages = () => {
 			numFmt( row.metrics[ 0 ].values[ 0 ], { style: 'decimal' } ),
 		];
 	} );
+
 	const options = {
-		hideHeader: false,
-		chartsEnabled: false,
+		chartsEnabled: true,
 		links,
-		hideColumns: {
-			mobile: [ 2, 3 ],
-		},
+		cap: 5,
+		showURLs: true,
+		useAdminURLs: true,
 	};
+
 	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
 	return (
