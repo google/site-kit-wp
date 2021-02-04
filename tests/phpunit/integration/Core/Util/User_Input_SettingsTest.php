@@ -12,8 +12,13 @@ namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\User_Input_State;
+use Google\Site_Kit\Core\Storage\Encrypted_Options;
+use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
 use Google\Site_Kit\Tests\TestCase;
@@ -43,19 +48,6 @@ class User_Input_SettingsTest extends TestCase {
 	public function setUp() {
 		parent::setUp();
 		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-	}
-
-	private function get_connected_to_proxy_mock() {
-		$settings = $this->getMockBuilder( User_Input_Settings::class )
-			->setConstructorArgs( array( $this->context ) )
-			->setMethods( array( 'is_connected_to_proxy' ) )
-			->getMock();
-
-		$settings
-			->method( 'is_connected_to_proxy' )
-			->willReturn( true );
-
-		return $settings;
 	}
 
 	public function test_not_connected_to_proxy() {
@@ -103,7 +95,14 @@ class User_Input_SettingsTest extends TestCase {
 		wp_set_current_user( $user_id );
 
 		$user_options = new User_Options( $this->context, $user_id );
-		$settings     = $this->get_connected_to_proxy_mock();
+		$settings     = $this->getMockBuilder( User_Input_Settings::class )
+			->setConstructorArgs( array( $this->context ) )
+			->setMethods( array( 'is_connected_to_proxy' ) )
+			->getMock();
+
+		$settings
+			->method( 'is_connected_to_proxy' )
+			->willReturn( true );
 
 		set_transient(
 			'googlesitekit_user_input_settings',
@@ -166,8 +165,8 @@ class User_Input_SettingsTest extends TestCase {
 	}
 
 	public function test_get_settings_from_remote() {
-		$settings = $this->get_connected_to_proxy_mock();
-		$data     = array(
+		list ( $settings, $auth ) = $this->provision_settings_instance();
+		$data                     = array(
 			'goals'         => array(
 				'values' => array( 'goal4', 'goal5', 'goal6' ),
 				'scope'  => 'site',
@@ -192,32 +191,16 @@ class User_Input_SettingsTest extends TestCase {
 
 		remove_all_filters( 'pre_http_request' );
 
-		add_filter(
-			'pre_http_request',
-			function( $pre, $args, $url ) use ( $data ) {
-				$authentication          = new Authentication( $this->context );
-				$user_input_settings_url = $authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
-				if ( $url !== $user_input_settings_url ) {
-					return $pre;
-				}
-
-				return array(
-					'headers'  => array(),
-					'body'     => wp_json_encode( $data ),
-					'response' => array( 'code' => 200 ),
-				);
-			},
-			10,
-			3
-		);
+		$pre_http_request = $this->make_pre_http_request_handler( $data, $auth );
+		add_filter( 'pre_http_request', $pre_http_request, 10, 3 );
 
 		$this->assertEquals( $data, $settings->get_settings() );
 	}
 
 	public function test_set_settings() {
-		$settings = $this->get_connected_to_proxy_mock();
-		$body     = array();
-		$data     = array(
+		list ( $settings, $auth ) = $this->provision_settings_instance();
+		$body                     = array();
+		$data                     = array(
 			'goals'         => array( 'goal7' ),
 			'helpNeeded'    => array(),
 			'searchTerms'   => array(),
@@ -227,102 +210,88 @@ class User_Input_SettingsTest extends TestCase {
 
 		remove_all_filters( 'pre_http_request' );
 
-		add_filter(
-			'pre_http_request',
-			function( $pre, $args, $url ) use ( $data ) {
-				$authentication          = new Authentication( $this->context );
-				$user_input_settings_url = $authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
-				if ( $url !== $user_input_settings_url ) {
-					return $pre;
-				}
-
-				return array(
-					'headers'  => array(),
-					'body'     => wp_json_encode( $data ),
-					'response' => array( 'code' => 200 ),
-				);
-			},
-			10,
-			3
-		);
+		$pre_http_request = $this->make_pre_http_request_handler( $data, $auth );
+		add_filter( 'pre_http_request', $pre_http_request, 10, 3 );
 
 		$this->assertEquals( $data, $settings->set_settings( $data ) );
 	}
 
 	public function test_set_settings_completed_flag() {
-		remove_all_filters( 'pre_http_request' );
-
-		add_filter(
-			'pre_http_request',
-			function( $pre, $args, $url ) {
-				$authentication          = new Authentication( $this->context );
-				$user_input_settings_url = $authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
-				if ( $url !== $user_input_settings_url ) {
-					return $pre;
-				}
-
-				return array(
-					'headers'  => array(),
-					'response' => array( 'code' => 200 ),
-					'body'     => json_encode(
-						array(
-							'setting1' => array( 'values' => array( '1', '2', '3' ) ),
-							'setting2' => array( 'values' => array( 'a', 'b', 'c' ) ),
-						)
-					),
-				);
-			},
-			10,
-			3
+		list ( $settings, $auth, $user_options ) = $this->provision_settings_instance();
+		$state                                   = new User_Input_State( $user_options );
+		$data                                    = array(
+			'setting1' => array( 'values' => array( '1', '2', '3' ) ),
+			'setting2' => array( 'values' => array( 'a', 'b', 'c' ) ),
 		);
 
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
+		remove_all_filters( 'pre_http_request' );
 
-		$settings = $this->get_connected_to_proxy_mock();
+		$pre_http_request = $this->make_pre_http_request_handler( $data, $auth );
+		add_filter( 'pre_http_request', $pre_http_request, 10, 3 );
+
 		$settings->set_settings( array() );
 
-		$user_options = new User_Options( $this->context, $user_id );
-		$state        = new User_Input_State( $user_options );
 		$this->assertEquals( User_Input_State::VALUE_COMPLETED, $state->get() );
 	}
 
 	public function test_set_settings_missing_flag() {
-		remove_all_filters( 'pre_http_request' );
-
-		add_filter(
-			'pre_http_request',
-			function( $pre, $args, $url ) {
-				$authentication          = new Authentication( $this->context );
-				$user_input_settings_url = $authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
-				if ( $url !== $user_input_settings_url ) {
-					return $pre;
-				}
-
-				return array(
-					'headers'  => array(),
-					'response' => array( 'code' => 200 ),
-					'body'     => json_encode(
-						array(
-							'setting1' => array( 'values' => array( '1', '2', '3' ) ),
-							'setting2' => array( 'values' => array() ),
-						)
-					),
-				);
-			},
-			10,
-			3
+		list ( $settings, $auth, $user_options ) = $this->provision_settings_instance();
+		$state                                   = new User_Input_State( $user_options );
+		$data                                    = array(
+			'setting1' => array( 'values' => array( '1', '2', '3' ) ),
+			'setting2' => array( 'values' => array() ),
 		);
 
+		remove_all_filters( 'pre_http_request' );
+
+		$pre_http_request = $this->make_pre_http_request_handler( $data, $auth );
+		add_filter( 'pre_http_request', $pre_http_request, 10, 3 );
+
+		$settings->set_settings( array() );
+
+		$this->assertEquals( User_Input_State::VALUE_MISSING, $state->get() );
+	}
+
+	private function provision_settings_instance() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$settings = $this->get_connected_to_proxy_mock();
-		$settings->set_settings( array() );
+		$user_options           = new User_Options( $this->context, $user_id );
+		$encrypted_user_options = new Encrypted_User_Options( $user_options );
+		$encrypted_user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN, '12345' );
 
-		$user_options = new User_Options( $this->context, $user_id );
-		$state        = new User_Input_State( $user_options );
-		$this->assertEquals( User_Input_State::VALUE_MISSING, $state->get() );
+		$options     = new Options( $this->context );
+		$credentials = new Credentials( new Encrypted_Options( $options ) );
+		$credentials->set(
+			array(
+				'oauth2_client_id'     => 'abcd.apps.sitekit.withgoogle.com',
+				'oauth2_client_secret' => 'xyz',
+			)
+		);
+
+		$auth     = new Authentication( $this->context, $options, $user_options );
+		$settings = new User_Input_Settings( $this->context, $auth );
+
+		return array(
+			$settings,
+			$auth,
+			$user_options,
+		);
+	}
+
+	private function make_pre_http_request_handler( $data, $auth ) {
+		return function( $pre, $args, $url ) use ( $data, $auth ) {
+			$user_input_settings_url = $auth->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
+			if ( $url !== $user_input_settings_url ) {
+				return $pre;
+			}
+
+			return array(
+				'headers'  => array(),
+				'body'     => wp_json_encode( $data ),
+				'response' => array( 'code' => 200 ),
+			);
+		};
 	}
 
 }
