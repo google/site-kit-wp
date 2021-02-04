@@ -48,7 +48,7 @@ describe( 'module/adsense service store', () => {
 		siteStatus: SITE_STATUS_ADDED,
 	};
 	const siteInfo = {
-		referenceSiteURL: 'http://reference-site-url.com/',
+		referenceSiteURL: 'http://example.com/',
 	};
 
 	let registry;
@@ -129,15 +129,37 @@ describe( 'module/adsense service store', () => {
 
 				const resultingURL = registry.select( STORE_NAME ).getServiceAccountSiteURL();
 				expect( resultingURL ).toMatchQueryParameters( {
+					authuser: userData.email,
 					source: 'site-kit',
 					url: referenceSiteURL,
 				} );
 			} );
 
 			it( 'should append `urlParams` arguments to the `query` if received', () => {
+				const { host: referenceSiteURL } = new URL( siteInfo.referenceSiteURL );
 				const urlParams = { foo: 'bar' };
 				const url = registry.select( STORE_NAME ).getServiceAccountSiteURL( urlParams );
-				expect( url ).toMatchQueryParameters( urlParams );
+
+				expect( url ).toMatchQueryParameters( {
+					authuser: userData.email,
+					source: 'site-kit',
+					url: referenceSiteURL,
+					...urlParams,
+				} );
+			} );
+
+			it( 'should give `urlParams` precedence over default query params with the same key', () => {
+				const { host: referenceSiteURL } = new URL( siteInfo.referenceSiteURL );
+				const urlParams = { source: 'new-source-param' };
+				const url = registry.select( STORE_NAME ).getServiceAccountSiteURL( urlParams );
+
+				expect( url ).toMatchQueryParameters( {
+					// default query params
+					authuser: userData.email,
+					url: referenceSiteURL,
+					// `source` key overriden
+					source: 'new-source-param',
+				} );
 			} );
 		} );
 	} );

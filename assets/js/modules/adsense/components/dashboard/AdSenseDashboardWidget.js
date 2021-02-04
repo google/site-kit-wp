@@ -42,7 +42,7 @@ import PageHeader from '../../../../components/PageHeader';
 import Layout from '../../../../components/layout/Layout';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ADSENSE, DATE_RANGE_OFFSET } from '../../../adsense/datastore/constants';
+import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../adsense/datastore/constants';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { generateDateRangeArgs } from '../../../adsense/util/report-date-range-args';
@@ -63,7 +63,7 @@ export default function AdSenseDashboardWidget() {
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
-	const accountSiteURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceAccountSiteURL( generateDateRangeArgs( dateRangeDates ) ) );
+	const accountSiteURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountSiteURL( generateDateRangeArgs( dateRangeDates ) ) );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 
