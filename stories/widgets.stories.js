@@ -136,7 +136,7 @@ storiesOf( 'Global/Widgets', module )
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
-					slug={ `widget${ count }` }
+					widgetSlug={ `widget${ count }` }
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
 					{ count !== 4 && <div>Widget body content.</div> }
@@ -149,7 +149,7 @@ storiesOf( 'Global/Widgets', module )
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
-					slug={ `widget${ count }` }
+					widgetSlug={ `widget${ count }` }
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
 					{ count !== 4 && <div>Widget body content.</div> }
@@ -162,7 +162,7 @@ storiesOf( 'Global/Widgets', module )
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
-					slug={ `widget${ count }` }
+					widgetSlug={ `widget${ count }` }
 					noPadding
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
@@ -176,7 +176,7 @@ storiesOf( 'Global/Widgets', module )
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
-					slug={ `widget${ count }` }
+					widgetSlug={ `widget${ count }` }
 					noPadding
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
@@ -190,9 +190,9 @@ storiesOf( 'Global/Widgets', module )
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
-					slug={ `widget${ count }` }
-					header={ () => <div>Widget header</div> }
-					footer={ () => <div>Widget footer</div> }
+					widgetSlug={ `widget${ count }` }
+					Header={ () => <div>Widget header</div> }
+					Footer={ () => <div>Widget footer</div> }
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
 					{ count !== 4 && <div>Widget body content.</div> }
@@ -205,9 +205,9 @@ storiesOf( 'Global/Widgets', module )
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
-					slug={ `widget${ count }` }
-					header={ () => <div>Widget header</div> }
-					footer={ () => <div>Widget footer</div> }
+					widgetSlug={ `widget${ count }` }
+					Header={ () => <div>Widget header</div> }
+					Footer={ () => <div>Widget footer</div> }
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
 					{ count !== 4 && <div>Widget body content.</div> }

@@ -60,8 +60,8 @@ describe( 'core/ui store', () => {
 
 				registry.dispatch( STORE_NAME ).setValues( { key1: 'value3' } );
 
-				const formValue = registry.select( STORE_NAME ).getValue( 'key2' );
-				expect( formValue ).toEqual( 'value2' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key2' );
+				expect( uiValue ).toEqual( 'value2' );
 			} );
 
 			it( 'returns a newly-set value if a new value for an existing key is set', () => {
@@ -69,8 +69,8 @@ describe( 'core/ui store', () => {
 
 				registry.dispatch( STORE_NAME ).setValues( { key1: 'value3' } );
 
-				const formValue = registry.select( STORE_NAME ).getValue( 'key1' );
-				expect( formValue ).toEqual( 'value3' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
+				expect( uiValue ).toEqual( 'value3' );
 			} );
 
 			it( 'does not overwrite unrelated keys when an empty object is supplied to values', () => {
@@ -78,8 +78,8 @@ describe( 'core/ui store', () => {
 
 				registry.dispatch( STORE_NAME ).setValues( {} );
 
-				const formValue = registry.select( STORE_NAME ).getValue( 'key2' );
-				expect( formValue ).toEqual( 'value2' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key2' );
+				expect( uiValue ).toEqual( 'value2' );
 			} );
 
 			it( 'works with empty values where the key value is updated', () => {
@@ -87,8 +87,8 @@ describe( 'core/ui store', () => {
 
 				registry.dispatch( STORE_NAME ).setValues( { key1: 'value1', key2: 'value2' } );
 
-				const formValue = registry.select( STORE_NAME ).getValue( 'key2' );
-				expect( formValue ).toEqual( 'value2' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key2' );
+				expect( uiValue ).toEqual( 'value2' );
 			} );
 
 			it( 'preserves data from state when new data is assigned', () => {
@@ -96,8 +96,29 @@ describe( 'core/ui store', () => {
 
 				registry.dispatch( STORE_NAME ).setValues( { key3: 'value3', key4: 'value4' } );
 
-				const formValue = registry.select( STORE_NAME ).getValue( 'key2' );
-				expect( formValue ).toEqual( 'value2' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key2' );
+				expect( uiValue ).toEqual( 'value2' );
+			} );
+
+			it( 'sets object values', () => {
+				registry.dispatch( STORE_NAME ).setValues( { key1: { childKey1: 'childValue1' } } );
+
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
+				expect( uiValue ).toEqual( { childKey1: 'childValue1' } );
+			} );
+
+			it( 'sets boolean values', () => {
+				registry.dispatch( STORE_NAME ).setValues( { key1: false } );
+
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
+				expect( uiValue ).toEqual( false );
+			} );
+
+			it( 'sets array values', () => {
+				registry.dispatch( STORE_NAME ).setValues( { key1: [ 'childKey1', 'childKey2', 'childKey3' ] } );
+
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
+				expect( uiValue ).toEqual( [ 'childKey1', 'childKey2', 'childKey3' ] );
 			} );
 		} );
 
@@ -108,13 +129,7 @@ describe( 'core/ui store', () => {
 				} ).toThrow( 'key is required.' );
 			} );
 
-			it( 'requires the value param', () => {
-				expect( () => {
-					registry.dispatch( STORE_NAME ).setValue( 'key1' );
-				} ).toThrow( 'value is required.' );
-			} );
-
-			it( 'does not throw with a key and value', () => {
+			it( 'does not throw with a key', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).setValue( 'key1', 'value1' );
 				} ).not.toThrow();
@@ -123,8 +138,36 @@ describe( 'core/ui store', () => {
 			it( 'works with key and value', () => {
 				registry.dispatch( STORE_NAME ).setValue( 'key1', 'value1' );
 
-				const formValue = registry.select( STORE_NAME ).getValue( 'key1' );
-				expect( formValue ).toEqual( 'value1' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
+				expect( uiValue ).toEqual( 'value1' );
+			} );
+
+			it( 'works with a boolean value', () => {
+				registry.dispatch( STORE_NAME ).setValue( 'key1', false );
+
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
+				expect( uiValue ).toEqual( false );
+			} );
+
+			it( 'works with the value as an object', () => {
+				registry.dispatch( STORE_NAME ).setValue( 'key1', { childKey1: 'childValue1', childKey2: 'childValue2' } );
+
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
+				expect( uiValue ).toEqual( { childKey1: 'childValue1', childKey2: 'childValue2' } );
+			} );
+
+			it( 'works with the value as an array', () => {
+				registry.dispatch( STORE_NAME ).setValue( 'key1', [ 'childKey1', 'childKey2', 'childKey3' ] );
+
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
+				expect( uiValue ).toEqual( [ 'childKey1', 'childKey2', 'childKey3' ] );
+			} );
+
+			it( 'works with the value undefined', () => {
+				registry.dispatch( STORE_NAME ).setValue( 'key1' );
+
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
+				expect( uiValue ).toEqual( undefined );
 			} );
 		} );
 	} );
@@ -132,22 +175,22 @@ describe( 'core/ui store', () => {
 	describe( 'selectors', () => {
 		describe( 'getValue', () => {
 			it( 'works with a key that does not exist', () => {
-				const formValue = registry.select( STORE_NAME ).getValue( 'key2' );
-				expect( formValue ).toEqual( undefined );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key2' );
+				expect( uiValue ).toEqual( undefined );
 			} );
 
 			it( 'works with key where the key does not exist', () => {
 				registry.dispatch( STORE_NAME ).setValues( { key1: 'value1', key2: 'value2' } );
 
-				const formValue = registry.select( STORE_NAME ).getValue( 'key3' );
-				expect( formValue ).toEqual( undefined );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key3' );
+				expect( uiValue ).toEqual( undefined );
 			} );
 
 			it( 'works with an existing key', () => {
 				registry.dispatch( STORE_NAME ).setValues( { key1: 'value1', key2: 'value2' } );
 
-				const formValue = registry.select( STORE_NAME ).getValue( 'key2' );
-				expect( formValue ).toEqual( 'value2' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key2' );
+				expect( uiValue ).toEqual( 'value2' );
 			} );
 		} );
 	} );

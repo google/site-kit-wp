@@ -41,7 +41,7 @@ const Switch = ( {
 	disabled,
 	hideLabel,
 } ) => {
-	// eslint-disable-next-line sitekit/camelcase-acronyms
+	// eslint-disable-next-line sitekit/acronym-case
 	const instanceID = useInstanceId( Switch );
 	const switchRef = useCallback( ( el ) => {
 		if ( el !== null ) {

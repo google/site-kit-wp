@@ -53,12 +53,11 @@ export const actions = {
 	 * @private
 	 *
 	 * @param {string} key   Ui key to set the value for.
-	 * @param {string} value The value for the key.
+	 * @param {*}      value The value for the key.
 	 * @return {Object} Redux-style action.
 	 */
 	setValue( key, value ) {
 		invariant( key, 'key is required.' );
-		invariant( value, 'value is required.' );
 
 		return {
 			payload: { key, value },

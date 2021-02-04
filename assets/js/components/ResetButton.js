@@ -22,6 +22,7 @@
 import { __ } from '@wordpress/i18n';
 import { Fragment, useState, useEffect, useCallback, createInterpolateElement } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
+import { useDebounce } from '../hooks/useDebounce';
 
 /**
  * Internal dependencies
@@ -37,8 +38,22 @@ const { useSelect, useDispatch } = Data;
 
 function ResetButton( { children } ) {
 	const postResetURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { notification: 'reset_success' } ) );
-
+	const isDoingReset = useSelect( ( select ) => select( CORE_SITE ).isDoingReset() );
+	const isNavigatingToPostResetURL = useSelect( ( select ) => select( CORE_LOCATION ).isNavigatingTo( postResetURL || '' ) );
+	const [ inProgress, setInProgress ] = useState( false );
 	const [ dialogActive, setDialogActive ] = useState( false );
+
+	/*
+	 * Using debounce here because the spinner has to render across two separate calls.
+	 * Rather than risk it flickering on and off in between the reset call completing and
+	 * the navigate call starting, we will just set a debounce to keep the spinner for 3 seconds.
+	 */
+	const debouncedSetInProgress = useDebounce( setInProgress, 3000 );
+	const mediatedSetInProgress = ( bool ) => bool ? setInProgress( true ) : debouncedSetInProgress( false );
+
+	useEffect( () => {
+		mediatedSetInProgress( isDoingReset || isNavigatingToPostResetURL );
+	}, [ isDoingReset, isNavigatingToPostResetURL ] );
 
 	useEffect( () => {
 		const handleCloseModal = ( event ) => {
@@ -101,6 +116,7 @@ function ResetButton( { children } ) {
 						} ) }
 					confirmButton={ __( 'Reset', 'google-site-kit' ) }
 					danger
+					inProgress={ inProgress }
 				/>
 			</Modal>
 		</Fragment>
