@@ -297,4 +297,23 @@ class Google_Proxy {
 		return $response_data;
 	}
 
+	/**
+	 * Gets remote features.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @return array|WP_Error Response of the wp_remote_post request.
+	 */
+	public function get_features( Credentials $credentials ) {
+		return $this->request(
+			self::FEATURES_URI,
+			$credentials,
+			array(
+				'platform' => 'wordpress/google-site-kit',
+				'version'  => GOOGLESITEKIT_VERSION,
+			)
+		);
+	}
+
 }

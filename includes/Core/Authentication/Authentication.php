@@ -254,6 +254,7 @@ final class Authentication {
 		add_filter( 'googlesitekit_admin_notices', $this->get_method_proxy( 'authentication_admin_notices' ) );
 		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
 		add_filter( 'googlesitekit_setup_data', $this->get_method_proxy( 'inline_js_setup_data' ) );
+		add_filter( 'googlesitekit_is_feature_enabled', $this->get_method_proxy( 'filter_features_via_proxy' ), 10, 2 );
 
 		add_action( 'init', $this->get_method_proxy( 'handle_oauth' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
@@ -1274,6 +1275,30 @@ final class Authentication {
 				$this->user_input_state->set( $is_empty ? User_Input_State::VALUE_MISSING : User_Input_State::VALUE_COMPLETED );
 			}
 		}
+	}
+
+	/**
+	 * Filters feature flags using features received from the proxy server.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param boolean $feature_enabled Original value of the feature.
+	 * @param string  $feature_name    Feature name.
+	 * @return boolean State flag from the proxy server if it is available, otherwise the original value.
+	 */
+	private function filter_features_via_proxy( $feature_enabled, $feature_name ) {
+		$transient_name = 'googlesitekit_remote_features';
+		$features       = $this->transient->get( $transient_name );
+		if ( empty( $features ) ) {
+			$features = $this->google_proxy->get_features( $this->credentials );
+			$this->transients->set( $transient_name, $features, DAY_IN_SECONDS );
+		}
+
+		if ( ! is_wp_error( $features ) && isset( $features[ $feature_name ]['enabled'] ) ) {
+			return filter_var( $features[ $feature_name ]['enabled'], FILTER_VALIDATE_BOOLEAN );
+		}
+
+		return $feature_enabled;
 	}
 
 }
