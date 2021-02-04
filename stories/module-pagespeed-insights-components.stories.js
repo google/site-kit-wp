@@ -31,6 +31,9 @@ import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/const
 import * as fixtures from '../assets/js/modules/pagespeed-insights/datastore/__fixtures__';
 import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../assets/js/modules/pagespeed-insights/datastore/constants';
 import { WithTestRegistry, freezeFetch } from '../tests/js/utils';
+import { getWidgetComponentProps } from '../assets/js/googlesitekit/widgets/util';
+
+const widgetComponentProps = getWidgetComponentProps( 'dashboardPageSpeed' );
 
 storiesOf( 'PageSpeed Insights Module/Components', module )
 	.add( 'Dashboard widget', () => {
@@ -54,9 +57,10 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 				},
 			] );
 		};
+
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeedWidget />
+				<DashboardPageSpeedWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
 	} )
@@ -81,7 +85,7 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeedWidget />
+				<DashboardPageSpeedWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
 	} )
@@ -108,7 +112,7 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeedWidget />
+				<DashboardPageSpeedWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
 	} )
@@ -141,7 +145,7 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeedWidget />
+				<DashboardPageSpeedWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
 	} )
@@ -165,7 +169,7 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeedWidget />
+				<DashboardPageSpeedWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
 	} )
