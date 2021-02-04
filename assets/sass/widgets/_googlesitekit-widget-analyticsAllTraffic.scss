@@ -130,7 +130,9 @@
 		&.googlesitekit-widget--analyticsAllTraffic__dimensions--loading {
 			visibility: hidden;
 		}
+	}
 
+	.googlesitekit-widget--analyticsAllTraffic__selectable {
 		// Use pointer when hovering over chart slice or legend entry.
 		.googlesitekit-line-chart > div > div > div > svg {
 

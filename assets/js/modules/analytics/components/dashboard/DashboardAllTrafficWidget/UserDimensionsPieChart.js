@@ -44,6 +44,7 @@ const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( { dimensionName, dimensionValue, sourceLink, loaded, report } ) {
 	const [ chartLoaded, setChartLoaded ] = useState( false );
+	const [ selectable, setSelectable ] = useState( false );
 
 	const otherSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
 		path: '/analytics/answer/1009671',
@@ -72,6 +73,10 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 						const newDimensionValue = dataTable.getValue( row, 0 );
 						const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
 
+						if ( isOthers ) {
+							chart.setSelection( [] );
+						}
+
 						setValues(
 							FORM_ALL_TRAFFIC_WIDGET,
 							{
@@ -85,6 +90,20 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 				}
 			} );
 		}
+
+		chartData.onMouseOver = global.google.visualization.events.addListener( chart, 'onmouseover', ( e ) => {
+			const { row } = e;
+
+			if ( ! row ) {
+				setSelectable( false );
+			}
+			const { dataTable } = GoogleChart.charts.get( chartID ) || {};
+			setSelectable( dataTable.getValue( row, 0 ) !== __( 'Others', 'google-site-kit' ) );
+		} );
+
+		chartData.onMouseOut = global.google.visualization.events.addListener( chart, 'onmouseout', () => {
+			setSelectable( false );
+		} );
 	}, [ chartID, dimensionName, setValues ] );
 
 	useEffect( () => {
@@ -94,12 +113,14 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 
 		const chartData = GoogleChart.charts.get( chartID );
 		const { chart } = chartData || {};
+
 		if ( chart && report?.[ 0 ]?.data?.rows ) {
 			// If there is a dimension value set but the initialized chart does not have a selection yet,
 			// find the matching row index and initially select it in the chart.
 			if ( dimensionValue && ! chart.getSelection().length ) {
 				const { slices } = UserDimensionsPieChart.chartOptions;
 				const selectedRow = report[ 0 ].data.rows.findIndex( ( row ) => row.dimensions.includes( dimensionValue ) );
+
 				if ( selectedRow && slices[ selectedRow ]?.color ) {
 					chart.setSelection( [ { row: selectedRow } ] );
 					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: slices[ selectedRow ]?.color } );
@@ -251,6 +272,7 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 				'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
 				{
 					'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
+					'googlesitekit-widget--analyticsAllTraffic__selectable': selectable,
 				}
 			) }>
 				<GoogleChart
