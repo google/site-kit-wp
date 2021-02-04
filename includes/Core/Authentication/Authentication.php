@@ -1057,17 +1057,15 @@ final class Authentication {
 			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
 		}
 
-		try {
-			$data = $this->google_proxy->exchange_site_code( $site_code, $code );
-
-			$this->credentials->set(
-				array(
-					'oauth2_client_id'     => $data['site_id'],
-					'oauth2_client_secret' => $data['site_secret'],
-				)
-			);
-		} catch ( Exception $exception ) {
-			$error_message = $exception->getMessage();
+		$data = $this->google_proxy->exchange_site_code( $site_code, $code );
+		if ( is_wp_error( $data ) ) {
+			$error_message = $data->get_error_message();
+			if ( empty( $error_message ) ) {
+				$error_message = $data->get_error_code();
+				if ( empty( $error_message ) ) {
+					$error_message = 'unknown_error';
+				}
+			}
 
 			// If missing verification, rely on the redirect back to the proxy,
 			// passing the site code instead of site ID.
@@ -1082,16 +1080,17 @@ final class Authentication {
 				return;
 			}
 
-			if ( ! $error_message ) {
-				$error_message = 'unknown_error';
-			}
-
 			$this->user_options->set( OAuth_Client::OPTION_ERROR_CODE, $error_message );
-			wp_safe_redirect(
-				$this->context->admin_url( 'splash' )
-			);
+			wp_safe_redirect( $this->context->admin_url( 'splash' ) );
 			exit;
 		}
+
+		$this->credentials->set(
+			array(
+				'oauth2_client_id'     => $data['site_id'],
+				'oauth2_client_secret' => $data['site_secret'],
+			)
+		);
 	}
 
 	/**
