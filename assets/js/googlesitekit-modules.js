@@ -21,14 +21,17 @@
 /**
  * Internal dependencies
  */
-import Modules from './googlesitekit/modules';
+import Data from 'googlesitekit-data';
+import { createModules, registerStore } from './googlesitekit/modules';
+
+registerStore( Data );
+
+const Modules = createModules( Data );
 
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
 }
 
-if ( typeof global.googlesitekit.modules === 'undefined' ) {
-	global.googlesitekit.modules = Modules;
-}
+global.googlesitekit.modules = Modules;
 
 export default Modules;

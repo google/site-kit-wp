@@ -13,10 +13,19 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
-import coreSiteStore from '../../assets/js/googlesitekit/datastore/site';
+import * as coreForms from '../../assets/js/googlesitekit/datastore/forms';
+import * as coreLocation from '../../assets/js/googlesitekit/datastore/location';
+import * as coreModules from '../../assets/js/googlesitekit/modules';
+import * as coreSite from '../../assets/js/googlesitekit/datastore/site';
+import * as coreUser from '../../assets/js/googlesitekit/datastore/user';
+import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
+import * as modulesAdSense from '../../assets/js/modules/adsense';
+import * as modulesAnalytics from '../../assets/js/modules/analytics';
+import * as modulesOptimize from '../../assets/js/modules/optimize';
+import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
+import * as modulesSearchConsole from '../../assets/js/modules/search-console';
+import * as modulesTagManager from '../../assets/js/modules/tagmanager';
 import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
-import coreUserStore from '../../assets/js/googlesitekit/datastore/user';
 import {
 	PERMISSION_AUTHENTICATE,
 	PERMISSION_SETUP,
@@ -27,63 +36,26 @@ import {
 	PERMISSION_PUBLISH_POSTS,
 	CORE_USER,
 } from '../../assets/js/googlesitekit/datastore/user/constants';
-import coreFormsStore from '../../assets/js/googlesitekit/datastore/forms';
-import { CORE_FORMS } from '../../assets/js/googlesitekit/datastore/forms/constants';
-import coreLocationStore from '../../assets/js/googlesitekit/datastore/location';
-import { CORE_LOCATION } from '../../assets/js/googlesitekit/datastore/location/constants';
-import coreModulesStore from '../../assets/js/googlesitekit/modules/datastore';
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
-import coreWidgetsStore from '../../assets/js/googlesitekit/widgets/datastore';
-import { CORE_WIDGETS } from '../../assets/js/googlesitekit/widgets/datastore/constants';
-// AdSense.
-import modulesAdSenseStore from '../../assets/js/modules/adsense/datastore';
-import { MODULES_ADSENSE } from '../../assets/js/modules/adsense/datastore/constants';
-import { SetupMain as AdSenseSetupMain } from '../../assets/js/modules/adsense/components/setup';
-import {
-	SettingsEdit as AdSenseSettingsEdit,
-	SettingsView as AdSenseSettingsView,
-	SettingsSetupIncomplete,
-} from '../../assets/js/modules/adsense/components/settings';
-import AdSenseIcon from '../../assets/svg/adsense.svg';
-import { ERROR_CODE_ADBLOCKER_ACTIVE } from '../../assets/js/modules/adsense/constants';
-// Analytics.
-import modulesAnalyticsStore from '../../assets/js/modules/analytics/datastore';
-import { MODULES_ANALYTICS } from '../../assets/js/modules/analytics/datastore/constants';
-import { SetupMain as AnalyticsSetupMain } from '../../assets/js/modules/analytics/components/setup';
-import {
-	SettingsEdit as AnalyticsSettingsEdit,
-	SettingsView as AnalyticsSettingsView,
-} from '../../assets/js/modules/analytics/components/settings';
-import AnalyticsIcon from '../../assets/svg/analytics.svg';
-// PageSpeed Insights.
-import modulesPageSpeedInsightsStore from '../../assets/js/modules/pagespeed-insights/datastore';
-import { MODULES_PAGESPEED_INSIGHTS } from '../../assets/js/modules/pagespeed-insights/datastore/constants';
-import { SettingsView as PageSpeedInsightsSettingsView } from '../../assets/js/modules/pagespeed-insights/components/settings';
-import PageSpeedInsightsIcon from '../../assets/svg/pagespeed-insights.svg';
-// Search Console.
-import modulesSearchConsoleStore from '../../assets/js/modules/search-console/datastore';
-import { MODULES_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/datastore/constants';
-import { SettingsView as SearchConsoleSettingsView } from '../../assets/js/modules/search-console/components/settings';
-import SearchConsoleIcon from '../../assets/svg/search-console.svg';
-// Tag Manager.
-import modulesTagManagerStore from '../../assets/js/modules/tagmanager/datastore';
-import { MODULES_TAGMANAGER } from '../../assets/js/modules/tagmanager/datastore/constants';
-import { SetupMain as TagManagerSetupMain } from '../../assets/js/modules/tagmanager/components/setup';
-import {
-	SettingsEdit as TagManagerSettingsEdit,
-	SettingsView as TagManagerSettingsView,
-} from '../../assets/js/modules/tagmanager/components/settings';
-import TagManagerIcon from '../../assets/svg/tagmanager.svg';
-// Optimize.
-import modulesOptimizeStore from '../../assets/js/modules/optimize/datastore';
-import { MODULES_OPTIMIZE } from '../../assets/js/modules/optimize/datastore/constants';
-import { SetupMain as OptimizeSetupMain } from '../../assets/js/modules/optimize/components/setup';
-import {
-	SettingsEdit as OptimizeSettingsEdit,
-	SettingsView as OptimizeSettingsView,
-} from '../../assets/js/modules/optimize/components/settings';
-import OptimizeIcon from '../../assets/svg/optimize.svg';
+import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/fixtures.json';
+
+const allCoreStores = [
+	coreForms,
+	coreLocation,
+	coreModules,
+	coreSite,
+	coreUser,
+	coreWidgets,
+];
+const allCoreModules = [
+	modulesAdSense,
+	modulesAnalytics,
+	modulesOptimize,
+	modulesPageSpeedInsights,
+	modulesSearchConsole,
+	modulesTagManager,
+];
 
 /**
  * Creates a registry with all available stores.
@@ -307,58 +279,23 @@ export const provideModules = ( registry, extraData = [] ) => {
  * @param {Object[]} [extraData] List of module registration data objects to be merged with defaults. Default empty array.
  */
 export const provideModuleRegistrations = ( registry, extraData = [] ) => {
-	const moduleRegistrationData = {
-		adsense: {
-			SettingsEditComponent: AdSenseSettingsEdit,
-			SettingsViewComponent: AdSenseSettingsView,
-			SetupComponent: AdSenseSetupMain,
-			SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
-			Icon: AdSenseIcon,
-			checkRequirements: () => {
-				// TODO: Remove this duplicate-ish code and instead import from reusable AdSense utility function.
-				const isAdBlockerActive = registry.select( MODULES_ADSENSE ).isAdBlockerActive();
-				if ( ! isAdBlockerActive ) {
-					return;
-				}
+	const extraDataBySlug = extraData.reduce( ( acc, { slug, ...data } ) => {
+		return { ...acc, [ slug ]: { slug, ...data } };
+	}, {} );
+	const { registerModule: realRegisterModule, ...Modules } = coreModules.createModules( registry );
+	// Decorate `Modules.registerModule` with a function to apply extra data.
+	const registeredModules = {};
+	const testRegisterModule = ( ( slug, settings ) => {
+		registeredModules[ slug ] = true;
+		return realRegisterModule( slug, { ...settings, ...extraDataBySlug[ slug ] } );
+	} );
+	Modules.registerModule = testRegisterModule;
 
-				throw {
-					code: ERROR_CODE_ADBLOCKER_ACTIVE,
-					message: 'Ad blocker detected, you need to disable it in order to set up AdSense.',
-					data: null,
-				};
-			},
-		},
-		analytics: {
-			SettingsEditComponent: AnalyticsSettingsEdit,
-			SettingsViewComponent: AnalyticsSettingsView,
-			SetupComponent: AnalyticsSetupMain,
-			Icon: AnalyticsIcon,
-		},
-		optimize: {
-			SettingsEditComponent: OptimizeSettingsEdit,
-			SettingsViewComponent: OptimizeSettingsView,
-			SetupComponent: OptimizeSetupMain,
-			Icon: OptimizeIcon,
-		},
-		'pagespeed-insights': {
-			SettingsViewComponent: PageSpeedInsightsSettingsView,
-			Icon: PageSpeedInsightsIcon,
-		},
-		'search-console': {
-			SettingsViewComponent: SearchConsoleSettingsView,
-			Icon: SearchConsoleIcon,
-		},
-		tagmanager: {
-			SettingsEditComponent: TagManagerSettingsEdit,
-			SettingsViewComponent: TagManagerSettingsView,
-			SetupComponent: TagManagerSetupMain,
-			Icon: TagManagerIcon,
-		},
-	};
-
-	for ( const slug in moduleRegistrationData ) {
-		registry.dispatch( CORE_MODULES ).registerModule( slug, { ...moduleRegistrationData[ slug ], ...extraData[ slug ] } );
-	}
+	allCoreModules.forEach( ( { registerModule } ) => registerModule?.( Modules ) );
+	// Register any additional modules provided.
+	Object.entries( extraDataBySlug )
+		.filter( ( [ slug ] ) => registeredModules[ slug ] !== true )
+		.forEach( ( [ slug, settings ] ) => realRegisterModule( slug, settings ) );
 };
 
 /**
@@ -409,18 +346,10 @@ export const freezeFetch = ( matcher ) => {
  * @param {wp.data.registry} registry Registry to register each store on.
  */
 export const registerAllStoresOn = ( registry ) => {
-	registry.registerStore( CORE_SITE, coreSiteStore );
-	registry.registerStore( CORE_USER, coreUserStore );
-	registry.registerStore( CORE_FORMS, coreFormsStore );
-	registry.registerStore( CORE_LOCATION, coreLocationStore );
-	registry.registerStore( CORE_MODULES, coreModulesStore );
-	registry.registerStore( CORE_WIDGETS, coreWidgetsStore );
-	registry.registerStore( MODULES_ADSENSE, modulesAdSenseStore );
-	registry.registerStore( MODULES_ANALYTICS, modulesAnalyticsStore );
-	registry.registerStore( MODULES_PAGESPEED_INSIGHTS, modulesPageSpeedInsightsStore );
-	registry.registerStore( MODULES_SEARCH_CONSOLE, modulesSearchConsoleStore );
-	registry.registerStore( MODULES_TAGMANAGER, modulesTagManagerStore );
-	registry.registerStore( MODULES_OPTIMIZE, modulesOptimizeStore );
+	[
+		...allCoreStores,
+		...allCoreModules,
+	].forEach( ( { registerStore } ) => registerStore?.( registry ) );
 };
 
 const unsubscribes = [];

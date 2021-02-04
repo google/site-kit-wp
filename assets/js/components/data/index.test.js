@@ -21,7 +21,6 @@
  */
 import dataAPI from './index';
 import { DATA_LAYER } from '../../util/tracking/constants';
-import * as DateRange from '../../util/date-range.js';
 import { getCacheKey } from './cache';
 import { enableTracking } from '../../util/tracking';
 
@@ -97,28 +96,24 @@ describe( 'dataAPI', () => {
 
 	describe( 'combinedGet', () => {
 		const combinedGet = dataAPI.combinedGet.bind( dataAPI );
-
-		const slugMock = jest.spyOn( DateRange, 'getCurrentDateRangeSlug' );
-		slugMock.mockImplementation( () => 'last-28-days' );
-
 		const combinedRequest = [
 			{
 				type: 'test-type',
 				identifier: 'test-identifier',
 				datapoint: 'test-datapoint',
-				data: { status: 500 },
+				data: { dateRange: 'last-99-days' },
 			},
 			{
 				type: 'test-type',
 				identifier: 'test-identifier',
 				datapoint: 'test-datapoint-2',
-				data: { status: 500 },
+				data: { dateRange: 'last-99-days' },
 			},
 			{
 				type: 'test-type',
 				identifier: 'analytics',
 				datapoint: 'test-datapoint-3',
-				data: { status: 500 },
+				data: { dateRange: 'last-99-days' },
 			},
 
 		];
@@ -135,7 +130,7 @@ describe( 'dataAPI', () => {
 		} );
 
 		it( 'should call trackEvent for error in combinedGet with one error', async () => {
-			const cacheKey = getCacheKey( 'test-type', 'test-identifier', 'test-datapoint', { dateRange: 'last-28-days', status: 500 } );
+			const cacheKey = getCacheKey( 'test-type', 'test-identifier', 'test-datapoint', { dateRange: 'last-99-days' } );
 			const response = {
 				body:
 					{
@@ -170,8 +165,8 @@ describe( 'dataAPI', () => {
 		} );
 
 		it( 'should call trackEvent for each error in combinedGet with multiple errors', async () => {
-			const cacheKey = getCacheKey( 'test-type', 'test-identifier', 'test-datapoint', { dateRange: 'last-28-days', status: 500 } );
-			const cacheKey2 = getCacheKey( 'test-type', 'analytics', 'test-datapoint-3', { dateRange: 'last-28-days', status: 500 } );
+			const cacheKey = getCacheKey( 'test-type', 'test-identifier', 'test-datapoint', { dateRange: 'last-99-days' } );
+			const cacheKey2 = getCacheKey( 'test-type', 'analytics', 'test-datapoint-3', { dateRange: 'last-99-days' } );
 			const response = {
 				body:
 					{

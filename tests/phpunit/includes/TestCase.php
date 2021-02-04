@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests;
 
+use Closure;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Input;
@@ -75,6 +76,27 @@ class TestCase extends \WP_UnitTestCase {
 		parent::tearDown();
 		// Clear screen related globals.
 		unset( $GLOBALS['current_screen'], $GLOBALS['taxnow'], $GLOBALS['typenow'] );
+	}
+
+	/**
+	 * Enables a feature.
+	 *
+	 * @param string $feature Feature to enable.
+	 * @return Closure Function to reset the enabled state.
+	 */
+	protected function enable_feature( $feature ) {
+		$enable_callback = function ( $enabled, $feature_name ) use ( $feature ) {
+			if ( $feature_name === $feature ) {
+				return true;
+			}
+			return $enabled;
+		};
+
+		add_filter( 'googlesitekit_is_feature_enabled', $enable_callback, 10, 2 );
+
+		return function () use ( $enable_callback ) {
+			remove_filter( 'googlesitekit_is_feature_enabled', $enable_callback, 10 );
+		};
 	}
 
 	/**

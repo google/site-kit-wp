@@ -27,7 +27,6 @@ import { addFilter } from '@wordpress/hooks';
 import { getSiteKitAdminURL, getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
 import AnalyticsDashboardWidget from './components/dashboard/AnalyticsDashboardWidget';
-import AnalyticsAdminbarWidget from './components/adminbar/AnalyticsAdminbarWidget';
 import LegacyAnalyticsDashboardWidgetTopLevel from './components/dashboard/LegacyAnalyticsDashboardWidgetTopLevel';
 import AnalyticsDashboardDetailsWidgetTopAcquisitionSources from './components/dashboard-details/AnalyticsDashboardDetailsWidgetTopAcquisitionSources';
 import AnalyticsAdSenseDashboardWidgetTopPagesTable from './components/dashboard/AnalyticsAdSenseDashboardWidgetTopPagesTable';
@@ -36,15 +35,6 @@ import LegacyAdSenseDashboardWidgetTopPagesTableSmall from './components/dashboa
 import LegacyDashboardAllTraffic from './components/dashboard/DashboardAllTrafficWidget/LegacyDashboardAllTraffic';
 
 const slug = 'analytics';
-
-const addAnalyticsAdminbarWidget = createAddToFilter( <AnalyticsAdminbarWidget /> );
-
-/**
- * Add components to the adminbar.
- */
-addFilter( 'googlesitekit.AdminbarModules',
-	'googlesitekit.Analytics',
-	addAnalyticsAdminbarWidget, 11 );
 
 const modulesData = getModulesData();
 

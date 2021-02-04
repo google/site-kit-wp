@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-const { isImported } = require( '../utils' );
+const { isImported, isFunction } = require( '../utils' );
 
 module.exports = {
 	create( context ) {
@@ -105,10 +105,26 @@ module.exports = {
 					// case-insensitive match.
 					if ( acronymMatches ) {
 						const acronymMatch = acronymMatches[ 0 ];
-						// The acronym was found in the variable with the correct capitalization, so
-						// this variable is good.
+
+						// The acronym was found in the variable with the correct capitalization
 						if ( acronymMatch === acronym ) {
-							return;
+							// Catch instances of URL() and JSON() that weren't identified as
+							// globals above
+							if ( acronymMatch.length === name.length ) {
+								return;
+							}
+							// If the acronym is not at the start that's fine, e.g. fooBarID
+							if ( ! name.startsWith( acronym ) ) {
+								return;
+							}
+							// or if the acronym IS at the start but it is a function, see #2195
+							if ( isFunction( node ) ) {
+								return;
+							}
+							// Constants in all-caps are fine
+							if ( node.type === 'Identifier' && name === name.toUpperCase() ) {
+								return;
+							}
 						}
 
 						// If the acronym was found entirely lowercased, skip this check.
@@ -125,7 +141,7 @@ module.exports = {
 
 						// If the name of this variable is the same length as the acronym,
 						// it should be lowercase or uppercase.
-						if ( name.length === acronym.length && ( acronymMatch === acronym.toLowerCase() || acronymMatch !== acronym ) ) {
+						if ( name.length === acronym.length && ( acronymMatch === acronym.toLowerCase() || acronymMatch === acronym.toUpperCase() ) ) {
 							return;
 						}
 

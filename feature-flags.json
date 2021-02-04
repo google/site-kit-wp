@@ -2,7 +2,6 @@
   "serviceSetupV2": "development",
   "storeErrorNotifications": "development",
   "userInput": "development",
-  "widgets.adminBar": "development",
   "widgets.dashboard": "development",
   "widgets.pageDashboard": "development"
 }
