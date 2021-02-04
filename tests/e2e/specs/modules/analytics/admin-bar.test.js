@@ -25,10 +25,15 @@ describe( 'Site Kit admin bar component display', () => {
 
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
+			if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics?' ) ) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( mockBatchResponse ),
+					body: JSON.stringify( mockBatchResponse[ 'modules::search-console::searchanalytics::e74216dd17533dcb67fa2d433c23467c' ] ),
+				} );
+			} else if ( request.url().match( 'google-site-kit/v1/modules/analytics/data/report?' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( mockBatchResponse[ 'modules::analytics::report::db20ba9afa3000cd79e2888048a1700c' ] ),
 				} );
 			} else {
 				request.continue();
@@ -52,7 +57,8 @@ describe( 'Site Kit admin bar component display', () => {
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics?' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/analytics/data/report?' ) ),
 		] );
 
 		const adminBarApp = await page.$( '#js-googlesitekit-adminbar' );

@@ -41,14 +41,14 @@ import { CONTEXT_WEB, CONTEXT_AMP } from '../constants';
 export const accountBuilder = build( 'Tag Manager Account', {
 	fields: {
 		path: 'accounts/{accountId}',
-		accountId: sequence( ( num ) => `${ 100 + num }` ), // eslint-disable-line sitekit/camelcase-acronyms
+		accountId: sequence( ( num ) => `${ 100 + num }` ), // eslint-disable-line sitekit/acronym-case
 		name: fake( ( { lorem } ) => lorem.words() ),
 	},
 	postBuild: ( account ) => {
-		const { accountId } = account; // eslint-disable-line sitekit/camelcase-acronyms
+		const { accountId } = account; // eslint-disable-line sitekit/acronym-case
 		return {
 			...account,
-			path: `accounts/${ accountId }`, // eslint-disable-line sitekit/camelcase-acronyms
+			path: `accounts/${ accountId }`, // eslint-disable-line sitekit/acronym-case
 		};
 	},
 } );
@@ -68,10 +68,10 @@ export const accountBuilder = build( 'Tag Manager Account', {
 export const containerBuilder = build( 'Tag Manager Container', {
 	fields: {
 		path: 'accounts/{accountId}/containers/{containerId}',
-		accountId: fake( ( { random } ) => random.number().toString() ), // eslint-disable-line sitekit/camelcase-acronyms
-		containerId: sequence( ( num ) => `${ 200 + num }` ), // eslint-disable-line sitekit/camelcase-acronyms
+		accountId: fake( ( { random } ) => random.number().toString() ), // eslint-disable-line sitekit/acronym-case
+		containerId: sequence( ( num ) => `${ 200 + num }` ), // eslint-disable-line sitekit/acronym-case
 		name: fake( ( { lorem } ) => lorem.words() ),
-		publicId: fake( ( { random } ) => { // eslint-disable-line sitekit/camelcase-acronyms
+		publicId: fake( ( { random } ) => { // eslint-disable-line sitekit/acronym-case
 			const char = random.alphaNumeric;
 			return `GTM-FAKE${ char() }${ char() }${ char() }`.toUpperCase();
 		} ),
@@ -79,15 +79,15 @@ export const containerBuilder = build( 'Tag Manager Container', {
 			oneOf( CONTEXT_WEB, CONTEXT_AMP ),
 		],
 		fingerprint: Date.now().toString(),
-		tagManagerUrl: 'https://tagmanager.google.com/#/container/accounts/{accountId}/containers/{containerId}/workspaces?apiLink=container', // eslint-disable-line sitekit/camelcase-acronyms
+		tagManagerUrl: 'https://tagmanager.google.com/#/container/accounts/{accountId}/containers/{containerId}/workspaces?apiLink=container', // eslint-disable-line sitekit/acronym-case
 	},
 	postBuild: ( container ) => {
-		const { accountId, containerId } = container; // eslint-disable-line sitekit/camelcase-acronyms
+		const { accountId, containerId } = container; // eslint-disable-line sitekit/acronym-case
 
 		return {
 			...container,
-			path: `accounts/${ accountId }/containers/${ containerId }`, // eslint-disable-line sitekit/camelcase-acronyms
-			tagManagerUrl: `https://tagmanager.google.com/#/container/accounts/${ accountId }/containers/${ containerId }/workspaces?apiLink=container`, // eslint-disable-line sitekit/camelcase-acronyms
+			path: `accounts/${ accountId }/containers/${ containerId }`, // eslint-disable-line sitekit/acronym-case
+			tagManagerUrl: `https://tagmanager.google.com/#/container/accounts/${ accountId }/containers/${ containerId }/workspaces?apiLink=container`, // eslint-disable-line sitekit/acronym-case
 		};
 	},
 } );
@@ -129,7 +129,7 @@ export function buildAccountWithContainers( {
 		count,
 		{
 			...containerOverrides,
-			accountId: account.accountId, // eslint-disable-line sitekit/camelcase-acronyms
+			accountId: account.accountId, // eslint-disable-line sitekit/acronym-case
 		},
 	);
 
@@ -139,7 +139,7 @@ export function buildAccountWithContainers( {
 	};
 }
 
-/* eslint-disable sitekit/camelcase-acronyms */
+/* eslint-disable sitekit/acronym-case */
 export const defaultTagWeb = ( { accountId, containerId } = {} ) => (
 	{
 		accountId,
@@ -356,7 +356,7 @@ const analyticsTagAMP = ( propertyID, { accountId, containerId } = {} ) => {
 		],
 	};
 };
-/* eslint-enable sitekit/camelcase-acronyms */
+/* eslint-enable sitekit/acronym-case */
 
 export const buildLiveContainerVersionWeb = ( {
 	accountID = '100',
@@ -364,7 +364,7 @@ export const buildLiveContainerVersionWeb = ( {
 } = {} ) => {
 	return liveContainerVersionBuilder( {
 		overrides: {
-			accountId: accountID, // eslint-disable-line sitekit/camelcase-acronyms
+			accountId: accountID, // eslint-disable-line sitekit/acronym-case
 			container: {
 				usageContext: [ CONTEXT_WEB ],
 			},
@@ -386,7 +386,7 @@ export const buildLiveContainerVersionAMP = ( {
 } = {} ) => {
 	return liveContainerVersionBuilder( {
 		overrides: {
-			accountId: accountID, // eslint-disable-line sitekit/camelcase-acronyms
+			accountId: accountID, // eslint-disable-line sitekit/acronym-case
 			container: {
 				usageContext: [ CONTEXT_AMP ],
 			},

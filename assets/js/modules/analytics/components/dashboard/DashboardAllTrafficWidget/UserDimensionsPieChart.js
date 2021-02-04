@@ -243,8 +243,8 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 					'googlesitekit-widget--analyticsAllTraffic__dimensions--not-loading': loaded,
 					'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
 				} ) }
-				width="282px"
-				height="282px"
+				width="300px"
+				height="300px"
 				shape="circular"
 			/>
 			<div className={ classnames(
@@ -314,7 +314,7 @@ UserDimensionsPieChart.chartOptions = {
 	},
 	title: null,
 	tooltip: {
-		isHtml: true, // eslint-disable-line sitekit/camelcase-acronyms
+		isHtml: true, // eslint-disable-line sitekit/acronym-case
 		trigger: 'focus',
 	},
 	width: '100%',

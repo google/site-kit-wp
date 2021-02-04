@@ -19,4 +19,9 @@
 /**
  * Internal dependencies
  */
-import './modules/tagmanager';
+import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
+import { registerStore, registerModule } from './modules/tagmanager';
+
+registerStore( Data );
+registerModule( Modules );

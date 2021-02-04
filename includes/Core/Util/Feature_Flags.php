@@ -119,6 +119,23 @@ class Feature_Flags {
 	}
 
 	/**
+	 * Gets all available feature flags.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array An array of all available features.
+	 */
+	public static function get_available_features() {
+		$feature_keys = array();
+
+		if ( is_array( static::$features ) ) {
+			$feature_keys = array_keys( static::$features );
+		}
+
+		return $feature_keys;
+	}
+
+	/**
 	 * Gets the current feature flag mode.
 	 *
 	 * @since 1.22.0
