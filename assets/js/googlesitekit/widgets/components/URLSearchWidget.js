@@ -26,14 +26,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widget from './Widget';
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_LOCATION } from '../../datastore/location/constants';
 import Button from '../../../components/Button';
 import PostSearcherAutoSuggest from '../../../components/PostSearcherAutoSuggest';
 const { useSelect, useDispatch } = Data;
 
-function URLSearchWidget() {
+function URLSearchWidget( { Widget } ) {
 	const [ canSubmit, setCanSubmit ] = useState( false );
 	const [ match, setMatch ] = useState( {} );
 
@@ -49,8 +48,7 @@ function URLSearchWidget() {
 	return (
 		<div className="mdc-layout-grid__cell">
 			<Widget
-				slug="urlSearchWidget"
-				header={ () => (
+				Header={ () => (
 					<h3 className="googlesitekit-subheading-1 googlesitekit-widget__header-title">
 						{ __( 'Search for individual page or post information', 'google-site-kit' ) }
 					</h3>

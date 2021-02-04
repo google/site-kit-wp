@@ -24,7 +24,7 @@ import { RuleTester } from 'eslint';
 /**
  * Internal dependencies
  */
-import rule from './camelcase-acronyms';
+import rule from './acronym-case';
 
 const ruleTester = new RuleTester( {
 	parserOptions: {
@@ -33,7 +33,7 @@ const ruleTester = new RuleTester( {
 	},
 } );
 
-ruleTester.run( 'camelcase-acronyms', rule, {
+ruleTester.run( 'acronym-case', rule, {
 	valid: [
 		{
 			code: `
@@ -52,6 +52,45 @@ export function FancyComponent() {
 	return \`myId-\${instanceID}\`;
 }
 			`,
+		},
+		{
+			code: `
+const htmlNode = '<div></div>';
+			`,
+		},
+		{
+			code: `
+const HTMLButtonComponent = () => {
+	return '<Button />';
+};
+function urlParser(url) {
+	return new URL(url);
+}
+function JSONParser(json) {
+	return JSON.parse(json);
+}
+const getElementByID = ( id ) => {
+	return document.getElementById(id);
+};
+export default function AMPExperimentJSONField() {}
+export { default as AMPExperimentJSONField } from './AMPExperimentJSONField';
+export const HTML = () => {};
+			`,
+		},
+		{
+			code: `const AMP_PROJECT_TEST_URL = 'foo';`,
+		},
+		{
+			code: `const amp = '';`,
+		},
+		{
+			code: `const json = false;`,
+		},
+		{
+			code: `const html = () => {};`,
+		},
+		{
+			code: `const HTML = () => {};`,
 		},
 	],
 	invalid: [
@@ -96,6 +135,42 @@ export function FancyComponent() {
 				{
 					message:
 								'`useInstanceId` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: `
+const HTMLNode = '<div></div>';
+`,
+			errors: [
+				{
+					// Acronyms at the beginning of an identifer should be entirely _lowercased_ instead
+					// of uppercased.
+					message: '`HTMLNode` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: `const Amp = '';`,
+			errors: [
+				{
+					message: '`Amp` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: `const Json = false;`,
+			errors: [
+				{
+					message: '`Json` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: `const Html = () => {};`,
+			errors: [
+				{
+					message: '`Html` violates naming rules.',
 				},
 			],
 		},

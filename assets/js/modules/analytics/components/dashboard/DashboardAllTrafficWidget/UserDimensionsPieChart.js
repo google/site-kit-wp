@@ -291,7 +291,7 @@ UserDimensionsPieChart.chartOptions = {
 	},
 	backgroundColor: 'transparent',
 	fontSize: 12,
-	height: 410,
+	height: 380,
 	legend: {
 		alignment: 'center',
 		position: 'bottom',
@@ -314,7 +314,7 @@ UserDimensionsPieChart.chartOptions = {
 	},
 	title: null,
 	tooltip: {
-		isHtml: true, // eslint-disable-line sitekit/camelcase-acronyms
+		isHtml: true, // eslint-disable-line sitekit/acronym-case
 		trigger: 'focus',
 	},
 	width: '100%',

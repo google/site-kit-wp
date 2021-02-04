@@ -128,7 +128,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 	.add( 'Start', ( registry ) => {
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID: fixtures.accounts[ 0 ].accountId } );
 
 		return <Setup registry={ registry } />;
@@ -158,7 +158,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 	} )
 	.add( 'Set up a new container', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
-		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.web, { accountID } );
@@ -174,7 +174,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 	} )
 	.add( 'Set up with a non-unique container name', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
-		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.web, { accountID } );
@@ -190,7 +190,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 		],
 	} )
 	.add( 'Existing tag (with access)', ( registry ) => {
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = fixtures.accounts[ 0 ].accountId;
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-S1T3K1T' );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: 'GTM-S1T3K1T' } );
@@ -216,7 +216,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 	} )
 	.add( 'Container with property ID, Analytics inactive', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
-		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,
@@ -234,7 +234,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 	// Multiple property IDs are only possible with secondary AMP.
 	.add( 'Container with property ID, Analytics active, ID match', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
-		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,
@@ -255,7 +255,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 	} )
 	.add( 'Container with property ID, Analytics active, ID mismatch error', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
-		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,
@@ -278,7 +278,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 	.add( 'Start', ( registry ) => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID: fixtures.accounts[ 0 ].accountId } );
 
 		return <Setup registry={ registry } />;
@@ -288,15 +288,15 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 		],
 	} )
 	.add( 'Selected', ( registry ) => {
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = fixtures.accounts[ 0 ].accountId;
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
 		const [ container ] = registry.select( STORE_NAME ).getAMPContainers( accountID );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAMPContainerID( container.publicId );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
 
 		return <Setup registry={ registry } />;
@@ -307,7 +307,7 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 	} )
 	.add( 'Container with property ID, Analytics inactive', ( registry ) => {
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
-		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			ampContainerVersion.container,
@@ -325,7 +325,7 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 	// Multiple property IDs are only possible with secondary AMP.
 	.add( 'Container with property ID, Analytics active, ID match', ( registry ) => {
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
-		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			ampContainerVersion.container,
@@ -346,7 +346,7 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 	} )
 	.add( 'Container with property ID, Analytics active, ID mismatch error', ( registry ) => {
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
-		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			ampContainerVersion.container,
@@ -369,7 +369,7 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	.add( 'Start', ( registry ) => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID: fixtures.accounts[ 0 ].accountId } );
 
 		return <Setup registry={ registry } />;
@@ -379,20 +379,20 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 		],
 	} )
 	.add( 'Selected', ( registry ) => {
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = fixtures.accounts[ 0 ].accountId;
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
 		const [ webContainer ] = registry.select( STORE_NAME ).getWebContainers( accountID );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
 		const [ ampContainer ] = registry.select( STORE_NAME ).getAMPContainers( accountID );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
 
 		return <Setup registry={ registry } />;
@@ -404,7 +404,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	.add( 'Singular property ID, Analytics inactive', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
-		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,
@@ -426,7 +426,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	.add( 'Multiple property IDs, Analytics inactive', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.noGA;
-		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,
@@ -448,7 +448,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	.add( 'Multiple property IDs, Analytics active', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.noGA;
-		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,
@@ -472,7 +472,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	.add( 'Singular property ID, Analytics active, ID match', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
-		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,
@@ -498,7 +498,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	.add( 'Singular property ID, Analytics active, ID mismatch error', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
-		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,
@@ -522,7 +522,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	} )
 	.add( 'Set up a new container', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
-		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
@@ -540,7 +540,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	} )
 	.add( 'Set up with a non-unique container names', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
-		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );

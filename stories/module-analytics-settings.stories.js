@@ -119,22 +119,22 @@ storiesOf( 'Analytics Module/Settings', module )
 	} )
 	.add( 'Edit, open with all settings', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		const { internalWebPropertyId } = properties.find( ( property ) => webPropertyId === property.id );
 
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } ); // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } ); // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/camelcase-acronyms
-			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/acronym-case
+			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
-			accountID: accountId, // eslint-disable-line sitekit/camelcase-acronyms
-			propertyID: webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
-			internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			accountID: accountId, // eslint-disable-line sitekit/acronym-case
+			propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
+			internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
 			profileID,
 		} );
 
@@ -146,22 +146,22 @@ storiesOf( 'Analytics Module/Settings', module )
 	} )
 	.add( 'Edit, open when creating new view', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		const { internalWebPropertyId } = properties.find( ( property ) => webPropertyId === property.id );
 
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: accountId } ); // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: accountId } ); // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			accountID: accountId, // eslint-disable-line sitekit/camelcase-acronyms
-			propertyID: webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			accountID: accountId, // eslint-disable-line sitekit/acronym-case
+			propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
-			accountID: accountId, // eslint-disable-line sitekit/camelcase-acronyms
-			propertyID: webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
-			internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			accountID: accountId, // eslint-disable-line sitekit/acronym-case
+			propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
+			internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
 			profileID,
 		} );
 		// This is chosen by the user, not received from API.
@@ -188,16 +188,16 @@ storiesOf( 'Analytics Module/Settings', module )
 	.add( 'Edit, with existing tag w/ access', ( args, { registry } ) => {
 		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			accountID: matchedProperty.accountId,
 			propertyID: matchedProperty.id,
 		};
 
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } ); // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } ); // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/camelcase-acronyms
-			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/acronym-case
+			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
@@ -221,10 +221,10 @@ storiesOf( 'Analytics Module/Settings', module )
 		};
 
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } ); // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } ); // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/camelcase-acronyms
-			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/acronym-case
+			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );

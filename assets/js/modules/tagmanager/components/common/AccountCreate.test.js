@@ -54,7 +54,7 @@ describe( 'AccountCreate', () => {
 	it( 'resets accounts when the re-fetch accounts link is clicked', async () => {
 		const accountA = factories.accountBuilder();
 		const accountB = factories.accountBuilder();
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountA.accountId );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ accountA ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
