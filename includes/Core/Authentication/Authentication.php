@@ -1288,7 +1288,7 @@ final class Authentication {
 	 */
 	private function filter_features_via_proxy( $feature_enabled, $feature_name ) {
 		$transient_name = 'googlesitekit_remote_features';
-		$features       = $this->transient->get( $transient_name );
+		$features       = $this->transients->get( $transient_name );
 		if ( empty( $features ) ) {
 			$features = $this->google_proxy->get_features( $this->credentials );
 			$this->transients->set( $transient_name, $features, DAY_IN_SECONDS );

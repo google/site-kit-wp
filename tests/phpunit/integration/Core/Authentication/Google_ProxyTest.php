@@ -255,13 +255,9 @@ class Google_ProxyTest extends TestCase {
 			400
 		);
 
-		// Ensure exception with correct message is thrown for error response.
-		try {
-			$google_proxy->unregister_site( $credentials );
-			$this->fail( 'Expected an exception to be thrown when unregistering the site' );
-		} catch ( Exception $e ) {
-			$this->assertEquals( $expected_error_response['error'], $e->getMessage() );
-		}
+		// Ensure error with correct message is returned for error response.
+		$error_response_data = $google_proxy->unregister_site( $credentials );
+		$this->assertWPErrorWithMessage( $expected_error_response['error'], $error_response_data );
 	}
 
 	public function test_sync_site_fields() {

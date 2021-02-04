@@ -89,13 +89,13 @@ class Google_Proxy {
 	 * @param array       $args Array of request arguments.
 	 * @return array|WP_Error The response as an associative array or WP_Error on failure.
 	 */
-	private function request( $uri, Credentials $credentials, array $args = array() ) {
+	private function request( $uri, $credentials, array $args = array() ) {
 		$request_args = array(
 			'headers' => ! empty( $args['headers'] ) && is_array( $args['headers'] ) ? $args['headers'] : array(),
 			'body'    => ! empty( $args['body'] ) && is_array( $args['body'] ) ? $args['body'] : array(),
 		);
 
-		if ( $credentials ) {
+		if ( $credentials && $credentials instanceof Credentials ) {
 			if ( ! $credentials->has() ) {
 				return new WP_Error( 'oauth_credentials_not_exist' );
 			}
@@ -159,6 +159,18 @@ class Google_Proxy {
 	}
 
 	/**
+	 * Fetch site fields
+	 *
+	 * @since 1.22.0
+	 *
+	 * @param Credentials $credentials Credentials instance.
+	 * @return array|WP_Error The response as an associative array or WP_Error on failure.
+	 */
+	public function fetch_site_fields( Credentials $credentials ) {
+		return $this->request( self::OAUTH2_SITE_URI, $credentials );
+	}
+
+	/**
 	 * Are site fields synced
 	 *
 	 * @since 1.22.0
@@ -168,7 +180,7 @@ class Google_Proxy {
 	 * @return boolean|WP_Error Boolean do the site fields match or WP_Error on failure.
 	 */
 	public function are_site_fields_synced( Credentials $credentials ) {
-		$site_fields = $this->request( self::OAUTH2_SITE_URI, $credentials );
+		$site_fields = $this->fetch_site_fields( $credentials );
 		if ( is_wp_error( $site_fields ) ) {
 			return $site_fields;
 		}
