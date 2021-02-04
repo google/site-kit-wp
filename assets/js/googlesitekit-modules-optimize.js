@@ -19,4 +19,9 @@
 /**
  * Internal dependencies
  */
-import './modules/optimize';
+import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
+import { registerStore, registerModule } from './modules/optimize';
+
+registerStore( Data );
+registerModule( Modules );

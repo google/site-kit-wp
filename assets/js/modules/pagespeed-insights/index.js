@@ -20,15 +20,10 @@
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
-import domReady from '@wordpress/dom-ready';
 
 /**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import Widgets from 'googlesitekit-widgets';
-import './datastore';
-import { STORE_NAME } from './datastore/constants';
 import { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-areas';
 import { getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
@@ -37,6 +32,9 @@ import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedW
 import LegacyDashboardPageSpeedCTA from './components/dashboard/LegacyDashboardPageSpeedCTA';
 import LegacyDashboardSpeed from './components/dashboard/LegacyDashboardSpeed';
 import PageSpeedInsightsIcon from '../../../svg/pagespeed-insights.svg';
+import { STORE_NAME } from './datastore/constants';
+
+export { registerStore } from './datastore';
 
 const {
 	active,
@@ -69,10 +67,8 @@ if ( active && setupComplete ) {
 	);
 }
 
-domReady( () => {
-	// IMPORTANT: When updating arguments here, also update the same call in
-	// `provideModuleRegistrations`.
-	Modules.registerModule(
+export const registerModule = ( modules ) => {
+	modules.registerModule(
 		'pagespeed-insights',
 		{
 			storeName: STORE_NAME,
@@ -80,10 +76,12 @@ domReady( () => {
 			Icon: PageSpeedInsightsIcon,
 		}
 	);
+};
 
-	Widgets.registerWidget( 'pagespeedInsightsWebVitals', {
+export const registerWidgets = ( widgets ) => {
+	widgets.registerWidget( 'pagespeedInsightsWebVitals', {
 		Component: DashboardPageSpeedWidget,
-		width: Widgets.WIDGET_WIDTHS.FULL,
+		width: widgets.WIDGET_WIDTHS.FULL,
 		wrapWidget: false,
 	}, [ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ] );
-} );
+};
