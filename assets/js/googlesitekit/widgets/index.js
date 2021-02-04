@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import Widget from './components/Widget';
 import { STORE_NAME, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from './datastore/constants';
 
 export { registerStore } from './datastore';
@@ -37,12 +36,6 @@ export { registerDefaults as registerWidgets } from './register-defaults';
  */
 export function createWidgets( { dispatch, select } ) {
 	const Widgets = {
-		/**
-		 * Public Widget components for creating Site Kit widgets.
-		 *
-		 * @since 1.11.0
-		 */
-		components: { Widget },
 
 		/**
 		 * Supported styles for Site Kit widget areas.
