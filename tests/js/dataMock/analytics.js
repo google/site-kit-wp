@@ -85,18 +85,6 @@ function getObjectHash( obj ) {
 }
 
 /**
- * Converts a string to a date object and returns it.
- *
- * @since n.e.x.t
- *
- * @param {string} dateString Date string.
- * @return {Date} A date object.
- */
-function stringToDate( dateString ) {
-	return new Date( `${ dateString } 00:00:00` );
-}
-
-/**
  * Gets metric key.
  *
  * @since n.e.x.t
@@ -204,6 +192,9 @@ function sortRows( rows, metrics, orderby ) {
  * @return {Array.<Object>} An array with generated report.
  */
 export function getAnalyticsMockResponse( args ) {
+	// We set seed for every data mock to make sure that the same arguments get the same report data.
+	// It means that everyone will have the same report data and will see the same widgets in the storybook.
+	// This approach gives us additional flexebility to control randomness on per widget basis.
 	faker.seed( getObjectHash( args ) );
 
 	const data = {
@@ -224,15 +215,20 @@ export function getAnalyticsMockResponse( args ) {
 	const validMetrics = ( args.metrics || [] ).filter( ( metric ) => !! getMetricType( metric ) );
 	const streams = [];
 
-	// Generate streams of dimension values.
+	// Generate streams (array) of dimension values. Each dimension will have its own stream (array) of data.
+	// Then streams will be merged into one (see zip( ... ) function call) and metric values will be added to each
+	// dimension set in the combined stream (array). We need to use array of streams because report arguments may
+	// have 0 or N dimensions (N > 1) which means that in the each row of the report data we will have an array
+	// of dimension values.
 	const dimensions = Array.isArray( args.dimensions ) ? args.dimensions : [ args.dimensions ];
 	dimensions.forEach( ( dimension ) => {
 		if ( dimension === 'ga:date' ) {
+			// Generates a stream (an array) of dates when the dimension is ga:date.
 			streams.push( new Observable( ( observer ) => {
-				const currentDate = stringToDate( args.startDate );
-				const end = stringToDate( args.endDate );
+				const currentDate = new Date( args.startDate );
+				const end = new Date( args.endDate );
 
-				while ( +currentDate <= +end ) {
+				while ( currentDate.getTime() <= end.getTime() ) {
 					observer.next( currentDate.toISOString().split( 'T' )[ 0 ].replace( /\D/g, '' ) );
 					currentDate.setDate( currentDate.getDate() + 1 );
 				}
@@ -240,6 +236,7 @@ export function getAnalyticsMockResponse( args ) {
 				observer.complete();
 			} ) );
 		} else if ( dimension && typeof ANALYTICS_DIMENSION_OPTIONS?.[ dimension ] === 'function' ) {
+			// Generates a stream (an array) of dimension values using a function associated with the current dimension.
 			streams.push( new Observable( ( observer ) => {
 				for ( let i = 1; i <= 90; i++ ) { // 90 is the max number of dates in the longest date range.
 					const val = ANALYTICS_DIMENSION_OPTIONS[ dimension ]( i );
@@ -253,12 +250,15 @@ export function getAnalyticsMockResponse( args ) {
 				observer.complete();
 			} ) );
 		} else if ( dimension && Array.isArray( ANALYTICS_DIMENSION_OPTIONS?.[ dimension ] ) ) {
+			// Uses predefined array of dimension values to create a stream (an array) from.
 			streams.push( from( ANALYTICS_DIMENSION_OPTIONS[ dimension ] ) );
 		} else {
+			// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array) with just one value.
 			streams.push( from( [ null ] ) );
 		}
 	} );
 
+	// This is the list of operations that we apply to the cobmined stream (array) of dimension values.
 	const ops = [
 		// Convert a dimension value to a row object and generate metric values.
 		map( ( dimensionValue ) => ( {
