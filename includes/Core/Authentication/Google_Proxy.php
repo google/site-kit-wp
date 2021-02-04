@@ -32,6 +32,7 @@ class Google_Proxy {
 	const SETUP_URI               = '/site-management/setup/';
 	const PERMISSIONS_URI         = '/site-management/permissions/';
 	const USER_INPUT_SETTINGS_URI = '/site-management/settings/';
+	const FEATURES_URI            = '/site-management/features/';
 	const ACTION_SETUP            = 'googlesitekit_proxy_setup';
 	const ACTION_PERMISSIONS      = 'googlesitekit_proxy_permissions';
 
@@ -76,6 +77,71 @@ class Google_Proxy {
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Sends a POST request to the Google Proxy server.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $uri Endpoint to send the request to.
+	 * @param Credentials $credentials Credentials instance.
+	 * @param array $args Array of request arguments.
+	 * @return array|WP_Error The response as an associative array or WP_Error on failure.
+	 */
+	public function request( $uri, Credentials $credentials, array $args = array() ) {
+		if ( ! $credentials->has() ) {
+			return new WP_Error( 'oauth_credentials_not_exist' );
+		}
+
+		$creds        = $credentials->get(); 
+		$request_args = array(
+			'headers' => ! empty( $args['headers'] ) && is_array( $args['headers'] )
+				? $args['headers']
+				: array(),
+			'body'    => array(
+				'site_id'     => $creds['oauth2_client_id'],
+				'site_secret' => $creds['oauth2_client_secret'],
+			),
+		);
+
+		if ( ! empty( $args['body'] ) && is_array( $args['body'] ) ) {
+			$request_args['body'] = array_merge( $args['body'], $request_args['body'] );
+		}
+
+		if ( ! empty( $args['access_token'] ) ) {
+			$request_args['headers']['Authorization'] = 'Bearer ' . $args['access_token'];
+		}
+
+		if ( isset( $args['mode'] ) && $args['mode'] === 'async' ) {
+			$request_args['timeout']  = 0.01;
+			$request_args['blocking'] = false;
+		}
+
+		if ( ! empty( $args['json_request'] ) ) {
+			$request_args['headers']['Content-Type'] = 'application/json';
+			$request_args['body'] = wp_json_encode( $request_args['body'] );
+		}
+
+		$url      = $this->url( $uri );
+		$response = wp_remote_post( $url, $request_args );
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$code = wp_remote_retrieve_response_code( $response );
+		$body = wp_remote_retrieve_body( $response );
+		$body = json_decode( $body, true );
+		if ( $code < 200 || 299 < $code ) {
+			$message = is_array( $body ) && ! empty( $body['error'] ) ? $body['error'] : '';
+			return new WP_Error( 'request_failed', $message, array( 'status' => $code ) );
+		}
+
+		if ( ! $body ) {
+			return new WP_Error( 'failed_to_parse_response' );
+		}
+
+		return $body;
 	}
 
 	/**
