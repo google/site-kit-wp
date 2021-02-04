@@ -22,4 +22,7 @@
 /**
  * Internal dependencies
  */
-import './googlesitekit/datastore/ui';
+import Data from 'googlesitekit-data';
+import { registerStore } from './googlesitekit/datastore/ui';
+
+registerStore( Data );
