@@ -31,5 +31,11 @@ $GLOBALS['wp_tests_options'] = array(
 	'active_plugins' => array( basename( TESTS_PLUGIN_DIR ) . '/google-site-kit.php' ),
 );
 
+// Give access to tests_add_filter() function.
+require $_test_root . '/includes/functions.php';
+
+// Ensure all features are disabled when bootstrapping the plugin.
+tests_add_filter( 'googlesitekit_is_feature_enabled', '__return_false', 0 );
+
 // Start up the WP testing environment.
 require $_test_root . '/includes/bootstrap.php';
