@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 register_activation_hook( __FILE__, 'e2e_user_input_settings_reset' );
 register_deactivation_hook( __FILE__, 'e2e_user_input_settings_reset' );
 
+add_action( 'init', 'e2e_user_input_settings_required_on_oauth_callback', -10 );
 add_filter( 'pre_http_request', 'e2e_user_input_settings_proxy_handler', 10, 3 );
 
 function e2e_user_input_settings_reset() {
@@ -34,6 +35,22 @@ function e2e_user_input_settings_reset() {
 
 	delete_option( '_userinput_sitewide' );
 	delete_option( '_userinput_' . get_current_user_id() );
+}
+
+function e2e_user_input_settings_required_on_oauth_callback() {
+	if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
+		return;
+	}
+
+	if (
+		! empty( $_GET['oauth2callback'] )
+		&& ! empty( $_GET['code'] )
+		&& 'valid-test-code' === $_GET['code']
+	) {
+		$user_options     = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$user_input_state = new User_Input_State( $user_options );
+		$user_input_state->set( User_Input_State::VALUE_REQUIRED );
+	}
 }
 
 function e2e_user_input_settings_proxy_handler( $pre, $args, $url ) {
