@@ -27,10 +27,10 @@ class Dismissed_ToursTest extends TestCase {
 		$user_id            = $this->factory()->user->create();
 		$context            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->user_options = new User_Options( $context, $user_id );
-		unregister_meta_key(
-			'user',
-			$this->user_options->get_meta_key( Dismissed_Tours::OPTION )
-		);
+		$meta_key           = $this->user_options->get_meta_key( Dismissed_Tours::OPTION );
+		unregister_meta_key( 'user', $meta_key );
+		// Needed to unregister the instance registered during plugin bootstrap.
+		remove_all_filters( "sanitize_user_meta_{$meta_key}" );
 	}
 
 	public function test_add() {
