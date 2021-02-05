@@ -21,9 +21,12 @@ use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 
 class User_Input_SettingsTest extends TestCase {
+
+	use Fake_Site_Connection_Trait;
 
 	/**
 	 * Context object.
@@ -262,12 +265,8 @@ class User_Input_SettingsTest extends TestCase {
 
 		$options     = new Options( $this->context );
 		$credentials = new Credentials( new Encrypted_Options( $options ) );
-		$credentials->set(
-			array(
-				'oauth2_client_id'     => 'abcd.apps.sitekit.withgoogle.com',
-				'oauth2_client_secret' => 'xyz',
-			)
-		);
+
+		$this->fake_proxy_site_connection();
 
 		$auth     = new Authentication( $this->context, $options, $user_options );
 		$settings = new User_Input_Settings( $this->context, $auth );
