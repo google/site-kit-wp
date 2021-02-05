@@ -336,7 +336,7 @@ class Google_ProxyTest extends TestCase {
 		);
 
 		$this->mock_http_request( $expected_url, $expected_success_response );
-		$this->google_proxy->get_features( $credentials );
+		$features = $this->google_proxy->get_features( $credentials );
 
 		// Ensure the request was made with the proper URL and body parameters.
 		$this->assertEquals( $expected_url, $pre_url );
@@ -350,6 +350,7 @@ class Google_ProxyTest extends TestCase {
 			),
 			$pre_args['body']
 		);
+		$this->assertEqualSetsWithIndex( $expected_success_response, $features );
 	}
 
 	/**
