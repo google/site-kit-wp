@@ -109,7 +109,7 @@ const baseActions = {
 		const registry = yield Data.commonActions.getRegistry();
 		yield clearError( 'saveUserInputSettings', [] );
 
-		const settings = registry.select( STORE_NAME ).getUserInputSettings() || {};
+		const settings = registry.select( STORE_NAME ).getUserInputSettings();
 		const values = Object.keys( settings ).reduce( ( accum, key ) => ( {
 			...accum,
 			[ key ]: settings[ key ]?.values || [],
