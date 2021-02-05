@@ -37,16 +37,18 @@ import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import {
-	wpDashboardUniqueVisitorsArgs,
-	wpDashboardUniqueVisitorsData,
+	wpDashboardPopularPagesArgs,
+	wpDashboardPopularPagesData,
 	wpDashboardSessionDurationArgs,
 	wpDashboardSessionDurationData,
+	wpDashboardUniqueVisitorsArgs,
+	wpDashboardUniqueVisitorsData,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import {
-	wpDashboardImpressionsArgs,
-	wpDashboardImpressionsData,
 	wpDashboardClicksArgs,
 	wpDashboardClicksData,
+	wpDashboardImpressionsArgs,
+	wpDashboardImpressionsData,
 } from '../assets/js/modules/search-console/datastore/__fixtures__';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
@@ -97,6 +99,10 @@ storiesOf( 'WordPress', module )
 
 			// For <WPDashboardClicks />
 			dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( wpDashboardClicksData, { options: wpDashboardClicksArgs } );
+
+			// For <WPDashboardPopularPages />
+			dispatch( MODULES_ANALYTICS ).receiveGetReport( wpDashboardPopularPagesData, { options: wpDashboardPopularPagesArgs } );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getReport', [ wpDashboardPopularPagesArgs ] );
 		};
 
 		setTimeout( () => {
