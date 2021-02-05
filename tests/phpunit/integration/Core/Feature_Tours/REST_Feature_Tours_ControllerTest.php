@@ -22,6 +22,12 @@ use WP_REST_Response;
 
 class REST_Feature_Tours_ControllerTest extends TestCase {
 
+	public function tearDown() {
+		parent::tearDown();
+		// This ensures the REST server is initialized fresh for each test using it.
+		unset( $GLOBALS['wp_rest_server'] );
+	}
+
 	public function test_register() {
 		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$controller = new REST_Feature_Tours_Controller( $context );
