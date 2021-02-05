@@ -1293,7 +1293,8 @@ final class Authentication {
 		$features       = $this->transients->get( $transient_name );
 		if ( empty( $features ) ) {
 			$features = $this->google_proxy->get_features( $this->credentials );
-			$this->transients->set( $transient_name, $features, DAY_IN_SECONDS );
+			$ttl      = is_wp_error( $features ) ? HOUR_IN_SECONDS : DAY_IN_SECONDS;
+			$this->transients->set( $transient_name, $features, $ttl );
 		}
 
 		if ( ! is_wp_error( $features ) && isset( $features[ $feature_name ]['enabled'] ) ) {

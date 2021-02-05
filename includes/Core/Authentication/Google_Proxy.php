@@ -133,7 +133,7 @@ class Google_Proxy {
 			return new WP_Error( 'request_failed', $message, array( 'status' => $code ) );
 		}
 
-		if ( ! $body ) {
+		if ( is_null( $body ) ) {
 			return new WP_Error( 'failed_to_parse_response' );
 		}
 
