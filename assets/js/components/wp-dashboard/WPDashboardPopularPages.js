@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import PreviewBlock from '../PreviewBlock';
+import PreviewTable from '../../components/PreviewTable';
 import ReportError from '../ReportError';
 import { numFmt } from '../../util';
 import TableOverflowContainer from '../../components/TableOverflowContainer';
@@ -68,7 +68,7 @@ const WPDashboardPopularPages = () => {
 	const loading = useSelect( ( select ) => ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 
 	if ( loading ) {
-		return <PreviewBlock width="48%" height="92px" />;
+		return <PreviewTable rows={ 6 } />;
 	}
 
 	if ( error ) {
