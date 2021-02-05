@@ -49,12 +49,16 @@ const fetchGetDismissedToursStore = createFetchStore( {
 const { fetchGetDismissedTours, receiveGetDismissedTours } = fetchGetDismissedToursStore.actions;
 const fetchDismissTourStore = createFetchStore( {
 	baseName: 'dismissTour',
-	controlCallback: ( slug ) => API.set( 'core', 'user', 'dismiss-tour', { slug } ),
+	controlCallback: ( { slug } ) => API.set( 'core', 'user', 'dismiss-tour', { slug } ),
 	reducerCallback: ( state, dismissedTours ) => {
 		return {
 			...state,
 			dismissedTours,
 		};
+	},
+	argsToParams: ( slug ) => ( { slug } ),
+	validateParams: ( { slug } = {} ) => {
+		invariant( slug, 'slug is required.' );
 	},
 } );
 const { fetchDismissTour } = fetchDismissTourStore.actions;
