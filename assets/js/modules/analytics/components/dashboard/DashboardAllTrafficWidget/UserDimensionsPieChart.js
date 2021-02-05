@@ -91,8 +91,8 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 			} );
 		}
 
-		chartData.onMouseOver = global.google.visualization.events.addListener( chart, 'onmouseover', ( e ) => {
-			const { row } = e;
+		chartData.onMouseOver = global.google.visualization.events.addListener( chart, 'onmouseover', ( event ) => {
+			const { row } = event;
 
 			if ( ! row ) {
 				setSelectable( false );
