@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit;
 
+use Google\Site_Kit\Core\Feature_Tours\Feature_Tours;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\JSON_File;
 
@@ -180,6 +181,7 @@ final class Plugin {
 				( new Core\Util\Health_Checks( $authentication ) )->register();
 				( new Core\Admin\Standalone( $this->context ) )->register();
 				( new Core\Util\Activation_Notice( $this->context, $activation_flag, $assets ) )->register();
+				( new Core\Feature_Tours\Feature_Tours( $this->context, $user_options ) )->register();
 				( new Core\Util\Migration_1_3_0( $this->context, $options, $user_options ) )->register();
 				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
 
