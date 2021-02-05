@@ -78,8 +78,8 @@ const baseActions = {
 		return ( function* () {
 			// Dismiss the given tour immediately.
 			yield {
-				type: DISMISS_TOUR,
 				payload: { slug },
+				type: DISMISS_TOUR,
 			};
 			// Dispatch a request to persist the dismissal.
 			const { response, error } = yield fetchDismissTour( slug );
