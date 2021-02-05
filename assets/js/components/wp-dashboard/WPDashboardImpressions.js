@@ -43,15 +43,15 @@ const WPDashboardImpressions = () => {
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
 
-	const args = {
+	const reportArgs = {
 		startDate: compareStartDate,
 		endDate,
 		dimensions: 'date',
 	};
 
-	const data = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( args ) );
-	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ args ] ) );
-	const loading = useSelect( ( select ) => ! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const data = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ) );
+	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
+	const loading = useSelect( ( select ) => ! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 
 	useEffect( () => {
 		if ( error ) {

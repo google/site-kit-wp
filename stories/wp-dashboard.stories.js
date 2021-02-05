@@ -35,7 +35,22 @@ import WPDashboardApp from '../assets/js/components/wp-dashboard/WPDashboardApp'
 import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
+import {
+	wpDashboardUniqueVisitorsArgs,
+	wpDashboardUniqueVisitorsData,
+	wpDashboardSessionDurationArgs,
+	wpDashboardSessionDurationData,
+} from '../assets/js/modules/analytics/datastore/__fixtures__';
+import {
+	wpDashboardImpressionsArgs,
+	wpDashboardImpressionsData,
+	wpDashboardClicksArgs,
+	wpDashboardClicksData,
+} from '../assets/js/modules/search-console/datastore/__fixtures__';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
+import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
 
 storiesOf( 'WordPress', module )
 	.add( 'WordPress Dashboard', () => {
@@ -55,6 +70,33 @@ storiesOf( 'WordPress', module )
 				requiredScopes: [],
 				grantedScopes: [],
 			} );
+			dispatch( CORE_MODULES ).receiveGetModules( [
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'search-console',
+					active: true,
+					connected: true,
+				},
+			] );
+			dispatch( CORE_USER ).setReferenceDate( '2021-01-23' );
+
+			// For <WPDashboardUniqueVisitors />
+			dispatch( MODULES_ANALYTICS ).receiveGetReport( wpDashboardUniqueVisitorsData, { options: wpDashboardUniqueVisitorsArgs } );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getReport', [ wpDashboardUniqueVisitorsArgs ] );
+
+			// For <WPDashboardSessionDuration />
+			dispatch( MODULES_ANALYTICS ).receiveGetReport( wpDashboardSessionDurationData, { options: wpDashboardSessionDurationArgs } );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getReport', [ wpDashboardSessionDurationArgs ] );
+
+			// For <WPDashboardImpressions />
+			dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( wpDashboardImpressionsData, { options: wpDashboardImpressionsArgs } );
+
+			// For <WPDashboardClicks />
+			dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( wpDashboardClicksData, { options: wpDashboardClicksArgs } );
 		};
 
 		setTimeout( () => {

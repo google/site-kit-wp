@@ -48,6 +48,10 @@ export { default as dashboardUserTotalsData } from './dashboard-user-totals-data
 export { default as dashboardUserTotalsArgs } from './dashboard-user-totals-args.json';
 export { default as dashboardUserGraphData } from './dashboard-user-graph-data.json';
 export { default as dashboardUserGraphArgs } from './dashboard-user-graph-args.json';
+export { default as wpDashboardUniqueVisitorsArgs } from './wp-dashboard-unique-visitors-args.json';
+export { default as wpDashboardUniqueVisitorsData } from './wp-dashboard-unique-visitors-data.json';
+export { default as wpDashboardSessionDurationArgs } from './wp-dashboard-session-duration-args.json';
+export { default as wpDashboardSessionDurationData } from './wp-dashboard-session-duration-data.json';
 export * from './dashboard-unique-visitors-data';
 export * from './dashboard-unique-visitors-args';
 export { pageDashboardUniqueVisitorsSparkData, pageDashboardUniqueVisitorsVisitorData } from './page-dashboard-unique-visitors-data';
