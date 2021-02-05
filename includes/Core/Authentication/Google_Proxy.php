@@ -322,8 +322,10 @@ class Google_Proxy {
 			self::FEATURES_URI,
 			$credentials,
 			array(
-				'platform' => 'wordpress/google-site-kit',
-				'version'  => GOOGLESITEKIT_VERSION,
+				'body' => array(
+					'platform' => 'wordpress/google-site-kit',
+					'version'  => GOOGLESITEKIT_VERSION,
+				),
 			)
 		);
 	}
