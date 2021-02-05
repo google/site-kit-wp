@@ -23,6 +23,10 @@ register_deactivation_hook( __FILE__, 'e2e_user_input_settings_reset' );
 add_filter( 'pre_http_request', 'e2e_user_input_settings_proxy_handler', 10, 3 );
 
 function e2e_user_input_settings_reset() {
+	if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
+		return;
+	}
+
 	$user_options     = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	$user_input_state = new User_Input_State( $user_options );
 
@@ -33,6 +37,10 @@ function e2e_user_input_settings_reset() {
 }
 
 function e2e_user_input_settings_proxy_handler( $pre, $args, $url ) {
+	if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
+		return $pre;
+	}
+
 	$google_proxy            = new Google_Proxy( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	$user_input_settings_url = $google_proxy->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
 	if ( $url !== $user_input_settings_url ) {

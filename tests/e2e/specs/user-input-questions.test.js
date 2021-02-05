@@ -59,9 +59,7 @@ describe( 'User Input Settings', () => {
 			expect( page ).toClick( '.googlesitekit-user-input__buttons--next' ),
 			page.waitForNavigation(),
 		] );
-	}
 
-	async function expectSuccessNotification() {
 		await page.waitForSelector( '#user-input-success' );
 		await expect( page ).toMatchElement( '#user-input-success' );
 	}
@@ -117,7 +115,6 @@ describe( 'User Input Settings', () => {
 		] );
 
 		await fillInInputSettings();
-		await expectSuccessNotification();
 	} );
 
 	it( 'should offer to enter input settings for existing users', async () => {
@@ -130,7 +127,6 @@ describe( 'User Input Settings', () => {
 		] );
 
 		await fillInInputSettings();
-		await expectSuccessNotification();
 	} );
 
 	it( 'should let existing users enter input settings from the settings page', async () => {
@@ -146,6 +142,5 @@ describe( 'User Input Settings', () => {
 		] );
 
 		await fillInInputSettings();
-		await expectSuccessNotification();
 	} );
 } );
