@@ -329,16 +329,9 @@ final class Authentication {
 					$user['user']['picture'] = $profile_data['photo'];
 				}
 
-				$user['verified'] = $this->verification->has();
-
-				return $user;
-			}
-		);
-
-		add_filter(
-			'googlesitekit_user_data',
-			function( $user ) {
+				$user['verified']       = $this->verification->has();
 				$user['userInputState'] = $this->user_input_state->get();
+
 				return $user;
 			}
 		);
