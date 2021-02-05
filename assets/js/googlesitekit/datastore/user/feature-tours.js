@@ -86,6 +86,7 @@ const baseActions = {
 			if ( ! error ) {
 				yield receiveGetDismissedTours( response );
 			}
+			return { response, error };
 		}() );
 	},
 };
