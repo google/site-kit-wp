@@ -32,6 +32,8 @@ import {
 	UseSnippetSwitch,
 } from '../common';
 import ProgressBar from '../../../../components/ProgressBar';
+import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
+import Link from '../../../../components/Link';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
@@ -63,6 +65,8 @@ export default function SettingsForm() {
 		uncheckedMessage = __( 'By not placing the code, AdSense will not show ads on your website unless you’ve already got some AdSense code.', 'google-site-kit' );
 	}
 
+	const supportURL = 'https://support.google.com/adsense/answer/10175505#create-an-ad-unit-for-web-stories';
+
 	return (
 		<div className="googlesitekit-adsense-settings-fields">
 			<ErrorNotices />
@@ -71,6 +75,20 @@ export default function SettingsForm() {
 				checkedMessage={ checkedMessage }
 				uncheckedMessage={ uncheckedMessage }
 			/>
+
+			<WebStoriesAdUnitSelect />
+			<p>
+				{ __( 'This ad unit will be used for your Web Stories.', 'google-site-kit' ) }
+				{ ' ' }
+				<Link
+					href={ supportURL }
+					external
+					inherit
+					aria-label={ __( 'Learn more about Ad Sense Web Stories.', 'google-site-kit' ) }
+				>
+					{ __( 'Learn more', 'google-site-kit' ) }
+				</Link>
+			</p>
 		</div>
 	);
 }

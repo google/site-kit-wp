@@ -197,6 +197,7 @@ final class AdSense extends Module
 	protected function get_datapoint_definitions() {
 		return array(
 			'GET:accounts'       => array( 'service' => 'adsense' ),
+			'GET:adunits'        => array( 'service' => 'adsense' ),
 			'GET:alerts'         => array( 'service' => 'adsense' ),
 			'GET:clients'        => array( 'service' => 'adsense' ),
 			'GET:earnings'       => array( 'service' => 'adsense' ),
@@ -221,6 +222,22 @@ final class AdSense extends Module
 			case 'GET:accounts':
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts->listAccounts();
+			case 'GET:adunits':
+				if ( ! isset( $data['accountID'] ) || ! isset( $data['clientID'] ) ) {
+					$option            = $this->get_settings()->get();
+					$data['accountID'] = $option['accountID'];
+					if ( empty( $data['accountID'] ) ) {
+						/* translators: %s: Missing parameter name */
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+					}
+					$data['clientID'] = $option['clientID'];
+					if ( empty( $data['clientID'] ) ) {
+						/* translators: %s: Missing parameter name */
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
+					}
+				}
+				$service = $this->get_service( 'adsense' );
+				return $service->accounts_adunits->listAccountsAdunits( $data['accountID'], $data['clientID'] );
 			case 'GET:alerts':
 				if ( ! isset( $data['accountID'] ) ) {
 					$option            = $this->get_settings()->get();
