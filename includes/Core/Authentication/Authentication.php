@@ -321,16 +321,16 @@ final class Authentication {
 		add_filter(
 			'googlesitekit_user_data',
 			function( $user ) {
-				$user['connectURL'] = esc_url_raw( $this->get_connect_url() );
-
 				if ( $this->profile->has() ) {
 					$profile_data            = $this->profile->get();
 					$user['user']['email']   = $profile_data['email'];
 					$user['user']['picture'] = $profile_data['photo'];
 				}
 
-				$user['verified']       = $this->verification->has();
+				$user['connectURL']     = esc_url_raw( $this->get_connect_url() );
+				$user['initialVersion'] = $this->initial_version->get();
 				$user['userInputState'] = $this->user_input_state->get();
+				$user['verified']       = $this->verification->has();
 
 				return $user;
 			}
