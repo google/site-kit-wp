@@ -20,16 +20,17 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
 import baseModuleStore from './base';
 import service from './service';
+import { STORE_NAME } from './constants';
 
 const store = Data.combineStores(
 	baseModuleStore,
 	service,
 );
 
-// Register this store on the global registry.
-Data.registerStore( STORE_NAME, store );
+export const registerStore = ( registry ) => {
+	registry.registerStore( STORE_NAME, store );
+};
 
 export default store;
