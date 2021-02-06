@@ -104,6 +104,7 @@ export const reducer = ( state, { payload, type } ) => {
 				siteName,
 				timezone,
 				usingProxy,
+				webStoriesActive,
 			} = payload.siteInfo;
 
 			return {
@@ -122,6 +123,7 @@ export const reducer = ( state, { payload, type } ) => {
 					siteName,
 					timezone,
 					usingProxy,
+					webStoriesActive,
 				},
 			};
 		}

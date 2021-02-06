@@ -43,7 +43,7 @@ describe( 'WebStoriesAdUnitSelect', () => {
 		const { getAllByRole } = render( <WebStoriesAdUnitSelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-		expect( listItems ).toHaveLength( fixtures.adunits.length );
+		expect( listItems ).toHaveLength( fixtures.adunits.length + 1 ); // + 1 accounts for the default value "Select ad unit".
 	} );
 
 	it( 'should render a loading state when ad units are undefined', async () => {

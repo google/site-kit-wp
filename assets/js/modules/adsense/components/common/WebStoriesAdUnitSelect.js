@@ -62,6 +62,11 @@ export default function WebStoriesAdUnitSelect() {
 			enhanced
 			outlined
 		>
+			<Option
+				value=""
+			>
+				{ __( 'Select ad unit', 'google-site-kit' ) }
+			</Option>
 			{ ( adunits || [] ).map( ( { id, name }, index ) => (
 				<Option
 					key={ index }
