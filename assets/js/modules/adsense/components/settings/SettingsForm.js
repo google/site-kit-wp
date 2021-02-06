@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,9 +35,11 @@ import {
 import ProgressBar from '../../../../components/ProgressBar';
 import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
 import Link from '../../../../components/Link';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
+	const webStoriesActive = useSelect( ( select ) => select( CORE_SITE ).isWebStoriesActive() );
 	const clientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
 	const { existingTag, hasResolvedGetExistingTag } = useSelect( ( select ) => ( {
 		existingTag: select( STORE_NAME ).getExistingTag(),
@@ -76,19 +79,23 @@ export default function SettingsForm() {
 				uncheckedMessage={ uncheckedMessage }
 			/>
 
-			<WebStoriesAdUnitSelect />
-			<p>
-				{ __( 'This ad unit will be used for your Web Stories.', 'google-site-kit' ) }
-				{ ' ' }
-				<Link
-					href={ supportURL }
-					external
-					inherit
-					aria-label={ __( 'Learn more about Ad Sense Web Stories.', 'google-site-kit' ) }
-				>
-					{ __( 'Learn more', 'google-site-kit' ) }
-				</Link>
-			</p>
+			{ webStoriesActive && (
+				<Fragment>
+					<WebStoriesAdUnitSelect />
+					<p>
+						{ __( 'This ad unit will be used for your Web Stories.', 'google-site-kit' ) }
+						{ ' ' }
+						<Link
+							href={ supportURL }
+							external
+							inherit
+							aria-label={ __( 'Learn more about Ad Sense Web Stories.', 'google-site-kit' ) }
+						>
+							{ __( 'Learn more', 'google-site-kit' ) }
+						</Link>
+					</p>
+				</Fragment>
+			) }
 		</div>
 	);
 }

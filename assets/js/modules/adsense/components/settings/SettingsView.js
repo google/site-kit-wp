@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME } from '../../datastore/constants';
 import {
 	ACCOUNT_STATUS_DISAPPROVED,
@@ -45,6 +46,7 @@ export default function SettingsView() {
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountManageSitesURL() );
+	const webStoriesActive = useSelect( ( select ) => select( CORE_SITE ).isWebStoriesActive() );
 	const webStoriesAdUnit = useSelect( ( select ) => select( STORE_NAME ).getWebStoriesAdUnit() );
 
 	let accountStatusLabel;
@@ -109,6 +111,7 @@ export default function SettingsView() {
 						</Link>
 					</p>
 				</div>
+				{ webStoriesActive &&
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Web Stories Ad Unit', 'google-site-kit' ) }
@@ -118,6 +121,7 @@ export default function SettingsView() {
 						{ webStoriesAdUnit && <DisplaySetting value={ webStoriesAdUnit } /> }
 					</p>
 				</div>
+				}
 			</div>
 
 			<div className="googlesitekit-settings-module__meta-items">
