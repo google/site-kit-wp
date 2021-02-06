@@ -91,9 +91,9 @@ describe( 'core/user date-range', () => {
 			describe( 'with date range', () => {
 				// [ dateRange, expectedReturnDates ]
 				const valuesToTest = [
-					[ 'last-1-days', { startDate: '2020-09-24', endDate: '2020-09-24' } ],
-					[ 'last-7-days', { startDate: '2020-09-18', endDate: '2020-09-24' } ],
-					[ 'last-365-days', { startDate: '2019-09-26', endDate: '2020-09-24' } ],
+					[ 'last-1-days', { startDate: '2020-09-24', endDate: '2020-09-24', numberOfDays: 1 } ],
+					[ 'last-7-days', { startDate: '2020-09-18', endDate: '2020-09-24', numberOfDays: 7 } ],
+					[ 'last-365-days', { startDate: '2019-09-26', endDate: '2020-09-24', numberOfDays: 365 } ],
 				];
 
 				it.each( valuesToTest )( 'should return proper dates for "%s"', ( dateRange, expected ) => {
@@ -104,12 +104,12 @@ describe( 'core/user date-range', () => {
 			describe( 'with date range & offset', () => {
 				// [ dateRange, offsetDays, expectedReturnDates ]
 				const valuesToTest = [
-					[ 'last-1-days', 0, { startDate: '2020-09-24', endDate: '2020-09-24' } ],
-					[ 'last-7-days', 0, { startDate: '2020-09-18', endDate: '2020-09-24' } ],
-					[ 'last-30-days', 0, { startDate: '2020-08-26', endDate: '2020-09-24' } ],
-					[ 'last-1-days', 3, { startDate: '2020-09-21', endDate: '2020-09-21' } ],
-					[ 'last-7-days', 3, { startDate: '2020-09-15', endDate: '2020-09-21' } ],
-					[ 'last-30-days', 3, { startDate: '2020-08-23', endDate: '2020-09-21' } ],
+					[ 'last-1-days', 0, { startDate: '2020-09-24', endDate: '2020-09-24', numberOfDays: 1 } ],
+					[ 'last-7-days', 0, { startDate: '2020-09-18', endDate: '2020-09-24', numberOfDays: 7 } ],
+					[ 'last-30-days', 0, { startDate: '2020-08-26', endDate: '2020-09-24', numberOfDays: 30 } ],
+					[ 'last-1-days', 3, { startDate: '2020-09-21', endDate: '2020-09-21', numberOfDays: 1 } ],
+					[ 'last-7-days', 3, { startDate: '2020-09-15', endDate: '2020-09-21', numberOfDays: 7 } ],
+					[ 'last-30-days', 3, { startDate: '2020-08-23', endDate: '2020-09-21', numberOfDays: 30 } ],
 				];
 
 				const testName = 'should return proper dates for "%s" & offsetDays %s';
@@ -126,36 +126,42 @@ describe( 'core/user date-range', () => {
 						endDate: '2020-09-24',
 						compareStartDate: '2020-09-23',
 						compareEndDate: '2020-09-23',
+						numberOfDays: 1,
 					} ],
 					[ 'last-7-days', 0, {
 						startDate: '2020-09-18',
 						endDate: '2020-09-24',
 						compareStartDate: '2020-09-11',
 						compareEndDate: '2020-09-17',
+						numberOfDays: 7,
 					} ],
 					[ 'last-30-days', 0, {
 						startDate: '2020-08-26',
 						endDate: '2020-09-24',
 						compareStartDate: '2020-07-27',
 						compareEndDate: '2020-08-25',
+						numberOfDays: 30,
 					} ],
 					[ 'last-1-days', 3, {
 						startDate: '2020-09-21',
 						endDate: '2020-09-21',
 						compareStartDate: '2020-09-20',
 						compareEndDate: '2020-09-20',
+						numberOfDays: 1,
 					} ],
 					[ 'last-7-days', 3, {
 						startDate: '2020-09-15',
 						endDate: '2020-09-21',
 						compareStartDate: '2020-09-08',
 						compareEndDate: '2020-09-14',
+						numberOfDays: 7,
 					} ],
 					[ 'last-30-days', 3, {
 						startDate: '2020-08-23',
 						endDate: '2020-09-21',
 						compareStartDate: '2020-07-24',
 						compareEndDate: '2020-08-22',
+						numberOfDays: 30,
 					} ],
 				];
 
@@ -173,48 +179,56 @@ describe( 'core/user date-range', () => {
 						endDate: '2020-09-23',
 						compareStartDate: '2020-09-16',
 						compareEndDate: '2020-09-16',
+						numberOfDays: 1,
 					} ],
 					[ 'last-3-days', 1, {
 						startDate: '2020-09-21',
 						endDate: '2020-09-23',
 						compareStartDate: '2020-09-14',
 						compareEndDate: '2020-09-16',
+						numberOfDays: 3,
 					} ],
 					[ 'last-7-days', 1, {
 						startDate: '2020-09-17',
 						endDate: '2020-09-23',
 						compareStartDate: '2020-09-10',
 						compareEndDate: '2020-09-16',
+						numberOfDays: 7,
 					} ],
 					[ 'last-1-days', 3, {
 						startDate: '2020-09-21',
 						endDate: '2020-09-21',
 						compareStartDate: '2020-09-14',
 						compareEndDate: '2020-09-14',
+						numberOfDays: 1,
 					} ],
 					[ 'last-3-days', 3, {
 						startDate: '2020-09-19',
 						endDate: '2020-09-21',
 						compareStartDate: '2020-09-12',
 						compareEndDate: '2020-09-14',
+						numberOfDays: 3,
 					} ],
 					[ 'last-7-days', 3, {
 						startDate: '2020-09-15',
 						endDate: '2020-09-21',
 						compareStartDate: '2020-09-08',
 						compareEndDate: '2020-09-14',
+						numberOfDays: 7,
 					} ],
 					[ 'last-28-days', 0, {
 						startDate: '2020-08-28',
 						endDate: '2020-09-24',
 						compareStartDate: '2020-07-31',
 						compareEndDate: '2020-08-27',
+						numberOfDays: 28,
 					} ],
 					[ 'last-90-days', 0, {
 						startDate: '2020-06-27',
 						endDate: '2020-09-24',
 						compareStartDate: '2020-03-28',
 						compareEndDate: '2020-06-25',
+						numberOfDays: 90,
 					} ],
 				];
 
