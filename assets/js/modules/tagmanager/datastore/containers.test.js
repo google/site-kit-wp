@@ -40,6 +40,8 @@ describe( 'modules/tagmanager containers', () => {
 		internalAMPContainerID: '',
 		internalContainerID: '',
 		useSnippet: true,
+		gaPropertyID: '',
+		gaAMPPropertyID: '',
 	};
 
 	beforeAll( () => {
@@ -141,9 +143,15 @@ describe( 'modules/tagmanager containers', () => {
 					container: { usageContext: [ CONTEXT_WEB ] },
 				} );
 				const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+				const internalContainerID = containers[ 0 ].containerId; // eslint-disable-line sitekit/acronym-case
+
 				const [ container ] = containers;
 				registry.dispatch( STORE_NAME ).setAccountID( accountID );
 				registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+
+				const liveContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } );
+
 				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
 
@@ -158,9 +166,15 @@ describe( 'modules/tagmanager containers', () => {
 					container: { usageContext: [ CONTEXT_AMP ] },
 				} );
 				const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+				const internalContainerID = containers[ 0 ].containerId; // eslint-disable-line sitekit/acronym-case
+
 				const [ container ] = containers;
 				registry.dispatch( STORE_NAME ).setAccountID( accountID );
 				registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+
+				const liveContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } );
+
 				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
 

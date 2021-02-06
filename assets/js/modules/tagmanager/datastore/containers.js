@@ -153,14 +153,14 @@ const baseActions = {
 			dispatch( STORE_NAME ).setContainerID( containerID );
 			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).setInternalContainerID( container.containerId );
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			const propertyID = select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, container.containerId );
 			dispatch( STORE_NAME ).setGaPropertyID( propertyID );
 		} else if ( container.usageContext.includes( CONTEXT_AMP ) ) {
 			dispatch( STORE_NAME ).setAMPContainerID( containerID );
 			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			const propertyID = select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, container.containerId );
 			dispatch( STORE_NAME ).setGaAMPPropertyID( propertyID );
 		}

@@ -34,7 +34,7 @@ let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 		'useSnippet',
 		'ownerID',
 		'gaPropertyID',
-		'gaAmpPropertyID',
+		'gaAMPPropertyID',
 	],
 	submitChanges,
 	validateCanSubmitChanges,

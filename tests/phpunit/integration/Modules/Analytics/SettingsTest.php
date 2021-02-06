@@ -102,6 +102,7 @@ class SettingsTest extends SettingsTestCase {
 				'profileID'             => '',
 				'internalWebPropertyID' => '',
 				'useSnippet'            => true,
+				'canUseSnippet'         => true,
 				'ownerID'               => 0,
 				'anonymizeIP'           => true,
 				'trackingDisabled'      => array( 'loggedinUsers' ),

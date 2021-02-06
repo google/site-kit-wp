@@ -23,6 +23,7 @@ import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
 import { createTestRegistry, untilResolved } from '../../../../../tests/js/utils';
 import { STORE_NAME, CONTEXT_WEB } from '../datastore/constants';
 import * as factories from '../datastore/__factories__';
+import * as fixtures from '../datastore/__fixtures__';
 import useExistingTagEffect from './useExistingTagEffect';
 
 describe( 'useExistingTagEffect', () => {
@@ -43,6 +44,10 @@ describe( 'useExistingTagEffect', () => {
 			// eslint-disable-next-line sitekit/acronym-case
 			3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }
 		);
+		const internalContainerID = containers[ 1 ].containerId; // eslint-disable-line sitekit/acronym-case
+		const liveContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } );
+
 		const [ firstContainer, existingContainer ] = containers;
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
