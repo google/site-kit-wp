@@ -26,10 +26,6 @@ import { storiesOf } from '@storybook/react';
  */
 import { GoogleSitekitAdminbar } from '../assets/js/googlesitekit-adminbar';
 import { googlesitekit as wpAdminBarData } from '../.storybook/data/blog---googlesitekit';
-// import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-// import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
-// import { provideModules, provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
-// import CollectModuleData from '../assets/js/components/data/collect-module-data';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { provideModules, provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';

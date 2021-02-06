@@ -60,9 +60,7 @@ function AdminBarImpressions( { WidgetReportZero } ) {
 	const reportZero = isZeroReport( searchConsoleData );
 	// Memoise the WidgetReportZero component to avoid Maximum update depth exceeded error.
 	const zeroDataComponent = useMemo( () => <WidgetReportZero moduleSlug="search-console" widgetSlug={ WIDGET_SLUG } />, [ reportZero ] );
-	if ( reportZero ) {
-		return zeroDataComponent;
-	}
+
 	if ( ! hasFinishedResolution ) {
 		return (
 			<PreviewBlock width="auto" height="59px" />
@@ -72,6 +70,11 @@ function AdminBarImpressions( { WidgetReportZero } ) {
 	if ( error ) {
 		return <ReportError moduleSlug="search-console" error={ error } />;
 	}
+
+	if ( reportZero ) {
+		return zeroDataComponent;
+	}
+
 	// Split the data in two chunks.
 	const half = Math.floor( searchConsoleData.length / 2 );
 	const latestData = searchConsoleData.slice( half );

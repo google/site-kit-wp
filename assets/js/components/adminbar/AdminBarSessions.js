@@ -29,7 +29,6 @@ import Data from 'googlesitekit-data';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
-import ReportZero from '../ReportZero';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
@@ -66,9 +65,6 @@ const AdminBarSessions = ( { WidgetReportZero } ) => {
 	const reportZero = isZeroReport( analyticsData );
 	// Memoise the WidgetReportZero component to avoid Maximum update depth exceeded error.
 	const zeroDataComponent = useMemo( () => <WidgetReportZero moduleSlug="analytics" widgetSlug={ WIDGET_SLUG } />, [ reportZero ] );
-	if ( reportZero ) {
-		return zeroDataComponent;
-	}
 
 	if ( ! hasFinishedResolution ) {
 		return (
@@ -80,8 +76,8 @@ const AdminBarSessions = ( { WidgetReportZero } ) => {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( analyticsData ) ) {
-		return <ReportZero moduleSlug="analytics" />;
+	if ( reportZero ) {
+		return zeroDataComponent;
 	}
 
 	const { totals } = analyticsData[ 0 ].data;

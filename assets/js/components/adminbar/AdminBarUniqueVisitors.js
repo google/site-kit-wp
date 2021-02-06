@@ -63,9 +63,6 @@ const AdminBarUniqueVisitors = ( { WidgetReportZero } ) => {
 	const reportZero = isZeroReport( analyticsData );
 	// Memoise the WidgetReportZero component to avoid Maximum update depth exceeded error.
 	const zeroDataComponent = useMemo( () => <WidgetReportZero moduleSlug="analytics" widgetSlug={ WIDGET_SLUG } />, [ reportZero ] );
-	if ( reportZero ) {
-		return zeroDataComponent;
-	}
 
 	if ( ! hasFinishedResolution ) {
 		return (
@@ -75,6 +72,10 @@ const AdminBarUniqueVisitors = ( { WidgetReportZero } ) => {
 
 	if ( error ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
+	}
+
+	if ( reportZero ) {
+		return zeroDataComponent;
 	}
 
 	const { totals } = analyticsData[ 0 ].data;
