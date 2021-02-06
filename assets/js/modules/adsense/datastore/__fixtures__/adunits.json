@@ -1,0 +1,12 @@
+[
+    {
+      "id":"0",
+      "kind":"adsense#adUnit",
+      "name":"Name 1"
+    },
+    {
+      "id":"1",
+      "kind":"adsense#adUnit",
+      "name":"Name 2"
+    }
+  ]

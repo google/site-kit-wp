@@ -28,7 +28,6 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-// import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
 const fetchGetAdUnitsStore = createFetchStore( {
 	baseName: 'getAdUnits',
@@ -55,48 +54,15 @@ const fetchGetAdUnitsStore = createFetchStore( {
 	},
 } );
 
-// Actions
-// TODO: remove any unused actions and reducers etc...
-// const RESET_URLCHANNELS = 'RESET_URLCHANNELS';
-
 const baseInitialState = {
 	adunits: {},
 };
 
 const baseActions = {
-	// *resetURLChannels() {
-	// 	const { dispatch } = yield Data.commonActions.getRegistry();
-
-	// 	yield {
-	// 		payload: {},
-	// 		type: RESET_URLCHANNELS,
-	// 	};
-
-	// 	yield errorStoreActions.clearErrors( 'getURLChannels' );
-
-	// 	return dispatch( STORE_NAME )
-	// 		.invalidateResolutionForStoreSelector( 'getURLChannels' );
-	// },
 };
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
-		// case RESET_URLCHANNELS: {
-		// 	const {
-		// 		siteStatus,
-		// 		siteSetupComplete,
-		// 	} = state.savedSettings || {};
-		// 	return {
-		// 		...state,
-		// 		adunits: initialState.adunits,
-		// 		settings: {
-		// 			...( state.settings || {} ),
-		// 			siteStatus,
-		// 			siteSetupComplete,
-		// 		},
-		// 	};
-		// }
-
 		default: {
 			return state;
 		}
@@ -136,8 +102,6 @@ const baseSelectors = {
 		if ( undefined === accountID || undefined === clientID ) {
 			return undefined;
 		}
-
-		// console.log( 'getAdUnits selector' ); TODO: TODO:
 
 		return state.adunits[ `${ accountID }::${ clientID }` ];
 	},

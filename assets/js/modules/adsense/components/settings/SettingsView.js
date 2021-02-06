@@ -47,8 +47,6 @@ export default function SettingsView() {
 	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountManageSitesURL() );
 	const webStoriesAdUnit = useSelect( ( select ) => select( STORE_NAME ).getWebStoriesAdUnit() );
 
-	// console.log( 'webStoriesAdUnit', webStoriesAdUnit ); TODO: TODO:
-
 	let accountStatusLabel;
 	switch ( accountStatus ) {
 		case ACCOUNT_STATUS_APPROVED:

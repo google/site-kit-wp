@@ -34,27 +34,20 @@ const { useSelect, useDispatch } = Data;
 export default function WebStoriesAdUnitSelect() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const clientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
-	const webStoriesAdUnit = useSelect( ( select ) => select( STORE_NAME ).getWebStoriesAdUnit( ) );
+	const webStoriesAdUnit = useSelect( ( select ) => select( STORE_NAME ).getWebStoriesAdUnit() );
 
-	// TODO: change for adunits
 	const { adunits, hasResolvedAdUnits } = useSelect( ( select ) => ( {
 		adunits: select( STORE_NAME ).getAdUnits( accountID, clientID ),
 		hasResolvedAdUnits: select( STORE_NAME ).hasFinishedResolution( 'getAdUnits' ),
 	} ) );
 
-	// TODO: TODO:
-	// console.log( 'STORE_NAME', STORE_NAME );
-	// console.log( 'hasResolvedAdUnits', hasResolvedAdUnits );
-	// console.log( 'webStoriesAdUnit', webStoriesAdUnit );
-	// console.log( 'adunits', adunits );
-
-	const { setAccountID } = useDispatch( STORE_NAME );
+	const { setWebStoriesAdUnit } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
-		const newAccountID = item.dataset.value;
-		if ( accountID !== newAccountID ) {
-			setAccountID( newAccountID );
+		const newWebStoriesAdUnit = item.dataset.value;
+		if ( webStoriesAdUnit !== newWebStoriesAdUnit ) {
+			setWebStoriesAdUnit( newWebStoriesAdUnit );
 		}
-	}, [ accountID ] );
+	}, [ webStoriesAdUnit ] );
 
 	if ( ! hasResolvedAdUnits ) {
 		return <ProgressBar small />;

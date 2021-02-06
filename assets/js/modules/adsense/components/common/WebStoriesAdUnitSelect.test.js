@@ -1,5 +1,5 @@
 /**
- * AdSense Account Select component tests.
+ * AdSense Web Stories Ad Unit Select component tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,55 +19,54 @@
 /**
  * Internal dependencies
  */
-import AccountSelect from './AccountSelect';
+import WebStoriesAdUnitSelect from './WebStoriesAdUnitSelect';
 import { fireEvent, render, freezeFetch } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 
+const TEST_ACCOUNT_ID = '123';
+const TEST_CLIENT_ID = '456';
+
 const setupRegistry = ( registry ) => {
-	registry.dispatch( STORE_NAME ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsMultiple );
-	registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+	registry.dispatch( STORE_NAME ).setSettings( { accountID: TEST_ACCOUNT_ID, clientID: TEST_CLIENT_ID } );
+
+	registry.dispatch( STORE_NAME ).receiveGetAdUnits( fixtures.adunits, { accountID: TEST_ACCOUNT_ID, clientID: TEST_CLIENT_ID } );
+	registry.dispatch( STORE_NAME ).finishResolution( 'getAdUnits', [] );
 };
 
 const setupLoadingRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setSettings( {} );
 };
 
-describe( 'AccountSelect', () => {
-	// TODO: TODO:
-	it( 'TODO TODO should write new tests here', async () => {
-		expect( 1 ).toEqual( 2 );
-	} );
-
-	it( 'should render an option for each AdSense account', async () => {
-		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
+describe( 'WebStoriesAdUnitSelect', () => {
+	it( 'should render an option for each AdSense ad unit', async () => {
+		const { getAllByRole } = render( <WebStoriesAdUnitSelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-		expect( listItems ).toHaveLength( fixtures.accountsMultiple.length );
+		expect( listItems ).toHaveLength( fixtures.adunits.length );
 	} );
 
-	it( 'should render a loading state when accounts are undefined', async () => {
-		freezeFetch( /^\/google-site-kit\/v1\/modules\/adsense\/data\/accounts/ );
+	it( 'should render a loading state when ad units are undefined', async () => {
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/adsense\/data\/adunits/ );
 
-		const { queryAllByRole, queryByRole } = render( <AccountSelect />, { setupRegistry: setupLoadingRegistry } );
+		const { queryAllByRole, queryByRole } = render( <WebStoriesAdUnitSelect />, { setupRegistry: setupLoadingRegistry } );
 
 		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should update accountID in the store when a new item is clicked', async () => {
-		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
-		const originalAccountID = registry.select( STORE_NAME ).getAccountID();
-		const selectedAccount = fixtures.accountsMultiple[ 0 ];
+	it( 'should update webStoriesAdUnit in the store when a new item is clicked', async () => {
+		const { getByText, container, registry } = render( <WebStoriesAdUnitSelect />, { setupRegistry } );
+		const originalWebStoriesAdUnit = registry.select( STORE_NAME ).getWebStoriesAdUnit();
+		const selectedAdUnit = fixtures.adunits[ 0 ];
 
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.
-		fireEvent.click( getByText( selectedAccount.name ) );
+		fireEvent.click( getByText( selectedAdUnit.name ) );
 
-		const newAccountID = registry.select( STORE_NAME ).getAccountID();
-		expect( originalAccountID ).not.toEqual( newAccountID );
-		expect( newAccountID ).toEqual( selectedAccount.id );
+		const newWebStoriesAdUnit = registry.select( STORE_NAME ).getWebStoriesAdUnit();
+		expect( originalWebStoriesAdUnit ).not.toEqual( newWebStoriesAdUnit );
+		expect( newWebStoriesAdUnit ).toEqual( selectedAdUnit.id );
 	} );
 } );
