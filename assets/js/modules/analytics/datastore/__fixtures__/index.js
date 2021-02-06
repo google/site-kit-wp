@@ -17,6 +17,10 @@
  */
 
 export { default as accountsPropertiesProfiles } from './accounts-properties-profiles';
+export { default as adminBarAnalyticsTotalUsersMockData } from './admin-bar-analytics-total-users-mock-data';
+export { default as adminBarAnalyticsTotalUsersOptions } from './admin-bar-analytics-total-users-options';
+export { default as adminBarAnalyticsSessionsMockData } from './admin-bar-analytics-session-mock-data';
+export { default as adminBarAnalyticsSessionsOptions } from './admin-bar-analytics-session-options';
 export { default as createProfile } from './create-profile';
 export { default as createProperty } from './create-property';
 export { default as goals } from './goals';

@@ -25,7 +25,6 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
@@ -37,9 +36,8 @@ import { isZeroReport } from '../../util';
 import ReportError from '../../../../components/ReportError';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
-const { Widget } = Widgets.components;
 
-function DashboardPopularPagesWidget( { WidgetReportZero } ) {
+function DashboardPopularPagesWidget( { Widget, WidgetReportZero } ) {
 	const {
 		data,
 		error,
@@ -124,9 +122,8 @@ function DashboardPopularPagesWidget( { WidgetReportZero } ) {
 
 	return (
 		<Widget
-			slug="analyticsPopularPages"
 			noPadding
-			footer={ () => (
+			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
 					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }

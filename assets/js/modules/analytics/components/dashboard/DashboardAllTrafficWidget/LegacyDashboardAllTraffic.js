@@ -29,11 +29,13 @@ import Layout from '../../../../../components/layout/Layout';
 import DashboardModuleHeader from '../../../../../components/dashboard/DashboardModuleHeader';
 import DashboardAllTrafficWidget from '.';
 import { Cell } from '../../../../../material-components';
+import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 
 function LegacyDashboardAllTraffic() {
+	const widgetComponentProps = getWidgetComponentProps( 'legacy-all-traffic-widget' );
 	return (
 		<Fragment>
-			<Cell id="googlesitekit-pagespeed-header" size={ 12 }>
+			<Cell size={ 12 }>
 				<DashboardModuleHeader
 					title={ __( 'Your Traffic at a Glance', 'google-site-kit' ) }
 					description={ __( 'How people found your site.', 'google-site-kit' ) }
@@ -41,7 +43,7 @@ function LegacyDashboardAllTraffic() {
 			</Cell>
 			<Cell size={ 12 }>
 				<Layout className="googlesitekit-pagespeed-widget">
-					<DashboardAllTrafficWidget />
+					<DashboardAllTrafficWidget { ...widgetComponentProps } />
 				</Layout>
 			</Cell>
 		</Fragment>
