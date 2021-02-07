@@ -33,12 +33,15 @@ const screenshotsIndex = new Map();
  */
 export async function screenshot( name ) {
 	const { currentTestName, testPath } = expect.getState();
+
 	const rootDir = resolve( __dirname, '..' );
 	const testDir = testPath.replace( resolve( rootDir, 'specs' ), '' ).replace( '.test.js', '' );
 	const screenshotsDir = join( rootDir, 'screenshots', testDir, currentTestName.replace( /\W+/g, '-' ) );
-	const screenshotIndex = ( screenshotsIndex.get( testPath ) || 0 ) + 1;
 
-	screenshotsIndex.set( testPath, screenshotIndex );
+	const screenshotKey = testPath + currentTestName;
+	const screenshotIndex = ( screenshotsIndex.get( screenshotKey ) || 0 ) + 1;
+
+	screenshotsIndex.set( screenshotKey, screenshotIndex );
 
 	await mkdir( screenshotsDir, {
 		mode: 0o755,
