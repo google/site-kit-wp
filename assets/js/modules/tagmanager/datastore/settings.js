@@ -67,8 +67,8 @@ export async function submitChanges( { select, dispatch } ) {
 			return { error };
 		}
 
-		await dispatch( STORE_NAME ).setContainerID( container.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
-		await dispatch( STORE_NAME ).setInternalContainerID( container.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
+		await dispatch( STORE_NAME ).setContainerID( container.publicId ); // eslint-disable-line sitekit/acronym-case
+		await dispatch( STORE_NAME ).setInternalContainerID( container.containerId ); // eslint-disable-line sitekit/acronym-case
 	}
 
 	const ampContainerID = select( STORE_NAME ).getAMPContainerID();
@@ -81,8 +81,8 @@ export async function submitChanges( { select, dispatch } ) {
 			return { error };
 		}
 
-		await dispatch( STORE_NAME ).setAMPContainerID( container.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
-		await dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
+		await dispatch( STORE_NAME ).setAMPContainerID( container.publicId ); // eslint-disable-line sitekit/acronym-case
+		await dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId ); // eslint-disable-line sitekit/acronym-case
 	}
 
 	// This action shouldn't be called if settings haven't changed,

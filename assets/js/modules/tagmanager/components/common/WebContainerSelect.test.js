@@ -41,12 +41,12 @@ describe( 'WebContainerSelect', () => {
 	it( 'should render an option for each web container of the currently selected account.', () => {
 		const account = factories.accountBuilder();
 		const webContainers = factories.buildContainers(
-			3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } // eslint-disable-line sitekit/camelcase-acronyms
+			3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } // eslint-disable-line sitekit/acronym-case
 		);
 		const ampContainers = factories.buildContainers(
-			3, { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] } // eslint-disable-line sitekit/camelcase-acronyms
+			3, { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] } // eslint-disable-line sitekit/acronym-case
 		);
-		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
@@ -68,7 +68,7 @@ describe( 'WebContainerSelect', () => {
 		const { account, containers } = factories.buildAccountWithContainers(
 			{ container: { usageContext: [ CONTEXT_WEB ] } }
 		);
-		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
@@ -85,7 +85,7 @@ describe( 'WebContainerSelect', () => {
 		const { account, containers } = factories.buildAccountWithContainers(
 			{ container: { usageContext: [ CONTEXT_WEB ] } }
 		);
-		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
@@ -105,7 +105,7 @@ describe( 'WebContainerSelect', () => {
 			{ container: { usageContext: [ CONTEXT_WEB ] } }
 		);
 		const webContainer = containers[ 0 ];
-		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
@@ -124,15 +124,15 @@ describe( 'WebContainerSelect', () => {
 			await untilResolved( registry, STORE_NAME ).getContainers( accountID );
 		} );
 
-		expect( registry.select( STORE_NAME ).getContainerID() ).toBe( webContainer.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
-		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( webContainer.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
+		expect( registry.select( STORE_NAME ).getContainerID() ).toBe( webContainer.publicId ); // eslint-disable-line sitekit/acronym-case
+		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( webContainer.containerId ); // eslint-disable-line sitekit/acronym-case
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/ );
 		const account = factories.accountBuilder();
-		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 
 		const { queryAllByRole, queryByRole } = render( <WebContainerSelect />, { registry } );
@@ -145,7 +145,7 @@ describe( 'WebContainerSelect', () => {
 	it( 'should render a loading state while containers are loading', () => {
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/ );
 		const account = factories.accountBuilder();
-		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
@@ -159,7 +159,7 @@ describe( 'WebContainerSelect', () => {
 
 	it( 'should be labeled as "Container" in a no AMP context', () => {
 		const { account, containers } = factories.buildAccountWithContainers();
-		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
@@ -173,7 +173,7 @@ describe( 'WebContainerSelect', () => {
 
 	it( 'should be labeled as "Web Container" in a secondary AMP context', () => {
 		const { account, containers } = factories.buildAccountWithContainers();
-		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );

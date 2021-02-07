@@ -17,3 +17,5 @@
  */
 
 export { default as report } from './report';
+export { default as adminbarSearchConsoleMockData } from './adminbar-search-console-mock-data';
+export { default as adminbarSearchConsoleOptions } from './adminbar-search-console-options';

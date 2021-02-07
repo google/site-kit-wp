@@ -56,6 +56,7 @@ class Feature_FlagsTest extends TestCase {
 	 * @param boolean $expected
 	 */
 	public function test_enabled( $features, $mode, $feature, $expected ) {
+		remove_all_filters( 'googlesitekit_is_feature_enabled' );
 		Feature_Flags::set_features( $features );
 		Feature_Flags::set_mode( $mode );
 

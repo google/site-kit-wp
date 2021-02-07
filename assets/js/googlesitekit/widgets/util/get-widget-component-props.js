@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import Widget from '../components/Widget';
 import WidgetReportZero from '../components/WidgetReportZero';
 import WidgetActivateModuleCTA from '../components/WidgetActivateModuleCTA';
 import WidgetCompleteModuleActivationCTA from '../components/WidgetCompleteModuleActivationCTA';
@@ -36,6 +37,7 @@ export function getWidgetComponentProps( widgetSlug ) {
 	// Scope widget-specific components to the widget instance so that the
 	// component does not need to (re-)specify the widget slug.
 	return {
+		Widget: withWidgetSlug( widgetSlug )( Widget ),
 		WidgetReportZero: withWidgetSlug( widgetSlug )( WidgetReportZero ),
 		WidgetActivateModuleCTA: withWidgetSlug( widgetSlug )( WidgetActivateModuleCTA ),
 		WidgetCompleteModuleActivationCTA: withWidgetSlug( widgetSlug )( WidgetCompleteModuleActivationCTA ),
