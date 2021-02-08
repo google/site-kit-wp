@@ -147,9 +147,9 @@ export const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				inputSettings: {
-					...( state.inputSettings || {} ),
+					...state.inputSettings,
 					[ payload.settingID ]: {
-						...( state.inputSettings?.[ payload.settingID ] || {} ),
+						...( state.inputSettings[ payload.settingID ] || {} ),
 						values: payload.values,
 					},
 				},
