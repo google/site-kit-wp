@@ -34,6 +34,7 @@ import { STORE_NAME } from '../datastore/constants';
 import Widget from './Widget';
 import { getWidgetComponentProps } from '../util';
 import { HIDDEN_CLASS } from '../util/constants';
+import WidgetNull from './WidgetNull';
 
 const { useSelect } = Data;
 
@@ -43,7 +44,7 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 	const widgetComponentProps = useMemo( () => getWidgetComponentProps( slug ), [ slug ] );
 
 	if ( ! widget ) {
-		return null;
+		return <WidgetNull />;
 	}
 
 	const { Component, wrapWidget } = widget;

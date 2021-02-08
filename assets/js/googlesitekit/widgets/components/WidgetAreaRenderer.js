@@ -51,6 +51,10 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 
 	const { activeWidgets, inactiveWidgets } = separateNullWidgets( widgets, widgetStates );
 
+	if ( activeWidgets.length === 0 ) {
+		return null;
+	}
+
 	// Compute the layout.
 	const {
 		classNames,
