@@ -27,7 +27,7 @@ import DashboardGoalsWidget from '../assets/js/modules/analytics/components/dash
 import DashboardUniqueVisitorsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardUniqueVisitorsWidget';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
 import { accountsPropertiesProfiles, goals } from '../assets/js/modules/analytics/datastore/__fixtures__';
-import { getAnalyticsMockResponse } from '../tests/js/dataMock/analytics';
+import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 
 /**
  * Defines some additional setup for all stories.

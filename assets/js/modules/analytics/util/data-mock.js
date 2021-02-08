@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import md5 from 'md5';
 import faker from 'faker';
 import { zip, from, Observable } from 'rxjs';
 import { map, reduce, take } from 'rxjs/operators';
@@ -65,26 +66,6 @@ const ANALYTICS_DIMENSION_OPTIONS = {
 };
 
 /**
- * Gets an object hash number.
- *
- * @since n.e.x.t
- *
- * @param {Object} obj The object.
- * @return {number} Object hash.
- */
-function getObjectHash( obj ) {
-	const msg = JSON.stringify( obj );
-	let hash = 0;
-
-	for ( let i = 0; i < msg.length; i++ ) {
-		hash = ( ( hash << 5 ) - hash ) + msg.charCodeAt( i ); // eslint-disable-line no-bitwise
-		hash |= 0; // eslint-disable-line no-bitwise
-	}
-
-	return hash;
-}
-
-/**
  * Gets metric key.
  *
  * @since n.e.x.t
@@ -113,14 +94,14 @@ function getMetricType( metric ) {
  *
  * @since n.e.x.t
  *
- * @param {string} type Metric type.
- * @param {number} max  Maximum number of values to generate.
+ * @param {string} type  Metric type.
+ * @param {number} count Maximum number of values to generate.
  * @return {Array.<Object>} Array of metric values.
  */
-function generateMetricValues( type, max ) {
+function generateMetricValues( type, count ) {
 	const metrics = [];
 
-	for ( let i = 0; i < max; i++ ) {
+	for ( let i = 0; i < count; i++ ) {
 		const values = [];
 
 		switch ( type ) {
@@ -192,10 +173,16 @@ function sortRows( rows, metrics, orderby ) {
  * @return {Array.<Object>} An array with generated report.
  */
 export function getAnalyticsMockResponse( args ) {
+	const originalSeedValue = faker.seedValue;
+	const argsHash = parseInt(
+		md5( JSON.stringify( args ) ).substring( 0, 8 ),
+		16,
+	);
+
 	// We set seed for every data mock to make sure that the same arguments get the same report data.
 	// It means that everyone will have the same report data and will see the same widgets in the storybook.
-	// This approach gives us additional flexebility to control randomness on per widget basis.
-	faker.seed( getObjectHash( args ) );
+	// This approach gives us additional flexibility to control randomness on a per widget basis.
+	faker.seed( argsHash );
 
 	const data = {
 		dataLastRefreshed: null,
@@ -284,16 +271,18 @@ export function getAnalyticsMockResponse( args ) {
 		if ( getMetricType( validMetrics[ 0 ] ) === 'INTEGER' ) {
 			data.totals = [];
 			for ( let i = 0; i < metricValuesCount; i++ ) {
-				data.totals.push( {
-					values: [
-						data.rows.reduce( ( acc, row ) => acc + parseFloat( row.metrics[ i ].values[ 0 ] ), 0 ).toString(),
-					],
-				} );
+				const sumValues = ( acc, row ) => acc + parseFloat( row.metrics[ i ].values[ 0 ] );
+				const total = data.rows.reduce( sumValues, 0 ).toString();
+
+				data.totals.push( { values: [ total ] } );
 			}
 		} else {
 			data.totals = [ ...( rows[ rows.length - 1 ]?.metrics || [] ) ];
 		}
 	} );
+
+	// Set the original seed value for the faker.
+	faker.seed( originalSeedValue );
 
 	return [ {
 		nextPageToken: null,
