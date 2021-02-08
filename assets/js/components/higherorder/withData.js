@@ -225,13 +225,17 @@ const withData = (
 						`googlesitekit.module${ context }DataRequest`,
 						`googlesitekit.withData.${ hashRequests( dataRequests ) }`,
 						( contextRequests ) => {
+							const modulesData = getModulesData();
 							const requestsToAdd = [];
 							for ( const dataRequest of dataRequests ) {
 								const { type, identifier } = dataRequest || {};
 								// If a dataRequest's module requires setup, set it in the state.
 								// This will cause the setup incomplete component to be rendered in all cases.
-								if ( TYPE_MODULES === type && ! getModulesData()[ identifier ]?.setupComplete ) {
-									this.setState( { moduleRequiringSetup: identifier } );
+								if ( TYPE_MODULES === type && ! modulesData[ identifier ]?.setupComplete ) {
+									this.setState( {
+										moduleRequiringSetup: identifier,
+										moduleRequiringActivation: ! modulesData[ identifier ]?.active,
+									} );
 									continue;
 								}
 
