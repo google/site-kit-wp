@@ -44,7 +44,7 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 	const widgetComponentProps = useMemo( () => getWidgetComponentProps( slug ), [ slug ] );
 
 	if ( ! widget ) {
-		return <WidgetNull />;
+		return <WidgetNull widgetSlug={ slug } />;
 	}
 
 	const { Component, wrapWidget } = widget;

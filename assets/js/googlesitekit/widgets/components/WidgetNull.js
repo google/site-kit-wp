@@ -28,10 +28,10 @@ import useWidgetStateEffect from '../hooks/useWidgetStateEffect';
 import Null from '../../../components/Null';
 
 // The supported props must match `Null` (except `widgetSlug`).
-export default function WidgetNull( { widgetSlug, moduleSlug, ...props } ) {
+export default function WidgetNull( { widgetSlug } ) {
 	useWidgetStateEffect( widgetSlug, Null, {} );
 
-	return <Null moduleSlug={ moduleSlug } { ...props } />;
+	return <Null />;
 }
 
 WidgetNull.propTypes = {
