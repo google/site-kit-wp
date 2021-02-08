@@ -656,7 +656,7 @@ final class Tag_Manager extends Module
 
 		$property_id = $is_amp
 			? $settings['gaAmpPropertyID ']
-			: $settings['ampContainerID'];
+			: $settings['gaPropertyID'];
 
 		if ( ! empty( $property_id ) && $settings['useSnippet'] ) {
 			return false;
