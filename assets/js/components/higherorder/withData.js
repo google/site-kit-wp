@@ -38,7 +38,6 @@ import getNoDataComponent from '../legacy-notifications/nodata';
 import getDataErrorComponent from '../legacy-notifications/data-error';
 import getSetupIncompleteComponent, { getModuleInactiveComponent } from '../legacy-notifications/setup-incomplete';
 import { TYPE_MODULES } from '../data/constants';
-import ctaWrapper from '../legacy-notifications/cta-wrapper';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { requestWithDateRange } from '../data/utils/request-with-date-range';
 const { withSelect } = Data;
@@ -331,12 +330,8 @@ const withData = (
 				moduleRequiringSetup,
 				moduleRequiringActivation,
 			} = this.state;
-			const { ActivateModuleComponent } = this.props;
 
 			if ( moduleRequiringActivation ) {
-				if ( ActivateModuleComponent ) {
-					return ctaWrapper( <ActivateModuleComponent />, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
-				}
 				return getModuleInactiveComponent( moduleRequiringSetup, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
 			}
 
