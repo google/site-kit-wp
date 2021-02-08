@@ -18,7 +18,7 @@
 
 export function separateNullWidgets( widgets, widgetStates ) {
 	return widgets.reduce( ( separated, widget ) => {
-		if ( null === widgetStates[ widget.slug ] ) {
+		if ( undefined === widgetStates[ widget.slug ] || null === widgetStates[ widget.slug ] ) {
 			separated.inactiveWidgets.push( widget );
 		} else {
 			separated.activeWidgets.push( widget );
