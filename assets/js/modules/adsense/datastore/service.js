@@ -109,7 +109,7 @@ export const selectors = {
 	 * @param {Object} urlParams URL parameters to be passed to the query.
 	 * @return {(string|undefined)} AdSense account site overview URL (or `undefined` if not loaded).
 	 */
-	getServiceAccountSiteURL: createRegistrySelector( ( select ) => ( state, urlParams = {} ) => {
+	getServiceAccountSiteURL: createRegistrySelector( ( select ) => () => {
 		const accountID = select( STORE_NAME ).getAccountID();
 		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
 
@@ -121,7 +121,6 @@ export const selectors = {
 		const query = {
 			source: 'site-kit',
 			url: parseDomain( siteURL ) || siteURL,
-			...urlParams,
 		};
 
 		return select( STORE_NAME ).getServiceURL( { path, query } );

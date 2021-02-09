@@ -134,31 +134,28 @@ describe( 'module/adsense service store', () => {
 					url: referenceSiteURL,
 				} );
 			} );
+		} );
 
-			it( 'should append `urlParams` arguments to the `query` if received', () => {
-				const { host: referenceSiteURL } = new URL( siteInfo.referenceSiteURL );
-				const urlParams = { foo: 'bar' };
-				const url = registry.select( STORE_NAME ).getServiceAccountSiteURL( urlParams );
-
-				expect( url ).toMatchQueryParameters( {
-					authuser: userData.email,
-					source: 'site-kit',
-					url: referenceSiteURL,
-					...urlParams,
-				} );
+		describe( 'getServiceReportURL', () => {
+			beforeEach( () => {
+				registry.dispatch( STORE_NAME ).setSettings( settings );
 			} );
 
-			it( 'should give `urlParams` precedence over default query params with the same key', () => {
-				const { host: referenceSiteURL } = new URL( siteInfo.referenceSiteURL );
-				const urlParams = { source: 'new-source-param' };
-				const url = registry.select( STORE_NAME ).getServiceAccountSiteURL( urlParams );
+			it( 'should construct the correct `path` for the URL', () => {
+				const correctPath = `${ settings.accountID }/reporting`;
+
+				const resultingURL = registry.select( STORE_NAME ).getServiceReportURL();
+				const { pathname } = new URL( resultingURL );
+
+				expect( pathname.endsWith( correctPath ) ).toBe( true );
+			} );
+
+			it( 'should append `reportArgs` arguments to the `query` if received', () => {
+				const reportArgs = { foo: 'bar' };
+				const url = registry.select( STORE_NAME ).getServiceReportURL( reportArgs );
 
 				expect( url ).toMatchQueryParameters( {
-					// default query params
-					authuser: userData.email,
-					url: referenceSiteURL,
-					// `source` key overriden
-					source: 'new-source-param',
+					...reportArgs,
 				} );
 			} );
 		} );
