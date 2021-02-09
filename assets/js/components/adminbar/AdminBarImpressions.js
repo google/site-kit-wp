@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -57,10 +56,6 @@ function AdminBarImpressions( { WidgetReportZero } ) {
 	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
 
-	const reportZero = isZeroReport( searchConsoleData );
-	// Memoise the WidgetReportZero component to avoid Maximum update depth exceeded error.
-	const zeroDataComponent = useMemo( () => <WidgetReportZero moduleSlug="search-console" widgetSlug={ WIDGET_SLUG } />, [ reportZero ] );
-
 	if ( ! hasFinishedResolution ) {
 		return (
 			<PreviewBlock width="auto" height="59px" />
@@ -71,8 +66,8 @@ function AdminBarImpressions( { WidgetReportZero } ) {
 		return <ReportError moduleSlug="search-console" error={ error } />;
 	}
 
-	if ( reportZero ) {
-		return zeroDataComponent;
+	if ( isZeroReport( searchConsoleData ) ) {
+		return <WidgetReportZero moduleSlug="search-console" widgetSlug={ WIDGET_SLUG } />;
 	}
 
 	// Split the data in two chunks.

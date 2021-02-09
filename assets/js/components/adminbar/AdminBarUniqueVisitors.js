@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -60,10 +59,6 @@ const AdminBarUniqueVisitors = ( { WidgetReportZero } ) => {
 	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
 
-	const reportZero = isZeroReport( analyticsData );
-	// Memoise the WidgetReportZero component to avoid Maximum update depth exceeded error.
-	const zeroDataComponent = useMemo( () => <WidgetReportZero moduleSlug="analytics" widgetSlug={ WIDGET_SLUG } />, [ reportZero ] );
-
 	if ( ! hasFinishedResolution ) {
 		return (
 			<PreviewBlock width="auto" height="59px" />
@@ -74,8 +69,8 @@ const AdminBarUniqueVisitors = ( { WidgetReportZero } ) => {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( reportZero ) {
-		return zeroDataComponent;
+	if ( isZeroReport( analyticsData ) ) {
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	const { totals } = analyticsData[ 0 ].data;
