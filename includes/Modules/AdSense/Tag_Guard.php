@@ -32,7 +32,7 @@ class Tag_Guard extends Module_Tag_Guard {
 		$settings = $this->settings->get();
 
 		// For web stories, the tag must only be rendered if a story-specific ad unit is provided.
-		if ( is_singular( 'web-story' ) && ! $settings['webStoriesAdUnit'] ) {
+		if ( is_singular( 'web-story' ) && empty( $settings['webStoriesAdUnit'] ) ) {
 			return false;
 		}
 
