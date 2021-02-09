@@ -46,7 +46,12 @@ const { useSelect } = Data;
  * @param {WPComponent|null} [options.IncompleteComponent] Optional. Fallback component to render when the module is active but not connected.
  * @return {Function} Enhancing function.
  */
-export default function whenActive( { moduleName, FallbackComponent = WidgetNull, IncompleteComponent = null } ) {
+export default function whenActive( {
+	moduleName,
+	WidgetNull,
+	FallbackComponent = WidgetNull,
+	IncompleteComponent = null,
+} ) {
 	return ( wrappedComponent ) => {
 		const whenActiveComponent = ( props ) => {
 			// The following eslint rule is disabled because it treats the following hook as such that doesn't adhere
