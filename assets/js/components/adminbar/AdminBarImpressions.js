@@ -65,7 +65,7 @@ function AdminBarImpressions( { WidgetReportZero } ) {
 	}
 
 	if ( isZeroReport( searchConsoleData ) ) {
-		return <WidgetReportZero moduleSlug="search-console" widgetSlug={ WIDGET_SLUG } />;
+		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
 	// Split the data in two chunks.
