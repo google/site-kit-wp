@@ -18,7 +18,10 @@
 
 export function separateNullWidgets( widgets, widgetStates ) {
 	return widgets.reduce( ( separated, widget ) => {
-		if ( undefined === widgetStates[ widget.slug ] || null === widgetStates[ widget.slug ] ) {
+		if ( 'WidgetNull' !== widget.Component().type.name ) {
+			// @TODO figure out why we have a null state in widgetStates when the component is not WidgetNull
+			separated.activeWidgets.push( widget );
+		} else if ( undefined === widgetStates[ widget.slug ] || null === widgetStates[ widget.slug ] ) {
 			separated.inactiveWidgets.push( widget );
 		} else {
 			separated.activeWidgets.push( widget );

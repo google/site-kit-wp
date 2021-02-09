@@ -51,11 +51,9 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 
 	const { activeWidgets, inactiveWidgets } = separateNullWidgets( widgets, widgetStates );
 
-	/*
 	if ( activeWidgets.length === 0 ) {
 		return null;
 	}
-	 */
 
 	// Compute the layout.
 	const {
@@ -138,7 +136,6 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 				<div className="googlesitekit-widget-area-widgets">
 					{ inactiveWidgets.map( ( widget ) => (
 						<div className={ HIDDEN_CLASS } key={ widget.slug }>
-
 							<widget.Component />
 						</div>
 					) ) }
