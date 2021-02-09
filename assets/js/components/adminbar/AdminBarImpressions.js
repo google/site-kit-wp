@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -34,7 +28,6 @@ import Data from 'googlesitekit-data';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
-import ReportZero from '../ReportZero';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-console/datastore/constants';
@@ -43,7 +36,7 @@ import { isZeroReport } from '../../modules/search-console/util/is-zero-report';
 import sumObjectListValue from '../../util/sum-object-list-value';
 const { useSelect } = Data;
 
-const AdminBarImpressions = ( { className } ) => {
+function AdminBarImpressions( { WidgetReportZero } ) {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
@@ -55,19 +48,13 @@ const AdminBarImpressions = ( { className } ) => {
 		dimensions: 'date',
 		url,
 	};
+
 	const searchConsoleData = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ) );
 	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
 
 	if ( ! hasFinishedResolution ) {
-		return (
-			<div className={ classnames(
-				'mdc-layout-grid__cell',
-				className,
-			) }>
-				<PreviewBlock width="auto" height="59px" />
-			</div>
-		);
+		return <PreviewBlock width="auto" height="59px" />;
 	}
 
 	if ( error ) {
@@ -75,7 +62,7 @@ const AdminBarImpressions = ( { className } ) => {
 	}
 
 	if ( isZeroReport( searchConsoleData ) ) {
-		return <ReportZero moduleSlug="search-console" />;
+		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
 	// Split the data in two chunks.
@@ -88,27 +75,14 @@ const AdminBarImpressions = ( { className } ) => {
 	const totalImpressionsChange = calculateChange( totalOlderImpressions, totalImpressions );
 
 	return (
-		<div className={ classnames(
-			'mdc-layout-grid__cell',
-			className,
-		) }>
-			<DataBlock
-				className="overview-total-impressions"
-				title={ __( 'Total Impressions', 'google-site-kit' ) }
-				datapoint={ totalImpressions }
-				change={ totalImpressionsChange }
-				changeDataUnit="%"
-			/>
-		</div>
+		<DataBlock
+			className="overview-total-impressions"
+			title={ __( 'Total Impressions', 'google-site-kit' ) }
+			datapoint={ totalImpressions }
+			change={ totalImpressionsChange }
+			changeDataUnit="%"
+		/>
 	);
-};
-
-AdminBarImpressions.propTypes = {
-	className: PropTypes.string,
-};
-
-AdminBarImpressions.defaultProps = {
-	className: 'mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
-};
+}
 
 export default AdminBarImpressions;
