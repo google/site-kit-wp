@@ -38,7 +38,7 @@ storiesOf( 'Global', module )
 		global._googlesitekitLegacyData = wpAdminBarData;
 
 		const setupRegistry = ( registry ) => {
-			// Set the Story site information.
+			// Set some site information.
 			provideSiteInfo( registry, {
 				currentEntityURL: 'https://www.sitekitbygoogle.com/blog/',
 				currentEntityTitle: 'Blog test post for Google Site Kit',
@@ -75,4 +75,30 @@ storiesOf( 'Global', module )
 				</div>
 			</div>
 		);
+	} )
+	.add( 'Admin Bar Zero Data', () => {
+		global._googlesitekitLegacyData = wpAdminBarData;
+
+		const setupRegistry = ( registry ) => {
+			// Set the Story site information.
+			provideSiteInfo( registry, {
+				currentEntityURL: 'https://www.sitekitbygoogle.com/blog/',
+				currentEntityTitle: 'Blog test post for Google Site Kit',
+			} );
+		};
+
+		return (
+			<div id="wpadminbar">
+				<div className="googlesitekit-plugin">
+					<div id="js-googlesitekit-adminbar" className="ab-sub-wrapper googlesitekit-adminbar" style={ { display: 'block' } }>
+						<section id="js-googlesitekit-adminbar-modules" className="googlesitekit-adminbar-modules">
+							<WithTestRegistry callback={ setupRegistry }>
+								<GoogleSitekitAdminbar />
+							</WithTestRegistry>
+						</section>
+					</div>
+				</div>
+			</div>
+		);
 	} );
+
