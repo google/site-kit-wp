@@ -85,14 +85,9 @@
 
 			&.googlesitekit-widget--analyticsAllTraffic__dimensions--loading {
 				left: 50%;
-				margin-top: -11px;
 				position: absolute;
 				top: 50%;
 				transform: translate(-50%, -50%);
-
-				@media (min-width: $bp-desktop) {
-					margin-top: -18px;
-				}
 			}
 		}
 
@@ -174,6 +169,7 @@
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__chart {
+		min-height: 400px;
 		position: relative;
 	}
 

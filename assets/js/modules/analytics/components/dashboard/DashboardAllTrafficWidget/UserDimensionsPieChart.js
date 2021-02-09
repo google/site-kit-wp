@@ -262,22 +262,22 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
-			<PreviewBlock
-				className={ classnames( {
-					'googlesitekit-widget--analyticsAllTraffic__dimensions--not-loading': loaded,
-					'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
-				} ) }
-				width="300px"
-				height="300px"
-				shape="circular"
-			/>
-			<div className={ classnames(
-				'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
-				{
-					'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
-				}
-			) }>
-				<div className="googlesitekit-widget--analyticsAllTraffic__chart">
+			<div className="googlesitekit-widget--analyticsAllTraffic__chart">
+				<PreviewBlock
+					className={ classnames( {
+						'googlesitekit-widget--analyticsAllTraffic__dimensions--not-loading': loaded,
+						'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
+					} ) }
+					width="300px"
+					height="300px"
+					shape="circular"
+				/>
+				<div className={ classnames(
+					'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
+					{
+						'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
+					}
+				) }>
 					<GoogleChart
 						chartID={ chartID }
 						chartType="pie"
@@ -292,34 +292,34 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 						dangerouslySetInnerHTML={ title }
 					/>
 				</div>
+			</div>
 
-				<div className="googlesitekit-widget--analyticsAllTraffic__legend">
-					{ dataMap?.slice( 1 ).map( ( [ label ], i ) => {
-						const isActive = label === dimensionValue;
-						const sliceColor = slices[ i ]?.color;
+			<div className="googlesitekit-widget--analyticsAllTraffic__legend">
+				{ dataMap?.slice( 1 ).map( ( [ label ], i ) => {
+					const isActive = label === dimensionValue;
+					const sliceColor = slices[ i ]?.color;
 
-						return (
-							<Link
-								key={ label }
-								onClick={ () => onLegendClick( i ) }
-								className={ classnames(
-									'googlesitekit-widget--analyticsAllTraffic__legend-slice',
-									{
-										'googlesitekit-widget--analyticsAllTraffic__active': isActive,
-									}
-								) }
-							>
-								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: sliceColor } } />
+					return (
+						<Link
+							key={ label }
+							onClick={ () => onLegendClick( i ) }
+							className={ classnames(
+								'googlesitekit-widget--analyticsAllTraffic__legend-slice',
+								{
+									'googlesitekit-widget--analyticsAllTraffic__active': isActive,
+								}
+							) }
+						>
+							<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: sliceColor } } />
 
-								{ label }
+							{ label }
 
-								{ isActive && (
-									<span className="googlesitekit-widget--analyticsAllTraffic__active-underlay" style={ { backgroundColor: sliceColor } } />
-								) }
-							</Link>
-						);
-					} ) }
-				</div>
+							{ isActive && (
+								<span className="googlesitekit-widget--analyticsAllTraffic__active-underlay" style={ { backgroundColor: sliceColor } } />
+							) }
+						</Link>
+					);
+				} ) }
 			</div>
 		</div>
 	);
