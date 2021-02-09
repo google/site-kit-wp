@@ -75,8 +75,6 @@ const baseResolvers = {
 			return;
 		}
 
-		// console.log( 'getAdUnits resolver' ); TODO: TODO:
-
 		const registry = yield Data.commonActions.getRegistry();
 		const existingURLChannels = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
 		if ( existingURLChannels ) {
