@@ -76,8 +76,8 @@ const baseResolvers = {
 		}
 
 		const registry = yield Data.commonActions.getRegistry();
-		const existingURLChannels = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
-		if ( existingURLChannels ) {
+		const existingAdUnits = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
+		if ( existingAdUnits ) {
 			return;
 		}
 
