@@ -55,9 +55,9 @@ export default function whenActive( { moduleName, FallbackComponent = WidgetNull
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleName ) );
 
-			// Return null if the module is not loaded yet or doesn't exist.
+			// Return <WidgetNull /> if the module is not loaded yet or doesn't exist.
 			if ( ! module ) {
-				return null;
+				return <WidgetNull widgetSlug={ moduleName } />;
 			}
 
 			// Return a fallback if the module is not active.
