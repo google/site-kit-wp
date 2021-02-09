@@ -148,7 +148,7 @@ export const selectors = {
 	 * @param {number}  [options.offsetDays]    Number of days to offset. Default is: 0.
 	 * @param {string}  [options.referenceDate] Used for testing to set a static date. Default is the datastore's reference date.
 	 * @param {boolean} [options.weekDayAlign]  Set to true if the compared date range should be aligned for the weekdays. Default is: false.
-	 * @return {DateRangeReturnObj}             Object containing dates for date ranges and the number of days.
+	 * @return {DateRangeReturnObj}             Object containing dates for date ranges.
 	 */
 	getDateRangeDates( state, {
 		compare = false,
@@ -161,7 +161,7 @@ export const selectors = {
 		const matches = dateRange.match( '-(.*)-' );
 		const numberOfDays = Number( matches ? matches[ 1 ] : 28 );
 		const startDate = getPreviousDate( endDate, numberOfDays - 1 );
-		const dates = { startDate, endDate, numberOfDays };
+		const dates = { startDate, endDate };
 
 		if ( compare ) {
 			const compareEndDate = weekDayAlign
@@ -173,6 +173,20 @@ export const selectors = {
 		}
 
 		return dates;
+	},
+
+	/**
+	 * Returns the number of days in the current date range.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state The current data store's state.
+	 * @return {number}      Integer. The number of days in the current date range.
+	 */
+	getDateRangeNumberOfDays( state ) {
+		const dateRange = selectors.getDateRange( state );
+		const matches = dateRange.match( '-(.*)-' );
+		return Number( matches ? matches[ 1 ] : 28 );
 	},
 
 	/**
