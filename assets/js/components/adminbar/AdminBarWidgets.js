@@ -42,7 +42,15 @@ import { Row, Cell } from '../../material-components';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { HIDDEN_CLASS } from '../../googlesitekit/widgets/util/constants';
 import ReportZero from '../ReportZero';
+import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 const { useSelect } = Data;
+
+// Search Console widgets.
+const AdminBarImpressionsWidget = withWidgetComponentProps( 'adminBarImpressions' )( AdminBarImpressions );
+const AdminBarClicksWidget = withWidgetComponentProps( 'adminBarClicks' )( AdminBarClicks );
+// Analytics Widgets.
+const AdminBarUniqueVisitorsWidget = withWidgetComponentProps( 'adminBarUniqueVisitors' )( AdminBarUniqueVisitors );
+const AdminBarSessionsWidget = withWidgetComponentProps( 'adminBarSessions' )( AdminBarSessions );
 
 export default function AdminBarWidgets() {
 	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
@@ -71,23 +79,23 @@ export default function AdminBarWidgets() {
 					lgSize={ searchConsoleZeroData ? 6 : 3 }
 					mdSize={ searchConsoleZeroData ? 4 : 2 }
 				>
-					<AdminBarImpressions />
+					<AdminBarImpressionsWidget />
 				</Cell>
 				<Cell
 					lgSize={ 3 }
 					mdSize={ 2 }
 					className={ classnames( { [ HIDDEN_CLASS ]: searchConsoleZeroData } ) }
 				>
-					<AdminBarClicks />
+					<AdminBarClicksWidget />
 				</Cell>
 
 				{ analyticsModuleConnected && analyticsModuleActive && (
 					<Fragment>
 						<Cell lgSize={ 3 } mdSize={ 2 }>
-							<AdminBarUniqueVisitors />
+							<AdminBarUniqueVisitorsWidget />
 						</Cell>
 						<Cell lgSize={ 3 } mdSize={ 2 }>
-							<AdminBarSessions />
+							<AdminBarSessionsWidget />
 						</Cell>
 					</Fragment>
 				) }

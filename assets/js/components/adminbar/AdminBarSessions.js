@@ -33,10 +33,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
 import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 const { useSelect } = Data;
-
-const WIDGET_SLUG = 'adminBarSessions';
 
 const AdminBarSessions = ( { WidgetReportZero } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
@@ -90,4 +87,4 @@ const AdminBarSessions = ( { WidgetReportZero } ) => {
 	);
 };
 
-export default withWidgetComponentProps( { widgetSlug: WIDGET_SLUG } )( AdminBarSessions );
+export default AdminBarSessions;

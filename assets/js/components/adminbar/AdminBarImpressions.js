@@ -34,10 +34,7 @@ import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-
 import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/search-console/util/is-zero-report';
 import sumObjectListValue from '../../util/sum-object-list-value';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 const { useSelect } = Data;
-
-const WIDGET_SLUG = 'adminBarImpressions';
 
 function AdminBarImpressions( { WidgetReportZero } ) {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
@@ -88,4 +85,4 @@ function AdminBarImpressions( { WidgetReportZero } ) {
 	);
 }
 
-export default withWidgetComponentProps( { widgetSlug: WIDGET_SLUG } )( AdminBarImpressions );
+export default AdminBarImpressions;

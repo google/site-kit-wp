@@ -34,10 +34,7 @@ import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
 import DataBlock from '../DataBlock';
 import sumObjectListValue from '../../util/sum-object-list-value';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 const { useSelect } = Data;
-
-const WIDGET_SLUG = 'adminBarClicks';
 
 function AdminBarClicks( { WidgetReportZero } ) {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
@@ -88,4 +85,4 @@ function AdminBarClicks( { WidgetReportZero } ) {
 	);
 }
 
-export default withWidgetComponentProps( { widgetSlug: WIDGET_SLUG } )( AdminBarClicks );
+export default AdminBarClicks;
