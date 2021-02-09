@@ -73,15 +73,17 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 						const newDimensionValue = dataTable.getValue( row, 0 );
 						const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
 
-						if ( ! isOthers ) {
-							setValues(
-								FORM_ALL_TRAFFIC_WIDGET,
-								{
-									dimensionValue: newDimensionValue,
-									dimensionColor: slices[ row ]?.color,
-								}
-							);
+						if ( isOthers ) {
+							chart.setSelection( [] );
 						}
+
+						setValues(
+							FORM_ALL_TRAFFIC_WIDGET,
+							{
+								dimensionValue: isOthers ? '' : newDimensionValue,
+								dimensionColor: isOthers ? '' : slices[ row ]?.color,
+							}
+						);
 					}
 				} else {
 					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
