@@ -30,9 +30,10 @@ import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_LOCATION } from '../../datastore/location/constants';
 import Button from '../../../components/Button';
 import PostSearcherAutoSuggest from '../../../components/PostSearcherAutoSuggest';
+import WidgetNull from './WidgetNull';
 const { useSelect, useDispatch } = Data;
 
-function URLSearchWidget( { Widget } ) {
+function URLSearchWidget( { Widget = WidgetNull } = {} ) {
 	const [ canSubmit, setCanSubmit ] = useState( false );
 	const [ match, setMatch ] = useState( {} );
 
