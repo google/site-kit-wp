@@ -27,7 +27,6 @@ import { createElement } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { kebabCaseToPascalCase } from '../googlesitekit/data/transform-case';
-import WidgetNull from '../googlesitekit/widgets/components/WidgetNull';
 const { useSelect } = Data;
 
 /**
@@ -48,8 +47,7 @@ const { useSelect } = Data;
  */
 export default function whenActive( {
 	moduleName,
-	WidgetNull,
-	FallbackComponent = WidgetNull,
+	FallbackComponent,
 	IncompleteComponent = null,
 } ) {
 	return ( wrappedComponent ) => {
@@ -60,14 +58,21 @@ export default function whenActive( {
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleName ) );
 
+			const WhenFallbackComponent = FallbackComponent ? FallbackComponent : props.WidgetNull;
+
+			if ( WhenFallbackComponent === undefined ) {
+				console.log( WhenFallbackComponent, props.WidgetNull ); // eslint-disable-line no-console
+				return <div />;
+			}
+
 			// Return <WidgetNull /> if the module is not loaded yet or doesn't exist.
 			if ( ! module ) {
-				return <WidgetNull />;
+				return <props.WidgetNull />;
 			}
 
 			// Return a fallback if the module is not active.
 			if ( module.active === false ) {
-				return <FallbackComponent { ...props } />;
+				return <WhenFallbackComponent { ...props } />;
 			}
 
 			// Return a fallback if the module is active but not connected yet.
@@ -76,7 +81,9 @@ export default function whenActive( {
 					return <IncompleteComponent { ...props } />;
 				}
 				// If there isn't a IncompleteComponent then use the FallbackComponent if available.
-				return FallbackComponent !== null ? <FallbackComponent { ...props } /> : null;
+				// return FallbackComponent !== null ? <FallbackComponent { ...props } /> : <props.WidgetNull />;
+				// return WhenFallbackComponent !== null ? <WhenFallbackComponent { ...props } /> : <props.WidgetNull />;
+				return <WhenFallbackComponent { ...props } />;
 			}
 
 			// Return the active and connected component.
