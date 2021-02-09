@@ -22,8 +22,8 @@
 import invariant from 'invariant';
 import isPlainObject from 'lodash/isPlainObject';
 
-const SET_UI_VALUES = 'SET_UI_VALUES';
-const SET_UI_VALUE = 'SET_UI_VALUE';
+const SET_VALUES = 'SET_VALUES';
+const SET_VALUE = 'SET_VALUE';
 
 export const initialState = {};
 
@@ -42,7 +42,7 @@ export const actions = {
 
 		return {
 			payload: { values },
-			type: SET_UI_VALUES,
+			type: SET_VALUES,
 		};
 	},
 
@@ -61,7 +61,7 @@ export const actions = {
 
 		return {
 			payload: { key, value },
-			type: SET_UI_VALUE,
+			type: SET_VALUE,
 		};
 	},
 };
@@ -70,7 +70,7 @@ export const controls = {};
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_UI_VALUES: {
+		case SET_VALUES: {
 			const { values } = payload;
 
 			return {
@@ -79,7 +79,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case SET_UI_VALUE: {
+		case SET_VALUE: {
 			const { key, value } = payload;
 
 			return {

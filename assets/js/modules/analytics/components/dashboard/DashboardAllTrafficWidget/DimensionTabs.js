@@ -35,9 +35,9 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
-	DIMENSION_NAME_ALL_TRAFFIC_WIDGET,
-	DIMENSION_VALUE_ALL_TRAFFIC_WIDGET,
-	DIMENSION_COLOR_ALL_TRAFFIC_WIDGET,
+	UI_DIMENSION_COLOR,
+	UI_DIMENSION_NAME,
+	UI_DIMENSION_VALUE,
 } from '../../../datastore/constants';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useDispatch } = Data;
@@ -64,9 +64,9 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 
 	const handleTabUpdate = useCallback( ( index ) => {
 		setValues( {
-			[ DIMENSION_NAME_ALL_TRAFFIC_WIDGET ]: tabs[ index ].dimensionName,
-			[ DIMENSION_VALUE_ALL_TRAFFIC_WIDGET ]: '',
-			[ DIMENSION_COLOR_ALL_TRAFFIC_WIDGET ]: '',
+			[ UI_DIMENSION_NAME ]: tabs[ index ].dimensionName,
+			[ UI_DIMENSION_VALUE ]: '',
+			[ UI_DIMENSION_COLOR ]: '',
 		} );
 	} );
 

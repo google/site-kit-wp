@@ -49,16 +49,16 @@ import {
 	STRATEGY_DESKTOP,
 	DATA_SRC_FIELD,
 	DATA_SRC_LAB,
-	WIDGET_STRATEGY,
-	WIDGET_DATA_SOURCE,
+	UI_STRATEGY,
+	UI_DATA_SOURCE,
 } from '../../datastore/constants';
 
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardPageSpeed() {
 	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
-	const strategy = useSelect( ( select ) => select( CORE_UI ).getValue( WIDGET_STRATEGY ) ) || STRATEGY_MOBILE;
-	const dataSrc = useSelect( ( select ) => select( CORE_UI ).getValue( WIDGET_DATA_SOURCE ) ) || DATA_SRC_LAB;
+	const strategy = useSelect( ( select ) => select( CORE_UI ).getValue( UI_STRATEGY ) ) || STRATEGY_MOBILE;
+	const dataSrc = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DATA_SOURCE ) ) || DATA_SRC_LAB;
 
 	const {
 		isFetchingMobile,
@@ -83,10 +83,10 @@ export default function DashboardPageSpeed() {
 	const { setValues } = useDispatch( CORE_UI );
 	const { invalidateResolution } = useDispatch( STORE_NAME );
 
-	const setStrategyMobile = useCallback( () => setValues( { [ WIDGET_STRATEGY ]: STRATEGY_MOBILE } ), [] );
-	const setStrategyDesktop = useCallback( () => setValues( { [ WIDGET_STRATEGY ]: STRATEGY_DESKTOP } ), [] );
-	const setDataSrcField = useCallback( () => setValues( { [ WIDGET_DATA_SOURCE ]: DATA_SRC_FIELD } ), [] );
-	const setDataSrcLab = useCallback( () => setValues( { [ WIDGET_DATA_SOURCE ]: DATA_SRC_LAB } ), [] );
+	const setStrategyMobile = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_MOBILE } ), [] );
+	const setStrategyDesktop = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_DESKTOP } ), [] );
+	const setDataSrcField = useCallback( () => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_FIELD } ), [] );
+	const setDataSrcLab = useCallback( () => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_LAB } ), [] );
 
 	// Update the active tab for "In the Lab" or "In The Field".
 	const updateActiveTab = useCallback( ( dataSrcIndex ) => {

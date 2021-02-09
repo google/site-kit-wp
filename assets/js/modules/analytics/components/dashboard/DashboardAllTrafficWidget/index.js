@@ -27,8 +27,8 @@ import { useState, useEffect } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import {
-	DIMENSION_NAME_ALL_TRAFFIC_WIDGET,
-	DIMENSION_VALUE_ALL_TRAFFIC_WIDGET,
+	UI_DIMENSION_NAME,
+	UI_DIMENSION_VALUE,
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS,
 } from '../../../datastore/constants';
@@ -52,8 +52,8 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero } ) {
 	const [ currentRange, setCurrentRange ] = useState( '' );
 
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const dimensionName = useSelect( ( select ) => select( CORE_UI ).getValue( DIMENSION_NAME_ALL_TRAFFIC_WIDGET ) || 'ga:channelGrouping' );
-	const dimensionValue = useSelect( ( select ) => select( CORE_UI ).getValue( DIMENSION_VALUE_ALL_TRAFFIC_WIDGET ) );
+	const dimensionName = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DIMENSION_NAME ) || 'ga:channelGrouping' );
+	const dimensionValue = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DIMENSION_VALUE ) );
 	const entityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
 	const {

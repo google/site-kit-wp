@@ -36,8 +36,8 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
-	DIMENSION_VALUE_ALL_TRAFFIC_WIDGET,
-	DIMENSION_COLOR_ALL_TRAFFIC_WIDGET,
+	UI_DIMENSION_COLOR,
+	UI_DIMENSION_VALUE,
 } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
@@ -76,14 +76,14 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 						const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
 
 						setValues( {
-							[ DIMENSION_VALUE_ALL_TRAFFIC_WIDGET ]: isOthers ? '' : newDimensionValue,
-							[ DIMENSION_COLOR_ALL_TRAFFIC_WIDGET ]: isOthers ? '' : slices[ row ]?.color,
+							[ UI_DIMENSION_VALUE ]: isOthers ? '' : newDimensionValue,
+							[ UI_DIMENSION_COLOR ]: isOthers ? '' : slices[ row ]?.color,
 						} );
 					}
 				} else {
 					setValues( {
-						[ DIMENSION_VALUE_ALL_TRAFFIC_WIDGET ]: '',
-						[ DIMENSION_COLOR_ALL_TRAFFIC_WIDGET ]: '',
+						[ UI_DIMENSION_VALUE ]: '',
+						[ UI_DIMENSION_COLOR ]: '',
 					} );
 				}
 			} );
@@ -106,7 +106,7 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 				if ( selectedRow && slices[ selectedRow ]?.color ) {
 					chart.setSelection( [ { row: selectedRow } ] );
 					setValues( {
-						[ DIMENSION_COLOR_ALL_TRAFFIC_WIDGET ]: slices[ selectedRow ]?.color,
+						[ UI_DIMENSION_COLOR ]: slices[ selectedRow ]?.color,
 					} );
 				}
 			}
@@ -116,7 +116,7 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 			if ( ! dimensionValue && chart.getSelection().length ) {
 				chart.setSelection( [] );
 				setValues( {
-					[ DIMENSION_COLOR_ALL_TRAFFIC_WIDGET ]: '',
+					[ UI_DIMENSION_COLOR ]: '',
 				} );
 			}
 		}

@@ -27,5 +27,5 @@ export const DATA_SRC_LAB = 'data_lab';
 export const DATA_SRC_FIELD = 'data_field';
 
 // Dashboard widgets using the UI store.
-export const WIDGET_STRATEGY = 'dashboardPageSpeedWidgetStrategy';
-export const WIDGET_DATA_SOURCE = 'dashboardPageSpeedWidgetDataSource';
+export const UI_STRATEGY = 'dashboardPageSpeedWidgetStrategy';
+export const UI_DATA_SOURCE = 'dashboardPageSpeedWidgetDataSource';

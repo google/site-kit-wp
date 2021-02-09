@@ -37,6 +37,6 @@ export const EDIT_SCOPE = 'https://www.googleapis.com/auth/analytics.edit';
 // Date range offset days for Analytics report requests.
 export const DATE_RANGE_OFFSET = 1;
 
-export const DIMENSION_NAME_ALL_TRAFFIC_WIDGET = 'dashboardAllTrafficWidgetDimensionName';
-export const DIMENSION_COLOR_ALL_TRAFFIC_WIDGET = 'dashboardAllTrafficWidgetDimensionColor';
-export const DIMENSION_VALUE_ALL_TRAFFIC_WIDGET = 'dashboardAllTrafficWidgetDimensionValue';
+export const UI_DIMENSION_NAME = 'dashboardAllTrafficWidgetDimensionName';
+export const UI_DIMENSION_COLOR = 'dashboardAllTrafficWidgetDimensionColor';
+export const UI_DIMENSION_VALUE = 'dashboardAllTrafficWidgetDimensionValue';

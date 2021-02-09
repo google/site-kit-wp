@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import { DIMENSION_COLOR_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { UI_DIMENSION_COLOR } from '../../../datastore/constants';
 import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import PreviewBlock from '../../../../../components/PreviewBlock';
@@ -40,7 +40,7 @@ import ReportError from '../../../../../components/ReportError';
 const { useSelect } = Data;
 
 export default function UserCountGraph( { loaded, error, report } ) {
-	const graphLineColor = useSelect( ( select ) => select( CORE_UI ).getValue( DIMENSION_COLOR_ALL_TRAFFIC_WIDGET ) || '#1a73e8' );
+	const graphLineColor = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) || '#1a73e8' );
 
 	if ( ! loaded ) {
 		// On desktop, the real graph height is 350px, so match that here.
