@@ -111,17 +111,17 @@ export default function SettingsView() {
 						</Link>
 					</p>
 				</div>
-				{ webStoriesActive &&
-				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Web Stories Ad Unit', 'google-site-kit' ) }
-					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						{ ! webStoriesAdUnit && __( 'None', 'google-site-kit' ) }
-						{ webStoriesAdUnit && <DisplaySetting value={ webStoriesAdUnit } /> }
-					</p>
-				</div>
-				}
+				{ webStoriesActive && (
+					<div className="googlesitekit-settings-module__meta-item">
+						<h5 className="googlesitekit-settings-module__meta-item-type">
+							{ __( 'Web Stories Ad Unit', 'google-site-kit' ) }
+						</h5>
+						<p className="googlesitekit-settings-module__meta-item-data">
+							{ ! webStoriesAdUnit && __( 'None', 'google-site-kit' ) }
+							{ webStoriesAdUnit && <DisplaySetting value={ webStoriesAdUnit } /> }
+						</p>
+					</div>
+				) }
 			</div>
 
 			<div className="googlesitekit-settings-module__meta-items">
