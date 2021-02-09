@@ -281,7 +281,6 @@ final class Authentication {
 				$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
 
 				$this->handle_site_code( $code, $site_code );
-				$this->require_user_input();
 				$this->redirect_to_proxy( $code );
 			}
 		);
@@ -293,7 +292,13 @@ final class Authentication {
 			}
 		);
 
-		add_action( 'googlesitekit_authorize_user', $this->get_method_proxy( 'set_connected_proxy_url' ) );
+		add_action(
+			'googlesitekit_authorize_user',
+			function () {
+				$this->set_connected_proxy_url();
+				$this->require_user_input();
+			}
+		);
 
 		add_filter(
 			'googlesitekit_rest_routes',
@@ -1104,15 +1109,12 @@ final class Authentication {
 			return;
 		}
 
+		// Refresh user input settings from the proxy.
+		// This will ensure the user input state is updated as well.
+		$this->user_input_settings->set_settings( null );
+
 		if ( User_Input_State::VALUE_COMPLETED !== $this->user_input_state->get() ) {
 			$this->user_input_state->set( User_Input_State::VALUE_REQUIRED );
-			// Set the `mode` query parameter in the proxy setup URL.
-			add_filter(
-				'googlesitekit_proxy_setup_url_params',
-				function ( $params ) {
-					return array_merge( $params, array( 'mode' => 'user_input' ) );
-				}
-			);
 		}
 	}
 
