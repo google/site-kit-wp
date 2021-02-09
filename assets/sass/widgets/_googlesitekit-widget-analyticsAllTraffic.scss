@@ -73,6 +73,7 @@
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions {
+		min-height: 450px;
 		padding-top: 30px;
 		position: relative;
 
@@ -84,13 +85,19 @@
 
 			&.googlesitekit-widget--analyticsAllTraffic__dimensions--loading {
 				left: 50%;
+				margin-top: -11px;
 				position: absolute;
 				top: 50%;
 				transform: translate(-50%, -50%);
+
+				@media (min-width: $bp-desktop) {
+					margin-top: -18px;
+				}
 			}
 		}
 
 		.googlesitekit-widget--analyticsAllTraffic__dimensions-container {
+			height: 100%;
 			position: relative;
 		}
 	}
@@ -103,6 +110,11 @@
 
 		svg {
 			vertical-align: bottom;
+		}
+
+		.googlesitekit-cta-link {
+			font-size: 1em;
+			letter-spacing: 0.04em;
 		}
 	}
 
