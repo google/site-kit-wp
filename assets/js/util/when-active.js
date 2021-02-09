@@ -62,7 +62,7 @@ export default function whenActive( {
 
 			// Return <WidgetNull /> if the module is not loaded yet or doesn't exist.
 			if ( ! module ) {
-				return <WidgetNull widgetSlug={ moduleName } />;
+				return <WidgetNull />;
 			}
 
 			// Return a fallback if the module is not active.
