@@ -22,7 +22,6 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  */
 class AMP_Tag extends Module_AMP_Tag {
 
-
 	use Method_Proxy_Trait;
 
 	/**
@@ -32,6 +31,14 @@ class AMP_Tag extends Module_AMP_Tag {
 	 * @var bool
 	 */
 	private $adsense_tag_printed = false;
+
+	/**
+	 * Web Story Ad Slot ID.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	private $story_ad_slot_id = '';
 
 	/**
 	 * Registers tag hooks.
@@ -99,14 +106,6 @@ class AMP_Tag extends Module_AMP_Tag {
 	}
 
 	/**
-	 * Web Story Ad Slot ID.
-	 *
-	 * @since n.e.x.t
-	 * @var string
-	 */
-	private $story_ad_slot_id = '';
-
-	/**
 	 * Set Web Story Ad Slot ID
 	 *
 	 * @since n.e.x.t
@@ -133,10 +132,9 @@ class AMP_Tag extends Module_AMP_Tag {
 							"data-ad-client": "%s",
 							"data-ad-slot": "00000000"
 						}
-					}
-				</script>
+					</script>
 				</amp-story-auto-ads>
-				',
+			',
 			$this->tag_id, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			$this->story_ad_slot_id // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);

@@ -55,7 +55,7 @@ export default function WebStoriesAdUnitSelect() {
 
 	return (
 		<Select
-			className="googlesitekit-adsense__select-account"
+			className="googlesitekit-adsense__select-field"
 			label={ __( 'Web Stories Ad Unit', 'google-site-kit' ) }
 			value={ webStoriesAdUnit }
 			onEnhancedChange={ onChange }
@@ -67,9 +67,9 @@ export default function WebStoriesAdUnitSelect() {
 			>
 				{ __( 'Select ad unit', 'google-site-kit' ) }
 			</Option>
-			{ ( adunits || [] ).map( ( { id, name }, index ) => (
+			{ ( adunits || [] ).map( ( { id, name } ) => (
 				<Option
-					key={ index }
+					key={ id }
 					value={ id }
 				>
 					{ name }

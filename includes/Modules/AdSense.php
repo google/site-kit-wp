@@ -201,8 +201,8 @@ final class AdSense extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:accounts'       => array( 'service' => 'adsense' ),
 			'GET:adunits'        => array( 'service' => 'adsense' ),
+			'GET:accounts'       => array( 'service' => 'adsense' ),
 			'GET:alerts'         => array( 'service' => 'adsense' ),
 			'GET:clients'        => array( 'service' => 'adsense' ),
 			'GET:earnings'       => array( 'service' => 'adsense' ),
