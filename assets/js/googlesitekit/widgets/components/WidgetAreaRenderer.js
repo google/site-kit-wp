@@ -131,11 +131,9 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 				</Row>
 			</div>
 
-			<div className="googlesitekit-widget-area-widgets">
+			<div className={ `googlesitekit-widget-area-widgets ${ HIDDEN_CLASS }` } >
 				{ inactiveWidgets.map( ( widget ) => (
-					<div className={ HIDDEN_CLASS } key={ widget.slug }>
-						<widget.Component />
-					</div>
+					<widget.Component key={ widget.slug } />
 				) ) }
 			</div>
 		</Grid>
