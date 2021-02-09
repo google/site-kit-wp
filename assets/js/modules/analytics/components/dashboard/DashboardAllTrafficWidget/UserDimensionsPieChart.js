@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState, useEffect } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { useInstanceId } from '@wordpress/compose';
 
@@ -86,34 +86,6 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 			} );
 		}
 	}, [ chartID, dimensionName, setValues ] );
-
-	useEffect( () => {
-		if ( ! chartLoaded ) {
-			return;
-		}
-
-		const chartData = GoogleChart.charts.get( chartID );
-		const { chart } = chartData || {};
-		if ( chart && report?.[ 0 ]?.data?.rows ) {
-			// If there is a dimension value set but the initialized chart does not have a selection yet,
-			// find the matching row index and initially select it in the chart.
-			if ( dimensionValue && ! chart.getSelection().length ) {
-				const { slices } = UserDimensionsPieChart.chartOptions;
-				const selectedRow = report[ 0 ].data.rows.findIndex( ( row ) => row.dimensions.includes( dimensionValue ) );
-				if ( selectedRow && slices[ selectedRow ]?.color ) {
-					chart.setSelection( [ { row: selectedRow } ] );
-					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: slices[ selectedRow ]?.color } );
-				}
-			}
-
-			// If there is no dimension value set but the initialized chart does have a selection,
-			// ensure it is no longer selected in the chart.
-			if ( ! dimensionValue && chart.getSelection().length ) {
-				chart.setSelection( [] );
-				setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: '' } );
-			}
-		}
-	}, [ chartLoaded, chartID, dimensionValue, JSON.stringify( report ) ] );
 
 	const absOthers = {
 		current: report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],
@@ -260,6 +232,7 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 					data={ dataMap || [] }
 					loadHeight={ 50 }
 					onReady={ onReady }
+					selectedValue={ dimensionValue }
 				/>
 				<div
 					className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"

@@ -20,13 +20,12 @@
  * External dependencies
  */
 import debounce from 'lodash/debounce';
-import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect, useState, useRef } from '@wordpress/element';
+import { useEffect, useState, useRef, useLayoutEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -46,6 +45,7 @@ export default function GoogleChart( props ) {
 		onReady,
 		options,
 		selectedStats,
+		selectedValue,
 		singleStat,
 	} = props;
 
@@ -167,6 +167,30 @@ export default function GoogleChart( props ) {
 		};
 	}, [] );
 
+	// HACK: We use `useLayoutEffect` and a 0ms `setTimeout` to ensure this code is run after
+	// the chart is (redrawn). Otherwise the selection isn't reliable.
+	// We should refactor this to be more React-like in the future, but for now this
+	// works quite well.
+	useLayoutEffect( () => {
+		setTimeout( () => {
+			// If there is a dimension value set but the initialized chart does not have a
+			// selection yet, find the matching row index and initially select it in the chart.
+			if ( selectedValue && ! chart?.getSelection().length ) {
+				const { slices } = options;
+				const selectedRow = data.findIndex( ( row ) => row[ 0 ]?.includes( selectedValue ) );
+				if ( selectedRow && slices[ selectedRow ]?.color ) {
+					chart.setSelection( [ { row: selectedRow - 1 } ] );
+				}
+			}
+
+			// If there is no dimension value set but the initialized chart does have a selection,
+			// ensure it is no longer selected in the chart.
+			if ( ! selectedValue && chart?.getSelection().length ) {
+				chart.setSelection( [] );
+			}
+		}, 0 );
+	} );
+
 	return (
 		<div className="googlesitekit-graph-wrapper">
 			<div ref={ chartRef } className="googlesitekit-line-chart">
@@ -191,20 +215,6 @@ export default function GoogleChart( props ) {
 	);
 }
 
-GoogleChart.propTypes = {
-	chartID: PropTypes.string,
-	chartType: PropTypes.oneOf( [ 'area', 'pie', 'line' ] ).isRequired,
-	className: PropTypes.string,
-	data: PropTypes.arrayOf( PropTypes.array ),
-	loadCompressed: PropTypes.bool,
-	loadSmall: PropTypes.bool,
-	loadHeight: PropTypes.number,
-	loadText: PropTypes.bool,
-	onReady: PropTypes.func,
-	selectedStats: PropTypes.arrayOf( PropTypes.number ),
-	singleStat: PropTypes.bool,
-};
-
 GoogleChart.defaultProps = {
 	className: '',
 	data: [],
@@ -213,6 +223,7 @@ GoogleChart.defaultProps = {
 	loadHeight: null,
 	loadText: true,
 	selectedStats: [],
+	selectedValue: undefined,
 	singleStat: true,
 };
 
