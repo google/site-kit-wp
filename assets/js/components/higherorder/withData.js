@@ -36,7 +36,7 @@ import Data from 'googlesitekit-data';
 import { getModulesData, stringifyObject } from '../../util';
 import getNoDataComponent from '../legacy-notifications/nodata';
 import getDataErrorComponent from '../legacy-notifications/data-error';
-import getSetupIncompleteComponent from '../legacy-notifications/setup-incomplete';
+import getSetupIncompleteComponent, { getModuleInactiveComponent } from '../legacy-notifications/setup-incomplete';
 import { TYPE_MODULES } from '../data/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { requestWithDateRange } from '../data/utils/request-with-date-range';
@@ -224,13 +224,17 @@ const withData = (
 						`googlesitekit.module${ context }DataRequest`,
 						`googlesitekit.withData.${ hashRequests( dataRequests ) }`,
 						( contextRequests ) => {
+							const modulesData = getModulesData();
 							const requestsToAdd = [];
 							for ( const dataRequest of dataRequests ) {
 								const { type, identifier } = dataRequest || {};
 								// If a dataRequest's module requires setup, set it in the state.
 								// This will cause the setup incomplete component to be rendered in all cases.
-								if ( TYPE_MODULES === type && ! getModulesData()[ identifier ]?.setupComplete ) {
-									this.setState( { moduleRequiringSetup: identifier } );
+								if ( TYPE_MODULES === type && ! modulesData[ identifier ]?.setupComplete ) {
+									this.setState( {
+										moduleRequiringSetup: identifier,
+										moduleRequiringActivation: ! modulesData[ identifier ]?.active,
+									} );
 									continue;
 								}
 
@@ -324,7 +328,12 @@ const withData = (
 				errorObj,
 				requestDataToState,
 				moduleRequiringSetup,
+				moduleRequiringActivation,
 			} = this.state;
+
+			if ( moduleRequiringActivation ) {
+				return getModuleInactiveComponent( moduleRequiringSetup, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
+			}
 
 			if ( moduleRequiringSetup ) {
 				return getSetupIncompleteComponent( moduleRequiringSetup, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
