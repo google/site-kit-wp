@@ -306,17 +306,17 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 							className={ classnames(
 								'googlesitekit-widget--analyticsAllTraffic__legend-slice',
 								{
-									'googlesitekit-widget--analyticsAllTraffic__active': isActive,
+									'googlesitekit-widget--analyticsAllTraffic__legend-active': isActive,
 								}
 							) }
 						>
 							<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: sliceColor } } />
 
-							{ label }
+							<span className="googlesitekit-widget--analyticsAllTraffic__label" data-label={ label }>
+								{ label }
+							</span>
 
-							{ isActive && (
-								<span className="googlesitekit-widget--analyticsAllTraffic__active-underlay" style={ { backgroundColor: sliceColor } } />
-							) }
+							<span className="googlesitekit-widget--analyticsAllTraffic__underlay" style={ { backgroundColor: sliceColor } } />
 						</Link>
 					);
 				} ) }
