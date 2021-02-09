@@ -127,10 +127,12 @@ class AMP_Tag extends Module_AMP_Tag {
 				<amp-story-auto-ads>
 					<script type="application/json">
 						{
-							"ad-attributes": {
-							"type": "adsense",
-							"data-ad-client": "%s",
-							"data-ad-slot": "00000000"
+							"ad-attributes":
+							{
+								"type": "adsense",
+								"data-ad-client": "%s",
+								"data-ad-slot": "00000000"
+							}
 						}
 					</script>
 				</amp-story-auto-ads>
