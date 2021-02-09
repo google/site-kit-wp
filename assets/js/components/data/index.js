@@ -141,7 +141,9 @@ const dataAPI = {
 					const { datapoint, type, identifier } = dataRequest[ requestIndex ];
 
 					this.handleWPError( {
-						method: 'POST',
+						// Report as GET requests as this is the internal method
+						// rather than the method of the batch request itself.
+						method: 'GET',
 						datapoint,
 						type,
 						identifier,

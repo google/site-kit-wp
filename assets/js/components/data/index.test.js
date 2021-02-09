@@ -158,7 +158,7 @@ describe( 'dataAPI', () => {
 			expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
 			const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 			expect( event ).toEqual( 'event' );
-			expect( eventName ).toEqual( 'POST:test-type/test-identifier/data/test-datapoint' );
+			expect( eventName ).toEqual( 'GET:test-type/test-identifier/data/test-datapoint' );
 			expect( eventData.event_category ).toEqual( 'api_error' );
 			expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error, reason: internal_server_error)' );
 			expect( eventData.value ).toEqual( 500 );
@@ -199,13 +199,13 @@ describe( 'dataAPI', () => {
 			expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 2 );
 			let [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 			expect( event ).toEqual( 'event' );
-			expect( eventName ).toEqual( 'POST:test-type/test-identifier/data/test-datapoint' );
+			expect( eventName ).toEqual( 'GET:test-type/test-identifier/data/test-datapoint' );
 			expect( eventData.event_category ).toEqual( 'api_error' );
 			expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error, reason: internal_server_error)' );
 			expect( eventData.value ).toEqual( 500 );
 			[ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 1 ][ 0 ];
 			expect( event ).toEqual( 'event' );
-			expect( eventName ).toEqual( 'POST:test-type/analytics/data/test-datapoint-3' );
+			expect( eventName ).toEqual( 'GET:test-type/analytics/data/test-datapoint-3' );
 			expect( eventData.event_category ).toEqual( 'api_error' );
 			expect( eventData.event_label ).toEqual( 'Unknown error (code: unknown_error, reason: unknown_error)' );
 			expect( eventData.value ).toEqual( 503 );
