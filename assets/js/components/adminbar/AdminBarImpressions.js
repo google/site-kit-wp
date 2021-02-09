@@ -57,9 +57,7 @@ function AdminBarImpressions( { WidgetReportZero } ) {
 	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
 
 	if ( ! hasFinishedResolution ) {
-		return (
-			<PreviewBlock width="auto" height="59px" />
-		);
+		return <PreviewBlock width="auto" height="59px" />;
 	}
 
 	if ( error ) {
