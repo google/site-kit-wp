@@ -36,7 +36,7 @@ const AnalyticsAdSenseDashboardWidgetLayout = ( { children } ) => {
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
-	const accountSiteURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceAccountSiteURL( generateDateRangeArgs( dateRangeDates ) ) );
+	const accountSiteURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceReportURL( generateDateRangeArgs( dateRangeDates ) ) );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 

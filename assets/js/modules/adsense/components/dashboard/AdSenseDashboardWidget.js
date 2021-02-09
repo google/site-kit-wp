@@ -63,7 +63,7 @@ export default function AdSenseDashboardWidget() {
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
-	const accountSiteURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountSiteURL( generateDateRangeArgs( dateRangeDates ) ) );
+	const accountSiteURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( generateDateRangeArgs( dateRangeDates ) ) );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 

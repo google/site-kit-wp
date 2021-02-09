@@ -127,6 +127,13 @@ export const selectors = {
 		return select( STORE_NAME ).getServiceURL( { path, query } );
 	} ),
 
+	getServiceReportURL: createRegistrySelector( ( select ) => ( state, reportArgs ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
+		const path = `${ accountID }/reporting`;
+
+		return select( STORE_NAME ).getServiceURL( { path, query: reportArgs } );
+	} ),
+
 	/**
 	 * Returns the service URL to an AdSense account's site management page.
 	 *
