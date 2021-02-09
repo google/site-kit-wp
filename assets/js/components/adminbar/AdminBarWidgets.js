@@ -45,25 +45,30 @@ import ReportZero from '../ReportZero';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 const { useSelect } = Data;
 
+// Widget slugs.
+const WIDGET_IMPRESSIONS = 'adminBarImpressions';
+const WIDGET_CLICKS = 'adminBarClicks';
+const WIDGET_VISITORS = 'adminBarUniqueVisitors';
+const WIDGET_SESSIONS = 'adminBarSessions';
 // Search Console widgets.
-const AdminBarImpressionsWidget = withWidgetComponentProps( 'adminBarImpressions' )( AdminBarImpressions );
-const AdminBarClicksWidget = withWidgetComponentProps( 'adminBarClicks' )( AdminBarClicks );
+const AdminBarImpressionsWidget = withWidgetComponentProps( WIDGET_IMPRESSIONS )( AdminBarImpressions );
+const AdminBarClicksWidget = withWidgetComponentProps( WIDGET_CLICKS )( AdminBarClicks );
 // Analytics Widgets.
-const AdminBarUniqueVisitorsWidget = withWidgetComponentProps( 'adminBarUniqueVisitors' )( AdminBarUniqueVisitors );
-const AdminBarSessionsWidget = withWidgetComponentProps( 'adminBarSessions' )( AdminBarSessions );
+const AdminBarUniqueVisitorsWidget = withWidgetComponentProps( WIDGET_VISITORS )( AdminBarUniqueVisitors );
+const AdminBarSessionsWidget = withWidgetComponentProps( WIDGET_SESSIONS )( AdminBarSessions );
 
 export default function AdminBarWidgets() {
 	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 
 	const searchConsoleZeroData = useSelect( ( select ) => {
-		return select( CORE_WIDGETS ).getWidgetState( 'adminBarImpressions' )?.Component === ReportZero &&
-		select( CORE_WIDGETS ).getWidgetState( 'adminBarClicks' )?.Component === ReportZero;
+		return select( CORE_WIDGETS ).getWidgetState( WIDGET_IMPRESSIONS )?.Component === ReportZero &&
+			select( CORE_WIDGETS ).getWidgetState( WIDGET_CLICKS )?.Component === ReportZero;
 	} );
 
 	const analyticsZeroData = useSelect( ( select ) => {
-		return select( CORE_WIDGETS ).getWidgetState( 'adminBarUniqueVisitors' )?.Component === ReportZero &&
-			select( CORE_WIDGETS ).getWidgetState( 'adminBarSessions' )?.Component === ReportZero;
+		return select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )?.Component === ReportZero &&
+			select( CORE_WIDGETS ).getWidgetState( WIDGET_SESSIONS )?.Component === ReportZero;
 	} );
 
 	// True if _all_ admin bar widgets have zero data.
