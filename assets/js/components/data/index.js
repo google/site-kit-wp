@@ -168,9 +168,9 @@ const dataAPI = {
 			} );
 
 			// Resolve any returned data requests, then re-request the remainder after a pause.
-		} ).catch( ( err ) => {
+		} ).catch( ( error ) => {
 			// Handle the error and give up trying.
-			console.warn( 'Error caught during combinedGet', err ); // eslint-disable-line no-console
+			console.warn( 'Error caught during combinedGet', `code:${ error.code }`, `error:"${ error.message }"` ); // eslint-disable-line no-console
 		} );
 	},
 
