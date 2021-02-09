@@ -30,7 +30,6 @@ import DashboardModuleHeader from '../../../../../components/dashboard/Dashboard
 import DashboardAllTrafficWidget from '.';
 import { Cell } from '../../../../../material-components';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import ReportError from '../../../../../components/ReportError';
 
 function LegacyDashboardAllTraffic() {
 	const widgetComponentProps = getWidgetComponentProps( 'legacy-all-traffic-widget' );
@@ -44,7 +43,7 @@ function LegacyDashboardAllTraffic() {
 			</Cell>
 			<Cell size={ 12 }>
 				<Layout className="googlesitekit-pagespeed-widget">
-					<DashboardAllTrafficWidget { ...widgetComponentProps } WidgetReportError={ ReportError } />
+					<DashboardAllTrafficWidget { ...widgetComponentProps } />
 				</Layout>
 			</Cell>
 		</Fragment>
