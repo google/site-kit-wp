@@ -89,7 +89,7 @@ const baseSelectors = {
 	/**
 	 * Gets all Google AdSense Account Ad Units for this account and client.
 	 *
-	 * @since 1.9.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The AdSense Account ID to fetch URL channels for.
