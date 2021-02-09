@@ -25,7 +25,7 @@ import debounce from 'lodash/debounce';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect, useState, useRef, useLayoutEffect } from '@wordpress/element';
+import { useEffect, useState, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -171,7 +171,7 @@ export default function GoogleChart( props ) {
 	// the chart is (redrawn). Otherwise the selection isn't reliable.
 	// We should refactor this to be more React-like in the future, but for now this
 	// works quite well.
-	useLayoutEffect( () => {
+	useEffect( () => {
 		setTimeout( () => {
 			// If there is a dimension value set but the initialized chart does not have a
 			// selection yet, find the matching row index and initially select it in the chart.
