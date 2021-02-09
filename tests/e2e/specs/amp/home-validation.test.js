@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import {
-	activatePlugin,
 	deactivatePlugin,
 } from '@wordpress/e2e-test-utils';
 
@@ -36,7 +35,6 @@ import {
 describe( 'AMP Homepage', () => {
 	beforeAll( async () => {
 		await setupSiteKit();
-		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
 		await activateAMPWithMode( 'primary' );
 	} );
 
