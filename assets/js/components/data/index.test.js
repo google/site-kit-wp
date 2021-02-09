@@ -58,7 +58,7 @@ describe( 'dataAPI', () => {
 			try {
 				await get( 'test-type', 'test-identifier', 'test-datapoint' );
 			} catch ( err ) {
-				expect( console ).toHaveWarnedWith( 'WP Error in data response', 'method:GET', 'datapoint:test-datapoint', 'type:test-type', 'identifier:test-identifier', `error:"${ err.message }"` );
+				expect( console ).toHaveWarnedWith( 'WP Error in data response', 'method:GET', 'type:test-type', 'identifier:test-identifier', 'datapoint:test-datapoint', `error:"${ err.message }"` );
 				expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
 				const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 				expect( event ).toEqual( 'event' );
@@ -82,7 +82,7 @@ describe( 'dataAPI', () => {
 			try {
 				await set( 'test-type', 'test-identifier', 'test-datapoint', {} );
 			} catch ( err ) {
-				expect( console ).toHaveWarnedWith( 'WP Error in data response', 'method:POST', 'datapoint:test-datapoint', 'type:test-type', 'identifier:test-identifier', `error:"${ err.message }"` );
+				expect( console ).toHaveWarnedWith( 'WP Error in data response', 'method:POST', 'type:test-type', 'identifier:test-identifier', 'datapoint:test-datapoint', `error:"${ err.message }"` );
 				expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
 				const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 				expect( event ).toEqual( 'event' );

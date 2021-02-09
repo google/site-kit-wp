@@ -176,7 +176,7 @@ const dataAPI = {
 
 	handleWPError( { method, datapoint, type, identifier, error } ) {
 		// eslint-disable-next-line no-console
-		console.warn( 'WP Error in data response', `method:${ method }`, `datapoint:${ datapoint }`, `type:${ type }`, `identifier:${ identifier }`, `error:"${ error.message }"` );
+		console.warn( 'WP Error in data response', `method:${ method }`, `type:${ type }`, `identifier:${ identifier }`, `datapoint:${ datapoint }`, `error:"${ error.message }"` );
 
 		trackAPIError( { method, datapoint, type, identifier, error } );
 
