@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\CLI;
 
 use Google\Site_Kit\Core\Util\Reset;
+use Google\Site_Kit\Core\Util\Reset_Persistent;
 use WP_CLI;
 
 /**
@@ -27,15 +28,27 @@ class Reset_CLI_Command extends CLI_Command {
 	 *
 	 * ## OPTIONS
 	 *
+	 * [--persistent]
+	 * : Remove persistent site kit options too.
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp google-site-kit reset
+	 *     wp google-site-kit reset --persistent
 	 *
 	 * @since 1.11.0
+	 *
+	 * @param Array $args Args.
+	 * @param Array $assoc_args Additional flags.
 	 */
-	public function __invoke() {
+	public function __invoke( $args, $assoc_args ) {
 		$reset = new Reset( $this->context );
 		$reset->all();
+
+		if ( isset( $assoc_args['persistent'] ) && true === $assoc_args['persistent'] ) {
+			$reset_persistent = new Reset_Persistent( $this->context );
+			$reset_persistent->all();
+		}
 
 		WP_CLI::success( 'Settings successfully reset.' );
 	}
