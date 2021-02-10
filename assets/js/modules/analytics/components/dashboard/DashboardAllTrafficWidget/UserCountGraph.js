@@ -51,13 +51,13 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	const X_LARGE_AND_ABOVE_MEDIA_QUERY = '(min-width: 1281px)';
 
 	const [ xSmallOnly, setXSmallOnly ] = useState( global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY ) );
-	const [ mobileToDeskop, setMobileToDeskop ] = useState( global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY ) );
+	const [ mobileToDesktop, setMobileToDesktop ] = useState( global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY ) );
 	const [ xLargeAndAbove, setXLargeAndAbove ] = useState( global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY ) );
 
 	// Watch media queries to adjust the ticks based on the app breakpoints.
 	const updateBreakpoints = () => {
 		setXSmallOnly( global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY ) );
-		setMobileToDeskop( global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY ) );
+		setMobileToDesktop( global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY ) );
 		setXLargeAndAbove( global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY ) );
 	};
 
@@ -113,7 +113,7 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	}
 
 	// On mobile, desktop and tablet devices, include a total of three ticks and increase the outer tick offset with more dense data.
-	if ( mobileToDeskop.matches ) {
+	if ( mobileToDesktop.matches ) {
 		if ( dateRangeNumberOfDays > 28 ) {
 			outerTickOffset = 5;
 		} else if ( dateRangeNumberOfDays > 7 ) {
