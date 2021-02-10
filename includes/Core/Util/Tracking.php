@@ -13,7 +13,13 @@ namespace Google\Site_Kit\Core\Util;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Screen;
 use Google\Site_Kit\Core\Admin\Screens;
+use Google\Site_Kit\Core\REST_API\REST_Route;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use WP_REST_Server;
+use WP_REST_Request;
+use WP_REST_Response;
 
 /**
  * Class managing admin tracking.
@@ -23,6 +29,8 @@ use Google\Site_Kit\Core\Storage\User_Options;
  * @ignore
  */
 final class Tracking {
+
+	use Method_Proxy_Trait;
 
 	const TRACKING_ID = 'UA-130569087-3';
 
@@ -70,10 +78,18 @@ final class Tracking {
 	public function register() {
 		$this->consent->register();
 
+		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
+		add_filter( 'googlesitekit_rest_routes', $this->get_method_proxy( 'get_rest_routes' ) );
+
 		add_filter(
-			'googlesitekit_inline_base_data',
-			function ( $data ) {
-				return $this->inline_js_base_data( $data );
+			'googlesitekit_apifetch_preload_paths',
+			function( $routes ) {
+				return array_merge(
+					$routes,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/core/user/data/tracking',
+					)
+				);
 			}
 		);
 	}
@@ -106,4 +122,60 @@ final class Tracking {
 
 		return $data;
 	}
+
+	/**
+	 * Gets tracking routes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $routes Array of routes.
+	 * @return array Modified array of routes that contains tracking related routes.
+	 */
+	private function get_rest_routes( $routes ) {
+		$valid_user = function() {
+			return is_user_logged_in();
+		};
+
+		$tracking_callback = function( WP_REST_Request $request ) {
+			return new WP_REST_Response(
+				array(
+					'enabled' => $this->is_active(),
+				)
+			);
+		};
+
+		return array_merge(
+			$routes,
+			array(
+				new REST_Route(
+					'core/user/data/tracking',
+					array(
+						array(
+							'methods'             => WP_REST_Server::READABLE,
+							'callback'            => $tracking_callback,
+							'permission_callback' => $valid_user,
+						),
+						array(
+							'methods'             => WP_REST_Server::CREATABLE,
+							'callback'            => function( WP_REST_Request $request ) use ( $tracking_callback ) {
+								$enabled = $request->get_param( 'enabled' );
+								$enabled = filter_var( $enabled, FILTER_VALIDATE_BOOLEAN );
+
+								$this->consent->set( $enabled );
+
+								return $tracking_callback( $request );
+							},
+							'permission_callback' => $valid_user,
+							'args'                => array(
+								'enabled' => array(
+									'type' => 'boolean',
+								),
+							),
+						),
+					)
+				),
+			)
+		);
+	}
+
 }
