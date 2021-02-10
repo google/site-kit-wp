@@ -21,7 +21,7 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-function PageHeader( props ) {
+export default function PageHeader( props ) {
 	const { title, icon, className, status, statusText, fullWidth, children } = props;
 
 	const widthClasses = fullWidth
@@ -97,5 +97,3 @@ PageHeader.defaultProps = {
 	statusText: '',
 	fullWidth: false,
 };
-
-export default PageHeader;
