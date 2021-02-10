@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * Internal dependencies
@@ -27,24 +28,44 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
 import { STORE_NAME } from '../datastore/constants';
+import { Cell, Row } from '../../../material-components';
 
 const { useSelect } = Data;
 
-const WidgetContextRenderer = ( { slug } ) => {
+const WidgetContextRenderer = ( props ) => {
+	const { slug, className, Header, Footer } = props;
+
 	const widgetAreas = useSelect( ( select ) => select( STORE_NAME ).getWidgetAreas( slug ) );
 	const widgetAreasLength = widgetAreas?.length;
 
 	return (
-		<div className="googlesitekit-widget-context">
+		<div className={ classnames( 'googlesitekit-widget-context', className ) }>
+			{ Header && (
+				<Row>
+					<Cell size={ 12 }>
+						<Header />
+					</Cell>
+				</Row>
+			) }
 			{ widgetAreas.map( ( area ) => {
 				return <WidgetAreaRenderer slug={ area.slug } key={ area.slug } totalAreas={ widgetAreasLength } />;
 			} ) }
+			{ Footer && (
+				<Row>
+					<Cell size={ 12 }>
+						<Footer />
+					</Cell>
+				</Row>
+			) }
 		</div>
 	);
 };
 
 WidgetContextRenderer.propTypes = {
 	slug: PropTypes.string.isRequired,
+	className: PropTypes.string,
+	Header: PropTypes.elementType,
+	Footer: PropTypes.elementType,
 };
 
 export default WidgetContextRenderer;
