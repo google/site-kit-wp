@@ -44,6 +44,10 @@
 			letter-spacing: normal;
 			text-transform: none;
 		}
+
+		.googlesitekit-widget__footer {
+			padding-top: 0;
+		}
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__user-count-chart {
@@ -92,7 +96,6 @@
 		}
 
 		.googlesitekit-widget--analyticsAllTraffic__dimensions-container {
-			height: 100%;
 			position: relative;
 		}
 	}
@@ -171,7 +174,7 @@
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__chart {
-		min-height: 400px;
+		min-height: 368px;
 		position: relative;
 	}
 

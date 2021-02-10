@@ -368,14 +368,14 @@ UserDimensionsPieChart.defaultProps = {
 
 UserDimensionsPieChart.chartOptions = {
 	chartArea: {
-		left: 0,
+		left: 'auto',
 		height: 300,
-		top: 50,
+		top: 'auto',
 		width: '100%',
 	},
 	backgroundColor: 'transparent',
 	fontSize: 12,
-	height: 380,
+	height: 368,
 	legend: {
 		position: 'none',
 	},
