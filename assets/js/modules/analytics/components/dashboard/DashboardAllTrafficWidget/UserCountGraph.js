@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -44,6 +45,25 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 	const dateRangeNumberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 	const graphLineColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) || '#1a73e8' );
+
+	const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
+	const MOBILE_TO_DESKOP_MEDIA_QUERY = '(min-width: 451px) and (max-width: 1280px';
+	const X_LARGE_AND_ABOVE_MEDIA_QUERY = '(min-width: 1281px)';
+
+	const [ xSmallOnly, setXSmallOnly ] = useState( global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY ) );
+	const [ mobileToDeskop, setMobileToDeskop ] = useState( global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY ) );
+	const [ xLargeAndAbove, setXLargeAndAbove ] = useState( global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY ) );
+
+	// Watch media queries to adjust the ticks based on the app breakpoints.
+	const updateBreakpoints = () => {
+		setXSmallOnly( global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY ) );
+		setMobileToDeskop( global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY ) );
+		setXLargeAndAbove( global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY ) );
+	};
+
+	useEffect( () => {
+		global.addEventListener( 'resize', updateBreakpoints );
+	}, [] );
 
 	if ( ! loaded ) {
 		// On desktop, the real graph height is 350px, so match that here.
@@ -83,40 +103,35 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	let outerTickOffset = 1;
 	let totalTicks = 2;
 
-	// Watch media queries to adjust the ticks based on the app breakpoints.
-	const xSmallOnly = global.window.matchMedia( '(max-width: 450px)' );
-	const mobileToDeskop = global.window.matchMedia( '(min-width: 451px) and (max-width: 1280px' );
-	const xLargeAndAbove = global.window.matchMedia( '(min-width: 1281px)' );
-
 	// On xsmall devices, increase the outer tick offset on mobile to make both ticks visible without ellipsis.
 	if ( xSmallOnly.matches ) {
-		if ( numberOfDays > 28 ) {
+		if ( dateRangeNumberOfDays > 28 ) {
 			outerTickOffset = 5;
-		} else if ( numberOfDays > 7 ) {
+		} else if ( dateRangeNumberOfDays > 7 ) {
 			outerTickOffset = 2;
 		}
 	}
 
 	// On mobile, desktop and tablet devices, include a total of three ticks and increase the outer tick offset with more dense data.
 	if ( mobileToDeskop.matches ) {
-		if ( numberOfDays > 28 ) {
+		if ( dateRangeNumberOfDays > 28 ) {
 			outerTickOffset = 5;
-		} else if ( numberOfDays > 7 ) {
+		} else if ( dateRangeNumberOfDays > 7 ) {
 			outerTickOffset = 2;
 		}
 
-		if ( numberOfDays > 7 ) {
+		if ( dateRangeNumberOfDays > 7 ) {
 			totalTicks = 3;
 		}
 	}
 
-	// On desktop and larger devices, add a third and fourth tick.
+	// On devices larger than desktop, add a third and fourth tick.
 	if ( xLargeAndAbove.matches ) {
-		if ( numberOfDays > 28 ) {
+		if ( dateRangeNumberOfDays > 28 ) {
 			outerTickOffset = 3;
 		}
 
-		if ( numberOfDays > 7 ) {
+		if ( dateRangeNumberOfDays > 7 ) {
 			totalTicks = 4;
 		}
 	}
@@ -133,7 +148,7 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	totalTicks = totalTicks - 2; // The start and end ticks are already set.
 	while ( totalTicks > 0 ) {
 		const midTick = new Date( endDate );
-		midTick.setDate( new Date( endDate ).getDate() - ( totalTicks * ( numberOfDays / tickDenominator ) ) );
+		midTick.setDate( new Date( endDate ).getDate() - ( totalTicks * ( dateRangeNumberOfDays / tickDenominator ) ) );
 		midTicks.push( midTick );
 
 		totalTicks = totalTicks - 1;
