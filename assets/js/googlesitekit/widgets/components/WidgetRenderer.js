@@ -37,12 +37,14 @@ import { HIDDEN_CLASS } from '../util/constants';
 
 const { useSelect } = Data;
 
-const WidgetRenderer = ( { slug, gridClassName, OverrideComponent, active } ) => {
+const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 	const widget = useSelect( ( select ) => select( STORE_NAME ).getWidget( slug ) );
+	const isWidgetActive = useSelect( ( select ) => select( STORE_NAME ).isWidgetActive( slug ) );
 	const widgetComponentProps = getWidgetComponentProps( slug );
+	const { WidgetNull } = widgetComponentProps;
 
-	if ( ! widget || ! active ) {
-		return <widgetComponentProps.WidgetNull />;
+	if ( ! widget || ! isWidgetActive ) {
+		return <WidgetNull />;
 	}
 
 	const { Component, wrapWidget } = widget;
