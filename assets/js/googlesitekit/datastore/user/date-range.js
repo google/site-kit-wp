@@ -178,7 +178,7 @@ export const selectors = {
 	/**
 	 * Returns the number of days in the current date range.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.26.0
 	 *
 	 * @param {Object} state The current data store's state.
 	 * @return {number}      Integer. The number of days in the current date range.

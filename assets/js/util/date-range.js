@@ -25,7 +25,7 @@ import { _n, sprintf } from '@wordpress/i18n';
  * Gets the current dateRange day count.
  *
  * @since 1.19.0
- * @since n.e.x.t `dateRange` is now a required argument.
+ * @since 1.26.0 `dateRange` is now a required argument.
  *
  * @param {string} dateRange The date range slug.
  * @return {number} The number of days in the range.
