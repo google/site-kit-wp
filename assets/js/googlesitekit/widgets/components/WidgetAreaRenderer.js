@@ -31,7 +31,6 @@ import WidgetRenderer from './WidgetRenderer';
 import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
 import { separateNullWidgets } from '../util/separate-null-widgets';
-import { HIDDEN_CLASS } from '../util/constants';
 const { useSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
@@ -49,7 +48,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		};
 	} );
 
-	const { activeWidgets, inactiveWidgets } = separateNullWidgets( widgets, widgetStates );
+	const { activeWidgets } = separateNullWidgets( widgets, widgetStates );
 
 	if ( activeWidgets.length === 0 ) {
 		return null;
@@ -78,7 +77,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	} );
 
 	// Render all widgets.
-	const widgetsOutput = activeWidgets.map( ( widget, i ) => (
+	const widgetsOutput = widgets.map( ( widget, i ) => (
 		<WidgetRenderer
 			gridClassName={ classnames( gridClassNames[ i ] ) }
 			OverrideComponent={ overrideComponents[ i ] ? () => {
@@ -87,6 +86,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 			} : undefined }
 			key={ widget.slug }
 			slug={ widget.slug }
+			active={ activeWidgets.some( ( { slug: s } ) => s === widget.slug ) }
 		/>
 	) );
 
@@ -129,12 +129,6 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 						</Cell>
 					) }
 				</Row>
-			</div>
-
-			<div className={ `googlesitekit-widget-area-widgets ${ HIDDEN_CLASS }` } >
-				{ inactiveWidgets.map( ( widget ) => (
-					<widget.Component key={ widget.slug } />
-				) ) }
 			</div>
 		</Grid>
 	);
