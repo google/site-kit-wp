@@ -436,22 +436,3 @@ export const decodeHTMLEntity = ( str ) => {
 
 	return unescape( decoded );
 };
-
-/**
- * Gets the meta key for the given user option.
- *
- * @since 1.3.0
- *
- * @param {string} userOptionName         User option name.
- * @param {Object} _googlesitekitBaseData Site Kit base data (used for testing).
- * @return {string} Meta key name.
- */
-export function getMetaKeyForUserOption( userOptionName, _googlesitekitBaseData = global._googlesitekitBaseData ) {
-	const { blogPrefix, isNetworkMode } = _googlesitekitBaseData;
-
-	if ( ! isNetworkMode ) {
-		return blogPrefix + userOptionName;
-	}
-
-	return userOptionName;
-}

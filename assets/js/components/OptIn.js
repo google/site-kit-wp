@@ -21,119 +21,70 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+
 /**
  * WordPress dependencies
  */
-import apiFetch from '@wordpress/api-fetch';
-import { Component } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { getMetaKeyForUserOption, sanitizeHTML } from '../util';
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { sanitizeHTML } from '../util';
+import { toggleTracking, trackEvent } from '../util/tracking';
 import Checkbox from './Checkbox';
-import {
-	isTrackingEnabled,
-	toggleTracking,
-	trackEvent,
-} from '../util/tracking';
+const { useSelect, useDispatch } = Data;
 
-class OptIn extends Component {
-	constructor( props ) {
-		super( props );
+export default function OptIn( { id, name, className, optinAction } ) {
+	const enabled = useSelect( ( select ) => select( CORE_USER ).isTrackingEnabled() );
+	const error = useSelect( ( select ) => select( CORE_USER ).getErrorForAction( 'saveUserTracking', [] ) );
 
-		this.state = {
-			optIn: isTrackingEnabled(),
-			error: false,
-		};
+	const { saveUserTracking } = useDispatch( CORE_USER );
 
-		this.handleOptIn = this.handleOptIn.bind( this );
-	}
-
-	async handleOptIn( e ) {
-		const checked = !! e.target.checked;
-		const trackingUserOptInKey = getMetaKeyForUserOption( 'googlesitekit_tracking_optin' );
+	const handleOptIn = useCallback( async () => {
+		const checked = ! enabled;
 
 		toggleTracking( checked );
-
 		if ( checked ) {
-			await trackEvent( 'tracking_plugin', this.props.optinAction );
+			await trackEvent( 'tracking_plugin', optinAction );
 		}
 
-		try {
-			await apiFetch( {
-				path: '/wp/v2/users/me',
-				method: 'POST',
-				data: {
-					meta: {
-						[ trackingUserOptInKey ]: checked,
-					},
-				},
-			} );
-			this.setState( {
-				optIn: checked,
-				error: false,
-			} );
-		} catch ( err ) {
-			this.setState( {
-				optIn: ! checked,
-				error: {
-					errorCode: err.code,
-					errorMsg: err.message,
-				},
-			} );
-		}
-	}
+		saveUserTracking( ! enabled );
+	}, [ enabled, optinAction ] );
 
-	render() {
-		const {
-			optIn,
-			error,
-		} = this.state;
+	const labelHTML = sprintf(
+		/* translators: %s: privacy policy URL */
+		__( 'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a href="%s" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>', 'google-site-kit' ),
+		'https://policies.google.com/privacy'
+	);
 
-		const {
-			id,
-			name,
-			className,
-		} = this.props;
+	const allowedDOM = {
+		ALLOWED_TAGS: [ 'a' ],
+		ALLOWED_ATTR: [ 'href', 'target', 'rel' ],
+	};
 
-		const labelHTML = sprintf(
-			/* translators: %s: privacy policy URL */
-			__( 'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a href="%s" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>', 'google-site-kit' ),
-			'https://policies.google.com/privacy'
-		);
+	return (
+		<div className={ classnames( 'googlesitekit-opt-in', className ) }>
+			<Checkbox
+				id={ id }
+				name={ name }
+				value="1"
+				checked={ enabled }
+				onChange={ handleOptIn }
+			>
+				<span dangerouslySetInnerHTML={ sanitizeHTML( labelHTML, allowedDOM ) } />
+			</Checkbox>
 
-		return (
-			<div className={ classnames(
-				'googlesitekit-opt-in',
-				className
-			) }>
-				<Checkbox
-					id={ id }
-					name={ name }
-					value="1"
-					checked={ optIn }
-					onChange={ this.handleOptIn }
-				>
-					<span
-						dangerouslySetInnerHTML={ sanitizeHTML(
-							labelHTML,
-							{
-								ALLOWED_TAGS: [ 'a' ],
-								ALLOWED_ATTR: [ 'href', 'target', 'rel' ],
-							}
-						) }
-					/>
-				</Checkbox>
-				{ error &&
+			{ error && (
 				<div className="googlesitekit-error-text">
 					{ error.errorMsg }
 				</div>
-				}
-			</div>
-		);
-	}
+			) }
+		</div>
+	);
 }
 
 OptIn.propTypes = {
@@ -147,5 +98,3 @@ OptIn.defaultProps = {
 	id: 'googlesitekit-opt-in',
 	name: 'optIn',
 };
-
-export default OptIn;

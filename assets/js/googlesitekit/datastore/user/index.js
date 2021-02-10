@@ -28,6 +28,7 @@ import { createErrorStore } from '../../data/create-error-store';
 import notifications from './notifications';
 import permissions from './permissions';
 import userInfo from './user-info';
+import tracking from './tracking';
 import { STORE_NAME } from './constants';
 
 const store = Data.combineStores(
@@ -38,6 +39,7 @@ const store = Data.combineStores(
 	createErrorStore(),
 	notifications,
 	permissions,
+	tracking,
 	userInfo,
 	userInputSettings,
 );
