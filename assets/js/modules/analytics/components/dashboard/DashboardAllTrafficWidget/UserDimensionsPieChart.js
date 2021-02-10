@@ -122,12 +122,18 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 			const { row } = chart.getSelection()?.[ 0 ] || {};
 			if ( row === index ) {
 				chart.setSelection( null );
-				setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '' } );
+				setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
 			} else {
 				chart.setSelection( [ { row: index, column: null } ] );
 
 				if ( newDimensionValue ) {
-					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: newDimensionValue } );
+					setValues(
+						FORM_ALL_TRAFFIC_WIDGET,
+						{
+							dimensionValue: newDimensionValue,
+							dimensionColor: slices[ index ]?.color,
+						}
+					);
 				}
 			}
 		}
