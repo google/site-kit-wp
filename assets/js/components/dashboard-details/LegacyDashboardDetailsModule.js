@@ -1,5 +1,5 @@
 /**
- * DashboardDetailsModules component.
+ * LegacyDashboardDetailsModule component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,22 +17,18 @@
  */
 
 /**
- * Internal dependencies
- */
-import DashboardDetailsModule from './dashboard-details-module';
-/**
  * WordPress dependencies
  */
+import { withFilters } from '@wordpress/components';
 import { Component } from '@wordpress/element';
 
-class DashboardDetailsModules extends Component {
+/**
+ * A single module. Keeps track of its own active state and settings.
+ */
+class LegacyDashboardDetailsModule extends Component {
 	render() {
-		return (
-			<DashboardDetailsModule
-				key={ 'googlesitekit-dashboard-details-module' }
-			/>
-		);
+		return null;
 	}
 }
 
-export default DashboardDetailsModules;
+export default withFilters( 'googlesitekit.DashboardDetailsModule' )( LegacyDashboardDetailsModule );

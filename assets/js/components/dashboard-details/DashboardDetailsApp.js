@@ -20,23 +20,24 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
+import LegacyDashboardDetailsModule from './LegacyDashboardDetailsModule';
+import DashboardDetailsHeader from './DashboardDetailsHeader';
+import DashboardDetailsFooter from './DashboardDetailsFooter';
 import Header from '../Header';
-import Link from '../Link';
 import DateRangeSelector from '../DateRangeSelector';
-import PageHeader from '../PageHeader';
-import HelpLink from '../HelpLink';
-import DashboardDetailsEntityView from './DashboardDetailsEntityView';
-import DashboardDetailsEntityNotFoundView from './DashboardDetailsEntityNotFoundView';
+import { Grid, Row, Cell } from '../../material-components/layout';
+import { useFeature } from '../../hooks/useFeature';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function DashboardDetailsApp() {
+	const pageDashboardWidgetsEnabled = useFeature( 'widgets.pageDashboard' );
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
@@ -49,43 +50,32 @@ export default function DashboardDetailsApp() {
 			<Header>
 				{ currentEntityURL && <DateRangeSelector /> }
 			</Header>
-			<div className="googlesitekit-module-page">
-				<div className="googlesitekit-dashboard-single-url">
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-2-phone
-								mdc-layout-grid__cell--span-4-tablet
-								mdc-layout-grid__cell--span-8-desktop
-							">
-								<Link href={ dashboardURL } inherit back small>
-									{ __( 'Back to the Site Kit Dashboard', 'google-site-kit' ) }
-								</Link>
 
-								<PageHeader
-									title={ __( 'Detailed Page Stats', 'google-site-kit' ) }
-									className="
-										googlesitekit-heading-2
-										googlesitekit-dashboard-single-url__heading
-									"
-									fullWidth
-								/>
-							</div>
+			{ pageDashboardWidgetsEnabled && (
+				<WidgetContextRenderer
+					slug={ currentEntityURL ? 'pageDashboard' : 'pageDashboardNotFound' }
+					className="googlesitekit-module-page googlesitekit-dashboard-single-url"
+					Header={ DashboardDetailsHeader }
+					Footer={ DashboardDetailsFooter }
+				/>
+			) }
 
-							{ currentEntityURL && <DashboardDetailsEntityView /> }
-							{ ! currentEntityURL && <DashboardDetailsEntityNotFoundView /> }
-
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								mdc-layout-grid__cell--align-right
-							">
-								<HelpLink />
-							</div>
-						</div>
-					</div>
-				</div>
+			<div className="googlesitekit-module-page googlesitekit-dashboard-single-url">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<DashboardDetailsHeader />
+						</Cell>
+						{ currentEntityURL && (
+							<LegacyDashboardDetailsModule
+								key={ 'googlesitekit-dashboard-details-module' }
+							/>
+						) }
+						<Cell size={ 12 }>
+							<DashboardDetailsFooter />
+						</Cell>
+					</Row>
+				</Grid>
 			</div>
 		</Fragment>
 	);
