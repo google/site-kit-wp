@@ -1,4 +1,4 @@
-=== Site Kit by Google ===
+=== Site Kit - Analytics, Search Console, AdSense, Speed ===
 
 Contributors:      google
 Requires at least: 4.7
