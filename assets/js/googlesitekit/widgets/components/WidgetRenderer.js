@@ -43,7 +43,7 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 	const widgetComponentProps = getWidgetComponentProps( slug );
 	const { WidgetNull } = widgetComponentProps;
 
-	if ( ! widget || ! isWidgetActive ) {
+	if ( ! widget ) {
 		return <WidgetNull />;
 	}
 
@@ -66,6 +66,12 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 					{ widgetElement }
 				</div>
 			</Fragment>
+		);
+	} else if ( ! isWidgetActive ) {
+		return (
+			<div className={ HIDDEN_CLASS }>
+				{ widgetElement }
+			</div>
 		);
 	} else if ( wrapWidget ) {
 		// Otherwise, wrap the component only if that is requested for this
