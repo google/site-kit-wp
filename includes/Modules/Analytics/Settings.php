@@ -195,6 +195,9 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				if ( isset( $option['useSnippet'] ) ) {
 					$option['useSnippet'] = (bool) $option['useSnippet'];
 				}
+				if ( isset( $option['canUseSnippet'] ) ) {
+					$option['canUseSnippet'] = (bool) $option['canUseSnippet'];
+				}
 				if ( isset( $option['anonymizeIP'] ) ) {
 					$option['anonymizeIP'] = (bool) $option['anonymizeIP'];
 				}
