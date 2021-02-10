@@ -40,6 +40,7 @@ import { numberFormat, sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import PreviewBlock from '../../../../../components/PreviewBlock';
+import Link from '../../../../../components/Link';
 const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( { dimensionName, dimensionValue, sourceLink, loaded, report } ) {
@@ -105,6 +106,32 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 			setSelectable( false );
 		} );
 	}, [ chartID, dimensionName, setValues ] );
+
+	const onLegendClick = useCallback( ( index ) => {
+		const chartData = GoogleChart.charts.get( chartID );
+		const { chart, dataTable } = chartData || {};
+
+		if ( chart ) {
+			const newDimensionValue = dataTable.getValue( index, 0 );
+			const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
+
+			if ( isOthers ) {
+				return;
+			}
+
+			const { row } = chart.getSelection()?.[ 0 ] || {};
+			if ( row === index ) {
+				chart.setSelection( null );
+				setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '' } );
+			} else {
+				chart.setSelection( [ { row: index, column: null } ] );
+
+				if ( newDimensionValue ) {
+					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: newDimensionValue } );
+				}
+			}
+		}
+	}, [ chartID, setValues ] );
 
 	useEffect( () => {
 		if ( ! chartLoaded ) {
@@ -257,36 +284,71 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 		options.pieSliceTextStyle.color = 'transparent';
 	}
 
+	const { slices } = UserDimensionsPieChart.chartOptions;
+
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
-			<PreviewBlock
-				className={ classnames( {
-					'googlesitekit-widget--analyticsAllTraffic__dimensions--not-loading': loaded,
-					'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
+			<div className="googlesitekit-widget--analyticsAllTraffic__chart">
+				<PreviewBlock
+					className={ classnames( {
+						'googlesitekit-widget--analyticsAllTraffic__dimensions--not-loading': loaded,
+						'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
+					} ) }
+					width="300px"
+					height="300px"
+					shape="circular"
+				/>
+				<div className={ classnames(
+					'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
+					{
+						'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
+						'googlesitekit-widget--analyticsAllTraffic__selectable': selectable,
+					}
+				) }>
+					<GoogleChart
+						chartID={ chartID }
+						chartType="pie"
+						options={ options }
+						data={ dataMap || [] }
+						loadHeight={ 50 }
+						onReady={ onReady }
+					/>
+
+					<div
+						className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
+						dangerouslySetInnerHTML={ title }
+					/>
+				</div>
+			</div>
+
+			<div className="googlesitekit-widget--analyticsAllTraffic__legend">
+				{ dataMap?.slice( 1 ).map( ( [ label ], i ) => {
+					const isActive = label === dimensionValue;
+					const sliceColor = slices[ i ]?.color;
+					const isOthers = __( 'Others', 'google-site-kit' ) === label;
+
+					return (
+						<Link
+							key={ label }
+							onClick={ () => onLegendClick( i ) }
+							className={ classnames(
+								'googlesitekit-widget--analyticsAllTraffic__legend-slice',
+								{
+									'googlesitekit-widget--analyticsAllTraffic__legend-active': isActive,
+									'googlesitekit-widget--analyticsAllTraffic__legend-others': isOthers,
+								}
+							) }
+						>
+							<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: sliceColor } } />
+
+							<span className="googlesitekit-widget--analyticsAllTraffic__label" data-label={ label }>
+								{ label }
+							</span>
+
+							<span className="googlesitekit-widget--analyticsAllTraffic__underlay" style={ { backgroundColor: sliceColor } } />
+						</Link>
+					);
 				} ) }
-				width="300px"
-				height="300px"
-				shape="circular"
-			/>
-			<div className={ classnames(
-				'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
-				{
-					'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
-					'googlesitekit-widget--analyticsAllTraffic__selectable': selectable,
-				}
-			) }>
-				<GoogleChart
-					chartID={ chartID }
-					chartType="pie"
-					options={ options }
-					data={ dataMap || [] }
-					loadHeight={ 50 }
-					onReady={ onReady }
-				/>
-				<div
-					className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
-					dangerouslySetInnerHTML={ title }
-				/>
 			</div>
 		</div>
 	);
@@ -315,12 +377,7 @@ UserDimensionsPieChart.chartOptions = {
 	fontSize: 12,
 	height: 380,
 	legend: {
-		alignment: 'center',
-		position: 'bottom',
-		textStyle: {
-			color: 'black',
-			fontSize: 12,
-		},
+		position: 'none',
 	},
 	pieHole: 0.6,
 	pieSliceTextStyle: {
