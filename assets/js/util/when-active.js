@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { createElement } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -50,24 +45,26 @@ export default function whenActive( {
 	FallbackComponent,
 	IncompleteComponent = null,
 } ) {
-	return ( wrappedComponent ) => {
-		const whenActiveComponent = ( props ) => {
+	return ( WrappedComponent ) => {
+		WrappedComponent.count = WrappedComponent.count || 0;
+		const WhenActiveComponent = ( props ) => {
+			const count = WrappedComponent.count + 1;
+			// if ( count > 150 ) {
+			// 	debugger;
+			// }
+			// global.console.log( WrappedComponent.name, { count, moduleName, FallbackComponent, IncompleteComponent } );
+			WrappedComponent.count = count;
+			const { WidgetNull } = props;
 			// The following eslint rule is disabled because it treats the following hook as such that doesn't adhere
 			// the "rules of hooks" which is incorrect because the following hook is a valid one.
-
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleName ) );
-
-			const WhenFallbackComponent = FallbackComponent ? FallbackComponent : props.WidgetNull;
-
-			if ( WhenFallbackComponent === undefined ) {
-				console.log( WhenFallbackComponent, props.WidgetNull ); // eslint-disable-line no-console
-				return <div />;
-			}
+			// global.console.log( { moduleName, FallbackComponent, WidgetNull } ); // eslint-disable-line no-console
+			const WhenFallbackComponent = FallbackComponent || WidgetNull;
 
 			// Return <WidgetNull /> if the module is not loaded yet or doesn't exist.
 			if ( ! module ) {
-				return <props.WidgetNull />;
+				return null;
 			}
 
 			// Return a fallback if the module is not active.
@@ -87,14 +84,14 @@ export default function whenActive( {
 			}
 
 			// Return the active and connected component.
-			return createElement( wrappedComponent, props );
+			return <WrappedComponent { ...props } />;
 		};
 
-		whenActiveComponent.displayName = `When${ kebabCaseToPascalCase( moduleName ) }Active`;
-		if ( wrappedComponent.displayName || wrappedComponent.name ) {
-			whenActiveComponent.displayName += `(${ wrappedComponent.displayName || wrappedComponent.name })`;
+		WhenActiveComponent.displayName = `When${ kebabCaseToPascalCase( moduleName ) }Active`;
+		if ( WrappedComponent.displayName || WrappedComponent.name ) {
+			WhenActiveComponent.displayName += `(${ WrappedComponent.displayName || WrappedComponent.name })`;
 		}
 
-		return whenActiveComponent;
+		return WhenActiveComponent;
 	};
 }
