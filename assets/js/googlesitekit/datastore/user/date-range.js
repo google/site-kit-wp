@@ -176,6 +176,20 @@ export const selectors = {
 	},
 
 	/**
+	 * Returns the number of days in the current date range.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state The current data store's state.
+	 * @return {number}      Integer. The number of days in the current date range.
+	 */
+	getDateRangeNumberOfDays( state ) {
+		const dateRange = selectors.getDateRange( state );
+		const matches = dateRange.match( /-(\d+)-/ );
+		return parseInt( matches ? matches[ 1 ] : 28, 10 );
+	},
+
+	/**
 	 * Returns the current reference date, typically today.
 	 *
 	 * @since 1.22.0
