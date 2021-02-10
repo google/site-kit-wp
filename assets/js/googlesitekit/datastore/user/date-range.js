@@ -185,8 +185,8 @@ export const selectors = {
 	 */
 	getDateRangeNumberOfDays( state ) {
 		const dateRange = selectors.getDateRange( state );
-		const matches = dateRange.match( '-(\d+)-' );
-		return Number( matches ? matches[ 1 ] : 28 );
+		const matches = dateRange.match( '-(.*)-' );
+		return parseInt( matches ? matches[ 1 ] : 28, 10 );
 	},
 
 	/**
