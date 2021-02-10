@@ -53,3 +53,23 @@ function withWidgetSlug( widgetSlug ) {
 		return WithWidgetSlug;
 	};
 }
+
+/**
+ * Gets the props and passes them to the widget's component through a HOC.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} widgetSlug The slug of the widget.
+ * @return {Function} Enhancing function that adds the getWidgetComponentProps to the passed component.
+ */
+export const withWidgetComponentProps = ( widgetSlug ) => {
+	const widgetComponentProps = getWidgetComponentProps( widgetSlug );
+	return ( WrappedComponent ) => {
+		const DecoratedComponent = ( props ) => <WrappedComponent { ...props } { ...widgetComponentProps } />;
+		DecoratedComponent.displayName = 'WithWidgetComponentProps';
+		if ( WrappedComponent.displayName || WrappedComponent.name ) {
+			DecoratedComponent.displayName += `(${ WrappedComponent.displayName || WrappedComponent.name })`;
+		}
+		return DecoratedComponent;
+	};
+};

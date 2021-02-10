@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { deactivatePlugin, activatePlugin, createURL } from '@wordpress/e2e-test-utils';
+import { deactivatePlugin, createURL } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
@@ -37,7 +37,6 @@ let mockBatchResponse;
 describe( 'AMP Admin Bar compatibility', () => {
 	beforeAll( async () => {
 		await setupSiteKit();
-		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
 		await activateAMPWithMode( 'primary' );
 
 		await page.setRequestInterception( true );
