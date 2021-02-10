@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import HelpLink from '../HelpLink';
+import HelpLink from './HelpLink';
 
 export default function PageFooter() {
 	return (

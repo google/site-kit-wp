@@ -28,7 +28,7 @@ import classnames from 'classnames';
 import Data from 'googlesitekit-data';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
 import { STORE_NAME } from '../datastore/constants';
-import { Cell, Row } from '../../../material-components';
+import { Grid, Row, Cell } from '../../../material-components';
 
 const { useSelect } = Data;
 
@@ -41,21 +41,25 @@ const WidgetContextRenderer = ( props ) => {
 	return (
 		<div className={ classnames( 'googlesitekit-widget-context', className ) }>
 			{ Header && (
-				<Row>
-					<Cell size={ 12 }>
-						<Header />
-					</Cell>
-				</Row>
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<Header />
+						</Cell>
+					</Row>
+				</Grid>
 			) }
 			{ widgetAreas.map( ( area ) => {
 				return <WidgetAreaRenderer slug={ area.slug } key={ area.slug } totalAreas={ widgetAreasLength } />;
 			} ) }
 			{ Footer && (
-				<Row>
-					<Cell size={ 12 }>
-						<Footer />
-					</Cell>
-				</Row>
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<Footer />
+						</Cell>
+					</Row>
+				</Grid>
 			) }
 		</div>
 	);
