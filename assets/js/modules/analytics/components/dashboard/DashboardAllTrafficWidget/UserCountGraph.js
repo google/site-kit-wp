@@ -85,9 +85,7 @@ export default function UserCountGraph( { loaded, error, report } ) {
 
 	// Watch media queries to adjust the ticks based on the app breakpoints.
 	const xSmallOnly = global.window.matchMedia( '(max-width: 450px)' );
-	const mobileOnly = global.window.matchMedia( '(min-width: 451px) and (max-width: 600px)' );
-	const tabletOnly = global.window.matchMedia( '(min-width: 601px) and (max-width: 960px)' );
-	const desktopOnly = global.window.matchMedia( '(min-width: 961px) and (max-width: 1280px' );
+	const mobileToDeskop = global.window.matchMedia( '(min-width: 451px) and (max-width: 1280px' );
 	const xLargeAndAbove = global.window.matchMedia( '(min-width: 1281px)' );
 
 	// On xsmall devices, increase the outer tick offset on mobile to make both ticks visible without ellipsis.
@@ -99,21 +97,8 @@ export default function UserCountGraph( { loaded, error, report } ) {
 		}
 	}
 
-	// On mobile devices, include a total of three ticks and increase the outer tick offset with more dense data.
-	if ( mobileOnly.matches ) {
-		if ( numberOfDays > 28 ) {
-			outerTickOffset = 5;
-		} else if ( numberOfDays > 7 ) {
-			outerTickOffset = 2;
-		}
-
-		if ( numberOfDays > 7 ) {
-			totalTicks = 3;
-		}
-	}
-
-	// On tablet devices, include a total of three ticks and increase the outer tick offset with more dense data.
-	if ( tabletOnly.matches || desktopOnly.matches ) {
+	// On mobile, desktop and tablet devices, include a total of three ticks and increase the outer tick offset with more dense data.
+	if ( mobileToDeskop.matches ) {
 		if ( numberOfDays > 28 ) {
 			outerTickOffset = 5;
 		} else if ( numberOfDays > 7 ) {
