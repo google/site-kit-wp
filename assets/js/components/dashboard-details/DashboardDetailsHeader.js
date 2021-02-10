@@ -55,7 +55,7 @@ export default function DashboardDetailsHeader() {
 				fullWidth
 			/>
 
-			<Layout>
+			<Layout className="googlesitekit-dashboard-single-url__entity-header">
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
