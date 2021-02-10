@@ -1,5 +1,5 @@
 /**
- * DashboardModules component.
+ * DashboardHeader component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,38 +17,20 @@
  */
 
 /**
- * External dependencies
- */
-import { Fragment } from 'react';
-
-/**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import HelpLink from '../HelpLink';
-import DashboardModule from './dashboard-module';
+import PageHeader from '../PageHeader';
 
-class DashboardModules extends Component {
-	render() {
-		return (
-			<Fragment>
-				<DashboardModule
-					key={ 'googlesitekit-dashboard-module' }
-				/>
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-					mdc-layout-grid__cell--align-right
-				">
-					<HelpLink />
-				</div>
-			</Fragment>
-		);
-	}
+export default function DashboardHeader() {
+	return (
+		<PageHeader
+			className="googlesitekit-heading-2 googlesitekit-dashboard__heading"
+			title={ __( 'Site Overview', 'google-site-kit' ) }
+		/>
+	);
 }
-
-export default DashboardModules;
