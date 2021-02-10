@@ -42,7 +42,7 @@ const { useSelect } = Data;
 
 export default function UserCountGraph( { loaded, error, report } ) {
 	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
-	const numberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
+	const dateRangeNumberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 	const graphLineColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) || '#1a73e8' );
 
 	if ( ! loaded ) {
