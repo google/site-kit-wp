@@ -109,9 +109,13 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	// On xsmall devices, increase the outer tick offset on mobile to make both ticks visible without ellipsis.
 	if ( xSmallOnly.matches ) {
 		if ( dateRangeNumberOfDays > 28 ) {
-			outerTickOffset = 5;
+			outerTickOffset = 8;
 		} else if ( dateRangeNumberOfDays > 7 ) {
-			outerTickOffset = 2;
+			outerTickOffset = 3;
+		}
+
+		if ( dateRangeNumberOfDays > 7 ) {
+			totalTicks = 3;
 		}
 	}
 
@@ -131,7 +135,7 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	// On devices larger than desktop, add a third and fourth tick.
 	if ( xLargeAndAbove.matches ) {
 		if ( dateRangeNumberOfDays > 28 ) {
-			outerTickOffset = 3;
+			outerTickOffset = 5;
 		}
 
 		if ( dateRangeNumberOfDays > 7 ) {
