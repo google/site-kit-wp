@@ -64,7 +64,7 @@ describe( 'modules/adsense Ad Units', () => {
 
 				const initialAdUnits = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
 
-				expect( initialAdUnits ).toEqual( undefined );
+				expect( initialAdUnits ).toBeUndefined();
 				await untilResolved( registry, STORE_NAME ).getAdUnits( accountID, clientID );
 
 				const adunits = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
