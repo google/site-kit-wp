@@ -26,7 +26,7 @@ import TabBar from '@material/react-tab-bar';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,6 +36,7 @@ import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 import PreviewBlock from '../../../../../components/PreviewBlock';
+import { Select, Option } from '../../../../../material-components';
 const { useDispatch } = Data;
 
 export default function DimensionTabs( { dimensionName, loaded } ) {
@@ -77,22 +78,46 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 	}
 
 	return (
-		<TabBar
-			activeIndex={ activeTab }
-			handleActiveIndexUpdate={ handleTabUpdate }
-		>
-			{
-				tabs.map( ( tab ) => (
-					<Tab
-						key={ tab.dimensionName }
-						className="mdc-tab--min-width"
-						focusOnActivate={ false }
-					>
-						<span className="mdc-tab__text-label">{ tab.tabText }</span>
-					</Tab>
-				) )
-			}
-		</TabBar>
+		<Fragment>
+			<div className="googlesitekit-widget--analyticsAllTraffic__tabs">
+				<TabBar
+					activeIndex={ activeTab }
+					handleActiveIndexUpdate={ handleTabUpdate }
+				>
+					{
+						tabs.map( ( tab ) => (
+							<Tab
+								key={ tab.dimensionName }
+								className="mdc-tab--min-width"
+								focusOnActivate={ false }
+							>
+								<span className="mdc-tab__text-label">{ tab.tabText }</span>
+							</Tab>
+						) )
+					}
+				</TabBar>
+			</div>
+
+			<div className="googlesitekit-widget--analyticsAllTraffic__tabs--small">
+				<Select
+					enhanced
+					onEnhancedChange={ handleTabUpdate }
+					outlined
+					value={ `dimension-name-${ activeTab }` }
+				>
+					{
+						tabs.map( ( tab, index ) => (
+							<Option
+								key={ index }
+								value={ `dimension-name-${ index }` }
+							>
+								{ tab.tabText }
+							</Option>
+						) )
+					}
+				</Select>
+			</div>
+		</Fragment>
 	);
 }
 
