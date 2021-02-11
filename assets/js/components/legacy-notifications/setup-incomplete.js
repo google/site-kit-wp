@@ -46,7 +46,7 @@ export default getSetupIncompleteComponent;
 /**
  * Creates a CTA component when module needs to be activated. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
  *
- * @since n.e.x.t
+ * @since 1.26.0
  *
  * @param {string}  module     Module slug.
  * @param {boolean} inGrid     Creates layout to fit within an existing grid with 'cell' classes. Default is half-width grid cells. Default: false.

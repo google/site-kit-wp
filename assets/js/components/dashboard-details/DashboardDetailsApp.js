@@ -60,23 +60,25 @@ export default function DashboardDetailsApp() {
 				/>
 			) }
 
-			<div className="googlesitekit-module-page googlesitekit-dashboard-single-url">
-				<Grid>
-					<Row>
-						<Cell size={ 12 }>
-							<DashboardDetailsHeader />
-						</Cell>
-						{ currentEntityURL && (
-							<LegacyDashboardDetailsModule
-								key={ 'googlesitekit-dashboard-details-module' }
-							/>
-						) }
-						<Cell size={ 12 }>
-							<DashboardDetailsFooter />
-						</Cell>
-					</Row>
-				</Grid>
-			</div>
+			{ ! pageDashboardWidgetsEnabled && (
+				<div className="googlesitekit-module-page googlesitekit-dashboard-single-url">
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<DashboardDetailsHeader />
+							</Cell>
+							{ currentEntityURL && (
+								<LegacyDashboardDetailsModule
+									key={ 'googlesitekit-dashboard-details-module' }
+								/>
+							) }
+							<Cell size={ 12 }>
+								<DashboardDetailsFooter />
+							</Cell>
+						</Row>
+					</Grid>
+				</div>
+			) }
 		</Fragment>
 	);
 }

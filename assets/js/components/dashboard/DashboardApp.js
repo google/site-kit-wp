@@ -54,21 +54,23 @@ export default function DashboardApp() {
 				/>
 			) }
 
-			<div className="googlesitekit-module-page googlesitekit-dashboard">
-				<Grid>
-					<Row>
-						<Cell size={ 12 }>
-							<DashboardHeader />
-						</Cell>
-						<LegacyDashboardModule
-							key={ 'googlesitekit-dashboard-module' }
-						/>
-						<Cell size={ 12 }>
-							<DashboardFooter />
-						</Cell>
-					</Row>
-				</Grid>
-			</div>
+			{ ! dashboardWidgetsEnabled && (
+				<div className="googlesitekit-module-page googlesitekit-dashboard">
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<DashboardHeader />
+							</Cell>
+							<LegacyDashboardModule
+								key={ 'googlesitekit-dashboard-module' }
+							/>
+							<Cell size={ 12 }>
+								<DashboardFooter />
+							</Cell>
+						</Row>
+					</Grid>
+				</div>
+			) }
 		</Fragment>
 	);
 }
