@@ -47,10 +47,6 @@ describe( 'modules/adsense Ad Units', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	describe( 'actions', () => {
-
-	} );
-
 	describe( 'selectors', () => {
 		describe( 'getAdUnits', () => {
 			it( 'uses a resolver to make a network request', async () => {

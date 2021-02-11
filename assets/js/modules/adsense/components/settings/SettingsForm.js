@@ -74,11 +74,6 @@ export default function SettingsForm() {
 		<div className="googlesitekit-adsense-settings-fields">
 			<ErrorNotices />
 
-			<UseSnippetSwitch
-				checkedMessage={ checkedMessage }
-				uncheckedMessage={ uncheckedMessage }
-			/>
-
 			{ webStoriesActive && (
 				<Fragment>
 					<WebStoriesAdUnitSelect />
@@ -96,6 +91,11 @@ export default function SettingsForm() {
 					</p>
 				</Fragment>
 			) }
+
+			<UseSnippetSwitch
+				checkedMessage={ checkedMessage }
+				uncheckedMessage={ uncheckedMessage }
+			/>
 		</div>
 	);
 }

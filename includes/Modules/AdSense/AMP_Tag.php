@@ -131,14 +131,14 @@ class AMP_Tag extends Module_AMP_Tag {
 							{
 								"type": "adsense",
 								"data-ad-client": "%s",
-								"data-ad-slot": "00000000"
+								"data-ad-slot": "%s"
 							}
 						}
 					</script>
 				</amp-story-auto-ads>
 			',
-			$this->tag_id, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			$this->story_ad_slot_id // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			esc_js( $this->tag_id ),
+			esc_js( $this->story_ad_slot_id )
 		);
 	}
 }
