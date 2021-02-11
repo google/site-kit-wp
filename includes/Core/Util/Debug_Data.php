@@ -376,7 +376,7 @@ class Debug_Data {
 	/**
 	 * Gets the available features.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.26.0
 	 *
 	 * @return array
 	 */
