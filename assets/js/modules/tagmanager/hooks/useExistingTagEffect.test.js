@@ -20,10 +20,12 @@
  * Internal dependencies
  */
 import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
-import { createTestRegistry, untilResolved } from '../../../../../tests/js/utils';
+import { createTestRegistry, provideModules, provideSiteInfo, untilResolved } from '../../../../../tests/js/utils';
 import { STORE_NAME, CONTEXT_WEB } from '../datastore/constants';
 import * as factories from '../datastore/__factories__';
-import * as fixtures from '../datastore/__fixtures__';
+import {
+	createBuildAndReceivers,
+} from '../datastore/__factories__/utils';
 import useExistingTagEffect from './useExistingTagEffect';
 
 describe( 'useExistingTagEffect', () => {
@@ -34,6 +36,16 @@ describe( 'useExistingTagEffect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		// Set set no existing tag.
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+
+		// Provide an activated Analytics module.
+		provideModules( registry, [ {
+			slug: 'analytics',
+			name: 'Analytics',
+			active: true,
+			connected: true,
+			setupComplete: true,
+			SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
+		} ] );
 	} );
 
 	it( 'sets the accountID and containerID when there is an existing tag with permission', async () => {
@@ -44,10 +56,6 @@ describe( 'useExistingTagEffect', () => {
 			// eslint-disable-next-line sitekit/acronym-case
 			3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }
 		);
-		const internalContainerID = containers[ 1 ].containerId; // eslint-disable-line sitekit/acronym-case
-		const liveContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
-		registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } );
-
 		const [ firstContainer, existingContainer ] = containers;
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
@@ -56,6 +64,14 @@ describe( 'useExistingTagEffect', () => {
 		registry.dispatch( STORE_NAME ).setContainerID( firstContainer.publicId );
 		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setInternalContainerID( firstContainer.containerId );
+
+		// Loop through each container and set up the relevant tag.
+		containers.forEach( ( container ) => {
+			// eslint-disable-next-line sitekit/acronym-case
+			const liveContainerVersion = factories.buildLiveContainerVersionWeb( { accountID: container.accountId, propertyID: container.publicId } );
+			// eslint-disable-next-line sitekit/acronym-case
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersion, { accountID: container.accountId, internalContainerID: container.containerId } );
+		} );
 
 		let rerender;
 		await act( () => new Promise( async ( resolve ) => {
@@ -84,5 +100,41 @@ describe( 'useExistingTagEffect', () => {
 		expect( registry.select( STORE_NAME ).getContainerID() ).toBe( existingContainer.publicId );
 		// eslint-disable-next-line sitekit/acronym-case
 		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( existingContainer.containerId );
+	} );
+
+	it( 'sets the gaPropertyId when property ID exists and analytics is active', async () => {
+		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
+
+		const WEB_PROPERTY_ID = 'UA-123456789-1';
+		const AMP_PROPERTY_ID = 'UA-987654321-9';
+
+		buildAndReceiveWebAndAMP( {
+			webPropertyID: WEB_PROPERTY_ID,
+			ampPropertyID: AMP_PROPERTY_ID,
+		} );
+
+		let rerender;
+
+		await act( () => new Promise( async ( resolve ) => {
+			( { rerender } = renderHook( () => useExistingTagEffect(), { registry } ) );
+			resolve();
+		} ) );
+
+		const gaPropertyID = registry.select( STORE_NAME ).getGaPropertyID();
+
+		expect( gaPropertyID ).toBe( WEB_PROPERTY_ID );
+
+		await act( () => new Promise( async ( resolve ) => {
+			act( () => {
+				provideSiteInfo( registry, {
+					ampMode: 'primary',
+				} );
+			} );
+			rerender();
+			resolve();
+		} ) );
+		const gaAMPPropertyID = registry.select( STORE_NAME ).getGaAMPPropertyID();
+
+		expect( gaAMPPropertyID ).toBe( AMP_PROPERTY_ID );
 	} );
 } );
