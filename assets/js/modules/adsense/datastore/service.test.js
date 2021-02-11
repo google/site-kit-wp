@@ -141,6 +141,13 @@ describe( 'module/adsense service store', () => {
 				registry.dispatch( STORE_NAME ).setSettings( settings );
 			} );
 
+			it( 'should return undefined if accountID is undefined', () => {
+				registry.dispatch( STORE_NAME ).setSettings( { accountID: undefined } );
+
+				const url = registry.select( STORE_NAME ).getServiceReportURL();
+				expect( url ).toBeUndefined();
+			} );
+
 			it( 'should construct the correct `path` for the URL', () => {
 				const correctPath = `${ settings.accountID }/reporting`;
 
