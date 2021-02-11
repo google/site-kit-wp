@@ -129,13 +129,11 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero } ) {
 			break;
 	}
 
-	let reportArgs = {};
+	const reportArgs = generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } );
+
 	if ( entityURL ) {
-		reportArgs = {
-			'explorer-table.plotKeys': '[]',
-			'_r.drilldown': `analytics.pagePath:${ getURLPath( entityURL ) }`,
-			...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
-		};
+		reportArgs[ 'explorer-table.plotKeys' ] = '[]';
+		reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath( entityURL ) }`;
 	}
 
 	const serviceReportURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( reportType, reportArgs ) );
