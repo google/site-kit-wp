@@ -108,7 +108,7 @@ describe( 'modules/adsense Ad Units', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const adunits = registry.select( STORE_NAME ).getAdUnits( fakeAccountID, fakeClientID );
-				expect( adunits ).toEqual( undefined );
+				expect( adunits ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );
 		} );
