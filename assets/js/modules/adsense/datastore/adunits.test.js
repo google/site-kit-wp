@@ -60,7 +60,7 @@ describe( 'modules/adsense Ad Units', () => {
 
 				const initialAdUnits = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
 
-				expect( initialAdUnits ).toEqual( undefined );
+				expect( initialAdUnits ).toBeUndefined();
 				await untilResolved( registry, STORE_NAME ).getAdUnits( accountID, clientID );
 
 				const adunits = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
@@ -104,7 +104,7 @@ describe( 'modules/adsense Ad Units', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const adunits = registry.select( STORE_NAME ).getAdUnits( fakeAccountID, fakeClientID );
-				expect( adunits ).toEqual( undefined );
+				expect( adunits ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );
 		} );
