@@ -225,6 +225,32 @@ describe( 'core/user date-range', () => {
 			} );
 		} );
 
+		describe( 'getDateRangeNumberOfDays', () => {
+			const createNumberOfDaysTest = ( dateRange, expectedNumberOfDays ) => {
+				registry.dispatch( STORE_NAME ).setDateRange( dateRange );
+				expect( registry.select( STORE_NAME ).getDateRangeNumberOfDays() )
+					.toEqual( expectedNumberOfDays );
+			};
+
+			describe( 'with date range', () => {
+				// [ dateRange, expectedNumberOfDays ]
+				const valuesToTest = [
+					[ 'last-1-days', 1 ],
+					[ 'last-3-days', 3 ],
+					[ 'last-7-days', 7 ],
+					[ 'last-1-days', 1 ],
+					[ 'last-3-days', 3 ],
+					[ 'last-7-days', 7 ],
+					[ 'last-28-days', 28 ],
+					[ 'last-90-days', 90 ],
+				];
+
+				it.each( valuesToTest )( 'should return proper number of days for "%s"', ( dateRange, expectedNumberOfDays ) => {
+					createNumberOfDaysTest( dateRange, expectedNumberOfDays );
+				} );
+			} );
+		} );
+
 		describe( 'getReferenceDate', () => {
 			it( 'should return the reference date once set', () => {
 				const someReferenceDate = '2020-08-04';

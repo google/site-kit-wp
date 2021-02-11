@@ -170,7 +170,7 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 
 		trackAPIError( { method, datapoint, type, identifier, error } );
 		dispatchAPIError( error );
-		global.console.error( 'Google Site Kit API Error', error );
+		global.console.error( 'Google Site Kit API Error', `method:${ method }`, `datapoint:${ datapoint }`, `type:${ type }`, `identifier:${ identifier }`, `error:"${ error.message }"` );
 
 		throw error;
 	}

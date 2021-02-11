@@ -121,7 +121,7 @@ class Feature_Flags {
 	/**
 	 * Gets all available feature flags.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.26.0
 	 *
 	 * @return array An array of all available features.
 	 */

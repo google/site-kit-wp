@@ -151,11 +151,15 @@ export default function GoogleChart( props ) {
 					chart: googleChart,
 					onSelect: selectListener,
 					onReady: readyListener,
+					onMouseOver: mouseOverListener,
+					onMouseOut: mouseOutListener,
 				} = GoogleChart.charts.get( chartID );
 
 				if ( googleChart ) {
 					global.google.visualization.events.removeListener( selectListener );
 					global.google.visualization.events.removeListener( readyListener );
+					global.google.visualization.events.removeListener( mouseOverListener );
+					global.google.visualization.events.removeListener( mouseOutListener );
 
 					googleChart.clearChart();
 				}
