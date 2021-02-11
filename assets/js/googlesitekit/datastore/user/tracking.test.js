@@ -28,28 +28,6 @@ describe( 'core/user tracking settings', () => {
 	let registry;
 
 	const coreUserTrackingSettingsEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/tracking/;
-	const coreUserInputSettingsExpectedResponse = {
-		goals: {
-			values: [ 'goal1', 'goal2' ],
-			scope: 'site',
-		},
-		helpNeeded: {
-			values: [ 'no' ],
-			scope: 'site',
-		},
-		searchTerms: {
-			values: [ 'keyword1' ],
-			scope: 'site',
-		},
-		role: {
-			values: [ 'admin' ],
-			scope: 'user',
-		},
-		postFrequency: {
-			values: [ 'daily' ],
-			scope: 'user',
-		},
-	};
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -68,10 +46,6 @@ describe( 'core/user tracking settings', () => {
 	} );
 
 	describe( 'actions', () => {
-		beforeEach( () => {
-			registry.dispatch( STORE_NAME ).receiveGetUserInputSettings( coreUserInputSettingsExpectedResponse );
-		} );
-
 		describe( 'saveUserTracking', () => {
 			it.each( [
 				[ 'enable', true ],
