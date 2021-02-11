@@ -39,20 +39,20 @@ import Checkbox from './Checkbox';
 const { useSelect, useDispatch } = Data;
 
 export default function OptIn( { id, name, className, optinAction } ) {
-	const enabled = useSelect( ( select ) => select( CORE_USER ).isTrackingEnabled() );
+	const enabled = useSelect( ( select ) => !! select( CORE_USER ).isTrackingEnabled() );
+	const saving = useSelect( ( select ) => select( CORE_USER ).isSavingUserTracking() );
 	const error = useSelect( ( select ) => select( CORE_USER ).getErrorForAction( 'saveUserTracking', [] ) );
 
 	const { saveUserTracking } = useDispatch( CORE_USER );
-
-	const handleOptIn = useCallback( async () => {
-		const checked = ! enabled;
+	const handleOptIn = useCallback( ( e ) => {
+		const checked = !! e.target.checked;
 
 		toggleTracking( checked );
 		if ( checked ) {
-			await trackEvent( 'tracking_plugin', optinAction );
+			trackEvent( 'tracking_plugin', optinAction );
 		}
 
-		saveUserTracking( ! enabled );
+		saveUserTracking( checked );
 	}, [ enabled, optinAction ] );
 
 	const labelHTML = sprintf(
@@ -73,6 +73,7 @@ export default function OptIn( { id, name, className, optinAction } ) {
 				name={ name }
 				value="1"
 				checked={ enabled }
+				disabled={ saving }
 				onChange={ handleOptIn }
 			>
 				<span dangerouslySetInnerHTML={ sanitizeHTML( labelHTML, allowedDOM ) } />

@@ -45,7 +45,11 @@ const fetchSaveTrackingStore = createFetchStore( {
 
 const baseInitialState = {
 	tracking: undefined,
+	isSavingTracking: false,
 };
+
+// Actions
+const SET_USER_TRACKING_SAVING_FLAG = 'SET_USER_TRACKING_SAVING_FLAG';
 
 const baseActions = {
 	/**
@@ -59,17 +63,33 @@ const baseActions = {
 	*saveUserTracking( enabled ) {
 		yield clearError( 'saveUserTracking', [] );
 
-		const { response, error } = yield fetchSaveTrackingStore.actions.fetchSaveUserInputSettings( enabled );
+		yield {
+			type: SET_USER_TRACKING_SAVING_FLAG,
+			payload: { isSaving: true },
+		};
+
+		const { response, error } = yield fetchSaveTrackingStore.actions.fetchSaveTracking( enabled );
 		if ( error ) {
 			yield receiveError( error, 'saveUserTracking', [] );
 		}
+
+		yield {
+			type: SET_USER_TRACKING_SAVING_FLAG,
+			payload: { isSaving: false },
+		};
 
 		return { response, error };
 	},
 };
 
-export const baseReducer = ( state, { type } ) => {
+export const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
+		case SET_USER_TRACKING_SAVING_FLAG: {
+			return {
+				...state,
+				isSavingTracking: payload.isSaving,
+			};
+		}
 		default: {
 			return state;
 		}
@@ -86,6 +106,18 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
+	/**
+	 * Determines whether the user tracking settings are being saved or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the user tracking settings are being saved, otherwise FALSE.
+	 */
+	isSavingUserTracking( state ) {
+		return !! state?.isSavingTracking;
+	},
+
 	/**
 	 * Determines whether the user tracking is enabled or not.
 	 *

@@ -158,8 +158,8 @@ final class Tracking {
 						array(
 							'methods'             => WP_REST_Server::CREATABLE,
 							'callback'            => function( WP_REST_Request $request ) use ( $tracking_callback ) {
-								$enabled = $request->get_param( 'enabled' );
-								$enabled = filter_var( $enabled, FILTER_VALIDATE_BOOLEAN );
+								$data    = $request->get_param( 'data' );
+								$enabled = ! empty( $data['enabled'] );
 
 								$this->consent->set( $enabled );
 
@@ -167,8 +167,15 @@ final class Tracking {
 							},
 							'permission_callback' => $valid_user,
 							'args'                => array(
-								'enabled' => array(
-									'type' => 'boolean',
+								'data' => array(
+									'type'       => 'object',
+									'required'   => true,
+									'properties' => array(
+										'enabled' => array(
+											'type'     => 'boolean',
+											'required' => true,
+										),
+									),
 								),
 							),
 						),
