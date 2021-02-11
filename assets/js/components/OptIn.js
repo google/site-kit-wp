@@ -39,9 +39,9 @@ import Checkbox from './Checkbox';
 const { useSelect, useDispatch } = Data;
 
 export default function OptIn( { id, name, className, optinAction } ) {
-	const enabled = useSelect( ( select ) => !! select( CORE_USER ).isTrackingEnabled() );
+	const enabled = useSelect( ( select ) => select( CORE_USER ).isTrackingEnabled() );
 	const saving = useSelect( ( select ) => select( CORE_USER ).isSavingUserTracking() );
-	const error = useSelect( ( select ) => select( CORE_USER ).getErrorForAction( 'saveUserTracking', [] ) );
+	const error = useSelect( ( select ) => select( CORE_USER ).getErrorForAction( 'saveUserTracking', [ ! enabled ] ) );
 
 	const { saveUserTracking } = useDispatch( CORE_USER );
 	const handleOptIn = useCallback( ( e ) => {
@@ -54,6 +54,10 @@ export default function OptIn( { id, name, className, optinAction } ) {
 
 		saveUserTracking( checked );
 	}, [ enabled, optinAction ] );
+
+	if ( enabled === undefined ) {
+		return null;
+	}
 
 	const labelHTML = sprintf(
 		/* translators: %s: privacy policy URL */
@@ -79,9 +83,9 @@ export default function OptIn( { id, name, className, optinAction } ) {
 				<span dangerouslySetInnerHTML={ sanitizeHTML( labelHTML, allowedDOM ) } />
 			</Checkbox>
 
-			{ error && (
+			{ error?.message && (
 				<div className="googlesitekit-error-text">
-					{ error.errorMsg }
+					{ error?.message }
 				</div>
 			) }
 		</div>

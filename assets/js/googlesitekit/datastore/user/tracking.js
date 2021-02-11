@@ -61,7 +61,7 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*saveUserTracking( enabled ) {
-		yield clearError( 'saveUserTracking', [] );
+		yield clearError( 'saveUserTracking', [ enabled ] );
 
 		yield {
 			type: SET_USER_TRACKING_SAVING_FLAG,
@@ -70,7 +70,7 @@ const baseActions = {
 
 		const { response, error } = yield fetchSaveTrackingStore.actions.fetchSaveTracking( enabled );
 		if ( error ) {
-			yield receiveError( error, 'saveUserTracking', [] );
+			yield receiveError( error, 'saveUserTracking', [ enabled ] );
 		}
 
 		yield {
