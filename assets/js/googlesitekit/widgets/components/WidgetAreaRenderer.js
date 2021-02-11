@@ -30,30 +30,13 @@ import { STORE_NAME, WIDGET_AREA_STYLES } from '../datastore/constants';
 import WidgetRenderer from './WidgetRenderer';
 import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
-import { separateNullWidgets } from '../util/separate-null-widgets';
-import { HIDDEN_CLASS } from '../util/constants';
 const { useSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const widgetArea = useSelect( ( select ) => select( STORE_NAME ).getWidgetArea( slug ) );
-
-	const { widgets, widgetStates } = useSelect( ( select ) => {
-		const allWidgets = select( STORE_NAME ).getWidgets( slug );
-		const allWidgetStates = {};
-		allWidgets.forEach( ( widget ) => {
-			allWidgetStates[ widget.slug ] = select( STORE_NAME ).getWidgetState( widget.slug );
-		} );
-		return {
-			widgets: allWidgets,
-			widgetStates: allWidgetStates,
-		};
-	} );
-
-	const { activeWidgets, inactiveWidgets } = separateNullWidgets( widgets, widgetStates );
-
-	if ( activeWidgets.length === 0 ) {
-		return null;
-	}
+	const widgets = useSelect( ( select ) => select( STORE_NAME ).getWidgets( slug ) );
+	const activeWidgets = useSelect( ( select ) => select( STORE_NAME ).getActiveWidgets( slug ) );
+	const widgetStates = useSelect( ( select ) => select( STORE_NAME ).getWidgetStates() );
 
 	// Compute the layout.
 	const {
@@ -78,7 +61,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	} );
 
 	// Render all widgets.
-	const widgetsOutput = activeWidgets.map( ( widget, i ) => (
+	const widgetsOutput = widgets.map( ( widget, i ) => (
 		<WidgetRenderer
 			gridClassName={ classnames( gridClassNames[ i ] ) }
 			OverrideComponent={ overrideComponents[ i ] ? () => {
@@ -129,12 +112,6 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 						</Cell>
 					) }
 				</Row>
-			</div>
-
-			<div className={ `googlesitekit-widget-area-widgets ${ HIDDEN_CLASS }` } >
-				{ inactiveWidgets.map( ( widget ) => (
-					<widget.Component key={ widget.slug } />
-				) ) }
 			</div>
 		</Grid>
 	);

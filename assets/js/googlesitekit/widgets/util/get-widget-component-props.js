@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import memize from 'memize';
+
+/**
  * Internal dependencies
  */
 import Widget from '../components/Widget';
@@ -33,17 +38,19 @@ import WidgetNull from '../components/WidgetNull';
  * @param {string} widgetSlug The widget's slug.
  * @return {Object} Props to pass to the widget component.
  */
-export function getWidgetComponentProps( widgetSlug ) {
-	// Scope widget-specific components to the widget instance so that the
-	// component does not need to (re-)specify the widget slug.
-	return {
-		Widget: withWidgetSlug( widgetSlug )( Widget ),
-		WidgetReportZero: withWidgetSlug( widgetSlug )( WidgetReportZero ),
-		WidgetActivateModuleCTA: withWidgetSlug( widgetSlug )( WidgetActivateModuleCTA ),
-		WidgetCompleteModuleActivationCTA: withWidgetSlug( widgetSlug )( WidgetCompleteModuleActivationCTA ),
-		WidgetNull: withWidgetSlug( widgetSlug )( WidgetNull ),
-	};
-}
+export const getWidgetComponentProps = memize(
+	( widgetSlug ) => {
+		// Scope widget-specific components to the widget instance so that the
+		// component does not need to (re-)specify the widget slug.
+		return {
+			Widget: withWidgetSlug( widgetSlug )( Widget ),
+			WidgetReportZero: withWidgetSlug( widgetSlug )( WidgetReportZero ),
+			WidgetActivateModuleCTA: withWidgetSlug( widgetSlug )( WidgetActivateModuleCTA ),
+			WidgetCompleteModuleActivationCTA: withWidgetSlug( widgetSlug )( WidgetCompleteModuleActivationCTA ),
+			WidgetNull: withWidgetSlug( widgetSlug )( WidgetNull ),
+		};
+	}
+);
 
 function withWidgetSlug( widgetSlug ) {
 	return ( WrappedComponent ) => {

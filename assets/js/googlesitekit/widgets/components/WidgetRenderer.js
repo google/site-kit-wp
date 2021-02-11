@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useMemo } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,17 +34,17 @@ import { STORE_NAME } from '../datastore/constants';
 import Widget from './Widget';
 import { getWidgetComponentProps } from '../util';
 import { HIDDEN_CLASS } from '../util/constants';
-import WidgetNull from './WidgetNull';
 
 const { useSelect } = Data;
 
 const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 	const widget = useSelect( ( select ) => select( STORE_NAME ).getWidget( slug ) );
-
-	const widgetComponentProps = useMemo( () => getWidgetComponentProps( slug ), [ slug ] );
+	const isWidgetActive = useSelect( ( select ) => select( STORE_NAME ).isWidgetActive( slug ) );
+	const widgetComponentProps = getWidgetComponentProps( slug );
+	const { WidgetNull } = widgetComponentProps;
 
 	if ( ! widget ) {
-		return <WidgetNull widgetSlug={ slug } />;
+		return <WidgetNull />;
 	}
 
 	const { Component, wrapWidget } = widget;
@@ -66,6 +66,12 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 					{ widgetElement }
 				</div>
 			</Fragment>
+		);
+	} else if ( ! isWidgetActive ) {
+		return (
+			<div className={ HIDDEN_CLASS }>
+				{ widgetElement }
+			</div>
 		);
 	} else if ( wrapWidget ) {
 		// Otherwise, wrap the component only if that is requested for this

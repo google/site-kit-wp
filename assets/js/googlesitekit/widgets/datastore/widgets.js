@@ -25,6 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { WIDGET_WIDTHS } from './constants';
+import Null from '../../../components/Null';
 
 const ASSIGN_WIDGET = 'ASSIGN_WIDGET';
 const REGISTER_WIDGET = 'REGISTER_WIDGET';
@@ -315,6 +316,20 @@ export const selectors = {
 	 */
 	getWidgetState( state, slug ) {
 		return state.widgetStates[ slug ] || null;
+	},
+
+	isWidgetActive( state, slug ) {
+		return selectors.getWidgetState( state, slug ) === null ||
+			selectors.getWidgetState( state, slug ).Component !== Null;
+	},
+
+	getActiveWidgets( state, widgetAreaSlug ) {
+		return selectors.getWidgets( state, widgetAreaSlug )
+			.filter( ( widget ) => selectors.isWidgetActive( state, widget.slug ) );
+	},
+
+	getWidgetStates( state ) {
+		return state.widgetStates;
 	},
 };
 
