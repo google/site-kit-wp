@@ -106,7 +106,6 @@ export const selectors = {
 	 *
 	 * @since 1.14.0
 	 *
-	 * @param {Object} urlParams URL parameters to be passed to the query.
 	 * @return {(string|undefined)} AdSense account site overview URL (or `undefined` if not loaded).
 	 */
 	getServiceAccountSiteURL: createRegistrySelector( ( select ) => () => {
@@ -126,8 +125,21 @@ export const selectors = {
 		return select( STORE_NAME ).getServiceURL( { path, query } );
 	} ),
 
+	/**
+	 * Returns the service URL to an AdSense account's site overview page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} reportArgs URL parameters to be passed to the query.
+	 * @return {(string|undefined)} AdSense account site overview URL (or `undefined` if not loaded).
+	 */
 	getServiceReportURL: createRegistrySelector( ( select ) => ( state, reportArgs ) => {
 		const accountID = select( STORE_NAME ).getAccountID();
+
+		if ( accountID === undefined ) {
+			return undefined;
+		}
+
 		const path = `${ accountID }/reporting`;
 
 		return select( STORE_NAME ).getServiceURL( { path, query: reportArgs } );
