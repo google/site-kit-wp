@@ -141,7 +141,9 @@ const dataAPI = {
 					const { datapoint, type, identifier } = dataRequest[ requestIndex ];
 
 					this.handleWPError( {
-						method: 'POST',
+						// Report as GET requests as this is the internal method
+						// rather than the method of the batch request itself.
+						method: 'GET',
 						datapoint,
 						type,
 						identifier,
@@ -166,15 +168,15 @@ const dataAPI = {
 			} );
 
 			// Resolve any returned data requests, then re-request the remainder after a pause.
-		} ).catch( ( err ) => {
+		} ).catch( ( error ) => {
 			// Handle the error and give up trying.
-			console.warn( 'Error caught during combinedGet', err ); // eslint-disable-line no-console
+			console.warn( 'Error caught during combinedGet', `code:${ error.code }`, `error:"${ error.message }"` ); // eslint-disable-line no-console
 		} );
 	},
 
 	handleWPError( { method, datapoint, type, identifier, error } ) {
 		// eslint-disable-next-line no-console
-		console.warn( 'WP Error in data response', error );
+		console.warn( 'WP Error in data response', `method:${ method }`, `type:${ type }`, `identifier:${ identifier }`, `datapoint:${ datapoint }`, `error:"${ error.message }"` );
 
 		trackAPIError( { method, datapoint, type, identifier, error } );
 
