@@ -59,6 +59,11 @@ describe( 'Tag Manager module setup', () => {
 				request.respond( {
 					status: 200,
 				} );
+			} else if ( request.url().match( 'google-site-kit/v1/core/site/data/notifications' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [] ),
+				} );
 			} else if ( request.url().match( 'modules/tagmanager/data/live-container-version' ) ) {
 				// Return a live container version without GA.
 				request.respond( { status: 200, body: JSON.stringify( liveContainerVersionFixture ) } );

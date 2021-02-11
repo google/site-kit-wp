@@ -1,5 +1,5 @@
 /**
- * Preview table styles.
+ * Admin Bar Zero Data component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,26 +16,22 @@
  * limitations under the License.
  */
 
-.googlesitekit-preview-table {
-	width: 100%;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
-	&--padding {
-		padding: $grid-gap-phone;
+const AdminBarZeroData = () => {
+	return (
+		<div>
+			<div className="googlesitekit-adminbar__subtitle googlesitekit-font-weight-bold">
+				{ __( 'No data available yet', 'google-site-kit' ) }
+			</div>
+			<div className="googlesitekit-adminbar__subtitle">
+				{ __( 'There is no data available for this content yet. This could be because it was recently created or because nobody has accessed it so far.', 'google-site-kit' ) }
+			</div>
+		</div>
+	);
+};
 
-		+ .googlesitekit-preview-table--padding {
-			padding-top: 0;
-		}
-
-		@media (min-width: $bp-desktop) {
-			padding: $grid-gap-desktop;
-		}
-	}
-
-	.googlesitekit-preview-table__row {
-		margin: 0 0 9px 0;
-
-		&:last-child {
-			margin-bottom: 0;
-		}
-	}
-}
+export default AdminBarZeroData;

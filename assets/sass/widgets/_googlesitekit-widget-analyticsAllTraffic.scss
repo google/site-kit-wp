@@ -44,6 +44,10 @@
 			letter-spacing: normal;
 			text-transform: none;
 		}
+
+		.googlesitekit-widget__footer {
+			padding-top: 0;
+		}
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__user-count-chart {
@@ -85,19 +89,13 @@
 
 			&.googlesitekit-widget--analyticsAllTraffic__dimensions--loading {
 				left: 50%;
-				margin-top: -11px;
 				position: absolute;
 				top: 50%;
 				transform: translate(-50%, -50%);
-
-				@media (min-width: $bp-desktop) {
-					margin-top: -18px;
-				}
 			}
 		}
 
 		.googlesitekit-widget--analyticsAllTraffic__dimensions-container {
-			height: 100%;
 			position: relative;
 		}
 	}
@@ -110,6 +108,11 @@
 
 		svg {
 			vertical-align: bottom;
+		}
+
+		.googlesitekit-cta-link {
+			font-size: 1em;
+			letter-spacing: 0.04em;
 		}
 	}
 
@@ -130,7 +133,9 @@
 		&.googlesitekit-widget--analyticsAllTraffic__dimensions--loading {
 			visibility: hidden;
 		}
+	}
 
+	.googlesitekit-widget--analyticsAllTraffic__selectable {
 		// Use pointer when hovering over chart slice or legend entry.
 		.googlesitekit-line-chart > div > div > div > svg {
 
@@ -165,6 +170,91 @@
 
 		.googlesitekit-preview-block {
 			margin: 0 10px;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__chart {
+		min-height: 368px;
+		position: relative;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend {
+		text-align: center;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend-slice {
+		align-items: center;
+		border-radius: 4px;
+		color: $c-cape-cod;
+		display: inline-flex;
+		font-size: 12px;
+		font-weight: $fw-primary-normal;
+		margin: 0 4px 0 0;
+		padding: 7px 4px;
+		position: relative;
+
+		&:hover {
+			text-decoration: none;
+		}
+
+		&:focus {
+			outline: none;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__label {
+		display: flex;
+		flex-direction: column;
+
+		&::after {
+			content: attr(data-label);
+			display: inline-flex;
+			font-weight: $fw-primary-medium;
+			height: 0;
+			visibility: hidden;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__dot {
+		border-radius: 50%;
+		display: inline-block;
+		height: 12px;
+		margin: 0 4px 0 0;
+		width: 12px;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__underlay {
+		display: block;
+		height: 100%;
+		left: 0;
+		opacity: 0;
+		position: absolute;
+		top: 0;
+		transition: opacity $t-default ease-in-out;
+		width: 100%;
+		z-index: 1;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend-active {
+		font-weight: $fw-primary-medium;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend-active,
+	.googlesitekit-widget--analyticsAllTraffic__legend-slice:hover {
+
+		.googlesitekit-widget--analyticsAllTraffic__underlay {
+			opacity: 0.16;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend-others {
+		cursor: text;
+
+		&:hover {
+
+			.googlesitekit-widget--analyticsAllTraffic__underlay {
+				opacity: 0;
+			}
 		}
 	}
 }
