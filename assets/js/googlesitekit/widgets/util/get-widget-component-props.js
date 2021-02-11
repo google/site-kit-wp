@@ -57,7 +57,7 @@ function withWidgetSlug( widgetSlug ) {
 /**
  * Gets the props and passes them to the widget's component through a HOC.
  *
- * @since n.e.x.t
+ * @since 1.26.0
  *
  * @param {string} widgetSlug The slug of the widget.
  * @return {Function} Enhancing function that adds the getWidgetComponentProps to the passed component.

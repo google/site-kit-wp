@@ -36,7 +36,7 @@ import { useEffect } from '@wordpress/element';
  * cancelled if any of the arguments change, including the function to debounce,
  * so please wrap functions created on render in components in `useCallback`.
  *
- * @since n.e.x.t
+ * @since 1.26.0
  *
  * @param {...any} args Arguments passed to Lodash's `debounce`.
  * @return {Function} Debounced function.
