@@ -65,14 +65,14 @@ export async function screenshot( name ) {
  * @return {Promise} Promise object.
  */
 export function step( name, cb ) {
-	return new Promise( async ( success, error ) => {
+	return new Promise( async ( resolve, reject ) => {
 		try {
 			const results = await ( typeof cb === 'function' ? cb() : cb );
 			await screenshot( name );
-			success( results );
+			resolve( results );
 		} catch ( err ) {
 			await screenshot( name );
-			error( err );
+			reject( err );
 		}
 	} );
 }
