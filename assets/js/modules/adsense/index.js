@@ -40,7 +40,7 @@ import {
 } from './components/dashboard';
 import AdSenseIcon from '../../../svg/adsense.svg';
 import { STORE_NAME } from './datastore/constants';
-import { ERROR_CODE_ADBLOCKER_ACTIVE } from './constants';
+import { ERROR_CODE_ADBLOCKER_ACTIVE, CONTEXT_MODULE_ADSENSE } from './constants';
 import { registerStore as registerDataStore } from './datastore';
 
 addFilter(
@@ -78,6 +78,7 @@ export const registerModule = ( modules ) => {
 					data: null,
 				};
 			},
+			screenWidgetContext: CONTEXT_MODULE_ADSENSE,
 		}
 	);
 };
