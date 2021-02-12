@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -31,19 +25,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DataBlock from '../DataBlock';
-import PreviewBlock from '../PreviewBlock';
-import ReportError from '../ReportError';
-import ReportZero from '../ReportZero';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-console/datastore/constants';
 import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/search-console/util/is-zero-report';
+import PreviewBlock from '../PreviewBlock';
+import ReportError from '../ReportError';
+import DataBlock from '../DataBlock';
 import sumObjectListValue from '../../util/sum-object-list-value';
 const { useSelect } = Data;
 
-const AdminBarClicks = ( { className } ) => {
+function AdminBarClicks( { WidgetReportZero } ) {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
@@ -55,19 +48,13 @@ const AdminBarClicks = ( { className } ) => {
 		dimensions: 'date',
 		url,
 	};
+
 	const searchConsoleData = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ) );
 	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
 
 	if ( ! hasFinishedResolution ) {
-		return (
-			<div className={ classnames(
-				'mdc-layout-grid__cell',
-				className,
-			) }>
-				<PreviewBlock width="auto" height="59px" />
-			</div>
-		);
+		return <PreviewBlock width="auto" height="59px" />;
 	}
 
 	if ( error ) {
@@ -75,7 +62,7 @@ const AdminBarClicks = ( { className } ) => {
 	}
 
 	if ( isZeroReport( searchConsoleData ) ) {
-		return <ReportZero moduleSlug="search-console" />;
+		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
 	// Split the data in two chunks.
@@ -88,27 +75,14 @@ const AdminBarClicks = ( { className } ) => {
 	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
 
 	return (
-		<div className={ classnames(
-			'mdc-layout-grid__cell',
-			className,
-		) }>
-			<DataBlock
-				className="overview-total-clicks"
-				title={ __( 'Total Clicks', 'google-site-kit' ) }
-				datapoint={ totalClicks }
-				change={ totalClicksChange }
-				changeDataUnit="%"
-			/>
-		</div>
+		<DataBlock
+			className="overview-total-clicks"
+			title={ __( 'Total Clicks', 'google-site-kit' ) }
+			datapoint={ totalClicks }
+			change={ totalClicksChange }
+			changeDataUnit="%"
+		/>
 	);
-};
-
-AdminBarClicks.propTypes = {
-	className: PropTypes.string,
-};
-
-AdminBarClicks.defaultProps = {
-	className: 'mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
-};
+}
 
 export default AdminBarClicks;
