@@ -1,5 +1,5 @@
 /**
- * DashboardMain component.
+ * LegacyDashboardDetailsModule component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,22 +17,18 @@
  */
 
 /**
- * Internal dependencies
- */
-import DashboardModules from './DashboardModules';
-/**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { withFilters } from '@wordpress/components';
+import { Component } from '@wordpress/element';
 
-class DashboardMain extends Component {
+/**
+ * A single module. Keeps track of its own active state and settings.
+ */
+class LegacyDashboardDetailsModule extends Component {
 	render() {
-		return (
-			<Fragment>
-				<DashboardModules />
-			</Fragment>
-		);
+		return null;
 	}
 }
 
-export default DashboardMain;
+export default withFilters( 'googlesitekit.DashboardDetailsModule' )( LegacyDashboardDetailsModule );

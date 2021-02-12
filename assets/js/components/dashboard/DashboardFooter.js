@@ -1,5 +1,5 @@
 /**
- * DashboardModule component.
+ * DashboardFooter component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,18 +17,12 @@
  */
 
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
+import PageFooter from '../PageFooter';
 
-/**
- * A single module. Keeps track of its own active state and settings.
- */
-class DashboardModule extends Component {
-	render() {
-		return null;
-	}
+export default function DashboardFooter() {
+	return (
+		<PageFooter />
+	);
 }
-
-export default withFilters( 'googlesitekit.DashboardModule' )( DashboardModule );

@@ -1,5 +1,5 @@
 /**
- * DashboardModules component.
+ * LegacyDashboardModule component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,38 +17,18 @@
  */
 
 /**
- * External dependencies
- */
-import { Fragment } from 'react';
-
-/**
  * WordPress dependencies
  */
+import { withFilters } from '@wordpress/components';
 import { Component } from '@wordpress/element';
 
 /**
- * Internal dependencies
+ * A single module. Keeps track of its own active state and settings.
  */
-import HelpLink from '../HelpLink';
-import DashboardModule from './dashboard-module';
-
-class DashboardModules extends Component {
+class LegacyDashboardModule extends Component {
 	render() {
-		return (
-			<Fragment>
-				<DashboardModule
-					key={ 'googlesitekit-dashboard-module' }
-				/>
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-					mdc-layout-grid__cell--align-right
-				">
-					<HelpLink />
-				</div>
-			</Fragment>
-		);
+		return null;
 	}
 }
 
-export default DashboardModules;
+export default withFilters( 'googlesitekit.DashboardModule' )( LegacyDashboardModule );
