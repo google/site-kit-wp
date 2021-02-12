@@ -17,3 +17,4 @@
  */
 
 export const CONTEXT_MODULE_ANALYTICS = 'moduleAnalytics';
+export const AREA_MODULE_ANALYTICS_MAIN = 'moduleAnalyticsMain';

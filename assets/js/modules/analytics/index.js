@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import {
@@ -35,7 +40,8 @@ import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqu
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
 import AnalyticsIcon from '../../../svg/analytics.svg';
 import { STORE_NAME } from './datastore/constants';
-import { CONTEXT_MODULE_ANALYTICS } from './constants';
+import { CONTEXT_MODULE_ANALYTICS, AREA_MODULE_ANALYTICS_MAIN } from './constants';
+import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 
 export { registerStore } from './datastore';
 
@@ -119,5 +125,15 @@ export const registerWidgets = ( widgets ) => {
 		[
 			AREA_DASHBOARD_POPULARITY,
 		],
+	);
+
+	widgets.registerWidgetArea(
+		AREA_MODULE_ANALYTICS_MAIN,
+		{
+			priority: 1,
+			style: WIDGET_AREA_STYLES.BOXES,
+			title: __( 'Overview', 'google-site-kit' ),
+		},
+		CONTEXT_MODULE_ANALYTICS,
 	);
 };
