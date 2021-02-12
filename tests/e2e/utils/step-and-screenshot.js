@@ -19,7 +19,7 @@
 /**
  * Node dependencies
  */
-import { resolve, join } from 'path';
+import path from 'path';
 import { mkdir } from 'fs/promises';
 
 const screenshotsIndex = new Map();
@@ -29,9 +29,11 @@ const screenshotsIndex = new Map();
  *
  * @since n.e.x.t
  *
- * @param {string} name Screenshot name.
+ * @param {string}  name     Screenshot name.
+ * @param {boolean} fullPage Whether or not to take full page screenshot.
  */
-export async function screenshot( name ) {
+export async function screenshot( name, fullPage = false ) {
+	const { resolve, join } = path;
 	const { currentTestName, testPath } = expect.getState();
 
 	const rootDir = resolve( __dirname, '..' );
@@ -51,7 +53,7 @@ export async function screenshot( name ) {
 	await page.screenshot( {
 		path: `${ screenshotsDir }/${ screenshotIndex.toString().padStart( 2, '0' ) }-${ name.replace( /\W+/, '-' ) }.png`,
 		type: 'png',
-		fullPage: true,
+		fullPage,
 	} );
 }
 
@@ -60,18 +62,22 @@ export async function screenshot( name ) {
  *
  * @since n.e.x.t
  *
- * @param {string}           name Step name.
- * @param {Function|Promise} cb   Step callback function or a promise object.
+ * @param {string}           name                       Step name.
+ * @param {Function|Promise} cb                         Step callback function or a promise object.
+ * @param {Object}           options                    Step options.
+ * @param {boolean}          options.fullPageScreenshot Determines whether we need to take the full page screenshot or not.
  * @return {Promise} Promise object.
  */
-export function step( name, cb ) {
+export function step( name, cb, {
+	fullPageScreenshot = false,
+} = {} ) {
 	return new Promise( async ( resolve, reject ) => {
 		try {
 			const results = await ( typeof cb === 'function' ? cb() : cb );
-			await screenshot( name );
+			await screenshot( name, fullPageScreenshot );
 			resolve( results );
 		} catch ( err ) {
-			await screenshot( name );
+			await screenshot( name, fullPageScreenshot );
 			reject( err );
 		}
 	} );
