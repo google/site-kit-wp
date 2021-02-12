@@ -31,6 +31,7 @@ import {
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/search-console.svg';
 import { STORE_NAME } from './datastore/constants';
+import { CONTEXT_MODULE_SEARCH_CONSOLE } from './constants';
 
 export { registerStore } from './datastore';
 
@@ -41,6 +42,7 @@ export const registerModule = ( modules ) => {
 			storeName: STORE_NAME,
 			SettingsViewComponent: SettingsView,
 			Icon: SearchConsoleIcon,
+			screenWidgetContext: CONTEXT_MODULE_SEARCH_CONSOLE,
 		}
 	);
 };
