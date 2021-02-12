@@ -43,7 +43,7 @@ describe( 'WebStoriesAdUnitSelect', () => {
 		const { getAllByRole } = render( <WebStoriesAdUnitSelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-		expect( listItems ).toHaveLength( fixtures.adunits.length + 1 ); // + 1 accounts for the default value "Select ad unit".
+		expect( listItems ).toHaveLength( fixtures.adunits.items.length + 1 ); // + 1 accounts for the default value "Select ad unit".
 	} );
 
 	it( 'should render a loading state when ad units are undefined', async () => {
@@ -58,7 +58,7 @@ describe( 'WebStoriesAdUnitSelect', () => {
 	it( 'should update webStoriesAdUnit in the store when a new item is clicked', async () => {
 		const { getByText, container, registry } = render( <WebStoriesAdUnitSelect />, { setupRegistry } );
 		const originalWebStoriesAdUnit = registry.select( STORE_NAME ).getWebStoriesAdUnit();
-		const selectedAdUnit = fixtures.adunits[ 0 ];
+		const selectedAdUnit = fixtures.adunits.items[ 0 ];
 
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );

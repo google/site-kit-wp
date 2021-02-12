@@ -66,7 +66,7 @@ describe( 'modules/adsense Ad Units', () => {
 				const adunits = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( adunits ).toEqual( fixtures.adunits );
+				expect( adunits ).toEqual( fixtures.adunits.items );
 			} );
 
 			it( 'does not make a network request if adunits for this account + client are already present', async () => {
@@ -82,7 +82,7 @@ describe( 'modules/adsense Ad Units', () => {
 				await untilResolved( registry, STORE_NAME ).getAdUnits( accountID, clientID );
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( adunits ).toEqual( fixtures.adunits );
+				expect( adunits ).toEqual( fixtures.adunits.items );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
