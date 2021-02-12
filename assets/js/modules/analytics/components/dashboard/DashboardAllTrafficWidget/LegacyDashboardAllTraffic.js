@@ -42,7 +42,7 @@ function LegacyDashboardAllTraffic() {
 				/>
 			</Cell>
 			<Cell size={ 12 }>
-				<Layout className="googlesitekit-pagespeed-widget">
+				<Layout>
 					<DashboardAllTrafficWidget { ...widgetComponentProps } />
 				</Layout>
 			</Cell>
