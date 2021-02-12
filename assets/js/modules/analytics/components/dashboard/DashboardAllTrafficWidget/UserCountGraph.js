@@ -32,9 +32,9 @@ import { useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { DATE_RANGE_OFFSET, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { DATE_RANGE_OFFSET, UI_DIMENSION_COLOR } from '../../../datastore/constants';
 import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import PreviewBlock from '../../../../../components/PreviewBlock';
@@ -48,7 +48,7 @@ const X_LARGE_AND_ABOVE_MEDIA_QUERY = '(min-width: 1281px)';
 export default function UserCountGraph( { loaded, error, report } ) {
 	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 	const dateRangeNumberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
-	const graphLineColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) || '#1a73e8' );
+	const graphLineColor = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) || '#1a73e8' );
 
 	const [ xSmallOnly, setXSmallOnly ] = useState( global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY ) );
 	const [ mobileToDesktop, setMobileToDesktop ] = useState( global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY ) );

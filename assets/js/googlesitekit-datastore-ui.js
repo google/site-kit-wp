@@ -1,5 +1,5 @@
 /**
- * `modules/pagespeed-insights` data store constants.
+ * Entrypoint for the `core/ui` data store.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,16 +16,13 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/pagespeed-insights';
-export { STORE_NAME as MODULES_PAGESPEED_INSIGHTS };
+// This import has side effects; it registers the core/ui datastore
+// on the default data store (`googlesitekit.data`).
 
-// Report strategies.
-export const STRATEGY_MOBILE = 'mobile';
-export const STRATEGY_DESKTOP = 'desktop';
-// Report data sources.
-export const DATA_SRC_LAB = 'data_lab';
-export const DATA_SRC_FIELD = 'data_field';
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { registerStore } from './googlesitekit/datastore/ui';
 
-// Dashboard widgets using the UI store.
-export const UI_STRATEGY = 'dashboardPageSpeedWidgetStrategy';
-export const UI_DATA_SOURCE = 'dashboardPageSpeedWidgetDataSource';
+registerStore( Data );
