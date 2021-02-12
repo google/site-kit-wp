@@ -19,15 +19,14 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useState, useEffect } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
-import { useInstanceId } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -38,12 +37,16 @@ import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constan
 import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
-import GoogleChart from '../../../../../components/GoogleChart';
-import PreviewBlock from '../../../../../components/PreviewBlock';
+import GoogleChartV2 from '../../../../../components/GoogleChartV2';
 const { useDispatch, useSelect } = Data;
 
-export default function UserDimensionsPieChart( { dimensionName, dimensionValue, sourceLink, loaded, report } ) {
-	const [ chartLoaded, setChartLoaded ] = useState( false );
+export default function UserDimensionsPieChart( {
+	dimensionName,
+	dimensionValue,
+	loaded,
+	report,
+	sourceLink,
+} ) {
 	const [ selectable, setSelectable ] = useState( false );
 
 	const otherSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
@@ -52,78 +55,64 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 	const notSetSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
 		path: '/analytics/answer/2820717',
 	} ) );
-
-	// Create a unique chartID to use for this component's GoogleChart child component.
-	const chartID = `user-dimensions-pie-chart-${ useInstanceId( UserDimensionsPieChart ) }`;
+	const dimensionColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) );
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const onReady = useCallback( () => {
-		setChartLoaded( true );
 
-		const chartData = GoogleChart.charts.get( chartID );
-		const { chart, onSelect } = chartData || {};
-		const { slices } = UserDimensionsPieChart.chartOptions;
+	const { slices } = UserDimensionsPieChart.chartOptions;
 
-		if ( chart && ! onSelect ) {
-			chartData.onSelect = global.google.visualization.events.addListener( chart, 'select', () => {
-				const { row } = chart.getSelection()?.[ 0 ] || {};
-				if ( row !== null && row !== undefined ) {
-					const { dataTable } = GoogleChart.charts.get( chartID ) || {};
-					if ( dataTable ) {
-						const newDimensionValue = dataTable.getValue( row, 0 );
-						const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
+	const onMouseOut = () => {
+		setSelectable( false );
+	};
 
-						if ( isOthers ) {
-							chart.setSelection( [] );
-						}
+	const onMouseOver = ( event, { chartWrapper } ) => {
+		const { row } = event;
 
-						setValues(
-							FORM_ALL_TRAFFIC_WIDGET,
-							{
-								dimensionValue: isOthers ? '' : newDimensionValue,
-								dimensionColor: isOthers ? '' : slices[ row ]?.color,
-							}
-						);
-					}
-				} else {
-					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
-				}
-			} );
-		}
-
-		chartData.onMouseOver = global.google.visualization.events.addListener( chart, 'onmouseover', ( event ) => {
-			const { row } = event;
-
-			if ( ! row ) {
-				setSelectable( false );
-			}
-			const { dataTable } = GoogleChart.charts.get( chartID ) || {};
-			setSelectable( dataTable.getValue( row, 0 ) !== __( 'Others', 'google-site-kit' ) );
-		} );
-
-		chartData.onMouseOut = global.google.visualization.events.addListener( chart, 'onmouseout', () => {
+		if ( row === undefined || row === null ) {
 			setSelectable( false );
-		} );
-	}, [ chartID, dimensionName, setValues ] );
-
-	useEffect( () => {
-		if ( ! chartLoaded ) {
-			return;
 		}
 
-		const chartData = GoogleChart.charts.get( chartID );
-		const { chart } = chartData || {};
+		const dataTable = chartWrapper.getDataTable();
+		setSelectable( dataTable.getValue( row, 0 ) !== __( 'Others', 'google-site-kit' ) );
+	};
 
-		if ( chart && report?.[ 0 ]?.data?.rows ) {
-			// If there is a dimension value set but the initialized chart does not have a selection yet,
-			// find the matching row index and initially select it in the chart.
+	const onSelect = ( { chartWrapper } ) => {
+		const chart = chartWrapper.getChart();
+		const { row } = chart.getSelection()?.[ 0 ] || {};
+		if ( row !== null && row !== undefined ) {
+			const dataTable = chartWrapper.getDataTable();
+			if ( dataTable ) {
+				const newDimensionValue = dataTable.getValue( row, 0 );
+				const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
+
+				setValues(
+					FORM_ALL_TRAFFIC_WIDGET,
+					{
+						dimensionValue: isOthers ? '' : newDimensionValue,
+						dimensionColor: isOthers ? '' : slices[ row ]?.color,
+					}
+				);
+			}
+		} else {
+			setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
+		}
+	};
+
+	const onReady = ( { chartWrapper } ) => {
+		const chart = chartWrapper.getChart();
+
+		if ( report?.[ 0 ]?.data?.rows ) {
+			// If there is a dimension value set but the initialized chart does not have a
+			// selection yet, find the matching row index and initially select it in the chart.
 			if ( dimensionValue && ! chart.getSelection().length ) {
-				const { slices } = UserDimensionsPieChart.chartOptions;
 				const selectedRow = report[ 0 ].data.rows.findIndex( ( row ) => row.dimensions.includes( dimensionValue ) );
 
-				if ( selectedRow && slices[ selectedRow ]?.color ) {
+				if ( selectedRow !== undefined && selectedRow !== null ) {
 					chart.setSelection( [ { row: selectedRow } ] );
-					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: slices[ selectedRow ]?.color } );
+
+					if ( dimensionColor !== slices[ selectedRow ]?.color ) {
+						setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: slices[ selectedRow ]?.color } );
+					}
 				}
 			}
 
@@ -131,10 +120,14 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 			// ensure it is no longer selected in the chart.
 			if ( ! dimensionValue && chart.getSelection().length ) {
 				chart.setSelection( [] );
+			}
+
+			// If no dimensionValue is set, unset the color.
+			if ( ! dimensionValue && dimensionColor !== '' ) {
 				setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: '' } );
 			}
 		}
-	}, [ chartLoaded, chartID, dimensionValue, JSON.stringify( report ) ] );
+	};
 
 	const absOthers = {
 		current: report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],
@@ -247,7 +240,7 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 		ALLOWED_ATTR: [],
 	};
 
-	const title = chartLoaded
+	const title = loaded
 		? sanitizeHTML( labels[ dimensionName ] || '', sanitizeArgs )
 		: { __html: '' };
 
@@ -259,34 +252,39 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
-			<PreviewBlock
-				className={ classnames( {
-					'googlesitekit-widget--analyticsAllTraffic__dimensions--not-loading': loaded,
-					'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
-				} ) }
-				width="300px"
-				height="300px"
-				shape="circular"
-			/>
 			<div className={ classnames(
 				'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
 				{
-					'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
 					'googlesitekit-widget--analyticsAllTraffic__selectable': selectable,
 				}
 			) }>
-				<GoogleChart
-					chartID={ chartID }
-					chartType="pie"
-					options={ options }
+				{ /* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events */ }
+				<GoogleChartV2
+					chartType="PieChart"
 					data={ dataMap || [] }
-					loadHeight={ 50 }
+					getChartWrapper={ () => {
+						// Forces a re-render of the component to re-run useEffect hooks.
+						// If this is not called and the chart is updated while the mouse cursor
+						// is already over the chart, it won't properly run the `onmousenter` event
+						// and the "selectable" slices of the pie chart won't be enabled consistently.
+						setSelectable( null );
+					} }
+					height="400px"
+					loaded={ loaded }
+					loadingHeight="300px"
+					loadingWidth="300px"
+					onMouseOut={ onMouseOut }
+					onMouseOver={ onMouseOver }
 					onReady={ onReady }
-				/>
-				<div
-					className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
-					dangerouslySetInnerHTML={ title }
-				/>
+					onSelect={ onSelect }
+					options={ options }
+					width="100%"
+				>
+					<div
+						className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
+						dangerouslySetInnerHTML={ title }
+					/>
+				</GoogleChartV2>
 			</div>
 		</div>
 	);
