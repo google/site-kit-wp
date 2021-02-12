@@ -11,7 +11,7 @@ services:
       WORDPRESS_DEBUG: 1
       WORDPRESS_CONFIG_EXTRA: |
         define( 'SCRIPT_DEBUG', true );
-        define( 'WP_HTTP_BLOCK_EXTERNAL', true );
+        define( 'WP_HTTP_BLOCK_EXTERNAL', ! defined( 'WP_CLI' ) );
     volumes:
       - wordpress_data:/var/www/html
       - ../../:/var/www/html/wp-content/plugins/google-site-kit
