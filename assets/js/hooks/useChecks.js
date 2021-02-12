@@ -38,7 +38,9 @@ export function useChecks( checks ) {
 	useEffect( () => {
 		const runChecks = async () => {
 			try {
-				await Promise.all( stableChecks.map( ( check ) => check() ) );
+				for ( const check of stableChecks ) {
+					await check();
+				}
 			} catch ( err ) {
 				setError( err );
 			}
