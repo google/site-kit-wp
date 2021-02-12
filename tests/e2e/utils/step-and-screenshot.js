@@ -29,10 +29,10 @@ const screenshotsIndex = new Map();
  *
  * @since n.e.x.t
  *
- * @param {string}  name     Screenshot name.
- * @param {boolean} fullPage Whether or not to take full page screenshot.
+ * @param {string} name    Screenshot name.
+ * @param {Object} options Screenshot objects.
  */
-export async function screenshot( name, fullPage = false ) {
+export async function screenshot( name, options = {} ) {
 	const { resolve, join } = path;
 	const { currentTestName, testPath } = expect.getState();
 
@@ -53,7 +53,7 @@ export async function screenshot( name, fullPage = false ) {
 	await page.screenshot( {
 		path: `${ screenshotsDir }/${ screenshotIndex.toString().padStart( 2, '0' ) }-${ name.replace( /\W+/, '-' ) }.png`,
 		type: 'png',
-		fullPage,
+		...options,
 	} );
 }
 
@@ -62,22 +62,22 @@ export async function screenshot( name, fullPage = false ) {
  *
  * @since n.e.x.t
  *
- * @param {string}           name                       Step name.
- * @param {Function|Promise} cb                         Step callback function or a promise object.
- * @param {Object}           options                    Step options.
- * @param {boolean}          options.fullPageScreenshot Determines whether we need to take the full page screenshot or not.
+ * @param {string}           name                   Step name.
+ * @param {Function|Promise} cb                     Step callback function or a promise object.
+ * @param {Object}           options                Step options.
+ * @param {Object}           options.screenshotArgs Screenshot arguments.
  * @return {Promise} Promise object.
  */
 export function step( name, cb, {
-	fullPageScreenshot = false,
+	screenshotArgs = {},
 } = {} ) {
 	return new Promise( async ( resolve, reject ) => {
 		try {
 			const results = await ( typeof cb === 'function' ? cb() : cb );
-			await screenshot( name, fullPageScreenshot );
+			await screenshot( name, screenshotArgs );
 			resolve( results );
 		} catch ( err ) {
-			await screenshot( name, fullPageScreenshot );
+			await screenshot( name, screenshotArgs );
 			reject( err );
 		}
 	} );
