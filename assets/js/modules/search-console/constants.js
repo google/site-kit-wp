@@ -17,3 +17,4 @@
  */
 
 export const CONTEXT_MODULE_SEARCH_CONSOLE = 'moduleSearchConsole';
+export const AREA_MODULE_SEARCH_CONSOLE_MAIN = 'moduleSearchConsoleMain';
