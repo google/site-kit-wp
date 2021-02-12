@@ -58,6 +58,36 @@ export const prepareSecondsForDisplay = ( seconds ) => {
 };
 
 /**
+ * Converts seconds into an array with the following values [HH, MM, SS, MS] as described below.
+ * HH: hours.
+ * MM: minutes.
+ * SS: seconds.
+ * MS: milliseconds.
+ *
+ * For example, passing 196.385 returns [ 0, 3, 16, 385 ].
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} seconds The number of seconds.
+ * @return {Array} Array containing the hours, minutes, seconds and milliseconds.
+ *
+ */
+export const prepareSecondsArray = ( seconds ) => {
+	seconds = parseInt( seconds, 10 );
+
+	if ( isNaN( seconds ) || 0 === seconds ) {
+		return '0.0s';
+	}
+
+	return [
+		Math.floor( seconds / 60 / 60 ),
+		Math.floor( ( seconds / 60 ) % 60 ),
+		Math.floor( seconds % 60 ),
+		parseInt( parseFloat( seconds ).toFixed( 3 ).slice( -3 ) ),
+	];
+};
+
+/**
  * Prepares a number to be used in readableLargeNumber.
  *
  * @since 1.7.0
