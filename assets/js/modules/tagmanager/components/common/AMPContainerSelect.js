@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -38,7 +38,7 @@ export default function AMPContainerSelect() {
 	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 
-	const { setAMPContainerID, setInternalAMPContainerID } = useDispatch( STORE_NAME );
+	const { setAMPContainerID, setInternalAMPContainerID, setGaAMPPropertyID } = useDispatch( STORE_NAME );
 	const onSelect = useCallback( ( index, item ) => {
 		const {
 			value: newContainerID,
@@ -50,6 +50,13 @@ export default function AMPContainerSelect() {
 			setInternalAMPContainerID( newInternalContainerID || '' );
 		}
 	}, [ ampContainerID ] );
+
+	const singleAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
+	useEffect( () => {
+		if ( singleAnalyticsPropertyID !== undefined ) {
+			setGaAMPPropertyID( singleAnalyticsPropertyID === null ? '' : singleAnalyticsPropertyID );
+		}
+	}, [ singleAnalyticsPropertyID ] );
 
 	if ( ! isAMP ) {
 		return null;

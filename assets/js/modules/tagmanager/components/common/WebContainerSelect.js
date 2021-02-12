@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -38,7 +38,7 @@ export default function WebContainerSelect() {
 	const isPrimaryAMP = useSelect( ( select ) => select( CORE_SITE ).isPrimaryAMP() );
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 
-	const { setContainerID, setInternalContainerID } = useDispatch( STORE_NAME );
+	const { setContainerID, setInternalContainerID, setGaPropertyID } = useDispatch( STORE_NAME );
 	const onSelect = useCallback( ( index, item ) => {
 		const {
 			value: newContainerID,
@@ -50,6 +50,13 @@ export default function WebContainerSelect() {
 			setInternalContainerID( newInternalContainerID || '' );
 		}
 	}, [ containerID ] );
+
+	const singleAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
+	useEffect( () => {
+		if ( singleAnalyticsPropertyID !== undefined ) {
+			setGaPropertyID( singleAnalyticsPropertyID === null ? '' : singleAnalyticsPropertyID );
+		}
+	}, [ singleAnalyticsPropertyID ] );
 
 	if ( isPrimaryAMP ) {
 		return null;
