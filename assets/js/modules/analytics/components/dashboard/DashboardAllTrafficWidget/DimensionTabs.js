@@ -79,7 +79,7 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 
 	return (
 		<Fragment>
-			<div className="googlesitekit-widget--analyticsAllTraffic__tabs">
+			<div className="googlesitekit-widget--analyticsAllTraffic__tabs hidden-on-mobile">
 				<TabBar
 					activeIndex={ activeTab }
 					handleActiveIndexUpdate={ handleTabUpdate }
