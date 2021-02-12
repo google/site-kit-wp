@@ -48,7 +48,6 @@ services:
     command: tail -f /dev/null
     networks:
       - default
-      - internal_network
 
   mysql:
     image: mysql:5.7
