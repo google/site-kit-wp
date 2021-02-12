@@ -26,21 +26,47 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { DATE_RANGE_OFFSET, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
 const { useSelect } = Data;
 
+const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
+const MOBILE_TO_DESKOP_MEDIA_QUERY = '(min-width: 451px) and (max-width: 1280px';
+const X_LARGE_AND_ABOVE_MEDIA_QUERY = '(min-width: 1281px)';
+
 export default function UserCountGraph( { loaded, error, report } ) {
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
+	const dateRangeNumberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 	const graphLineColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) || '#1a73e8' );
+
+	const [ xSmallOnly, setXSmallOnly ] = useState( global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY ) );
+	const [ mobileToDesktop, setMobileToDesktop ] = useState( global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY ) );
+	const [ xLargeAndAbove, setXLargeAndAbove ] = useState( global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY ) );
+
+	// Watch media queries to adjust the ticks based on the app breakpoints.
+	useEffect( () => {
+		const updateBreakpoints = () => {
+			setXSmallOnly( global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY ) );
+			setMobileToDesktop( global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY ) );
+			setXLargeAndAbove( global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY ) );
+		};
+
+		global.addEventListener( 'resize', updateBreakpoints );
+		return () => {
+			global.removeEventListener( 'resize', updateBreakpoints );
+		};
+	}, [] );
 
 	if ( ! loaded ) {
 		// On desktop, the real graph height is 350px, so match that here.
@@ -73,6 +99,69 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	];
 
 	const chartOptions = { ...UserCountGraph.chartOptions };
+
+	// Putting the actual start and end dates in the ticks causes the charts not to render
+	// them. See: https://github.com/google/site-kit-wp/issues/2708.
+	// On smaller screens we set a larger offset to avoid ticks getting cut off.
+	let outerTickOffset = 1;
+	let totalTicks = 2;
+
+	// On xsmall devices, increase the outer tick offset on mobile to make both ticks visible without ellipsis.
+	if ( xSmallOnly.matches ) {
+		if ( dateRangeNumberOfDays > 28 ) {
+			outerTickOffset = 8;
+		} else if ( dateRangeNumberOfDays > 7 ) {
+			outerTickOffset = 3;
+		}
+
+		if ( dateRangeNumberOfDays > 7 ) {
+			totalTicks = 3;
+		}
+	}
+
+	// On mobile, desktop and tablet devices, include a total of three ticks and increase the outer tick offset with more dense data.
+	if ( mobileToDesktop.matches ) {
+		if ( dateRangeNumberOfDays > 28 ) {
+			outerTickOffset = 5;
+		} else if ( dateRangeNumberOfDays > 7 ) {
+			outerTickOffset = 2;
+		}
+
+		if ( dateRangeNumberOfDays > 7 ) {
+			totalTicks = 3;
+		}
+	}
+
+	// On devices larger than desktop, add a third and fourth tick.
+	if ( xLargeAndAbove.matches ) {
+		if ( dateRangeNumberOfDays > 28 ) {
+			outerTickOffset = 5;
+		}
+
+		if ( dateRangeNumberOfDays > 7 ) {
+			totalTicks = 4;
+		}
+	}
+
+	// Create the start and end ticks, applying the outer offset.
+	const startTick = new Date( startDate );
+	startTick.setDate( new Date( startDate ).getDate() + outerTickOffset );
+	const endTick = new Date( endDate );
+	endTick.setDate( new Date( endDate ).getDate() - outerTickOffset );
+	const midTicks = [];
+
+	// Create the mid ticks.
+	const tickDenominator = totalTicks - 1; // Used to place the midTicks and even intervals across the axis.
+	totalTicks = totalTicks - 2; // The start and end ticks are already set.
+	while ( totalTicks > 0 ) {
+		const midTick = new Date( endDate );
+		midTick.setDate( new Date( endDate ).getDate() - ( totalTicks * ( dateRangeNumberOfDays / tickDenominator ) ) );
+		midTicks.push( midTick );
+
+		totalTicks = totalTicks - 1;
+	}
+
+	chartOptions.hAxis.ticks = [ startTick, ...midTicks, endTick ];
 	chartOptions.series[ 0 ].color = graphLineColor;
 
 	return (

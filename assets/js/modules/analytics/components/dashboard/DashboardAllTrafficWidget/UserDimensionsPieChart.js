@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useRef, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -38,6 +38,7 @@ import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChartV2 from '../../../../../components/GoogleChartV2';
+import Link from '../../../../../components/Link';
 const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( {
@@ -59,7 +60,33 @@ export default function UserDimensionsPieChart( {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
+	const chartWrapperRef = useRef();
+
 	const { slices } = UserDimensionsPieChart.chartOptions;
+
+	const onLegendClick = ( index ) => {
+		if ( chartWrapperRef.current ) {
+			const newDimensionValue = chartWrapperRef.current.getDataTable().getValue( index, 0 );
+			const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
+
+			if ( isOthers ) {
+				return;
+			}
+
+			const { row } = chartWrapperRef.current.getChart().getSelection()?.[ 0 ] || {};
+			if ( row === index ) {
+				setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
+			} else if ( newDimensionValue ) {
+				setValues(
+					FORM_ALL_TRAFFIC_WIDGET,
+					{
+						dimensionValue: newDimensionValue,
+						dimensionColor: slices[ index ]?.color,
+					}
+				);
+			}
+		}
+	};
 
 	const onMouseOut = () => {
 		setSelectable( false );
@@ -262,14 +289,14 @@ export default function UserDimensionsPieChart( {
 				<GoogleChartV2
 					chartType="PieChart"
 					data={ dataMap || [] }
-					getChartWrapper={ () => {
+					getChartWrapper={ ( chartWrapper ) => {
+						chartWrapperRef.current = chartWrapper;
 						// Forces a re-render of the component to re-run useEffect hooks.
 						// If this is not called and the chart is updated while the mouse cursor
 						// is already over the chart, it won't properly run the `onmousenter` event
 						// and the "selectable" slices of the pie chart won't be enabled consistently.
 						setSelectable( null );
 					} }
-					height="400px"
 					loaded={ loaded }
 					loadingHeight="300px"
 					loadingWidth="300px"
@@ -285,6 +312,36 @@ export default function UserDimensionsPieChart( {
 						dangerouslySetInnerHTML={ title }
 					/>
 				</GoogleChartV2>
+
+				<div className="googlesitekit-widget--analyticsAllTraffic__legend">
+					{ dataMap?.slice( 1 ).map( ( [ label ], i ) => {
+						const isActive = label === dimensionValue;
+						const sliceColor = slices[ i ]?.color;
+						const isOthers = __( 'Others', 'google-site-kit' ) === label;
+
+						return (
+							<Link
+								key={ label }
+								onClick={ () => onLegendClick( i ) }
+								className={ classnames(
+									'googlesitekit-widget--analyticsAllTraffic__legend-slice',
+									{
+										'googlesitekit-widget--analyticsAllTraffic__legend-active': isActive,
+										'googlesitekit-widget--analyticsAllTraffic__legend-others': isOthers,
+									}
+								) }
+							>
+								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: sliceColor } } />
+
+								<span className="googlesitekit-widget--analyticsAllTraffic__label" data-label={ label }>
+									{ label }
+								</span>
+
+								<span className="googlesitekit-widget--analyticsAllTraffic__underlay" style={ { backgroundColor: sliceColor } } />
+							</Link>
+						);
+					} ) }
+				</div>
 			</div>
 		</div>
 	);
@@ -304,21 +361,16 @@ UserDimensionsPieChart.defaultProps = {
 
 UserDimensionsPieChart.chartOptions = {
 	chartArea: {
-		left: 0,
+		left: 'auto',
 		height: 300,
-		top: 50,
+		top: 'auto',
 		width: '100%',
 	},
 	backgroundColor: 'transparent',
 	fontSize: 12,
-	height: 380,
+	height: 368,
 	legend: {
-		alignment: 'center',
-		position: 'bottom',
-		textStyle: {
-			color: 'black',
-			fontSize: 12,
-		},
+		position: 'none',
 	},
 	pieHole: 0.6,
 	pieSliceTextStyle: {
