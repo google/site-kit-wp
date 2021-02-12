@@ -31,7 +31,6 @@ async function dismissEditorWelcome() {
 describe( 'Site Kit admin bar component display', () => {
 	beforeAll( async () => {
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
-		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
 		await setSiteVerification();
 		await setSearchConsoleProperty();
 
@@ -41,6 +40,11 @@ describe( 'Site Kit admin bar component display', () => {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( mockBatchResponse[ 'modules::search-console::searchanalytics::e74216dd17533dcb67fa2d433c23467c' ] ),
+				} );
+			} else if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( mockBatchResponse ),
 				} );
 			} else {
 				request.continue();

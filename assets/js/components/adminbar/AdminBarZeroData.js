@@ -1,5 +1,5 @@
 /**
- * UserInputSuccessNotification component.
+ * Admin Bar Zero Data component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -21,21 +21,17 @@
  */
 import { __ } from '@wordpress/i18n';
 
-/**
- * Internal dependencies
- */
-import Notification from '../legacy-notifications/notification';
-import UserInputSuccessImage from '../../../svg/congrats.svg';
-
-export default function UserInputSuccessNotification() {
+const AdminBarZeroData = () => {
 	return (
-		<Notification
-			id="user-input-success"
-			title={ __( 'Congrats! You set your site goals.', 'google-site-kit' ) }
-			description={ __( 'Now Site Kit will begin suggesting metrics to add to your dashboard that are relevant specifically to you, based on the goals you shared.', 'google-site-kit' ) }
-			SmallImageSVG={ UserInputSuccessImage }
-			dismiss={ __( 'OK, got it!', 'google-site-kit' ) }
-			format="small"
-		/>
+		<div>
+			<div className="googlesitekit-adminbar__subtitle googlesitekit-font-weight-bold">
+				{ __( 'No data available yet', 'google-site-kit' ) }
+			</div>
+			<div className="googlesitekit-adminbar__subtitle">
+				{ __( 'There is no data available for this content yet. This could be because it was recently created or because nobody has accessed it so far.', 'google-site-kit' ) }
+			</div>
+		</div>
 	);
-}
+};
+
+export default AdminBarZeroData;

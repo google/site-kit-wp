@@ -25,31 +25,24 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies.
  */
-import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
-import AdminBarSessions from './AdminBarSessions';
-import AdminBarImpressions from './AdminBarImpressions';
-import AdminBarClicks from './AdminBarClicks';
-import ActivateModuleCTA from '../ActivateModuleCTA';
-import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import Data from 'googlesitekit-data';
 import Link from '../Link';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { decodeHTMLEntity, trackEvent } from '../../util';
+import AdminBarWidgets from './AdminBarWidgets';
 const { useSelect } = Data;
 
 export default function AdminBarApp() {
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
 	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: currentEntityURL } ) );
-	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
-	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 
 	const onMoreDetailsClick = useCallback( async () => {
 		await trackEvent( 'admin_bar', 'post_details_click' );
 		document.location.assign( detailsURL );
 	}, [ detailsURL ] );
 
+	// Only show the adminbar on valid pages and posts.
 	if ( ! detailsURL || ! currentEntityURL ) {
 		return null;
 	}
@@ -73,41 +66,16 @@ export default function AdminBarApp() {
 							}
 						</div>
 					</div>
+
 					<div className="
 						mdc-layout-grid__cell
 						mdc-layout-grid__cell--span-8-tablet
 						mdc-layout-grid__cell--span-7-desktop
 						mdc-layout-grid__cell--align-middle
 					">
-						<div className="mdc-layout-grid__inner">
-							<AdminBarImpressions />
-							<AdminBarClicks />
-
-							{ analyticsModuleConnected && analyticsModuleActive && (
-								<Fragment>
-									<AdminBarUniqueVisitors />
-									<AdminBarSessions />
-								</Fragment>
-							) }
-
-							{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
-								<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-6-desktop
-									mdc-layout-grid__cell--span-4-tablet
-								">
-									{ ! analyticsModuleActive && (
-										<ActivateModuleCTA moduleSlug="analytics" />
-									) }
-
-									{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
-										<CompleteModuleActivationCTA moduleSlug="analytics" />
-									) }
-								</div>
-							) }
-
-						</div>
+						<AdminBarWidgets />
 					</div>
+
 					<div className="
 						mdc-layout-grid__cell
 						mdc-layout-grid__cell--span-2

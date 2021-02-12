@@ -62,7 +62,9 @@ export default function DashboardDetailsEntityView() {
 				</div>
 			) }
 
-			<DashboardDetailsModules />
+			{ ! pageDashboardWidgetsEnabled && (
+				<DashboardDetailsModules />
+			) }
 		</Fragment>
 	);
 }

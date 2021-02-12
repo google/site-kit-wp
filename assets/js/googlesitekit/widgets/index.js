@@ -27,7 +27,7 @@ export { registerDefaults as registerWidgets } from './register-defaults';
 /**
  * Creates a new instance of Widgets.
  *
- * @since n.e.x.t
+ * @since 1.26.0
  *
  * @param {Object}   registry          Datastore registry.
  * @param {Function} registry.select   Registry select function.
