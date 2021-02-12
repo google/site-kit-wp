@@ -76,7 +76,7 @@ export const prepareSecondsArray = ( seconds ) => {
 	seconds = parseInt( seconds, 10 );
 
 	if ( isNaN( seconds ) || 0 === seconds ) {
-		return '0.0s';
+		return [ 0, 0, 0, 0 ];
 	}
 
 	return [
