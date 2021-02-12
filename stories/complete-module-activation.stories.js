@@ -26,24 +26,22 @@ import { storiesOf } from '@storybook/react';
  */
 import CompleteModuleActivationCTA from '../assets/js/components/CompleteModuleActivationCTA';
 import {
-	PERMISSION_MANAGE_OPTIONS,
-	CORE_USER,
-} from '../assets/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { WithTestRegistry } from '../tests/js/utils';
+	WithTestRegistry,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	provideModules,
+	provideModuleRegistrations,
+} from '../tests/js/utils';
 
 storiesOf( 'Global', module )
 	.add( 'CompleteModuleActivationCTA', () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_USER ).receiveCapabilities( {
-				[ PERMISSION_MANAGE_OPTIONS ]: true,
-			} );
-			dispatch( CORE_MODULES ).receiveGetModules( [
-				{
-					slug: 'tagmanager',
-					name: 'Tag Manager',
-				},
-			] );
+		const setupRegistry = ( registry ) => {
+			provideSiteInfo( registry );
+			provideUserAuthentication( registry );
+			provideUserCapabilities( registry );
+			provideModules( registry );
+			provideModuleRegistrations( registry );
 		};
 
 		return (

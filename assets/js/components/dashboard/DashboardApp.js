@@ -62,7 +62,9 @@ export default function DashboardApp() {
 								</Cell>
 							) }
 
-							<DashboardMain />
+							{ ! dashboardWidgetsEnabled && (
+								<DashboardMain />
+							) }
 						</Row>
 					</Grid>
 				</div>
