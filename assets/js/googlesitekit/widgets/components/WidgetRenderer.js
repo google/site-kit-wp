@@ -49,7 +49,7 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 
 	const { Component, wrapWidget } = widget;
 
-	let widgetElement = <Component { ...widgetComponentProps } />;
+	let widgetElement = <Component style={ { display: isWidgetActive ? null : 'none' } } { ...widgetComponentProps } />;
 
 	if ( OverrideComponent ) {
 		// If OverrideComponent passed, render it instead of the actual widget.
@@ -58,7 +58,7 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 		// The real widget component will still be rendered, but it will be
 		// hidden via CSS.
 		widgetElement = (
-			<Fragment>
+			<Fragment style={ { display: isWidgetActive ? null : 'none' } } >
 				<Widget widgetSlug="overridden">
 					<OverrideComponent />
 				</Widget>
@@ -67,22 +67,16 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 				</div>
 			</Fragment>
 		);
-	} else if ( ! isWidgetActive ) {
-		return (
-			<div className={ HIDDEN_CLASS }>
-				{ widgetElement }
-			</div>
-		);
 	} else if ( wrapWidget ) {
 		// Otherwise, wrap the component only if that is requested for this
 		// widget.
-		widgetElement = <Widget widgetSlug={ slug }>{ widgetElement }</Widget>;
+		widgetElement = <Widget style={ { display: isWidgetActive ? null : 'none' } } widgetSlug={ slug }>{ widgetElement }</Widget>;
 	}
 
 	// Wrap the widget into a grid class.
 	if ( gridClassName ) {
 		return (
-			<div className={ gridClassName }>
+			<div style={ { display: isWidgetActive ? null : 'none' } } className={ gridClassName }>
 				{ widgetElement }
 			</div>
 		);
