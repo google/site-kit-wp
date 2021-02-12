@@ -246,6 +246,7 @@ const baseActions = {
 	 * @param {WPComponent} [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {WPComponent} [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
 	 * @param {Function}    [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
+	 * @param {Function}    [settings.screenWidgetContext]              Optional. Get the registered context name for a given module.
 	 */
 	*registerModule( slug, {
 		storeName,
@@ -259,6 +260,7 @@ const baseActions = {
 		SetupComponent,
 		SettingsSetupIncompleteComponent,
 		checkRequirements = () => true,
+		screenWidgetContext,
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
 
@@ -274,6 +276,7 @@ const baseActions = {
 			SetupComponent,
 			SettingsSetupIncompleteComponent,
 			checkRequirements,
+			screenWidgetContext,
 		};
 
 		yield {
@@ -789,6 +792,25 @@ const baseSelectors = {
 		invariant( slug, 'slug is required.' );
 		const requirementsStatus = state.checkRequirementsResults[ slug ];
 		return requirementsStatus === true ? null : requirementsStatus;
+	},
+
+	/**
+	 * Gets the module's screenWidgetContext.
+	 *
+	 * Returns `null` if there is no registered context string for the given module.
+	 * Returns `string` the registered context string, screenWidgetContext for the given module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} moduleSlug Module slug.
+	 * @return {(null|string)}    The module's registered context string, or null.
+	 */
+	getScreenWidgetContext( state, moduleSlug ) {
+		invariant( moduleSlug, 'slug is required.' );
+		const screenWidgetContext = state.screenWidgetContext[ moduleSlug ];
+
+		return screenWidgetContext || null;
 	},
 };
 
