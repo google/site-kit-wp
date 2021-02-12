@@ -4,8 +4,6 @@ services:
   wordpress:
     image: wordpress
     restart: always
-    ports:
-      - 9002:80
     environment:
       WORDPRESS_DB_HOST: mysql
       WORDPRESS_DB_PASSWORD: example
@@ -13,6 +11,7 @@ services:
       WORDPRESS_DEBUG: 1
       WORDPRESS_CONFIG_EXTRA: |
         define( 'SCRIPT_DEBUG', true );
+        define( 'WP_HTTP_BLOCK_EXTERNAL', true );
     volumes:
       - wordpress_data:/var/www/html
       - ../../:/var/www/html/wp-content/plugins/google-site-kit
@@ -20,6 +19,20 @@ services:
       - ../../tests/e2e/mu-plugins:/var/www/html/wp-content/mu-plugins
     depends_on:
       - mysql
+      - http_proxy
+    networks:
+      - internal_network
+
+  http_proxy:
+    image: nginx
+    restart: always
+    ports:
+      - 9002:80
+    volumes:
+      - './config/nginx-http-proxy.conf:/etc/nginx/conf.d/default.conf'
+    networks:
+      - default
+      - internal_network
 
   cli:
     image: wordpress:cli
@@ -33,6 +46,9 @@ services:
       - mysql
       - wordpress
     command: tail -f /dev/null
+    networks:
+      - default
+      - internal_network
 
   mysql:
     image: mysql:5.7
@@ -40,6 +56,13 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: example
       MYSQL_DATABASE: wordpress_test
+    networks:
+      - default
+      - internal_network
 
 volumes:
   wordpress_data:
+
+networks:
+  internal_network:
+    internal: true # No external connections allowed
