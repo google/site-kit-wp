@@ -35,6 +35,7 @@ import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqu
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
 import AnalyticsIcon from '../../../svg/analytics.svg';
 import { STORE_NAME } from './datastore/constants';
+import { CONTEXT_MODULE_ANALYTICS } from './constants';
 
 export { registerStore } from './datastore';
 
@@ -47,6 +48,7 @@ export const registerModule = ( modules ) => {
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
 			Icon: AnalyticsIcon,
+			screenWidgetContext: CONTEXT_MODULE_ANALYTICS,
 		}
 	);
 };
