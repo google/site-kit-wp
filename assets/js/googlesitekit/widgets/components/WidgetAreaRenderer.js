@@ -61,6 +61,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	} );
 
 	// Render all widgets.
+	// We want all the hooks to run, but won't render widgets if there are no active ones.
 	// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 	const widgetsOutput = widgets.map( ( widget, i ) => (
 		<WidgetRenderer
