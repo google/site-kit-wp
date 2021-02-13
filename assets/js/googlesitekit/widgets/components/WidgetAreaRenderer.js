@@ -61,6 +61,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	} );
 
 	// Render all widgets.
+	// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 	const widgetsOutput = widgets.map( ( widget, i ) => (
 		<WidgetRenderer
 			gridClassName={ classnames( gridClassNames[ i ] ) }
@@ -72,6 +73,10 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 			slug={ widget.slug }
 		/>
 	) );
+
+	if ( activeWidgets.length === 0 ) {
+		return null;
+	}
 
 	const { Icon, title, style, subtitle } = widgetArea;
 
