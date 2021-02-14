@@ -13,15 +13,11 @@ namespace Google\Site_Kit\Tests\Core\Util;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Reset_Persistent;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit\Tests\OptionsTestTrait;
-use Google\Site_Kit\Tests\UserOptionsTestTrait;
-use Google\Site_Kit\Tests\TransientsTestTrait;
 
 /**
  * @group Util
  */
 class ResetPersistentTest extends TestCase {
-	use OptionsTestTrait, UserOptionsTestTrait, TransientsTestTrait;
 
 	public function test_all() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -50,21 +46,10 @@ class ResetPersistentTest extends TestCase {
 	protected function run_reset( Context $context ) {
 		wp_load_alloptions();
 		$this->assertNotFalse( wp_cache_get( 'alloptions', 'options' ) );
-
-		$user_id         = $this->factory()->user->create();
-		$reset           = new Reset_Persistent( $context );
-		$is_network_mode = $context->is_network_mode();
-
-		$this->init_option_values( $is_network_mode );
-		$this->init_user_option_values( $user_id, $is_network_mode );
-		$this->init_transient_values( $is_network_mode );
-
+		$reset = new Reset_Persistent( $context );
 		$reset->all();
 
 		// Ensure options cache is flushed (must check before accessing other options as this will re-prime the cache)
 		$this->assertFalse( wp_cache_get( 'alloptions', 'options' ) );
-		$this->assertOptionsDeleted( $is_network_mode );
-		$this->assertUserOptionsDeleted( $user_id, $is_network_mode );
-		$this->assertTransientsDeleted( $is_network_mode );
 	}
 }
