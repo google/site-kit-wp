@@ -1,5 +1,5 @@
 /**
- * DashboardDetailsModules component.
+ * `core/ui` data store: constants.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,23 +16,5 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import DashboardDetailsModule from './dashboard-details-module';
-/**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-
-class DashboardDetailsModules extends Component {
-	render() {
-		return (
-			<DashboardDetailsModule
-				key={ 'googlesitekit-dashboard-details-module' }
-			/>
-		);
-	}
-}
-
-export default DashboardDetailsModules;
+export const STORE_NAME = 'core/ui';
+export { STORE_NAME as CORE_UI };

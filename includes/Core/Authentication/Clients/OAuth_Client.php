@@ -161,27 +161,6 @@ final class OAuth_Client {
 	private $client_credentials = false;
 
 	/**
-	 * Custom retry map to define which api responses should be retried based on our retry config.
-	 *
-	 * Copied from the default $retryMap within Google_Client/Task/Runner with the addition of lighthouseError.
-	 *
-	 * @since 1.22.0
-	 * @var array $retry_map Map of errors with retry counts.
-	 */
-	protected $retry_map = array(
-		'500'                   => Runner::TASK_RETRY_ALWAYS,
-		'503'                   => Runner::TASK_RETRY_ALWAYS,
-		'rateLimitExceeded'     => Runner::TASK_RETRY_ALWAYS,
-		'userRateLimitExceeded' => Runner::TASK_RETRY_ALWAYS,
-		6                       => Runner::TASK_RETRY_ALWAYS,  // CURLE_COULDNT_RESOLVE_HOST.
-		7                       => Runner::TASK_RETRY_ALWAYS,  // CURLE_COULDNT_CONNECT.
-		28                      => Runner::TASK_RETRY_ALWAYS,  // CURLE_OPERATION_TIMEOUTED.
-		35                      => Runner::TASK_RETRY_ALWAYS,  // CURLE_SSL_CONNECT_ERROR.
-		52                      => Runner::TASK_RETRY_ALWAYS,  // CURLE_GOT_NOTHING.
-		'lighthouseError'       => Runner::TASK_RETRY_NEVER,
-	);
-
-	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -253,9 +232,6 @@ final class OAuth_Client {
 
 		// Enable exponential retries, try up to three times.
 		$client->setConfig( 'retry', array( 'retries' => 3 ) );
-
-		// Set a custom retryMap for the REST Runner.
-		$client->setConfig( 'retry_map', $this->retry_map );
 
 		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
 		// By default this header uses the generic Guzzle client's user-agent and includes
@@ -931,7 +907,7 @@ final class OAuth_Client {
 	 * @since 1.1.0
 	 * @since 1.1.2 Added 'credentials_retrieval'
 	 * @since 1.2.0 Added 'short_verification_token' (Supported as of 1.0.1)
-	 * @since n.e.x.t Added 'user_input_flow'
+	 * @since 1.26.0 Added 'user_input_flow'
 	 * @return array Array of supported features.
 	 */
 	private function get_proxy_setup_supports() {
