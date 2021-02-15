@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests;
 
 use Closure;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Core\Util\JSON_File;
@@ -40,7 +41,7 @@ class TestCase extends \WP_UnitTestCase {
 	}
 
 	protected static function reset_feature_flags() {
-		Feature_Flags::set_mode( Feature_Flags::MODE_PRODUCTION );
+		Build_Mode::set_mode( Build_Mode::MODE_PRODUCTION );
 		Feature_Flags::set_features( self::$featureFlagsConfig );
 	}
 

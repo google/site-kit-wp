@@ -30,7 +30,7 @@ class Feature_Flags {
 	private static $features = array();
 
 	/**
-	 * Checks if the given feature is enabled in the current mode on the main instance.
+	 * Checks if the given feature is enabled.
 	 *
 	 * @since 1.22.0
 	 *
@@ -52,7 +52,6 @@ class Feature_Flags {
 		 *
 		 * @param bool   $feature_enabled The current status of this feature flag (`true` or `false`).
 		 * @param string $feature         The feature name.
-		 * @param string $mode            Site mode for loading features ('development' or 'production').
 		 */
 		return apply_filters( 'googlesitekit_is_feature_enabled', false, $feature );
 	}
