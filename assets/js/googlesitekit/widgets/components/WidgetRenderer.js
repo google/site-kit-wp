@@ -31,7 +31,7 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
-import Widget from './Widget';
+import BaseWidget from './Widget';
 import { getWidgetComponentProps } from '../util';
 import { HIDDEN_CLASS } from '../util/constants';
 
@@ -39,9 +39,8 @@ const { useSelect } = Data;
 
 const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 	const widget = useSelect( ( select ) => select( STORE_NAME ).getWidget( slug ) );
-	const isWidgetActive = useSelect( ( select ) => select( STORE_NAME ).isWidgetActive( slug ) );
 	const widgetComponentProps = getWidgetComponentProps( slug );
-	const { WidgetNull } = widgetComponentProps;
+	const { Widget, WidgetNull } = widgetComponentProps;
 
 	if ( ! widget ) {
 		return <WidgetNull />;
@@ -49,7 +48,7 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 
 	const { Component, wrapWidget } = widget;
 
-	let widgetElement = <Component style={ { display: isWidgetActive ? null : 'none' } } { ...widgetComponentProps } />;
+	let widgetElement = <Component { ...widgetComponentProps } />;
 
 	if ( OverrideComponent ) {
 		// If OverrideComponent passed, render it instead of the actual widget.
@@ -58,10 +57,10 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 		// The real widget component will still be rendered, but it will be
 		// hidden via CSS.
 		widgetElement = (
-			<Fragment style={ { display: isWidgetActive ? null : 'none' } } >
-				<Widget widgetSlug="overridden">
+			<Fragment>
+				<BaseWidget widgetSlug="overridden">
 					<OverrideComponent />
-				</Widget>
+				</BaseWidget>
 				<div className={ HIDDEN_CLASS }>
 					{ widgetElement }
 				</div>
@@ -70,13 +69,13 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 	} else if ( wrapWidget ) {
 		// Otherwise, wrap the component only if that is requested for this
 		// widget.
-		widgetElement = <Widget style={ { display: isWidgetActive ? null : 'none' } } widgetSlug={ slug }>{ widgetElement }</Widget>;
+		widgetElement = <Widget>{ widgetElement }</Widget>;
 	}
 
 	// Wrap the widget into a grid class.
 	if ( gridClassName ) {
 		return (
-			<div style={ { display: isWidgetActive ? null : 'none' } } className={ gridClassName }>
+			<div className={ gridClassName }>
 				{ widgetElement }
 			</div>
 		);
