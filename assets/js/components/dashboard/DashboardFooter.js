@@ -1,5 +1,5 @@
 /**
- * DashboardDetailsModules component.
+ * DashboardFooter component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,20 +19,10 @@
 /**
  * Internal dependencies
  */
-import DashboardDetailsModule from './dashboard-details-module';
-/**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
+import PageFooter from '../PageFooter';
 
-class DashboardDetailsModules extends Component {
-	render() {
-		return (
-			<DashboardDetailsModule
-				key={ 'googlesitekit-dashboard-details-module' }
-			/>
-		);
-	}
+export default function DashboardFooter() {
+	return (
+		<PageFooter />
+	);
 }
-
-export default DashboardDetailsModules;
