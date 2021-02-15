@@ -267,6 +267,8 @@ export function getAnalyticsMockResponse( args ) {
 		data.rows = rows;
 		data.rowCount = rows.length;
 
+		// We pretend that the first row contains minimums and the last one maximums because we don't
+		// really need mathematically correct values and can simplify the process of finding this information.
 		data.minimums = [ ...( rows[ 0 ]?.metrics || [] ) ];
 		data.maximums = [ ...( rows[ rows.length - 1 ]?.metrics || [] ) ];
 
@@ -279,6 +281,7 @@ export function getAnalyticsMockResponse( args ) {
 				data.totals.push( { values: [ total ] } );
 			}
 		} else {
+			// Same here, we pretend that the last row contains totals because we don't need it to be mathematically valid.
 			data.totals = [ ...( rows[ rows.length - 1 ]?.metrics || [] ) ];
 		}
 	} );
