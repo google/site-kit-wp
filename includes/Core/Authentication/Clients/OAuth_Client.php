@@ -234,7 +234,7 @@ final class OAuth_Client {
 		// Guzzle, cURL, and PHP versions as it is normally shared.
 		// In our case however, the client is namespaced to be used by Site Kit only.
 		$http_client = $client->getHttpClient();
-		$http_client->setDefaultOption( 'headers/User-Agent', $application_name );
+		$http_client->setDefaultOption( 'headers/User-Agent', Google_Proxy::get_application_name() );
 
 		// Configure the Google_Client's HTTP client to use to use the same HTTP proxy as WordPress HTTP, if set.
 		if ( $this->http_proxy->is_enabled() ) {

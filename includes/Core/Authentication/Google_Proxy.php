@@ -139,13 +139,14 @@ class Google_Proxy {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Credentials $credentials  Credentials instance.
-	 * @param array       $query_params Optional. Additional query parameters.
+	 * @param Credentials $credentials Credentials instance.
+	 * @param array       $query_args  Optional. Additional query parameters.
 	 * @return string URL to the permissions page on the authentication proxy on success, or an empty string on failure.
 	 */
-	public function get_permissions_url( Credentials $credentials, array $query_params = array() ) {
-		if ( $credentials && ! empty( $credentials->web->client_id ) ) {
-			$query_args['site_id'] = $credentials->web->client_id;
+	public function get_permissions_url( Credentials $credentials, array $query_args = array() ) {
+		if ( $credentials->has() ) {
+			$creds                 = $credentials->get();
+			$query_args['site_id'] = $creds['oauth2_client_id'];
 		}
 
 		$query_args['application_name'] = rawurlencode( self::get_application_name() );
