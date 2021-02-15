@@ -1,5 +1,5 @@
 /**
- * DashboardDetailsEntityHeaderContainer component.
+ * DashboardHeader component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,31 +17,20 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import PropTypes from 'prop-types';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Layout from '../layout/Layout';
+import PageHeader from '../PageHeader';
 
-export default function DashboardDetailsEntityHeaderContainer( { children } ) {
+export default function DashboardHeader() {
 	return (
-		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-			<Layout>
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-							{ children }
-						</div>
-					</div>
-				</div>
-			</Layout>
-		</div>
+		<PageHeader
+			className="googlesitekit-heading-2 googlesitekit-dashboard__heading"
+			title={ __( 'Site Overview', 'google-site-kit' ) }
+		/>
 	);
 }
-
-DashboardDetailsEntityHeaderContainer.propTypes = {
-	children: PropTypes.node.isRequired,
-};
