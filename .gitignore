@@ -41,5 +41,6 @@ Desktop.ini
 tests/backstop/html_report/
 tests/backstop/tests/
 
-# Jest coverage
+# Jest
 coverage/
+tests/e2e/screenshots

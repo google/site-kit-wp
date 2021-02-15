@@ -39,17 +39,23 @@ import { getAvailableDateRanges } from '../../../../../util/date-range';
 import ChangeArrow from '../../../../../components/ChangeArrow';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import {
+	UI_DIMENSION_COLOR,
+	UI_DIMENSION_VALUE,
+} from '../../../datastore/constants';
 import Link from '../../../../../components/Link';
 const { useSelect, useDispatch } = Data;
 
 export default function TotalUserCount( { loaded, error, report, dimensionValue } ) {
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
-	const { setValues } = useDispatch( CORE_FORMS );
+	const { setValues } = useDispatch( CORE_UI );
 	const showAllUsers = () => {
-		setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
+		setValues( {
+			[ UI_DIMENSION_VALUE ]: '',
+			[ UI_DIMENSION_COLOR ]: '',
+		} );
 	};
 
 	if ( ! loaded ) {
