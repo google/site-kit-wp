@@ -105,7 +105,7 @@ class Google_Proxy {
 			$request_args['body']['site_secret'] = $creds['oauth2_client_secret'];
 		}
 
-		if ( ! empty( $args['access_token'] ) ) {
+		if ( ! empty( $args['access_token'] ) && is_string( $args['access_token'] ) ) {
 			$request_args['headers']['Authorization'] = 'Bearer ' . $args['access_token'];
 		}
 
