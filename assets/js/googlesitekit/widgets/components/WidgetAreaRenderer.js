@@ -61,8 +61,6 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	} );
 
 	// Render all widgets.
-	// We want all the hooks to run, but won't render widgets if there are no active ones.
-	// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 	const widgetsOutput = widgets.map( ( widget, i ) => (
 		<WidgetRenderer
 			gridClassName={ classnames( gridClassNames[ i ] ) }
@@ -75,8 +73,13 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		/>
 	) );
 
-	if ( activeWidgets.length === 0 ) {
-		return null;
+	// Here we render the bare output as it is guaranteed to render empty.
+	// This is important compared to returning `null` so that the area
+	// can maybe render later if conditions change for widgets to become active.
+	// Returning `null` here however would have the side-effect of making
+	// all widgets active again, which is why we must return the "null" output.
+	if ( ! activeWidgets.length ) {
+		return widgetsOutput;
 	}
 
 	const { Icon, title, style, subtitle } = widgetArea;
