@@ -38,7 +38,7 @@ export default function WebStoriesAdUnitSelect() {
 
 	const { adunits, hasResolvedAdUnits } = useSelect( ( select ) => ( {
 		adunits: select( STORE_NAME ).getAdUnits( accountID, clientID ),
-		hasResolvedAdUnits: select( STORE_NAME ).hasFinishedResolution( 'getAdUnits' ),
+		hasResolvedAdUnits: select( STORE_NAME ).hasFinishedResolution( 'getAdUnits', [ accountID, clientID ] ),
 	} ) );
 
 	const { setWebStoriesAdUnit } = useDispatch( STORE_NAME );

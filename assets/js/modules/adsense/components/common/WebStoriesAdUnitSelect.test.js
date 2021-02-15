@@ -31,18 +31,21 @@ const setupRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setSettings( { accountID: TEST_ACCOUNT_ID, clientID: TEST_CLIENT_ID } );
 
 	registry.dispatch( STORE_NAME ).receiveGetAdUnits( fixtures.adunits, { accountID: TEST_ACCOUNT_ID, clientID: TEST_CLIENT_ID } );
-	registry.dispatch( STORE_NAME ).finishResolution( 'getAdUnits', [] );
+	registry.dispatch( STORE_NAME ).finishResolution( 'getAdUnits', [ TEST_ACCOUNT_ID, TEST_CLIENT_ID ] );
 };
 
 const setupLoadingRegistry = ( registry ) => {
-	registry.dispatch( STORE_NAME ).setSettings( {} );
+	registry.dispatch( STORE_NAME ).setSettings( { accountID: TEST_ACCOUNT_ID, clientID: TEST_CLIENT_ID } );
+
+	// Do not provided Ad Units in this test registry so that it will render the loading state for us.
 };
 
 describe( 'WebStoriesAdUnitSelect', () => {
 	it( 'should render an option for each AdSense ad unit', async () => {
 		const { getAllByRole } = render( <WebStoriesAdUnitSelect />, { setupRegistry } );
 
-		const listItems = getAllByRole( 'menuitem', { hidden: true } );
+		const listItems = await getAllByRole( 'menuitem', { hidden: true } );
+
 		expect( listItems ).toHaveLength( fixtures.adunits.items.length + 1 ); // + 1 accounts for the default value "Select ad unit".
 	} );
 
