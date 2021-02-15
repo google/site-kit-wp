@@ -175,14 +175,16 @@ function sortRows( rows, metrics, orderby ) {
 export function getAnalyticsMockResponse( args ) {
 	const originalSeedValue = faker.seedValue;
 	const argsHash = parseInt(
-		md5( JSON.stringify( args ) ).substring( 0, 8 ),
+		md5( args.url || 'http://example.com' ).substring( 0, 8 ),
 		16,
 	);
 
 	// We set seed for every data mock to make sure that the same arguments get the same report data.
 	// It means that everyone will have the same report data and will see the same widgets in the storybook.
 	// This approach gives us additional flexibility to control randomness on a per widget basis.
-	faker.seed( argsHash );
+	if ( ! Number.isNaN( argsHash ) ) {
+		faker.seed( argsHash );
+	}
 
 	const data = {
 		dataLastRefreshed: null,
