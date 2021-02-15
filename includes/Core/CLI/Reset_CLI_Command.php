@@ -37,6 +37,7 @@ class Reset_CLI_Command extends CLI_Command {
 	 *     wp google-site-kit reset --persistent
 	 *
 	 * @since 1.11.0
+	 * @since n.e.x.t Added --persistent flag to delete persistent options.
 	 *
 	 * @param Array $args Args.
 	 * @param Array $assoc_args Additional flags.
