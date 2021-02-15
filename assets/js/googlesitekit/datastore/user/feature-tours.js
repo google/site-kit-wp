@@ -148,10 +148,16 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Tour slug to check.
-	 * @return {boolean} `true` if dismissed, otherwise `false`.
+	 * @return {(boolean|undefined)} `undefined` if dismissed tours are not loaded yet,
+	 *                               `true` if dismissed,
+	 *                               `false` if not dismissed.
 	 */
 	isTourDismissed: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const dismissedTours = select( STORE_NAME ).getDismissedTours() || [];
+		const dismissedTours = select( STORE_NAME ).getDismissedTours();
+
+		if ( undefined === dismissedTours ) {
+			return undefined;
+		}
 
 		return dismissedTours.includes( slug );
 	} ),
