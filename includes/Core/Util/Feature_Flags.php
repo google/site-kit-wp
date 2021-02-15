@@ -66,7 +66,7 @@ class Feature_Flags {
 	public static function get_enabled_features() {
 		$enabled_features = array();
 
-		foreach ( static::$features as $feature_name => $value ) {
+		foreach ( static::$features as $feature_name ) {
 			if ( static::enabled( $feature_name ) ) {
 				$enabled_features[] = $feature_name;
 			}
