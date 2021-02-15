@@ -18,6 +18,7 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-widget.googlesitekit-widget--legacy-all-traffic-widget,
 	.googlesitekit-widget.googlesitekit-widget--analyticsAllTraffic {
 
 		.mdc-tab-scroller__scroll-content {
@@ -43,6 +44,10 @@
 		.mdc-tab__text-label {
 			letter-spacing: normal;
 			text-transform: none;
+		}
+
+		.googlesitekit-widget__footer {
+			padding-top: 0;
 		}
 	}
 
@@ -92,7 +97,6 @@
 		}
 
 		.googlesitekit-widget--analyticsAllTraffic__dimensions-container {
-			height: 100%;
 			position: relative;
 		}
 	}
@@ -171,7 +175,7 @@
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__chart {
-		min-height: 400px;
+		min-height: 368px;
 		position: relative;
 	}
 
