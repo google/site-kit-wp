@@ -150,7 +150,7 @@ const withData = (
 	/**
 	 * Map of data requests by context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.26.0
 	 *
 	 * @type {Object.<string, Object[]>}
 	 */

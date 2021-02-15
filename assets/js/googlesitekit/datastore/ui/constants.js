@@ -1,5 +1,5 @@
 /**
- * DashboardModule component.
+ * `core/ui` data store: constants.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,19 +16,5 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
-
-/**
- * A single module. Keeps track of its own active state and settings.
- */
-class DashboardModule extends Component {
-	render() {
-		return null;
-	}
-}
-
-export default withFilters( 'googlesitekit.DashboardModule' )( DashboardModule );
+export const STORE_NAME = 'core/ui';
+export { STORE_NAME as CORE_UI };

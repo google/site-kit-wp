@@ -114,8 +114,19 @@ export default function UserInputPreview( props ) {
 								<UserInputQuestionNotice />
 
 								<div className="googlesitekit-user-input__buttons">
-									<Button text onClick={ back }>{ __( 'Back', 'google-site-kit' ) }</Button>
-									<Button onClick={ submitChanges }>{ __( 'Submit', 'google-site-kit' ) }</Button>
+									<Button
+										className="googlesitekit-user-input__buttons--back"
+										onClick={ back }
+										text
+									>
+										{ __( 'Back', 'google-site-kit' ) }
+									</Button>
+									<Button
+										className="googlesitekit-user-input__buttons--next"
+										onClick={ submitChanges }
+									>
+										{ __( 'Submit', 'google-site-kit' ) }
+									</Button>
 								</div>
 							</div>
 						) }

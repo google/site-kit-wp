@@ -152,6 +152,7 @@ const webpackConfig = ( env, argv ) => {
 				'googlesitekit-datastore-user': './assets/js/googlesitekit-datastore-user.js',
 				'googlesitekit-datastore-forms': './assets/js/googlesitekit-datastore-forms.js',
 				'googlesitekit-datastore-location': './assets/js/googlesitekit-datastore-location.js',
+				'googlesitekit-datastore-ui': './assets/js/googlesitekit-datastore-ui.js',
 				'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
 				'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
 				'googlesitekit-modules-adsense': './assets/js/googlesitekit-modules-adsense.js',

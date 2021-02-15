@@ -20,18 +20,18 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
-import DashboardMain from './DashboardMain';
+import LegacyDashboardModule from './LegacyDashboardModule';
+import DashboardHeader from './DashboardHeader';
+import DashboardFooter from './DashboardFooter';
 import DashboardNotifications from './dashboard-notifications';
 import Header from '../Header';
 import DateRangeSelector from '../DateRangeSelector';
-import PageHeader from '../PageHeader';
-import { Cell, Grid, Row } from '../../material-components';
+import { Grid, Row, Cell } from '../../material-components/layout';
 import { useFeature } from '../../hooks/useFeature';
 
 export default function DashboardApp() {
@@ -45,28 +45,32 @@ export default function DashboardApp() {
 
 			<DashboardNotifications />
 
-			<div className="googlesitekit-module-page">
-				<div className="googlesitekit-dashboard">
+			{ dashboardWidgetsEnabled && (
+				<WidgetContextRenderer
+					slug="dashboard"
+					className="googlesitekit-module-page googlesitekit-dashboard"
+					Header={ DashboardHeader }
+					Footer={ DashboardFooter }
+				/>
+			) }
+
+			{ ! dashboardWidgetsEnabled && (
+				<div className="googlesitekit-module-page googlesitekit-dashboard">
 					<Grid>
 						<Row>
 							<Cell size={ 12 }>
-								<PageHeader
-									className=" googlesitekit-heading-2 googlesitekit-dashboard__heading"
-									title={ __( 'Site Overview', 'google-site-kit' ) }
-								/>
+								<DashboardHeader />
 							</Cell>
-
-							{ dashboardWidgetsEnabled && (
-								<Cell size={ 12 }>
-									<WidgetContextRenderer slug="dashboard" />
-								</Cell>
-							) }
-
-							<DashboardMain />
+							<LegacyDashboardModule
+								key={ 'googlesitekit-dashboard-module' }
+							/>
+							<Cell size={ 12 }>
+								<DashboardFooter />
+							</Cell>
 						</Row>
 					</Grid>
 				</div>
-			</div>
+			) }
 		</Fragment>
 	);
 }
