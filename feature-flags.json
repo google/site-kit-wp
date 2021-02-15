@@ -4,5 +4,6 @@
   "userInput": "development",
   "widgets.dashboard": "development",
   "widgets.pageDashboard": "development",
-  "widgets.wpDashboard": "development"
+  "widgets.wpDashboard": "development",
+  "widgets.moduleScreens": "development"
 }
