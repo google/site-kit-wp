@@ -34,8 +34,11 @@ import { useInstanceId } from '@wordpress/compose';
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import {
+	UI_DIMENSION_COLOR,
+	UI_DIMENSION_VALUE,
+} from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
@@ -57,7 +60,7 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 	// Create a unique chartID to use for this component's GoogleChart child component.
 	const chartID = `user-dimensions-pie-chart-${ useInstanceId( UserDimensionsPieChart ) }`;
 
-	const { setValues } = useDispatch( CORE_FORMS );
+	const { setValues } = useDispatch( CORE_UI );
 	const onReady = useCallback( () => {
 		setChartLoaded( true );
 
@@ -78,16 +81,16 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 							chart.setSelection( [] );
 						}
 
-						setValues(
-							FORM_ALL_TRAFFIC_WIDGET,
-							{
-								dimensionValue: isOthers ? '' : newDimensionValue,
-								dimensionColor: isOthers ? '' : slices[ row ]?.color,
-							}
-						);
+						setValues( {
+							[ UI_DIMENSION_VALUE ]: isOthers ? '' : newDimensionValue,
+							[ UI_DIMENSION_COLOR ]: isOthers ? '' : slices[ row ]?.color,
+						} );
 					}
 				} else {
-					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
+					setValues( {
+						[ UI_DIMENSION_VALUE ]: '',
+						[ UI_DIMENSION_COLOR ]: '',
+					} );
 				}
 			} );
 		}
@@ -122,18 +125,18 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 			const { row } = chart.getSelection()?.[ 0 ] || {};
 			if ( row === index ) {
 				chart.setSelection( null );
-				setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
+				setValues( {
+					[ UI_DIMENSION_VALUE ]: '',
+					[ UI_DIMENSION_COLOR ]: '',
+				} );
 			} else {
 				chart.setSelection( [ { row: index, column: null } ] );
 
 				if ( newDimensionValue ) {
-					setValues(
-						FORM_ALL_TRAFFIC_WIDGET,
-						{
-							dimensionValue: newDimensionValue,
-							dimensionColor: slices[ index ]?.color,
-						}
-					);
+					setValues( {
+						[ UI_DIMENSION_VALUE ]: newDimensionValue,
+						[ UI_DIMENSION_COLOR ]: slices[ index ]?.color,
+					} );
 				}
 			}
 		}
@@ -156,7 +159,9 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 
 				if ( selectedRow && slices[ selectedRow ]?.color ) {
 					chart.setSelection( [ { row: selectedRow } ] );
-					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: slices[ selectedRow ]?.color } );
+					setValues( {
+						[ UI_DIMENSION_COLOR ]: slices[ selectedRow ]?.color,
+					} );
 				}
 			}
 
@@ -164,7 +169,9 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 			// ensure it is no longer selected in the chart.
 			if ( ! dimensionValue && chart.getSelection().length ) {
 				chart.setSelection( [] );
-				setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: '' } );
+				setValues( {
+					[ UI_DIMENSION_COLOR ]: '',
+				} );
 			}
 		}
 	}, [ chartLoaded, chartID, dimensionValue, JSON.stringify( report ) ] );
