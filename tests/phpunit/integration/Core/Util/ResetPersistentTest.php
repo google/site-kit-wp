@@ -46,10 +46,37 @@ class ResetPersistentTest extends TestCase {
 	protected function run_reset( Context $context ) {
 		wp_load_alloptions();
 		$this->assertNotFalse( wp_cache_get( 'alloptions', 'options' ) );
-		$reset = new Reset_Persistent( $context );
+		$reset           = new Reset_Persistent( $context );
+		$user_id         = $this->factory()->user->create();
+		$is_network_mode = $context->is_network_mode();
+
+		$option_name   = 'googlesitekitpersistent_option';
+		$transient_key = 'googlesitekitpersistent_transient';
+
+		if ( $is_network_mode ) {
+			update_network_option( null, $option_name, "test-{$option_name}-value" );
+			update_user_meta( $user_id, $option_name, "test-{$option_name}-value" );
+			set_site_transient( $transient_key, "test-{$transient_key}-value" );
+		} else {
+			update_option( $option_name, 'test-foo-value' );
+			update_user_option( $user_id, $option_name, "test-{$option_name}-value" );
+			set_transient( $transient_key, "test-{$transient_key}-value" );
+		}
 		$reset->all();
 
 		// Ensure options cache is flushed (must check before accessing other options as this will re-prime the cache)
 		$this->assertFalse( wp_cache_get( 'alloptions', 'options' ) );
+
+		if ( $is_network_mode ) {
+			remove_all_filters( "default_site_option_$option_name" );
+			$this->assertFalse( get_network_option( null, $option_name ) );
+			$this->assertFalse( metadata_exists( 'user', $user_id, $option_name ) );
+			$this->assertFalse( get_site_transient( $transient_key ) );
+		} else {
+			remove_all_filters( "default_option_$option_name" );
+			$this->assertFalse( get_option( $option_name ) );
+			$this->assertFalse( get_user_option( $option_name, $user_id ) );
+			$this->assertFalse( get_transient( $transient_key ) );
+		}
 	}
 }
