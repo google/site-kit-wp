@@ -806,12 +806,18 @@ const baseSelectors = {
 	 * @param {string} moduleSlug Module slug.
 	 * @return {(null|string)}    The module's registered context string, or null.
 	 */
-	getScreenWidgetContext( state, moduleSlug ) {
-		invariant( moduleSlug, 'slug is required.' );
-		const screenWidgetContext = state.screenWidgetContext[ moduleSlug ];
+	getScreenWidgetContext: createRegistrySelector( ( select ) => ( state, moduleSlug ) => {
+		invariant( moduleSlug && moduleSlug.slug, 'slug is required.' );
+		const modules = select( STORE_NAME ).getModules();
+
+		if ( ! modules ) {
+			return null;
+		}
+
+		const screenWidgetContext = modules[ moduleSlug.slug ]?.screenWidgetContext;
 
 		return screenWidgetContext || null;
-	},
+	} ),
 };
 
 const store = Data.combineStores(
