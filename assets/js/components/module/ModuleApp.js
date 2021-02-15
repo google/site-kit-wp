@@ -25,8 +25,10 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { isFeatureEnabled } from '../../features';
 import Header from '../Header';
 import Alert from '../Alert';
+import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 
 import DateRangeSelector from '../DateRangeSelector';
 
@@ -37,13 +39,20 @@ const { useSelect } = Data;
 function ModuleApp( { moduleSlug } ) {
 	const screenWidgetContext = useSelect( ( select ) => select( CORE_MODULES ).getScreenWidgetContext( moduleSlug ) );
 	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
+	const { slug } = moduleSlug;
+	const shouldRenderWidget = isFeatureEnabled( 'widgets.moduleScreens' ) && screenWidgetContext;
+
 	return (
 		<div>
 			<Header>
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
-			<Alert module={ moduleSlug } />
-			<div>It worked { screenWidgetContext && `${ screenWidgetContext }` }</div>
+			<Alert module={ slug } />
+			{ shouldRenderWidget &&
+				<WidgetContextRenderer slug={ screenWidgetContext } />
+			}
+			<div>screenWidgetContext: { screenWidgetContext && `${ screenWidgetContext }` }</div>
+			<div>{ isFeatureEnabled( 'widgets.moduleScreens' ) && 'enabled' }</div>
 		</div>
 	);
 }
