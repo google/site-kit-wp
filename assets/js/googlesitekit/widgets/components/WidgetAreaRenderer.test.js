@@ -29,7 +29,6 @@ import {
 	unsubscribeFromAll,
 	waitFor,
 } from '../../../../../tests/js/test-utils';
-import Null from '../../../components/Null';
 
 const { useSelect } = Data;
 
@@ -52,8 +51,8 @@ const WidgetComponent = () => {
 	return ( <div>Foo bar! Connected: { isConnected ? ' yes' : 'no' }.</div> );
 };
 
-const WidgetComponentEmpty = () => {
-	return null;
+const WidgetComponentEmpty = ( { WidgetNull } ) => {
+	return <WidgetNull />;
 };
 
 const createWidgets = ( registry, areaName, widgets ) => {
@@ -103,7 +102,6 @@ describe( 'WidgetAreaRenderer', () => {
 			{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
 		] );
 
-		registry.dispatch( STORE_NAME ).setWidgetState( 'empty', Null );
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } />, { registry } );
 
 		await waitFor( () => {
@@ -281,8 +279,6 @@ describe( 'WidgetAreaRenderer', () => {
 		createWidgets( registry, areaName, [
 			{ Component: WidgetComponentEmpty, slug: 'empty', width: WIDGET_WIDTHS.HALF },
 		] );
-
-		registry.dispatch( STORE_NAME ).setWidgetState( 'empty', Null );
 
 		const widgets = registry.select( STORE_NAME ).getWidgets( areaName );
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } />, { registry } );
