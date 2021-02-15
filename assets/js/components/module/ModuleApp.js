@@ -26,6 +26,8 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import Header from '../Header';
+import Alert from '../Alert';
+
 import DateRangeSelector from '../DateRangeSelector';
 
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -40,6 +42,7 @@ function ModuleApp( { moduleSlug } ) {
 			<Header>
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
+			<Alert module={ moduleSlug } />
 			<div>It worked { screenWidgetContext && `${ screenWidgetContext }` }</div>
 		</div>
 	);
