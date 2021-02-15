@@ -263,7 +263,10 @@ final class Modules {
 			uasort(
 				$this->modules,
 				function( Module $a, Module $b ) {
-					return $a->order > $b->order;
+					if ( $a->order === $b->order ) {
+						return 0;
+					}
+					return ( $a->order < $b->order ) ? -1 : 1;
 				}
 			);
 

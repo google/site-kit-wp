@@ -1,5 +1,5 @@
 /**
- * Dashboard single URL styles.
+ * PageFooter component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,26 +16,15 @@
  * limitations under the License.
  */
 
-.googlesitekit-dashboard-single-url {
+/**
+ * Internal dependencies
+ */
+import HelpLink from './HelpLink';
 
-	.googlesitekit-dashboard-single-url__heading {
-		margin: 10px 0 0 0;
-	}
-
-	.googlesitekit-dashboard-single-url__entity-header {
-
-		// Use the same spacing as is used in layout grids.
-		@each $size in map-keys($mdc-layout-grid-columns) {
-
-			@include mdc-layout-grid-media-query_($size) {
-				$gutter: map-get($mdc-layout-grid-default-gutter, $size);
-
-				margin-top: var(--mdc-layout-grid-gutter-#{$size}, $gutter);
-			}
-		}
-	}
-
-	.googlesitekit-dashboard-single-url__title {
-		margin: 0 0 10px 0;
-	}
+export default function PageFooter() {
+	return (
+		<div className="googlesitekit-page-footer">
+			<HelpLink />
+		</div>
+	);
 }
