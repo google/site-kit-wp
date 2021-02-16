@@ -26,6 +26,7 @@ const path = require( 'path' );
  * External dependencies
  */
 const CircularDependencyPlugin = require( 'circular-dependency-plugin' );
+const ESLintPlugin = require( 'eslint-webpack-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
@@ -107,13 +108,6 @@ const rules = [
 						'@wordpress/default',
 						'@babel/preset-react',
 					],
-				},
-			},
-			{
-				loader: 'eslint-loader',
-				options: {
-					quiet: true,
-					formatter: require( 'eslint' ).CLIEngine.getFormatter( 'stylish' ),
 				},
 			},
 		],
@@ -259,6 +253,11 @@ const webpackConfig = ( env, argv ) => {
 				} ),
 				new DefinePlugin( {
 					'global.GOOGLESITEKIT_VERSION': JSON.stringify( GOOGLESITEKIT_VERSION ),
+				} ),
+				new ESLintPlugin( {
+					emitError: true,
+					emitWarning: true,
+					failOnError: mode === 'production',
 				} ),
 			],
 			optimization: {
@@ -419,6 +418,11 @@ module.exports.default = ( env, argv ) => {
 		// Build the test files if we aren't doing a production build.
 		config.push( testBundle() );
 	}
+
+	config.devServer = {
+		stats: 'errors-warnings',
+	};
+	config.stats = 'errors-warnings';
 
 	return config;
 };
