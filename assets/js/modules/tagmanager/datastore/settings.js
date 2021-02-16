@@ -85,15 +85,6 @@ export async function submitChanges( { select, dispatch } ) {
 		await dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId ); // eslint-disable-line sitekit/acronym-case
 	}
 
-	// Store the single analytics property ID in the store to allow the analytics
-	// module to restore it's snippet if tag manager is disabled in future.
-	const singleAnalyticsPropertyID = select( STORE_NAME ).getSingleAnalyticsPropertyID();
-	if ( select( CORE_SITE ).isPrimaryAMP() ) {
-		await dispatch( STORE_NAME ).setGaAMPPropertyID( singleAnalyticsPropertyID === null ? '' : singleAnalyticsPropertyID );
-	} else {
-		await dispatch( STORE_NAME ).setGaPropertyID( singleAnalyticsPropertyID === null ? '' : singleAnalyticsPropertyID );
-	}
-
 	// This action shouldn't be called if settings haven't changed,
 	// but this prevents errors in tests.
 	if ( select( STORE_NAME ).haveSettingsChanged() ) {
@@ -103,7 +94,8 @@ export async function submitChanges( { select, dispatch } ) {
 			return { error };
 		}
 
-		// Get the latest settings from the Analytics store to get the filtered value of canUseSnippet.
+		// Get the latest settings from the Analytics store to get the
+		// latest filtered value of canUseSnippet.
 		await dispatch( MODULES_ANALYTICS ).fetchGetSettings();
 	}
 

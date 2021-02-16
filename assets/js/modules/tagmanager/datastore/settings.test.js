@@ -151,6 +151,7 @@ describe( 'modules/tagmanager settings', () => {
 							return { body: data, status: 200 };
 						}
 					);
+					muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ );
 
 					const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -217,6 +218,7 @@ describe( 'modules/tagmanager settings', () => {
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
 						{ body: validSettings, status: 200 }
 					);
+					muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ );
 
 					await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -254,6 +256,7 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
 					muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/ );
+					muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ );
 					const cacheKey = createCacheKey( 'modules', 'tagmanager', 'arbitrary-datapoint' );
 					expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
 					expect( ( await getItem( cacheKey ) ).value ).not.toBeFalsy();
@@ -294,6 +297,8 @@ describe( 'modules/tagmanager settings', () => {
 							return { body: data, status: 200 };
 						}
 					);
+
+					muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ );
 
 					await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -360,6 +365,8 @@ describe( 'modules/tagmanager settings', () => {
 							return { body: data, status: 200 };
 						}
 					);
+
+					muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ );
 
 					const { error } = await registry.dispatch( STORE_NAME ).submitChanges();
 

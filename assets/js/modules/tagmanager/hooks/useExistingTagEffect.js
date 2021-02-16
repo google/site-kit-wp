@@ -55,12 +55,12 @@ export default function useExistingTagEffect() {
 			// prevent duplicate measurement.
 			// The stored property ID is then used to re-enable the Analytics snippet if
 			// Tag Manager is disconnected in future.
-			if ( singleAnalyticsPropertyID && analyticsModuleActive ) {
+			if ( singleAnalyticsPropertyID !== undefined && analyticsModuleActive ) {
 				// Set the GA property ID in the Tag Manager store.
 				if ( isPrimaryAMP ) {
-					await setGaAMPPropertyID( singleAnalyticsPropertyID );
+					await setGaAMPPropertyID( singleAnalyticsPropertyID === null ? '' : singleAnalyticsPropertyID );
 				} else {
-					await setGaPropertyID( singleAnalyticsPropertyID );
+					await setGaPropertyID( singleAnalyticsPropertyID === null ? '' : singleAnalyticsPropertyID );
 				}
 			}
 		} )();
