@@ -22,11 +22,9 @@
 import HelpLink from '../HelpLink';
 
 const ModuleFooter = () => (
-	<div className="mdc-layout-grid">
-		<div className="mdc-layout-grid__inner">
-			<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12 mdc-layout-grid__cell--align-right ">
-				<HelpLink />
-			</div>
+	<div className="mdc-layout-grid__inner">
+		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 mdc-layout-grid__cell--align-right ">
+			<HelpLink />
 		</div>
 	</div>
 );

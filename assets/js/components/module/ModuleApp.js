@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { _x, sprintf, __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * External dependencies
@@ -45,47 +46,50 @@ const { useSelect } = Data;
 
 function ModuleApp( { moduleSlug } ) {
 	const screenWidgetContext = useSelect( ( select ) => select( CORE_MODULES ).getScreenWidgetContext( moduleSlug ) );
-	const { slug } = moduleSlug;
+	const { slug, name } = moduleSlug;
+	const serviceName = _x( name, 'Service name', 'google-site-kit' ); // eslint-disable-line @wordpress/i18n-no-variables
 
 	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( slug ) );
 	const ModuleIcon = useSelect( ( select ) => select( CORE_MODULES ).getModuleIcon( slug ) );
 	const shouldRenderWidget = isFeatureEnabled( 'widgets.moduleScreens' ) && screenWidgetContext;
+	const moduleStatus = moduleConnected ? 'connected' : 'not-connected';
 	const moduleStatusText = sprintf(
 		/* translators: %s: module name. */
 		__( '%s is connected', 'google-site-kit' ),
-		_x( 'AdSense', 'Service name', 'google-site-kit' )
+		serviceName,
 	);
-	const moduleStatus = moduleConnected ? 'connected' : 'not-connected';
 
 	return (
-		<div>
+		<Fragment>
 			<Header>
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
 			<Alert module={ slug } />
 			{ shouldRenderWidget &&
-				<WidgetContextRenderer
-					slug={ screenWidgetContext }
-					className={ `googlesitekit-module-page googlesitekit-module-page--${ slug }` }
-					Header={ () => (
-						<PageHeader
-							title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
-							icon={
-								<ModuleIcon
-									className="googlesitekit-page-header__icon"
-									height="33"
-									width="33"
-								/>
-							}
-							status={ moduleStatus }
-							statusText={ moduleStatusText }
-						/>
-					) }
-				/>
+				<Fragment>
+					<WidgetContextRenderer
+						slug={ screenWidgetContext }
+						className={ `googlesitekit-module-page googlesitekit-module-page--${ slug }` }
+						Header={ () => (
+							<PageHeader
+								title={ serviceName }
+								icon={
+									<ModuleIcon
+										className="googlesitekit-page-header__icon"
+										height="21"
+										width="23"
+									/>
+								}
+								status={ moduleStatus }
+								statusText={ moduleStatusText }
+							/>
+						) }
+						Footer={ ModuleFooter }
+					/>
+				</Fragment>
 			}
-			<ModuleFooter />
 			<LegacyModuleApp />
-		</div>
+		</Fragment>
 	);
 }
 
