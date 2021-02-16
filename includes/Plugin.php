@@ -170,6 +170,7 @@ final class Plugin {
 				$screens->register();
 
 				( new Core\Util\Reset( $this->context ) )->register();
+				( new Core\Util\Reset_Persistent( $this->context ) )->register();
 				( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 				( new Core\Util\Tracking( $this->context, $user_options, $screens ) )->register();
 				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
