@@ -151,7 +151,8 @@ class SettingsModules extends Component {
 				autoActivate={ module.autoActivate }
 				updateModulesList={ this.updateModulesList }
 				handleEdit={ this.handleButtonAction }
-				handleConfirm
+				handleCancel={ this.handleButtonAction }
+				handleConfirm={ this.handleButtonAction }
 				isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
 				isOpen={ isCurrentModule && moduleState !== 'closed' }
 				handleAccordion={ this.handleAccordion }
@@ -204,6 +205,7 @@ class SettingsModules extends Component {
 		const { activeTab } = this.props;
 		const modulesBeingEdited = filter( isEditing, ( module ) => module );
 		const editActive = 0 < modulesBeingEdited.length;
+
 		if ( ! Object.values( modulesData ).length ) {
 			return null;
 		}

@@ -186,6 +186,8 @@ class SettingsModule extends Component {
 			isOpen,
 			handleAccordion,
 			handleEdit,
+			handleCancel,
+			handleConfirm,
 			description,
 			hasSettings,
 			canSubmitChanges,
@@ -344,7 +346,7 @@ class SettingsModule extends Component {
 											{ isEditing[ moduleKey ] || isSavingModule ? (
 												<Fragment>
 													<Button
-														onClick={ () => handleEdit( slug, buttonActionName, buttonAction ) }
+														onClick={ () => handleConfirm( slug, buttonActionName, buttonAction ) }
 														disabled={ isSavingModule || ! canSubmitChanges }
 														id={ hasSettings && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
 													>
@@ -354,7 +356,7 @@ class SettingsModule extends Component {
 													{ hasSettings &&
 													<Link
 														className="googlesitekit-settings-module__footer-cancel"
-														onClick={ () => handleEdit( slug, 'cancel' ) }
+														onClick={ () => handleCancel( slug ) }
 														inherit
 													>
 														{ __( 'Cancel', 'google-site-kit' ) }
@@ -464,6 +466,8 @@ SettingsModule.propTypes = {
 	homepage: PropTypes.string,
 	isEditing: PropTypes.object,
 	handleEdit: PropTypes.func,
+	handleCancel: PropTypes.func,
+	handleConfirm: PropTypes.func,
 	handleDialog: PropTypes.func,
 	autoActivate: PropTypes.bool,
 	hasSettings: PropTypes.bool,
@@ -480,6 +484,8 @@ SettingsModule.defaultProps = {
 	homepage: '',
 	isEditing: {},
 	handleEdit: null,
+	handleCancel: null,
+	handleConfirm: null,
 	handleDialog: null,
 	active: false,
 	setupComplete: false,
