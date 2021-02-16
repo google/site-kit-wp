@@ -238,7 +238,7 @@ export default withData(
 			identifier: 'adsense',
 			datapoint: 'earnings',
 			data: {
-				dateRange: 'this-month',
+				// dateRange not set here to inherit from googlesitekit.dateRange filter: last-x-days
 				dimensions: [ 'DATE' ],
 			},
 			priority: 1,
