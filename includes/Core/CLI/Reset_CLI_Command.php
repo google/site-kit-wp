@@ -29,7 +29,7 @@ class Reset_CLI_Command extends CLI_Command {
 	 * ## OPTIONS
 	 *
 	 * [--persistent]
-	 * : Remove persistent site kit options too.
+	 * : Additionally deletes persistent options.
 	 *
 	 * ## EXAMPLES
 	 *
@@ -39,8 +39,8 @@ class Reset_CLI_Command extends CLI_Command {
 	 * @since 1.11.0
 	 * @since n.e.x.t Added --persistent flag to delete persistent options.
 	 *
-	 * @param Array $args Args.
-	 * @param Array $assoc_args Additional flags.
+	 * @param array $args       Positional args.
+	 * @param array $assoc_args Additional flags.
 	 */
 	public function __invoke( $args, $assoc_args ) {
 		$reset = new Reset( $this->context );

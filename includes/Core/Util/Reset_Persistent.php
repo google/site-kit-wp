@@ -20,7 +20,7 @@ namespace Google\Site_Kit\Core\Util;
 class Reset_Persistent extends Reset {
 
 	/**
-	 * MySQL key pattern for all Site Kit keys.
+	 * MySQL key pattern for all persistent Site Kit keys.
 	 */
 	const KEY_PATTERN = 'googlesitekitpersistent\_%';
 

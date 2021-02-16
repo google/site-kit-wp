@@ -36,9 +36,10 @@ import {
  * @since 1.0.0
  * @since n.e.x.t Option to reset persistent options.
  *
- * @param {Object} options Reset Site kit Options.
+ * @param {Object}  [options]            Reset options.
+ * @param {boolean} [options.persistent] Additionally deletes persistent options.
  */
-export async function resetSiteKit( options = { persistent: false } ) {
+export async function resetSiteKit( { persistent = false } = {} ) {
 	if ( ! page.url().includes( '/wp-admin' ) ) {
 		await visitAdminPage( '/' );
 	}
@@ -53,12 +54,13 @@ export async function resetSiteKit( options = { persistent: false } ) {
 		page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/core/site/data/reset' ) ),
 	];
 
-	if ( options.persistent ) {
+	if ( persistent ) {
 		promises.push(
 			wpApiFetch( {
 				path: 'google-site-kit/v1/core/site/data/reset-persistent',
 				method: 'post',
-			} )
+			} ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/core/site/data/reset-persistent' ) )
 		);
 	}
 
