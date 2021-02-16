@@ -1,5 +1,5 @@
 /**
- * DashboardDetailsModule component.
+ * Page footer styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,19 +16,8 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
-
-/**
- * A single module. Keeps track of its own active state and settings.
- */
-class DashboardDetailsModule extends Component {
-	render() {
-		return null;
-	}
+.googlesitekit-page-footer {
+	display: flex;
+	justify-content: flex-end;
+	margin: 0;
 }
-
-export default withFilters( 'googlesitekit.DashboardDetailsModule' )( DashboardDetailsModule );
