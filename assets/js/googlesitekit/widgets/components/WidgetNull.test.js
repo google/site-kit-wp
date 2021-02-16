@@ -20,11 +20,41 @@
  * Internal dependencies
  */
 import WidgetNull from './WidgetNull';
-import { render } from '../../../../../tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideModules,
+	provideUserCapabilities,
+	render,
+} from '../../../../../tests/js/test-utils';
+import { STORE_NAME } from '../datastore/constants';
+import Null from '../../../components/Null';
 
 describe( 'WidgetNull', () => {
+	let registry;
+
+	beforeAll( () => {
+		registry = createTestRegistry();
+		provideModules( registry );
+		provideUserCapabilities( registry );
+	} );
+
 	it( 'should return an empty element', async () => {
-		const { container } = render( <WidgetNull widgetSlug="TestWidget" /> );
-		expect( container ).toBeEmptyDOMElement();
+		const widgetSlug = 'TestWidget';
+
+		// Initial state should be null.
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toBe( null );
+
+		const widget = render( <WidgetNull widgetSlug={ widgetSlug } />, { registry } );
+
+		expect( widget.container ).toBeEmptyDOMElement();
+
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toMatchObject( {
+			Component: Null,
+			metadata: {},
+		} );
+
+		// Special state should be unset again upon unmount.
+		widget.unmount();
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toBe( null );
 	} );
 } );
