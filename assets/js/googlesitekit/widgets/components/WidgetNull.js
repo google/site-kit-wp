@@ -29,7 +29,7 @@ import Null from '../../../components/Null';
 
 // The supported props must match `Null` (except `widgetSlug`).
 export default function WidgetNull( { widgetSlug } ) {
-	useWidgetStateEffect( widgetSlug, Null );
+	useWidgetStateEffect( widgetSlug, Null, null );
 
 	return <Null />;
 }
