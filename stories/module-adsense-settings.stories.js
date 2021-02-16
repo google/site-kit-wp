@@ -66,8 +66,10 @@ const completeSettings = {
 const Settings = createLegacySettingsWrapper( 'adsense' );
 
 const setUpAdUnits = ( registry ) => {
-	registry.dispatch( STORE_NAME ).receiveGetAdUnits( fixtures.adunits, { accountID: fixtures.accounts[ 0 ].id, clientID: fixtures.clients[ 0 ].id } );
-	registry.dispatch( STORE_NAME ).finishResolution( 'getAdUnits', [] );
+	const accountID = fixtures.accounts[ 0 ].id;
+	const clientID = fixtures.clients[ 0 ].id;
+	registry.dispatch( STORE_NAME ).receiveGetAdUnits( fixtures.adunits, { accountID, clientID } );
+	registry.dispatch( STORE_NAME ).finishResolution( 'getAdUnits', [ accountID, clientID ] );
 };
 
 storiesOf( 'AdSense Module/Settings', module )
