@@ -29,7 +29,6 @@
  *
  * @param {number} seconds The number of seconds.
  * @return {Array} Array containing the hours, minutes, seconds and milliseconds.
- *
  */
 export const convertSecondsToArray = ( seconds ) => {
 	seconds = parseFloat( seconds );
@@ -42,6 +41,6 @@ export const convertSecondsToArray = ( seconds ) => {
 		Math.floor( seconds / 60 / 60 ),
 		Math.floor( ( seconds / 60 ) % 60 ),
 		Math.floor( seconds % 60 ),
-		parseInt( parseFloat( seconds ).toFixed( 3 ).slice( -3 ) ),
+		( Math.floor( seconds * 1000 ) ) - ( Math.floor( seconds ) * 1000 ),
 	];
 };
