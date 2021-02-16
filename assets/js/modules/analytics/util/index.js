@@ -33,7 +33,7 @@ import { __, sprintf, _x } from '@wordpress/i18n';
 import { getLocale } from '../../../util/i18n';
 import calculateOverviewData from './calculateOverviewData';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
-import { numFmt, prepareSecondsForDisplay, prepareSecondsArray } from '../../../util';
+import { convertSecondsToArray, numFmt, prepareSecondsForDisplay } from '../../../util';
 
 export { calculateOverviewData };
 
@@ -281,8 +281,8 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 				<p>${ dateRange }</p>
 				<p>${ statInfo }</p>
 			</div>`,
-			isSessionDuration ? prepareSecondsArray( row[ 1 ] ) : row[ 1 ],
-			isSessionDuration ? prepareSecondsArray( previousMonthData[ i ][ 1 ] ) : previousMonthData[ i ][ 1 ],
+			isSessionDuration ? convertSecondsToArray( row[ 1 ] ) : row[ 1 ],
+			isSessionDuration ? convertSecondsToArray( previousMonthData[ i ][ 1 ] ) : previousMonthData[ i ][ 1 ],
 		] );
 	} );
 
