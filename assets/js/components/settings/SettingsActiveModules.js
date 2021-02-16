@@ -98,17 +98,17 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 							name={ module.name }
 							description={ module.description }
 							homepage={ module.homepage }
-							learnmore={ deprecatedModulesData[ module.slug ].learnMore }
+							learnmore={ deprecatedModulesData[ module.slug ]?.learnMore }
 							active={ module.active }
 							setupComplete={ module.active && module.connected }
-							autoActivate={ deprecatedModulesData[ module.slug ].autoActivate }
+							autoActivate={ deprecatedModulesData[ module.slug ]?.autoActivate }
 							handleEdit={ onEdit }
 							handleConfirm={ onConfirm }
 							handleCancel={ onCancel }
 							isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
 							isOpen={ activeModule === module.slug && moduleState !== 'closed' }
 							handleAccordion={ handleAccordion }
-							provides={ deprecatedModulesData[ module.slug ].provides }
+							provides={ deprecatedModulesData[ module.slug ]?.provides }
 							isSaving={ isSaving }
 							error={ error }
 						/>

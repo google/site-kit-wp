@@ -40,7 +40,6 @@ import Layout from '../layout/Layout';
 import HelpLink from '../HelpLink';
 import SettingsActiveModules from './SettingsActiveModules';
 import SettingsInactiveModules from './SettingsInactiveModules';
-import SettingsModules from './SettingsModules';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../material-components';
 
@@ -141,14 +140,6 @@ export default function SettingsApp() {
 							)
 						}
 
-						{ [ 'settings', 'connect' ].includes( activeTabID ) && ( // TODO Refactor SettingsModules into separate components.
-							<SettingsModules
-								activeTab={ activeTab }
-								activeModule={ moduleSlug }
-								moduleState={ moduleState }
-								setModuleState={ setModuleState }
-							/>
-						) }
 						{ 'admin' === activeTabID && (
 							<SettingsAdmin />
 						) }
