@@ -35,6 +35,7 @@ import Header from '../Header';
 import Alert from '../Alert';
 import PageHeader from '../PageHeader';
 import ModuleFooter from './ModuleFooter';
+import LegacyModuleApp from './LegacyModuleApp';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 
 import DateRangeSelector from '../DateRangeSelector';
@@ -82,9 +83,8 @@ function ModuleApp( { moduleSlug } ) {
 					) }
 				/>
 			}
-			<div>screenWidgetContext: { screenWidgetContext && `${ screenWidgetContext }` }</div>
-			<div>{ isFeatureEnabled( 'widgets.moduleScreens' ) && 'enabled' }</div>
 			<ModuleFooter />
+			<LegacyModuleApp />
 		</div>
 	);
 }
