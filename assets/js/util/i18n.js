@@ -24,7 +24,7 @@ import { get, isFinite, isPlainObject } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __, sprintf, _x } from '@wordpress/i18n';
 
 /**
  * Converts seconds to a display ready string indicating
@@ -33,28 +33,48 @@ import { __, sprintf } from '@wordpress/i18n';
  * For example, passing 65 returns '1m 5s'.
  *
  * @since 1.0.0
+ * @since n.e.x.t Refactored and renamed to improve localization.
  *
- * @param {number} seconds The number of seconds.
- * @return {string} Human readable string indicating time elapsed.
- *
+ * @param {number}                     seconds   The number of seconds.
+ * @param {(Intl.NumberFormatOptions)} [options] Optional formatting options.
+ * @return {string}   		Human readable string indicating time elapsed.
  */
-export const prepareSecondsForDisplay = ( seconds ) => {
+const durationFormat = ( seconds, options = {} ) => {
 	seconds = parseInt( seconds, 10 );
 
-	if ( isNaN( seconds ) || 0 === seconds ) {
-		return '0.0s';
+	if ( isNaN( seconds ) ) {
+		seconds = 0;
 	}
-	const results = {};
-	results.hours = Math.floor( seconds / 60 / 60 );
-	results.minutes = Math.floor( ( seconds / 60 ) % 60 );
-	results.seconds = Math.floor( seconds % 60 );
 
-	const returnString =
-		( results.hours ? results.hours + 'h ' : '' ) +
-		( results.minutes ? results.minutes + 'm ' : '' ) +
-		( results.seconds ? results.seconds + 's ' : '' );
+	let hours = Math.floor( seconds / 60 / 60 ) || '';
+	let minutes = Math.floor( ( seconds / 60 ) % 60 ) || '';
 
-	return returnString.trim();
+	seconds = Math.floor( seconds % 60 );
+
+	if ( hours ) {
+		hours = numberFormat( hours, {
+			style: 'unit',
+			unit: 'hour',
+			...options,
+		} );
+	}
+
+	if ( minutes ) {
+		minutes = numberFormat( minutes, {
+			style: 'unit',
+			unit: 'minute',
+			...options,
+		} );
+	}
+
+	seconds = numberFormat( seconds, {
+		style: 'unit',
+		unit: 'second',
+		...options,
+	} );
+
+	/* translators: 1: hours, 2: minutes, 3: seconds */
+	return _x( '%$1s %$2s %$3s', 'duration of time', 'google-site-kit' );
 };
 
 /**
@@ -183,7 +203,7 @@ export const numFmt = ( number, options = {} ) => {
 	}
 
 	if ( 'duration' === style ) {
-		return prepareSecondsForDisplay( number );
+		return durationFormat( number );
 	}
 
 	return numberFormat( number, formatOptions );
