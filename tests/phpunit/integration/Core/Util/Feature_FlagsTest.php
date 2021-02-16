@@ -64,4 +64,15 @@ class Feature_FlagsTest extends TestCase {
 		$this->assertTrue( Feature_Flags::enabled( 'test_feature' ) );
 	}
 
+	public function test_enabled_without_filter() {
+		remove_all_filters( 'googlesitekit_is_feature_enabled' );
+		Feature_Flags::set_features(
+			array(
+				'test_feature',
+			)
+		);
+
+		$this->assertFalse( Feature_Flags::enabled( 'test_feature' ) );
+	}
+
 }

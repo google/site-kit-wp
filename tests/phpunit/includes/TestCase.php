@@ -38,11 +38,15 @@ class TestCase extends \WP_UnitTestCase {
 	public static function tearDownAfterClass() {
 		parent::tearDownAfterClass();
 		self::reset_feature_flags();
+		self::reset_build_mode();
 	}
 
 	protected static function reset_feature_flags() {
-		Build_Mode::set_mode( Build_Mode::MODE_PRODUCTION );
 		Feature_Flags::set_features( self::$featureFlagsConfig );
+	}
+
+	protected static function reset_build_mode() {
+		Build_Mode::set_mode( Build_Mode::MODE_PRODUCTION );
 	}
 
 	/**

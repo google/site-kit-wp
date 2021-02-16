@@ -10,8 +10,6 @@
 
 namespace Google\Site_Kit\Core\Util;
 
-use ArrayAccess;
-
 /**
  * Class for interacting with build mode configuration.
  *
@@ -51,7 +49,7 @@ class Build_Mode {
 	 *
 	 * @return string Current mode.
 	 */
-	private static function get_mode() {
+	public static function get_mode() {
 		/**
 		 * Filter the build mode.
 		 *
