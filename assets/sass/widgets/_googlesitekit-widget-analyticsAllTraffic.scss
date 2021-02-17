@@ -18,6 +18,7 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-widget.googlesitekit-widget--legacy-all-traffic-widget,
 	.googlesitekit-widget.googlesitekit-widget--analyticsAllTraffic {
 
 		.mdc-tab-scroller__scroll-content {
@@ -160,6 +161,14 @@
 
 		& span {
 			font-weight: 300;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__tabs--small {
+		text-align: center;
+
+		@media (min-width: $bp-tablet) {
+			display: none;
 		}
 	}
 

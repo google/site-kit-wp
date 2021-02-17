@@ -1,5 +1,5 @@
 /**
- * Dashboard single URL styles.
+ * LegacyDashboardModule component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,26 +16,19 @@
  * limitations under the License.
  */
 
-.googlesitekit-dashboard-single-url {
+/**
+ * WordPress dependencies
+ */
+import { withFilters } from '@wordpress/components';
+import { Component } from '@wordpress/element';
 
-	.googlesitekit-dashboard-single-url__heading {
-		margin: 10px 0 0 0;
-	}
-
-	.googlesitekit-dashboard-single-url__entity-header {
-
-		// Use the same spacing as is used in layout grids.
-		@each $size in map-keys($mdc-layout-grid-columns) {
-
-			@include mdc-layout-grid-media-query_($size) {
-				$gutter: map-get($mdc-layout-grid-default-gutter, $size);
-
-				margin-top: var(--mdc-layout-grid-gutter-#{$size}, $gutter);
-			}
-		}
-	}
-
-	.googlesitekit-dashboard-single-url__title {
-		margin: 0 0 10px 0;
+/**
+ * A single module. Keeps track of its own active state and settings.
+ */
+class LegacyDashboardModule extends Component {
+	render() {
+		return null;
 	}
 }
+
+export default withFilters( 'googlesitekit.DashboardModule' )( LegacyDashboardModule );
