@@ -22,17 +22,11 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { doAction } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
 import GoogleLogoIcon from '../assets/svg/logo-g.svg';
 import SiteKitLogoIcon from '../assets/svg/logo-sitekit.svg';
 import WPDashboardApp from '../assets/js/components/wp-dashboard/WPDashboardApp';
-import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
@@ -56,10 +50,6 @@ import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/data
 
 storiesOf( 'WordPress', module )
 	.add( 'WordPress Dashboard', () => {
-		global._googlesitekitLegacyData = wpDashboardData;
-		global._googlesitekitLegacyData.admin.assetsRoot = ''; // See .storybook/config.js
-		global._googlesitekitLegacyData.canAdsRun = true;
-
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveSiteInfo( {
 				usingProxy: true,
@@ -104,13 +94,6 @@ storiesOf( 'WordPress', module )
 			dispatch( MODULES_ANALYTICS ).receiveGetReport( wpDashboardPopularPagesData, { options: wpDashboardPopularPagesArgs } );
 			dispatch( MODULES_ANALYTICS ).finishResolution( 'getReport', [ wpDashboardPopularPagesArgs ] );
 		};
-
-		setTimeout( () => {
-			doAction(
-				'googlesitekit.moduleLoaded',
-				'WPDashboard'
-			);
-		}, 250 );
 
 		return (
 			<div id="dashboard-widgets">
