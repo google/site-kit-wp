@@ -17,13 +17,22 @@
  */
 
 /**
+ * External dependencies
+ */
+import classNames from 'classnames';
+
+/**
  * Internal dependencies
  */
 import HelpLink from '../HelpLink';
 
 const ModuleFooter = () => (
 	<div className="mdc-layout-grid__inner">
-		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 mdc-layout-grid__cell--align-right ">
+		<div className={ classNames( [
+			'mdc-layout-grid__cell',
+			'mdc-layout-grid__cell--span-12',
+			'mdc-layout-grid__cell--align-right',
+		] ) }>
 			<HelpLink />
 		</div>
 	</div>

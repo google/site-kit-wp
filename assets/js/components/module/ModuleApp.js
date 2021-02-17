@@ -26,6 +26,7 @@ import { Fragment } from '@wordpress/element';
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 /**
  * Internal dependencies
@@ -66,7 +67,10 @@ function ModuleApp( { moduleName, moduleSlug } ) {
 				<Fragment>
 					<WidgetContextRenderer
 						slug={ screenWidgetContext }
-						className={ `googlesitekit-module-page googlesitekit-module-page--${ moduleSlug }` }
+						className={ classNames( [
+							'googlesitekit-module-page',
+							`googlesitekit-module-page--${ moduleSlug }`,
+						] ) }
 						Header={ () => (
 							<PageHeader
 								title={ moduleName }
