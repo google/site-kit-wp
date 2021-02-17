@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { _x, sprintf, __ } from '@wordpress/i18n';
+import { sprintf, __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 
 /**
@@ -44,19 +44,16 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 const { useSelect } = Data;
 
-function ModuleApp( { moduleSlug } ) {
+function ModuleApp( { moduleName, moduleSlug } ) {
 	const screenWidgetContext = useSelect( ( select ) => select( CORE_MODULES ).getScreenWidgetContext( moduleSlug ) );
-	const { slug, name } = moduleSlug;
-	const serviceName = _x( name, 'Service name', 'google-site-kit' ); // eslint-disable-line @wordpress/i18n-no-variables
-
-	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( slug ) );
-	const ModuleIcon = useSelect( ( select ) => select( CORE_MODULES ).getModuleIcon( slug ) );
+	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleSlug ) );
+	const ModuleIcon = useSelect( ( select ) => select( CORE_MODULES ).getModuleIcon( moduleSlug ) );
 	const shouldRenderWidget = isFeatureEnabled( 'widgets.moduleScreens' ) && screenWidgetContext;
 	const moduleStatus = moduleConnected ? 'connected' : 'not-connected';
 	const moduleStatusText = sprintf(
 		/* translators: %s: module name. */
 		__( '%s is connected', 'google-site-kit' ),
-		serviceName,
+		moduleName,
 	);
 
 	return (
@@ -64,15 +61,15 @@ function ModuleApp( { moduleSlug } ) {
 			<Header>
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
-			<Alert module={ slug } />
+			<Alert module={ moduleSlug } />
 			{ shouldRenderWidget &&
 				<Fragment>
 					<WidgetContextRenderer
 						slug={ screenWidgetContext }
-						className={ `googlesitekit-module-page googlesitekit-module-page--${ slug }` }
+						className={ `googlesitekit-module-page googlesitekit-module-page--${ moduleSlug }` }
 						Header={ () => (
 							<PageHeader
-								title={ serviceName }
+								title={ moduleName }
 								icon={
 									<ModuleIcon
 										className="googlesitekit-page-header__icon"
@@ -94,7 +91,8 @@ function ModuleApp( { moduleSlug } ) {
 }
 
 ModuleApp.propTypes = {
-	moduleSlug: PropTypes.object,
+	moduleName: PropTypes.string,
+	moduleSlug: PropTypes.string,
 };
 
 export default ModuleApp;
