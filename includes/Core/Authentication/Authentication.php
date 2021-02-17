@@ -1289,12 +1289,19 @@ final class Authentication {
 	 * @return boolean State flag from the proxy server if it is available, otherwise the original value.
 	 */
 	private function filter_features_via_proxy( $feature_enabled, $feature_name ) {
+		if ( ! $this->credentials->has() ) {
+			return $feature_enabled;
+		}
+
 		$transient_name = 'googlesitekit_remote_features';
 		$features       = $this->transients->get( $transient_name );
-		if ( empty( $features ) ) {
+		if ( false === $features ) {
 			$features = $this->google_proxy->get_features( $this->credentials );
-			$ttl      = is_wp_error( $features ) ? HOUR_IN_SECONDS : DAY_IN_SECONDS;
-			$this->transients->set( $transient_name, $features, $ttl );
+			if ( is_wp_error( $features ) ) {
+				$this->transients->set( $transient_name, array(), HOUR_IN_SECONDS );
+			} else {
+				$this->transients->set( $transient_name, $features, DAY_IN_SECONDS );
+			}
 		}
 
 		if ( ! is_wp_error( $features ) && isset( $features[ $feature_name ]['enabled'] ) ) {

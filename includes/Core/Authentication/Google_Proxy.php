@@ -97,7 +97,11 @@ class Google_Proxy {
 
 		if ( $credentials && $credentials instanceof Credentials ) {
 			if ( ! $credentials->has() ) {
-				return new WP_Error( 'oauth_credentials_not_exist', __( 'OAuth credentials haven\'t been found.', 'google-site-kit' ), array( 'status' => 401 ) );
+				return new WP_Error(
+					'oauth_credentials_not_exist',
+					__( 'OAuth credentials haven\'t been found.', 'google-site-kit' ),
+					array( 'status' => 401 )
+				);
 			}
 
 			$creds                               = $credentials->get();
@@ -134,7 +138,11 @@ class Google_Proxy {
 		}
 
 		if ( is_null( $body ) ) {
-			return new WP_Error( 'failed_to_parse_response', __( 'Failed to parse response.', 'google-site-kit' ), array( 'status' => 500 ) );
+			return new WP_Error(
+				'failed_to_parse_response',
+				__( 'Failed to parse response.', 'google-site-kit' ),
+				array( 'status' => 500 )
+			);
 		}
 
 		return $body;
@@ -303,7 +311,11 @@ class Google_Proxy {
 		}
 
 		if ( ! isset( $response_data['site_id'], $response_data['site_secret'] ) ) {
-			return new WP_Error( 'oauth_credentials_not_exist' );
+			return new WP_Error(
+				'oauth_credentials_not_exist',
+				__( 'OAuth credentials haven\'t been found.', 'google-site-kit' ),
+				array( 'status' => 401 )
+			);
 		}
 
 		return $response_data;
