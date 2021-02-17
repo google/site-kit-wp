@@ -917,7 +917,10 @@ final class OAuth_Client {
 			array(
 				'credentials_retrieval',
 				'short_verification_token',
+				// Informs the proxy the user input feature is generally supported.
 				'user_input_flow',
+				// Informs the proxy the user input feature is already enabled locally.
+				// TODO: Remove once the feature is fully rolled out.
 				Feature_Flags::enabled( 'userInput' ) ? 'user_input_flow_feature' : false,
 				$this->supports_file_verification() ? 'file_verification' : false,
 			)
