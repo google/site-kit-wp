@@ -29,17 +29,4 @@
 	+ label {
 		margin-left: 10px;
 	}
-
-	// Prevent the background checkbox from becoming visible when setting a
-	// switch to the disabled state.
-	input[type="checkbox"].disabled,
-	input[type="checkbox"].disabled:checked::before,
-	input[type="checkbox"]:disabled,
-	input[type="checkbox"]:disabled:checked::before,
-	input[type="radio"].disabled,
-	input[type="radio"].disabled:checked::before,
-	input[type="radio"]:disabled,
-	input[type="radio"]:disabled:checked::before {
-		opacity: 0;
-	}
 }
