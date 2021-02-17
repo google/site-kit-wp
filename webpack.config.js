@@ -238,7 +238,10 @@ const webpackConfig = ( env, argv ) => {
 				new CreateFileWebpack( {
 					path: './dist',
 					fileName: 'config.json',
-					content: JSON.stringify( { flagMode, features } ),
+					content: JSON.stringify( {
+						buildMode: flagMode,
+						features,
+					} ),
 				} ),
 				new ManifestPlugin( {
 					fileName: path.resolve( __dirname, 'includes/Core/Assets/Manifest.php' ),
