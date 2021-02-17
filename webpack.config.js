@@ -419,9 +419,6 @@ module.exports.default = ( env, argv ) => {
 		config.push( testBundle() );
 	}
 
-	config.devServer = {
-		stats: 'errors-warnings',
-	};
 	config.stats = 'errors-warnings';
 
 	return config;
