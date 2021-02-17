@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
-use Google\Site_Kit\Core\Modules\Module_With_Admin_Bar;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
@@ -41,9 +40,6 @@ use Google\Site_Kit\Modules\Analytics\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics\Web_Tag;
 use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRangeValues;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_Report;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_ReportData;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsRequest;
@@ -72,7 +68,7 @@ use Exception;
  * @ignore
  */
 final class Analytics extends Module
-	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Admin_Bar, Module_With_Debug_Fields, Module_With_Owner {
+	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -203,22 +199,6 @@ final class Analytics extends Module
 	public function on_deactivation() {
 		$this->get_settings()->delete();
 		$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
-	}
-
-	/**
-	 * Checks if the module is active in the admin bar for the given URL.
-	 *
-	 * @since 1.4.0
-	 *
-	 * @param string $url URL to determine active state for.
-	 * @return bool
-	 */
-	public function is_active_in_admin_bar( $url ) {
-		if ( ! $this->is_connected() ) {
-			return false;
-		}
-
-		return $this->has_data_for_url( $url );
 	}
 
 	/**
@@ -1272,62 +1252,6 @@ final class Analytics extends Module
 				)
 			),
 		);
-	}
-
-	/**
-	 * Checks whether Analytics data exists for the given URL.
-	 *
-	 * @since 1.4.0
-	 *
-	 * @param string $url The url to check data for.
-	 * @return bool
-	 */
-	protected function has_data_for_url( $url ) {
-		if ( ! $url ) {
-			return false;
-		}
-
-		$transient_key = 'googlesitekit_analytics_has_data_' . md5( $url );
-		$has_data      = get_transient( $transient_key );
-
-		if ( false === $has_data ) {
-			/* @var Google_Service_AnalyticsReporting_Report[]|WP_Error $reports Array of reporting report instances. */
-			$reports = $this->get_data(
-				'report',
-				array(
-					'url'     => $url,
-					'metrics' => array(
-						array( 'expression' => 'ga:users' ),
-						array( 'expression' => 'ga:sessions' ),
-					),
-				)
-			);
-
-			if ( is_wp_error( $reports ) ) {
-				$reports = array(); // Bypass data check and cache.
-			}
-
-			foreach ( $reports as $report ) {
-				/* @var Google_Service_AnalyticsReporting_Report $report Report instance. */
-				$report_data = $report->getData();
-				/* @var Google_Service_AnalyticsReporting_ReportData $report_data Report data instance. */
-				foreach ( $report_data->getTotals() as $date_range_values ) {
-					/* @var Google_Service_AnalyticsReporting_DateRangeValues $date_range_values Values instance. */
-					if (
-						isset( $date_range_values[0], $date_range_values[1] )
-						&& ( 0 < $date_range_values[0] || 0 < $date_range_values[1] )
-					) {
-						$has_data = true;
-						break 2;
-					}
-				}
-			}
-
-			// Cache "data found" status for one day, "no data" status for one hour.
-			set_transient( $transient_key, (int) $has_data, $has_data ? DAY_IN_SECONDS : HOUR_IN_SECONDS );
-		}
-
-		return (bool) $has_data;
 	}
 
 	/**

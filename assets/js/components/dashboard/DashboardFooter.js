@@ -1,5 +1,5 @@
 /**
- * DashboardDetailsEntityHeaderContainer component.
+ * DashboardFooter component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,31 +17,12 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * Internal dependencies
  */
-import Layout from '../layout/Layout';
+import PageFooter from '../PageFooter';
 
-export default function DashboardDetailsEntityHeaderContainer( { children } ) {
+export default function DashboardFooter() {
 	return (
-		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-			<Layout>
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-							{ children }
-						</div>
-					</div>
-				</div>
-			</Layout>
-		</div>
+		<PageFooter />
 	);
 }
-
-DashboardDetailsEntityHeaderContainer.propTypes = {
-	children: PropTypes.node.isRequired,
-};

@@ -29,7 +29,7 @@ export { registerStore } from './datastore';
 /**
  * Creates a new instance of Modules.
  *
- * @since n.e.x.t
+ * @since 1.26.0
  *
  * @param {Object}   registry          Datastore registry.
  * @param {Function} registry.dispatch Registry dispatch function.
