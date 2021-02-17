@@ -57,6 +57,21 @@ function ModuleApp( { moduleName, moduleSlug } ) {
 		moduleName,
 	);
 
+	const ModuleHeader = () => (
+		<PageHeader
+			title={ moduleName }
+			icon={
+				<ModuleIcon
+					className="googlesitekit-page-header__icon"
+					height="21"
+					width="23"
+				/>
+			}
+			status={ moduleStatus }
+			statusText={ moduleStatusText }
+		/>
+	);
+
 	return (
 		<Fragment>
 			<Header>
@@ -71,20 +86,7 @@ function ModuleApp( { moduleName, moduleSlug } ) {
 							'googlesitekit-module-page',
 							`googlesitekit-module-page--${ moduleSlug }`,
 						] ) }
-						Header={ () => (
-							<PageHeader
-								title={ moduleName }
-								icon={
-									<ModuleIcon
-										className="googlesitekit-page-header__icon"
-										height="21"
-										width="23"
-									/>
-								}
-								status={ moduleStatus }
-								statusText={ moduleStatusText }
-							/>
-						) }
+						Header={ ModuleHeader }
 						Footer={ ModuleFooter }
 					/>
 				</Fragment>
