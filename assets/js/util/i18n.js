@@ -34,6 +34,7 @@ import { __, sprintf, _x } from '@wordpress/i18n';
  *
  * @since 1.0.0
  * @since n.e.x.t Refactored and renamed to improve localization.
+ * @private
  *
  * @param {number}                     seconds   The number of seconds.
  * @param {(Intl.NumberFormatOptions)} [options] Optional formatting options.
