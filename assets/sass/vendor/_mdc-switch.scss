@@ -24,15 +24,15 @@
 		transition: none;
 		vertical-align: middle;
 		width: 68px;
+
+		// Prevent the background checkbox from becoming visible when a switch
+		// loads or is set in the disabled state.
+		&::before {
+			opacity: 0 !important;
+		}
 	}
 
 	+ label {
 		margin-left: 10px;
-	}
-
-	// Prevent the background checkbox from becoming visible when a switch
-	// loads or is set in the disabled state.
-	.mdc-switch__native-control::before {
-		opacity: 0 !important;
 	}
 }
