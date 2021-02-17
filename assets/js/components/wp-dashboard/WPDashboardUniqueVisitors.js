@@ -31,9 +31,10 @@ import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
 import { calculateChange } from '../../util';
 import DataBlock from '../DataBlock';
+import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
-const WPDashboardUniqueVisitors = () => {
+const WPDashboardUniqueVisitors = ( { WidgetReportZero } ) => {
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
@@ -59,6 +60,10 @@ const WPDashboardUniqueVisitors = () => {
 
 	if ( error ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
+	}
+
+	if ( isZeroReport( data ) ) {
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	const { totals } = data[ 0 ].data;

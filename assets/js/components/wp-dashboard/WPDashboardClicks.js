@@ -34,10 +34,9 @@ import sumObjectListValue from '../../util/sum-object-list-value';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
-import ReportZero from '../ReportZero';
 const { useSelect } = Data;
 
-const WPDashboardClicks = () => {
+const WPDashboardClicks = ( { WidgetReportZero } ) => {
 	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
@@ -68,7 +67,7 @@ const WPDashboardClicks = () => {
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="search-console" />;
+		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
 	const half = Math.floor( data.length / 2 );
