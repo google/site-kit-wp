@@ -23,6 +23,7 @@ use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Scopes;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit_Dependencies\Google\Task\Runner;
 use Google\Site_Kit_Dependencies\Google_Service_PeopleService;
 use WP_HTTP_Proxy;
@@ -908,6 +909,7 @@ final class OAuth_Client {
 	 * @since 1.1.2 Added 'credentials_retrieval'
 	 * @since 1.2.0 Added 'short_verification_token' (Supported as of 1.0.1)
 	 * @since 1.26.0 Added 'user_input_flow'
+	 * @since n.e.x.t Added 'user_input_flow_feature' (temporarily)
 	 * @return array Array of supported features.
 	 */
 	private function get_proxy_setup_supports() {
@@ -916,6 +918,7 @@ final class OAuth_Client {
 				'credentials_retrieval',
 				'short_verification_token',
 				'user_input_flow',
+				Feature_Flags::enabled( 'userInput' ) ? 'user_input_flow_feature' : false,
 				$this->supports_file_verification() ? 'file_verification' : false,
 			)
 		);
