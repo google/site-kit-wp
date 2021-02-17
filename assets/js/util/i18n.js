@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { get, isFinite, isPlainObject } from 'lodash';
+import { get, isFinite, isPlainObject, omit } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -74,7 +74,9 @@ const durationFormat = ( seconds, options = { unitDisplay: 'short' } ) => {
 	} );
 
 	/* translators: 1: hours, 2: minutes, 3: seconds */
-	return _x( '%$1s %$2s %$3s', 'duration of time', 'google-site-kit' );
+	const formattedString = sprintf( _x( '%1$s %2$s %3$s', 'google-site-kit', 'google-site-kit' ), hours, minutes, seconds );
+
+	return formattedString.trim();
 };
 
 /**
@@ -183,10 +185,9 @@ export const numFmt = ( number, options = {} ) => {
 			maximumFractionDigits: 2,
 		};
 	} else if ( 's' === options ) {
-		formatOptions = {
-			style: 'duration',
+		return durationFormat( number, {
 			unitDisplay: 'narrow',
-		};
+		} );
 	} else if ( !! options && typeof options === 'string' ) {
 		formatOptions = {
 			style: 'currency',
@@ -201,10 +202,9 @@ export const numFmt = ( number, options = {} ) => {
 
 	if ( 'metric' === style ) {
 		return readableLargeNumber( number );
-	}
-
-	if ( 'duration' === style ) {
-		return durationFormat( number );
+	} else if ( 'duration' === style ) {
+		formatOptions = omit( options, 'style' );
+		return durationFormat( number, formatOptions );
 	}
 
 	return numberFormat( number, formatOptions );

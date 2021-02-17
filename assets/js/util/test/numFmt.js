@@ -107,6 +107,36 @@ describe( 'numFmt', () => {
 			'',
 			`999`,
 		],
+		[
+			'en_US',
+			9,
+			's',
+			`9s`,
+		],
+		[
+			'en_US',
+			( 60 * 60 * 3 ) + ( 60 * 5 ) + 12,
+			's',
+			'3h 5m 12s',
+		],
+		[
+			'en_US',
+			( 60 * 60 * 3 ) + ( 60 * 5 ) + 12,
+			{ style: 'duration' },
+			'3 hr 5 min 12 sec',
+		],
+		[
+			'en_US',
+			( 60 * 60 * 3 ) + ( 60 * 5 ) + 12,
+			{ style: 'duration', unitDisplay: 'narrow' },
+			'3h 5m 12s',
+		],
+		[
+			'en_US',
+			( 60 * 60 * 3 ) + ( 60 * 5 ) + 12,
+			{ style: 'duration', unitDisplay: 'long' },
+			'3 hours 5 minutes 12 seconds',
+		],
 	];
 
 	it.each( siteKitLocales )( 'formats numbers correctly with locale variant %s', ( locale, number, unit, expected ) => {
