@@ -39,7 +39,7 @@ import { __, sprintf, _x } from '@wordpress/i18n';
  * @param {(Intl.NumberFormatOptions)} [options] Optional formatting options.
  * @return {string}   		Human readable string indicating time elapsed.
  */
-const durationFormat = ( seconds, options = {} ) => {
+const durationFormat = ( seconds, options = { unitDisplay: 'short' } ) => {
 	seconds = parseInt( seconds, 10 );
 
 	if ( isNaN( seconds ) ) {
@@ -185,6 +185,7 @@ export const numFmt = ( number, options = {} ) => {
 	} else if ( 's' === options ) {
 		formatOptions = {
 			style: 'duration',
+			unitDisplay: 'narrow',
 		};
 	} else if ( !! options && typeof options === 'string' ) {
 		formatOptions = {
