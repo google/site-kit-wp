@@ -128,17 +128,21 @@ class User_Input_Settings {
 	private function sync_with_proxy( $settings = null ) {
 		$user_input_settings_url = $this->authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
 		$creds                   = $this->authentication->credentials()->get();
+		$access_token            = $this->authentication->get_oauth_client()->get_access_token();
 
 		$user_input_settings_args = array(
 			'headers' => array(
-				'Authorization' => 'Bearer ' . $this->authentication->get_oauth_client()->get_access_token(),
-				'Content-Type'  => 'application/json',
+				'Content-Type' => 'application/json',
 			),
 			'body'    => array(
 				'site_id'     => $creds['oauth2_client_id'],
 				'site_secret' => $creds['oauth2_client_secret'],
 			),
 		);
+
+		if ( ! empty( $access_token ) && is_string( $access_token ) ) {
+			$user_input_settings_args['headers']['Authorization'] = 'Bearer ' . $access_token;
+		}
 
 		if ( ! empty( $settings ) ) {
 			$user_input_settings_args['body']['settings']       = $settings;

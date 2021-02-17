@@ -1,7 +1,7 @@
-{
-  "serviceSetupV2": "development",
-  "storeErrorNotifications": "development",
-  "userInput": "development",
-  "widgets.dashboard": "development",
-  "widgets.pageDashboard": "development"
-}
+[
+  "serviceSetupV2",
+  "storeErrorNotifications",
+  "userInput",
+  "widgets.dashboard",
+  "widgets.pageDashboard"
+]

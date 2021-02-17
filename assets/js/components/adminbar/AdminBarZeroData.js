@@ -1,5 +1,5 @@
 /**
- * DashboardModule component.
+ * Admin Bar Zero Data component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,16 +19,19 @@
 /**
  * WordPress dependencies
  */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
-/**
- * A single module. Keeps track of its own active state and settings.
- */
-class DashboardModule extends Component {
-	render() {
-		return null;
-	}
-}
+const AdminBarZeroData = () => {
+	return (
+		<div>
+			<div className="googlesitekit-adminbar__subtitle googlesitekit-font-weight-bold">
+				{ __( 'No data available yet', 'google-site-kit' ) }
+			</div>
+			<div className="googlesitekit-adminbar__subtitle">
+				{ __( 'There is no data available for this content yet. This could be because it was recently created or because nobody has accessed it so far.', 'google-site-kit' ) }
+			</div>
+		</div>
+	);
+};
 
-export default withFilters( 'googlesitekit.DashboardModule' )( DashboardModule );
+export default AdminBarZeroData;

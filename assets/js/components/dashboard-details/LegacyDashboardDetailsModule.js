@@ -1,5 +1,5 @@
 /**
- * DashboardDetailsModule component.
+ * LegacyDashboardDetailsModule component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -25,10 +25,10 @@ import { Component } from '@wordpress/element';
 /**
  * A single module. Keeps track of its own active state and settings.
  */
-class DashboardDetailsModule extends Component {
+class LegacyDashboardDetailsModule extends Component {
 	render() {
 		return null;
 	}
 }
 
-export default withFilters( 'googlesitekit.DashboardDetailsModule' )( DashboardDetailsModule );
+export default withFilters( 'googlesitekit.DashboardDetailsModule' )( LegacyDashboardDetailsModule );

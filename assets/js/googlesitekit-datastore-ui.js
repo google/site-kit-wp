@@ -1,5 +1,5 @@
 /**
- * DashboardModules component.
+ * Entrypoint for the `core/ui` data store.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,39 +16,13 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import { Fragment } from 'react';
-
-/**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
+// This import has side effects; it registers the core/ui datastore
+// on the default data store (`googlesitekit.data`).
 
 /**
  * Internal dependencies
  */
-import HelpLink from '../HelpLink';
-import DashboardModule from './dashboard-module';
+import Data from 'googlesitekit-data';
+import { registerStore } from './googlesitekit/datastore/ui';
 
-class DashboardModules extends Component {
-	render() {
-		return (
-			<Fragment>
-				<DashboardModule
-					key={ 'googlesitekit-dashboard-module' }
-				/>
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-					mdc-layout-grid__cell--align-right
-				">
-					<HelpLink />
-				</div>
-			</Fragment>
-		);
-	}
-}
-
-export default DashboardModules;
+registerStore( Data );

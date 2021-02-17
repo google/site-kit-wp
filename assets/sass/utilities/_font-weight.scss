@@ -1,5 +1,5 @@
 /**
- * DashboardMain component.
+ * Font Weight utilities.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,23 +16,10 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import DashboardModules from './DashboardModules';
-/**
- * WordPress dependencies
- */
-import { Component, Fragment } from '@wordpress/element';
+.googlesitekit-plugin {
 
-class DashboardMain extends Component {
-	render() {
-		return (
-			<Fragment>
-				<DashboardModules />
-			</Fragment>
-		);
+	.googlesitekit-font-weight-bold {
+		font-weight: 700 !important;
 	}
-}
 
-export default DashboardMain;
+}
