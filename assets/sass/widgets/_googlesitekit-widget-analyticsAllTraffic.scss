@@ -167,6 +167,14 @@
 		}
 	}
 
+	.googlesitekit-widget--analyticsAllTraffic__tabs--small {
+		text-align: center;
+
+		@media (min-width: $bp-tablet) {
+			display: none;
+		}
+	}
+
 	.googlesitekit-widget--analyticsAllTraffic__tabs--loading {
 		display: flex;
 		flex-direction: row;

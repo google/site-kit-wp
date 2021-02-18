@@ -35,8 +35,9 @@ import DashboardDetailsApp from '../assets/js/components/dashboard-details/Dashb
 
 storiesOf( 'Dashboard Details', module )
 	.add( 'Existing Entity', () => {
-		// Ensure widget API is disabled and don't display legacy widgets either.
-		// TODO: Expand this story to include new widgets once legacy widgets are no longer used.
+		// Ensure legacy widgets are not displayed. The new widgets should not be displayed either,
+		// but that is already the case since the Widgets API is behind a feature flag.
+		// TODO: Delete this hook removal once legacy widgets are no longer used.
 		removeAllFilters( 'googlesitekit.DashboardDetailsModule' );
 
 		const setupRegistry = ( registry ) => {
@@ -49,13 +50,8 @@ storiesOf( 'Dashboard Details', module )
 			} );
 		};
 
-		const enabledFeatures = [
-			'storeErrorNotifications', // Needed to enable datastore errors in the Header component.
-			'widgets.pageDashboard', // Needed to ensure the new widget area appears.
-		];
-
 		return (
-			<WithTestRegistry callback={ setupRegistry } features={ enabledFeatures }>
+			<WithTestRegistry callback={ setupRegistry }>
 				<DashboardDetailsApp />
 			</WithTestRegistry>
 		);

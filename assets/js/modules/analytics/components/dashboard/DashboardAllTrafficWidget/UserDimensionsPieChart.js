@@ -33,8 +33,11 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import {
+	UI_DIMENSION_COLOR,
+	UI_DIMENSION_VALUE,
+} from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChartV2 from '../../../../../components/GoogleChartV2';
@@ -56,9 +59,9 @@ export default function UserDimensionsPieChart( {
 	const notSetSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
 		path: '/analytics/answer/2820717',
 	} ) );
-	const dimensionColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) );
+	const dimensionColor = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) );
 
-	const { setValues } = useDispatch( CORE_FORMS );
+	const { setValues } = useDispatch( CORE_UI );
 
 	const chartWrapperRef = useRef();
 
@@ -75,15 +78,15 @@ export default function UserDimensionsPieChart( {
 
 			const { row } = chartWrapperRef.current.getChart().getSelection()?.[ 0 ] || {};
 			if ( row === index ) {
-				setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
+				setValues( {
+					[ UI_DIMENSION_VALUE ]: '',
+					[ UI_DIMENSION_COLOR ]: '',
+				} );
 			} else if ( newDimensionValue ) {
-				setValues(
-					FORM_ALL_TRAFFIC_WIDGET,
-					{
-						dimensionValue: newDimensionValue,
-						dimensionColor: slices[ index ]?.color,
-					}
-				);
+				setValues( {
+					[ UI_DIMENSION_COLOR ]: isOthers ? '' : slices[ row ]?.color,
+					[ UI_DIMENSION_VALUE ]: isOthers ? '' : newDimensionValue,
+				} );
 			}
 		}
 	};
@@ -106,22 +109,23 @@ export default function UserDimensionsPieChart( {
 	const onSelect = ( { chartWrapper } ) => {
 		const chart = chartWrapper.getChart();
 		const { row } = chart.getSelection()?.[ 0 ] || {};
-		if ( row !== null && row !== undefined ) {
+
+		if ( row === null || row === undefined ) {
+			setValues( {
+				[ UI_DIMENSION_VALUE ]: '',
+				[ UI_DIMENSION_COLOR ]: '',
+			} );
+		} else {
 			const dataTable = chartWrapper.getDataTable();
 			if ( dataTable ) {
 				const newDimensionValue = dataTable.getValue( row, 0 );
 				const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
 
-				setValues(
-					FORM_ALL_TRAFFIC_WIDGET,
-					{
-						dimensionValue: isOthers ? '' : newDimensionValue,
-						dimensionColor: isOthers ? '' : slices[ row ]?.color,
-					}
-				);
+				setValues( {
+					[ UI_DIMENSION_COLOR ]: isOthers ? '' : slices[ row ]?.color,
+					[ UI_DIMENSION_VALUE ]: isOthers ? '' : newDimensionValue,
+				} );
 			}
-		} else {
-			setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
 		}
 	};
 
@@ -138,7 +142,9 @@ export default function UserDimensionsPieChart( {
 					chart.setSelection( [ { row: selectedRow } ] );
 
 					if ( dimensionColor !== slices[ selectedRow ]?.color ) {
-						setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: slices[ selectedRow ]?.color } );
+						setValues( {
+							[ UI_DIMENSION_COLOR ]: slices[ selectedRow ]?.color,
+						} );
 					}
 				}
 			}
@@ -151,7 +157,9 @@ export default function UserDimensionsPieChart( {
 
 			// If no dimensionValue is set, unset the color.
 			if ( ! dimensionValue && dimensionColor !== '' ) {
-				setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: '' } );
+				setValues( {
+					[ UI_DIMENSION_COLOR ]: '',
+				} );
 			}
 		}
 	};
