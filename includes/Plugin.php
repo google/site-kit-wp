@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit;
 
+use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\JSON_File;
 
@@ -169,6 +170,7 @@ final class Plugin {
 				$screens->register();
 
 				( new Core\Util\Reset( $this->context ) )->register();
+				( new Core\Util\Reset_Persistent( $this->context ) )->register();
 				( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 				( new Core\Util\Tracking( $this->context, $user_options, $screens ) )->register();
 				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
@@ -246,7 +248,7 @@ final class Plugin {
 		}
 
 		$config = new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.json' );
-		Feature_Flags::set_mode( $config['flagMode'] );
+		Build_Mode::set_mode( $config['buildMode'] );
 		Feature_Flags::set_features( (array) $config['features'] );
 
 		static::$instance = new static( $main_file );
@@ -254,4 +256,5 @@ final class Plugin {
 
 		return true;
 	}
+
 }
