@@ -26,6 +26,7 @@ import memize from 'memize';
  */
 import Widget from '../components/Widget';
 import WidgetReportZero from '../components/WidgetReportZero';
+import WidgetReportError from '../components/WidgetReportError';
 import WidgetActivateModuleCTA from '../components/WidgetActivateModuleCTA';
 import WidgetCompleteModuleActivationCTA from '../components/WidgetCompleteModuleActivationCTA';
 import WidgetNull from '../components/WidgetNull';
@@ -45,6 +46,7 @@ export const getWidgetComponentProps = memize(
 		return {
 			Widget: withWidgetSlug( widgetSlug )( Widget ),
 			WidgetReportZero: withWidgetSlug( widgetSlug )( WidgetReportZero ),
+			WidgetReportError: withWidgetSlug( widgetSlug )( WidgetReportError ),
 			WidgetActivateModuleCTA: withWidgetSlug( widgetSlug )( WidgetActivateModuleCTA ),
 			WidgetCompleteModuleActivationCTA: withWidgetSlug( widgetSlug )( WidgetCompleteModuleActivationCTA ),
 			WidgetNull: withWidgetSlug( widgetSlug )( WidgetNull ),
