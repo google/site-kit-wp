@@ -139,10 +139,19 @@ export const selectors = {
 		if ( accountID === undefined ) {
 			return undefined;
 		}
+		const query = {
+			...reportArgs,
+		};
+		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
+		const domain = siteURL && parseDomain( siteURL );
+
+		if ( domain ) {
+			query.dd = `1YsiteY1Y${ domain }Y${ domain }`;
+		}
 
 		const path = `${ accountID }/reporting`;
 
-		return select( STORE_NAME ).getServiceURL( { path, query: reportArgs } );
+		return select( STORE_NAME ).getServiceURL( { path, query } );
 	} ),
 
 	/**
