@@ -36,6 +36,7 @@ import { calculateChange } from '../../../../util';
 import { getURLPath } from '../../../../util/getURLPath';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
@@ -83,6 +84,7 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			serviceURL: store.getServiceReportURL( 'visitors-overview', {
 				'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+				...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
 			} ),
 		};
 	} );

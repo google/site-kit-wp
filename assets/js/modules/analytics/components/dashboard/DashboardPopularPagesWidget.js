@@ -34,6 +34,8 @@ import { getDataTableFromData } from '../../../../components/data-table';
 import { numFmt } from '../../../../util';
 import { isZeroReport } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
+
 const { useSelect } = Data;
 
 function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
@@ -45,7 +47,7 @@ function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
+		const { startDate, endDate, compareStartDate, compareEndDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
 		const args = {
 			startDate,
 			endDate,
@@ -69,7 +71,10 @@ function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 		};
 
 		return {
-			analyticsMainURL: store.getServiceReportURL( 'content-pages' ),
+			analyticsMainURL: store.getServiceReportURL(
+				'content-pages',
+				generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
+			),
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
