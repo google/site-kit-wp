@@ -43,9 +43,7 @@ function GoogleSitekitModule() {
 		return <ModuleSetup moduleSlug={ moduleToSetup } />;
 	}
 
-	const { name, slug } = global.googlesitekitCurrentModule;
-
-	return <ModuleApp moduleName={ name } moduleSlug={ slug } />;
+	return <ModuleApp slug={ global.googlesitekitCurrentModule.slug } />;
 }
 
 // Initialize the app once the DOM is ready.

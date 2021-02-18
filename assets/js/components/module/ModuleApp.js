@@ -45,21 +45,23 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 const { useSelect } = Data;
 
-function ModuleApp( { moduleName, moduleSlug } ) {
-	const screenWidgetContext = useSelect( ( select ) => select( CORE_MODULES ).getScreenWidgetContext( moduleSlug ) );
-	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleSlug ) );
-	const ModuleIcon = useSelect( ( select ) => select( CORE_MODULES ).getModuleIcon( moduleSlug ) );
+function ModuleApp( { slug } ) {
+	const { name } = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) ) || {};
+	const screenWidgetContext = useSelect( ( select ) => select( CORE_MODULES ).getScreenWidgetContext( slug ) );
+	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( slug ) );
+	const ModuleIcon = useSelect( ( select ) => select( CORE_MODULES ).getModuleIcon( slug ) );
 	const shouldRenderWidget = isFeatureEnabled( 'widgets.moduleScreens' ) && screenWidgetContext;
 	const moduleStatus = moduleConnected ? 'connected' : 'not-connected';
+
 	const moduleStatusText = sprintf(
 		/* translators: %s: module name. */
 		__( '%s is connected', 'google-site-kit' ),
-		moduleName,
+		name,
 	);
 
 	const ModuleHeader = () => (
 		<PageHeader
-			title={ moduleName }
+			title={ name }
 			icon={
 				<ModuleIcon
 					className="googlesitekit-page-header__icon"
@@ -77,14 +79,14 @@ function ModuleApp( { moduleName, moduleSlug } ) {
 			<Header>
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
-			<Alert module={ moduleSlug } />
+			<Alert module={ slug } />
 			{ shouldRenderWidget &&
 				<Fragment>
 					<WidgetContextRenderer
 						slug={ screenWidgetContext }
 						className={ classNames( [
 							'googlesitekit-module-page',
-							`googlesitekit-module-page--${ moduleSlug }`,
+							`googlesitekit-module-page--${ slug }`,
 						] ) }
 						Header={ ModuleHeader }
 						Footer={ ModuleFooter }
@@ -97,8 +99,7 @@ function ModuleApp( { moduleName, moduleSlug } ) {
 }
 
 ModuleApp.propTypes = {
-	moduleName: PropTypes.string,
-	moduleSlug: PropTypes.string,
+	slug: PropTypes.string,
 };
 
 export default ModuleApp;
