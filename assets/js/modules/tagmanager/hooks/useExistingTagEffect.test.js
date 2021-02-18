@@ -112,8 +112,8 @@ describe( 'useExistingTagEffect', () => {
 			resolve();
 		} ) );
 
-		const gaPropertyID = registry.select( STORE_NAME ).getGAPropertyID();
+		const propertyID = registry.select( STORE_NAME ).getGAPropertyID();
 
-		expect( gaPropertyID ).toBe( TEST_GA_PROPERTY_ID );
+		expect( propertyID ).toBe( TEST_GA_PROPERTY_ID );
 	} );
 } );
