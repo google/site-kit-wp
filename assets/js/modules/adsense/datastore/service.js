@@ -126,7 +126,7 @@ export const selectors = {
 	} ),
 
 	/**
-	 * Returns the service URL to an AdSense account's site overview page.
+	 * Returns the service URL to an AdSense account report.
 	 *
 	 * @since n.e.x.t
 	 *
