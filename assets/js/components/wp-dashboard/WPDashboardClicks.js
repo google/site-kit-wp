@@ -33,10 +33,9 @@ import { calculateChange, trackEvent } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
-import ReportError from '../ReportError';
 const { useSelect } = Data;
 
-const WPDashboardClicks = ( { WidgetReportZero } ) => {
+const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
@@ -63,7 +62,7 @@ const WPDashboardClicks = ( { WidgetReportZero } ) => {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="search-console" error={ error } />;
+		return <WidgetReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {
