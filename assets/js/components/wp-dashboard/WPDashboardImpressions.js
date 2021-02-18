@@ -32,26 +32,25 @@ import { isZeroReport } from '../../modules/search-console/util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import ReportError from '../ReportError';
-import ReportZero from '../ReportZero';
 import { calculateChange, trackEvent } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 const { useSelect } = Data;
 
-const WPDashboardImpressions = () => {
+const WPDashboardImpressions = ( { WidgetReportZero } ) => {
 	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
 
-	const args = {
+	const reportArgs = {
 		startDate: compareStartDate,
 		endDate,
 		dimensions: 'date',
 	};
 
-	const data = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( args ) );
-	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ args ] ) );
-	const loading = useSelect( ( select ) => ! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const data = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ) );
+	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
+	const loading = useSelect( ( select ) => ! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 
 	useEffect( () => {
 		if ( error ) {
@@ -68,7 +67,7 @@ const WPDashboardImpressions = () => {
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="search-console" />;
+		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
 	const half = Math.floor( data.length / 2 );

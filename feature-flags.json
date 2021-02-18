@@ -3,6 +3,5 @@
   "storeErrorNotifications",
   "userInput",
   "widgets.dashboard",
-  "widgets.pageDashboard",
-  "widgets.wpDashboard"
+  "widgets.pageDashboard"
 ]

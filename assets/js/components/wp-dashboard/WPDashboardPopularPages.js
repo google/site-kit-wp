@@ -32,11 +32,10 @@ import ReportError from '../ReportError';
 import { numFmt } from '../../util';
 import TableOverflowContainer from '../../components/TableOverflowContainer';
 import { getDataTableFromData } from '../../components/data-table';
-import ReportZero from '../../components/ReportZero';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
-const WPDashboardPopularPages = () => {
+const WPDashboardPopularPages = ( { WidgetReportZero } ) => {
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
@@ -76,7 +75,7 @@ const WPDashboardPopularPages = () => {
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	const headers = [
