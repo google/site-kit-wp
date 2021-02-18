@@ -25,7 +25,6 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
@@ -38,9 +37,8 @@ export default function useExistingTagEffect() {
 
 	const singleAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
-	const isPrimaryAMP = useSelect( ( select ) => select( CORE_SITE ).isPrimaryAMP() );
 
-	const { selectAccount, selectContainerByID, setGaAMPPropertyID, setGaPropertyID } = useDispatch( STORE_NAME );
+	const { selectAccount, selectContainerByID, setGAPropertyID } = useDispatch( STORE_NAME );
 
 	useEffect( () => {
 		( async () => {
@@ -57,11 +55,7 @@ export default function useExistingTagEffect() {
 			// Tag Manager is disconnected in future.
 			if ( singleAnalyticsPropertyID !== undefined && analyticsModuleActive ) {
 				// Set the GA property ID in the Tag Manager store.
-				if ( isPrimaryAMP ) {
-					await setGaAMPPropertyID( singleAnalyticsPropertyID === null ? '' : singleAnalyticsPropertyID );
-				} else {
-					await setGaPropertyID( singleAnalyticsPropertyID === null ? '' : singleAnalyticsPropertyID );
-				}
+				await setGAPropertyID( singleAnalyticsPropertyID === null ? '' : singleAnalyticsPropertyID );
 			}
 		} )();
 	}, [ hasExistingTag, existingTag, hasExistingTagPermission, existingTagPermission, singleAnalyticsPropertyID, analyticsModuleActive ] );

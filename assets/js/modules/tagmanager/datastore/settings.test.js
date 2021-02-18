@@ -38,6 +38,7 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 	muteFetch,
+	provideModules,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
@@ -72,15 +73,11 @@ describe( 'modules/tagmanager settings', () => {
 		accountID: '100',
 		containerID: 'GTM-WEB1234',
 		internalContainerID: '300',
-		// ampContainerID: '',
-		// internalAMPContainerID: '',
 		useSnippet: true,
 	};
 
 	const validSettingsAMP = {
 		accountID: '100',
-		// containerID: '',
-		// internalContainerID: '',
 		ampContainerID: 'GTM-AMP1234',
 		internalAMPContainerID: '399',
 		useSnippet: true,
@@ -99,6 +96,12 @@ describe( 'modules/tagmanager settings', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
+
+		// Provide an inactive Analytics module so that we aren't testing the singleAnalyticsPropertyID in every test.
+		provideModules( registry, [ {
+			slug: 'analytics',
+			active: false,
+		} ] );
 	} );
 
 	afterEach( () => {
@@ -151,7 +154,7 @@ describe( 'modules/tagmanager settings', () => {
 							return { body: data, status: 200 };
 						}
 					);
-					muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ );
+					muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
 
 					const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -218,7 +221,7 @@ describe( 'modules/tagmanager settings', () => {
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
 						{ body: validSettings, status: 200 }
 					);
-					muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ );
+					muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
 
 					await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -256,7 +259,6 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
 					muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/ );
-					muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ );
 					const cacheKey = createCacheKey( 'modules', 'tagmanager', 'arbitrary-datapoint' );
 					expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
 					expect( ( await getItem( cacheKey ) ).value ).not.toBeFalsy();
@@ -297,8 +299,7 @@ describe( 'modules/tagmanager settings', () => {
 							return { body: data, status: 200 };
 						}
 					);
-
-					muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ );
+					muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
 
 					await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -324,6 +325,8 @@ describe( 'modules/tagmanager settings', () => {
 				beforeEach( () => setSecondaryAMP() );
 
 				it( 'dispatches createContainer for both web and AMP containers when selected', async () => {
+					muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
+
 					registry.dispatch( STORE_NAME ).setSettings( {
 						...validSettings,
 						containerID: CONTAINER_CREATE,
@@ -365,8 +368,7 @@ describe( 'modules/tagmanager settings', () => {
 							return { body: data, status: 200 };
 						}
 					);
-
-					muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ );
+					muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
 
 					const { error } = await registry.dispatch( STORE_NAME ).submitChanges();
 

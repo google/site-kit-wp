@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
-import { createTestRegistry, provideModules, provideSiteInfo, untilResolved } from '../../../../../tests/js/utils';
+import { createTestRegistry, provideModules, untilResolved } from '../../../../../tests/js/utils';
 import { STORE_NAME, CONTEXT_WEB } from '../datastore/constants';
 import * as factories from '../datastore/__factories__';
 import {
@@ -40,11 +40,7 @@ describe( 'useExistingTagEffect', () => {
 		// Provide an activated Analytics module.
 		provideModules( registry, [ {
 			slug: 'analytics',
-			name: 'Analytics',
 			active: true,
-			connected: true,
-			setupComplete: true,
-			SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
 		} ] );
 	} );
 
@@ -102,39 +98,22 @@ describe( 'useExistingTagEffect', () => {
 		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( existingContainer.containerId );
 	} );
 
-	it( 'sets the gaPropertyId when property ID exists and analytics is active', async () => {
+	it( 'sets the GAPropertyID when property ID exists and Analytics is active', async () => {
 		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
 
-		const WEB_PROPERTY_ID = 'UA-123456789-1';
-		const AMP_PROPERTY_ID = 'UA-987654321-9';
+		const TEST_GA_PROPERTY_ID = 'UA-123456789-1';
 
 		buildAndReceiveWebAndAMP( {
-			webPropertyID: WEB_PROPERTY_ID,
-			ampPropertyID: AMP_PROPERTY_ID,
+			webPropertyID: TEST_GA_PROPERTY_ID,
 		} );
 
-		let rerender;
-
 		await act( () => new Promise( async ( resolve ) => {
-			( { rerender } = renderHook( () => useExistingTagEffect(), { registry } ) );
+			renderHook( () => useExistingTagEffect(), { registry } );
 			resolve();
 		} ) );
 
-		const gaPropertyID = registry.select( STORE_NAME ).getGaPropertyID();
+		const gaPropertyID = registry.select( STORE_NAME ).getGAPropertyID();
 
-		expect( gaPropertyID ).toBe( WEB_PROPERTY_ID );
-
-		await act( () => new Promise( async ( resolve ) => {
-			act( () => {
-				provideSiteInfo( registry, {
-					ampMode: 'primary',
-				} );
-			} );
-			rerender();
-			resolve();
-		} ) );
-		const gaAMPPropertyID = registry.select( STORE_NAME ).getGaAMPPropertyID();
-
-		expect( gaAMPPropertyID ).toBe( AMP_PROPERTY_ID );
+		expect( gaPropertyID ).toBe( TEST_GA_PROPERTY_ID );
 	} );
 } );

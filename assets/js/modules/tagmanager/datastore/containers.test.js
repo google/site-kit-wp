@@ -41,7 +41,6 @@ describe( 'modules/tagmanager containers', () => {
 		internalContainerID: '',
 		useSnippet: true,
 		gaPropertyID: '',
-		gaAMPPropertyID: '',
 	};
 
 	beforeAll( () => {

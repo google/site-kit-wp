@@ -96,7 +96,11 @@ export async function submitChanges( { select, dispatch } ) {
 
 		// Get the latest settings from the Analytics store to get the
 		// latest filtered value of canUseSnippet.
-		await dispatch( MODULES_ANALYTICS ).fetchGetSettings();
+		const singleAnalyticsPropertyID = select( STORE_NAME ).getSingleAnalyticsPropertyID();
+		const analyticsModuleActive = select( CORE_MODULES ).isModuleActive( 'analytics' );
+		if ( singleAnalyticsPropertyID !== undefined && analyticsModuleActive ) {
+			await dispatch( MODULES_ANALYTICS ).fetchGetSettings();
+		}
 	}
 
 	await API.invalidateCache( 'modules', 'tagmanager' );

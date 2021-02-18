@@ -650,15 +650,14 @@ final class Tag_Manager extends Module
 	 * @return boolean Filtered value.
 	 */
 	private function can_analytics_use_snippet( $original_value ) {
-		$is_amp          = $this->context->is_amp();
-		$module_settings = $this->get_settings();
-		$settings        = $module_settings->get();
+		$settings = $this->get_settings()->get();
 
-		$property_id = $is_amp
-			? $settings['gaAMPPropertyID']
-			: $settings['gaPropertyID'];
-
-		if ( ! empty( $property_id ) && $settings['useSnippet'] ) {
+		// The GAPropertyID is set by Tag Manager when it's own snippet shares the GA ID
+		// of an existing, active, Analytics tag.
+		// Returning false here disables the useSnippet setting in the Analytics setting
+		// and shows a message to the user explaining that the snippet is now controlled
+		// by Tag Manager.
+		if ( ! empty( $settings['GAPropertyID'] ) && $settings['useSnippet'] ) {
 			return false;
 		}
 
