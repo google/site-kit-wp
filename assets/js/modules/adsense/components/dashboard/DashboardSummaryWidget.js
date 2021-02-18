@@ -34,11 +34,10 @@ import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
-import ReportError from '../../../../components/ReportError';
 
 const { useSelect } = Data;
 
-function DashboardSummaryWidget( { Widget, WidgetReportZero } ) {
+function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		error,
 		loading,
@@ -86,7 +85,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero } ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="adsense" error={ error } />;
+		return <WidgetReportError moduleSlug="adsense" error={ error } />;
 	}
 
 	if ( isZeroReport( today ) && isZeroReport( period ) && isZeroReport( daily ) ) {

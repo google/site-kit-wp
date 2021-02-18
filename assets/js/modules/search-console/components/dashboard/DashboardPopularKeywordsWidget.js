@@ -34,13 +34,12 @@ import { getDataTableFromData } from '../../../../components/data-table';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import ReportError from '../../../../components/ReportError';
 import { isZeroReport } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
-function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero } ) {
+function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		data,
 		error,
@@ -88,7 +87,7 @@ function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero } ) {
 		return <PreviewTable padding />;
 	}
 	if ( error ) {
-		return <ReportError moduleSlug="search-console" error={ error } />;
+		return <WidgetReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {
