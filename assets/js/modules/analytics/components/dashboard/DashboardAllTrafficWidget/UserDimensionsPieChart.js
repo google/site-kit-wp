@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useRef, useState } from '@wordpress/element';
+import { Fragment, useRef, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -42,6 +42,7 @@ import { numberFormat, sanitizeHTML } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChartV2 from '../../../../../components/GoogleChartV2';
 import Link from '../../../../../components/Link';
+import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( {
@@ -324,7 +325,7 @@ export default function UserDimensionsPieChart( {
 				</GoogleChartV2>
 
 				<div className="googlesitekit-widget--analyticsAllTraffic__legend">
-					{ dataMap?.slice( 1 ).map( ( [ label ], i ) => {
+					{ loaded && dataMap?.slice( 1 ).map( ( [ label ], i ) => {
 						const isActive = label === dimensionValue;
 						const sliceColor = slices[ i ]?.color;
 						const isOthers = __( 'Others', 'google-site-kit' ) === label;
@@ -351,6 +352,30 @@ export default function UserDimensionsPieChart( {
 							</Link>
 						);
 					} ) }
+
+					{ ! loaded && (
+						<Fragment>
+							<span className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
+								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
+								<PreviewBlock height="18px" width="68px" shape="square" />
+							</span>
+
+							<span className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
+								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
+								<PreviewBlock height="18px" width="52px" shape="square" />
+							</span>
+
+							<span className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
+								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
+								<PreviewBlock height="18px" width="40px" shape="square" />
+							</span>
+
+							<span className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
+								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
+								<PreviewBlock height="18px" width="52px" shape="square" />
+							</span>
+						</Fragment>
+					) }
 				</div>
 			</div>
 		</div>
