@@ -1,7 +1,7 @@
 /**
  * Provides a datastore for getting existing tags
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_SITE } from '../datastore/site/constants';
+import { CORE_SITE } from '../datastore/site/constants';
 import { getExistingTagURLs, extractExistingTag } from '../../util/tag';
 
 const { createRegistryControl, createRegistrySelector } = Data;

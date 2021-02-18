@@ -1,7 +1,7 @@
 /**
  * `core/widgets` data store
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@
  */
 import Data from 'googlesitekit-data';
 import areas from './areas';
-import { STORE_NAME } from './constants';
 import widgets from './widgets';
 import { createErrorStore } from '../../data/create-error-store';
+import { STORE_NAME } from './constants';
 
 const store = Data.combineStores(
 	Data.commonStore,
@@ -32,7 +32,8 @@ const store = Data.combineStores(
 	createErrorStore(),
 );
 
-// Register this store on the global registry.
-Data.registerStore( STORE_NAME, store );
+export const registerStore = ( registry ) => {
+	registry.registerStore( STORE_NAME, store );
+};
 
 export default store;

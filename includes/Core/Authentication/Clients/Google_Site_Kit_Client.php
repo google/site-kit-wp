@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -103,10 +103,10 @@ class Google_Site_Kit_Client extends Google_Client {
 			$callback = $this->getConfig( 'token_callback' );
 
 			try {
-				$creds = $this->fetchAccessTokenWithRefreshToken( $token['refresh_token'] );
+				$token_response = $this->fetchAccessTokenWithRefreshToken( $token['refresh_token'] );
 				if ( $callback ) {
 					// Due to original callback signature this can only accept the token itself.
-					call_user_func( $callback, '', $creds['access_token'] );
+					call_user_func( $callback, '', $token_response['access_token'] );
 				}
 			} catch ( Exception $e ) {
 				// Pass exception to special callback if provided.
@@ -142,13 +142,13 @@ class Google_Site_Kit_Client extends Google_Client {
 
 		$http_handler = HttpHandlerFactory::build( $this->getHttpClient() );
 
-		$creds = $this->fetchAuthToken( $auth, $http_handler );
-		if ( $creds && isset( $creds['access_token'] ) ) {
-			$creds['created'] = time();
-			$this->setAccessToken( $creds );
+		$token_response = $this->fetchAuthToken( $auth, $http_handler );
+		if ( $token_response && isset( $token_response['access_token'] ) ) {
+			$token_response['created'] = time();
+			$this->setAccessToken( $token_response );
 		}
 
-		return $creds;
+		return $token_response;
 	}
 
 	/**
@@ -176,16 +176,33 @@ class Google_Site_Kit_Client extends Google_Client {
 
 		$http_handler = HttpHandlerFactory::build( $this->getHttpClient() );
 
-		$creds = $this->fetchAuthToken( $auth, $http_handler );
-		if ( $creds && isset( $creds['access_token'] ) ) {
-			$creds['created'] = time();
-			if ( ! isset( $creds['refresh_token'] ) ) {
-				$creds['refresh_token'] = $refresh_token;
+		$token_response = $this->fetchAuthToken( $auth, $http_handler );
+		if ( $token_response && isset( $token_response['access_token'] ) ) {
+			$token_response['created'] = time();
+			if ( ! isset( $token_response['refresh_token'] ) ) {
+				$token_response['refresh_token'] = $refresh_token;
 			}
-			$this->setAccessToken( $creds );
+			$this->setAccessToken( $token_response );
+
+			// TODO: In the future, once the old authentication mechanism no longer exists, this check can be removed.
+			// For now the below action should only fire for the proxy despite not clarifying that in the hook name.
+			if ( $this instanceof Google_Site_Kit_Proxy_Client ) {
+				/**
+				 * Fires when the current user has just been reauthorized to access Google APIs with a refreshed access token.
+				 *
+				 * In other words, this action fires whenever Site Kit has just obtained a new access token based on
+				 * the refresh token for the current user, which typically happens once every hour when using Site Kit,
+				 * since that is the lifetime of every access token.
+				 *
+				 * @since 1.25.0
+				 *
+				 * @param array $token_response Token response data.
+				 */
+				do_action( 'googlesitekit_reauthorize_user', $token_response );
+			}
 		}
 
-		return $creds;
+		return $token_response;
 	}
 
 	/**

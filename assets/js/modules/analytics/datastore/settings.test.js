@@ -1,7 +1,7 @@
 /**
  * `modules/analytics` data store: settings tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME, FORM_SETUP, ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
-import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import * as fixtures from './__fixtures__';
 import {
@@ -99,7 +99,7 @@ describe( 'modules/analytics settings', () => {
 				const createdProperty = {
 					...fixtures.propertiesProfiles.properties[ 0 ],
 					id: 'UA-12345-1',
-					// eslint-disable-next-line sitekit/camelcase-acronyms
+					// eslint-disable-next-line sitekit/acronym-case
 					internalWebPropertyId: '123456789',
 				};
 
@@ -124,7 +124,7 @@ describe( 'modules/analytics settings', () => {
 
 				expect( result.error ).toBeFalsy();
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( createdProperty.id );
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( createdProperty.internalWebPropertyId );
 			} );
 

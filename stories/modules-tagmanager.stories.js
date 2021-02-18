@@ -1,7 +1,7 @@
 /**
  * Tag Manager Module Component Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import { storiesOf } from '@storybook/react';
  */
 import { WithTestRegistry } from '../tests/js/utils';
 import { STORE_NAME } from '../assets/js/modules/tagmanager/datastore/constants';
-import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY } from '../assets/js/googlesitekit/datastore/site/constants';
+import { CORE_SITE, AMP_MODE_PRIMARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
 import AccountSelect from '../assets/js/modules/tagmanager/components/common/AccountSelect';
 import WebContainerSelect from '../assets/js/modules/tagmanager/components/common/WebContainerSelect';
@@ -67,7 +67,7 @@ storiesOf( 'Tag Manager Module', module )
 	} )
 	.add( 'WebContainerSelect', () => {
 		const setupRegistry = ( registry ) => {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			const accountID = fixtures.getContainers.all[ 0 ].accountId;
 			registry.dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID,
@@ -90,7 +90,7 @@ storiesOf( 'Tag Manager Module', module )
 	} )
 	.add( 'AMPContainerSelect', () => {
 		const setupRegistry = ( registry ) => {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			const accountID = fixtures.getContainers.all[ 0 ].accountId;
 			registry.dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID,

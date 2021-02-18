@@ -1,7 +1,7 @@
 /**
  * Analytics module setup with account and no tag tests.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,6 +71,11 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
 				request.respond( {
 					status: 200,
+				} );
+			} else if ( request.url().match( '/wp-json/google-site-kit/v1/modules/analytics/data/report?' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( { dummy_response: true } ),
 				} );
 			} else {
 				request.continue();

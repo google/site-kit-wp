@@ -1,7 +1,7 @@
 /**
  * Entrypoint for the `core/forms` data store.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-// This import has side effects; it registers the core/forms datastore
-// on the default data store (`googlesitekit.data`).
-
 /**
  * Internal dependencies
  */
-import './googlesitekit/datastore/forms';
+import Data from 'googlesitekit-data';
+import { registerStore } from './googlesitekit/datastore/forms';
+
+registerStore( Data );

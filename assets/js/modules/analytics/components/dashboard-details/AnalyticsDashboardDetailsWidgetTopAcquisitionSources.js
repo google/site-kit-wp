@@ -1,7 +1,7 @@
 /**
  * AnalyticsDashboardDetailsWidgetTopAcquisitionSources component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,19 +31,17 @@ import Layout from '../../../../components/layout/Layout';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import LegacyDashboardAcquisitionPieChart from '../dashboard/LegacyDashboardAcquisitionPieChart';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import applyEntityToReportPath from '../../util/applyEntityToReportPath';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { getURLPath } from '../../../../util/getURLPath';
 
 const { useSelect } = Data;
 
 export default function AnalyticsDashboardDetailsWidgetTopAcquisitionSources() {
-	const serviceURL = useSelect( ( select ) => {
-		const accountID = select( STORE_NAME ).getAccountID();
-		const profileID = select( STORE_NAME ).getProfileID();
-		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		return select( STORE_NAME ).getServiceURL( { path: applyEntityToReportPath( url, `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ) } );
-	} );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', {
+		'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+	} ) );
+
 	return (
 		<Fragment>
 			<div className="

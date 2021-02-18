@@ -3,7 +3,7 @@
  * Plugin main file.
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  *
@@ -11,7 +11,7 @@
  * Plugin Name: Site Kit by Google
  * Plugin URI:  https://sitekit.withgoogle.com
  * Description: Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
- * Version:     1.23.0
+ * Version:     1.26.0
  * Author:      Google
  * Author URI:  https://opensource.google.com
  * License:     Apache License 2.0
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define most essential constants.
-define( 'GOOGLESITEKIT_VERSION', '1.23.0' );
+define( 'GOOGLESITEKIT_VERSION', '1.26.0' );
 define( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE', __FILE__ );
 define( 'GOOGLESITEKIT_PHP_MINIMUM', '5.6.0' );
 

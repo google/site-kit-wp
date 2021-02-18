@@ -3,13 +3,15 @@
  * Class Google\Site_Kit\Plugin
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
 namespace Google\Site_Kit;
 
+use Google\Site_Kit\Core\Feature_Tours\Feature_Tours;
+use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\JSON_File;
 
@@ -169,6 +171,7 @@ final class Plugin {
 				$screens->register();
 
 				( new Core\Util\Reset( $this->context ) )->register();
+				( new Core\Util\Reset_Persistent( $this->context ) )->register();
 				( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 				( new Core\Util\Tracking( $this->context, $user_options, $screens ) )->register();
 				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
@@ -180,6 +183,7 @@ final class Plugin {
 				( new Core\Util\Health_Checks( $authentication ) )->register();
 				( new Core\Admin\Standalone( $this->context ) )->register();
 				( new Core\Util\Activation_Notice( $this->context, $activation_flag, $assets ) )->register();
+				( new Core\Feature_Tours\Feature_Tours( $this->context, $user_options ) )->register();
 				( new Core\Util\Migration_1_3_0( $this->context, $options, $user_options ) )->register();
 				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
 
@@ -246,14 +250,13 @@ final class Plugin {
 		}
 
 		$config = new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.json' );
-		Feature_Flags::set_mode( $config['flagMode'] );
-		Feature_Flags::set_features(
-			new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'feature-flags.json' )
-		);
+		Build_Mode::set_mode( $config['buildMode'] );
+		Feature_Flags::set_features( (array) $config['features'] );
 
 		static::$instance = new static( $main_file );
 		static::$instance->register();
 
 		return true;
 	}
+
 }

@@ -1,7 +1,7 @@
 /**
  * Analytics utility functions.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import { __, sprintf, _x } from '@wordpress/i18n';
 import { getLocale } from '../../../util/i18n';
 import calculateOverviewData from './calculateOverviewData';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
-import { numFmt, prepareSecondsForDisplay } from '../../../util';
+import { convertSecondsToArray, numFmt, prepareSecondsForDisplay } from '../../../util';
 
 export { calculateOverviewData };
 
@@ -45,7 +45,7 @@ export * from './validation';
  * Extracts data required for a pie chart from the Analytics report information.
  *
  * @since 1.16.0 Added keyColumnIndex argument.
- * @since n.e.x.t Updated the function signature to use options argument instead of keyColumnIndex.
+ * @since 1.24.0 Updated the function signature to use options argument instead of keyColumnIndex.
  *
  * @param {Array}    reports                   The array with reports data.
  * @param {Object}   [options]                 Optional. Data extraction options.
@@ -201,7 +201,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	const dataLabels = [
 		__( 'Users', 'google-site-kit' ),
 		__( 'Sessions', 'google-site-kit' ),
-		__( 'Bounce Rate', 'google-site-kit' ),
+		__( 'Bounce Rate %', 'google-site-kit' ),
 		__( 'Session Duration', 'google-site-kit' ),
 	];
 
@@ -216,12 +216,15 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 		prepareSecondsForDisplay,
 	];
 
+	const isSessionDuration = dataLabels[ selectedStats ] === __( 'Session Duration', 'google-site-kit' );
+	const dataType = isSessionDuration ? 'timeofday' : 'number';
+
 	const dataMap = [
 		[
 			{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
 			{ type: 'string', role: 'tooltip', p: { html: true } },
-			{ type: 'number', label: dataLabels[ selectedStats ] },
-			{ type: 'number', label: __( 'Previous period', 'google-site-kit' ) },
+			{ type: dataType, label: dataLabels[ selectedStats ] },
+			{ type: dataType, label: __( 'Previous period', 'google-site-kit' ) },
 		],
 	];
 
@@ -278,8 +281,8 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 				<p>${ dateRange }</p>
 				<p>${ statInfo }</p>
 			</div>`,
-			row[ 1 ],
-			previousMonthData[ i ][ 1 ],
+			isSessionDuration ? convertSecondsToArray( row[ 1 ] ) : row[ 1 ],
+			isSessionDuration ? convertSecondsToArray( previousMonthData[ i ][ 1 ] ) : previousMonthData[ i ][ 1 ],
 		] );
 	} );
 

@@ -1,7 +1,7 @@
 /**
  * PageSpeed Insights module initialization.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,22 +20,21 @@
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
-import domReady from '@wordpress/dom-ready';
 
 /**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import Widgets from 'googlesitekit-widgets';
-import './datastore';
 import { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-areas';
 import { getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
 import { SettingsView } from './components/settings';
 import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
-import DashboardPageSpeedCTA from './components/dashboard/DashboardPageSpeedCTA';
+import LegacyDashboardPageSpeedCTA from './components/dashboard/LegacyDashboardPageSpeedCTA';
 import LegacyDashboardSpeed from './components/dashboard/LegacyDashboardSpeed';
 import PageSpeedInsightsIcon from '../../../svg/pagespeed-insights.svg';
+import { STORE_NAME } from './datastore/constants';
+
+export { registerStore } from './datastore';
 
 const {
 	active,
@@ -63,26 +62,26 @@ if ( active && setupComplete ) {
 	addFilter(
 		'googlesitekit.DashboardModule',
 		'googlesitekit.PageSpeedInsights',
-		createAddToFilter( <DashboardPageSpeedCTA /> ),
+		createAddToFilter( <LegacyDashboardPageSpeedCTA /> ),
 		45
 	);
 }
 
-domReady( () => {
-	// IMPORTANT: When updating arguments here, also update the same call in
-	// `provideModuleRegistrations`.
-	Modules.registerModule(
+export const registerModule = ( modules ) => {
+	modules.registerModule(
 		'pagespeed-insights',
 		{
-			storeName: 'modules/pagespeed-insights',
+			storeName: STORE_NAME,
 			SettingsViewComponent: SettingsView,
 			Icon: PageSpeedInsightsIcon,
 		}
 	);
+};
 
-	Widgets.registerWidget( 'pagespeedInsightsWebVitals', {
+export const registerWidgets = ( widgets ) => {
+	widgets.registerWidget( 'pagespeedInsightsWebVitals', {
 		Component: DashboardPageSpeedWidget,
-		width: Widgets.WIDGET_WIDTHS.FULL,
+		width: widgets.WIDGET_WIDTHS.FULL,
 		wrapWidget: false,
 	}, [ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ] );
-} );
+};

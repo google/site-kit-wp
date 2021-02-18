@@ -1,7 +1,7 @@
 /**
  * Dashboard Details page stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,18 +30,14 @@ import { removeAllFilters } from '@wordpress/hooks';
  * Internal dependencies
  */
 import { provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import DashboardDetailsApp from '../assets/js/components/dashboard-details/DashboardDetailsApp';
-import { enableFeature } from './utils/features';
 
 storiesOf( 'Dashboard Details', module )
 	.add( 'Existing Entity', () => {
-		// Ensure feature flag for Header component exists.
-		enableFeature( 'storeErrorNotifications' );
-
-		// Ensure widget API is disabled and don't display legacy widgets either.
-		// TODO: Expand this story to include new widgets once legacy widgets are no longer used.
-		enableFeature( 'widgets.pageDashboard' );
+		// Ensure legacy widgets are not displayed. The new widgets should not be displayed either,
+		// but that is already the case since the Widgets API is behind a feature flag.
+		// TODO: Delete this hook removal once legacy widgets are no longer used.
 		removeAllFilters( 'googlesitekit.DashboardDetailsModule' );
 
 		const setupRegistry = ( registry ) => {

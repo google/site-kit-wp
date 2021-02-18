@@ -1,7 +1,7 @@
 /**
  * Entrypoint for the "core/site" data store.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,4 +19,7 @@
 /**
  * Internal dependencies
  */
-import 'assets/js/googlesitekit/datastore/site';
+import Data from 'googlesitekit-data';
+import { registerStore } from 'assets/js/googlesitekit/datastore/site';
+
+registerStore( Data );

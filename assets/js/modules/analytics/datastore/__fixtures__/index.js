@@ -1,7 +1,7 @@
 /**
  * Analytics Datastore Fixtures.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,10 @@
  */
 
 export { default as accountsPropertiesProfiles } from './accounts-properties-profiles';
+export { default as adminBarAnalyticsTotalUsersMockData } from './admin-bar-analytics-total-users-mock-data';
+export { default as adminBarAnalyticsTotalUsersOptions } from './admin-bar-analytics-total-users-options';
+export { default as adminBarAnalyticsSessionsMockData } from './admin-bar-analytics-session-mock-data';
+export { default as adminBarAnalyticsSessionsOptions } from './admin-bar-analytics-session-options';
 export { default as createProfile } from './create-profile';
 export { default as createProperty } from './create-property';
 export { default as goals } from './goals';
@@ -42,6 +46,14 @@ export { default as dashboardUserDimensionsData } from './dashboard-user-dimensi
 export { default as dashboardUserDimensionsArgs } from './dashboard-user-dimensions-args.json';
 export { default as dashboardUserTotalsData } from './dashboard-user-totals-data.json';
 export { default as dashboardUserTotalsArgs } from './dashboard-user-totals-args.json';
+export { default as dashboardUserGraphData } from './dashboard-user-graph-data.json';
+export { default as dashboardUserGraphArgs } from './dashboard-user-graph-args.json';
+export { default as wpDashboardPopularPagesArgs } from './wp-dashboard-popular-pages-args.json';
+export { default as wpDashboardPopularPagesData } from './wp-dashboard-popular-pages-data.json';
+export { default as wpDashboardUniqueVisitorsArgs } from './wp-dashboard-unique-visitors-args.json';
+export { default as wpDashboardUniqueVisitorsData } from './wp-dashboard-unique-visitors-data.json';
+export { default as wpDashboardSessionDurationArgs } from './wp-dashboard-session-duration-args.json';
+export { default as wpDashboardSessionDurationData } from './wp-dashboard-session-duration-data.json';
 export * from './dashboard-unique-visitors-data';
 export * from './dashboard-unique-visitors-args';
 export { pageDashboardUniqueVisitorsSparkData, pageDashboardUniqueVisitorsVisitorData } from './page-dashboard-unique-visitors-data';

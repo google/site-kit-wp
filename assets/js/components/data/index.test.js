@@ -1,7 +1,7 @@
 /**
  * Legacy dataAPI tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
  */
 import dataAPI from './index';
 import { DATA_LAYER } from '../../util/tracking/constants';
-import * as DateRange from '../../util/date-range.js';
 import { getCacheKey } from './cache';
 import { enableTracking } from '../../util/tracking';
 
@@ -59,7 +58,7 @@ describe( 'dataAPI', () => {
 			try {
 				await get( 'test-type', 'test-identifier', 'test-datapoint' );
 			} catch ( err ) {
-				expect( console ).toHaveWarnedWith( 'WP Error in data response', err );
+				expect( console ).toHaveWarnedWith( 'WP Error in data response', 'method:GET', 'type:test-type', 'identifier:test-identifier', 'datapoint:test-datapoint', `error:"${ err.message }"` );
 				expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
 				const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 				expect( event ).toEqual( 'event' );
@@ -83,7 +82,7 @@ describe( 'dataAPI', () => {
 			try {
 				await set( 'test-type', 'test-identifier', 'test-datapoint', {} );
 			} catch ( err ) {
-				expect( console ).toHaveWarnedWith( 'WP Error in data response', err );
+				expect( console ).toHaveWarnedWith( 'WP Error in data response', 'method:POST', 'type:test-type', 'identifier:test-identifier', 'datapoint:test-datapoint', `error:"${ err.message }"` );
 				expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
 				const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 				expect( event ).toEqual( 'event' );
@@ -97,28 +96,24 @@ describe( 'dataAPI', () => {
 
 	describe( 'combinedGet', () => {
 		const combinedGet = dataAPI.combinedGet.bind( dataAPI );
-
-		const slugMock = jest.spyOn( DateRange, 'getCurrentDateRangeSlug' );
-		slugMock.mockImplementation( () => 'last-28-days' );
-
 		const combinedRequest = [
 			{
 				type: 'test-type',
 				identifier: 'test-identifier',
 				datapoint: 'test-datapoint',
-				data: { status: 500 },
+				data: { dateRange: 'last-99-days' },
 			},
 			{
 				type: 'test-type',
 				identifier: 'test-identifier',
 				datapoint: 'test-datapoint-2',
-				data: { status: 500 },
+				data: { dateRange: 'last-99-days' },
 			},
 			{
 				type: 'test-type',
 				identifier: 'analytics',
 				datapoint: 'test-datapoint-3',
-				data: { status: 500 },
+				data: { dateRange: 'last-99-days' },
 			},
 
 		];
@@ -135,7 +130,7 @@ describe( 'dataAPI', () => {
 		} );
 
 		it( 'should call trackEvent for error in combinedGet with one error', async () => {
-			const cacheKey = getCacheKey( 'test-type', 'test-identifier', 'test-datapoint', { dateRange: 'last-28-days', status: 500 } );
+			const cacheKey = getCacheKey( 'test-type', 'test-identifier', 'test-datapoint', { dateRange: 'last-99-days' } );
 			const response = {
 				body:
 					{
@@ -163,15 +158,15 @@ describe( 'dataAPI', () => {
 			expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
 			const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 			expect( event ).toEqual( 'event' );
-			expect( eventName ).toEqual( 'POST:test-type/test-identifier/data/test-datapoint' );
+			expect( eventName ).toEqual( 'GET:test-type/test-identifier/data/test-datapoint' );
 			expect( eventData.event_category ).toEqual( 'api_error' );
 			expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error, reason: internal_server_error)' );
 			expect( eventData.value ).toEqual( 500 );
 		} );
 
 		it( 'should call trackEvent for each error in combinedGet with multiple errors', async () => {
-			const cacheKey = getCacheKey( 'test-type', 'test-identifier', 'test-datapoint', { dateRange: 'last-28-days', status: 500 } );
-			const cacheKey2 = getCacheKey( 'test-type', 'analytics', 'test-datapoint-3', { dateRange: 'last-28-days', status: 500 } );
+			const cacheKey = getCacheKey( 'test-type', 'test-identifier', 'test-datapoint', { dateRange: 'last-99-days' } );
+			const cacheKey2 = getCacheKey( 'test-type', 'analytics', 'test-datapoint-3', { dateRange: 'last-99-days' } );
 			const response = {
 				body:
 					{
@@ -204,13 +199,13 @@ describe( 'dataAPI', () => {
 			expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 2 );
 			let [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 			expect( event ).toEqual( 'event' );
-			expect( eventName ).toEqual( 'POST:test-type/test-identifier/data/test-datapoint' );
+			expect( eventName ).toEqual( 'GET:test-type/test-identifier/data/test-datapoint' );
 			expect( eventData.event_category ).toEqual( 'api_error' );
 			expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error, reason: internal_server_error)' );
 			expect( eventData.value ).toEqual( 500 );
 			[ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 1 ][ 0 ];
 			expect( event ).toEqual( 'event' );
-			expect( eventName ).toEqual( 'POST:test-type/analytics/data/test-datapoint-3' );
+			expect( eventName ).toEqual( 'GET:test-type/analytics/data/test-datapoint-3' );
 			expect( eventData.event_category ).toEqual( 'api_error' );
 			expect( eventData.event_label ).toEqual( 'Unknown error (code: unknown_error, reason: unknown_error)' );
 			expect( eventData.value ).toEqual( 503 );

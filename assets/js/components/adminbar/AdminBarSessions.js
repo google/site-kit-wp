@@ -1,7 +1,7 @@
 /**
  * Admin Bar Sessions component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -33,16 +27,14 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
-import ReportError from '../ReportError';
-import ReportZero from '../ReportZero';
-import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
 import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
-const AdminBarSessions = ( { className } ) => {
+const AdminBarSessions = ( { WidgetReportZero, WidgetReportError } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
@@ -60,27 +52,21 @@ const AdminBarSessions = ( { className } ) => {
 		],
 		url,
 	};
+
 	const analyticsData = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( reportArgs ) );
 	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
 
 	if ( ! hasFinishedResolution ) {
-		return (
-			<div className={ classnames(
-				'mdc-layout-grid__cell',
-				className,
-			) }>
-				<PreviewBlock width="auto" height="59px" />
-			</div>
-		);
+		return <PreviewBlock width="auto" height="59px" />;
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( analyticsData ) ) {
-		return <ReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	const { totals } = analyticsData[ 0 ].data;
@@ -90,27 +76,14 @@ const AdminBarSessions = ( { className } ) => {
 	const totalSessionsChange = calculateChange( previousMonth[ 0 ], lastMonth[ 0 ] );
 
 	return (
-		<div className={ classnames(
-			'mdc-layout-grid__cell',
-			className,
-		) }>
-			<DataBlock
-				className="overview-total-sessions"
-				title={ __( 'Total Sessions', 'google-site-kit' ) }
-				datapoint={ totalSessions }
-				change={ totalSessionsChange }
-				changeDataUnit="%"
-			/>
-		</div>
+		<DataBlock
+			className="overview-total-sessions"
+			title={ __( 'Total Sessions', 'google-site-kit' ) }
+			datapoint={ totalSessions }
+			change={ totalSessionsChange }
+			changeDataUnit="%"
+		/>
 	);
-};
-
-AdminBarSessions.propTypes = {
-	className: PropTypes.string,
-};
-
-AdminBarSessions.defaultProps = {
-	className: 'mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop',
 };
 
 export default AdminBarSessions;

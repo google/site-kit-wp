@@ -1,7 +1,7 @@
 /**
  * `modules/optimize` base data store
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,21 +35,21 @@ let baseModuleStore = Modules.createModuleStore( 'optimize', {
 
 // Rename generated pieces to adhere to our convention.
 baseModuleStore = ( ( { actions, selectors, ...store } ) => {
-	// eslint-disable-next-line sitekit/camelcase-acronyms
+	// eslint-disable-next-line sitekit/acronym-case
 	const { setAmpExperimentJSON, ...restActions } = actions;
-	// eslint-disable-next-line sitekit/camelcase-acronyms
+	// eslint-disable-next-line sitekit/acronym-case
 	const { getAmpExperimentJSON, ...restSelectors } = selectors;
 
 	return {
 		...store,
 		actions: {
 			...restActions,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			setAMPExperimentJSON: setAmpExperimentJSON,
 		},
 		selectors: {
 			...restSelectors,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			getAMPExperimentJSON: getAmpExperimentJSON,
 		},
 	};

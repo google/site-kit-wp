@@ -3,7 +3,7 @@
  *
  * Provides API functions to manage modules.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,17 @@
 /**
  * Internal dependencies
  */
-import Modules from './googlesitekit/modules';
+import Data from 'googlesitekit-data';
+import { createModules, registerStore } from './googlesitekit/modules';
+
+registerStore( Data );
+
+const Modules = createModules( Data );
 
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
 }
 
-if ( typeof global.googlesitekit.modules === 'undefined' ) {
-	global.googlesitekit.modules = Modules;
-}
+global.googlesitekit.modules = Modules;
 
 export default Modules;

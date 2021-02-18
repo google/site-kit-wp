@@ -1,7 +1,7 @@
 /**
  * DashboardAuthAlert component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Notification from '../legacy-notifications/notification';
 import { getModulesData, listFormat } from '../../util';
-import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 const { useSelect } = Data;
 
 // Map of scope IDs to Site Kit module slugs.
@@ -58,12 +59,13 @@ function mapScopesToModuleNames( scopes ) {
 }
 
 export default function UnsatisfiedScopesAlert() {
+	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigatingTo( /(\/o\/oauth2)|(googlesitekit_connect=1)/i ) );
 	const unsatisfiedScopes = useSelect( ( select ) => select( CORE_USER ).getUnsatisfiedScopes() );
 	const connectURL = useSelect( ( select ) => select( CORE_USER ).getConnectURL( {
 		redirectURL: global.location.href,
 	} ) );
 
-	if ( unsatisfiedScopes === undefined || ! unsatisfiedScopes.length || connectURL === undefined ) {
+	if ( isNavigating || ! unsatisfiedScopes?.length || connectURL === undefined ) {
 		return null;
 	}
 

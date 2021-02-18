@@ -1,7 +1,7 @@
 /**
  * User Input Component Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,11 @@ import { storiesOf } from '@storybook/react';
  */
 import UserInputApp from '../assets/js/components/user-input/UserInputApp';
 import { WithTestRegistry } from '../tests/js/utils';
-import { enableFeature } from './utils/features';
 
 storiesOf( 'User Input', module )
 	.add( 'UserInputApp', () => {
-		enableFeature( 'userInput' );
-
 		return (
-			<WithTestRegistry>
+			<WithTestRegistry features={ [ 'userInput' ] }>
 				<UserInputApp />
 			</WithTestRegistry>
 		);

@@ -1,7 +1,7 @@
 /**
  * Sparkline component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import GoogleChart from './GoogleChart';
 function Sparkline( {
 	data,
 	change,
-	// eslint-disable-next-line sitekit/camelcase-acronyms
+	// eslint-disable-next-line sitekit/acronym-case
 	instanceId,
 	invertChangeColor,
 	loadSmall,
@@ -79,9 +79,10 @@ function Sparkline( {
 	return (
 		<div className="googlesitekit-analytics-sparkline-chart-wrap">
 			<GoogleChart
+				chartType="line"
 				data={ data }
 				options={ chartOptions }
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				id={ `googlesitekit-sparkline-${ instanceId }` }
 				loadSmall={ loadSmall }
 				loadCompressed={ loadCompressed }
@@ -93,7 +94,7 @@ function Sparkline( {
 }
 
 Sparkline.propTypes = {
-	// eslint-disable-next-line sitekit/camelcase-acronyms
+	// eslint-disable-next-line sitekit/acronym-case
 	instanceId: PropTypes.number.isRequired,
 	invertChangeColor: PropTypes.bool,
 	loadSmall: PropTypes.bool,

@@ -1,7 +1,7 @@
 /**
  * Tag Manager Account Select component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,13 +64,13 @@ export default function AccountSelect() {
 		>
 			{ ( accounts || [] )
 				.concat( {
-					accountId: ACCOUNT_CREATE, // eslint-disable-line sitekit/camelcase-acronyms
+					accountId: ACCOUNT_CREATE, // eslint-disable-line sitekit/acronym-case
 					name: __( 'Set up a new account', 'google-site-kit' ),
 				} )
-				.map( ( { accountId, name } ) => ( // eslint-disable-line sitekit/camelcase-acronyms
+				.map( ( { accountId, name } ) => ( // eslint-disable-line sitekit/acronym-case
 					<Option
-						key={ accountId } // eslint-disable-line sitekit/camelcase-acronyms
-						value={ accountId } // eslint-disable-line sitekit/camelcase-acronyms
+						key={ accountId } // eslint-disable-line sitekit/acronym-case
+						value={ accountId } // eslint-disable-line sitekit/acronym-case
 					>
 						{ name }
 					</Option>

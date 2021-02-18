@@ -1,7 +1,7 @@
 /**
  * `core/user` data store: date-range.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -173,6 +173,20 @@ export const selectors = {
 		}
 
 		return dates;
+	},
+
+	/**
+	 * Returns the number of days in the current date range.
+	 *
+	 * @since 1.26.0
+	 *
+	 * @param {Object} state The current data store's state.
+	 * @return {number}      Integer. The number of days in the current date range.
+	 */
+	getDateRangeNumberOfDays( state ) {
+		const dateRange = selectors.getDateRange( state );
+		const matches = dateRange.match( /-(\d+)-/ );
+		return parseInt( matches ? matches[ 1 ] : 28, 10 );
 	},
 
 	/**

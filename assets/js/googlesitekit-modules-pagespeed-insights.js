@@ -1,7 +1,7 @@
 /**
  * PageSpeed Insights module entrypoint.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,4 +19,11 @@
 /**
  * Internal dependencies
  */
-import './modules/pagespeed-insights';
+import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
+import Widgets from 'googlesitekit-widgets';
+import { registerStore, registerModule, registerWidgets } from './modules/pagespeed-insights';
+
+registerStore( Data );
+registerModule( Modules );
+registerWidgets( Widgets );

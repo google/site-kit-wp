@@ -1,7 +1,7 @@
 /**
  * PostSearcherAutoSuggest component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import PropTypes from 'prop-types';
 import {
 	Combobox,
 	ComboboxInput,
@@ -39,7 +40,7 @@ import { __ } from '@wordpress/i18n';
 import API from 'googlesitekit-api';
 import { useDebouncedState } from '../hooks/useDebouncedState';
 
-function PostSearcherAutoSuggest( { setCanSubmit, setMatch } ) {
+export default function PostSearcherAutoSuggest( { id, setCanSubmit, setMatch } ) {
 	const [ searchTerm, setSearchTerm ] = useState( '' );
 	const debouncedValue = useDebouncedState( searchTerm, 200 );
 	const [ results, setResults ] = useState( [] );
@@ -78,7 +79,7 @@ function PostSearcherAutoSuggest( { setCanSubmit, setMatch } ) {
 	return (
 		<Combobox className="autocomplete__wrapper" onSelect={ onSelectCallback }>
 			<ComboboxInput
-				id="autocomplete"
+				id={ id }
 				className="autocomplete__input autocomplete__input--default"
 				type="text"
 				onChange={ onInputChange }
@@ -99,4 +100,8 @@ function PostSearcherAutoSuggest( { setCanSubmit, setMatch } ) {
 	);
 }
 
-export default PostSearcherAutoSuggest;
+PostSearcherAutoSuggest.propTypes = {
+	id: PropTypes.string,
+	setCanSubmit: PropTypes.func,
+	setMatch: PropTypes.func,
+};

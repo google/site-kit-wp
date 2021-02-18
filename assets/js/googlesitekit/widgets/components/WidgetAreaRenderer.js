@@ -1,7 +1,7 @@
 /**
  * WidgetAreaRenderer component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,34 +28,74 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, WIDGET_AREA_STYLES } from '../datastore/constants';
 import WidgetRenderer from './WidgetRenderer';
-import { getWidgetClassNames } from '../util';
+import { getWidgetLayout, combineWidgets, getWidgetComponentProps } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
 const { useSelect } = Data;
 
-export default function WidgetAreaRenderer( { slug } ) {
-	const { widgets, widgetArea } = useSelect( ( select ) => ( {
-		widgetArea: select( STORE_NAME ).getWidgetArea( slug ),
-		widgets: select( STORE_NAME ).getWidgets( slug ),
-	} ) );
+export default function WidgetAreaRenderer( { slug, totalAreas } ) {
+	const widgetArea = useSelect( ( select ) => select( STORE_NAME ).getWidgetArea( slug ) );
 
+	const { widgets, widgetStates } = useSelect( ( select ) => {
+		const allWidgets = select( STORE_NAME ).getWidgets( slug );
+		const allWidgetStates = {};
+		allWidgets.forEach( ( widget ) => {
+			allWidgetStates[ widget.slug ] = select( STORE_NAME ).getWidgetState( widget.slug );
+		} );
+		return {
+			widgets: allWidgets,
+			widgetStates: allWidgetStates,
+		};
+	} );
+
+	// TODO: Solve this in a better way.
 	const activeWidgets = widgets.filter( ( widget ) => {
 		const widgetExists = widgets.some( ( item ) => item.slug === widget.slug );
 		const isComponent = typeof widget.Component === 'function';
-		const isActive = 	widget.Component.prototype.render
-			? new widget.Component( {} ).render()
-			: widget.Component( {} );
+		if ( ! widgetExists || ! isComponent ) {
+			return false;
+		}
+		const widgetComponentProps = getWidgetComponentProps( widget.slug );
+		const isActive = widget.Component.prototype.render
+			? new widget.Component( widgetComponentProps ).render()
+			: widget.Component( widgetComponentProps );
 
-		return widgetExists && isComponent && Boolean( isActive );
+		return Boolean( isActive );
 	} );
 
 	if ( activeWidgets.length === 0 ) {
 		return null;
 	}
 
-	const widgetClassNames = getWidgetClassNames( activeWidgets );
+	// Compute the layout.
+	const {
+		classNames,
+		columnWidths,
+		rowIndexes,
+	} = getWidgetLayout( activeWidgets );
+
+	// Combine widgets with similar CTAs and prepare final props to pass to
+	// `WidgetRenderer` below. Only one consecutive instance of a similar CTA
+	// will be maintained (via an "override component"), and all other similar
+	// ones will receive a CSS class to hide them.
+	// A combined CTA will span the combined width of all widgets that it was
+	// combined from.
+	const {
+		gridClassNames,
+		overrideComponents,
+	} = combineWidgets( activeWidgets, widgetStates, {
+		classNames,
+		columnWidths,
+		rowIndexes,
+	} );
+
+	// Render all widgets.
 	const widgetsOutput = activeWidgets.map( ( widget, i ) => (
 		<WidgetRenderer
-			gridClassName={ widgetClassNames[ i ] !== null ? classnames( widgetClassNames[ i ] ) : 'googlesitekit-widget-area--hidden' }
+			gridClassName={ classnames( gridClassNames[ i ] ) }
+			OverrideComponent={ overrideComponents[ i ] ? () => {
+				const { Component, metadata } = overrideComponents[ i ];
+				return <Component { ...metadata } />;
+			} : undefined }
 			key={ widget.slug }
 			slug={ widget.slug }
 		/>
@@ -65,25 +105,27 @@ export default function WidgetAreaRenderer( { slug } ) {
 
 	return (
 		<Grid className={ `googlesitekit-widget-area googlesitekit-widget-area--${ slug } googlesitekit-widget-area--${ style }` }>
-			<Row>
-				<Cell className="googlesitekit-widget-area-header" size={ 12 }>
-					{ Icon && (
-						<Icon width={ 33 } height={ 33 } />
-					) }
+			{ totalAreas > 1 && (
+				<Row>
+					<Cell className="googlesitekit-widget-area-header" size={ 12 }>
+						{ Icon && (
+							<Icon width={ 33 } height={ 33 } />
+						) }
 
-					{ title && (
-						<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
-							{ title }
-						</h3>
-					) }
+						{ title && (
+							<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
+								{ title }
+							</h3>
+						) }
 
-					{ subtitle && (
-						<h4 className="googlesitekit-widget-area-header__subtitle">
-							{ subtitle }
-						</h4>
-					) }
-				</Cell>
-			</Row>
+						{ subtitle && (
+							<h4 className="googlesitekit-widget-area-header__subtitle">
+								{ subtitle }
+							</h4>
+						) }
+					</Cell>
+				</Row>
+			) }
 
 			<div className="googlesitekit-widget-area-widgets">
 				<Row>

@@ -1,7 +1,7 @@
 /**
  * Analytics Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,12 +67,12 @@ storiesOf( 'Analytics Module', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				propertyID: profiles[ 0 ].webPropertyId,
 			} );
 		};
@@ -93,20 +93,20 @@ storiesOf( 'Analytics Module', module )
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				propertyID: profiles[ 0 ].webPropertyId,
 			} );
 			dispatch( STORE_NAME ).receiveGetSettings( {
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				accountID: profiles[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				propertyID: profiles[ 0 ].webPropertyId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				internalWebPropertyID: profiles[ 0 ].internalWebPropertyId,
 				profileID: profiles[ 0 ].id,
 			} );
@@ -243,22 +243,24 @@ storiesOf( 'Analytics Module', module )
 		}, 250 );
 
 		return (
-			<Layout
-				header
-				title={ __( 'Audience overview for the last 28 days', 'google-site-kit' ) }
-				headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-				headerCTALink="http://analytics.google.com"
-			>
-				<AnalyticsDashboardWidgetOverview
-					selectedStats={ selectedStats }
-					handleDataError={ () => {} }
-				/>
-				<AnalyticsDashboardWidgetSiteStats
-					selectedStats={ selectedStats }
-					series={ series }
-					vAxes={ vAxes }
-				/>
-			</Layout>
+			<WithTestRegistry>
+				<Layout
+					header
+					title={ __( 'Audience overview for the last 28 days', 'google-site-kit' ) }
+					headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+					headerCTALink="http://analytics.google.com"
+				>
+					<AnalyticsDashboardWidgetOverview
+						selectedStats={ selectedStats }
+						handleDataError={ () => {} }
+					/>
+					<AnalyticsDashboardWidgetSiteStats
+						selectedStats={ selectedStats }
+						series={ series }
+						vAxes={ vAxes }
+					/>
+				</Layout>
+			</WithTestRegistry>
 		);
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )

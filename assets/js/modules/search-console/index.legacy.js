@@ -1,7 +1,7 @@
 /**
  * Search Console module initialization.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@ import { addFilter } from '@wordpress/hooks';
 import { createAddToFilter } from '../../util/helpers';
 import PostSearcher from '../../components/PostSearcher';
 import GoogleSitekitSearchConsoleDashboardWidget from './components/dashboard/GoogleSitekitSearchConsoleDashboardWidget';
-import GoogleSitekitSearchConsoleAdminbarWidget from './components/adminbar/GoogleSitekitSearchConsoleAdminbarWidget';
-import WPSearchConsoleDashboardWidget from './components/wp-dashboard/WPSearchConsoleDashboardWidget';
 import LegacyDashboardSearchFunnel from './components/dashboard/LegacyDashboardSearchFunnel.js';
 import LegacySearchConsoleDashboardWidgetTopLevel from './components/dashboard/LegacySearchConsoleDashboardWidgetTopLevel';
 import DashboardDetailsWidgetKeywordsTable from './components/dashboard-details/DashboardDetailsWidgetKeywordsTable';
@@ -39,8 +37,6 @@ import LegacyDashboardPopularity from './components/dashboard/LegacyDashboardPop
 const slug = 'search-console';
 
 const addGoogleSitekitSearchConsoleDashboardWidget = createAddToFilter( <GoogleSitekitSearchConsoleDashboardWidget /> );
-const addGoogleSitekitSearchConsoleAdminbarWidget = createAddToFilter( <GoogleSitekitSearchConsoleAdminbarWidget /> );
-const addWPSearchConsoleDashboardWidget = createAddToFilter( <WPSearchConsoleDashboardWidget /> );
 const addLegacyDashboardSearchFunnel = createAddToFilter( <LegacyDashboardSearchFunnel /> );
 const addLegacySearchConsoleDashboardWidgetTopLevel = createAddToFilter( <LegacySearchConsoleDashboardWidgetTopLevel /> );
 
@@ -81,13 +77,6 @@ addFilter( 'googlesitekit.DashboardPopularity',
 	addPostSearcher, 30 );
 
 /**
- * Add components to the WordPress Dashboard widget.
- */
-addFilter( 'googlesitekit.WPDashboardHeader',
-	'googlesitekit.SearchConsole',
-	addWPSearchConsoleDashboardWidget, 11 );
-
-/**
  * Add components to the module detail page.
  */
 addFilter( 'googlesitekit.ModuleApp-' + slug,
@@ -97,10 +86,3 @@ addFilter( 'googlesitekit.ModuleApp-' + slug,
 addFilter( `googlesitekit.showDateRangeSelector-${ slug }`,
 	'googlesitekit.searchConsoleShowDateRangeSelector',
 	() => true );
-
-/**
- * Add components to the adminbar.
- */
-addFilter( 'googlesitekit.AdminbarModules',
-	'googlesitekit.SearchConsole',
-	addGoogleSitekitSearchConsoleAdminbarWidget );

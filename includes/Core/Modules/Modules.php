@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Modules\Modules
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -263,7 +263,10 @@ final class Modules {
 			uasort(
 				$this->modules,
 				function( Module $a, Module $b ) {
-					return $a->order > $b->order;
+					if ( $a->order === $b->order ) {
+						return 0;
+					}
+					return ( $a->order < $b->order ) ? -1 : 1;
 				}
 			);
 

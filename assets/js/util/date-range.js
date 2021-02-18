@@ -1,7 +1,7 @@
 /**
  * Utility functions.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,20 +22,15 @@
 import { _n, sprintf } from '@wordpress/i18n';
 
 /**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
-
-/**
  * Gets the current dateRange day count.
  *
  * @since 1.19.0
+ * @since 1.26.0 `dateRange` is now a required argument.
  *
- * @param {string} [dateRange] Optional. The date range slug.
+ * @param {string} dateRange The date range slug.
  * @return {number} The number of days in the range.
  */
-export function getCurrentDateRangeDayCount( dateRange = getCurrentDateRangeSlug() ) {
+export function getCurrentDateRangeDayCount( dateRange ) {
 	const daysMatch = dateRange.match( /last-(\d+)-days/ );
 
 	if ( daysMatch && daysMatch[ 1 ] ) {
@@ -43,17 +38,6 @@ export function getCurrentDateRangeDayCount( dateRange = getCurrentDateRangeSlug
 	}
 
 	throw new Error( 'Unrecognized date range slug.' );
-}
-
-/**
- * Gets the current dateRange slug.
- *
- * @since 1.8.0
- *
- * @return {string} The date range slug.
- */
-export function getCurrentDateRangeSlug() {
-	return Data.select( CORE_USER ).getDateRange();
 }
 
 /**

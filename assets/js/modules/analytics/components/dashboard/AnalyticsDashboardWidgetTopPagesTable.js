@@ -1,7 +1,7 @@
 /**
  * AnalyticsDashboardWidgetTopPagesTable component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,22 +33,23 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { getTimeInSeconds, numFmt } from '../../../../util';
 import withData from '../../../../components/higherorder/withData';
+import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
 import { getTopPagesReportDataDefaults } from '../../util';
-import { STORE_NAME } from '../../datastore/constants';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
-const { useSelect } = Data;
+import Link from '../../../../components/Link';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
+
+const { useSelect, withSelect } = Data;
 
 const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
-	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
-		{ path: `/report/content-drilldown/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath` }
-	) );
 	const { data, colspan } = props;
+	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
 
 	if ( ! data || ! data.length ) {
 		return null;
@@ -82,7 +83,8 @@ const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
 		const percent = Number( row.metrics[ 0 ].values[ 2 ] ) / 100;
 		const [ title, url ] = row.dimensions;
-		links[ i ] = `${ baseServiceURL }:${ encodeURIComponent( url.replace( /\//g, '~2F' ) ) }`;
+		links[ i ] = url;
+
 		return [
 			title,
 			numFmt( row.metrics[ 0 ].values[ 0 ], { style: 'decimal' } ),
@@ -102,6 +104,18 @@ const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 		hideColumns: {
 			mobile: [ 2, 3 ],
 		},
+		PrimaryLink: withSelect( ( select, { href = '/' } ) => {
+			const serviceURL = select( STORE_NAME ).getServiceReportURL( 'content-drilldown', {
+				'explorer-table.plotKeys': '[]',
+				'_r.drilldown': `analytics.pagePath:${ href }`,
+				...generateDateRangeArgs( dateRangeDates ),
+			} );
+
+			return {
+				href: serviceURL,
+				external: true,
+			};
+		} )( Link ),
 	};
 
 	const dataTable = getDataTableFromData( dataMapped, headers, options );

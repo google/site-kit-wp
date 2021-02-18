@@ -1,7 +1,7 @@
 /**
  * DashboardDetailsSearchFunnel component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Layout from '../../../../components/layout/Layout';
 import LegacyDashboardSearchFunnelInner from '../dashboard/LegacyDashboardSearchFunnelInner';
 import { getModulesData } from '../../../../util';
-import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
+import ActivateModuleCTA from '../../../../components/ActivateModuleCTA';
 import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
 
 class DashboardDetailsSearchFunnel extends Component {
@@ -57,7 +57,7 @@ class DashboardDetailsSearchFunnel extends Component {
 										mdc-layout-grid__cell--span-4-tablet
 										mdc-layout-grid__cell--span-6-desktop
 									">
-										<AnalyticsInactiveCTA />
+										<ActivateModuleCTA moduleSlug="analytics" />
 									</div>
 								}
 							</div>

@@ -1,7 +1,7 @@
 /**
  * LegacyDashboardWidgetPopularKeywordsTable component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +39,12 @@ import Layout from '../../../../components/layout/Layout';
 import {
 	isDataZeroSearchConsole,
 } from '../../util';
-import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
-import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
+
 const { useSelect } = Data;
 
 const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
@@ -52,9 +54,10 @@ const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
 	const referenceSiteURL = useSelect( ( select ) => {
 		return untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 	} );
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 	const baseServiceArgs = {
 		resource_id: domain,
-		num_of_days: getCurrentDateRangeDayCount(),
+		...generateDateRangeArgs( { startDate, endDate } ),
 	};
 	if ( isDomainProperty && referenceSiteURL ) {
 		baseServiceArgs.page = `*${ referenceSiteURL }`;

@@ -1,7 +1,7 @@
 /**
  * Tag Manager factory utils.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ import {
 	buildLiveContainerVersionAMP,
 } from './builders';
 
-export const parseLiveContainerVersionIDs = ( { accountId, containerId, container }, callback ) => { // eslint-disable-line sitekit/camelcase-acronyms
+export const parseLiveContainerVersionIDs = ( { accountId, containerId, container }, callback ) => { // eslint-disable-line sitekit/acronym-case
 	const ids = {
-		accountID: accountId, // eslint-disable-line sitekit/camelcase-acronyms
-		containerID: container.publicId, // eslint-disable-line sitekit/camelcase-acronyms
-		ampContainerID: container.publicId, // eslint-disable-line sitekit/camelcase-acronyms
-		internalContainerID: containerId, // eslint-disable-line sitekit/camelcase-acronyms
-		internalAMPContainerID: containerId, // eslint-disable-line sitekit/camelcase-acronyms
+		accountID: accountId, // eslint-disable-line sitekit/acronym-case
+		containerID: container.publicId, // eslint-disable-line sitekit/acronym-case
+		ampContainerID: container.publicId, // eslint-disable-line sitekit/acronym-case
+		internalContainerID: containerId, // eslint-disable-line sitekit/acronym-case
+		internalAMPContainerID: containerId, // eslint-disable-line sitekit/acronym-case
 	};
 	if ( callback ) {
 		callback( ids );

@@ -1,7 +1,7 @@
 /**
  * WP Dashboard Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,69 +22,65 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
 import GoogleLogoIcon from '../assets/svg/logo-g.svg';
 import SiteKitLogoIcon from '../assets/svg/logo-sitekit.svg';
-import WPDashboardMain from '../assets/js/components/wp-dashboard/WPDashboardMain';
-import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
-import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/components/wp-dashboard/WPSearchConsoleDashboardWidget';
-import { createAddToFilter } from '../assets/js/util/helpers';
-import WPAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/wp-dashboard/WPAnalyticsDashboardWidgetOverview';
-import WPAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/wp-dashboard/WPAnalyticsDashboardWidgetTopPagesTable';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
-import { WithTestRegistry } from '../tests/js/utils';
+import WPDashboardApp from '../assets/js/components/wp-dashboard/WPDashboardApp';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import {
+	wpDashboardPopularPagesArgs,
+	wpDashboardPopularPagesData,
+	wpDashboardSessionDurationArgs,
+	wpDashboardSessionDurationData,
+	wpDashboardUniqueVisitorsArgs,
+	wpDashboardUniqueVisitorsData,
+} from '../assets/js/modules/analytics/datastore/__fixtures__';
+import {
+	wpDashboardClicksArgs,
+	wpDashboardClicksData,
+	wpDashboardImpressionsArgs,
+	wpDashboardImpressionsData,
+} from '../assets/js/modules/search-console/datastore/__fixtures__';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import {
+	WithTestRegistry,
+	createTestRegistry,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideModules,
+} from '../tests/js/utils';
+import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
 
 storiesOf( 'WordPress', module )
-	.add( 'WordPress Dashboard', () => {
-		global._googlesitekitLegacyData = wpDashboardData;
-		global._googlesitekitLegacyData.admin.assetsRoot = ''; // See .storybook/config.js
-		global._googlesitekitLegacyData.canAdsRun = true;
+	.addDecorator( ( storyFn ) => {
+		const registry = createTestRegistry();
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
+		provideModules( registry );
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {
-				usingProxy: true,
-				referenceSiteURL: 'https://example.com',
-				adminURL: 'https://example.com/wp-admin/',
-				siteName: 'My Site Name',
-			} );
-			dispatch( CORE_USER ).receiveGetAuthentication( {
-				authenticated: true,
-				requiredScopes: [],
-				grantedScopes: [],
-			} );
-		};
+		return storyFn( registry );
+	} )
+	.add( 'WordPress Dashboard', ( registry ) => {
+		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-23' );
 
-		const addWPSearchConsoleDashboardWidget = createAddToFilter( <WPSearchConsoleDashboardWidget /> );
-		const addWPAnalyticsDashboardWidgetOverview = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
-		const addWPAnalyticsDashboardWidgetTopPagesTable = createAddToFilter( <WPAnalyticsDashboardWidgetTopPagesTable /> );
+		// For <WPDashboardUniqueVisitors />
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( wpDashboardUniqueVisitorsData, { options: wpDashboardUniqueVisitorsArgs } );
+		registry.dispatch( MODULES_ANALYTICS ).finishResolution( 'getReport', [ wpDashboardUniqueVisitorsArgs ] );
 
-		removeAllFilters( 'googlesitekit.WPDashboardHeader' );
-		removeAllFilters( 'googlesitekit.WPDashboardModule' );
+		// For <WPDashboardSessionDuration />
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( wpDashboardSessionDurationData, { options: wpDashboardSessionDurationArgs } );
+		registry.dispatch( MODULES_ANALYTICS ).finishResolution( 'getReport', [ wpDashboardSessionDurationArgs ] );
 
-		addFilter( 'googlesitekit.WPDashboardHeader',
-			'googlesitekit.SearchConsole',
-			addWPSearchConsoleDashboardWidget, 11 );
+		// For <WPDashboardImpressions />
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( wpDashboardImpressionsData, { options: wpDashboardImpressionsArgs } );
 
-		addFilter( 'googlesitekit.WPDashboardHeader',
-			'googlesitekit.Analytics',
-			addWPAnalyticsDashboardWidgetOverview, 1 );
-		addFilter( 'googlesitekit.WPDashboardModule',
-			'googlesitekit.Analytics',
-			addWPAnalyticsDashboardWidgetTopPagesTable );
+		// For <WPDashboardClicks />
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( wpDashboardClicksData, { options: wpDashboardClicksArgs } );
 
-		setTimeout( () => {
-			doAction(
-				'googlesitekit.moduleLoaded',
-				'WPDashboard'
-			);
-		}, 250 );
+		// For <WPDashboardPopularPages />
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( wpDashboardPopularPagesData, { options: wpDashboardPopularPagesArgs } );
+		registry.dispatch( MODULES_ANALYTICS ).finishResolution( 'getReport', [ wpDashboardPopularPagesArgs ] );
 
 		return (
 			<div id="dashboard-widgets">
@@ -98,8 +94,99 @@ storiesOf( 'WordPress', module )
 						</h2>
 						<div className="inside">
 							<div id="js-googlesitekit-wp-dashboard">
-								<WithTestRegistry callback={ setupRegistry }>
-									<WPDashboardMain />
+								<WithTestRegistry registry={ registry }>
+									<WPDashboardApp />
+								</WithTestRegistry>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}, {
+		options: {
+			readySelector: '.googlesitekit-data-block',
+			delay: 2000, // Wait for table overlay to animate.
+		},
+	} )
+	.add( 'WordPress Dashboard (Analytics inactive)', ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: false,
+				connected: false,
+			},
+		] );
+		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-23' );
+
+		// For <WPDashboardImpressions />
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( wpDashboardImpressionsData, { options: wpDashboardImpressionsArgs } );
+
+		// For <WPDashboardClicks />
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( wpDashboardClicksData, { options: wpDashboardClicksArgs } );
+
+		return (
+			<div id="dashboard-widgets">
+				<div className="metabox-holder">
+					<div id="google_dashboard_widget" className="postbox">
+						<h2 className="hndle ui-sortable-handle">
+							<span><span className="googlesitekit-logo googlesitekit-logo--mini">
+								<GoogleLogoIcon height="19" width="19" />
+								<SiteKitLogoIcon height="17" width="78" />
+							</span></span>
+						</h2>
+						<div className="inside">
+							<div id="js-googlesitekit-wp-dashboard">
+								<WithTestRegistry registry={ registry }>
+									<WPDashboardApp />
+								</WithTestRegistry>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}, {
+		options: {
+			readySelector: '.googlesitekit-data-block',
+			delay: 2000, // Wait for table overlay to animate.
+		},
+	} )
+	.add( 'WordPress Dashboard (Data Unavailable)', ( registry ) => {
+		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-23' );
+
+		// For <WPDashboardUniqueVisitors />
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options: wpDashboardUniqueVisitorsArgs } );
+		registry.dispatch( MODULES_ANALYTICS ).finishResolution( 'getReport', [ wpDashboardUniqueVisitorsArgs ] );
+
+		// For <WPDashboardSessionDuration />
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options: wpDashboardSessionDurationArgs } );
+		registry.dispatch( MODULES_ANALYTICS ).finishResolution( 'getReport', [ wpDashboardSessionDurationArgs ] );
+
+		// For <WPDashboardImpressions />
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( {}, { options: wpDashboardImpressionsArgs } );
+
+		// For <WPDashboardClicks />
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( {}, { options: wpDashboardClicksArgs } );
+
+		// For <WPDashboardPopularPages />
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options: wpDashboardPopularPagesArgs } );
+		registry.dispatch( MODULES_ANALYTICS ).finishResolution( 'getReport', [ wpDashboardPopularPagesArgs ] );
+
+		return (
+			<div id="dashboard-widgets">
+				<div className="metabox-holder">
+					<div id="google_dashboard_widget" className="postbox">
+						<h2 className="hndle ui-sortable-handle">
+							<span><span className="googlesitekit-logo googlesitekit-logo--mini">
+								<GoogleLogoIcon height="19" width="19" />
+								<SiteKitLogoIcon height="17" width="78" />
+							</span></span>
+						</h2>
+						<div className="inside">
+							<div id="js-googlesitekit-wp-dashboard">
+								<WithTestRegistry registry={ registry }>
+									<WPDashboardApp />
 								</WithTestRegistry>
 							</div>
 						</div>

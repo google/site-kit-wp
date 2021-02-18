@@ -1,7 +1,7 @@
 /**
  * DashboardPopularKeywordsWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,24 +26,20 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { numFmt, untrailingslashit } from '../../../../util';
 import { getDataTableFromData } from '../../../../components/data-table';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
-import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { isZeroReport } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
-const { Widget } = Widgets.components;
 
-function DashboardPopularKeywordsWidget() {
+function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		data,
 		error,
@@ -63,7 +59,7 @@ function DashboardPopularKeywordsWidget() {
 
 		const baseServiceURLArgs = {
 			resource_id: domain,
-			num_of_days: getCurrentDateRangeDayCount(),
+			...generateDateRangeArgs( { startDate, endDate } ),
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
@@ -91,11 +87,11 @@ function DashboardPopularKeywordsWidget() {
 		return <PreviewTable padding />;
 	}
 	if ( error ) {
-		return <ReportError moduleSlug="search-console" error={ error } />;
+		return <WidgetReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="search-console" />;
+		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
 	const headers = [
@@ -135,9 +131,8 @@ function DashboardPopularKeywordsWidget() {
 
 	return (
 		<Widget
-			slug="searchConsolePopularKeywords"
 			noPadding
-			footer={ () => (
+			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
 					name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }

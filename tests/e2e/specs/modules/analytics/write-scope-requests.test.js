@@ -1,7 +1,7 @@
 /**
  * Analytics write scope requests tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,11 @@ describe( 'Analytics write scope requests', () => {
 	let interceptCreatePropertyRequest;
 	let interceptCreateProfileRequest;
 
+	// Custom helper to click the "Configure Analytics" button.
+	// For some reason, using normal methods of clicking are less reliable in this test.
+	// See https://github.com/puppeteer/puppeteer/issues/1805
+	const submitForm = () => page.$eval( '.googlesitekit-setup-module__action button', ( el ) => el.click() );
+
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
@@ -59,13 +64,13 @@ describe( 'Analytics write scope requests', () => {
 					request.respond( {
 						status: 200,
 						body: JSON.stringify( {
-							accountId: '100', // eslint-disable-line sitekit/camelcase-acronyms
+							accountId: '100', // eslint-disable-line sitekit/acronym-case
 							id: 'UA-100-1',
-							internalWebPropertyId: '200', // eslint-disable-line sitekit/camelcase-acronyms
+							internalWebPropertyId: '200', // eslint-disable-line sitekit/acronym-case
 							kind: 'analytics#webproperty',
 							level: 'STANDARD',
 							name: 'Test Property X',
-							websiteUrl: '/wp-admin/', // eslint-disable-line sitekit/camelcase-acronyms
+							websiteUrl: '/wp-admin/', // eslint-disable-line sitekit/acronym-case
 							permissions: {
 								effective: [
 									'READ_AND_ANALYZE',
@@ -83,14 +88,14 @@ describe( 'Analytics write scope requests', () => {
 						status: 200,
 						body: JSON.stringify( {
 							id: '300',
-							accountId: '100', // eslint-disable-line sitekit/camelcase-acronyms
-							webPropertyId: 'UA-100-1', // eslint-disable-line sitekit/camelcase-acronyms
-							internalWebPropertyId: '200', // eslint-disable-line sitekit/camelcase-acronyms
+							accountId: '100', // eslint-disable-line sitekit/acronym-case
+							webPropertyId: 'UA-100-1', // eslint-disable-line sitekit/acronym-case
+							internalWebPropertyId: '200', // eslint-disable-line sitekit/acronym-case
 							kind: 'analytics#profile',
 							level: 'STANDARD',
 							name: 'Test Profile X',
 							type: 'WEB',
-							websiteUrl: '/wp-admin/', // eslint-disable-line sitekit/camelcase-acronyms
+							websiteUrl: '/wp-admin/', // eslint-disable-line sitekit/acronym-case
 							permissions: {
 								effective: [
 									'READ_AND_ANALYZE',
@@ -154,8 +159,7 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForRequest( ( req ) => req.url().match( 'analytics.google.com/analytics/web' ) );
 	} );
 
-	// TODO: Fix instability to remove skip.
-	it.skip( 'prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
+	it( 'prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
 		scope = 'https://www.googleapis.com/auth/analytics.edit';
 		interceptCreateProfileRequest = true;
 
@@ -179,8 +183,8 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /set up a new property/i } );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
-		await expect( page ).toClick( '.mdc-button:not(:disabled)', { text: /configure analytics/i } );
-		await page.waitForSelector( '.mdc-dialog--open' );
+		await submitForm();
+		await page.waitForSelector( '.mdc-dialog--open', { timeout: 3000 } );
 
 		// Click on proceed button and wait for oauth request.
 		await Promise.all( [
@@ -201,8 +205,7 @@ describe( 'Analytics write scope requests', () => {
 		expect( console ).toHaveErrored(); // Permission scope error.
 	} );
 
-	// TODO: Fix instability to remove skip.
-	it.skip( 'prompts for additional permissions during a new Analytics profile creation if the user has not granted the Analytics edit scope', async () => {
+	it( 'prompts for additional permissions during a new Analytics profile creation if the user has not granted the Analytics edit scope', async () => {
 		scope = 'https://www.googleapis.com/auth/analytics.edit';
 
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
@@ -229,8 +232,8 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /set up a new view/i } );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
-		await expect( page ).toClick( '.mdc-button:not(:disabled)', { text: /configure analytics/i } );
-		await page.waitForSelector( '.mdc-dialog--open' );
+		await submitForm();
+		await page.waitForSelector( '.mdc-dialog--open', { timeout: 3000 } );
 
 		// Click on proceed button and wait for oauth request.
 		await Promise.all( [

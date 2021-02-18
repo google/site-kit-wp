@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Tests\Core\Util\Debug_DataTest
  *
  * @package   Google\Site_Kit\Tests\Core\Util
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -44,6 +44,7 @@ class Debug_DataTest extends TestCase {
 				'search_console_property',
 				'required_scopes',
 				'capabilities',
+				'enabled_features',
 			),
 			array_keys( $info['google-site-kit']['fields'] )
 		);

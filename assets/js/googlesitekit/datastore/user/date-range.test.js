@@ -1,7 +1,7 @@
 /**
  * `core/user` data store: date-range.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -221,6 +221,32 @@ describe( 'core/user date-range', () => {
 				const testName = 'should return proper dates for "%s", offsetDays %s, compare, & weekDayAlign';
 				it.each( valuesToTest )( testName, ( dateRange, offsetDays, expected ) => {
 					createDateRangeTest( dateRange, expected, { offsetDays, compare: true, weekDayAlign: true } );
+				} );
+			} );
+		} );
+
+		describe( 'getDateRangeNumberOfDays', () => {
+			const createNumberOfDaysTest = ( dateRange, expectedNumberOfDays ) => {
+				registry.dispatch( STORE_NAME ).setDateRange( dateRange );
+				expect( registry.select( STORE_NAME ).getDateRangeNumberOfDays() )
+					.toEqual( expectedNumberOfDays );
+			};
+
+			describe( 'with date range', () => {
+				// [ dateRange, expectedNumberOfDays ]
+				const valuesToTest = [
+					[ 'last-1-days', 1 ],
+					[ 'last-3-days', 3 ],
+					[ 'last-7-days', 7 ],
+					[ 'last-1-days', 1 ],
+					[ 'last-3-days', 3 ],
+					[ 'last-7-days', 7 ],
+					[ 'last-28-days', 28 ],
+					[ 'last-90-days', 90 ],
+				];
+
+				it.each( valuesToTest )( 'should return proper number of days for "%s"', ( dateRange, expectedNumberOfDays ) => {
+					createNumberOfDaysTest( dateRange, expectedNumberOfDays );
 				} );
 			} );
 		} );

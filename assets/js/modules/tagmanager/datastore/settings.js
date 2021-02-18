@@ -1,7 +1,7 @@
 /**
  * `modules/tagmanager` data store: settings.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { TYPE_MODULES } from '../../../components/data/constants';
 import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import {
@@ -39,9 +39,9 @@ import {
 } from '../util';
 import { STORE_NAME, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP, FORM_SETUP } from './constants';
 import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
-import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 
 // Invariant error messages.
@@ -67,8 +67,8 @@ export async function submitChanges( { select, dispatch } ) {
 			return { error };
 		}
 
-		await dispatch( STORE_NAME ).setContainerID( container.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
-		await dispatch( STORE_NAME ).setInternalContainerID( container.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
+		await dispatch( STORE_NAME ).setContainerID( container.publicId ); // eslint-disable-line sitekit/acronym-case
+		await dispatch( STORE_NAME ).setInternalContainerID( container.containerId ); // eslint-disable-line sitekit/acronym-case
 	}
 
 	const ampContainerID = select( STORE_NAME ).getAMPContainerID();
@@ -81,8 +81,8 @@ export async function submitChanges( { select, dispatch } ) {
 			return { error };
 		}
 
-		await dispatch( STORE_NAME ).setAMPContainerID( container.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
-		await dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
+		await dispatch( STORE_NAME ).setAMPContainerID( container.publicId ); // eslint-disable-line sitekit/acronym-case
+		await dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId ); // eslint-disable-line sitekit/acronym-case
 	}
 
 	// This action shouldn't be called if settings haven't changed,

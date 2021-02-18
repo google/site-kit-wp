@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Util\JSON_File
  *
  * @package   Google\Site_Kit\Core\Util
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -11,7 +11,8 @@
 namespace Google\Site_Kit\Core\Util;
 
 use ArrayAccess;
-use InvalidArgumentException;
+use ArrayIterator;
+use IteratorAggregate;
 use JsonSerializable;
 
 /**
@@ -21,7 +22,7 @@ use JsonSerializable;
  * @access private
  * @ignore
  */
-class JSON_File implements ArrayAccess, JsonSerializable {
+class JSON_File implements ArrayAccess, IteratorAggregate, JsonSerializable {
 	/**
 	 * Path to JSON file.
 	 *
@@ -135,5 +136,18 @@ class JSON_File implements ArrayAccess, JsonSerializable {
 		$this->hydrate();
 
 		return $this->data;
+	}
+
+	/**
+	 * Retrieve an iterator instance for the JSON data.
+	 *
+	 * @since 1.25.0
+	 *
+	 * @return ArrayIterator|\Traversable
+	 */
+	public function getIterator() {
+		$array_data = $this->jsonSerialize();
+		$array_data = is_array( $array_data ) ? $array_data : array();
+		return new ArrayIterator( $array_data );
 	}
 }

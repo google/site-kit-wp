@@ -1,7 +1,7 @@
 /**
  * LegacyAnalyticsDashboardWidgetPopularPagesTable component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,14 +38,7 @@ import TableOverflowContainer from '../../../../components/TableOverflowContaine
 const { useSelect } = Data;
 
 const RenderLayout = ( { children } ) => {
-	const serviceURL = useSelect( ( select ) => {
-		const accountID = select( STORE_NAME ).getAccountID();
-		const profileID = select( STORE_NAME ).getProfileID();
-		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
-		return select( STORE_NAME ).getServiceURL(
-			{ path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }` }
-		);
-	} );
+	const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages' ) );
 	return (
 		<div className="
 			mdc-layout-grid__cell

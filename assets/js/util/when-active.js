@@ -1,7 +1,7 @@
 /**
  * `whenActive` HOC.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import { createElement } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { kebabCaseToPascalCase } from '../googlesitekit/data/transform-case';
 const { useSelect } = Data;
 
@@ -61,16 +61,16 @@ export default function whenActive( { moduleName, FallbackComponent = null, Inco
 
 			// Return a fallback if the module is not active.
 			if ( module.active === false ) {
-				return FallbackComponent !== null ? <FallbackComponent /> : null;
+				return FallbackComponent !== null ? <FallbackComponent { ...props } /> : null;
 			}
 
 			// Return a fallback if the module is active but not connected yet.
 			if ( module.connected === false ) {
 				if ( IncompleteComponent !== null ) {
-					return <IncompleteComponent />;
+					return <IncompleteComponent { ...props } />;
 				}
 				// If there isn't a IncompleteComponent then use the FallbackComponent if available.
-				return FallbackComponent !== null ? <FallbackComponent /> : null;
+				return FallbackComponent !== null ? <FallbackComponent { ...props } /> : null;
 			}
 
 			// Return the active and connected component.

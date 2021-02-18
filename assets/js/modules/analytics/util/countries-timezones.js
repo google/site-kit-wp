@@ -1,7 +1,7 @@
 /**
  * Country and Time Zone utilities.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,14 +37,14 @@ export const timeZonesByCountryCode = allCountries.reduce( ( map, country ) => {
 export const countriesByCode = keyBy( allCountries, 'countryCode' );
 
 export const countryCodesByTimezone = allCountries.reduce( ( map, country ) => {
-	country.timeZone.forEach( ( { timeZoneId } ) => map[ timeZoneId ] = country.countryCode ); // eslint-disable-line sitekit/camelcase-acronyms
+	country.timeZone.forEach( ( { timeZoneId } ) => map[ timeZoneId ] = country.countryCode ); // eslint-disable-line sitekit/acronym-case
 
 	return map;
 }, {} );
 
 export const countriesByTimeZone = allCountries.reduce( ( map, country ) => {
-	country.timeZone.forEach( ( { timeZoneId } ) => { // eslint-disable-line sitekit/camelcase-acronyms
-		map[ timeZoneId ] = country; // eslint-disable-line sitekit/camelcase-acronyms
+	country.timeZone.forEach( ( { timeZoneId } ) => { // eslint-disable-line sitekit/acronym-case
+		map[ timeZoneId ] = country; // eslint-disable-line sitekit/acronym-case
 	} );
 	return map;
 }, {} );

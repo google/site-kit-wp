@@ -1,7 +1,7 @@
 /**
  * AMP Homepage validation tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import {
-	activatePlugin,
 	deactivatePlugin,
 } from '@wordpress/e2e-test-utils';
 
@@ -36,7 +35,6 @@ import {
 describe( 'AMP Homepage', () => {
 	beforeAll( async () => {
 		await setupSiteKit();
-		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
 		await activateAMPWithMode( 'primary' );
 	} );
 

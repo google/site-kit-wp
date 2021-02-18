@@ -1,7 +1,7 @@
 /**
  * Search Console dashboard utility functions.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@
 /**
  * External dependencies
  */
-import { each } from 'lodash';
+import each from 'lodash/each';
+import round from 'lodash/round';
 
 /**
  * Internal dependencies
@@ -43,14 +44,15 @@ function reduceSearchConsoleData( rows ) {
 	let totalCTR = 0;
 	let totalPosition = 0;
 	const count = rows.length;
+
 	each( rows, ( row ) => {
 		const date = new Date( row.keys[ 0 ] );
 		dataMap.push( [
 			( date.getMonth() + 1 ) + '/' + date.getUTCDate(),
 			row.clicks,
 			row.impressions,
-			row.ctr,
-			row.position,
+			round( row.ctr, 3 ),
+			round( row.position, 3 ),
 		] );
 		totalClicks += row.clicks;
 		totalImpressions += row.impressions;

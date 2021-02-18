@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Util\Method_Proxy_Trait
  *
  * @package   Google\Site_Kit\Core\Util
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -29,21 +29,22 @@ trait Method_Proxy_Trait {
 	/**
 	 * Gets a proxy function for a class method which can be executed only once.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param string $method Method name.
 	 * @return callable A proxy function.
 	 */
 	private function get_method_proxy_once( $method ) {
-		static $calls = array();
+		return function ( ...$args ) use ( $method ) {
+			static $called;
+			static $return_value;
 
-		return function ( ...$args ) use ( $method, $calls ) {
-			$key = get_class( $this ) . '::' . $method;
-			if ( ! array_key_exists( $key, $calls ) ) {
-				$calls[ $key ] = $this->{ $method }( ...$args );
+			if ( ! $called ) {
+				$called       = true;
+				$return_value = $this->{ $method }( ...$args );
 			}
 
-			return $calls[ $key ];
+			return $return_value;
 		};
 	}
 

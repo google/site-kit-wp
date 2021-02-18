@@ -1,7 +1,7 @@
 /**
  * Search Console Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admi
 import Layout from '../assets/js/components/layout/Layout';
 import SearchConsoleDashboardWidgetOverview from '../assets/js/modules/search-console/components/dashboard/SearchConsoleDashboardWidgetOverview';
 import SearchConsoleDashboardWidgetSiteStats from '../assets/js/modules/search-console/components/dashboard/SearchConsoleDashboardWidgetSiteStats';
+import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Search Console Module', module )
 	.add( 'Overview Chart', () => {
@@ -71,17 +72,20 @@ storiesOf( 'Search Console Module', module )
 		}, 250 );
 
 		return (
-			<Layout
-				header
-				title={ __( 'Overview for the last 28 days', 'google-site-kit' ) }
-				headerCTALabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
-				headerCTALink="https://search.google.com/search-console"
-			>
-				<SearchConsoleDashboardWidgetOverview
-					selectedStats={ selectedStats }
-				/>
-				<SearchConsoleDashboardWidgetSiteStats selectedStats={ selectedStats } series={ series } vAxes={ vAxes } />
-			</Layout>
+			<WithTestRegistry>
+				<Layout
+					header
+					title={ __( 'Overview for the last 28 days', 'google-site-kit' ) }
+					headerCTALabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
+					headerCTALink="https://search.google.com/search-console"
+				>
+					<SearchConsoleDashboardWidgetOverview
+						selectedStats={ selectedStats }
+						handleDataError={ () => {} } // Required prop.
+					/>
+					<SearchConsoleDashboardWidgetSiteStats selectedStats={ selectedStats } series={ series } vAxes={ vAxes } />
+				</Layout>
+			</WithTestRegistry>
 		);
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } );

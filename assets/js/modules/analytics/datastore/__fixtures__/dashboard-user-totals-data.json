@@ -6,7 +6,7 @@
 			"metricHeader": {
 				"metricHeaderEntries": [
 					{
-						"name": "ga:users",
+						"name": "Users",
 						"type": "INTEGER"
 					}
 				]

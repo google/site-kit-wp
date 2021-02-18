@@ -1,7 +1,7 @@
 /**
  * Widgets API defaults
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import URLSearchWidget from '../../googlesitekit/widgets/components/URLSearchWidget';
-import { CONTEXT_DASHBOARD, CONTEXT_PAGE_DASHBOARD } from './default-contexts';
+import {
+	CONTEXT_DASHBOARD,
+	CONTEXT_PAGE_DASHBOARD,
+	CONTEXT_MODULE_SEARCH_CONSOLE,
+	CONTEXT_MODULE_ANALYTICS,
+	CONTEXT_MODULE_ADSENSE,
+} from './default-contexts';
 import {
 	AREA_DASHBOARD_ALL_TRAFFIC,
 	AREA_DASHBOARD_SEARCH_FUNNEL,
@@ -36,6 +42,9 @@ import {
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
 	AREA_PAGE_DASHBOARD_POPULARITY,
 	AREA_PAGE_DASHBOARD_SPEED,
+	AREA_MODULE_SEARCH_CONSOLE_MAIN,
+	AREA_MODULE_ANALYTICS_MAIN,
+	AREA_MODULE_ADSENSE_MAIN,
 } from './default-areas';
 import { WIDGET_URL_SEARCH } from './default-widgets';
 import { WIDGET_AREA_STYLES, WIDGET_WIDTHS } from './datastore/constants';
@@ -51,7 +60,7 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea(
 		AREA_DASHBOARD_ALL_TRAFFIC,
 		{
-			title: __( 'All Traffic', 'google-site-kit' ),
+			title: __( 'Your Traffic at a Glance', 'google-site-kit' ),
 			subtitle: __( 'How people found your site.', 'google-site-kit' ),
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
@@ -117,7 +126,7 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea(
 		AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
 		{
-			title: __( 'All Traffic', 'google-site-kit' ),
+			title: __( 'Your Traffic at a Glance', 'google-site-kit' ),
 			subtitle: __( 'How people found your page.', 'google-site-kit' ),
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 2,
@@ -158,5 +167,35 @@ export function registerDefaults( widgetsAPI ) {
 		[
 			AREA_DASHBOARD_POPULARITY,
 		],
+	);
+
+	widgetsAPI.registerWidgetArea(
+		AREA_MODULE_SEARCH_CONSOLE_MAIN,
+		{
+			priority: 1,
+			style: WIDGET_AREA_STYLES.BOXES,
+			title: __( 'Overview', 'google-site-kit' ),
+		},
+		CONTEXT_MODULE_SEARCH_CONSOLE,
+	);
+
+	widgetsAPI.registerWidgetArea(
+		AREA_MODULE_ANALYTICS_MAIN,
+		{
+			priority: 1,
+			style: WIDGET_AREA_STYLES.BOXES,
+			title: __( 'Overview', 'google-site-kit' ),
+		},
+		CONTEXT_MODULE_ANALYTICS,
+	);
+
+	widgetsAPI.registerWidgetArea(
+		AREA_MODULE_ADSENSE_MAIN,
+		{
+			priority: 1,
+			style: WIDGET_AREA_STYLES.BOXES,
+			title: __( 'Overview', 'google-site-kit' ),
+		},
+		CONTEXT_MODULE_ADSENSE,
 	);
 }

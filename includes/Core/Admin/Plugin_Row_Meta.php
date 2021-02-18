@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Admin;
 /**
  * Class for managing plugin row meta.
  *
- * @since n.e.x.t
+ * @since 1.24.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Plugin_Row_Meta {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 */
 	public function register() {
 		add_filter(
@@ -41,7 +41,7 @@ class Plugin_Row_Meta {
 	/**
 	 * Builds an array of anchor elements to be shown in the plugin row.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @return string[] Array of links as HTML strings.
 	 */

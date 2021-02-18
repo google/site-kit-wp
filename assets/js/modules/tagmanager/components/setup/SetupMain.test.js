@@ -1,7 +1,7 @@
 /**
  * Tag Manager Setup Main component tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@
 import { provideSiteInfo, provideUserAuthentication } from '../../../../../../tests/js/utils';
 import { render, waitFor, createTestRegistry } from '../../../../../../tests/js/test-utils';
 import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME, CONTEXT_WEB, CONTAINER_CREATE, FORM_SETUP, CONTEXT_AMP } from '../../datastore/constants';
 import { buildAccountWithContainers } from '../../datastore/__factories__';
 import SetupMain from './SetupMain';
@@ -42,7 +42,7 @@ describe( 'SetupMain', () => {
 		};
 
 		const { account, containers } = buildAccountWithContainers( args );
-		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 
 		registry = createTestRegistry();
 

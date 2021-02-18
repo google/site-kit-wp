@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Assets\Assets
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Dependencies;
 
 /**
@@ -310,8 +311,10 @@ final class Assets {
 			'googlesitekit-base',
 			'googlesitekit-data',
 			'googlesitekit-datastore-forms',
+			'googlesitekit-datastore-location',
 			'googlesitekit-datastore-site',
 			'googlesitekit-datastore-user',
+			'googlesitekit-datastore-ui',
 			'googlesitekit-widgets',
 		);
 
@@ -389,7 +392,8 @@ final class Assets {
 					'src'          => 'https://www.gstatic.com/charts/loader.js',
 					'in_footer'    => false,
 					'before_print' => function( $handle ) {
-						wp_add_inline_script( $handle, 'google.charts.load( "current", { packages: [ "corechart" ] } );' );
+						// The "42" version is important because it contains a fix for the tooltip flickering issue.
+						wp_add_inline_script( $handle, 'google.charts.load( "42", { packages: [ "corechart" ] } );' );
 					},
 				)
 			),
@@ -466,6 +470,16 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-datastore-location',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-location.js',
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-data',
+					),
+				)
+			),
+			new Script(
 				'googlesitekit-datastore-site',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-datastore-site.js',
@@ -482,6 +496,15 @@ final class Assets {
 				'googlesitekit-datastore-forms',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-datastore-forms.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-datastore-ui',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-ui.js',
 					'dependencies' => array(
 						'googlesitekit-data',
 					),
@@ -641,6 +664,7 @@ final class Assets {
 			'isNetworkMode'    => $this->context->is_network_mode(),
 			'timezone'         => get_option( 'timezone_string' ),
 			'siteName'         => get_bloginfo( 'name' ),
+			'enabledFeatures'  => Feature_Flags::get_enabled_features(),
 		);
 
 		/**

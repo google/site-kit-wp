@@ -1,7 +1,7 @@
 /**
  * DashboardTopEarningPagesWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,22 +26,18 @@ import { compose } from '@wordpress/compose';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME as ANALYTICS_STORE, DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import { getDataTableFromData } from '../../../../components/data-table';
 import SourceLink from '../../../../components/SourceLink';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import { isZeroReport } from '../../../analytics/util';
-import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
-const { Widget } = Widgets.components;
 
-function DashboardTopEarningPagesWidget() {
+function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		isAdSenseLinked,
 		analyticsMainURL,
@@ -69,11 +65,11 @@ function DashboardTopEarningPagesWidget() {
 		};
 
 		return {
-			isAdSenseLinked: select( ANALYTICS_STORE ).getAdsenseLinked(),
-			analyticsMainURL: select( ANALYTICS_STORE ).getServiceURL(),
-			data: select( ANALYTICS_STORE ).getReport( args ),
-			error: select( ANALYTICS_STORE ).getErrorForSelector( 'getReport', [ args ] ),
-			loading: ! select( ANALYTICS_STORE ).hasFinishedResolution( 'getReport', [ args ] ),
+			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
+			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceURL(),
+			data: select( MODULES_ANALYTICS ).getReport( args ),
+			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ),
+			loading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ),
 		};
 	} );
 
@@ -90,11 +86,11 @@ function DashboardTopEarningPagesWidget() {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	const headers = [
@@ -129,9 +125,8 @@ function DashboardTopEarningPagesWidget() {
 
 	return (
 		<Widget
-			slug="adsenseTopEarningPages"
 			noPadding
-			footer={ () => (
+			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
 					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }

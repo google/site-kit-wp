@@ -3,7 +3,7 @@
 /**
  * Release script.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,6 @@ const archiver = require( 'archiver' );
 const fse = require( 'fs-extra' );
 const getRepoInfo = require( 'git-repo-info' );
 const sanitizeFilename = require( 'sanitize-filename' );
-
-/**
- * Internal dependencies
- */
-const { flagMode } = require( '../dist/config.json' );
 
 /**
  * Retrieves the plugin version from the plugin's file header.
@@ -119,12 +114,10 @@ async function makeRelease() {
 		cp( 'google-site-kit.php' ),
 		cp( 'uninstall.php' ),
 		cp( 'dist/assets' ),
+		cp( 'dist/config.json' ),
 		cp( 'includes' ),
 		cp( 'third-party' ),
 	];
-	if ( 'production' !== flagMode ) {
-		fileCopyPromises.push( cp( 'dist/config.json' ) );
-	}
 	await Promise.all( fileCopyPromises );
 
 	// Archive the release directory.

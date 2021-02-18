@@ -1,7 +1,7 @@
 /**
  * Analytics dashboard components.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,4 +34,3 @@ export { default as LegacyAnalyticsDashboardWidgetPopularPagesTable } from './Le
 export { default as LegacyAnalyticsDashboardWidgetTopAcquisitionSources } from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 export { default as LegacyAnalyticsDashboardWidgetTopLevel } from './LegacyAnalyticsDashboardWidgetTopLevel';
 export { default as LegacyDashboardAcquisitionPieChart } from './LegacyDashboardAcquisitionPieChart';
-export { default as DashboardAllTrafficWidgetV2 } from './DashboardAllTrafficWidgetV2';

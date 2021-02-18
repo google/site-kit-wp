@@ -1,7 +1,7 @@
 /**
  * `modules/analytics` data store: accounts.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { isValidAccountSelection } from '../util';
 import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
-import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { actions as tagActions } from './tags';
@@ -236,14 +236,14 @@ const baseResolvers = {
 			if ( response ) {
 				dispatch( STORE_NAME ).receiveGetAccounts( response.accounts );
 
-				if ( response.properties?.[ 0 ]?.accountId ) { // eslint-disable-line sitekit/camelcase-acronyms
-					const accountID = response.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+				if ( response.properties?.[ 0 ]?.accountId ) { // eslint-disable-line sitekit/acronym-case
+					const accountID = response.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 					dispatch( STORE_NAME ).receiveGetProperties( response.properties, { accountID } );
 				}
 
-				if ( response.profiles?.[ 0 ]?.webPropertyId ) { // eslint-disable-line sitekit/camelcase-acronyms
-					const propertyID = response.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
-					const accountID = response.profiles[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+				if ( response.profiles?.[ 0 ]?.webPropertyId ) { // eslint-disable-line sitekit/acronym-case
+					const propertyID = response.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/acronym-case
+					const accountID = response.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { accountID, propertyID } );
 				}
 
@@ -265,8 +265,8 @@ const baseResolvers = {
 		const accountID = registry.select( STORE_NAME ).getAccountID();
 		// Pre-select values from the matched property if no account is selected.
 		if ( matchedProperty && ! accountID ) {
-			registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId ); // eslint-disable-line sitekit/camelcase-acronyms
-			registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
+			registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId ); // eslint-disable-line sitekit/acronym-case
+			registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 		}
 	},
 };

@@ -1,7 +1,7 @@
 /**
  * Widget Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,12 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { createTestRegistry, WithTestRegistry } from '../tests/js/utils';
+import {
+	createTestRegistry,
+	WithTestRegistry,
+	provideModules,
+	provideUserCapabilities,
+} from '../tests/js/utils';
 import Widget from '../assets/js/googlesitekit/widgets/components/Widget';
 import WidgetAreaRenderer from '../assets/js/googlesitekit/widgets/components/WidgetAreaRenderer';
 import { STORE_NAME, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from '../assets/js/googlesitekit/widgets/datastore/constants';
@@ -68,11 +73,34 @@ function QuarterWidgetInGrid( props ) {
 	);
 }
 
-function createWidgetAreas( registry, ...widgets ) {
-	return widgets.map( ( widths, i ) => createWidgetArea(
+function getRegularWidget( textContent ) {
+	return () => <div>{ textContent || 'Regular Widget' }</div>;
+}
+
+function getReportZeroWidget( moduleSlug ) {
+	return ( { WidgetReportZero } ) => <WidgetReportZero moduleSlug={ moduleSlug } />;
+}
+
+function getActivateModuleCTAWidget( moduleSlug ) {
+	return ( { WidgetActivateModuleCTA } ) => <WidgetActivateModuleCTA moduleSlug={ moduleSlug } />;
+}
+
+function getCompleteModuleActivationCTAWidget( moduleSlug ) {
+	return ( { WidgetCompleteModuleActivationCTA } ) => <WidgetCompleteModuleActivationCTA moduleSlug={ moduleSlug } />;
+}
+
+function createWidgetAreasFromWidths( registry, ...widgetAreaWidgetWidths ) {
+	const widgetAreaWidgets = widgetAreaWidgetWidths.map( ( widgetWidths ) => {
+		return widgetWidths.map( ( width ) => ( { width } ) );
+	} );
+	return createWidgetAreas( registry, ...widgetAreaWidgets );
+}
+
+function createWidgetAreas( registry, ...widgetAreaWidgets ) {
+	return widgetAreaWidgets.map( ( widgets, i ) => createWidgetArea(
 		registry,
 		`area${ i + 1 }`,
-		widths.map( ( width ) => ( { width } ) ),
+		widgets,
 	) );
 }
 
@@ -84,7 +112,7 @@ function createWidgetArea( registry, areaName, widgets ) {
 	} );
 
 	widgets.forEach( ( { Component, slug, width }, i ) => {
-		const widgetSlug = slug || `${ areaName }-width${ i + 1 }`;
+		const widgetSlug = slug || `${ areaName }-widget${ i + 1 }`;
 		const componentFallback = () => (
 			<div>
 				{ ( Array.isArray( width ) ? width.join( ' / ' ) : width ).toUpperCase() }
@@ -108,7 +136,7 @@ storiesOf( 'Global/Widgets', module )
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
-					slug={ `widget${ count }` }
+					widgetSlug={ `widget${ count }` }
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
 					{ count !== 4 && <div>Widget body content.</div> }
@@ -121,7 +149,7 @@ storiesOf( 'Global/Widgets', module )
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
-					slug={ `widget${ count }` }
+					widgetSlug={ `widget${ count }` }
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
 					{ count !== 4 && <div>Widget body content.</div> }
@@ -134,7 +162,7 @@ storiesOf( 'Global/Widgets', module )
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
-					slug={ `widget${ count }` }
+					widgetSlug={ `widget${ count }` }
 					noPadding
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
@@ -148,7 +176,7 @@ storiesOf( 'Global/Widgets', module )
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
-					slug={ `widget${ count }` }
+					widgetSlug={ `widget${ count }` }
 					noPadding
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
@@ -162,9 +190,9 @@ storiesOf( 'Global/Widgets', module )
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
-					slug={ `widget${ count }` }
-					header={ () => <div>Widget header</div> }
-					footer={ () => <div>Widget footer</div> }
+					widgetSlug={ `widget${ count }` }
+					Header={ () => <div>Widget header</div> }
+					Footer={ () => <div>Widget footer</div> }
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
 					{ count !== 4 && <div>Widget body content.</div> }
@@ -177,9 +205,9 @@ storiesOf( 'Global/Widgets', module )
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
-					slug={ `widget${ count }` }
-					header={ () => <div>Widget header</div> }
-					footer={ () => <div>Widget footer</div> }
+					widgetSlug={ `widget${ count }` }
+					Header={ () => <div>Widget header</div> }
+					Footer={ () => <div>Widget footer</div> }
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
 					{ count !== 4 && <div>Widget body content.</div> }
@@ -189,10 +217,16 @@ storiesOf( 'Global/Widgets', module )
 	) );
 
 storiesOf( 'Global/Widgets/Widget Area', module )
-	.addDecorator( ( storyFn ) => storyFn( createTestRegistry() ) )
+	.addDecorator( ( storyFn ) => {
+		const registry = createTestRegistry();
+		provideUserCapabilities( registry );
+		provideModules( registry );
+
+		return storyFn( registry );
+	} )
 	.add( 'Regular sizes', ( registry ) => (
 		<WithTestRegistry registry={ registry }>
-			{ createWidgetAreas(
+			{ createWidgetAreasFromWidths(
 				registry,
 				[ QUARTER, QUARTER, QUARTER, QUARTER ],
 				[ HALF, QUARTER, QUARTER ],
@@ -205,7 +239,7 @@ storiesOf( 'Global/Widgets/Widget Area', module )
 	) )
 	.add( 'Irregular sizes', ( registry ) => (
 		<WithTestRegistry registry={ registry }>
-			{ createWidgetAreas(
+			{ createWidgetAreasFromWidths(
 				registry,
 				[ QUARTER, QUARTER, QUARTER, HALF, QUARTER ],
 				[ QUARTER, QUARTER, HALF, [ QUARTER, FULL ] ],
@@ -216,4 +250,90 @@ storiesOf( 'Global/Widgets/Widget Area', module )
 			) }
 		</WithTestRegistry>
 	) )
-;
+	.add( 'Special combination states', ( registry ) => (
+		<WithTestRegistry registry={ registry }>
+			{ createWidgetAreas(
+				registry,
+				[
+					{
+						Component: getRegularWidget(),
+						width: QUARTER,
+					},
+					{
+						Component: getReportZeroWidget( 'search-console' ),
+						width: QUARTER,
+					},
+					{
+						Component: getReportZeroWidget( 'analytics' ),
+						width: QUARTER,
+					},
+					{
+						Component: getActivateModuleCTAWidget( 'adsense' ),
+						width: QUARTER,
+					},
+				],
+				[
+					{
+						Component: getReportZeroWidget( 'search-console' ),
+						width: QUARTER,
+					},
+					{
+						Component: getReportZeroWidget( 'search-console' ),
+						width: QUARTER,
+					},
+					{
+						Component: getReportZeroWidget( 'analytics' ),
+						width: QUARTER,
+					},
+					{
+						Component: getReportZeroWidget( 'analytics' ),
+						width: QUARTER,
+					},
+				],
+				[
+					{
+						Component: getReportZeroWidget( 'search-console' ),
+						width: HALF,
+					},
+					{
+						Component: getActivateModuleCTAWidget( 'analytics' ),
+						width: HALF,
+					},
+					{
+						Component: getActivateModuleCTAWidget( 'analytics' ),
+						width: HALF,
+					},
+					{
+						Component: getActivateModuleCTAWidget( 'analytics' ),
+						width: HALF,
+					},
+				],
+				[
+					{
+						Component: getCompleteModuleActivationCTAWidget( 'search-console' ),
+						width: HALF,
+					},
+					{
+						Component: getCompleteModuleActivationCTAWidget( 'search-console' ),
+						width: HALF,
+					},
+					{
+						Component: getCompleteModuleActivationCTAWidget( 'search-console' ),
+						width: QUARTER,
+					},
+					{
+						Component: getCompleteModuleActivationCTAWidget( 'analytics' ),
+						width: QUARTER,
+					},
+					{
+						Component: getRegularWidget(),
+						width: QUARTER,
+					},
+					{
+						Component: getCompleteModuleActivationCTAWidget( 'analytics' ),
+						width: QUARTER,
+					},
+				],
+			) }
+		</WithTestRegistry>
+	) );

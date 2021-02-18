@@ -1,7 +1,7 @@
 /**
  * `modules/adsense` data store: service.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { parseDomain } from '../util/url';
 
 const { createRegistrySelector } = Data;
@@ -123,6 +123,26 @@ export const selectors = {
 		};
 
 		return select( STORE_NAME ).getServiceURL( { path, query } );
+	} ),
+
+	/**
+	 * Returns the service URL to an AdSense account report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} reportArgs URL parameters to be passed to the query.
+	 * @return {(string|undefined)} AdSense account site overview URL (or `undefined` if not loaded).
+	 */
+	getServiceReportURL: createRegistrySelector( ( select ) => ( state, reportArgs ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
+
+		if ( accountID === undefined ) {
+			return undefined;
+		}
+
+		const path = `${ accountID }/reporting`;
+
+		return select( STORE_NAME ).getServiceURL( { path, query: reportArgs } );
 	} ),
 
 	/**

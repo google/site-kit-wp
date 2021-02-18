@@ -1,7 +1,7 @@
 /**
  * `modules/tagmanager` data store: containers.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -149,11 +149,11 @@ const baseActions = {
 		}
 		if ( container.usageContext.includes( CONTEXT_WEB ) ) {
 			dispatch( STORE_NAME ).setContainerID( containerID );
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).setInternalContainerID( container.containerId );
 		} else if ( container.usageContext.includes( CONTEXT_AMP ) ) {
 			dispatch( STORE_NAME ).setAMPContainerID( containerID );
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
 		}
 	},
@@ -230,7 +230,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		return containers.find( ( { publicId } ) => containerID === publicId ) || null;
 	} ),
 

@@ -1,7 +1,7 @@
 /**
  * `modules/analytics` data store constants.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
  */
 
 export const STORE_NAME = 'modules/analytics';
+export { STORE_NAME as MODULES_ANALYTICS };
 
 // A special Account ID value used for the "Set up a new account" option.
 export const ACCOUNT_CREATE = 'account_create';
@@ -36,4 +37,6 @@ export const EDIT_SCOPE = 'https://www.googleapis.com/auth/analytics.edit';
 // Date range offset days for Analytics report requests.
 export const DATE_RANGE_OFFSET = 1;
 
-export const FORM_ALL_TRAFFIC_WIDGET = 'analyticsAllTrafficWidget';
+export const UI_DIMENSION_NAME = 'dashboardAllTrafficWidgetDimensionName';
+export const UI_DIMENSION_COLOR = 'dashboardAllTrafficWidgetDimensionColor';
+export const UI_DIMENSION_VALUE = 'dashboardAllTrafficWidgetDimensionValue';

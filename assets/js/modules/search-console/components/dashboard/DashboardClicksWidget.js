@@ -1,7 +1,7 @@
 /**
  * DashboardClicksWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import { untrailingslashit, calculateChange } from '../../../../util';
 import { trackEvent } from '../../../../util/tracking';
@@ -36,14 +36,12 @@ import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
-import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import sumObjectListValue from '../../../../util/sum-object-list-value';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
-function DashboardClicksWidget() {
+function DashboardClicksWidget( { WidgetReportZero, WidgetReportError } ) {
 	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
@@ -52,7 +50,7 @@ function DashboardClicksWidget() {
 		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
 		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 
-		const { compareStartDate, endDate } = select( CORE_USER ).getDateRangeDates( { compare: true, offsetDays: DATE_RANGE_OFFSET } );
+		const { compareStartDate, startDate, endDate } = select( CORE_USER ).getDateRangeDates( { compare: true, offsetDays: DATE_RANGE_OFFSET } );
 		const args = {
 			dimensions: 'date',
 			// Combine both date ranges into one single date range.
@@ -61,7 +59,7 @@ function DashboardClicksWidget() {
 		};
 		const serviceBaseURLArgs = {
 			resource_id: propertyID,
-			num_of_days: getCurrentDateRangeDayCount( args.dateRange ),
+			...generateDateRangeArgs( { startDate, endDate } ),
 		};
 
 		if ( url ) {
@@ -85,11 +83,11 @@ function DashboardClicksWidget() {
 
 	if ( error ) {
 		trackEvent( 'plugin_setup', 'search_console_error', error.message );
-		return <ReportError moduleSlug="search-console" error={ error } />;
+		return <WidgetReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="search-console" />;
+		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 	// Split the data in two chunks.
 	const half = Math.floor( data.length / 2 );

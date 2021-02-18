@@ -1,7 +1,7 @@
 /**
  * Analytics module initialization.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,8 @@
  */
 
 /**
- * WordPress dependencies
- */
-import domReady from '@wordpress/dom-ready';
-
-/**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import Widgets from 'googlesitekit-widgets';
-import './datastore';
 import {
 	AREA_DASHBOARD_ALL_TRAFFIC,
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
@@ -42,27 +34,29 @@ import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
 import AnalyticsIcon from '../../../svg/analytics.svg';
-import DashboardAllTrafficWidgetV2 from './components/dashboard/DashboardAllTrafficWidgetV2';
+import { STORE_NAME } from './datastore/constants';
 
-domReady( () => {
-	// IMPORTANT: When updating arguments here, also update the same call in
-	// `provideModuleRegistrations`.
-	Modules.registerModule(
+export { registerStore } from './datastore';
+
+export const registerModule = ( modules ) => {
+	modules.registerModule(
 		'analytics',
 		{
-			storeName: 'modules/analytics',
+			storeName: STORE_NAME,
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
 			Icon: AnalyticsIcon,
 		}
 	);
+};
 
-	Widgets.registerWidget(
+export const registerWidgets = ( widgets ) => {
+	widgets.registerWidget(
 		'analyticsAllTraffic',
 		{
 			Component: DashboardAllTrafficWidget,
-			width: Widgets.WIDGET_WIDTHS.FULL,
+			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
 		},
@@ -72,25 +66,11 @@ domReady( () => {
 		],
 	);
 
-	Widgets.registerWidget(
-		'analyticsAllTrafficV2',
-		{
-			Component: DashboardAllTrafficWidgetV2,
-			width: Widgets.WIDGET_WIDTHS.FULL,
-			priority: 1,
-			wrapWidget: false,
-		},
-		[
-			AREA_DASHBOARD_ALL_TRAFFIC,
-			AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
-		],
-	);
-
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'analyticsUniqueVisitors',
 		{
 			Component: DashboardUniqueVisitorsWidget,
-			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 3,
 			wrapWidget: true,
 		},
@@ -100,11 +80,11 @@ domReady( () => {
 		],
 	);
 
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'analyticsGoals',
 		{
 			Component: DashboardGoalsWidget,
-			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 4,
 			wrapWidget: true,
 		},
@@ -113,11 +93,11 @@ domReady( () => {
 		],
 	);
 
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'analyticsBounceRate',
 		{
 			Component: DashboardBounceRateWidget,
-			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 4,
 			wrapWidget: true,
 		},
@@ -126,11 +106,11 @@ domReady( () => {
 		],
 	);
 
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'analyticsPopularPages',
 		{
 			Component: DashboardPopularPagesWidget,
-			width: Widgets.WIDGET_WIDTHS.HALF,
+			width: widgets.WIDGET_WIDTHS.HALF,
 			priority: 2,
 			wrapWidget: false,
 		},
@@ -138,4 +118,4 @@ domReady( () => {
 			AREA_DASHBOARD_POPULARITY,
 		],
 	);
-} );
+};

@@ -1,7 +1,7 @@
 /**
  * UserInputSuccessNotification component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ export default function UserInputSuccessNotification() {
 		<Notification
 			id="user-input-success"
 			title={ __( 'Congrats! You set your site goals.', 'google-site-kit' ) }
-			description={ __( 'Now Site Kit will begin showing you suggestions how to add more metrics to your dashboard that are relevant specifically to you, based on the goals you shared.', 'google-site-kit' ) }
+			description={ __( 'Now Site Kit will begin suggesting metrics to add to your dashboard that are relevant specifically to you, based on the goals you shared.', 'google-site-kit' ) }
 			SmallImageSVG={ UserInputSuccessImage }
 			dismiss={ __( 'OK, got it!', 'google-site-kit' ) }
 			format="small"
