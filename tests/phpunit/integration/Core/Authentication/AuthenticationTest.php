@@ -83,6 +83,49 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
+	public function test_register__googlesitekit_user_data() {
+		remove_all_filters( 'googlesitekit_user_data' );
+		$user_id      = $this->factory()->user->create();
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context, $user_id );
+		$auth         = new Authentication(
+			$context,
+			null,
+			$user_options
+		);
+		$auth->register();
+		$this->assertTrue( has_filter( 'googlesitekit_user_data' ) );
+
+		$user_data = apply_filters( 'googlesitekit_user_data', array() );
+		$this->assertEqualSets(
+			array(
+				'connectURL',
+				'initialVersion',
+				'userInputState',
+				'verified',
+			),
+			array_keys( $user_data )
+		);
+
+		// When a profile is set, additional data is added.
+		$email = 'wapuu.wordpress@gmail.com';
+		$photo = 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png';
+		$auth->profile()->set( compact( 'email', 'photo' ) );
+		$user_data = apply_filters( 'googlesitekit_user_data', array() );
+		$this->assertEqualSets(
+			array(
+				'connectURL',
+				'initialVersion',
+				'userInputState',
+				'verified',
+				'user',
+			),
+			array_keys( $user_data )
+		);
+		$this->assertEquals( $email, $user_data['user']['email'] );
+		$this->assertEquals( $photo, $user_data['user']['picture'] );
+	}
+
 	/**
 	 * @dataProvider option_action_provider
 	 * @param string $option

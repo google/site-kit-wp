@@ -39,7 +39,6 @@ import { Grid, Row, Cell } from '../../../../../material-components/layout';
 import { getURLPath } from '../../../../../util/getURLPath';
 import whenActive from '../../../../../util/when-active';
 import SourceLink from '../../../../../components/SourceLink';
-import ReportError from '../../../../../components/ReportError';
 import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
@@ -49,7 +48,7 @@ import { generateDateRangeArgs } from '../../../../analytics/util/report-date-ra
 
 const { useSelect } = Data;
 
-function DashboardAllTrafficWidget( { Widget, WidgetReportZero } ) {
+function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const [ firstLoad, setFirstLoad ] = useState( true );
 	const [ currentRange, setCurrentRange ] = useState( '' );
 
@@ -159,7 +158,7 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero } ) {
 	] );
 
 	if ( pieChartError ) {
-		return <ReportError moduleSlug="analytics" error={ pieChartError } />;
+		return <WidgetReportError moduleSlug="analytics" error={ pieChartError } />;
 	}
 
 	if ( isZeroReport( pieChartReport ) ) {

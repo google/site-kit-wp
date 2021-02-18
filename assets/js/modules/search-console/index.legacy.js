@@ -27,7 +27,6 @@ import { addFilter } from '@wordpress/hooks';
 import { createAddToFilter } from '../../util/helpers';
 import PostSearcher from '../../components/PostSearcher';
 import GoogleSitekitSearchConsoleDashboardWidget from './components/dashboard/GoogleSitekitSearchConsoleDashboardWidget';
-import WPSearchConsoleDashboardWidget from './components/wp-dashboard/WPSearchConsoleDashboardWidget';
 import LegacyDashboardSearchFunnel from './components/dashboard/LegacyDashboardSearchFunnel.js';
 import LegacySearchConsoleDashboardWidgetTopLevel from './components/dashboard/LegacySearchConsoleDashboardWidgetTopLevel';
 import DashboardDetailsWidgetKeywordsTable from './components/dashboard-details/DashboardDetailsWidgetKeywordsTable';
@@ -38,7 +37,6 @@ import LegacyDashboardPopularity from './components/dashboard/LegacyDashboardPop
 const slug = 'search-console';
 
 const addGoogleSitekitSearchConsoleDashboardWidget = createAddToFilter( <GoogleSitekitSearchConsoleDashboardWidget /> );
-const addWPSearchConsoleDashboardWidget = createAddToFilter( <WPSearchConsoleDashboardWidget /> );
 const addLegacyDashboardSearchFunnel = createAddToFilter( <LegacyDashboardSearchFunnel /> );
 const addLegacySearchConsoleDashboardWidgetTopLevel = createAddToFilter( <LegacySearchConsoleDashboardWidgetTopLevel /> );
 
@@ -77,13 +75,6 @@ addFilter( 'googlesitekit.DashboardPopularity',
 addFilter( 'googlesitekit.DashboardPopularity',
 	'googlesitekit.DashboardPPostSearcherModule',
 	addPostSearcher, 30 );
-
-/**
- * Add components to the WordPress Dashboard widget.
- */
-addFilter( 'googlesitekit.WPDashboardHeader',
-	'googlesitekit.SearchConsole',
-	addWPSearchConsoleDashboardWidget, 11 );
 
 /**
  * Add components to the module detail page.

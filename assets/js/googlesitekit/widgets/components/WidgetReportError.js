@@ -1,5 +1,5 @@
 /**
- * LegacyWPDashboardHeader component.
+ * WidgetReportError component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,18 +17,22 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
+import PropTypes from 'prop-types';
 
 /**
- * A single module. Keeps track of its own active state and settings.
+ * Internal dependencies
  */
-class LegacyWPDashboardHeader extends Component {
-	render() {
-		return null;
-	}
+import ReportError from '../../../components/ReportError';
+
+// eslint-disable-next-line no-unused-vars
+export default function WidgetReportError( { widgetSlug, ...props } ) {
+	return <ReportError { ...props } />;
 }
 
-export default withFilters( 'googlesitekit.WPDashboardHeader' )( LegacyWPDashboardHeader );
+WidgetReportError.propTypes = {
+	widgetSlug: PropTypes.string.isRequired,
+	...ReportError.propTypes,
+};
+

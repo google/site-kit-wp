@@ -34,14 +34,13 @@ import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import { calculateChange } from '../../../../util';
 import { getURLPath } from '../../../../util/getURLPath';
-import ReportError from '../../../../components/ReportError';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
-function DashboardBounceRateWidget( { WidgetReportZero } ) {
+function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 	const {
 		data,
 		error,
@@ -95,7 +94,7 @@ function DashboardBounceRateWidget( { WidgetReportZero } ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {
