@@ -314,6 +314,7 @@ final class Assets {
 			'googlesitekit-datastore-location',
 			'googlesitekit-datastore-site',
 			'googlesitekit-datastore-user',
+			'googlesitekit-datastore-ui',
 			'googlesitekit-widgets',
 		);
 
@@ -391,7 +392,8 @@ final class Assets {
 					'src'          => 'https://www.gstatic.com/charts/loader.js',
 					'in_footer'    => false,
 					'before_print' => function( $handle ) {
-						wp_add_inline_script( $handle, 'google.charts.load( "current", { packages: [ "corechart" ] } );' );
+						// The "42" version is important because it contains a fix for the tooltip flickering issue.
+						wp_add_inline_script( $handle, 'google.charts.load( "42", { packages: [ "corechart" ] } );' );
 					},
 				)
 			),
@@ -494,6 +496,15 @@ final class Assets {
 				'googlesitekit-datastore-forms',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-datastore-forms.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-datastore-ui',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-ui.js',
 					'dependencies' => array(
 						'googlesitekit-data',
 					),

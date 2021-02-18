@@ -58,7 +58,7 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 		// hidden via CSS.
 		widgetElement = (
 			<Fragment>
-				<Widget slug="overridden">
+				<Widget widgetSlug="overridden">
 					<OverrideComponent />
 				</Widget>
 				<div className={ HIDDEN_CLASS }>
@@ -69,7 +69,7 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 	} else if ( wrapWidget ) {
 		// Otherwise, wrap the component only if that is requested for this
 		// widget.
-		widgetElement = <Widget slug={ slug }>{ widgetElement }</Widget>;
+		widgetElement = <Widget widgetSlug={ slug }>{ widgetElement }</Widget>;
 	}
 
 	// Wrap the widget into a grid class.

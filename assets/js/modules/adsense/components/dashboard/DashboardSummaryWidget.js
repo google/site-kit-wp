@@ -25,7 +25,6 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport, reduceAdSenseData } from '../../util';
@@ -35,13 +34,11 @@ import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
-import ReportError from '../../../../components/ReportError';
 import { getDateString } from '../../../../googlesitekit/datastore/user/utils/get-date-string';
 
 const { useSelect } = Data;
-const { Widget } = Widgets.components;
 
-function DashboardSummaryWidget( { WidgetReportZero } ) {
+function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		error,
 		loading,
@@ -100,7 +97,7 @@ function DashboardSummaryWidget( { WidgetReportZero } ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="adsense" error={ error } />;
+		return <WidgetReportError moduleSlug="adsense" error={ error } />;
 	}
 
 	if ( isZeroReport( today ) && isZeroReport( period ) && isZeroReport( daily ) ) {
@@ -114,10 +111,7 @@ function DashboardSummaryWidget( { WidgetReportZero } ) {
 	const currencyCode = currencyHeader ? currencyHeader.currency : false;
 
 	return (
-		<Widget
-			slug="adsenseSummary"
-			className="googlesitekit-dashboard-adsense-stats mdc-layout-grid"
-		>
+		<Widget className="googlesitekit-dashboard-adsense-stats mdc-layout-grid">
 			<div className="mdc-layout-grid__inner">
 				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 					<DataBlock

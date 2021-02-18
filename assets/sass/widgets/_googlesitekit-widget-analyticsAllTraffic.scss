@@ -18,6 +18,7 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-widget.googlesitekit-widget--legacy-all-traffic-widget,
 	.googlesitekit-widget.googlesitekit-widget--analyticsAllTraffic {
 
 		.mdc-tab-scroller__scroll-content {
@@ -44,6 +45,22 @@
 			letter-spacing: normal;
 			text-transform: none;
 		}
+
+		.googlesitekit-widget__footer {
+			padding-top: 0;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__user-count-chart {
+
+		@media (min-width: $bp-desktop) {
+			position: relative;
+			top: 16px;
+		}
+
+		@media (min-width: $bp-xlarge) {
+			top: 0;
+		}
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__user-count-chart,
@@ -61,15 +78,73 @@
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions {
+		min-height: 450px;
 		padding-top: 30px;
+		position: relative;
 
 		.googlesitekit-preview-block {
-			margin: 62px auto;
+
+			&.googlesitekit-widget--analyticsAllTraffic__dimensions--not-loading {
+				display: none;
+			}
+
+			&.googlesitekit-widget--analyticsAllTraffic__dimensions--loading {
+				left: 50%;
+				position: absolute;
+				top: 50%;
+				transform: translate(-50%, -50%);
+			}
+		}
+
+		.googlesitekit-widget--analyticsAllTraffic__dimensions-container {
+			position: relative;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__totalcount {
+
+		.googlesitekit-data-block__title {
+			text-transform: capitalize;
+		}
+
+		svg {
+			vertical-align: bottom;
+		}
+
+		.googlesitekit-cta-link {
+			font-size: 1em;
+			letter-spacing: 0.04em;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__totalcount--loading {
+		margin: 0 0 10px;
+
+		@media (min-width: $bp-xlarge) {
+			// Override `PreviewBlock` height definition, since it doesn't
+			// support flexible sizes per breakpoint.
+			// TODO: Remove and achieve via `PreviewBlock` extra props instead.
+			min-height: 106px;
 		}
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart {
 		position: relative;
+
+		&.googlesitekit-widget--analyticsAllTraffic__dimensions--loading {
+			visibility: hidden;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__selectable {
+		// Use pointer when hovering over chart slice or legend entry.
+		.googlesitekit-line-chart > div > div > div > svg {
+
+			& > g > path,
+			& > g > g {
+				cursor: pointer;
+			}
+		}
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title {
@@ -89,19 +164,12 @@
 		}
 	}
 
-	.googlesitekit-widget--analyticsAllTraffic__totalcount {
+	.googlesitekit-widget--analyticsAllTraffic__tabs--small {
+		text-align: center;
 
-		.googlesitekit-data-block__title {
-			text-transform: capitalize;
+		@media (min-width: $bp-tablet) {
+			display: none;
 		}
-
-		svg {
-			vertical-align: bottom;
-		}
-	}
-
-	.googlesitekit-widget--analyticsAllTraffic__totalcount--loading {
-		margin: 0 0 10px;
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__tabs--loading {
@@ -111,6 +179,91 @@
 
 		.googlesitekit-preview-block {
 			margin: 0 10px;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__chart {
+		min-height: 368px;
+		position: relative;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend {
+		text-align: center;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend-slice {
+		align-items: center;
+		border-radius: 4px;
+		color: $c-cape-cod;
+		display: inline-flex;
+		font-size: 12px;
+		font-weight: $fw-primary-normal;
+		margin: 0 4px 0 0;
+		padding: 7px 4px;
+		position: relative;
+
+		&:hover {
+			text-decoration: none;
+		}
+
+		&:focus {
+			outline: none;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__label {
+		display: flex;
+		flex-direction: column;
+
+		&::after {
+			content: attr(data-label);
+			display: inline-flex;
+			font-weight: $fw-primary-medium;
+			height: 0;
+			visibility: hidden;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__dot {
+		border-radius: 50%;
+		display: inline-block;
+		height: 12px;
+		margin: 0 4px 0 0;
+		width: 12px;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__underlay {
+		display: block;
+		height: 100%;
+		left: 0;
+		opacity: 0;
+		position: absolute;
+		top: 0;
+		transition: opacity $t-default ease-in-out;
+		width: 100%;
+		z-index: 1;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend-active {
+		font-weight: $fw-primary-medium;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend-active,
+	.googlesitekit-widget--analyticsAllTraffic__legend-slice:hover {
+
+		.googlesitekit-widget--analyticsAllTraffic__underlay {
+			opacity: 0.16;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend-others {
+		cursor: text;
+
+		&:hover {
+
+			.googlesitekit-widget--analyticsAllTraffic__underlay {
+				opacity: 0;
+			}
 		}
 	}
 }

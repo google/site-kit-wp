@@ -26,7 +26,6 @@ import { compose } from '@wordpress/compose';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
 import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
@@ -35,12 +34,10 @@ import { getDataTableFromData } from '../../../../components/data-table';
 import SourceLink from '../../../../components/SourceLink';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import { isZeroReport } from '../../../analytics/util';
-import ReportError from '../../../../components/ReportError';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
-const { Widget } = Widgets.components;
 
-function DashboardTopEarningPagesWidget( { WidgetReportZero } ) {
+function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		isAdSenseLinked,
 		analyticsMainURL,
@@ -89,7 +86,7 @@ function DashboardTopEarningPagesWidget( { WidgetReportZero } ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {
@@ -128,9 +125,8 @@ function DashboardTopEarningPagesWidget( { WidgetReportZero } ) {
 
 	return (
 		<Widget
-			slug="adsenseTopEarningPages"
 			noPadding
-			footer={ () => (
+			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
 					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }

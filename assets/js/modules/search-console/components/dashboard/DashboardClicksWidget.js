@@ -36,13 +36,12 @@ import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import ReportError from '../../../../components/ReportError';
-import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import sumObjectListValue from '../../../../util/sum-object-list-value';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
-function DashboardClicksWidget( { WidgetReportZero } ) {
+function DashboardClicksWidget( { WidgetReportZero, WidgetReportError } ) {
 	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
@@ -51,7 +50,7 @@ function DashboardClicksWidget( { WidgetReportZero } ) {
 		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
 		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 
-		const { compareStartDate, endDate } = select( CORE_USER ).getDateRangeDates( { compare: true, offsetDays: DATE_RANGE_OFFSET } );
+		const { compareStartDate, startDate, endDate } = select( CORE_USER ).getDateRangeDates( { compare: true, offsetDays: DATE_RANGE_OFFSET } );
 		const args = {
 			dimensions: 'date',
 			// Combine both date ranges into one single date range.
@@ -60,7 +59,7 @@ function DashboardClicksWidget( { WidgetReportZero } ) {
 		};
 		const serviceBaseURLArgs = {
 			resource_id: propertyID,
-			num_of_days: getCurrentDateRangeDayCount( args.dateRange ),
+			...generateDateRangeArgs( { startDate, endDate } ),
 		};
 
 		if ( url ) {
@@ -84,7 +83,7 @@ function DashboardClicksWidget( { WidgetReportZero } ) {
 
 	if ( error ) {
 		trackEvent( 'plugin_setup', 'search_console_error', error.message );
-		return <ReportError moduleSlug="search-console" error={ error } />;
+		return <WidgetReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {

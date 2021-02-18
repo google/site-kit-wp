@@ -20,12 +20,15 @@ use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Disconnected_Reason;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
+use Google\Site_Kit\Core\Authentication\User_Input_State;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\User_Input_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\MutableInput;
@@ -78,6 +81,49 @@ class AuthenticationTest extends TestCase {
 			),
 			array_filter( $notice_slugs )
 		);
+	}
+
+	public function test_register__googlesitekit_user_data() {
+		remove_all_filters( 'googlesitekit_user_data' );
+		$user_id      = $this->factory()->user->create();
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context, $user_id );
+		$auth         = new Authentication(
+			$context,
+			null,
+			$user_options
+		);
+		$auth->register();
+		$this->assertTrue( has_filter( 'googlesitekit_user_data' ) );
+
+		$user_data = apply_filters( 'googlesitekit_user_data', array() );
+		$this->assertEqualSets(
+			array(
+				'connectURL',
+				'initialVersion',
+				'userInputState',
+				'verified',
+			),
+			array_keys( $user_data )
+		);
+
+		// When a profile is set, additional data is added.
+		$email = 'wapuu.wordpress@gmail.com';
+		$photo = 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png';
+		$auth->profile()->set( compact( 'email', 'photo' ) );
+		$user_data = apply_filters( 'googlesitekit_user_data', array() );
+		$this->assertEqualSets(
+			array(
+				'connectURL',
+				'initialVersion',
+				'userInputState',
+				'verified',
+				'user',
+			),
+			array_keys( $user_data )
+		);
+		$this->assertEquals( $email, $user_data['user']['email'] );
+		$this->assertEquals( $photo, $user_data['user']['picture'] );
 	}
 
 	/**
@@ -280,6 +326,51 @@ class AuthenticationTest extends TestCase {
 		$saved_creds = $credentials->get();
 		$this->assertEquals( 'test-site-id.apps.sitekit.withgoogle.com', $saved_creds['oauth2_client_id'] );
 		$this->assertEquals( 'test-site-secret', $saved_creds['oauth2_client_secret'] );
+	}
+
+	public function test_require_user_input() {
+		$this->enable_feature( 'userInput' );
+		remove_all_actions( 'googlesitekit_authorize_user' );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$auth->register();
+
+		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
+		// Mocking User_Input_Settings here to avoid adding a ton of complexity
+		// from intercepting a request to the proxy, returning, settings etc.
+		$mock_user_input_settings = $this->getMockBuilder( User_Input_Settings::class )
+			->disableOriginalConstructor()
+			->disableProxyingToOriginalMethods()
+			->setMethods( array( 'set_settings' ) )
+			->getMock();
+		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
+
+		$this->assertEmpty( $user_input_state->get() );
+		do_action( 'googlesitekit_authorize_user', array() );
+		$this->assertEquals( User_Input_State::VALUE_REQUIRED, $user_input_state->get() );
+	}
+
+	public function test_require_user_input__without_feature() {
+		remove_all_actions( 'googlesitekit_authorize_user' );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$auth->register();
+
+		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
+		// Mocking User_Input_Settings here to avoid adding a ton of complexity
+		// from intercepting a request to the proxy, returning, settings etc.
+		$mock_user_input_settings = $this->getMockBuilder( User_Input_Settings::class )
+			->setMethods( array( 'set_settings' ) )
+			->disableProxyingToOriginalMethods()
+			->disableOriginalConstructor()
+			->getMock();
+		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
+
+		$this->assertEmpty( $user_input_state->get() );
+		do_action( 'googlesitekit_authorize_user', array() );
+		$this->assertEmpty( $user_input_state->get() );
 	}
 
 	public function test_get_oauth_client() {

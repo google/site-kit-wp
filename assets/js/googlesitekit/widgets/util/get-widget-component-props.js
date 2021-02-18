@@ -19,7 +19,9 @@
 /**
  * Internal dependencies
  */
+import Widget from '../components/Widget';
 import WidgetReportZero from '../components/WidgetReportZero';
+import WidgetReportError from '../components/WidgetReportError';
 import WidgetActivateModuleCTA from '../components/WidgetActivateModuleCTA';
 import WidgetCompleteModuleActivationCTA from '../components/WidgetCompleteModuleActivationCTA';
 
@@ -35,7 +37,9 @@ export function getWidgetComponentProps( widgetSlug ) {
 	// Scope widget-specific components to the widget instance so that the
 	// component does not need to (re-)specify the widget slug.
 	return {
+		Widget: withWidgetSlug( widgetSlug )( Widget ),
 		WidgetReportZero: withWidgetSlug( widgetSlug )( WidgetReportZero ),
+		WidgetReportError: withWidgetSlug( widgetSlug )( WidgetReportError ),
 		WidgetActivateModuleCTA: withWidgetSlug( widgetSlug )( WidgetActivateModuleCTA ),
 		WidgetCompleteModuleActivationCTA: withWidgetSlug( widgetSlug )( WidgetCompleteModuleActivationCTA ),
 	};
@@ -51,3 +55,23 @@ function withWidgetSlug( widgetSlug ) {
 		return WithWidgetSlug;
 	};
 }
+
+/**
+ * Gets the props and passes them to the widget's component through a HOC.
+ *
+ * @since 1.26.0
+ *
+ * @param {string} widgetSlug The slug of the widget.
+ * @return {Function} Enhancing function that adds the getWidgetComponentProps to the passed component.
+ */
+export const withWidgetComponentProps = ( widgetSlug ) => {
+	const widgetComponentProps = getWidgetComponentProps( widgetSlug );
+	return ( WrappedComponent ) => {
+		const DecoratedComponent = ( props ) => <WrappedComponent { ...props } { ...widgetComponentProps } />;
+		DecoratedComponent.displayName = 'WithWidgetComponentProps';
+		if ( WrappedComponent.displayName || WrappedComponent.name ) {
+			DecoratedComponent.displayName += `(${ WrappedComponent.displayName || WrappedComponent.name })`;
+		}
+		return DecoratedComponent;
+	};
+};

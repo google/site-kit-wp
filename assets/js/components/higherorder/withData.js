@@ -20,23 +20,29 @@
  * External dependencies
  */
 import castArray from 'lodash/castArray';
-import each from 'lodash/each';
+import memize from 'memize';
 
 /**
  * WordPress dependencies
  */
-import { addFilter, addAction } from '@wordpress/hooks';
+import { addFilter, addAction, removeAction, removeFilter } from '@wordpress/hooks';
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { getModulesData } from '../../util';
+import Data from 'googlesitekit-data';
+import { getModulesData, stringifyObject } from '../../util';
 import getNoDataComponent from '../legacy-notifications/nodata';
 import getDataErrorComponent from '../legacy-notifications/data-error';
-import getSetupIncompleteComponent from '../legacy-notifications/setup-incomplete';
+import getSetupIncompleteComponent, { getModuleInactiveComponent } from '../legacy-notifications/setup-incomplete';
 import { TYPE_MODULES } from '../data/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { requestWithDateRange } from '../data/utils/request-with-date-range';
+const { withSelect } = Data;
+
+const hashRequests = memize( stringifyObject );
 
 /**
  * Provides data from the API to components. (Legacy HOC.)
@@ -141,6 +147,23 @@ const withData = (
 		return false;
 	}
 ) => {
+	/**
+	 * Map of data requests by context.
+	 *
+	 * @since 1.26.0
+	 *
+	 * @type {Object.<string, Object[]>}
+	 */
+	const dataRequestsByContext = selectData.reduce(
+		( acc, dataRequest ) => {
+			castArray( dataRequest.context ).forEach( ( context ) => {
+				acc[ context ] = acc[ context ] || [];
+				acc[ context ].push( dataRequest );
+			} );
+			return acc;
+		},
+		{}
+	);
 	// ...and returns another component...
 	class NewComponent extends Component {
 		constructor( props ) {
@@ -153,100 +176,145 @@ const withData = (
 				moduleRequiringSetup: '',
 			};
 
+			this.handleModuleDataReset = this.handleModuleDataReset.bind( this );
+			this.handleReturnedData = this.handleReturnedData.bind( this );
+			this.addDataRequests = this.addDataRequests.bind( this );
+			this.removeDataRequests = this.removeDataRequests.bind( this );
+		}
+
+		componentDidMount() {
 			addAction(
 				'googlesitekit.moduleDataReset',
 				'googlesitekit.moduleDataResetHandler',
-				() => {
-					this.setState( {
-						data: false,
-						errorMessage: false,
-						zeroData: false,
-					} );
-				}
+				this.handleModuleDataReset
 			);
 
-			/**
-			 * Handles a single datapoint returned from the data API.
-			 *
-			 * Each resolved data point is passed thru this handler to detect errors and zero data conditions, and
-			 * to trigger `handleDataError` and `handleDataSuccess` helpers.
-			 *
-			 * @since 1.0.0
-			 *
-			 * @param {Object} returnedData The data returned from the API.
-			 * @param {Object} requestData  The data object for the request.
-			 */
-			const handleReturnedData = ( returnedData, requestData ) => {
-				// If available, `handleDataError` will be called for errors (with a string) and empty data.
-				const {
-					handleDataError,
-					handleDataSuccess,
-				} = this.props;
-				const { datapoint, identifier, toState } = requestData;
+			this.addDataRequests();
+		}
 
-				// Check to see if the returned data is an error. If so, getDataError will return a string.
-				const errorMessage = getDataError( returnedData );
-				if ( errorMessage ) {
-					// Set an error state on the Component.
-					this.setState( {
-						errorMessage,
-						errorObj: returnedData,
-						module: identifier,
-					} );
+		componentWillUnmount() {
+			removeAction(
+				'googlesitekit.moduleDataReset',
+				'googlesitekit.moduleDataResetHandler',
+				this.handleModuleDataReset
+			);
 
-					// If the Component included a `handleDataError` helper, pass it the error message.
-					if ( handleDataError ) {
-						handleDataError( errorMessage, returnedData );
-					}
-				} else if ( isDataZero( returnedData, datapoint, requestData ) ) { // No data error, next check for zero data.
-					// If we have a `handleDataError` call it without any parameters (indicating empty data).
-					if ( handleDataError ) {
-						handleDataError( errorMessage, returnedData );
-					}
+			this.removeDataRequests();
+		}
 
-					// Set a zeroData state on the Component.
-					this.setState( { zeroData: true } );
-				} else if ( handleDataSuccess ) {
-					// Success! `handleDataSuccess` will be called (ie. not error or zero).
-					handleDataSuccess();
-				}
+		handleModuleDataReset() {
+			// When the global dateRange changes, it will trigger the googlesitekit.moduleDataReset action.
+			// When this happens, we need to re-hook the requests for the default date range to be applied correctly.
+			this.removeDataRequests();
+			this.addDataRequests();
 
-				// Resolve the returned data by setting state on the Component.
-				this.setState( {
-					requestDataToState: toState,
-					data: returnedData,
-					datapoint,
-					module: identifier,
-				} );
-			};
+			this.setState( {
+				data: false,
+				errorMessage: false,
+				zeroData: false,
+			} );
+		}
 
-			// Resolve all selectedData.
-			each( selectData, ( data ) => {
-				const { type, identifier } = data || {};
-				// Handle single contexts, or arrays of contexts.
-				each( castArray( data.context ), ( context ) => {
-					/**
-					 * Request data for the context.
-					 */
+		addDataRequests() {
+			const { dateRange } = this.props;
+
+			Object.entries( dataRequestsByContext ).forEach(
+				( [ context, dataRequests ] ) => {
 					addFilter(
 						`googlesitekit.module${ context }DataRequest`,
-						`googlesitekit.data${ context }`,
-						( moduleData ) => {
-							// If any module in the selectData requires setup, set it in the state.
-							// This will cause the setup incomplete component to be rendered in all cases.
-							if ( TYPE_MODULES === type && ! getModulesData()[ identifier ]?.setupComplete ) {
-								this.setState( { moduleRequiringSetup: identifier } );
-								return moduleData;
+						`googlesitekit.withData.${ hashRequests( dataRequests ) }`,
+						( contextRequests ) => {
+							const modulesData = getModulesData();
+							const requestsToAdd = [];
+							for ( const dataRequest of dataRequests ) {
+								const { type, identifier } = dataRequest || {};
+								// If a dataRequest's module requires setup, set it in the state.
+								// This will cause the setup incomplete component to be rendered in all cases.
+								if ( TYPE_MODULES === type && ! modulesData[ identifier ]?.setupComplete ) {
+									this.setState( {
+										moduleRequiringSetup: identifier,
+										moduleRequiringActivation: ! modulesData[ identifier ]?.active,
+									} );
+									continue;
+								}
+
+								// Apply default date range if not set.
+								const request = requestWithDateRange( dataRequest, dateRange );
+								request.callback = ( returnedData ) => {
+									this.handleReturnedData( returnedData, dataRequest );
+								};
+								requestsToAdd.push( request );
 							}
-
-							const callback = ( returnedData ) => {
-								handleReturnedData( returnedData, data );
-							};
-
-							return moduleData.concat( { ...data, callback } );
+							return contextRequests.concat( requestsToAdd );
 						}
 					);
+				}
+			);
+		}
+
+		removeDataRequests() {
+			Object.entries( dataRequestsByContext ).forEach(
+				( [ context, dataRequests ] ) => {
+					removeFilter(
+						`googlesitekit.module${ context }DataRequest`,
+						`googlesitekit.withData.${ hashRequests( dataRequests ) }`,
+					);
+				}
+			);
+		}
+
+		/**
+		 * Handles a single datapoint returned from the data API.
+		 *
+		 * Each resolved data point is passed thru this handler to detect errors and zero data conditions, and
+		 * to trigger `handleDataError` and `handleDataSuccess` helpers.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param {Object} returnedData The data returned from the API.
+		 * @param {Object} requestData  The data object for the request.
+		 */
+		handleReturnedData( returnedData, requestData ) {
+			// If available, `handleDataError` will be called for errors (with a string) and empty data.
+			const {
+				handleDataError,
+				handleDataSuccess,
+			} = this.props;
+			const { datapoint, identifier, toState } = requestData;
+
+			// Check to see if the returned data is an error. If so, getDataError will return a string.
+			const errorMessage = getDataError( returnedData );
+			if ( errorMessage ) {
+				// Set an error state on the Component.
+				this.setState( {
+					errorMessage,
+					errorObj: returnedData,
+					module: identifier,
 				} );
+
+				// If the Component included a `handleDataError` helper, pass it the error message.
+				if ( handleDataError ) {
+					handleDataError( errorMessage, returnedData );
+				}
+			} else if ( isDataZero( returnedData, datapoint, requestData ) ) { // No data error, next check for zero data.
+				// If we have a `handleDataError` call it without any parameters (indicating empty data).
+				if ( handleDataError ) {
+					handleDataError( errorMessage, returnedData );
+				}
+
+				// Set a zeroData state on the Component.
+				this.setState( { zeroData: true } );
+			} else if ( handleDataSuccess ) {
+				// Success! `handleDataSuccess` will be called (ie. not error or zero).
+				handleDataSuccess();
+			}
+
+			// Resolve the returned data by setting state on the Component.
+			this.setState( {
+				requestDataToState: toState,
+				data: returnedData,
+				datapoint,
+				module: identifier,
 			} );
 		}
 
@@ -260,7 +328,12 @@ const withData = (
 				errorObj,
 				requestDataToState,
 				moduleRequiringSetup,
+				moduleRequiringActivation,
 			} = this.state;
+
+			if ( moduleRequiringActivation ) {
+				return getModuleInactiveComponent( moduleRequiringSetup, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
+			}
 
 			if ( moduleRequiringSetup ) {
 				return getSetupIncompleteComponent( moduleRequiringSetup, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
@@ -298,7 +371,11 @@ const withData = (
 	const displayName = DataDependentComponent.displayName || DataDependentComponent.name || 'AnonymousComponent';
 	NewComponent.displayName = `withData(${ displayName })`;
 
-	return NewComponent;
+	return withSelect( ( select ) => {
+		return {
+			dateRange: select( CORE_USER ).getDateRange(),
+		};
+	} )( NewComponent );
 };
 
 export default withData;

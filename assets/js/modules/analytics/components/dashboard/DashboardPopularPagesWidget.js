@@ -25,7 +25,6 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
@@ -34,12 +33,12 @@ import SourceLink from '../../../../components/SourceLink';
 import { getDataTableFromData } from '../../../../components/data-table';
 import { numFmt } from '../../../../util';
 import { isZeroReport } from '../../util';
-import ReportError from '../../../../components/ReportError';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
-const { useSelect } = Data;
-const { Widget } = Widgets.components;
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
-function DashboardPopularPagesWidget( { WidgetReportZero } ) {
+const { useSelect } = Data;
+
+function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		data,
 		error,
@@ -48,7 +47,7 @@ function DashboardPopularPagesWidget( { WidgetReportZero } ) {
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
+		const { startDate, endDate, compareStartDate, compareEndDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
 		const args = {
 			startDate,
 			endDate,
@@ -72,7 +71,10 @@ function DashboardPopularPagesWidget( { WidgetReportZero } ) {
 		};
 
 		return {
-			analyticsMainURL: store.getServiceReportURL( 'content-pages' ),
+			analyticsMainURL: store.getServiceReportURL(
+				'content-pages',
+				generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
+			),
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
@@ -84,7 +86,7 @@ function DashboardPopularPagesWidget( { WidgetReportZero } ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {
@@ -124,9 +126,8 @@ function DashboardPopularPagesWidget( { WidgetReportZero } ) {
 
 	return (
 		<Widget
-			slug="analyticsPopularPages"
 			noPadding
-			footer={ () => (
+			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
 					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }

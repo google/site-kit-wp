@@ -31,13 +31,17 @@ async function dismissEditorWelcome() {
 describe( 'Site Kit admin bar component display', () => {
 	beforeAll( async () => {
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
-		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
 		await setSiteVerification();
 		await setSearchConsoleProperty();
 
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
+			if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics?' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( mockBatchResponse[ 'modules::search-console::searchanalytics::e74216dd17533dcb67fa2d433c23467c' ] ),
+				} );
+			} else if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( mockBatchResponse ),
@@ -57,11 +61,11 @@ describe( 'Site Kit admin bar component display', () => {
 	it( 'loads when viewing the front end of a post with data in Search Console', async () => {
 		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
-		mockBatchResponse = searchConsole;
+		mockBatchResponse = Object.assign( {}, searchConsole );
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics?' ) ),
 		] );
 
 		const adminBarApp = await page.$( '#js-googlesitekit-adminbar' );
@@ -77,7 +81,7 @@ describe( 'Site Kit admin bar component display', () => {
 	it( 'loads when editing a post with data in Search Console', async () => {
 		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
-		mockBatchResponse = searchConsole;
+		mockBatchResponse = Object.assign( {}, searchConsole );
 
 		// Navigate to edit view for this post
 		await Promise.all( [
@@ -91,7 +95,7 @@ describe( 'Site Kit admin bar component display', () => {
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics?' ) ),
 		] );
 
 		await page.evaluate( () => {
@@ -113,11 +117,11 @@ describe( 'Site Kit admin bar component display', () => {
 	it( 'links "More details" to the dashboard details view for the current post', async () => {
 		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
-		mockBatchResponse = searchConsole;
+		mockBatchResponse = Object.assign( {}, searchConsole );
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics?' ) ),
 		] );
 
 		await expect( page ).toMatchElement(
