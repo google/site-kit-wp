@@ -21,16 +21,6 @@ use ArrayAccess;
  */
 class Feature_Flags {
 
-	const MODE_PRODUCTION = 'production';
-
-	/**
-	 * Feature flag mode.
-	 *
-	 * @since 1.22.0
-	 * @var string
-	 */
-	private static $mode = self::MODE_PRODUCTION;
-
 	/**
 	 * Feature flag definitions.
 	 *
@@ -40,7 +30,7 @@ class Feature_Flags {
 	private static $features = array();
 
 	/**
-	 * Checks if the given feature is enabled in the current mode on the main instance.
+	 * Checks if the given feature is enabled.
 	 *
 	 * @since 1.22.0
 	 *
@@ -52,12 +42,6 @@ class Feature_Flags {
 			return false;
 		}
 
-		$feature_modes = is_array( static::$features[ $feature ] ) ?
-			static::$features[ $feature ] :
-			array( static::$features[ $feature ] );
-
-		$feature_enabled = in_array( static::get_mode(), $feature_modes, true );
-
 		/**
 		 * Filters a feature flag's status (on or off).
 		 *
@@ -68,9 +52,8 @@ class Feature_Flags {
 		 *
 		 * @param bool   $feature_enabled The current status of this feature flag (`true` or `false`).
 		 * @param string $feature         The feature name.
-		 * @param string $mode            Site mode for loading features ('development' or 'production').
 		 */
-		return apply_filters( 'googlesitekit_is_feature_enabled', $feature_enabled, $feature, static::get_mode() );
+		return apply_filters( 'googlesitekit_is_feature_enabled', false, $feature );
 	}
 
 	/**
@@ -83,7 +66,7 @@ class Feature_Flags {
 	public static function get_enabled_features() {
 		$enabled_features = array();
 
-		foreach ( static::$features as $feature_name => $value ) {
+		foreach ( static::$features as $feature_name ) {
 			if ( static::enabled( $feature_name ) ) {
 				$enabled_features[] = $feature_name;
 			}
@@ -106,19 +89,6 @@ class Feature_Flags {
 	}
 
 	/**
-	 * Sets the feature flag mode.
-	 *
-	 * @since 1.22.0
-	 *
-	 * @param string $mode Feature flag mode.
-	 */
-	public static function set_mode( $mode ) {
-		if ( $mode && is_string( $mode ) ) {
-			static::$mode = $mode;
-		}
-	}
-
-	/**
 	 * Gets all available feature flags.
 	 *
 	 * @since 1.26.0
@@ -126,30 +96,7 @@ class Feature_Flags {
 	 * @return array An array of all available features.
 	 */
 	public static function get_available_features() {
-		$feature_keys = array();
-
-		if ( is_array( static::$features ) ) {
-			$feature_keys = array_keys( static::$features );
-		}
-
-		return $feature_keys;
+		return static::$features;
 	}
 
-	/**
-	 * Gets the current feature flag mode.
-	 *
-	 * @since 1.22.0
-	 *
-	 * @return string Current mode.
-	 */
-	private static function get_mode() {
-		/**
-		 * Filter the feature flag mode.
-		 *
-		 * @since 1.22.0
-		 *
-		 * @param string $mode The current feature flag mode.
-		 */
-		return (string) apply_filters( 'googlesitekit_flag_mode', static::$mode ) ?: self::MODE_PRODUCTION;
-	}
 }

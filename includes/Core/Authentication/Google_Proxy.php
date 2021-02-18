@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Error;
 use Exception;
 
@@ -76,12 +77,19 @@ class Google_Proxy {
 		$supports = array(
 			'credentials_retrieval',
 			'short_verification_token',
+			// Informs the proxy the user input feature is generally supported.
 			'user_input_flow',
 		);
 
 		$home_path = wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_PATH );
 		if ( ! $home_path || '/' === $home_path ) {
 			$supports[] = 'file_verification';
+		}
+
+		// Informs the proxy the user input feature is already enabled locally.
+		// TODO: Remove once the feature is fully rolled out.
+		if ( Feature_Flags::enabled( 'userInput' ) ) {
+			$supports[] = 'user_input_flow_feature';
 		}
 
 		return $supports;
