@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
-import ReportError from '../ReportError';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-console/datastore/constants';
@@ -36,7 +35,7 @@ import { isZeroReport } from '../../modules/search-console/util/is-zero-report';
 import sumObjectListValue from '../../util/sum-object-list-value';
 const { useSelect } = Data;
 
-function AdminBarImpressions( { WidgetReportZero } ) {
+function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
@@ -58,7 +57,7 @@ function AdminBarImpressions( { WidgetReportZero } ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="search-console" error={ error } />;
+		return <WidgetReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( isZeroReport( searchConsoleData ) ) {

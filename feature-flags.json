@@ -1,9 +1,8 @@
-{
-  "serviceSetupV2": "development",
-  "storeErrorNotifications": "development",
-  "userInput": "development",
-  "widgets.dashboard": "development",
-  "widgets.pageDashboard": "development",
-  "widgets.wpDashboard": "development",
-  "widgets.moduleScreens": "development"
-}
+[
+  "serviceSetupV2",
+  "storeErrorNotifications",
+  "userInput",
+  "widgets.dashboard",
+  "widgets.pageDashboard",
+  "widgets.moduleScreens"
+]
