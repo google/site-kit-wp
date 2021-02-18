@@ -290,6 +290,7 @@ export default function UserDimensionsPieChart( {
 			<div className={ classnames(
 				'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
 				{
+					'googlesitekit-widget--analyticsAllTraffic__slice-selected': !! dimensionValue,
 					'googlesitekit-widget--analyticsAllTraffic__selectable': selectable,
 				}
 			) }>
@@ -305,6 +306,7 @@ export default function UserDimensionsPieChart( {
 						// and the "selectable" slices of the pie chart won't be enabled consistently.
 						setSelectable( null );
 					} }
+					height="368px"
 					loaded={ loaded }
 					loadingHeight="300px"
 					loadingWidth="300px"

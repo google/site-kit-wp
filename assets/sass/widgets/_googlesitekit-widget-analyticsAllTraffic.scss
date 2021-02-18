@@ -185,6 +185,11 @@
 		}
 	}
 
+	.googlesitekit-widget--analyticsAllTraffic__totals {
+		// HACK: Fixes jumping of widget when a dimension is selected.
+		height: 1px;
+	}
+
 	.googlesitekit-widget--analyticsAllTraffic__chart {
 		min-height: 368px;
 		position: relative;

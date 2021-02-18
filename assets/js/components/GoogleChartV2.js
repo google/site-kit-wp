@@ -35,6 +35,7 @@ import PreviewBlock from './PreviewBlock';
 export default function GoogleChartV2( props ) {
 	const {
 		chartEvents,
+		chartType,
 		children,
 		className,
 		getChartWrapper,
@@ -122,7 +123,12 @@ export default function GoogleChartV2( props ) {
 		<Fragment>
 			<Chart
 				chartEvents={ combinedChartEvents }
-				className={ classnames( 'googlesitekit-chart-v2', className ) }
+				chartType={ chartType }
+				className={ classnames(
+					'googlesitekit-chart-v2',
+					`googlesitekit-chart-v2--${ chartType }`,
+					className
+				) }
 				loader={ loader }
 				height={ height }
 				getChartWrapper={ ( chartWrapper, google ) => {
