@@ -31,12 +31,11 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../modules/search-console/util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
-import ReportError from '../ReportError';
 import { calculateChange, trackEvent } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 const { useSelect } = Data;
 
-const WPDashboardImpressions = ( { WidgetReportZero } ) => {
+const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
@@ -63,7 +62,7 @@ const WPDashboardImpressions = ( { WidgetReportZero } ) => {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="search-console" error={ error } />;
+		return <WidgetReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {

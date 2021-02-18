@@ -33,11 +33,10 @@ import SourceLink from '../../../../components/SourceLink';
 import { getDataTableFromData } from '../../../../components/data-table';
 import { numFmt } from '../../../../util';
 import { isZeroReport } from '../../util';
-import ReportError from '../../../../components/ReportError';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
 
-function DashboardPopularPagesWidget( { Widget, WidgetReportZero } ) {
+function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		data,
 		error,
@@ -82,7 +81,7 @@ function DashboardPopularPagesWidget( { Widget, WidgetReportZero } ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {

@@ -36,11 +36,10 @@ import CTA from '../../../../components/legacy-notifications/cta';
 import { calculateChange } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
-import ReportError from '../../../../components/ReportError';
 
 const { useSelect } = Data;
 
-function DashboardGoalsWidget( { WidgetReportZero } ) {
+function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 	const {
 		data,
 		error,
@@ -94,7 +93,7 @@ function DashboardGoalsWidget( { WidgetReportZero } ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( ! goals || ! Array.isArray( goals.items ) || ! goals.items.length ) {

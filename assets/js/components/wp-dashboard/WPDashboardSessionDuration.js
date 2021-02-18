@@ -30,11 +30,10 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { calculateChange } from '../../util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
-import ReportError from '../ReportError';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
-const WPDashboardSessionDuration = ( { WidgetReportZero } ) => {
+const WPDashboardSessionDuration = ( { WidgetReportZero, WidgetReportError } ) => {
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
@@ -61,7 +60,7 @@ const WPDashboardSessionDuration = ( { WidgetReportZero } ) => {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {
