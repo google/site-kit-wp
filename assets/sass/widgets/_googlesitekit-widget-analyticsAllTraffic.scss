@@ -187,7 +187,9 @@
 
 	.googlesitekit-widget--analyticsAllTraffic__totals {
 		// HACK: Fixes jumping of widget when a dimension is selected.
-		height: 1px;
+		@media (min-width: $bp-desktop) {
+			height: 1px;
+		}
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__chart {
@@ -196,6 +198,7 @@
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__legend {
+		margin-top: -6px;
 		text-align: center;
 	}
 
