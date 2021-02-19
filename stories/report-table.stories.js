@@ -26,6 +26,7 @@ import { storiesOf } from '@storybook/react';
  */
 import ReportTable from '../assets/js/components/ReportTable';
 import Layout from '../assets/js/components/layout/Layout';
+import Link from '../assets/js/components/Link';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import {
 	createTestRegistry,
@@ -40,7 +41,13 @@ storiesOf( 'Global/ReportTable', module )
 				title: 'Name',
 				description: 'Module name',
 				primary: true,
-				field: 'name',
+				Component: ( { row } ) => (
+					<Link
+						href={ row.homepage }
+						children={ row.name }
+						external
+					/>
+				),
 			},
 			{
 				title: 'Description',
