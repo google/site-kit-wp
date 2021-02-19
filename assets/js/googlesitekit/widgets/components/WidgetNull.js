@@ -27,9 +27,12 @@ import PropTypes from 'prop-types';
 import useWidgetStateEffect from '../hooks/useWidgetStateEffect';
 import Null from '../../../components/Null';
 
+// This doesn't need to change.
+const metadata = {};
+
 // The supported props must match `Null` (except `widgetSlug`).
 export default function WidgetNull( { widgetSlug } ) {
-	useWidgetStateEffect( widgetSlug, Null, null );
+	useWidgetStateEffect( widgetSlug, Null, metadata );
 
 	return <Null />;
 }
