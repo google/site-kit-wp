@@ -53,7 +53,7 @@ export default function GoogleChartV2( props ) {
 
 	const loadingHeightToUse = loadingHeight || height;
 	const loadingWidthToUse = loadingWidth || width;
-	const loadingShape = chartType ? 'circular' : 'square';
+	const loadingShape = chartType === 'PieChart' ? 'circular' : 'square';
 
 	const loader = (
 		<div className="googlesitekit-chart-v2-loading">
