@@ -69,26 +69,28 @@ export default function UserDimensionsPieChart( {
 	const { slices } = UserDimensionsPieChart.chartOptions;
 
 	const onLegendClick = ( index ) => {
-		if ( chartWrapperRef.current ) {
-			const newDimensionValue = chartWrapperRef.current.getDataTable().getValue( index, 0 );
-			const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
+		if ( ! chartWrapperRef.current ) {
+			return;
+		}
 
-			if ( isOthers ) {
-				return;
-			}
+		const newDimensionValue = chartWrapperRef.current.getDataTable().getValue( index, 0 );
+		const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
 
-			const { row } = chartWrapperRef.current.getChart().getSelection()?.[ 0 ] || {};
-			if ( row === index ) {
-				setValues( {
-					[ UI_DIMENSION_VALUE ]: '',
-					[ UI_DIMENSION_COLOR ]: '',
-				} );
-			} else if ( newDimensionValue ) {
-				setValues( {
-					[ UI_DIMENSION_COLOR ]: isOthers ? '' : slices[ row ]?.color,
-					[ UI_DIMENSION_VALUE ]: isOthers ? '' : newDimensionValue,
-				} );
-			}
+		if ( isOthers ) {
+			return;
+		}
+
+		const { row } = chartWrapperRef.current.getChart().getSelection()?.[ 0 ] || {};
+		if ( row === index ) {
+			setValues( {
+				[ UI_DIMENSION_VALUE ]: '',
+				[ UI_DIMENSION_COLOR ]: '',
+			} );
+		} else if ( newDimensionValue ) {
+			setValues( {
+				[ UI_DIMENSION_COLOR ]: isOthers ? '' : slices[ row ]?.color,
+				[ UI_DIMENSION_VALUE ]: isOthers ? '' : newDimensionValue,
+			} );
 		}
 	};
 
@@ -355,25 +357,25 @@ export default function UserDimensionsPieChart( {
 
 					{ ! loaded && (
 						<Fragment>
-							<span className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
+							<div className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
 								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
 								<PreviewBlock height="18px" width="68px" shape="square" />
-							</span>
+							</div>
 
-							<span className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
+							<div className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
 								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
 								<PreviewBlock height="18px" width="52px" shape="square" />
-							</span>
+							</div>
 
-							<span className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
+							<div className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
 								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
 								<PreviewBlock height="18px" width="40px" shape="square" />
-							</span>
+							</div>
 
-							<span className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
+							<div className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
 								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
 								<PreviewBlock height="18px" width="52px" shape="square" />
-							</span>
+							</div>
 						</Fragment>
 					) }
 				</div>
