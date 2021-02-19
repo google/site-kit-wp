@@ -66,7 +66,9 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 
 		return {
 			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
-			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceURL(),
+			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL( 'content-publisher-overview', {
+				'_u.date00': startDate, '_u.date01': endDate,
+			} ),
 			data: select( MODULES_ANALYTICS ).getReport( args ),
 			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ),
