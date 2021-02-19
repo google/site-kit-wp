@@ -73,7 +73,7 @@ export default function GoogleChartV2( props ) {
 		// Remove all event listeners after the component has unmounted.
 		return () => {
 			// eslint-disable-next-line no-unused-expressions
-			googleRef.current?.visualization.events.removeAllListeners( chartWrapperRef.current.getChart() );
+			googleRef.current?.visualization.events.removeAllListeners( chartWrapperRef.current?.getChart() );
 		};
 	}, [] );
 
@@ -144,6 +144,11 @@ export default function GoogleChartV2( props ) {
 				loader={ loader }
 				height={ height }
 				getChartWrapper={ ( chartWrapper, google ) => {
+					// Remove all the event listeners on the old chart before we draw
+					// a new one.
+					// eslint-disable-next-line no-unused-expressions
+					googleRef.current?.visualization.events.removeAllListeners( chartWrapperRef.current?.getChart() );
+
 					chartWrapperRef.current = chartWrapper;
 					googleRef.current = google;
 
