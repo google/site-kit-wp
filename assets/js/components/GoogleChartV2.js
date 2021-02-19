@@ -25,7 +25,7 @@ import { Chart } from 'react-google-charts';
 /**
  * WordPress dependencies
  */
-import { Fragment, useLayoutEffect, useRef } from '@wordpress/element';
+import { Fragment, useEffect, useLayoutEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -68,6 +68,14 @@ export default function GoogleChartV2( props ) {
 
 	const chartWrapperRef = useRef();
 	const googleRef = useRef();
+
+	useEffect( () => {
+		// Remove all event listeners after the component has unmounted.
+		return () => {
+			// eslint-disable-next-line no-unused-expressions
+			googleRef.current?.visualization.events.removeAllListeners( chartWrapperRef.current.getChart() );
+		};
+	} );
 
 	// These event listeners are added manually to the current chart because
 	// `react-google-charts` doesn't support `mouseOver` or `mouseOut` events
