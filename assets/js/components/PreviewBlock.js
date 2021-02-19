@@ -21,8 +21,68 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { useEffect, useState } from '@wordpress/element';
+import { debounce } from 'lodash';
 
-function PreviewBlock( { className, width, height, shape, padding } ) {
+/**
+ * Internal dependencies
+ */
+import { getBreakpoint } from '../util/get-breakpoint';
+
+function PreviewBlock( {
+	className,
+	width,
+	height,
+	shape,
+	padding,
+	smWidth,
+	smHeight,
+	mdWidth,
+	mdHeight,
+	lgWidth,
+	lgHeight,
+} ) {
+	const [ blockWidth, setBlockWidth ] = useState( width );
+	const [ blockHeight, setBlockHeight ] = useState( height );
+
+	const handleResize = () => {
+		const breakpoint = getBreakpoint();
+
+		if ( 'small' === breakpoint && smWidth && smHeight ) {
+			setBlockWidth( smWidth );
+			setBlockHeight( smHeight );
+
+			return;
+		}
+
+		if ( 'tablet' === breakpoint && mdWidth && mdHeight ) {
+			setBlockWidth( mdWidth );
+			setBlockHeight( mdHeight );
+
+			return;
+		}
+
+		if ( ( 'xlarge' === breakpoint || 'desktop' === breakpoint ) && lgWidth && lgHeight ) {
+			setBlockWidth( lgWidth );
+			setBlockHeight( lgHeight );
+
+			return;
+		}
+
+		setBlockWidth( width );
+		setBlockHeight( height );
+	};
+
+	useEffect( () => {
+		handleResize();
+
+		const resize = debounce( handleResize, 100 );
+
+		global.addEventListener( 'resize', resize );
+
+		return () => global.removeEventListener( 'resize', resize );
+	} );
+
 	return (
 		<div
 			className={ classnames(
@@ -31,8 +91,8 @@ function PreviewBlock( { className, width, height, shape, padding } ) {
 				{ 'googlesitekit-preview-block--padding': padding }
 			) }
 			style={ {
-				width,
-				height,
+				width: blockWidth,
+				height: blockHeight,
 			} }
 		>
 			<div className={ classnames(

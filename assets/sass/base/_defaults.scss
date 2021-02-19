@@ -188,6 +188,31 @@
 			display: none;
 		}
 	}
+
+	/**
+	 * get current breakpoint in JS:
+	 * window
+	 * 	.getComputedStyle(document.querySelector('body'), ':before' )
+	 * 	.getPropertyValue('content').replace( /"/g, '')
+	 */
+	&::before {
+		content: "small";
+		left: -9999em;
+		position: absolute;
+		top: -9999em;
+
+		@media (min-width: $bp-tablet) {
+			content: "tablet";
+		}
+
+		@media (min-width: $bp-desktop) {
+			content: "desktop";
+		}
+
+		@media (min-width: $bp-xlarge) {
+			content: "xlarge";
+		}
+	}
 }
 
 .googlesitekit-hidden {
