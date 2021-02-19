@@ -32,17 +32,6 @@ import { Fragment, useLayoutEffect, useRef } from '@wordpress/element';
  */
 import PreviewBlock from './PreviewBlock';
 
-const CIRCULAR_LOADER_SHAPE = [
-	'PieChart',
-];
-
-function getLoadingShape( chartType ) {
-	if ( CIRCULAR_LOADER_SHAPE.includes( chartType ) ) {
-		return 'circular';
-	}
-
-	return 'square';
-}
 export default function GoogleChartV2( props ) {
 	const {
 		chartEvents,
@@ -64,7 +53,7 @@ export default function GoogleChartV2( props ) {
 
 	const loadingHeightToUse = loadingHeight || height;
 	const loadingWidthToUse = loadingWidth || width;
-	const loadingShape = getLoadingShape( chartType );
+	const loadingShape = chartType ? 'circular' : 'square';
 
 	const loader = (
 		<div className="googlesitekit-chart-v2-loading">
