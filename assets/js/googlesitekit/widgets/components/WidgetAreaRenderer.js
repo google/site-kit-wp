@@ -43,7 +43,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		classNames,
 		columnWidths,
 		rowIndexes,
-	} = getWidgetLayout( activeWidgets );
+	} = getWidgetLayout( widgets, widgetStates );
 
 	// Combine widgets with similar CTAs and prepare final props to pass to
 	// `WidgetRenderer` below. Only one consecutive instance of a similar CTA
@@ -54,7 +54,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const {
 		gridClassNames,
 		overrideComponents,
-	} = combineWidgets( activeWidgets, widgetStates, {
+	} = combineWidgets( widgets, widgetStates, {
 		classNames,
 		columnWidths,
 		rowIndexes,
