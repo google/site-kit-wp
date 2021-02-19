@@ -30,13 +30,14 @@ import { STORE_NAME, WIDGET_AREA_STYLES } from '../datastore/constants';
 import WidgetRenderer from './WidgetRenderer';
 import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
+import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
 const { useSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const widgetArea = useSelect( ( select ) => select( STORE_NAME ).getWidgetArea( slug ) );
 	const widgets = useSelect( ( select ) => select( STORE_NAME ).getWidgets( slug ) );
-	const activeWidgets = useSelect( ( select ) => select( STORE_NAME ).getActiveWidgets( slug ) );
 	const widgetStates = useSelect( ( select ) => select( STORE_NAME ).getWidgetStates() );
+	const activeWidgets = widgets.filter( ( widget ) => ! ( widgetStates[ widget.slug ] && isInactiveWidgetState( widgetStates[ widget.slug ] ) ) );
 
 	// Compute the layout.
 	const {
