@@ -21,6 +21,8 @@
  */
 import { getWidgetLayout } from './get-widget-layout';
 import { WIDGET_WIDTHS } from '../datastore/constants';
+import ReportZero from '../../../components/ReportZero';
+import ActivateModuleCTA from '../../../components/ActivateModuleCTA';
 
 describe( 'getWidgetLayout', () => {
 	const quarter = { width: WIDGET_WIDTHS.QUARTER };
@@ -30,18 +32,34 @@ describe( 'getWidgetLayout', () => {
 	const halfOrQuarter = { width: [ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.QUARTER ] };
 	const fullOrHalf = { width: [ WIDGET_WIDTHS.FULL, WIDGET_WIDTHS.HALF ] };
 
+	const getQuarterWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.QUARTER } );
+	const getHalfWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.HALF } );
+	const getFullWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.FULL } );
+
+	const getRegularState = () => null;
+	const getReportZeroState = ( moduleSlug ) => ( { Component: ReportZero, metadata: { moduleSlug } } );
+	const getActivateModuleCTAState = ( moduleSlug ) => ( { Component: ActivateModuleCTA, metadata: { moduleSlug } } );
+
 	it( 'computes expected class names', () => {
 		const widgets = [
 			// First row.
-			quarter,
-			quarter,
-			half,
+			getQuarterWidget( 'test1' ),
+			getQuarterWidget( 'test2' ),
+			getHalfWidget( 'test3' ),
 			// Second row.
-			half,
-			quarter,
+			getHalfWidget( 'test4' ),
+			getQuarterWidget( 'test5' ),
 			// Third row.
-			full,
+			getFullWidget( 'test6' ),
 		];
+		const widgetStates = {
+			test1: getRegularState(),
+			test2: getReportZeroState( 'search-console' ),
+			test3: getReportZeroState( 'analytics' ),
+			test4: getActivateModuleCTAState( 'adsense' ),
+			test5: getActivateModuleCTAState( 'adsense' ),
+			test6: getActivateModuleCTAState( 'adsense' ),
+		};
 
 		// Phone and tablet column widths are static based on the widget width.
 		// Desktop column widths usually are as well, except for the case where
@@ -82,55 +100,69 @@ describe( 'getWidgetLayout', () => {
 			],
 		];
 
-		expect( getWidgetLayout( widgets ).classNames ).toEqual( expectedClassNames );
+		expect( getWidgetLayout( widgets, widgetStates ).classNames ).toEqual( expectedClassNames );
 	} );
 
 	it( 'computes expected column widths in a single row', () => {
-		const widgets = [ quarter, half, quarter ];
+		const widgets = [
+			getQuarterWidget( 'test1' ),
+			getHalfWidget( 'test2' ),
+			getQuarterWidget( 'test3' ),
+		];
+		const widgetStates = {
+			test1: getRegularState(),
+			test2: getRegularState(),
+			test3: getRegularState(),
+		};
+
 		const expectedColumnWidths = [ 3, 6, 3 ];
 		const expectedRowIndexes = [ 0, 0, 0 ];
 
-		const { columnWidths, rowIndexes } = getWidgetLayout( widgets );
+		const { columnWidths, rowIndexes } = getWidgetLayout( widgets, widgetStates );
 		expect( columnWidths ).toEqual( expectedColumnWidths );
 		expect( rowIndexes ).toEqual( expectedRowIndexes );
 	} );
 
 	it( 'computes expected column widths across multiple rows', () => {
 		const widgets = [ half, half, full, quarter, half, quarter, quarter, quarter, quarter, quarter ];
+		const widgetStates = {};
 		const expectedColumnWidths = [ 6, 6, 12, 3, 6, 3, 3, 3, 3, 3 ];
 		const expectedRowIndexes = [ 0, 0, 1, 2, 2, 2, 3, 3, 3, 3 ];
 
-		const { columnWidths, rowIndexes } = getWidgetLayout( widgets );
+		const { columnWidths, rowIndexes } = getWidgetLayout( widgets, widgetStates );
 		expect( columnWidths ).toEqual( expectedColumnWidths );
 		expect( rowIndexes ).toEqual( expectedRowIndexes );
 	} );
 
 	it( 'expands 3/4 rows into full-width rows', () => {
 		const widgets = [ half, quarter, full, quarter, quarter, quarter, half, quarter ];
+		const widgetStates = {};
 		const expectedColumnWidths = [ 8, 4, 12, 4, 4, 4, 8, 4 ];
 		const expectedRowIndexes = [ 0, 0, 1, 2, 2, 2, 3, 3 ];
 
-		const { columnWidths, rowIndexes } = getWidgetLayout( widgets );
+		const { columnWidths, rowIndexes } = getWidgetLayout( widgets, widgetStates );
 		expect( columnWidths ).toEqual( expectedColumnWidths );
 		expect( rowIndexes ).toEqual( expectedRowIndexes );
 	} );
 
 	it( 'chooses best supported widget width to fit single row', () => {
 		const widgets = [ quarter, quarterOrHalf, fullOrHalf ];
+		const widgetStates = {};
 		const expectedColumnWidths = [ 3, 3, 6 ];
 		const expectedRowIndexes = [ 0, 0, 0 ];
 
-		const { columnWidths, rowIndexes } = getWidgetLayout( widgets );
+		const { columnWidths, rowIndexes } = getWidgetLayout( widgets, widgetStates );
 		expect( columnWidths ).toEqual( expectedColumnWidths );
 		expect( rowIndexes ).toEqual( expectedRowIndexes );
 	} );
 
 	it( 'chooses best supported widget width to fit multiple rows', () => {
 		const widgets = [ quarter, halfOrQuarter, fullOrHalf, halfOrQuarter, fullOrHalf ];
+		const widgetStates = {};
 		const expectedColumnWidths = [ 3, 3, 6, 4, 8 ];
 		const expectedRowIndexes = [ 0, 0, 0, 1, 1 ];
 
-		const { columnWidths, rowIndexes } = getWidgetLayout( widgets );
+		const { columnWidths, rowIndexes } = getWidgetLayout( widgets, widgetStates );
 		expect( columnWidths ).toEqual( expectedColumnWidths );
 		expect( rowIndexes ).toEqual( expectedRowIndexes );
 	} );
