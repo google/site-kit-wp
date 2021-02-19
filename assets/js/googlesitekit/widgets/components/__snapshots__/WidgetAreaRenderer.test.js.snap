@@ -871,7 +871,7 @@ exports[`WidgetAreaRenderer should treat widgets that render no content as zero-
       </div>
     </div>
     <div
-      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2-phone mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-4-tablet"
+      class="googlesitekit-hidden"
     >
       <div
         class="googlesitekit-widget googlesitekit-widget--empty"
@@ -882,15 +882,19 @@ exports[`WidgetAreaRenderer should treat widgets that render no content as zero-
       </div>
     </div>
     <div
-      class="googlesitekit-widget googlesitekit-widget--three"
+      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2-phone mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-4-tablet"
     >
       <div
-        class="googlesitekit-widget__body"
+        class="googlesitekit-widget googlesitekit-widget--three"
       >
-        <div>
-          Foo bar! Connected: 
-           yes
-          .
+        <div
+          class="googlesitekit-widget__body"
+        >
+          <div>
+            Foo bar! Connected: 
+             yes
+            .
+          </div>
         </div>
       </div>
     </div>
