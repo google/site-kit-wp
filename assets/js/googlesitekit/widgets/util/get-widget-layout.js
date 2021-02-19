@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { WIDTH_GRID_COUNTER_MAP, WIDTH_GRID_CLASS_MAP } from './constants';
-import Null from '../../../components/Null';
+import { isInactiveWidgetState } from './is-inactive-widget-state';
 
 /**
  * Adjusts class names to better fit into the current row knowing that the default sizes don't fill the row completely.
@@ -122,7 +122,7 @@ export function getWidgetLayout( widgets, widgetStates ) {
 
 	widgets.forEach( ( widget, i ) => {
 		// If a widget is inactive, we set null / 0 values and don't need to calculate a layout.
-		if ( widgetStates[ widget.slug ] && Null === widgetStates[ widget.slug ].Component ) {
+		if ( isInactiveWidgetState( widgetStates[ widget.slug ] ) ) {
 			columnWidths.push( 0 );
 			classNames[ i ] = null;
 			rowIndexes.push( rowIndex );
