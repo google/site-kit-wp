@@ -43,7 +43,7 @@ import { __, sprintf, _x } from '@wordpress/i18n';
 const durationFormat = ( seconds, options = { unitDisplay: 'short' } ) => {
 	seconds = parseInt( seconds, 10 );
 
-	if ( isNaN( seconds ) ) {
+	if ( Number.isNaN( seconds ) ) {
 		seconds = 0;
 	}
 
@@ -75,7 +75,7 @@ const durationFormat = ( seconds, options = { unitDisplay: 'short' } ) => {
 	} );
 
 	/* translators: 1: hours, 2: minutes, 3: seconds */
-	const formattedString = sprintf( _x( '%1$s %2$s %3$s', 'google-site-kit', 'google-site-kit' ), hours, minutes, seconds );
+	const formattedString = sprintf( _x( '%1$s %2$s %3$s', 'duration of time: hh mm ss', 'google-site-kit' ), hours, minutes, seconds );
 
 	return formattedString.trim();
 };
