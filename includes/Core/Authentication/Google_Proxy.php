@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Error;
 use Exception;
 
@@ -52,6 +53,114 @@ class Google_Proxy {
 	 */
 	public function __construct( Context $context ) {
 		$this->context = $context;
+	}
+
+	/**
+	 * Returns the application name: a combination of the namespace and version.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The application name.
+	 */
+	public static function get_application_name() {
+		return 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION;
+	}
+
+	/**
+	 * Gets the list of features to declare support for when setting up with the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Array of supported features.
+	 */
+	private function get_supports() {
+		$supports = array(
+			'credentials_retrieval',
+			'short_verification_token',
+			// Informs the proxy the user input feature is generally supported.
+			'user_input_flow',
+		);
+
+		$home_path = wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_PATH );
+		if ( ! $home_path || '/' === $home_path ) {
+			$supports[] = 'file_verification';
+		}
+
+		// Informs the proxy the user input feature is already enabled locally.
+		// TODO: Remove once the feature is fully rolled out.
+		if ( Feature_Flags::enabled( 'userInput' ) ) {
+			$supports[] = 'user_input_flow_feature';
+		}
+
+		return $supports;
+	}
+
+	/**
+	 * Returns the setup URL to the authentication proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @param array       $query_params Optional. Additional query parameters.
+	 * @return string URL to the setup page on the authentication proxy.
+	 */
+	public function get_setup_url( Credentials $credentials, array $query_params = array() ) {
+		$params = array_merge(
+			$query_params,
+			array(
+				'supports' => rawurlencode( implode( ' ', $this->get_supports() ) ),
+				'nonce'    => rawurlencode( wp_create_nonce( self::ACTION_SETUP ) ),
+			)
+		);
+
+		if ( $credentials->has() ) {
+			$creds             = $credentials->get();
+			$params['site_id'] = $creds['oauth2_client_id'];
+		}
+
+		/**
+		 * Filters parameters included in proxy setup URL.
+		 *
+		 * @since n.e.x.t
+		 */
+		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', $params );
+
+		// If no site identification information is present, we need to provide details for a new site.
+		if ( empty( $params['site_id'] ) && empty( $params['site_code'] ) ) {
+			$site_fields = array_map( 'rawurlencode', $this->get_site_fields() );
+			$params      = array_merge( $params, $site_fields );
+		}
+
+		$user_fields = array_map( 'rawurlencode', $this->get_user_fields() );
+		$params      = array_merge( $params, $user_fields );
+
+		$params['application_name'] = rawurlencode( self::get_application_name() );
+		$params['hl']               = get_user_locale();
+
+		return add_query_arg( $params, $this->url( self::SETUP_URI ) );
+	}
+
+	/**
+	 * Returns the permissions URL to the authentication proxy.
+	 *
+	 * This only returns a URL if the user already has an access token set.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials Credentials instance.
+	 * @param array       $query_args  Optional. Additional query parameters.
+	 * @return string URL to the permissions page on the authentication proxy on success, or an empty string on failure.
+	 */
+	public function get_permissions_url( Credentials $credentials, array $query_args = array() ) {
+		if ( $credentials->has() ) {
+			$creds                 = $credentials->get();
+			$query_args['site_id'] = $creds['oauth2_client_id'];
+		}
+
+		$query_args['application_name'] = rawurlencode( self::get_application_name() );
+		$query_args['hl']               = get_user_locale();
+
+		return add_query_arg( $query_args, $this->url( self::PERMISSIONS_URI ) );
 	}
 
 	/**
