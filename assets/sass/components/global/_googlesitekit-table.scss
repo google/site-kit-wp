@@ -204,17 +204,17 @@
 		background-image: none;
 	}
 
-	.googlesitekit-table__body-item-url {
-		background-image: none;
-		display: block;
-		font-size: 0.75rem;
-		word-break: break-word;
-	}
-
 	.googlesitekit-table__body-item-chart-wrap {
 		align-items: center;
 		display: flex;
 		justify-content: flex-end;
+	}
+
+	.googlesitekit-table__link--secondary {
+		background-image: none;
+		display: block;
+		font-size: 0.75rem;
+		word-break: break-word;
 	}
 
 	.googlesitekit-table__source {
