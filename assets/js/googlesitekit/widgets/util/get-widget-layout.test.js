@@ -23,6 +23,7 @@ import { getWidgetLayout } from './get-widget-layout';
 import { WIDGET_WIDTHS } from '../datastore/constants';
 import ReportZero from '../../../components/ReportZero';
 import ActivateModuleCTA from '../../../components/ActivateModuleCTA';
+import Null from '../../../components/Null';
 
 describe( 'getWidgetLayout', () => {
 	const quarter = { width: WIDGET_WIDTHS.QUARTER };
@@ -39,6 +40,7 @@ describe( 'getWidgetLayout', () => {
 	const getRegularState = () => null;
 	const getReportZeroState = ( moduleSlug ) => ( { Component: ReportZero, metadata: { moduleSlug } } );
 	const getActivateModuleCTAState = ( moduleSlug ) => ( { Component: ActivateModuleCTA, metadata: { moduleSlug } } );
+	const getNullState = () => ( { Component: Null, metadata: {} } );
 
 	it( 'computes expected class names', () => {
 		const widgets = [
@@ -51,6 +53,7 @@ describe( 'getWidgetLayout', () => {
 			getQuarterWidget( 'test5' ),
 			// Third row.
 			getFullWidget( 'test6' ),
+			getFullWidget( 'test7' ),
 		];
 		const widgetStates = {
 			test1: getRegularState(),
@@ -59,6 +62,7 @@ describe( 'getWidgetLayout', () => {
 			test4: getActivateModuleCTAState( 'adsense' ),
 			test5: getActivateModuleCTAState( 'adsense' ),
 			test6: getActivateModuleCTAState( 'adsense' ),
+			test7: getNullState(),
 		};
 
 		// Phone and tablet column widths are static based on the widget width.
@@ -98,6 +102,7 @@ describe( 'getWidgetLayout', () => {
 				'mdc-layout-grid__cell',
 				'mdc-layout-grid__cell--span-12',
 			],
+			null,
 		];
 
 		expect( getWidgetLayout( widgets, widgetStates ).classNames ).toEqual( expectedClassNames );
