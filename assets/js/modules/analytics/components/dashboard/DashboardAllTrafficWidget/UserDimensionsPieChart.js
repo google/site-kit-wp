@@ -310,11 +310,6 @@ export default function UserDimensionsPieChart( {
 					data={ dataMap || [] }
 					getChartWrapper={ ( chartWrapper ) => {
 						chartWrapperRef.current = chartWrapper;
-						// Forces a re-render of the component to re-run useEffect hooks.
-						// If this is not called and the chart is updated while the mouse cursor
-						// is already over the chart, it won't properly run the `onmousenter` event
-						// and the "selectable" slices of the pie chart won't be enabled consistently.
-						setSelectable( null );
 					} }
 					height="368px"
 					loaded={ loaded }

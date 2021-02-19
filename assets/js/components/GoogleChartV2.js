@@ -75,7 +75,7 @@ export default function GoogleChartV2( props ) {
 			// eslint-disable-next-line no-unused-expressions
 			googleRef.current?.visualization.events.removeAllListeners( chartWrapperRef.current.getChart() );
 		};
-	} );
+	}, [] );
 
 	// These event listeners are added manually to the current chart because
 	// `react-google-charts` doesn't support `mouseOver` or `mouseOut` events
