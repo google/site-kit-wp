@@ -81,15 +81,15 @@ export default function UserDimensionsPieChart( {
 		}
 
 		const { row } = chartWrapperRef.current.getChart().getSelection()?.[ 0 ] || {};
-		if ( row === index ) {
+		if ( row === index || isOthers ) {
 			setValues( {
 				[ UI_DIMENSION_VALUE ]: '',
 				[ UI_DIMENSION_COLOR ]: '',
 			} );
 		} else if ( newDimensionValue ) {
 			setValues( {
-				[ UI_DIMENSION_COLOR ]: isOthers ? '' : slices[ row ]?.color,
-				[ UI_DIMENSION_VALUE ]: isOthers ? '' : newDimensionValue,
+				[ UI_DIMENSION_COLOR ]: slices[ row ]?.color,
+				[ UI_DIMENSION_VALUE ]: newDimensionValue,
 			} );
 		}
 	};
@@ -124,10 +124,17 @@ export default function UserDimensionsPieChart( {
 				const newDimensionValue = dataTable.getValue( row, 0 );
 				const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
 
-				setValues( {
-					[ UI_DIMENSION_COLOR ]: isOthers ? '' : slices[ row ]?.color,
-					[ UI_DIMENSION_VALUE ]: isOthers ? '' : newDimensionValue,
-				} );
+				if ( isOthers ) {
+					setValues( {
+						[ UI_DIMENSION_COLOR ]: '',
+						[ UI_DIMENSION_VALUE ]: '',
+					} );
+				} else {
+					setValues( {
+						[ UI_DIMENSION_COLOR ]: slices[ row ]?.color,
+						[ UI_DIMENSION_VALUE ]: newDimensionValue,
+					} );
+				}
 			}
 		}
 	};
@@ -384,14 +391,6 @@ export default function UserDimensionsPieChart( {
 	);
 }
 
-UserDimensionsPieChart.propTypes = {
-	sourceLink: PropTypes.string,
-	dimensionName: PropTypes.string.isRequired,
-	dimensionValue: PropTypes.string,
-	report: PropTypes.arrayOf( PropTypes.object ),
-	loaded: PropTypes.bool,
-};
-
 UserDimensionsPieChart.defaultProps = {
 	dimensionName: 'ga:channelGrouping',
 };
@@ -427,4 +426,12 @@ UserDimensionsPieChart.chartOptions = {
 		trigger: 'focus',
 	},
 	width: '100%',
+};
+
+UserDimensionsPieChart.propTypes = {
+	sourceLink: PropTypes.string,
+	dimensionName: PropTypes.string.isRequired,
+	dimensionValue: PropTypes.string,
+	report: PropTypes.arrayOf( PropTypes.object ),
+	loaded: PropTypes.bool,
 };
