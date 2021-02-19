@@ -145,9 +145,13 @@ export default function GoogleChartV2( props ) {
 				height={ height }
 				getChartWrapper={ ( chartWrapper, google ) => {
 					// Remove all the event listeners on the old chart before we draw
-					// a new one.
-					// eslint-disable-next-line no-unused-expressions
-					googleRef.current?.visualization.events.removeAllListeners( chartWrapperRef.current?.getChart() );
+					// a new one. Only run this if the old chart and the new chart aren't
+					// the same reference though, otherwise we'll remove existing `onReady`
+					// events and other event listeners, which will cause bugs.
+					if ( chartWrapper !== chartWrapperRef.current ) {
+						// eslint-disable-next-line no-unused-expressions
+						googleRef.current?.visualization.events.removeAllListeners( chartWrapperRef.current?.getChart() );
+					}
 
 					chartWrapperRef.current = chartWrapper;
 					googleRef.current = google;
