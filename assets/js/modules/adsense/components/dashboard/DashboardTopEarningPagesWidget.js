@@ -30,11 +30,13 @@ import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../analytics/datasto
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
-import { getDataTableFromData } from '../../../../components/data-table';
 import SourceLink from '../../../../components/SourceLink';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import { isZeroReport } from '../../../analytics/util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import ReportTable from '../../../../components/ReportTable';
+import Link from '../../../../components/Link';
+import { numFmt } from '../../../../util';
 const { useSelect } = Data;
 
 function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
@@ -61,7 +63,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 				fieldName: 'ga:adsenseRevenue',
 				sortOrder: 'DESCENDING',
 			},
-			limit: 10,
+			limit: 5,
 		};
 
 		return {
@@ -74,9 +76,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 	} );
 
 	if ( loading ) {
-		return (
-			<PreviewTable rows={ 5 } padding />
-		);
+		return <PreviewTable rows={ 5 } padding />;
 	}
 
 	// A restricted metrics error will cause this value to change in the resolver
@@ -93,36 +93,6 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
-	const headers = [
-		{
-			title: __( 'Top Earning Pages', 'google-site-kit' ),
-			tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
-			primary: true,
-		},
-		{
-			title: __( 'Revenue', 'google-site-kit' ),
-			tooltip: __( 'Revenue', 'google-site-kit' ),
-		},
-	];
-
-	const links = [];
-	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-		links[ i ] = row.dimensions[ 1 ];
-		return [
-			row.dimensions[ 0 ],
-			Number( row.metrics[ 0 ].values[ 0 ] ).toFixed( 2 ),
-		];
-	} );
-
-	const options = {
-		hideHeader: false,
-		chartsEnabled: false,
-		cap: 5,
-		links,
-	};
-
-	const dataTable = getDataTableFromData( dataMapped, headers, options );
-
 	return (
 		<Widget
 			noPadding
@@ -136,11 +106,44 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 			) }
 		>
 			<TableOverflowContainer>
-				{ dataTable }
+				<ReportTable
+					rows={ data[ 0 ].data.rows }
+					columns={ tableColumns }
+				/>
 			</TableOverflowContainer>
 		</Widget>
 	);
 }
+
+const tableColumns = [
+	{
+		title: __( 'Top Earning Pages', 'google-site-kit' ),
+		tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
+		primary: true,
+		Component: ( { row } ) => {
+			const [ title, url ] = row.dimensions;
+			return (
+				<Link
+					href={ url }
+					children={ title }
+					external
+					inherit
+				/>
+			);
+		},
+	},
+	{
+		title: __( 'Revenue', 'google-site-kit' ),
+		tooltip: __( 'Revenue', 'google-site-kit' ),
+		Component: ( { row } ) => {
+			return numFmt( row.metrics[ 0 ].values[ 0 ], {
+				style: 'decimal',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+			} );
+		},
+	},
+];
 
 export default compose(
 	whenActive( { moduleName: 'adsense' } ),
