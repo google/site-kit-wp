@@ -80,6 +80,10 @@ export default function GoogleChartV2( props ) {
 	const chartWrapperRef = useRef();
 	const googleRef = useRef();
 
+	// These event listeners are added manually to the current chart because
+	// `react-google-charts` doesn't support `mouseOver` or `mouseOut` events
+	// in its `chartEvents` prop.
+	// See: https://github.com/google/site-kit-wp/pull/2805#discussion_r579172660
 	useLayoutEffect( () => {
 		if ( onMouseOver ) {
 			// eslint-disable-next-line no-unused-expressions
