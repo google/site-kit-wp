@@ -319,6 +319,19 @@ export const selectors = {
 	},
 
 	/**
+	 * Returns all widget states.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object} Widget states, keyed by slug, with a value containing the component and metadata.
+	 */
+	getWidgetStates( state ) {
+		return state.widgetStates;
+	},
+
+	/**
 	 * Returns whether or not a widget with a given slug is active.
 	 *
 	 * @since n.e.x.t
@@ -346,19 +359,6 @@ export const selectors = {
 	getActiveWidgets( state, widgetAreaSlug ) {
 		return selectors.getWidgets( state, widgetAreaSlug )
 			.filter( ( widget ) => selectors.isWidgetActive( state, widget.slug ) );
-	},
-
-	/**
-	 * Returns all widget states.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {Object} Widget states, keyed by slug, with a value containing the component and metadata.
-	 */
-	getWidgetStates( state ) {
-		return state.widgetStates;
 	},
 };
 
