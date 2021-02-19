@@ -30,5 +30,5 @@ import Null from '../../../components/Null';
  * @return {boolean} True if widget is inactive, otherwise false.
  */
 export function isInactiveWidgetState( widgetState ) {
-	return widgetState && widgetState.Component === Null;
+	return !! widgetState && widgetState.Component === Null;
 }
