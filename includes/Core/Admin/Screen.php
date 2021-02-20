@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Admin;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Util\Google_Icon;
 use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
 
 /**
@@ -129,7 +130,7 @@ final class Screen {
 						$this->args['capability'],
 						$this->slug,
 						'',
-						$context->url( 'dist/assets/images/logo-g_white_small.png' )
+						'data:image/svg+xml;base64,' . Google_Icon::to_base64()
 					);
 					$menu_slug = $this->slug;
 				}
