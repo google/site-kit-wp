@@ -40,6 +40,7 @@ describe( 'modules/tagmanager containers', () => {
 		internalAMPContainerID: '',
 		internalContainerID: '',
 		useSnippet: true,
+		gaPropertyID: '',
 	};
 
 	beforeAll( () => {

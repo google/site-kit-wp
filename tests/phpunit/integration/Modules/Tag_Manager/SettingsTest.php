@@ -37,7 +37,7 @@ class SettingsTest extends SettingsTestCase {
 				'internalContainerID'    => '',
 				'internalAMPContainerID' => '',
 				'ownerID'                => 0,
-				'GAPropertyID'           => '',
+				'gaPropertyID'           => '',
 			),
 			get_option( Settings::OPTION )
 		);

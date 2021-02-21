@@ -134,7 +134,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				 * @since n.e.x.t
 				 * @param bool $can_use_snippet Null by default, will fallback to the option value if not set.
 				 */
-				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', null );
+				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', true );
 				if ( is_bool( $can_use_snippet ) ) {
 					$option['canUseSnippet'] = $can_use_snippet;
 				}

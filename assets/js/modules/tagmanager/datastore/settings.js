@@ -94,11 +94,10 @@ export async function submitChanges( { select, dispatch } ) {
 			return { error };
 		}
 
-		// Get the latest settings from the Analytics store to get the
-		// latest filtered value of canUseSnippet.
-		const singleAnalyticsPropertyID = select( STORE_NAME ).getSingleAnalyticsPropertyID();
-		const analyticsModuleActive = select( CORE_MODULES ).isModuleActive( 'analytics' );
-		if ( singleAnalyticsPropertyID !== undefined && analyticsModuleActive ) {
+		// Fetch the latest settings in the Analytics store so that we can update
+		// the filtered value of canUseSnippet.
+		const analyticsModuleConnected = select( CORE_MODULES ).isModuleConnected( 'analytics' );
+		if ( analyticsModuleConnected ) {
 			await dispatch( MODULES_ANALYTICS ).fetchGetSettings();
 		}
 	}

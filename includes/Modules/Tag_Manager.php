@@ -652,12 +652,9 @@ final class Tag_Manager extends Module
 	private function can_analytics_use_snippet( $original_value ) {
 		$settings = $this->get_settings()->get();
 
-		// The GAPropertyID is set by Tag Manager when it's own snippet shares the GA ID
-		// of an existing, active, Analytics tag.
-		// Returning false here disables the useSnippet setting in the Analytics setting
-		// and shows a message to the user explaining that the snippet is now controlled
-		// by Tag Manager.
-		if ( ! empty( $settings['GAPropertyID'] ) && $settings['useSnippet'] ) {
+		// This disables the Analytics snippet if there is a GA tag in the
+		// configured containers, and the GTM snippet is enabled.
+		if ( ! empty( $settings['gaPropertyID'] ) && $settings['useSnippet'] ) {
 			return false;
 		}
 

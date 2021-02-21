@@ -33,7 +33,7 @@ let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 		'internalAMPContainerID',
 		'useSnippet',
 		'ownerID',
-		'GAPropertyID',
+		'gaPropertyID',
 	],
 	submitChanges,
 	validateCanSubmitChanges,

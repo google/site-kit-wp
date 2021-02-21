@@ -23,9 +23,6 @@ import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
 import { createTestRegistry, provideModules, untilResolved } from '../../../../../tests/js/utils';
 import { STORE_NAME, CONTEXT_WEB } from '../datastore/constants';
 import * as factories from '../datastore/__factories__';
-import {
-	createBuildAndReceivers,
-} from '../datastore/__factories__/utils';
 import useExistingTagEffect from './useExistingTagEffect';
 
 describe( 'useExistingTagEffect', () => {
@@ -96,24 +93,5 @@ describe( 'useExistingTagEffect', () => {
 		expect( registry.select( STORE_NAME ).getContainerID() ).toBe( existingContainer.publicId );
 		// eslint-disable-next-line sitekit/acronym-case
 		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( existingContainer.containerId );
-	} );
-
-	it( 'sets the GAPropertyID when property ID exists and Analytics is active', async () => {
-		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
-
-		const TEST_GA_PROPERTY_ID = 'UA-123456789-1';
-
-		buildAndReceiveWebAndAMP( {
-			webPropertyID: TEST_GA_PROPERTY_ID,
-		} );
-
-		await act( () => new Promise( async ( resolve ) => {
-			renderHook( () => useExistingTagEffect(), { registry } );
-			resolve();
-		} ) );
-
-		const propertyID = registry.select( STORE_NAME ).getGAPropertyID();
-
-		expect( propertyID ).toBe( TEST_GA_PROPERTY_ID );
 	} );
 } );

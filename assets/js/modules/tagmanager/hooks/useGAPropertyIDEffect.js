@@ -1,5 +1,5 @@
 /**
- * Tag Manager useExistingTag custom hook.
+ * Tag Manager useGAPropertyIDEffect custom hook.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -28,20 +28,13 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
-export default function useExistingTagEffect() {
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).getTagPermission( existingTag ) );
-	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
-
-	const { selectAccount, selectContainerByID } = useDispatch( STORE_NAME );
+export default function useGAPropertyIDEffect() {
+	const singleAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
+	const { setGAPropertyID } = useDispatch( STORE_NAME );
 
 	useEffect( () => {
-		( async () => {
-			if ( hasExistingTag && hasExistingTagPermission ) {
-				await selectAccount( existingTagPermission.accountID );
-				await selectContainerByID( existingTag );
-			}
-		} )();
-	}, [ hasExistingTag, existingTag, hasExistingTagPermission, existingTagPermission ] );
+		if ( singleAnalyticsPropertyID !== undefined ) {
+			setGAPropertyID( singleAnalyticsPropertyID || '' );
+		}
+	}, [ singleAnalyticsPropertyID ] );
 }

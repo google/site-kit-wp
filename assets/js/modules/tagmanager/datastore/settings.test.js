@@ -95,13 +95,12 @@ describe( 'modules/tagmanager settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
-
-		// Provide an inactive Analytics module so that we aren't testing the singleAnalyticsPropertyID in every test.
+		// TODO: the analytics module should not be connected by default in the module fixtures assets/js/googlesitekit/modules/datastore/fixtures.json
 		provideModules( registry, [ {
 			slug: 'analytics',
 			active: false,
 		} ] );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 	} );
 
 	afterEach( () => {
@@ -154,7 +153,6 @@ describe( 'modules/tagmanager settings', () => {
 							return { body: data, status: 200 };
 						}
 					);
-					muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
 
 					const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -221,7 +219,6 @@ describe( 'modules/tagmanager settings', () => {
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
 						{ body: validSettings, status: 200 }
 					);
-					muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
 
 					await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -299,7 +296,6 @@ describe( 'modules/tagmanager settings', () => {
 							return { body: data, status: 200 };
 						}
 					);
-					muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
 
 					await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -325,8 +321,6 @@ describe( 'modules/tagmanager settings', () => {
 				beforeEach( () => setSecondaryAMP() );
 
 				it( 'dispatches createContainer for both web and AMP containers when selected', async () => {
-					muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
-
 					registry.dispatch( STORE_NAME ).setSettings( {
 						...validSettings,
 						containerID: CONTAINER_CREATE,
@@ -368,7 +362,6 @@ describe( 'modules/tagmanager settings', () => {
 							return { body: data, status: 200 };
 						}
 					);
-					muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
 
 					const { error } = await registry.dispatch( STORE_NAME ).submitChanges();
 
