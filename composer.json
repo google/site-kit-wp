@@ -71,6 +71,8 @@
       "mkdir -p third-party/vendor/composer && mv third-party/autoload_classmap.php third-party/vendor/composer/"
     ],
     "lint": "phpcs",
+    "lint-interactive": "phpcs -a",
+    "lint-debug": "phpcs -vvv",
     "lint-fix": "phpcbf",
     "test":  "phpunit"
   }

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ruleset name="GoogleSiteKit">
+
+    <description>Google Site Kit's additional coding standards.</description>
+
+    <!-- Exclude duplicate rules from other packages of Sniffs. -->
+    <rule ref="Generic.Commenting.DocComment.LongNotCapital">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.Commenting.DocComment.ShortNotCapital">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+
+</ruleset>
