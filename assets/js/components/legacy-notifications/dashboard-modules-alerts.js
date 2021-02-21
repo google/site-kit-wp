@@ -74,7 +74,7 @@ class DashboardModulesAlerts extends Component {
 						title={ notification.title || '' }
 						description={ notification.description || '' }
 						blockData={ notification.blockData || [] }
-						winImage={ notification.winImage ? `${ global._googlesitekitLegacyData.admin.assetsRoot }images/${ notification.winImage }` : '' }
+						WinImageSVG={ notification.WinImageSVG || null }
 						format={ notification.format || 'small' }
 						learnMoreURL={ notification.learnMoreURL || '' }
 						learnMoreDescription={ notification.learnMoreDescription || '' }
