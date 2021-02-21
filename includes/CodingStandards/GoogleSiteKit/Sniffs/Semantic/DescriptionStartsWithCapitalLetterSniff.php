@@ -135,7 +135,7 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff
                         && preg_match('|\p{Lu}|u', $tagDescription[0]) === 0
                         && $tagDescription !== ucfirst($tagDescription)
                     ) {
-                        $error = "Tag $commentTagType comment description must start with a capital letter";
+                        $error = "Tag $commentTagType description must start with a capital letter";
                         $fix   = $phpcsFile->addFixableError($error, $currentToken, 'TagNotCapital');
                         if ($fix === true) {
                             $fixedTagComment = str_replace( $tagDescription, ucfirst($tagDescription), $fullTagComment );

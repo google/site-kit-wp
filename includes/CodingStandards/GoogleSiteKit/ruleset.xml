@@ -3,12 +3,16 @@
 
     <description>Google Site Kit's additional coding standards.</description>
 
-    <!-- Exclude duplicate rules from other packages of Sniffs. -->
+    <!-- Exclude duplicate rules from other package or core Sniffs. -->
     <rule ref="Generic.Commenting.DocComment.LongNotCapital">
         <exclude-pattern>*</exclude-pattern>
     </rule>
     <rule ref="Generic.Commenting.DocComment.ShortNotCapital">
         <exclude-pattern>*</exclude-pattern>
     </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.ParamCommentFullStop">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    
 
 </ruleset>
