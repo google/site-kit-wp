@@ -87,6 +87,8 @@ class DescriptionEndsWithFullStopSniff implements Sniff
             // Remove any trailing white spaces which are detected by other sniffs.
             $longContent = trim($longContent);
 
+            // TODO: TODO: take into account multiple line long comments.
+
             if (preg_match('/[a-zA-Z]$/', $longContent) === 1) {
                 $error = 'Doc comment long description must end with a full stop';
                 $fix   = $phpcsFile->addFixableError($error, $longEnd, 'LongFullStop');

@@ -63,16 +63,21 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff
         // Remove any trailing white spaces which are detected by other sniffs.
         $shortContent = trim($shortContent);
 
-        $lastChar = substr($shortContent, -1);
-        if (in_array($lastChar, array('.', '!', '?', ')')) === false && $shortContent !== '{@inheritdoc}'
+        if (preg_match('|\p{Lu}|u', $shortContent[0]) === 0 && $shortContent !== '{@inheritdoc}'
             // Ignore Features module export files that just use the file name as
             // comment.
             && $shortContent !== basename($phpcsFile->getFilename())
         ) {
-            $error = 'Doc comment short description must end with a full stop';
-            $fix   = $phpcsFile->addFixableError($error, $shortEnd, 'ShortFullStop');
-            if ($fix === true) {
-                $phpcsFile->fixer->addContent($shortEnd, '.');
+            $error = 'Doc comment short description must start with a capital letter';
+            // If we cannot capitalize the first character then we don't have a
+            // fixable error.
+            if ($tokens[$short]['content'] === ucfirst($tokens[$short]['content'])) {
+                $phpcsFile->addError($error, $short, 'ShortNotCapital');
+            } else {
+                $fix = $phpcsFile->addFixableError($error, $short, 'ShortNotCapital');
+                if ($fix === true) {
+                    $phpcsFile->fixer->replaceToken($short, ucfirst($tokens[$short]['content']));
+                }
             }
         }
 
@@ -80,116 +85,69 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff
 
         if ($tokens[$long]['code'] === T_DOC_COMMENT_STRING) {
 
-            // Account for the fact that a description might cover multiple lines.
-            $longContent = $tokens[$long]['content'];
-            $longEnd     = $long;
-
-            // Remove any trailing white spaces which are detected by other sniffs.
-            $longContent = trim($longContent);
-
-            if (preg_match('/[a-zA-Z]$/', $longContent) === 1) {
-                $error = 'Doc comment long description must end with a full stop';
-                $fix   = $phpcsFile->addFixableError($error, $longEnd, 'LongFullStop');
+            if (preg_match('|\p{Lu}|u', $tokens[$long]['content'][0]) === 0
+                && $tokens[$long]['content'] !== ucfirst($tokens[$long]['content'])
+            ) {
+                $error = 'Doc comment long description must start with a capital letter';
+                $fix   = $phpcsFile->addFixableError($error, $long, 'LongNotCapital');
                 if ($fix === true) {
-                    $phpcsFile->fixer->addContent($longEnd, '.');
+                    $phpcsFile->fixer->replaceToken($long, ucfirst($tokens[$long]['content']));
                 }
             }
         }
 
-        // Check for full stop on doc block tags.
-        $params  = [];
-        $maxType = 0;
-        $maxVar  = 0;
-        foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
+        // Look through all @ comments in the current doc comment.
+        $currentToken = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($shortEnd + 1), ($commentEnd - 1));
+        while ($currentToken) {
 
-            $commentTagType = $tokens[$tag]['content'];
+            $commentTagType = $tokens[$currentToken]['content'];
 
-            // Only check the tag types defined in $docCommentTags.
-            if (! in_array( $commentTagType, $docCommentTags ) ) {
-                continue;
-            }
+            // Check to see if this token is an @ comment in the $docCommentTags array.
+            if ($tokens[$currentToken]['code'] === T_DOC_COMMENT_TAG && in_array( $commentTagType, $docCommentTags )) {
 
-            $type         = '';
-            $comment      = '';
-            if ($tokens[($tag + 2)]['code'] === T_DOC_COMMENT_STRING) {
-                $matches = [];
-                preg_match('/([^$&.]+)(?:((?:\.\.\.)?(?:\$|&)[^\s]+)(?:(\s+)(.*))?)?/', $tokens[($tag + 2)]['content'], $matches);
+                // Find the @ tag comment if there is one.
+                // $nextTag = $phpcsFile->findNext([T_DOC_COMMENT_TAG, T_DOC_COMMENT_CLOSE_TAG], ($currentToken + 1), ($commentEnd - 1));
+                $tagComment = $phpcsFile->findNext(T_DOC_COMMENT_STRING, ($currentToken + 1), ($commentEnd - 1));
 
-                if (empty($matches) === false) {
-                    $typeLen   = strlen($matches[1]);
-                    $type      = trim($matches[1]);
-                    $typeSpace = ($typeLen - strlen($type));
-                    $typeLen   = strlen($type);
-                    if ($typeLen > $maxType) {
-                        $maxType = $typeLen;
-                    }
-                }
+                // Check each comment for capitalisation.
+                if($tagComment) 
+                    $fullTagComment = $tokens[$tagComment]['content'];{
 
-                if (isset($matches[2]) === true) {
-                    $var    = $matches[2];
-                    $varLen = strlen($var);
-                    if ($varLen > $maxVar) {
-                        $maxVar = $varLen;
-                    }
+                    $tagDescription = false;
+                    if($commentTagType === '@return') {
+                        // Tags with the type description structure.
 
-                    if (isset($matches[4]) === true) {
-                        $varSpace       = strlen($matches[3]);
-                        $comment        = $matches[4];
-                        $commentLines[] = [
-                            'comment' => $comment,
-                            'token'   => ($tag + 2),
-                            'indent'  => $varSpace,
-                        ];
+                        // Remove the type string from the description.
+                        $tagDescription = preg_replace("/^(\w+\s)/", '', $fullTagComment);
+                    } else {
+                        // Comments with the type $variable description structure.
 
-                        // Any strings until the next tag belong to this comment.
-                        if (isset($tokens[$commentStart]['comment_tags'][($pos + 1)]) === true) {
-                            $end = $tokens[$commentStart]['comment_tags'][($pos + 1)];
-                        } else {
-                            $end = $tokens[$commentStart]['comment_closer'];
+                        // Split the Class and variable name from the tag description.
+                        $splitTagComment = preg_split('/\$[\w\d]+\ /', $fullTagComment);
+                        if(count($splitTagComment) >= 2) {
+                            // Get the pure description if there is one.
+                            $tagDescription = $splitTagComment[1];
                         }
+                    }
 
-                        for ($i = ($tag + 3); $i < $end; $i++) {
-                            if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
-                                $indent = 0;
-                                if ($tokens[($i - 1)]['code'] === T_DOC_COMMENT_WHITESPACE) {
-                                    $indent = $tokens[($i - 1)]['length'];
-                                }
+                    // Check for capital letter.
+                    if ($tagDescription 
+                        && preg_match('|\p{Lu}|u', $tagDescription[0]) === 0
+                        && $tagDescription !== ucfirst($tagDescription)
+                    ) {
+                        $error = "Tag $commentTagType comment description must start with a capital letter";
+                        $fix   = $phpcsFile->addFixableError($error, $currentToken, 'TagNotCapital');
+                        if ($fix === true) {
+                            $fixedTagComment = str_replace( $tagDescription, ucfirst($tagDescription), $fullTagComment );
 
-                                $comment       .= ' '.$tokens[$i]['content'];
-                                $commentLines[] = [
-                                    'comment' => $tokens[$i]['content'],
-                                    'token'   => $i,
-                                    'indent'  => $indent,
-                                ];
-                            }
+                            $phpcsFile->fixer->replaceToken($tagComment, $fixedTagComment);
                         }
                     }
                 }
+
             }
-
-            $params[] = [
-                'tag'          => $tag,
-                'tag_type'     => $commentTagType,
-                'type'         => $type,
-                'comment'      => $comment,
-                'commentLines'      => $commentLines,
-            ];
-        }
-
-        foreach ($params as $pos => $param) {
-            // If the type is empty, the whole line is empty.
-            if ($param['type'] === '') {
-                continue;
-            }
-
-            $lastChar = substr($param['comment'], -1);
-            if ($lastChar !== '.') {
-                $error = "Tag {$param['tag_type']} description must end with a full stop";
-
-                $phpcsFile->addError($error, $param['tag'], 'TagFullStop');
-            }
+            // Look through all @ comments in the current doc comment.
+            $currentToken = $phpcsFile->findNext(T_DOC_COMMENT_TAG, ($currentToken + 1), ($commentEnd - 1));
         }
     }
 }
-
-
