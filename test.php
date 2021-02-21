@@ -2,6 +2,8 @@
 /**
  * Class Google\Site_Kit\Modules\PageSpeed_Insights.
  *
+ * @since 1.0.0
+ *
  * @package   Google\Site_Kit
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
@@ -41,8 +43,16 @@ final class PageSpeed_Insights {
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 now requires Google_Site_Kit_Client instance
-	 *
+	 * 
+	 * @access
+	 * @since ljsdflkajdfkl
 	 * @var int $test_const Google client instance.
+	 * @deprecated ljsdflkajdfkl
+	 * @global ljsdflkajdfkl
+	 * @var ljsdflkajdfkl
+	 * @param ljsdflkajdfkl.
+	 * @static
+	 * @return void ljsdflkajdfkl.
 	 */
 	protected $test_const = 123;
 
@@ -70,6 +80,9 @@ final class PageSpeed_Insights {
 	 *
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
 	 * for the first time.
+	 *
+	 * @since 1.0.0
+	 * @since 1.2.0 now requires Google_Site_Kit_Client instance
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @param Google_Site_Kit_Client $spoon Comment.
