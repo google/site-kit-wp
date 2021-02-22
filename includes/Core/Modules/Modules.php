@@ -886,6 +886,7 @@ final class Modules {
 			'dependencies' => $this->get_module_dependencies( $module->slug ),
 			'dependants'   => $this->get_module_dependants( $module->slug ),
 			'owner'        => null,
+			'forceActive'  => $module->force_active,
 		);
 
 		if ( current_user_can( 'list_users' ) && $module instanceof Module_With_Owner ) {

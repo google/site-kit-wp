@@ -64,6 +64,7 @@ const moduleDefaults = {
 	dependencies: [],
 	dependants: [],
 	order: 10,
+	features: [],
 	Icon: null,
 	SettingsEditComponent: null,
 	SettingsViewComponent: null,
@@ -238,6 +239,7 @@ const baseActions = {
 	 * @param {string}      [settings.storeName]                        Optional. Module storeName. If none is provided we assume no store exists for this module.
 	 * @param {string}      [settings.name]                             Optional. Module name. Default is the slug.
 	 * @param {string}      [settings.description]                      Optional. Module description. Default empty string.
+	 * @param {Array}       [settings.features]                         Optional. Module features. Default empty array.
 	 * @param {WPComponent} [settings.Icon]                             Optional. React component to render module icon. Default none.
 	 * @param {number}      [settings.order]                            Optional. Numeric indicator for module order. Default 10.
 	 * @param {string}      [settings.homepage]                         Optional. Module homepage URL. Default empty string.
@@ -251,6 +253,7 @@ const baseActions = {
 		storeName,
 		name,
 		description,
+		features,
 		Icon,
 		order,
 		homepage,
@@ -266,6 +269,7 @@ const baseActions = {
 			storeName,
 			name,
 			description,
+			features,
 			Icon,
 			order,
 			homepage,
@@ -790,6 +794,35 @@ const baseSelectors = {
 		const requirementsStatus = state.checkRequirementsResults[ slug ];
 		return requirementsStatus === true ? null : requirementsStatus;
 	},
+
+	/**
+	 * Gets the module's list of features.
+	 *
+	 * Returns a list of features of this module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(Array|undefined)} An array of features for the module; `undefined` if state is still loading.
+	 */
+	getModuleFeatures: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const modules = select( STORE_NAME ).getModules();
+
+		// Return `undefined` if modules haven't been loaded yet.
+		if ( modules === undefined ) {
+			return undefined;
+		}
+
+		// A module with this slug couldn't be found; return `null` to signify the
+		// "not found" state.
+		if ( modules[ slug ] === undefined ) {
+			return null;
+		}
+
+		// This module exists, so let's return it.
+		return modules[ slug ]?.features;
+	} ),
 };
 
 const store = Data.combineStores(

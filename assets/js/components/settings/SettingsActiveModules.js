@@ -24,7 +24,7 @@ import { useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { clearWebStorage, getModulesData } from '../../util';
+import { clearWebStorage } from '../../util';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import Data from 'googlesitekit-data';
 import Layout from '../layout/Layout';
@@ -47,7 +47,7 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 
 	const onConfirm = useCallback( async ( slug ) => {
 		setIsSaving( true );
-		// to rename
+
 		const { error: submissionError } = await submitChanges( slug );
 
 		setIsSaving( false );
@@ -77,9 +77,6 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 		return null;
 	}
 
-	// deprecated
-	const deprecatedModulesData = getModulesData();
-
 	const modules = Object.values( modulesData )
 		.filter( ( module ) => ! module.internal && module.active )
 		.sort( ( module1, module2 ) => module1.sort - module2.sort );
@@ -98,18 +95,17 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 							name={ module.name }
 							description={ module.description }
 							homepage={ module.homepage }
-							learnmore={ deprecatedModulesData[ module.slug ]?.learnMore }
 							active={ module.active }
 							setupComplete={ module.active && module.connected }
-							autoActivate={ deprecatedModulesData[ module.slug ]?.autoActivate }
+							autoActivate={ module.forceActive }
 							handleEdit={ onEdit }
 							handleConfirm={ onConfirm }
 							handleCancel={ onCancel }
 							isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
 							isOpen={ activeModule === module.slug && moduleState !== 'closed' }
 							handleAccordion={ handleAccordion }
-							provides={ deprecatedModulesData[ module.slug ]?.provides }
 							isSaving={ isSaving }
+							provides={ module.features }
 							error={ error }
 						/>
 					);

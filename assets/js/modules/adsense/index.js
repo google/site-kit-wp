@@ -67,6 +67,10 @@ export const registerModule = ( modules ) => {
 			SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
 			SetupComponent: SetupMain,
 			Icon: AdSenseIcon,
+			features: [
+				__( 'Monetize your website', 'google-site-kit' ),
+				__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
+			],
 			checkRequirements: () => {
 				if ( ! isAdBlockerActive() ) {
 					return;
