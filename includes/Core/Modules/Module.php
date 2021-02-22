@@ -183,7 +183,6 @@ abstract class Module {
 			'cta'          => $this->cta,
 			'sort'         => $this->order,
 			'homepage'     => $this->homepage,
-			'learnMore'    => $this->learn_more,
 			'required'     => $this->depends_on,
 			'autoActivate' => $this->force_active,
 			'internal'     => $this->internal,
