@@ -13,6 +13,5 @@
     <rule ref="Squiz.Commenting.FunctionComment.ParamCommentFullStop">
         <exclude-pattern>*</exclude-pattern>
     </rule>
-    
 
 </ruleset>

@@ -14,7 +14,7 @@ namespace PHP_CodeSniffer\Standards\GoogleSiteKit\Sniffs\Semantic;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 
-class CommentTagsInCorrectOrder implements Sniff
+class CommentTagsCorrectlyGrouped implements Sniff
 {
     /**
      * Returns the token types that this sniff is interested in.
@@ -42,7 +42,7 @@ class CommentTagsInCorrectOrder implements Sniff
         $commentStart = $tokens[$commentEnd]['comment_opener'];
 
         // List of @ comment types to check. They should be in order set by this array.
-        $docCommentTagsOrder = array(
+        $docCommentTags = array(
             '@since',
             '@deprecated',
             '@access',
@@ -62,8 +62,8 @@ class CommentTagsInCorrectOrder implements Sniff
             $commentTagType = $tokens[$tag]['content'];
             $tagToken = $tag;
 
-            // Only check the tag types defined in $docCommentTagsOrder.
-            if (! in_array( $commentTagType, $docCommentTagsOrder ) ) {
+            // Only check the tag types defined in $docCommentTags.
+            if (! in_array( $commentTagType, $docCommentTags ) ) {
                 continue;
             }
 
@@ -135,30 +135,8 @@ class CommentTagsInCorrectOrder implements Sniff
             ];
         }
 
-        // Track the previous and next tags to check the order is correct. 
-        $previousTags = [];
-        $nextTags = $params;
+        // If there are param/return and other tags, make sure they are separated by a space.
+        // TODO: TODO:
 
-        while (count($nextTags) > 0) {
-            // Remove the current tag.
-            $currentTag = array_shift($nextTags);
-            $currentTagType = $currentTag['tag_type'];
-
-            $tagOrderPosition = array_search($currentTagType, $docCommentTagsOrder);
-
-            $allowedPreviousTags = $docCommentTagsOrder;
-            $allowedPreviousTags = array_splice($allowedPreviousTags, 0, $tagOrderPosition);
-
-            // Loop through previous tags and show error for disallowed tags.
-            foreach ( $previousTags as $tag ) {
-                if( $tag['tag_type'] !== $currentTagType && ! in_array( $tag['tag_type'], $allowedPreviousTags ) ) {
-                    $error = "Tag {$tag['tag_type']} must be below $currentTagType tag";
-                    $phpcsFile->addError($error, $tag['tag_token'], 'TagOrder');
-                }
-            }
-
-            // Add the tag we have checked into the $previousTags array.
-            $previousTags[] = $currentTag;
-        }
     }
 }

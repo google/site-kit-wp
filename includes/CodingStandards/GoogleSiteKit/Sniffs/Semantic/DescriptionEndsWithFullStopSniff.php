@@ -185,6 +185,8 @@ class DescriptionEndsWithFullStopSniff implements Sniff
                 continue;
             }
 
+            // TODO: TODO: this breaks for full some @return tags as well as multi line comments. 
+
             $lastChar = substr($param['comment'], -1);
             if ($lastChar !== '.') {
                 $error = "Tag {$param['tag_type']} description must end with a full stop";

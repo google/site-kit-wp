@@ -52,7 +52,9 @@ final class PageSpeed_Insights {
 	 * @var ljsdflkajdfkl
 	 * @param ljsdflkajdfkl.
 	 * @static
-	 * @return void ljsdflkajdfkl.
+	 *
+	 * @return void Tjsdflkajd
+	 *              fkl.
 	 */
 	protected $test_const = 123;
 
