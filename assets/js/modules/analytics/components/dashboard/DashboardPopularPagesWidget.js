@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
@@ -27,17 +26,16 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import { numFmt } from '../../../../util';
 import { isZeroReport } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import ReportTable from '../../../../components/ReportTable';
-import Link from '../../../../components/Link';
+import Decimal from '../../../../components/Num/Decimal';
+import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
 
 const { useSelect } = Data;
 
@@ -123,34 +121,14 @@ const tableColumns = [
 		title: __( 'Most popular content', 'google-site-kit' ),
 		primary: true,
 		Component: ( { row } ) => {
-			const [ title, pathname ] = row.dimensions;
-			const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
-			const permaLink = new URL( pathname, siteURL ).href;
-			const detailsURL = useSelect( ( select ) => {
-				return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink } );
-			} );
-
-			return (
-				<Fragment>
-					<Link href={ detailsURL } inherit>
-						{ title }
-					</Link>
-
-					<Link
-						className="googlesitekit-table__link--secondary"
-						href={ permaLink }
-						inherit
-						external
-					>
-						{ pathname }
-					</Link>
-				</Fragment>
-			);
+			const [ title, path ] = row.dimensions;
+			return <DetailsPermaLinks title={ title } path={ path } />;
 		},
 	},
 	{
 		title: __( 'Views', 'google-site-kit' ),
-		Component: ( { row } ) => numFmt( row.metrics[ 0 ].values[ 0 ], { style: 'decimal' } ),
+		field: 'metrics.0.values.0',
+		Component: ( { fieldValue } ) => <Decimal value={ fieldValue } />,
 	},
 ];
 
