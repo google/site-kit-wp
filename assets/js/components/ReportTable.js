@@ -66,20 +66,23 @@ export default function ReportTable( { rows, columns, className } ) {
 						>
 							{ columns
 								.filter( ( { Component, field } ) => Component || field )
-								.map( ( { Component, field, className: columnClassName }, j ) => (
-									<td
-										key={ `googlesitekit-table__body-item-${ j }` }
-										className={ classnames(
-											'googlesitekit-table__body-item',
-											columnClassName
-										) }
-									>
-										<div className="googlesitekit-table__body-item-content">
-											{ Component && <Component row={ row } /> }
-											{ ! Component && field && get( row, field ) }
-										</div>
-									</td>
-								) )
+								.map( ( { Component, field, className: columnClassName }, j ) => {
+									const fieldValue = field && get( row, field );
+									return (
+										<td
+											key={ `googlesitekit-table__body-item-${ j }` }
+											className={ classnames(
+												'googlesitekit-table__body-item',
+												columnClassName
+											) }
+										>
+											<div className="googlesitekit-table__body-item-content">
+												{ Component && <Component row={ row } fieldValue={ fieldValue } /> }
+												{ ! Component && fieldValue }
+											</div>
+										</td>
+									);
+								} )
 							}
 						</tr>
 					) ) }
