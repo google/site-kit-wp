@@ -25,10 +25,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numFmt } from '../../../../util';
+import { getTimeInSeconds } from '../../../../util';
 import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
-import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
 import ctaWrapper from '../../../../components/legacy-notifications/cta-wrapper';
 import AdSenseLinkCTA from '../common/AdSenseLinkCTA';
@@ -37,7 +36,9 @@ import { STORE_NAME } from '../../datastore/constants';
 import AnalyticsAdSenseDashboardWidgetLayout from './AnalyticsAdSenseDashboardWidgetLayout';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import Link from '../../../../components/Link';
-const { withSelect } = Data;
+import ReportTable from '../../../../components/ReportTable';
+import Decimal from '../../../../components/Num/Decimal';
+const { useSelect } = Data;
 
 const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 	// Do not return zero data callout here since it will already be
@@ -51,74 +52,59 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		return null;
 	}
 
-	const headers = [
-		{
-			title: __( 'Page Title', 'google-site-kit' ),
-			tooltip: __( 'Page Title', 'google-site-kit' ),
-			primary: true,
-		},
-		{
-			title: __( 'Earnings', 'google-site-kit' ),
-			tooltip: __( 'Earnings', 'google-site-kit' ),
-		},
-		{
-			title: __( 'Page RPM', 'google-site-kit' ),
-			tooltip: __( 'Page RPM', 'google-site-kit' ),
-		},
-		{
-			title: __( 'Impressions', 'google-site-kit' ),
-			tooltip: __( 'Impressions', 'google-site-kit' ),
-		},
-	];
-
-	const dataMapped = rows.map( ( row ) => {
-		/**
-		 * The shape of the dimensions and metrics objects:
-		 *
-		 * ```
-		 * dimensions[0] = ga:pageTitle
-		 * dimensions[1] = ga:pagePath
-		 *
-		 * metrics[0] = ga:adsenseECPM
-		 * metrics[1] = ga:adsensePageImpressions
-		 * metrics[2] = ga:adsenseRevenue
-		 * ```
-		 */
-		return [
-			row.dimensions[ 0 ],
-			Number( row.metrics[ 0 ].values[ 0 ] ).toFixed( 2 ),
-			Number( row.metrics[ 0 ].values[ 1 ] ).toFixed( 2 ),
-			numFmt( row.metrics[ 0 ].values[ 2 ], { style: 'decimal' } ),
-		];
-	} );
-
-	const options = {
-		hideHeader: false,
-		chartsEnabled: false,
-		links: rows.map( ( row ) => row.dimensions[ 1 ] || '/' ),
-		PrimaryLink: withSelect( ( select, { href = '/' } ) => {
-			const serviceURL = select( STORE_NAME ).getServiceReportURL( 'content-pages', {
-				'explorer-table.plotKeys': '[]',
-				'_r.drilldown': `analytics.pagePath:${ href }`,
-			} );
-
-			return {
-				href: serviceURL,
-				external: true,
-			};
-		} )( Link ),
-	};
-
-	const dataTable = getDataTableFromData( dataMapped, headers, options );
-
 	return (
 		<AnalyticsAdSenseDashboardWidgetLayout>
 			<TableOverflowContainer>
-				{ dataTable }
+				<ReportTable
+					rows={ rows }
+					columns={ tableColumns }
+				/>
 			</TableOverflowContainer>
 		</AnalyticsAdSenseDashboardWidgetLayout>
 	);
 };
+
+const tableColumns = [
+	{
+		title: __( 'Page Title', 'google-site-kit' ),
+		description: __( 'Page Title', 'google-site-kit' ),
+		primary: true,
+		Component: ( { row } ) => {
+			const [ title, url ] = row.dimensions;
+			const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages', {
+				'explorer-table.plotKeys': '[]',
+				'_r.drilldown': `analytics.pagePath:${ url }`,
+			} ) );
+			return (
+				<Link
+					href={ serviceURL }
+					external
+					inherit
+				>
+					{ title }
+				</Link>
+			);
+		},
+	},
+	{
+		title: __( 'Earnings', 'google-site-kit' ),
+		description: __( 'Earnings', 'google-site-kit' ),
+		field: 'metrics.0.values.0',
+		Component: ( { fieldValue } ) => <Decimal value={ fieldValue } precision={ 2 } fixed />,
+	},
+	{
+		title: __( 'Page RPM', 'google-site-kit' ),
+		description: __( 'Page RPM', 'google-site-kit' ),
+		field: 'metrics.0.values.1',
+		Component: ( { fieldValue } ) => <Decimal value={ fieldValue } precision={ 2 } fixed />,
+	},
+	{
+		title: __( 'Impressions', 'google-site-kit' ),
+		description: __( 'Impressions', 'google-site-kit' ),
+		field: 'metrics.0.values.2',
+		Component: ( { fieldValue } ) => <Decimal value={ fieldValue } />,
+	},
+];
 
 /**
  * Checks error data response, and handle the INVALID_ARGUMENT specifically.
