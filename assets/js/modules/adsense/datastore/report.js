@@ -53,7 +53,7 @@ const fetchGetReportStore = createFetchStore( {
 		invariant( isPlainObject( options ), 'options must be an object.' );
 
 		// Account for additional date ranges supported by AdSense module in PHP.
-		invariant( [ 'today', 'this-month' ].includes( options.dateRange ) || isValidDateRange( options ), 'Either date range or start/end dates must be provided for AdSense report.' );
+		invariant( 'today' === options.dateRange || isValidDateRange( options ), 'Either date range or start/end dates must be provided for AdSense report.' );
 
 		const { orderby, metrics, dimensions } = options;
 
