@@ -51,34 +51,6 @@ class OptimizeTest extends TestCase {
 		$this->assertTrue( $optimize->is_connected() );
 	}
 
-	public function test_prepare_info_for_js() {
-		$optimize = new Optimize( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$info = $optimize->prepare_info_for_js();
-
-		$this->assertEqualSets(
-			array(
-				'slug',
-				'name',
-				'description',
-				'cta',
-				'sort',
-				'homepage',
-				'learnMore',
-				'required',
-				'autoActivate',
-				'internal',
-				'screenID',
-				'settings',
-				'provides',
-			),
-			array_keys( $info )
-		);
-		$this->assertEquals( 'optimize', $info['slug'] );
-		$this->assertArrayHasKey( 'optimizeID', $info['settings'] );
-		$this->assertArrayHasKey( 'ampExperimentJSON', $info['settings'] );
-	}
-
 	public function test_on_deactivation() {
 		$optimize = new Optimize( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
