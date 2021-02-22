@@ -97,10 +97,9 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 							homepage={ module.homepage }
 							active={ module.active }
 							setupComplete={ module.active && module.connected }
-							autoActivate={ module.forceActive }
-							handleEdit={ onEdit }
-							handleConfirm={ onConfirm }
-							handleCancel={ onCancel }
+							onEdit={ onEdit }
+							onConfirm={ onConfirm }
+							onCancel={ onCancel }
 							isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
 							isOpen={ activeModule === module.slug && moduleState !== 'closed' }
 							handleAccordion={ handleAccordion }

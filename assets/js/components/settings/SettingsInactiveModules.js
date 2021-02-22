@@ -88,9 +88,6 @@ const SettingsInactiveModules = () => {
 						) ) }
 					</div>
 				</div>
-
-				{ /* TODO: Need some input here with regards to changing state */ }
-				{ /* { editActive && <SettingsOverlay /> } */ }
 			</Layout>
 		</div>
 	);

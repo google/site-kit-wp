@@ -76,7 +76,7 @@ class SettingsModule extends Component {
 		this.activateOrDeactivate = this.activateOrDeactivate.bind( this );
 		this.handleDialog = this.handleDialog.bind( this );
 		this.handleCloseModal = this.handleCloseModal.bind( this );
-		this.handleConfirmRemoveModule = this.handleConfirmRemoveModule.bind( this );
+		this.onConfirmRemoveModule = this.onConfirmRemoveModule.bind( this );
 	}
 
 	componentDidMount() {
@@ -117,7 +117,7 @@ class SettingsModule extends Component {
 	}
 
 	deactivate() {
-		if ( this.props.autoActivate ) {
+		if ( 'search-console' === this.props.slug ) {
 			return;
 		}
 		this.activateOrDeactivate();
@@ -132,7 +132,7 @@ class SettingsModule extends Component {
 	}
 
 	// Handle user click on the confirm removal button.
-	handleConfirmRemoveModule() {
+	onConfirmRemoveModule() {
 		this.deactivate();
 	}
 
@@ -174,17 +174,16 @@ class SettingsModule extends Component {
 			isEditing,
 			isOpen,
 			handleAccordion,
-			handleEdit,
-			handleCancel,
-			handleConfirm,
+			onEdit,
+			onCancel,
+			onConfirm,
 			hasSettings,
 			canSubmitChanges,
-			autoActivate,
 			provides,
 			isSaving,
 			error,
 		} = this.props;
-
+		const autoActivate = 'search-console' === slug;
 		const moduleKey = `${ slug }-module`;
 		const isConnected = applyFilters( `googlesitekit.Connected-${ slug }`, setupComplete );
 		const connectedClassName = isConnected
@@ -330,7 +329,7 @@ class SettingsModule extends Component {
 									{ isEditing[ moduleKey ] || isSavingModule ? (
 										<Fragment>
 											<Button
-												onClick={ () => handleConfirm( slug, buttonActionName, buttonAction ) }
+												onClick={ () => onConfirm( slug, buttonActionName, buttonAction ) }
 												disabled={ isSavingModule || ! canSubmitChanges }
 												id={ hasSettings && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
 											>
@@ -340,7 +339,7 @@ class SettingsModule extends Component {
 											{ hasSettings &&
 											<Link
 												className="googlesitekit-settings-module__footer-cancel"
-												onClick={ () => handleCancel( slug ) }
+												onClick={ () => onCancel( slug ) }
 												inherit
 											>
 												{ __( 'Cancel', 'google-site-kit' ) }
@@ -351,7 +350,7 @@ class SettingsModule extends Component {
 									<Link
 										className="googlesitekit-settings-module__edit-button"
 										onClick={ () => {
-											handleEdit( slug, 'edit' );
+											onEdit( slug, 'edit' );
 										} }
 										inherit
 									>
@@ -416,7 +415,7 @@ class SettingsModule extends Component {
 					subtitle={ subtitle }
 					onKeyPress={ this.handleCloseModal }
 					provides={ provides }
-					handleConfirm={ this.handleConfirmRemoveModule }
+					handleConfirm={ this.onConfirmRemoveModule }
 					dependentModules={ dependentModules
 						? sprintf(
 							/* translators: %1$s: module name, %2$s: list of dependent modules */
@@ -437,11 +436,10 @@ SettingsModule.propTypes = {
 	slug: PropTypes.string,
 	homepage: PropTypes.string,
 	isEditing: PropTypes.object,
-	handleEdit: PropTypes.func,
-	handleCancel: PropTypes.func,
-	handleConfirm: PropTypes.func,
+	onEdit: PropTypes.func,
+	onCancel: PropTypes.func,
+	onConfirm: PropTypes.func,
 	handleDialog: PropTypes.func,
-	autoActivate: PropTypes.bool,
 	hasSettings: PropTypes.bool,
 	canSubmitChanges: PropTypes.bool,
 	required: PropTypes.array,
@@ -454,9 +452,9 @@ SettingsModule.defaultProps = {
 	slug: '',
 	homepage: '',
 	isEditing: {},
-	handleEdit: null,
-	handleCancel: null,
-	handleConfirm: null,
+	onEdit: null,
+	onCancel: null,
+	onConfirm: null,
 	handleDialog: null,
 	active: false,
 	setupComplete: false,
