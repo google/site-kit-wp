@@ -32,6 +32,7 @@ const WebpackBar = require( 'webpackbar' );
 const { DefinePlugin, ProvidePlugin } = require( 'webpack' );
 const CreateFileWebpack = require( 'create-file-webpack' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
+const ImageminPlugin = require( 'imagemin-webpack' );
 const features = require( './feature-flags.json' );
 
 const projectPath = ( relativePath ) => {
@@ -190,6 +191,35 @@ const webpackConfig = ( env, argv ) => {
 			},
 			performance: {
 				maxEntrypointSize: 175000,
+			},
+			module: {
+				rules: [
+					...rules,
+					{
+						test: /\.(png|jpg)$/i,
+						use: [
+							{
+								loader: 'file-loader',
+								options: {
+									name: '[name].[ext]',
+									publicPath: 'images/',
+									outputPath: '../images',
+								},
+							},
+							{
+								loader: ImageminPlugin.loader,
+								options: {
+									imageminOptions: {
+										plugins: [
+											'jpegtran',
+											'optipng',
+										],
+									},
+								},
+							},
+						],
+					},
+				],
 			},
 			plugins: [
 				new ProvidePlugin( {
