@@ -51,6 +51,8 @@ class Google_Site_Kit_Proxy_Client extends Google_Site_Kit_Client {
 		unset( $config['proxy_base_path'] );
 
 		parent::__construct( $config );
+
+		$this->setApplicationName( Google_Proxy::get_application_name() );
 	}
 
 	/**

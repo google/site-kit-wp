@@ -126,6 +126,26 @@ export const selectors = {
 	} ),
 
 	/**
+	 * Returns the service URL to an AdSense account report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} reportArgs URL parameters to be passed to the query.
+	 * @return {(string|undefined)} AdSense account site overview URL (or `undefined` if not loaded).
+	 */
+	getServiceReportURL: createRegistrySelector( ( select ) => ( state, reportArgs ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
+
+		if ( accountID === undefined ) {
+			return undefined;
+		}
+
+		const path = `${ accountID }/reporting`;
+
+		return select( STORE_NAME ).getServiceURL( { path, query: reportArgs } );
+	} ),
+
+	/**
 	 * Returns the service URL to an AdSense account's site management page.
 	 *
 	 * @since 1.14.0

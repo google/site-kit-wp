@@ -34,13 +34,13 @@ import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import { calculateChange } from '../../../../util';
 import { getURLPath } from '../../../../util/getURLPath';
-import ReportError from '../../../../components/ReportError';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
-function DashboardUniqueVisitorsWidget( { WidgetReportZero } ) {
+function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } ) {
 	const {
 		loading,
 		error,
@@ -101,6 +101,7 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero } ) {
 			sparkData: store.getReport( sparklineArgs ),
 			serviceURL: store.getServiceReportURL( 'visitors-overview', {
 				'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+				...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
 			} ),
 			visitorsData: store.getReport( args ),
 		};
@@ -111,7 +112,7 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero } ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( sparkData ) || isZeroReport( visitorsData ) ) {

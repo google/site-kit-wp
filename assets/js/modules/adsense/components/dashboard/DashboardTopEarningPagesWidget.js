@@ -34,11 +34,10 @@ import { getDataTableFromData } from '../../../../components/data-table';
 import SourceLink from '../../../../components/SourceLink';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import { isZeroReport } from '../../../analytics/util';
-import ReportError from '../../../../components/ReportError';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
 
-function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero } ) {
+function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		isAdSenseLinked,
 		analyticsMainURL,
@@ -87,7 +86,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero } ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {
