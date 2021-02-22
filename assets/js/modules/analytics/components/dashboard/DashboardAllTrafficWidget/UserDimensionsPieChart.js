@@ -295,6 +295,12 @@ export default function UserDimensionsPieChart( {
 		options.pieSliceTextStyle.color = 'transparent';
 	}
 
+	if ( dimensionValue?.length ) {
+		options.tooltip.trigger = 'selection';
+	} else {
+		options.tooltip.trigger = 'focus';
+	}
+
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
 			<div className={ classnames(
