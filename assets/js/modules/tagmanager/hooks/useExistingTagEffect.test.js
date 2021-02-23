@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
-import { createTestRegistry, provideModules, untilResolved } from '../../../../../tests/js/utils';
+import { createTestRegistry, untilResolved } from '../../../../../tests/js/utils';
 import { STORE_NAME, CONTEXT_WEB } from '../datastore/constants';
 import * as factories from '../datastore/__factories__';
 import useExistingTagEffect from './useExistingTagEffect';
@@ -33,12 +33,6 @@ describe( 'useExistingTagEffect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		// Set set no existing tag.
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-
-		// Provide an activated Analytics module.
-		provideModules( registry, [ {
-			slug: 'analytics',
-			active: true,
-		} ] );
 	} );
 
 	it( 'sets the accountID and containerID when there is an existing tag with permission', async () => {
@@ -57,14 +51,6 @@ describe( 'useExistingTagEffect', () => {
 		registry.dispatch( STORE_NAME ).setContainerID( firstContainer.publicId );
 		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setInternalContainerID( firstContainer.containerId );
-
-		// Loop through each container and set up the relevant tag.
-		containers.forEach( ( container ) => {
-			// eslint-disable-next-line sitekit/acronym-case
-			const liveContainerVersion = factories.buildLiveContainerVersionWeb( { accountID: container.accountId, propertyID: container.publicId } );
-			// eslint-disable-next-line sitekit/acronym-case
-			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersion, { accountID: container.accountId, internalContainerID: container.containerId } );
-		} );
 
 		let rerender;
 		await act( () => new Promise( async ( resolve ) => {
