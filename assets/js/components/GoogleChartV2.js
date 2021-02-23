@@ -73,7 +73,11 @@ export default function GoogleChartV2( props ) {
 		// Remove all event listeners after the component has unmounted.
 		return () => {
 			// eslint-disable-next-line no-unused-expressions
-			googleRef.current?.visualization.events.removeAllListeners( chartWrapperRef.current?.getChart() );
+			if ( googleRef.current && chartWrapperRef.current ) {
+				const { events } = googleRef.current.visualization;
+				events.removeAllListeners( chartWrapperRef.current.getChart() );
+				events.removeAllListeners( chartWrapperRef.current );
+			}
 		};
 	}, [] );
 
