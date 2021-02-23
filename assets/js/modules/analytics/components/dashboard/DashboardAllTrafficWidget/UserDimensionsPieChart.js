@@ -151,8 +151,8 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 	}, [ chartID, setValues ] );
 
 	useEffect( () => {
-		const onTooltipClick = ( e ) => {
-			const { target } = e || {};
+		const onTooltipClick = ( event ) => {
+			const { target } = event || {};
 			if ( ! target?.classList?.contains( 'googlesitekit-cta-link__tooltip' ) ) {
 				return;
 			}
