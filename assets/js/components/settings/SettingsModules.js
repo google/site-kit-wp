@@ -205,7 +205,6 @@ class SettingsModules extends Component {
 		const { activeTab } = this.props;
 		const modulesBeingEdited = filter( isEditing, ( module ) => module );
 		const editActive = 0 < modulesBeingEdited.length;
-
 		if ( ! Object.values( modulesData ).length ) {
 			return null;
 		}

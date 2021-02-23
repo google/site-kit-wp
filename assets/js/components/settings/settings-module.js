@@ -48,7 +48,7 @@ import {
 import { refreshAuthentication } from '../../util/refresh-authentication';
 import Link from '../Link';
 import Button from '../../components/Button';
-import data from '../../components/data';
+import data, { TYPE_MODULES } from '../../components/data';
 import SettingsOverlay from '../../components/settings/SettingsOverlay';
 import Spinner from '../Spinner';
 import GenericError from '../legacy-notifications/generic-error';
@@ -76,7 +76,8 @@ class SettingsModule extends Component {
 		this.activateOrDeactivate = this.activateOrDeactivate.bind( this );
 		this.handleDialog = this.handleDialog.bind( this );
 		this.handleCloseModal = this.handleCloseModal.bind( this );
-		this.onConfirmRemoveModule = this.onConfirmRemoveModule.bind( this );
+		this.handleConfirmRemoveModule = this.handleConfirmRemoveModule.bind( this );
+		this.handleConfirmOrCancel = this.handleConfirmOrCancel.bind( this );
 	}
 
 	componentDidMount() {
@@ -94,10 +95,11 @@ class SettingsModule extends Component {
 			await activateOrDeactivateModule(
 				data,
 				this.props.slug,
-				false,
+				false
 			);
 
 			await refreshAuthentication();
+			data.invalidateCacheGroup( TYPE_MODULES, this.props.slug );
 
 			this.setState( {
 				isSaving: false,
@@ -117,7 +119,9 @@ class SettingsModule extends Component {
 	}
 
 	deactivate() {
-		if ( 'search-console' === this.props.slug ) {
+		const { slug } = this.props;
+
+		if ( 'search-console' === slug ) {
 			return;
 		}
 		this.activateOrDeactivate();
@@ -132,7 +136,7 @@ class SettingsModule extends Component {
 	}
 
 	// Handle user click on the confirm removal button.
-	onConfirmRemoveModule() {
+	handleConfirmRemoveModule() {
 		this.deactivate();
 	}
 
@@ -141,6 +145,25 @@ class SettingsModule extends Component {
 			this.setState( {
 				dialogActive: false,
 			} );
+		}
+	}
+
+	handleConfirmOrCancel() {
+		const {
+			setupComplete,
+		} = this.state;
+
+		const {
+			hasSettings,
+			slug,
+			onCancel,
+			onConfirm,
+		} = this.props;
+
+		if ( hasSettings && setupComplete ) {
+			onConfirm( slug );
+		} else {
+			onCancel();
 		}
 	}
 
@@ -174,14 +197,13 @@ class SettingsModule extends Component {
 			isEditing,
 			isOpen,
 			handleAccordion,
-			onEdit,
-			onCancel,
-			onConfirm,
 			hasSettings,
 			canSubmitChanges,
 			provides,
 			isSaving,
 			error,
+			onEdit,
+			onCancel,
 		} = this.props;
 		const autoActivate = 'search-console' === slug;
 		const moduleKey = `${ slug }-module`;
@@ -209,13 +231,6 @@ class SettingsModule extends Component {
 			} else {
 				buttonText = __( 'Confirm Changes', 'google-site-kit' );
 			}
-		}
-
-		// Set button action based on state.
-		let buttonActionName = 'cancel';
-		let buttonAction;
-		if ( hasSettings && setupComplete ) {
-			buttonActionName = 'confirm';
 		}
 
 		return (
@@ -329,7 +344,7 @@ class SettingsModule extends Component {
 									{ isEditing[ moduleKey ] || isSavingModule ? (
 										<Fragment>
 											<Button
-												onClick={ () => onConfirm( slug, buttonActionName, buttonAction ) }
+												onClick={ this.handleConfirmOrCancel }
 												disabled={ isSavingModule || ! canSubmitChanges }
 												id={ hasSettings && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
 											>
@@ -339,7 +354,7 @@ class SettingsModule extends Component {
 											{ hasSettings &&
 											<Link
 												className="googlesitekit-settings-module__footer-cancel"
-												onClick={ () => onCancel( slug ) }
+												onClick={ onCancel }
 												inherit
 											>
 												{ __( 'Cancel', 'google-site-kit' ) }
@@ -350,7 +365,7 @@ class SettingsModule extends Component {
 									<Link
 										className="googlesitekit-settings-module__edit-button"
 										onClick={ () => {
-											onEdit( slug, 'edit' );
+											onEdit( slug );
 										} }
 										inherit
 									>
@@ -415,7 +430,7 @@ class SettingsModule extends Component {
 					subtitle={ subtitle }
 					onKeyPress={ this.handleCloseModal }
 					provides={ provides }
-					handleConfirm={ this.onConfirmRemoveModule }
+					handleConfirm={ this.handleConfirmRemoveModule }
 					dependentModules={ dependentModules
 						? sprintf(
 							/* translators: %1$s: module name, %2$s: list of dependent modules */
@@ -436,15 +451,16 @@ SettingsModule.propTypes = {
 	slug: PropTypes.string,
 	homepage: PropTypes.string,
 	isEditing: PropTypes.object,
-	onEdit: PropTypes.func,
-	onCancel: PropTypes.func,
-	onConfirm: PropTypes.func,
+	handleEdit: PropTypes.func,
 	handleDialog: PropTypes.func,
 	hasSettings: PropTypes.bool,
 	canSubmitChanges: PropTypes.bool,
 	required: PropTypes.array,
 	active: PropTypes.bool,
 	setupComplete: PropTypes.bool,
+	onEdit: PropTypes.func,
+	onConfirm: PropTypes.func,
+	onCancel: PropTypes.func,
 };
 
 SettingsModule.defaultProps = {
@@ -452,12 +468,13 @@ SettingsModule.defaultProps = {
 	slug: '',
 	homepage: '',
 	isEditing: {},
-	onEdit: null,
-	onCancel: null,
-	onConfirm: null,
+	handleEdit: null,
 	handleDialog: null,
 	active: false,
 	setupComplete: false,
+	onEdit: null,
+	onConfirm: null,
+	onCancel: null,
 };
 
 export default compose( [
