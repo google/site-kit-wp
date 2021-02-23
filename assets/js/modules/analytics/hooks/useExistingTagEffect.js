@@ -86,6 +86,9 @@ export default function useExistingTagEffect() {
 			// GTM container has GA tag and user has access to it, force select it.
 			setAccountID( gtmAnalyticsAccountID );
 			selectProperty( gtmAnalyticsPropertyID );
+			// We no longer set `useSnippet` to false here as this is handled using a filter
+			// on the server side now so that Analytics will take over the snippet again
+			// if Tag Manager or its snippet is disabled.
 		}
 	}, [
 		existingTag,
