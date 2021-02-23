@@ -122,15 +122,13 @@ class AMP_Tag extends Module_AMP_Tag {
 	 * @since n.e.x.t
 	 */
 	private function render_story_auto_ads() {
-		$config = wp_json_encode(
-			array(
-				'ad-attributes' => array(
-					'type'           => 'adsense',
-					'data-ad-client' => $this->tag_id,
-					'data-ad-slot'   => $this->story_ad_slot_id,
-				),
-			)
+		$config = array(
+			'ad-attributes' => array(
+				'type'           => 'adsense',
+				'data-ad-client' => $this->tag_id,
+				'data-ad-slot'   => $this->story_ad_slot_id,
+			),
 		);
-		printf( '<amp-story-auto-ads><script type="application/json">%s</script></amp-story-auto-ads>', esc_js( $config ) );
+		printf( '<amp-story-auto-ads><script type="application/json">%s</script></amp-story-auto-ads>', wp_json_encode( $config ) );
 	}
 }

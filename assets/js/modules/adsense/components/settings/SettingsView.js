@@ -124,9 +124,9 @@ export default function SettingsView() {
 				</div>
 			</div>
 
-			<div className="googlesitekit-settings-module__meta-items">
-				<div className="googlesitekit-settings-module__meta-item">
-					{ webStoriesActive && (
+			{ webStoriesActive && (
+				<div className="googlesitekit-settings-module__meta-items">
+					<div className="googlesitekit-settings-module__meta-item">
 						<div className="googlesitekit-settings-module__meta-item">
 							<h5 className="googlesitekit-settings-module__meta-item-type">
 								{ __( 'Web Stories Ad Unit', 'google-site-kit' ) }
@@ -136,9 +136,9 @@ export default function SettingsView() {
 								{ webStoriesAdUnit && <DisplaySetting value={ webStoriesAdUnit } /> }
 							</p>
 						</div>
-					) }
+					</div>
 				</div>
-			</div>
+			) }
 		</div>
 	);
 }
