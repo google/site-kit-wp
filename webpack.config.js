@@ -257,7 +257,7 @@ const webpackConfig = ( env, argv ) => {
 				new ESLintPlugin( {
 					emitError: true,
 					emitWarning: true,
-					failOnError: mode === 'production',
+					failOnError: true,
 				} ),
 			],
 			optimization: {
