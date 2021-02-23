@@ -1,6 +1,6 @@
 <?php
 /**
- * Docblock comment tags should be grouped.
+ * Descriptions of tags in docblock should be aligned.
  *
  * @category  PHP
  * @package   PHP_CodeSniffer
@@ -14,7 +14,7 @@ namespace PHP_CodeSniffer\Standards\GoogleSiteKit\Sniffs\Semantic;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 
-class CommentTagsCorrectlyGrouped implements Sniff
+class CommentTagsDescriptionsAligned implements Sniff
 {
     /**
      * Returns the token types that this sniff is interested in.
@@ -50,32 +50,37 @@ class CommentTagsCorrectlyGrouped implements Sniff
             '@global',
             '@var',
             '@param',
-            '@return'
         );
 
-        // List how the @ tags should be grouped.
-        $docCommentTagsGroups = array(
-            [
-                '@since',
-                '@deprecated',
-                '@access',
-                '@static'
-            ],
-            [
-                '@global'
-            ],
-            [
-                '@var',
-                '@param',
-                '@return'
-            ],
-        );
+        // // List how the @ tags should be grouped.
+        // $docCommentTagsGroups = array(
+        //     [
+        //         '@since',
+        //         '@deprecated',
+        //         '@access',
+        //         '@static'
+        //     ],
+        //     [
+        //         '@global'
+        //     ],
+        //     [
+        //         '@var',
+        //         '@param',
+        //         '@return'
+        //     ],
+        // );
         
         // Check for full stop on doc block tags.
         $params  = [];
         $maxType = 0;
         $maxVar  = 0;
         foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
+
+            // Tokens used to calculate total indent later.
+            $preTagWhitespace = $tokens[( $tag - 1 )];
+            $fullTag = $tokens[ $tag ];
+            $fullTagCommentWhitespace = $tokens[( $tag + 1 )];
+            $fullComment = $tokens[( $tag + 2 )];
 
             $commentTagType = $tokens[$tag]['content'];
             $tagToken = $tag;
@@ -88,9 +93,11 @@ class CommentTagsCorrectlyGrouped implements Sniff
             $type          = '';
             $comment       = '';
             $commentLines  = [];
-            if ($tokens[($tag + 2)]['code'] === T_DOC_COMMENT_STRING) {
+            if ($fullComment['code'] === T_DOC_COMMENT_STRING) {
                 $matches = [];
-                preg_match('/([^$&.]+)(?:((?:\.\.\.)?(?:\$|&)[^\s]+)(?:(\s+)(.*))?)?/', $tokens[($tag + 2)]['content'], $matches);
+                preg_match('/([^$&.]+)(?:((?:\.\.\.)?(?:\$|&)[^\s]+)(?:(\s+)(.*))?)?/', $fullComment['content'], $matches);
+
+                // var_dump($matches);
 
                 if (empty($matches) === false) {
                     $typeLen   = strlen($matches[1]);
@@ -102,19 +109,70 @@ class CommentTagsCorrectlyGrouped implements Sniff
                 }
 
                 if (isset($matches[2]) === true) {
-                    $var    = $matches[2];
-                    $varLen = strlen($var);
-                    if ($varLen > $maxVar) {
-                        $maxVar = $varLen;
+
+                    // echo $commentTagType."\n\n";
+
+                    // Return is special as it doesn't need a var.
+                    if( $commentTagType === '@return' )
+                    {
+                        // Pass the description to the following comment check.
+                        $matches[4] = $matches[2];
+
+                        $varLen = 0;
+                    } else {
+                        $var    = $matches[2];
+                        $varLen = strlen($var);
+                        if ($varLen > $maxVar) {
+                            $maxVar = $varLen;
+                        }
                     }
 
                     if (isset($matches[4]) === true) {
-                        $varSpace       = strlen($matches[3]);
+
                         $comment        = $matches[4];
+
+                        // Sum the length of each section of the comment to get the total indent of the description.
+
+                        // $preTagWhitespace = $tokens[($tag-1)];
+                        // $fullTag = $tokens[($tag)];
+                        // $fullTagCommentWhitespace = $tokens[($tag+1)];
+                        // $fullComment = $tokens[($tag + 2)];
+
+                        $lineLength = 
+                            $preTagWhitespace['length'] +
+                            $fullTag['length'] +
+                            $fullTagCommentWhitespace['length'] +
+                            $fullComment['length'];
+
+                        // $fullLine = 
+                        //     $preTagWhitespace['content'] .
+                        //     $fullTag['content'] .
+                        //     $fullTagCommentWhitespace['content'] .
+                        //     $fullComment['content'];
+
+                        $commentLength = strlen( $comment );
+
+                        // echo 'lineLength '.$lineLength."\n\n";
+                        // echo 'fullLine '.$fullLine."\n\n";
+                        // echo 'commentLength '.$commentLength."\n\n";
+
+                        // $fullCommentPreSpaceLength = $tokens[($tag-1)]['content'];
+                        // echo '$fullCommentPreSpaceLength'.$fullCommentPreSpaceLength."END\n\n";
+                        // $fullCommentTagLength = $tokens[($tag)]['content'];
+                        // echo '$fullCommentTagLength'.$fullCommentTagLength."END\n\n";
+                        // $fullCommentSpaceLength = $tokens[($tag + 1)]['content'];
+                        // echo '$fullCommentSpaceLength'.$fullCommentSpaceLength."END\n\n";
+                        // $fullCommentLineLength = $tokens[($tag + 2)]['content'];
+                        // echo '$fullCommentLineLength'.$fullCommentLineLength."END\n\n";
+                        // $tagDescriptionIndent = strlen( $fullCommentPreSpaceLength ) + strlen( $fullCommentTagLength ) + strlen( $fullCommentSpaceLength ) + strlen( $fullCommentLineLength ) - strlen( $comment ) - $varLen;
+                        
+                        $tagDescriptionIndent = $lineLength - $commentLength;
+
+
                         $commentLines[] = [
                             'comment' => $comment,
                             'token'   => ($tag + 2),
-                            'indent'  => $varSpace,
+                            'indent'  => $tagDescriptionIndent,
                         ];
 
                         // Any strings until the next tag belong to this comment.
@@ -189,44 +247,44 @@ class CommentTagsCorrectlyGrouped implements Sniff
         }
 
         // Track the previous and next tags to check the order is correct. 
-        $previousTags = [];
-        $nextTags = $params;
+        $tagGroups = array();
+        $tagGroup = array();
+        foreach ( $params as $tag ) {
 
-        while (count($nextTags) > 0) {
-            // Remove the current tag.
-            $currentTag = array_shift($nextTags);
-            $currentTagType = $currentTag['tag_type'];
-            $currentTagBlankLines = $currentTag['commentBlankLines'];
-            
-            // Get the next tag to compare with the current.
-            if(empty($nextTags)) {
-                break;
+            // Only add tags that have descriptions to the array.
+            if( $tag['comment'] ) {
+                $tagGroup[] = $tag;
             }
-            $nextTag = $nextTags[0];
-            $nextTagType = $nextTag['tag_type'];
+            
+            // Once we hit a blank line, store this group and reset the tagGroup
+            // array for the next group.
+            if( $tag['commentBlankLines'] > 0 ) {
+                $tagGroups[] = $tagGroup;
+                $tagGroup = array();
+            }
+        }
+        $tagGroups[] = $tagGroup;
 
-            $currentTagGroup = array();
-            foreach ($docCommentTagsGroups as $commentTagGroup) {
-                if(in_array($currentTagType, $commentTagGroup)) {
-                    $currentTagGroup = $commentTagGroup;
+        // Make sure all of the descriptions in every tag group are alligned.
+        foreach ( $tagGroups as $tagGroup ) {
+            $maxFirstLineIndent = array_reduce($tagGroup, function ($previous, $current) {
+                // echo 'previous'.$previous."\n\n";
+                // echo 'current'.$current['commentLines'][0]['indent']."\n\n";
+
+                if( $current['commentLines'][0]['indent'] > $previous ) {
+                    return $current['commentLines'][0]['indent'];
+                }
+                return $previous;
+            }, 0);
+
+            foreach ( $tagGroup as $singleTagComment ) {
+                foreach ( $singleTagComment['commentLines'] as $commentLine) {
+                    if( $commentLine['indent'] !== $maxFirstLineIndent ) {
+                        $error = "Tag description not aligned with surrounding tags; expected $maxFirstLineIndent spaces but found {$commentLine['indent']}";
+                        $phpcsFile->addError($error, $commentLine['token'], 'TagDescriptionAlignment');
+                    }
                 }
             }
-
-            // Check if the next tag is allowed in this group and is not separated by a blank line.
-            if( ! in_array($nextTagType, $currentTagGroup ) && $currentTagBlankLines === 0) {
-                $error = "Missing blank line between $currentTagType tag and $nextTagType tag";
-                $phpcsFile->addError($error, $currentTag['tag_token'], 'TagGrouping');
-            }
-
-            // Check if the next tag should be grouped with the current one but is spearated by a blank line.
-            if( in_array($nextTagType, $currentTagGroup ) && $currentTagBlankLines > 0) {
-                $error = "Blank line not allowed between $currentTagType tag and $nextTagType tag";
-                $phpcsFile->addError($error, $currentTag['tag_token'], 'TagGrouping');
-            }
-
-            // Add the tag we have checked into the $previousTags array.
-            $previousTags[] = $currentTag;
         }
-
     }
 }

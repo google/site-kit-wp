@@ -44,8 +44,6 @@ final class PageSpeed_Insights {
 	 * @since 1.0.0
 	 * @since 1.2.0 now requires Google_Site_Kit_Client instance
 	 * @since ljsdflkajdfkl
-	 *
-	 * @return void
 	 */
 	protected $test_const = 123;
 
@@ -65,9 +63,9 @@ final class PageSpeed_Insights {
 	 * @param Google_Site_Kit_Client $client Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *                                            instance of Google_Service.
 	 * @param Google_Site_Kit_Client $spoon Comment.
-	 * @param string $test Ljsdflkajdfkl.
-	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
-	 *               instance of Google_Service.
+	 * @param string $test   Ljsdflkajdfkl.
+	 * @return array                 Google services as $identifier => $service_instance pairs. Every $service_instance must be an
+	 *                                    instance of Google_Service.
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client, $spoon ) {
 
