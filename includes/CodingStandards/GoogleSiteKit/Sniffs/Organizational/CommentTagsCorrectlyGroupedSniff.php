@@ -41,7 +41,7 @@ class CommentTagsCorrectlyGrouped implements Sniff
         $commentEnd   = $phpcsFile->findNext(T_DOC_COMMENT_CLOSE_TAG, ($stackPtr + 1));
         $commentStart = $tokens[$commentEnd]['comment_opener'];
 
-        // List of @ comment types to check. They should be in order set by this array.
+        // List of @ comment types to check.
         $docCommentTags = array(
             '@since',
             '@deprecated',
@@ -50,7 +50,25 @@ class CommentTagsCorrectlyGrouped implements Sniff
             '@global',
             '@var',
             '@param',
-            '@return',
+            '@return'
+        );
+
+        // List how the @ tags should be grouped.
+        $docCommentTagsGroups = array(
+            [
+                '@since',
+                '@deprecated',
+                '@access',
+                '@static'
+            ],
+            [
+                '@global'
+            ],
+            [
+                '@var',
+                '@param',
+                '@return'
+            ],
         );
         
         // Check for full stop on doc block tags.
@@ -137,6 +155,11 @@ class CommentTagsCorrectlyGrouped implements Sniff
 
         // If there are param/return and other tags, make sure they are separated by a space.
         // TODO: TODO:
+
+
+        // For methods and functions, tags should be grouped: since/deprecated/access/static should be grouped together,
+        // separated by a blank line from param/return which should be grouped together. If there is global, it should
+        // be separated from both others by a blank line (essentially be its own group).
 
     }
 }

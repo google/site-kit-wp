@@ -76,18 +76,27 @@ class DescriptionEndsWithFullStopSniff implements Sniff
             }
         }
 
+
         $long = $phpcsFile->findNext($empty, ($shortEnd + 1), ($commentEnd - 1), true);
+        // Account for the fact that a description might cover multiple lines.
+        $longContent = $tokens[$long]['content'];
+        $longEnd = $long;
+        for ($i = $long + 1; $i < $commentEnd; $i++) {
+            if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
+                if ($tokens[$i]['line'] === $tokens[$longEnd]['line'] + 1) {
+                    $longContent .= $tokens[$i]['content'];
+                    $longEnd = $i;
+                }
+                else {
+                    break;
+                }
+            }
+        }
 
         if ($tokens[$long]['code'] === T_DOC_COMMENT_STRING) {
 
-            // Account for the fact that a description might cover multiple lines.
-            $longContent = $tokens[$long]['content'];
-            $longEnd     = $long;
-
-            // Remove any trailing white spaces which are detected by other sniffs.
+            // Remove any trailing white spaces which will be detected by other sniffs.
             $longContent = trim($longContent);
-
-            // TODO: TODO: take into account multiple line long comments.
 
             if (preg_match('/[a-zA-Z]$/', $longContent) === 1) {
                 $error = 'Doc comment long description must end with a full stop';
@@ -97,6 +106,7 @@ class DescriptionEndsWithFullStopSniff implements Sniff
                 }
             }
         }
+
 
         // Check for full stop on doc block tags.
         $params  = [];
@@ -185,9 +195,8 @@ class DescriptionEndsWithFullStopSniff implements Sniff
                 continue;
             }
 
-            // TODO: TODO: this breaks for full some @return tags as well as multi line comments. 
-
-            $lastChar = substr($param['comment'], -1);
+            // Check the last character of the last line of the comment.
+            $lastChar = substr(end($param['commentLines'])['comment'], -1);
             if ($lastChar !== '.') {
                 $error = "Tag {$param['tag_type']} description must end with a full stop";
 

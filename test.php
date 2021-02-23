@@ -72,6 +72,11 @@ final class PageSpeed_Insights {
 	 *               instance of Google_Service.
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client, $spoon ) {
+
+		$test = 'spoon';
+		$testksdfj = 'spoon';
+		$testlkjxdlkdj = 'spoon';
+
 		return array(
 			'pagespeedonline' => new Google_Service_Pagespeedonline( $client ),
 		);
@@ -81,7 +86,7 @@ final class PageSpeed_Insights {
 	 * Sets up the Google services the module should use.
 	 *
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
-	 * for the first time.
+	 * for the first time
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 now requires Google_Site_Kit_Client instance
