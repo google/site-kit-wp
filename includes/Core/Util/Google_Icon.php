@@ -24,9 +24,26 @@ final class Google_Icon {
 	 *
 	 * @since n.e.x.t
 	 *
+	 * @param string $source SVG icon source.
+	 *
 	 * @return string Base64 representation of SVG
 	 */
-	public static function to_base64() {
-		return base64_encode( self::XML );
+	public static function to_base64( $source = false ) {
+		$svg = $source ? $source : self::XML;
+		return base64_encode( $svg );
+	}
+
+	/**
+	 * Returns SVG XML with fill color replaced.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $color Any valid color for css, either word or hex code.
+	 *
+	 * @return string SVG XML with the fill color replaced
+	 */
+	public static function replace_fill( $color ) {
+		return str_replace( 'white', esc_attr( $color ), self::XML );
 	}
 }
+

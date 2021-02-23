@@ -133,6 +133,50 @@ final class Screen {
 						'data:image/svg+xml;base64,' . Google_Icon::to_base64()
 					);
 					$menu_slug = $this->slug;
+
+					/**
+					 * An SVG icon file needs to be colored (filled) based on the theme color setting.
+					 *
+					 * This exists in js as wp.svgPainter() per:
+					 * https://github.com/WordPress/WordPress/blob/master/wp-admin/js/svg-painter.js
+					 *
+					 * The downside of the js approach is that we get a brief flash of an unstyled icon
+					 * until the JS runs.
+					 *
+					 * A user can pick a custom Admin Color Scheme, which is only available in admin_init
+					 * or later actions. add_menu_page runs in admin_menu actino, which precedes admin_init
+					 * per https://codex.wordpress.org/Plugin_API/Action_Reference
+					 *
+					 * WordPress provides some color schemes out of the box, but they can also be added via
+					 * wp_admin_css_color()
+					 *
+					 * Our workaround is to set the icon and subsequently replace it in admin_init, which is
+					 * what we do in the following action.
+					 */
+					add_action(
+						'admin_init',
+						function() {
+
+							global $menu, $_wp_admin_css_colors;
+
+							$color_scheme = get_user_option( 'admin_color' ) ?: 'fresh';
+
+							if ( empty( $_wp_admin_css_colors[ $color_scheme ]->icon_colors['base'] ) ) {
+								return;
+							}
+
+							$color = $_wp_admin_css_colors[ $color_scheme ]->icon_colors['base'];
+
+							foreach ( $menu as &$item ) {
+								if ( 'googlesitekit-dashboard' === $item[2] ) {
+									$item[6] = 'data:image/svg+xml;base64,' . Google_Icon::to_base64( Google_Icon::replace_fill( $color ) );
+									break;
+								}
+							}
+
+						},
+						100
+					);
 				}
 
 				// Set parent slug to actual slug of main Site Kit menu.
