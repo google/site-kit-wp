@@ -30,15 +30,16 @@ import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import Layout from '../../../../components/layout/Layout';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
+import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
 const { useSelect } = Data;
 
 const AnalyticsAdSenseDashboardWidgetLayout = ( { children } ) => {
 	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
-	const accountSiteURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL(
+	const analyticsReportURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL(
 		'content-publisher-overview',
-		{ '_u.date00': startDate, '_u.date01': endDate },
+		generateDateRangeArgs( { startDate, endDate } ),
 	) );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
@@ -52,7 +53,7 @@ const AnalyticsAdSenseDashboardWidgetLayout = ( { children } ) => {
 				currentDayCount,
 			) }
 			headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-			headerCTALink={ accountSiteURL }>
+			headerCTALink={ analyticsReportURL }>
 			{ children }
 		</Layout>
 	);
