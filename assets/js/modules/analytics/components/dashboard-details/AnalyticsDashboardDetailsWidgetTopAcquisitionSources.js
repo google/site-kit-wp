@@ -20,71 +20,33 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
 import Layout from '../../../../components/layout/Layout';
-import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
-import LegacyDashboardAcquisitionPieChart from '../dashboard/LegacyDashboardAcquisitionPieChart';
-import { STORE_NAME } from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { getURLPath } from '../../../../util/getURLPath';
-
-const { useSelect } = Data;
+import { Cell } from '../../../../material-components';
+import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import DashboardAllTrafficWidget from '../dashboard/DashboardAllTrafficWidget';
 
 export default function AnalyticsDashboardDetailsWidgetTopAcquisitionSources() {
-	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', {
-		'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
-	} ) );
+	const widgetComponentProps = getWidgetComponentProps( 'legacy-all-traffic-widget' );
 
 	return (
 		<Fragment>
-			<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-				">
+			<Cell size={ 12 }>
 				<DashboardModuleHeader
 					title={ __( 'All Traffic', 'google-site-kit' ) }
 					description={ __( 'How people found your page.', 'google-site-kit' ) }
 				/>
-			</div>
-			<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-				">
-				<Layout
-					className="googlesitekit-analytics-acquisition-sources"
-					footer
-					footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					footerCTALink={ serviceURL }
-				>
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-4-desktop
-									mdc-layout-grid__cell--span-8-tablet
-									mdc-layout-grid__cell--span-4-phone
-								">
-								<LegacyDashboardAcquisitionPieChart />
-							</div>
-							<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-8-desktop
-									mdc-layout-grid__cell--span-8-tablet
-									mdc-layout-grid__cell--span-4-phone
-								">
-								<LegacyAnalyticsDashboardWidgetTopAcquisitionSources />
-							</div>
-						</div>
-					</div>
+			</Cell>
+			<Cell size={ 12 }>
+				<Layout>
+					<DashboardAllTrafficWidget { ...widgetComponentProps } />
 				</Layout>
-			</div>
+			</Cell>
 		</Fragment>
 	);
 }
