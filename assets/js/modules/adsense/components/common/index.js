@@ -22,3 +22,4 @@ export { default as ErrorNotices } from './ErrorNotices';
 export { default as SiteSteps } from './SiteSteps';
 export { default as UserProfile } from './UserProfile';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';
+export { default as WebStoriesAdUnitSelect } from './WebStoriesAdUnitSelect';

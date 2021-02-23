@@ -36,6 +36,7 @@ import {
 	provideUserAuthentication,
 	provideModules,
 	provideModuleRegistrations,
+	provideSiteInfo,
 } from '../tests/js/utils';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
@@ -58,9 +59,18 @@ const completeSettings = {
 	siteStatus: SITE_STATUS_ADDED,
 	accountSetupComplete: true,
 	siteSetupComplete: true,
+	webStoriesAdUnit: '0123456789',
+	webStoriesActive: true,
 };
 
 const Settings = createLegacySettingsWrapper( 'adsense' );
+
+const setUpAdUnits = ( registry ) => {
+	const accountID = fixtures.accounts[ 0 ].id;
+	const clientID = fixtures.clients[ 0 ].id;
+	registry.dispatch( STORE_NAME ).receiveGetAdUnits( fixtures.adunits, { accountID, clientID } );
+	registry.dispatch( STORE_NAME ).finishResolution( 'getAdUnits', [ accountID, clientID ] );
+};
 
 storiesOf( 'AdSense Module/Settings', module )
 	.addDecorator( ( storyFn ) => {
@@ -68,6 +78,7 @@ storiesOf( 'AdSense Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
+		provideSiteInfo( registry, { webStoriesActive: true } );
 		provideUserAuthentication( registry );
 		provideModules( registry, [ {
 			slug: 'adsense',
@@ -104,18 +115,21 @@ storiesOf( 'AdSense Module/Settings', module )
 	} )
 	.add( 'Edit, open', ( registry ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
+		setUpAdUnits( registry );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
 	.add( 'Edit, open with existing tag (same account)', ( registry ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( completeSettings.clientID );
+		setUpAdUnits( registry );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
 	.add( 'Edit, open with existing tag (different account)', ( registry ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'ca-pub-12345678' );
+		setUpAdUnits( registry );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
