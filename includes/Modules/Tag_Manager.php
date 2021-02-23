@@ -93,7 +93,7 @@ final class Tag_Manager extends Module
 
 		// Tag Manager tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
-		// Filter the Analytics useSnippet value.
+		// Filter the Analytics `canUseSnippet` value.
 		add_action( 'googlesitekit_analytics_can_use_snippet', $this->get_method_proxy( 'can_analytics_use_snippet' ) );
 	}
 
