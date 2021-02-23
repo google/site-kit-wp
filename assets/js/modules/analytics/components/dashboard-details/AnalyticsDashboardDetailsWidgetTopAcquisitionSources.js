@@ -38,7 +38,7 @@ export default function AnalyticsDashboardDetailsWidgetTopAcquisitionSources() {
 		<Fragment>
 			<Cell size={ 12 }>
 				<DashboardModuleHeader
-					title={ __( 'All Traffic', 'google-site-kit' ) }
+					title={ __( 'Your Traffic at a Glance', 'google-site-kit' ) }
 					description={ __( 'How people found your page.', 'google-site-kit' ) }
 				/>
 			</Cell>
