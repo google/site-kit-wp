@@ -467,35 +467,6 @@ final class AdSense extends Module
 					gmdate( 'Y-m-d', strtotime( 'today' ) ),
 					gmdate( 'Y-m-d', strtotime( 'today' ) ),
 				);
-			case 'yesterday':
-				return array(
-					gmdate( 'Y-m-d', strtotime( 'yesterday' ) ),
-					gmdate( 'Y-m-d', strtotime( 'yesterday' ) ),
-				);
-			case 'same-day-last-week':
-				return array(
-					gmdate( 'Y-m-d', strtotime( '7 days ago' ) ),
-					gmdate( 'Y-m-d', strtotime( '7 days ago' ) ),
-				);
-			case 'this-month':
-				return array(
-					gmdate( 'Y-m-01' ),
-					gmdate( 'Y-m-d', strtotime( 'today' ) ),
-				);
-			case 'this-month-last-year':
-				$last_year          = intval( gmdate( 'Y' ) ) - 1;
-				$last_date_of_month = gmdate( 't', strtotime( $last_year . '-' . gmdate( 'm' ) . '-01' ) );
-
-				return array(
-					gmdate( $last_year . '-m-01' ),
-					gmdate( $last_year . '-m-' . $last_date_of_month ),
-				);
-			// Intentional fallthrough.
-			case 'prev-7-days':
-			case 'prev-14-days':
-			case 'prev-28-days':
-			case 'prev-90-days':
-				return $this->parse_date_range( $date_range, 1, 1, true );
 			// Intentional fallthrough.
 			case 'last-7-days':
 			case 'last-14-days':
