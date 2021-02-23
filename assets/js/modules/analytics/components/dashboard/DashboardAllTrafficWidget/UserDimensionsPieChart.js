@@ -76,10 +76,6 @@ export default function UserDimensionsPieChart( {
 		const newDimensionValue = chartWrapperRef.current.getDataTable().getValue( index, 0 );
 		const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
 
-		if ( isOthers ) {
-			return;
-		}
-
 		const { row } = chartWrapperRef.current.getChart().getSelection()?.[ 0 ] || {};
 		if ( row === index || isOthers ) {
 			setValues( {
