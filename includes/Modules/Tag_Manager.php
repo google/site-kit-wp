@@ -641,7 +641,7 @@ final class Tag_Manager extends Module
 	}
 
 	/**
-	 * Can the Analytics module insert it's own snippet.
+	 * Filters whether or not the Analytics module's snippet should be controlled by its `useSnippet` setting.
 	 *
 	 * @since n.e.x.t
 	 *
