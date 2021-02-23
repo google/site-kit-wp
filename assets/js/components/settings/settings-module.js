@@ -78,6 +78,8 @@ class SettingsModule extends Component {
 		this.handleCloseModal = this.handleCloseModal.bind( this );
 		this.handleConfirmRemoveModule = this.handleConfirmRemoveModule.bind( this );
 		this.handleConfirmOrCancel = this.handleConfirmOrCancel.bind( this );
+		this.handleCancel = this.handleCancel.bind( this );
+		this.handleEdit = this.handleEdit.bind( this );
 	}
 
 	componentDidMount() {
@@ -160,10 +162,32 @@ class SettingsModule extends Component {
 			onConfirm,
 		} = this.props;
 
-		if ( hasSettings && setupComplete ) {
+		if ( hasSettings && setupComplete && typeof onConfirm === 'function' ) {
 			onConfirm( slug );
-		} else {
-			onCancel();
+		} else if ( typeof onCancel === 'function' ) {
+			onCancel( slug );
+		}
+	}
+
+	handleCancel() {
+		const {
+			slug,
+			onCancel,
+		} = this.props;
+
+		if ( typeof onCancel === 'function' ) {
+			onCancel( slug );
+		}
+	}
+
+	handleEdit() {
+		const {
+			slug,
+			onEdit,
+		} = this.props;
+
+		if ( typeof onEdit === 'function' ) {
+			onEdit( slug );
 		}
 	}
 
@@ -202,8 +226,6 @@ class SettingsModule extends Component {
 			provides,
 			isSaving,
 			error,
-			onEdit,
-			onCancel,
 		} = this.props;
 		const autoActivate = 'search-console' === slug;
 		const moduleKey = `${ slug }-module`;
@@ -354,7 +376,7 @@ class SettingsModule extends Component {
 											{ hasSettings &&
 											<Link
 												className="googlesitekit-settings-module__footer-cancel"
-												onClick={ onCancel }
+												onClick={ this.handleCancel }
 												inherit
 											>
 												{ __( 'Cancel', 'google-site-kit' ) }
@@ -364,9 +386,7 @@ class SettingsModule extends Component {
 									) : ( ( hasSettings || ! autoActivate ) &&
 									<Link
 										className="googlesitekit-settings-module__edit-button"
-										onClick={ () => {
-											onEdit( slug );
-										} }
+										onClick={ this.handleEdit }
 										inherit
 									>
 										{ __( 'Edit', 'google-site-kit' ) }
