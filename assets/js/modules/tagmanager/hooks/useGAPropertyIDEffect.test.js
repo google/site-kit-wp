@@ -37,7 +37,7 @@ describe( 'useGAPropertyIDEffect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 	} );
 
-	it( 'sets the gaPropertyID when property ID exists and Analytics is active', async () => {
+	it( 'sets the gaPropertyID with the current detected singular property ID in selected containers', async () => {
 		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
 
 		const TEST_GA_PROPERTY_ID = 'UA-123456789-1';

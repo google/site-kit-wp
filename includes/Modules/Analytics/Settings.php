@@ -132,7 +132,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				 * is disconnected, ensuring the Analytics snippet is always included.
 				 *
 				 * @since n.e.x.t
-				 * @param bool $can_use_snippet Null by default, will fallback to the option value if not set.
+				 * @param bool $can_use_snippet Whether or not `useSnippet` can control snippet output. Default: `true`.
 				 */
 				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', true );
 				if ( is_bool( $can_use_snippet ) ) {
