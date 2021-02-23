@@ -83,8 +83,6 @@ final class Admin_Bar {
 			99
 		);
 
-		# Debug Perl style comment for new test phpcs
-
 		// TODO: This can be removed at some point, see https://github.com/ampproject/amp-wp/pull/4001.
 		add_filter( 'amp_dev_mode_element_xpaths', array( $this, 'add_amp_dev_mode' ) );
 

@@ -2,6 +2,8 @@
 /**
  * Descriptions of tags in docblock should be aligned.
  *
+ * @since n.e.x.t
+ *
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @copyright 2021 Google LLC
@@ -14,277 +16,230 @@ namespace PHP_CodeSniffer\Standards\GoogleSiteKit\Sniffs\Semantic;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 
-class CommentTagsDescriptionsAligned implements Sniff
-{
-    /**
-     * Returns the token types that this sniff is interested in.
-     *
-     * @return array(int)
-     */
-    public function register()
-    {
-        return array(T_DOC_COMMENT_OPEN_TAG); 
-    }
+class CommentTagsDescriptionsAligned implements Sniff {
 
-    /**
-     * Processes this sniff, when one of its tokens is encountered.
-     *
-     * @param \PHP_CodeSniffer\Files\File $phpcsFile The current file being checked.
-     * @param int                         $stackPtr  The position of the current token in the
-     *                                               stack passed in $tokens.
-     *
-     * @return void
-     */
-    public function process(File $phpcsFile, $stackPtr)
-    {
-        $tokens       = $phpcsFile->getTokens();
-        $commentEnd   = $phpcsFile->findNext(T_DOC_COMMENT_CLOSE_TAG, ($stackPtr + 1));
-        $commentStart = $tokens[$commentEnd]['comment_opener'];
+	/**
+	 * Returns the token types that this sniff is interested in.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array(int)
+	 */
+	public function register() {
+		return array( T_DOC_COMMENT_OPEN_TAG );
+	}
 
-        // List of @ comment types to check.
-        $docCommentTags = array(
-            '@since',
-            '@deprecated',
-            '@access',
-            '@static',
-            '@global',
-            '@var',
-            '@param',
-        );
+	/**
+	 * Processes this sniff, when one of its tokens is encountered.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param \PHP_CodeSniffer\Files\File $phpcs_file The current file being checked.
+	 * @param int                         $stack_ptr  The position of the current token in the
+	 *                                               stack passed in $tokens.
+	 * @return void
+	 */
+	public function process( File $phpcs_file, $stack_ptr ) {
+		$tokens       = $phpcs_file->getTokens();
+		$comment_end   = $phpcs_file->findNext( T_DOC_COMMENT_CLOSE_TAG, ( $stack_ptr + 1 ) );
+		$commentStart = $tokens[ $comment_end ]['comment_opener'];
 
-        // // List how the @ tags should be grouped.
-        // $docCommentTagsGroups = array(
-        //     [
-        //         '@since',
-        //         '@deprecated',
-        //         '@access',
-        //         '@static'
-        //     ],
-        //     [
-        //         '@global'
-        //     ],
-        //     [
-        //         '@var',
-        //         '@param',
-        //         '@return'
-        //     ],
-        // );
-        
-        // Check for full stop on doc block tags.
-        $params  = [];
-        $maxType = 0;
-        $maxVar  = 0;
-        foreach ($tokens[$commentStart]['comment_tags'] as $pos => $tag) {
+		// List of @ comment types to check.
+		$doc_comment_tags = array(
+			'@since',
+			'@deprecated',
+			'@access',
+			'@static',
+			'@global',
+			'@var',
+			'@param',
+		);
 
-            // Tokens used to calculate total indent later.
-            $preTagWhitespace = $tokens[( $tag - 1 )];
-            $fullTag = $tokens[ $tag ];
-            $fullTagCommentWhitespace = $tokens[( $tag + 1 )];
-            $fullComment = $tokens[( $tag + 2 )];
+		// Check for full stop on doc block tags.
+		$params  = array();
+		$maxType = 0;
+		$maxVar  = 0;
+		foreach ( $tokens[ $commentStart ]['comment_tags'] as $pos => $tag ) {
 
-            $commentTagType = $tokens[$tag]['content'];
-            $tagToken = $tag;
+			// Tokens used to calculate total indent later.
+			$preTagWhitespace         = $tokens[ ( $tag - 1 ) ];
+			$fullTag                  = $tokens[ $tag ];
+			$full_tag_commentWhitespace = $tokens[ ( $tag + 1 ) ];
+			$fullComment              = $tokens[ ( $tag + 2 ) ];
 
-            // Only check the tag types defined in $docCommentTags.
-            if (! in_array( $commentTagType, $docCommentTags ) ) {
-                continue;
-            }
+			$comment_tag_type = $tokens[ $tag ]['content'];
+			$tagToken       = $tag;
 
-            $type          = '';
-            $comment       = '';
-            $commentLines  = [];
-            if ($fullComment['code'] === T_DOC_COMMENT_STRING) {
-                $matches = [];
-                preg_match('/([^$&.]+)(?:((?:\.\.\.)?(?:\$|&)[^\s]+)(?:(\s+)(.*))?)?/', $fullComment['content'], $matches);
+			// Only check the tag types defined in $doc_comment_tags.
+			if ( ! in_array( $comment_tag_type, $doc_comment_tags ) ) {
+				continue;
+			}
 
-                // var_dump($matches);
+			$type         = '';
+			$comment      = '';
+			$commentLines = array();
+			if ( $fullComment['code'] === T_DOC_COMMENT_STRING ) {
+				$matches = array();
+				preg_match( '/([^$&.]+)(?:((?:\.\.\.)?(?:\$|&)[^\s]+)(?:(\s+)(.*))?)?/', $fullComment['content'], $matches );
 
-                if (empty($matches) === false) {
-                    $typeLen   = strlen($matches[1]);
-                    $type      = trim($matches[1]);
-                    $typeLen   = strlen($type);
-                    if ($typeLen > $maxType) {
-                        $maxType = $typeLen;
-                    }
-                }
+				if ( empty( $matches ) === false ) {
+					$typeLen = strlen( $matches[1] );
+					$type    = trim( $matches[1] );
+					$typeLen = strlen( $type );
+					if ( $typeLen > $maxType ) {
+						$maxType = $typeLen;
+					}
+				}
 
-                if (isset($matches[2]) === true) {
+				if ( isset( $matches[2] ) === true ) {
 
-                    // echo $commentTagType."\n\n";
+					// Return is special as it doesn't need a var.
+					if ( $comment_tag_type === '@return' ) {
+						// Pass the description to the following comment check.
+						$matches[4] = $matches[2];
 
-                    // Return is special as it doesn't need a var.
-                    if( $commentTagType === '@return' )
-                    {
-                        // Pass the description to the following comment check.
-                        $matches[4] = $matches[2];
+						$varLen = 0;
+					} else {
+						$var    = $matches[2];
+						$varLen = strlen( $var );
+						if ( $varLen > $maxVar ) {
+							$maxVar = $varLen;
+						}
+					}
 
-                        $varLen = 0;
-                    } else {
-                        $var    = $matches[2];
-                        $varLen = strlen($var);
-                        if ($varLen > $maxVar) {
-                            $maxVar = $varLen;
-                        }
-                    }
+					if ( isset( $matches[4] ) === true ) {
 
-                    if (isset($matches[4]) === true) {
+						$comment = $matches[4];
 
-                        $comment        = $matches[4];
+						// Sum the length of each section of the comment to get the total indent of the description.
+						$lineLength =
+							$preTagWhitespace['length'] +
+							$fullTag['length'] +
+							$full_tag_commentWhitespace['length'] +
+							$fullComment['length'];
 
-                        // Sum the length of each section of the comment to get the total indent of the description.
+						$commentLength = strlen( $comment );
 
-                        // $preTagWhitespace = $tokens[($tag-1)];
-                        // $fullTag = $tokens[($tag)];
-                        // $fullTagCommentWhitespace = $tokens[($tag+1)];
-                        // $fullComment = $tokens[($tag + 2)];
+						$tag_descriptionIndent = $lineLength - $commentLength;
 
-                        $lineLength = 
-                            $preTagWhitespace['length'] +
-                            $fullTag['length'] +
-                            $fullTagCommentWhitespace['length'] +
-                            $fullComment['length'];
+						$commentLines[] = array(
+							'comment' => $comment,
+							'token'   => ( $tag + 2 ),
+							'indent'  => $tag_descriptionIndent,
+						);
 
-                        // $fullLine = 
-                        //     $preTagWhitespace['content'] .
-                        //     $fullTag['content'] .
-                        //     $fullTagCommentWhitespace['content'] .
-                        //     $fullComment['content'];
+						// Any strings until the next tag belong to this comment.
+						if ( isset( $tokens[ $commentStart ]['comment_tags'][ ( $pos + 1 ) ] ) === true ) {
+							$end = $tokens[ $commentStart ]['comment_tags'][ ( $pos + 1 ) ];
+						} else {
+							$end = $tokens[ $commentStart ]['comment_closer'];
+						}
 
-                        $commentLength = strlen( $comment );
+						for ( $i = ( $tag + 3 ); $i < $end; $i++ ) {
+							if ( $tokens[ $i ]['code'] === T_DOC_COMMENT_STRING ) {
+								$indent = 0;
+								if ( $tokens[ ( $i - 1 ) ]['code'] === T_DOC_COMMENT_WHITESPACE ) {
+									$indent = $tokens[ ( $i - 1 ) ]['length'];
+								}
 
-                        // echo 'lineLength '.$lineLength."\n\n";
-                        // echo 'fullLine '.$fullLine."\n\n";
-                        // echo 'commentLength '.$commentLength."\n\n";
+								$comment       .= ' ' . $tokens[ $i ]['content'];
+								$commentLines[] = array(
+									'comment' => $tokens[ $i ]['content'],
+									'token'   => $i,
+									'indent'  => $indent,
+								);
+							}
+						}
+					}
+				}
+			}
 
-                        // $fullCommentPreSpaceLength = $tokens[($tag-1)]['content'];
-                        // echo '$fullCommentPreSpaceLength'.$fullCommentPreSpaceLength."END\n\n";
-                        // $fullCommentTagLength = $tokens[($tag)]['content'];
-                        // echo '$fullCommentTagLength'.$fullCommentTagLength."END\n\n";
-                        // $fullCommentSpaceLength = $tokens[($tag + 1)]['content'];
-                        // echo '$fullCommentSpaceLength'.$fullCommentSpaceLength."END\n\n";
-                        // $fullCommentLineLength = $tokens[($tag + 2)]['content'];
-                        // echo '$fullCommentLineLength'.$fullCommentLineLength."END\n\n";
-                        // $tagDescriptionIndent = strlen( $fullCommentPreSpaceLength ) + strlen( $fullCommentTagLength ) + strlen( $fullCommentSpaceLength ) + strlen( $fullCommentLineLength ) - strlen( $comment ) - $varLen;
-                        
-                        $tagDescriptionIndent = $lineLength - $commentLength;
+			// Find the number of blank lines after this tag by looking for the number of stars before the next comment.
 
+			// Find the next element that is not a star or whitespace (the next comment location)
+			$nextCommentTag    = $phpcs_file->findNext( array( T_DOC_COMMENT_TAG ), $tagToken + 1, null );
+			$endOfCommentBlock = $phpcs_file->findNext( array( T_DOC_COMMENT_CLOSE_TAG ), $tagToken + 1, null );
 
-                        $commentLines[] = [
-                            'comment' => $comment,
-                            'token'   => ($tag + 2),
-                            'indent'  => $tagDescriptionIndent,
-                        ];
+			// Stop the search at the end of each comment block.
+			if ( $endOfCommentBlock < $nextCommentTag ) {
+				$nextCommentTag = $endOfCommentBlock;
+			}
 
-                        // Any strings until the next tag belong to this comment.
-                        if (isset($tokens[$commentStart]['comment_tags'][($pos + 1)]) === true) {
-                            $end = $tokens[$commentStart]['comment_tags'][($pos + 1)];
-                        } else {
-                            $end = $tokens[$commentStart]['comment_closer'];
-                        }
+			$currentPosition = $tagToken;
+			$stars           = 0;
+			$nextStar        = true;
+			while ( $nextStar ) {
+				$nextStar = $phpcs_file->findNext( array( T_DOC_COMMENT_STAR ), $currentPosition, $nextCommentTag );
 
-                        for ($i = ($tag + 3); $i < $end; $i++) {
-                            if ($tokens[$i]['code'] === T_DOC_COMMENT_STRING) {
-                                $indent = 0;
-                                if ($tokens[($i - 1)]['code'] === T_DOC_COMMENT_WHITESPACE) {
-                                    $indent = $tokens[($i - 1)]['length'];
-                                }
+				if ( $nextStar ) {
+					$stars           = $stars + 1;
+					$currentPosition = $nextStar + 1;
+				}
+			}
 
-                                $comment       .= ' '.$tokens[$i]['content'];
-                                $commentLines[] = [
-                                    'comment' => $tokens[$i]['content'],
-                                    'token'   => $i,
-                                    'indent'  => $indent,
-                                ];
-                            }
-                        }
-                    }
-                }
-            }
+			// Subtract the total lines of the current tag comment to account for multi line comments.
+			$blankLineOffset = 1;
+			if ( count( $commentLines ) > 1 ) {
+				$blankLineOffset = count( $commentLines );
+			}
+			// echo "commentTagType $comment_tag_type blankLineOffset $blankLineOffset \n\n";
+			$commentBlankLines = $stars;
+			if ( $commentBlankLines > 0 ) {
+				$commentBlankLines = $stars - $blankLineOffset;
+			}
 
-            // Find the number of blank lines after this tag by looking for the number of stars before the next comment.
+			$params[] = array(
+				'tag'               => $tag,
+				'type'              => $type,
+				'comment'           => $comment,
+				'commentLines'      => $commentLines,
+				'commentBlankLines' => $commentBlankLines,
+			);
+		}
 
-            // Find the next element that is not a star or whitespace (the next comment location)
-            $nextCommentTag = $phpcsFile->findNext([T_DOC_COMMENT_TAG], $tagToken + 1, null);
-            $endOfCommentBlock = $phpcsFile->findNext([T_DOC_COMMENT_CLOSE_TAG], $tagToken + 1, null);
+		// Track the previous and next tags to check the order is correct.
+		$tagGroups = array();
+		$tagGroup  = array();
+		foreach ( $params as $tag ) {
 
-            // Stop the search at the end of each comment block.
-            if( $endOfCommentBlock < $nextCommentTag ) {
-                $nextCommentTag = $endOfCommentBlock;
-            }
+			// Only add tags that have descriptions to the array.
+			if ( $tag['comment'] ) {
+				$tagGroup[] = $tag;
+			}
 
-            $currentPosition = $tagToken;
-            $stars = 0;
-            $nextStar = true;
-            while ( $nextStar ) {
-                $nextStar = $phpcsFile->findNext([T_DOC_COMMENT_STAR], $currentPosition, $nextCommentTag);
+			// Once we hit a blank line, store this group and reset the tagGroup
+			// array for the next group.
+			if ( $tag['commentBlankLines'] > 0 ) {
+				$tagGroups[] = $tagGroup;
+				$tagGroup    = array();
+			}
+		}
+		$tagGroups[] = $tagGroup;
 
-                if( $nextStar ) {
-                    $stars = $stars + 1;
-                    $currentPosition = $nextStar + 1;
-                }
-            }
+		// Make sure all of the descriptions in every tag group are alligned.
+		foreach ( $tagGroups as $tagGroup ) {
+			$maxFirstLineIndent = array_reduce(
+				$tagGroup,
+				function ( $previous, $current ) {
+					// echo 'previous'.$previous."\n\n";
+					// echo 'current'.$current['commentLines'][0]['indent']."\n\n";
 
-            // Subtract the total lines of the current tag comment to account for multi line comments.
-            $blankLineOffset = 1;
-            if( count( $commentLines ) > 1 ) {
-                $blankLineOffset = count($commentLines);
-            }
-            // echo "commentTagType $commentTagType blankLineOffset $blankLineOffset \n\n";
-            $commentBlankLines = $stars;
-            if($commentBlankLines > 0 ){
-                $commentBlankLines = $stars - $blankLineOffset;
-            }
+					if ( $current['commentLines'][0]['indent'] > $previous ) {
+						return $current['commentLines'][0]['indent'];
+					}
+					return $previous;
+				},
+				0
+			);
 
-            $params[] = [
-                'tag'               => $tag,
-                'tag_type'          => $commentTagType,
-                'tag_token'         => $tagToken, // TODO: unify camel case
-                'type'              => $type,
-                'comment'           => $comment,
-                'commentLines'      => $commentLines,
-                'commentBlankLines' => $commentBlankLines,
-            ];
-        }
-
-        // Track the previous and next tags to check the order is correct. 
-        $tagGroups = array();
-        $tagGroup = array();
-        foreach ( $params as $tag ) {
-
-            // Only add tags that have descriptions to the array.
-            if( $tag['comment'] ) {
-                $tagGroup[] = $tag;
-            }
-            
-            // Once we hit a blank line, store this group and reset the tagGroup
-            // array for the next group.
-            if( $tag['commentBlankLines'] > 0 ) {
-                $tagGroups[] = $tagGroup;
-                $tagGroup = array();
-            }
-        }
-        $tagGroups[] = $tagGroup;
-
-        // Make sure all of the descriptions in every tag group are alligned.
-        foreach ( $tagGroups as $tagGroup ) {
-            $maxFirstLineIndent = array_reduce($tagGroup, function ($previous, $current) {
-                // echo 'previous'.$previous."\n\n";
-                // echo 'current'.$current['commentLines'][0]['indent']."\n\n";
-
-                if( $current['commentLines'][0]['indent'] > $previous ) {
-                    return $current['commentLines'][0]['indent'];
-                }
-                return $previous;
-            }, 0);
-
-            foreach ( $tagGroup as $singleTagComment ) {
-                foreach ( $singleTagComment['commentLines'] as $commentLine) {
-                    if( $commentLine['indent'] !== $maxFirstLineIndent ) {
-                        $error = "Tag description not aligned with surrounding tags; expected $maxFirstLineIndent spaces but found {$commentLine['indent']}";
-                        $phpcsFile->addError($error, $commentLine['token'], 'TagDescriptionAlignment');
-                    }
-                }
-            }
-        }
-    }
+			foreach ( $tagGroup as $singleTagComment ) {
+				foreach ( $singleTagComment['commentLines'] as $commentLine ) {
+					if ( $commentLine['indent'] !== $maxFirstLineIndent ) {
+						$error = "Tag description not aligned with surrounding tags; expected $maxFirstLineIndent spaces but found {$commentLine['indent']}";
+						$phpcs_file->addError( $error, $commentLine['token'], 'TagDescriptionAlignment' );
+					}
+				}
+			}
+		}
+	}
 }

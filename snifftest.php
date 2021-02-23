@@ -54,18 +54,20 @@ final class PageSpeed_Insights {
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 now requires Google_Site_Kit_Client instance
+	 * @global ljsdflkajdfkl
 	 * @deprecated ljsdflkajdfkl
 	 * @static
 	 *
-	 * @global ljsdflkajdfkl
 	 *
-	 * @var int $test_const Google client instance.
+	 * @var int $test_const                  Google client instance.
 	 * @param Google_Site_Kit_Client $client Google services as $identifier => $service_instance pairs. Every $service_instance must be an
-	 *                                            instance of Google_Service.
-	 * @param Google_Site_Kit_Client $spoon Comment.
-	 * @param string $test   Ljsdflkajdfkl.
-	 * @return array                 Google services as $identifier => $service_instance pairs. Every $service_instance must be an
-	 *                                    instance of Google_Service.
+	 *                                       instance of Google_Service.
+	 * @param Google_Site_Kit_Client $spoon  Comment.
+	 * @param string $test                   Ljsdflkajdfkl.
+	 * 
+	 * 
+	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
+	 *               instance of Google_Service.
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client, $spoon ) {
 
@@ -88,9 +90,8 @@ final class PageSpeed_Insights {
 	 * @since 1.2.0 now requires Google_Site_Kit_Client instance
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
-	 * @param Google_Site_Kit_Client $spoon Comment.
-	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
-	 *               instance of Google_Service.
+	 * @param Google_Site_Kit_Client $spoon omment.
+	 * @return void
 	 */
 	protected function setup_services_2( Google_Site_Kit_Client $client, $spoon ) {
 		return array(
