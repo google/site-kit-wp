@@ -155,6 +155,8 @@ export default function GoogleChartV2( props ) {
 					if ( chartWrapper !== chartWrapperRef.current ) {
 						// eslint-disable-next-line no-unused-expressions
 						googleRef.current?.visualization.events.removeAllListeners( chartWrapperRef.current?.getChart() );
+						// eslint-disable-next-line no-unused-expressions
+						googleRef.current?.visualization.events.removeAllListeners( chartWrapperRef.current );
 					}
 
 					chartWrapperRef.current = chartWrapper;
