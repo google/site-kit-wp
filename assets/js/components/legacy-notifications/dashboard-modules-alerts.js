@@ -74,7 +74,7 @@ class DashboardModulesAlerts extends Component {
 						title={ notification.title || '' }
 						description={ notification.description || '' }
 						blockData={ notification.blockData || [] }
-						WinImageSVG={ notification.WinImageSVG || null }
+						WinImageSVG={ notification.WinImageSVG }
 						format={ notification.format || 'small' }
 						learnMoreURL={ notification.learnMoreURL || '' }
 						learnMoreDescription={ notification.learnMoreDescription || '' }
