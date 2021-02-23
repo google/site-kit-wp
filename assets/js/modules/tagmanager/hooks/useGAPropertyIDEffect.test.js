@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
-import { createTestRegistry, provideModules } from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { STORE_NAME } from '../datastore/constants';
 import {
 	createBuildAndReceivers,
@@ -35,12 +35,6 @@ describe( 'useGAPropertyIDEffect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		// Set set no existing tag.
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-
-		// Provide an activated Analytics module.
-		provideModules( registry, [ {
-			slug: 'analytics',
-			active: true,
-		} ] );
 	} );
 
 	it( 'sets the gaPropertyID when property ID exists and Analytics is active', async () => {
