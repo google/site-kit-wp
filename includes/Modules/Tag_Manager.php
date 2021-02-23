@@ -646,7 +646,6 @@ final class Tag_Manager extends Module
 	 * @since n.e.x.t
 	 *
 	 * @param boolean $original_value Original value of useSnippet setting.
-	 *
 	 * @return boolean Filtered value.
 	 */
 	private function can_analytics_use_snippet( $original_value ) {
