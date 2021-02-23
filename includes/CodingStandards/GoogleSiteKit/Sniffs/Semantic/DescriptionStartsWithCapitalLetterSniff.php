@@ -110,8 +110,8 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff
                 $tagComment = $phpcsFile->findNext(T_DOC_COMMENT_STRING, ($currentToken + 1), ($commentEnd - 1));
 
                 // Check each comment for capitalisation.
-                if($tagComment) 
-                    $fullTagComment = $tokens[$tagComment]['content'];{
+                if($tagComment) {
+                    $fullTagComment = $tokens[$tagComment]['content'];
 
                     $tagDescription = false;
                     if($commentTagType === '@return') {

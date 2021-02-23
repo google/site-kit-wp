@@ -85,9 +85,9 @@ class CommentTagsCorrectlyGrouped implements Sniff
                 continue;
             }
 
-            $type         = '';
-            $comment      = '';
-            $commentLines = [];
+            $type          = '';
+            $comment       = '';
+            $commentLines  = [];
             if ($tokens[($tag + 2)]['code'] === T_DOC_COMMENT_STRING) {
                 $matches = [];
                 preg_match('/([^$&.]+)(?:((?:\.\.\.)?(?:\$|&)[^\s]+)(?:(\s+)(.*))?)?/', $tokens[($tag + 2)]['content'], $matches);
@@ -143,23 +143,90 @@ class CommentTagsCorrectlyGrouped implements Sniff
                 }
             }
 
+            // Find the number of blank lines after this tag by looking for the number of stars before the next comment.
+
+            // Find the next element that is not a star or whitespace (the next comment location)
+            $nextCommentTag = $phpcsFile->findNext([T_DOC_COMMENT_TAG], $tagToken + 1, null);
+            $endOfCommentBlock = $phpcsFile->findNext([T_DOC_COMMENT_CLOSE_TAG], $tagToken + 1, null);
+
+            // Stop the search at the end of each comment block.
+            if( $endOfCommentBlock < $nextCommentTag ) {
+                $nextCommentTag = $endOfCommentBlock;
+            }
+
+            $currentPosition = $tagToken;
+            $stars = 0;
+            $nextStar = true;
+            while ( $nextStar ) {
+                $nextStar = $phpcsFile->findNext([T_DOC_COMMENT_STAR], $currentPosition, $nextCommentTag);
+
+                if( $nextStar ) {
+                    $stars = $stars + 1;
+                    $currentPosition = $nextStar + 1;
+                }
+            }
+
+            // Subtract the total lines of the current tag comment to account for multi line comments.
+            $blankLineOffset = 1;
+            if( count( $commentLines ) > 1 ) {
+                $blankLineOffset = count($commentLines);
+            }
+            // echo "commentTagType $commentTagType blankLineOffset $blankLineOffset \n\n";
+            $commentBlankLines = $stars;
+            if($commentBlankLines > 0 ){
+                $commentBlankLines = $stars - $blankLineOffset;
+            }
+
             $params[] = [
-                'tag'          => $tag,
-                'tag_type'     => $commentTagType,
-                'tag_token'    => $tagToken,
-                'type'         => $type,
-                'comment'      => $comment,
-                'commentLines' => $commentLines,
+                'tag'               => $tag,
+                'tag_type'          => $commentTagType,
+                'tag_token'         => $tagToken, // TODO: unify camel case
+                'type'              => $type,
+                'comment'           => $comment,
+                'commentLines'      => $commentLines,
+                'commentBlankLines' => $commentBlankLines,
             ];
         }
 
-        // If there are param/return and other tags, make sure they are separated by a space.
-        // TODO: TODO:
+        // Track the previous and next tags to check the order is correct. 
+        $previousTags = [];
+        $nextTags = $params;
 
+        while (count($nextTags) > 0) {
+            // Remove the current tag.
+            $currentTag = array_shift($nextTags);
+            $currentTagType = $currentTag['tag_type'];
+            $currentTagBlankLines = $currentTag['commentBlankLines'];
+            
+            // Get the next tag to compare with the current.
+            if(empty($nextTags)) {
+                break;
+            }
+            $nextTag = $nextTags[0];
+            $nextTagType = $nextTag['tag_type'];
 
-        // For methods and functions, tags should be grouped: since/deprecated/access/static should be grouped together,
-        // separated by a blank line from param/return which should be grouped together. If there is global, it should
-        // be separated from both others by a blank line (essentially be its own group).
+            $currentTagGroup = array();
+            foreach ($docCommentTagsGroups as $commentTagGroup) {
+                if(in_array($currentTagType, $commentTagGroup)) {
+                    $currentTagGroup = $commentTagGroup;
+                }
+            }
+
+            // Check if the next tag is allowed in this group and is not separated by a blank line.
+            if( ! in_array($nextTagType, $currentTagGroup ) && $currentTagBlankLines === 0) {
+                $error = "Missing blank line between $currentTagType tag and $nextTagType tag";
+                $phpcsFile->addError($error, $currentTag['tag_token'], 'TagGrouping');
+            }
+
+            // Check if the next tag should be grouped with the current one but is spearated by a blank line.
+            if( in_array($nextTagType, $currentTagGroup ) && $currentTagBlankLines > 0) {
+                $error = "Blank line not allowed between $currentTagType tag and $nextTagType tag";
+                $phpcsFile->addError($error, $currentTag['tag_token'], 'TagGrouping');
+            }
+
+            // Add the tag we have checked into the $previousTags array.
+            $previousTags[] = $currentTag;
+        }
 
     }
 }

@@ -43,18 +43,9 @@ final class PageSpeed_Insights {
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 now requires Google_Site_Kit_Client instance
-	 * 
-	 * @access
 	 * @since ljsdflkajdfkl
-	 * @var int $test_const Google client instance.
-	 * @deprecated ljsdflkajdfkl
-	 * @global ljsdflkajdfkl
-	 * @var ljsdflkajdfkl
-	 * @param ljsdflkajdfkl.
-	 * @static
 	 *
-	 * @return void Tjsdflkajd
-	 *              fkl.
+	 * @return void
 	 */
 	protected $test_const = 123;
 
@@ -65,9 +56,16 @@ final class PageSpeed_Insights {
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 now requires Google_Site_Kit_Client instance
+	 * @deprecated ljsdflkajdfkl
+	 * @static
 	 *
-	 * @param Google_Site_Kit_Client $client Google client instance.
+	 * @global ljsdflkajdfkl
+	 *
+	 * @var int $test_const Google client instance.
+	 * @param Google_Site_Kit_Client $client Google services as $identifier => $service_instance pairs. Every $service_instance must be an
+	 *                                            instance of Google_Service.
 	 * @param Google_Site_Kit_Client $spoon Comment.
+	 * @param string $test Ljsdflkajdfkl.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *               instance of Google_Service.
 	 */
@@ -86,7 +84,7 @@ final class PageSpeed_Insights {
 	 * Sets up the Google services the module should use.
 	 *
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
-	 * for the first time
+	 * for the first time.
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 now requires Google_Site_Kit_Client instance

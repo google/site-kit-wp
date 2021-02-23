@@ -195,6 +195,11 @@ class DescriptionEndsWithFullStopSniff implements Sniff
                 continue;
             }
 
+            // Only enforce full stop of there is a comment to check.
+            if ($param['comment'] === '') {
+                continue;
+            }
+
             // Check the last character of the last line of the comment.
             $lastChar = substr(end($param['commentLines'])['comment'], -1);
             if ($lastChar !== '.') {
