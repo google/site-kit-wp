@@ -78,7 +78,8 @@ export default function UserDimensionsPieChart( {
 		const newDimensionValue = chartWrapperRef.current.getDataTable().getValue( index, 0 );
 		const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
 
-		if ( ! isOthers ) {
+		// Do not do anything as "Others" should not be selectable.
+		if ( isOthers ) {
 			return;
 		}
 
@@ -87,11 +88,13 @@ export default function UserDimensionsPieChart( {
 			setValues( {
 				[ UI_DIMENSION_VALUE ]: '',
 				[ UI_DIMENSION_COLOR ]: '',
+				[ UI_ACTIVE_ROW_INDEX ]: null,
 			} );
 		} else if ( newDimensionValue ) {
 			setValues( {
 				[ UI_DIMENSION_COLOR ]: slices[ row ]?.color,
 				[ UI_DIMENSION_VALUE ]: newDimensionValue,
+				[ UI_ACTIVE_ROW_INDEX ]: index,
 			} );
 
 			trackEvent(
