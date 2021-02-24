@@ -73,8 +73,12 @@ export default function UserDimensionsPieChart( {
 		const newDimensionValue = chartWrapperRef.current.getDataTable().getValue( index, 0 );
 		const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
 
+		if ( ! isOthers ) {
+			return;
+		}
+
 		const { row } = chartWrapperRef.current.getChart().getSelection()?.[ 0 ] || {};
-		if ( row === index || isOthers ) {
+		if ( row === index ) {
 			setValues( {
 				[ UI_DIMENSION_VALUE ]: '',
 				[ UI_DIMENSION_COLOR ]: '',
@@ -124,12 +128,13 @@ export default function UserDimensionsPieChart( {
 				const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
 
 				if ( isOthers ) {
+					// Maintain the existing selection when clicking on the "Others" slice.
+					// We set a value here because otherwise Google Charts will show the
+					// "Others" slice as selected.
 					setValues( {
-						[ UI_DIMENSION_COLOR ]: '',
-						[ UI_DIMENSION_VALUE ]: '',
+						[ UI_DIMENSION_COLOR ]: dimensionColor || '',
+						[ UI_DIMENSION_VALUE ]: dimensionValue || '',
 					} );
-
-					trackEvent( 'all_traffic_widget', 'others_source_click', null );
 				} else {
 					setValues( {
 						[ UI_DIMENSION_COLOR ]: slices[ row ]?.color,
