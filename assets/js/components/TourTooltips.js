@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useLocalStorage, useMount } from 'react-use';
+import { useMount } from 'react-use';
 import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
 import PropTypes from 'prop-types';
 
@@ -28,6 +28,7 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import TourTooltip from './TourTooltip';
 const { useSelect, useDispatch } = Data;
 
@@ -59,11 +60,13 @@ const floaterProps = {
 export default function TourTooltips( { steps, tourID } ) {
 	const stepKey = `${ tourID }-step`;
 	const runKey = `${ tourID }-run`;
+
 	const { setValue } = useDispatch( CORE_UI );
-	const [ shouldSkipTour, setShouldSkipTour ] = useLocalStorage( `sitekit-${ tourID }__has-encountered-tour` );
+	const { dismissTour } = useDispatch( CORE_USER );
 
 	const stepIndex = useSelect( ( select ) => select( CORE_UI ).getValue( stepKey ) );
 	const run = useSelect( ( select ) => select( CORE_UI ).getValue( runKey ) || false );
+	const shouldSkipTour = useSelect( ( select ) => select( CORE_USER ).isTourDismissed( tourID ) );
 
 	const changeStep = ( index, action ) => setValue(
 		stepKey,
@@ -78,8 +81,7 @@ export default function TourTooltips( { steps, tourID } ) {
 	};
 
 	const endTour = () => {
-		// Add to localStorage to avoid unwanted repeat viewing.
-		setShouldSkipTour( true );
+		dismissTour( tourID );
 		setValue( runKey, false );
 	};
 
