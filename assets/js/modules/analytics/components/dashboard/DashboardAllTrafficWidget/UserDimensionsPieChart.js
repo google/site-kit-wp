@@ -258,7 +258,7 @@ export default function UserDimensionsPieChart( {
 
 					trackEvent(
 						'all_traffic_widget',
-						'help_click',
+						'slice_select',
 						`${ dimensionName }:${ newDimensionValue }`,
 					);
 				}
