@@ -269,41 +269,43 @@ export default function UserDimensionsPieChart( {
 	const onReady = ( { chartWrapper } ) => {
 		const chart = chartWrapper.getChart();
 
-		if ( report?.[ 0 ]?.data?.rows ) {
-			// If there is a dimension value set but the initialized chart does not have a
-			// selection yet, find the matching row index and initially select it in the chart.
-			if ( dimensionValue && ! chart.getSelection().length ) {
-				const selectedRow = report[ 0 ].data.rows.findIndex( ( row ) => row.dimensions.includes( dimensionValue ) );
+		// If there is a dimension value set but the initialized chart does not have a
+		// selection yet, find the matching row index and initially select it in the chart.
+		if ( dimensionValue && ! chart.getSelection().length ) {
+			// Look in the real data map, which includes headings, therefore subtract 1.
+			const selectedRow = dataMap.findIndex( ( row ) => row[ 0 ] === dimensionValue ) - 1;
 
-				if ( selectedRow !== undefined && selectedRow !== null ) {
-					chart.setSelection( [ { row: selectedRow } ] );
-					setValues( {
-						[ UI_ACTIVE_ROW_INDEX ]: selectedRow,
-					} );
-
-					if ( dimensionColor !== slices[ selectedRow ]?.color ) {
-						setValues( {
-							[ UI_DIMENSION_COLOR ]: slices[ selectedRow ]?.color,
-						} );
-					}
-				}
-			}
-
-			// If there is no dimension value set but the initialized chart does have a selection,
-			// ensure it is no longer selected in the chart.
-			if ( ! dimensionValue && chart.getSelection().length ) {
-				chart.setSelection( [] );
+			if ( selectedRow >= 0 ) {
+				// If the new data includes the original dimension value, re-select it and adjust the color as needed.
+				chart.setSelection( [ { row: selectedRow } ] );
 				setValues( {
+					[ UI_ACTIVE_ROW_INDEX ]: selectedRow,
+					[ UI_DIMENSION_COLOR ]: slices[ selectedRow ]?.color || dimensionColor,
+				} );
+			} else {
+				// If the new data does not include the original dimension value, unset it to match the empty selection.
+				setValues( {
+					[ UI_DIMENSION_VALUE ]: '',
+					[ UI_DIMENSION_COLOR ]: '',
 					[ UI_ACTIVE_ROW_INDEX ]: null,
 				} );
 			}
+		}
 
-			// If no dimensionValue is set, unset the color.
-			if ( ! dimensionValue && dimensionColor !== '' ) {
-				setValues( {
-					[ UI_DIMENSION_COLOR ]: '',
-				} );
-			}
+		// If there is no dimension value set but the initialized chart does have a selection,
+		// ensure it is no longer selected in the chart.
+		if ( ! dimensionValue && chart.getSelection().length ) {
+			chart.setSelection( [] );
+			setValues( {
+				[ UI_ACTIVE_ROW_INDEX ]: null,
+			} );
+		}
+
+		// If no dimensionValue is set, unset the color.
+		if ( ! dimensionValue && dimensionColor !== '' ) {
+			setValues( {
+				[ UI_DIMENSION_COLOR ]: '',
+			} );
 		}
 	};
 
