@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useRef, useState } from '@wordpress/element';
+import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -67,6 +67,33 @@ export default function UserDimensionsPieChart( {
 	const { setValues } = useDispatch( CORE_UI );
 
 	const chartWrapperRef = useRef();
+	const containerRef = useRef();
+
+	useEffect( () => {
+		const onTooltipClick = ( event ) => {
+			const { target } = event || {};
+			if ( ! target?.classList?.contains( 'googlesitekit-cta-link__tooltip' ) ) {
+				return;
+			}
+
+			const label = target.dataset.rowLabel;
+			if ( label === '(other)' || label === '(not set)' ) {
+				trackEvent( 'all_traffic_widget', 'help_click', label );
+			} else if ( label === 'others' ) {
+				trackEvent( 'all_traffic_widget', 'others_source_click', null );
+			}
+		};
+
+		if ( containerRef.current ) {
+			containerRef.current.addEventListener( 'click', onTooltipClick );
+		}
+
+		return () => {
+			if ( containerRef.current ) {
+				containerRef.current.removeEventListener( 'click', onTooltipClick );
+			}
+		};
+	}, [ containerRef.current ] );
 
 	const { slices } = UserDimensionsPieChart.chartOptions;
 
@@ -96,12 +123,6 @@ export default function UserDimensionsPieChart( {
 				[ UI_DIMENSION_VALUE ]: newDimensionValue,
 				[ UI_ACTIVE_ROW_INDEX ]: index,
 			} );
-
-			trackEvent(
-				'all_traffic_widget',
-				'slice_select',
-				`${ dimensionName }:${ newDimensionValue }`,
-			);
 		}
 	};
 
@@ -154,7 +175,7 @@ export default function UserDimensionsPieChart( {
 
 					trackEvent(
 						'all_traffic_widget',
-						'help_click',
+						'slice_select',
 						`${ dimensionName }:${ newDimensionValue }`,
 					);
 				}
@@ -173,9 +194,12 @@ export default function UserDimensionsPieChart( {
 
 				if ( selectedRow !== undefined && selectedRow !== null ) {
 					chart.setSelection( [ { row: selectedRow } ] );
-					setValues( {
-						[ UI_ACTIVE_ROW_INDEX ]: selectedRow,
-					} );
+
+					if ( activeRowIndex !== selectedRow ) {
+						setValues( {
+							[ UI_ACTIVE_ROW_INDEX ]: selectedRow,
+						} );
+					}
 
 					if ( dimensionColor !== slices[ selectedRow ]?.color ) {
 						setValues( {
@@ -189,9 +213,12 @@ export default function UserDimensionsPieChart( {
 			// ensure it is no longer selected in the chart.
 			if ( ! dimensionValue && chart.getSelection().length ) {
 				chart.setSelection( [] );
-				setValues( {
-					[ UI_ACTIVE_ROW_INDEX ]: null,
-				} );
+
+				if ( activeRowIndex !== null ) {
+					setValues( {
+						[ UI_ACTIVE_ROW_INDEX ]: null,
+					} );
+				}
 			}
 
 			// If no dimensionValue is set, unset the color.
@@ -330,7 +357,7 @@ export default function UserDimensionsPieChart( {
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
-			<div className={ classnames(
+			<div ref={ containerRef } className={ classnames(
 				'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
 				{
 					'googlesitekit-widget--analyticsAllTraffic__slice-selected': !! dimensionValue,
