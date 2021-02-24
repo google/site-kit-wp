@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState, useEffect } from '@wordpress/element';
+import { useCallback, useState, useEffect, useRef } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { useInstanceId } from '@wordpress/compose';
 
@@ -35,10 +35,7 @@ import { useInstanceId } from '@wordpress/compose';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import {
-	UI_DIMENSION_COLOR,
-	UI_DIMENSION_VALUE,
-} from '../../../datastore/constants';
+import { UI_DIMENSION_COLOR, UI_DIMENSION_VALUE } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML, trackEvent } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
@@ -47,6 +44,8 @@ import Link from '../../../../../components/Link';
 const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( { dimensionName, dimensionValue, sourceLink, loaded, report } ) {
+	const containerRef = useRef();
+
 	const [ chartLoaded, setChartLoaded ] = useState( false );
 	const [ selectable, setSelectable ] = useState( false );
 
@@ -165,12 +164,16 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 			}
 		};
 
-		global.addEventListener( 'click', onTooltipClick );
+		if ( containerRef.current ) {
+			containerRef.current.addEventListener( 'click', onTooltipClick );
+		}
 
 		return () => {
-			global.removeEventListener( 'click', onTooltipClick );
+			if ( containerRef.current ) {
+				containerRef.current.removeEventListener( 'click', onTooltipClick );
+			}
 		};
-	}, [] );
+	}, [ containerRef.current ] );
 
 	useEffect( () => {
 		if ( ! chartLoaded ) {
@@ -345,7 +348,7 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 					height="300px"
 					shape="circular"
 				/>
-				<div className={ classnames(
+				<div ref={ containerRef } className={ classnames(
 					'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
 					{
 						'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
