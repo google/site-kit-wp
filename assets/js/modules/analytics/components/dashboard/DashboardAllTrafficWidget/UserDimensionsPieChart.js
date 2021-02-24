@@ -68,6 +68,110 @@ export default function UserDimensionsPieChart( {
 
 	const chartWrapperRef = useRef();
 
+	const absOthers = {
+		current: report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],
+		previous: report?.[ 0 ]?.data?.totals?.[ 1 ]?.values?.[ 0 ],
+	};
+
+	( report?.[ 0 ]?.data?.rows || [] ).forEach( ( { metrics } ) => {
+		absOthers.current -= metrics[ 0 ].values[ 0 ];
+		absOthers.previous -= metrics[ 1 ].values[ 0 ];
+	} );
+
+	const getTooltipHelp = ( url, label, rowLabel ) => (
+		`<p>
+			<a
+				href="${ url }"
+				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit googlesitekit-cta-link__tooltip"
+				target="_blank"
+				rel="noreferrer noopener"
+				data-row-label="${ rowLabel }"
+			>
+				${ label }
+			</a>
+		</p>`
+	);
+
+	const dataMap = extractAnalyticsDataForPieChart( report, {
+		keyColumnIndex: 0,
+		maxSlices: 5,
+		withOthers: true,
+		tooltipCallback: ( row, rowData ) => {
+			let difference = row?.metrics?.[ 1 ]?.values?.[ 0 ] > 0
+				? ( row.metrics[ 0 ].values[ 0 ] * 100 / row.metrics[ 1 ].values[ 0 ] ) - 100
+				: 100;
+
+			if ( row === null && absOthers.previous > 0 ) {
+				difference = ( absOthers.current * 100 / absOthers.previous ) - 100;
+			}
+
+			const absValue = row ? row.metrics[ 0 ].values[ 0 ] : absOthers.current;
+			const statInfo = sprintf(
+				/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, %%: percent symbol */
+				_x( 'Users: <strong>%1$s</strong> <em>%2$s %3$s%%</em>', 'Stat information for the user dimensions chart tooltip', 'google-site-kit' ),
+				numberFormat( absValue ),
+				`<svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="${ classnames( 'googlesitekit-change-arrow', {
+					'googlesitekit-change-arrow--up': difference > 0,
+					'googlesitekit-change-arrow--down': difference < 0,
+				} ) }">
+					<path d="M5.625 10L5.625 2.375L9.125 5.875L10 5L5 -1.76555e-07L-2.7055e-07 5L0.875 5.875L4.375 2.375L4.375 10L5.625 10Z" fill="currentColor" />
+				</svg>`,
+				numberFormat( Math.abs( difference ), { maximumFractionDigits: 2 } ),
+			);
+
+			const rowLabel = rowData[ 0 ].toLowerCase();
+			const dimensionClassName = `googlesitekit-visualization-tooltip-${ rowLabel.replace( /\W+/, '_' ) }`;
+
+			let tooltip = (
+				`<p>
+					${ /* translators: %s: dimension label */ sprintf( __( '%s:', 'google-site-kit' ), rowData[ 0 ].toUpperCase() ) }
+					<b>${ numberFormat( rowData[ 1 ], { maximumFractionDigits: 1, style: 'percent' } ) }</b>
+				</p>
+				<p>
+					${ statInfo }
+				</p>`
+			);
+
+			const othersLabel = __( 'Others', 'google-site-kit' ).toLowerCase();
+			if ( sourceLink && rowLabel === othersLabel ) {
+				tooltip += getTooltipHelp(
+					sourceLink,
+					__( 'See the detailed breakdown in Analytics', 'google-site-kit' ),
+					'others'
+				);
+			}
+
+			if ( otherSupportURL && rowLabel === '(other)' ) {
+				tooltip += getTooltipHelp(
+					otherSupportURL,
+					/* translators: %s: pie slice label */
+					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel ),
+					rowLabel
+				);
+			}
+
+			if ( notSetSupportURL && rowLabel === '(not set)' ) {
+				tooltip += getTooltipHelp(
+					notSetSupportURL,
+					/* translators: %s: pie slice label */
+					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel ),
+					rowLabel
+				);
+			}
+
+			tooltip = (
+				`<div class="${ classnames( 'googlesitekit-visualization-tooltip', dimensionClassName, {
+					'googlesitekit-visualization-tooltip--up': difference > 0,
+					'googlesitekit-visualization-tooltip--down': difference < 0,
+				} ) }">
+					${ tooltip }
+				</div>`
+			);
+
+			return tooltip;
+		},
+	} );
+
 	const { slices } = UserDimensionsPieChart.chartOptions;
 
 	const onLegendClick = ( index ) => {
@@ -202,110 +306,6 @@ export default function UserDimensionsPieChart( {
 			}
 		}
 	};
-
-	const absOthers = {
-		current: report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],
-		previous: report?.[ 0 ]?.data?.totals?.[ 1 ]?.values?.[ 0 ],
-	};
-
-	( report?.[ 0 ]?.data?.rows || [] ).forEach( ( { metrics } ) => {
-		absOthers.current -= metrics[ 0 ].values[ 0 ];
-		absOthers.previous -= metrics[ 1 ].values[ 0 ];
-	} );
-
-	const getTooltipHelp = ( url, label, rowLabel ) => (
-		`<p>
-			<a
-				href="${ url }"
-				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit googlesitekit-cta-link__tooltip"
-				target="_blank"
-				rel="noreferrer noopener"
-				data-row-label="${ rowLabel }"
-			>
-				${ label }
-			</a>
-		</p>`
-	);
-
-	const dataMap = extractAnalyticsDataForPieChart( report, {
-		keyColumnIndex: 0,
-		maxSlices: 5,
-		withOthers: true,
-		tooltipCallback: ( row, rowData ) => {
-			let difference = row?.metrics?.[ 1 ]?.values?.[ 0 ] > 0
-				? ( row.metrics[ 0 ].values[ 0 ] * 100 / row.metrics[ 1 ].values[ 0 ] ) - 100
-				: 100;
-
-			if ( row === null && absOthers.previous > 0 ) {
-				difference = ( absOthers.current * 100 / absOthers.previous ) - 100;
-			}
-
-			const absValue = row ? row.metrics[ 0 ].values[ 0 ] : absOthers.current;
-			const statInfo = sprintf(
-				/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, %%: percent symbol */
-				_x( 'Users: <strong>%1$s</strong> <em>%2$s %3$s%%</em>', 'Stat information for the user dimensions chart tooltip', 'google-site-kit' ),
-				numberFormat( absValue ),
-				`<svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="${ classnames( 'googlesitekit-change-arrow', {
-					'googlesitekit-change-arrow--up': difference > 0,
-					'googlesitekit-change-arrow--down': difference < 0,
-				} ) }">
-					<path d="M5.625 10L5.625 2.375L9.125 5.875L10 5L5 -1.76555e-07L-2.7055e-07 5L0.875 5.875L4.375 2.375L4.375 10L5.625 10Z" fill="currentColor" />
-				</svg>`,
-				numberFormat( Math.abs( difference ), { maximumFractionDigits: 2 } ),
-			);
-
-			const rowLabel = rowData[ 0 ].toLowerCase();
-			const dimensionClassName = `googlesitekit-visualization-tooltip-${ rowLabel.replace( /\W+/, '_' ) }`;
-
-			let tooltip = (
-				`<p>
-					${ /* translators: %s: dimension label */ sprintf( __( '%s:', 'google-site-kit' ), rowData[ 0 ].toUpperCase() ) }
-					<b>${ numberFormat( rowData[ 1 ], { maximumFractionDigits: 1, style: 'percent' } ) }</b>
-				</p>
-				<p>
-					${ statInfo }
-				</p>`
-			);
-
-			const othersLabel = __( 'Others', 'google-site-kit' ).toLowerCase();
-			if ( sourceLink && rowLabel === othersLabel ) {
-				tooltip += getTooltipHelp(
-					sourceLink,
-					__( 'See the detailed breakdown in Analytics', 'google-site-kit' ),
-					'others'
-				);
-			}
-
-			if ( otherSupportURL && rowLabel === '(other)' ) {
-				tooltip += getTooltipHelp(
-					otherSupportURL,
-					/* translators: %s: pie slice label */
-					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel ),
-					rowLabel
-				);
-			}
-
-			if ( notSetSupportURL && rowLabel === '(not set)' ) {
-				tooltip += getTooltipHelp(
-					notSetSupportURL,
-					/* translators: %s: pie slice label */
-					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel ),
-					rowLabel
-				);
-			}
-
-			tooltip = (
-				`<div class="${ classnames( 'googlesitekit-visualization-tooltip', dimensionClassName, {
-					'googlesitekit-visualization-tooltip--up': difference > 0,
-					'googlesitekit-visualization-tooltip--down': difference < 0,
-				} ) }">
-					${ tooltip }
-				</div>`
-			);
-
-			return tooltip;
-		},
-	} );
 
 	const labels = {
 		'ga:channelGrouping': __( '<span>By</span> channels', 'google-site-kit' ),
