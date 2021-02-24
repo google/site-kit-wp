@@ -16,6 +16,11 @@ namespace PHP_CodeSniffer\Standards\GoogleSiteKit\Sniffs\Semantic;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 
+/**
+ * Description Ends With Full Stop Sniff.
+ *
+ * @since n.e.x.t
+ */
 class DescriptionEndsWithFullStopSniff implements Sniff {
 
 	/**
@@ -36,13 +41,13 @@ class DescriptionEndsWithFullStopSniff implements Sniff {
 	 *
 	 * @param \PHP_CodeSniffer\Files\File $phpcs_file The current file being checked.
 	 * @param int                         $stack_ptr  The position of the current token in the
-	 *                                               stack passed in $tokens.
+	 *                                                stack passed in $tokens.
 	 * @return void
 	 */
 	public function process( File $phpcs_file, $stack_ptr ) {
-		$tokens       = $phpcs_file->getTokens();
+		$tokens        = $phpcs_file->getTokens();
 		$comment_end   = $phpcs_file->findNext( T_DOC_COMMENT_CLOSE_TAG, ( $stack_ptr + 1 ) );
-		$commentStart = $tokens[ $comment_end ]['comment_opener'];
+		$comment_start = $tokens[ $comment_end ]['comment_opener'];
 
 		$empty = array(
 			T_DOC_COMMENT_WHITESPACE,
@@ -66,15 +71,15 @@ class DescriptionEndsWithFullStopSniff implements Sniff {
 		// Remove any trailing white spaces which are detected by other sniffs.
 		$short_content = trim( $short_content );
 
-		$lastChar = substr( $short_content, -1 );
-		if ( in_array( $lastChar, array( '.', '!', '?', ')' ) ) === false && $short_content !== '{@inheritdoc}'
+		$last_char = substr( $short_content, -1 );
+		if ( ! in_array( $last_char, array( '.', '!', '?', ')' ), true ) && '{@inheritdoc}' !== $short_content
 			// Ignore Features module export files that just use the file name as
 			// comment.
-			&& $short_content !== basename( $phpcs_file->getFilename() )
+			&& basename( $phpcs_file->getFilename() ) !== $short_content
 		) {
 			$error = 'Doc comment short description must end with a full stop';
 			$fix   = $phpcs_file->addFixableError( $error, $short_end, 'ShortFullStop' );
-			if ( $fix === true ) {
+			if ( true === $fix ) {
 				$phpcs_file->fixer->addContent( $short_end, '.' );
 			}
 		}
@@ -84,7 +89,7 @@ class DescriptionEndsWithFullStopSniff implements Sniff {
 		$long_content = $tokens[ $long ]['content'];
 		$long_end     = $long;
 		for ( $i = $long + 1; $i < $comment_end; $i++ ) {
-			if ( $tokens[ $i ]['code'] === T_DOC_COMMENT_STRING ) {
+			if ( T_DOC_COMMENT_STRING === $tokens[ $i ]['code'] ) {
 				if ( $tokens[ $i ]['line'] === $tokens[ $long_end ]['line'] + 1 ) {
 					$long_content .= $tokens[ $i ]['content'];
 					$long_end      = $i;
@@ -94,7 +99,7 @@ class DescriptionEndsWithFullStopSniff implements Sniff {
 			}
 		}
 
-		if ( $tokens[ $long ]['code'] === T_DOC_COMMENT_STRING ) {
+		if ( T_DOC_COMMENT_STRING === $tokens[ $long ]['code'] ) {
 
 			// Remove any trailing white spaces which will be detected by other sniffs.
 			$long_content = trim( $long_content );
@@ -102,27 +107,27 @@ class DescriptionEndsWithFullStopSniff implements Sniff {
 			if ( preg_match( '/[a-zA-Z]$/', $long_content ) === 1 ) {
 				$error = 'Doc comment long description must end with a full stop';
 				$fix   = $phpcs_file->addFixableError( $error, $long_end, 'LongFullStop' );
-				if ( $fix === true ) {
+				if ( true === $fix ) {
 					$phpcs_file->fixer->addContent( $long_end, '.' );
 				}
 			}
 		}
 
 		// Check for full stop on doc block tags.
-		$params  = array();
-		foreach ( $tokens[ $commentStart ]['comment_tags'] as $pos => $tag ) {
+		$params = array();
+		foreach ( $tokens[ $comment_start ]['comment_tags'] as $pos => $tag ) {
 
 			$comment_tag_type = $tokens[ $tag ]['content'];
 
 			// Only check the tag types defined in $doc_comment_tags.
-			if ( ! in_array( $comment_tag_type, $doc_comment_tags ) ) {
+			if ( ! in_array( $comment_tag_type, $doc_comment_tags, true ) ) {
 				continue;
 			}
 
-			$type         = '';
-			$comment      = '';
-			$commentLines = array();
-			if ( $tokens[ ( $tag + 2 ) ]['code'] === T_DOC_COMMENT_STRING ) {
+			$type          = '';
+			$comment       = '';
+			$comment_lines = array();
+			if ( T_DOC_COMMENT_STRING === $tokens[ ( $tag + 2 ) ]['code'] ) {
 				$matches = array();
 				preg_match( '/([^$&.]+)(?:((?:\.\.\.)?(?:\$|&)[^\s]+)(?:(\s+)(.*))?)?/', $tokens[ ( $tag + 2 ) ]['content'], $matches );
 
@@ -131,34 +136,34 @@ class DescriptionEndsWithFullStopSniff implements Sniff {
 				}
 
 				// Return is special as it doesn't have a variable name.
-				if ( $comment_tag_type === '@return' ) {
+				if ( '@return' === $comment_tag_type ) {
 					// Pass the description to the following comment check.
 					$matches[2] = $matches[1];
 					$matches[4] = $tokens[ ( $tag + 2 ) ]['content'];
 				}
 
-				if ( isset( $matches[2] ) === true ) {
-					
-					if ( isset( $matches[4] ) === true ) {
+				if ( true === isset( $matches[2] ) ) {
+
+					if ( true === isset( $matches[4] ) ) {
 
 						$comment = $matches[4];
 
-						$commentLines[] = array(
+						$comment_lines[] = array(
 							'comment' => $comment,
 							'token'   => ( $tag + 2 ),
 						);
 
 						// Any strings until the next tag belong to this comment.
-						if ( isset( $tokens[ $commentStart ]['comment_tags'][ ( $pos + 1 ) ] ) === true ) {
-							$end = $tokens[ $commentStart ]['comment_tags'][ ( $pos + 1 ) ];
+						if ( isset( $tokens[ $comment_start ]['comment_tags'][ ( $pos + 1 ) ] ) === true ) {
+							$end = $tokens[ $comment_start ]['comment_tags'][ ( $pos + 1 ) ];
 						} else {
-							$end = $tokens[ $commentStart ]['comment_closer'];
+							$end = $tokens[ $comment_start ]['comment_closer'];
 						}
 
 						for ( $i = ( $tag + 3 ); $i < $end; $i++ ) {
-							if ( $tokens[ $i ]['code'] === T_DOC_COMMENT_STRING ) {
-								$comment       .= ' ' . $tokens[ $i ]['content'];
-								$commentLines[] = array(
+							if ( T_DOC_COMMENT_STRING === $tokens[ $i ]['code'] ) {
+								$comment        .= ' ' . $tokens[ $i ]['content'];
+								$comment_lines[] = array(
 									'comment' => $tokens[ $i ]['content'],
 									'token'   => $i,
 								);
@@ -173,24 +178,24 @@ class DescriptionEndsWithFullStopSniff implements Sniff {
 				'tagType'      => $comment_tag_type,
 				'type'         => $type,
 				'comment'      => $comment,
-				'commentLines' => $commentLines,
+				'commentLines' => $comment_lines,
 			);
 		}
 
 		foreach ( $params as $pos => $param ) {
 			// If the type is empty, the whole line is empty.
-			if ( $param['type'] === '' ) {
+			if ( '' === $param['type'] ) {
 				continue;
 			}
 
 			// Only enforce full stop of there is a comment to check.
-			if ( $param['comment'] === '' || ! strstr( $param['comment'], ' ' ) ) {
+			if ( '' === $param['comment'] || ! strstr( $param['comment'], ' ' ) ) {
 				continue;
 			}
 
 			// Check the last character of the last line of the comment.
-			$lastChar = substr( end( $param['commentLines'] )['comment'], -1 );
-			if ( $lastChar !== '.' ) {
+			$last_char = substr( end( $param['commentLines'] )['comment'], -1 );
+			if ( '.' !== $last_char ) {
 				$error = "Tag {$param['tagType']} description must end with a full stop";
 				$phpcs_file->addError( $error, $param['tag'], 'TagFullStop' );
 			}

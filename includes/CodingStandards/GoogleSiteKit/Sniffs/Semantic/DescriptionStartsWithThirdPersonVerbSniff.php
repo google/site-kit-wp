@@ -16,6 +16,11 @@ namespace PHP_CodeSniffer\Standards\GoogleSiteKit\Sniffs\Semantic;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 
+/**
+ * Description Starts With Third Person Verb Sniff.
+ *
+ * @since n.e.x.t
+ */
 class DescriptionStartsWithThirdPersonVerbSniff implements Sniff {
 
 	/**
@@ -40,10 +45,11 @@ class DescriptionStartsWithThirdPersonVerbSniff implements Sniff {
 	 * @return void
 	 */
 	public function process( File $phpcs_file, $stack_ptr ) {
-		$tokens     = $phpcs_file->getTokens();
+		$tokens      = $phpcs_file->getTokens();
 		$comment_end = $phpcs_file->findNext( T_DOC_COMMENT_CLOSE_TAG, ( $stack_ptr + 1 ) );
 
-		$lastToken = ( $phpcs_file->numTokens - 1 );
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		$last_token = ( $phpcs_file->numTokens - 1 );
 
 		$empty = array(
 			T_DOC_COMMENT_WHITESPACE,
@@ -57,26 +63,26 @@ class DescriptionStartsWithThirdPersonVerbSniff implements Sniff {
 		$short_content = $tokens[ $short ]['content'];
 
 		// Search between this comment and the next.
-		$nextComment = $phpcs_file->findNext( T_DOC_COMMENT_OPEN_TAG, ( $stack_ptr + 1 ) );
+		$next_comment = $phpcs_file->findNext( T_DOC_COMMENT_OPEN_TAG, ( $stack_ptr + 1 ) );
 
 		// If this is the last comment we need to check between the comment and the end of the file to find it's subject.
-		if ( ! $nextComment ) {
-			$nextComment = $lastToken;
+		if ( ! $next_comment ) {
+			$next_comment = $last_token;
 		}
 
 		// Only continue if this comment is on a method or function.
-		$isFunction = $phpcs_file->findNext( T_FUNCTION, ( $stack_ptr + 1 ), ( $nextComment - 1 ) );
+		$is_function = $phpcs_file->findNext( T_FUNCTION, ( $stack_ptr + 1 ), ( $next_comment - 1 ) );
 
 		// Remove any trailing white spaces which are detected by other sniffs.
 		$short_content = trim( $short_content );
 
 		// Only check for third person verb on the short description of functions and methods.
-		if ( $isFunction && $short_content ) {
+		if ( $is_function && $short_content ) {
 
-			$firstWord  = strtok( $short_content, ' ' );
-			$lastLetter = substr( $firstWord, -1, 1 );
+			$first_word  = strtok( $short_content, ' ' );
+			$last_letter = substr( $first_word, -1, 1 );
 
-			if ( $lastLetter !== 's' ) {
+			if ( 's' !== $last_letter ) {
 				$error = 'Doc comment short description must start with third person verb';
 				$phpcs_file->addError( $error, $short, 'ShortNotCapital' );
 			}

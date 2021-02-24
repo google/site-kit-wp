@@ -45,8 +45,8 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff {
 	 * @return void
 	 */
 	public function process( File $phpcs_file, $stack_ptr ) {
-		$tokens       = $phpcs_file->getTokens();
-		$comment_end  = $phpcs_file->findNext( T_DOC_COMMENT_CLOSE_TAG, ( $stack_ptr + 1 ) );
+		$tokens      = $phpcs_file->getTokens();
+		$comment_end = $phpcs_file->findNext( T_DOC_COMMENT_CLOSE_TAG, ( $stack_ptr + 1 ) );
 
 		$empty = array(
 			T_DOC_COMMENT_WHITESPACE,
@@ -70,19 +70,20 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff {
 		// Remove any trailing white spaces which are detected by other sniffs.
 		$short_content = trim( $short_content );
 
-		if ( preg_match( '|\p{Lu}|u', $short_content[0] ) === 0 && $short_content !== '{@inheritdoc}'
+		if ( 0 === preg_match( '|\p{Lu}|u', $short_content[0] )
+			&& '{@inheritdoc}' !== $short_content
 			// Ignore Features module export files that just use the file name as
 			// comment.
-			&& $short_content !== basename( $phpcs_file->getFilename() )
+			&& basename( $phpcs_file->getFilename() ) !== $short_content
 		) {
 			$error = 'Doc comment short description must start with a capital letter';
 			// If we cannot capitalize the first character then we don't have a
 			// fixable error.
-			if ( $tokens[ $short ]['content'] === ucfirst( $tokens[ $short ]['content'] ) ) {
+			if ( ucfirst( $tokens[ $short ]['content'] ) === $tokens[ $short ]['content'] ) {
 				$phpcs_file->addError( $error, $short, 'ShortNotCapital' );
 			} else {
 				$fix = $phpcs_file->addFixableError( $error, $short, 'ShortNotCapital' );
-				if ( $fix === true ) {
+				if ( true === $fix ) {
 					$phpcs_file->fixer->replaceToken( $short, ucfirst( $tokens[ $short ]['content'] ) );
 				}
 			}
@@ -90,14 +91,14 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff {
 
 		$long = $phpcs_file->findNext( $empty, ( $short_end + 1 ), ( $comment_end - 1 ), true );
 
-		if ( $tokens[ $long ]['code'] === T_DOC_COMMENT_STRING ) {
+		if ( T_DOC_COMMENT_STRING === $tokens[ $long ]['code'] ) {
 
-			if ( preg_match( '|\p{Lu}|u', $tokens[ $long ]['content'][0] ) === 0
-				&& $tokens[ $long ]['content'] !== ucfirst( $tokens[ $long ]['content'] )
+			if ( 0 === preg_match( '|\p{Lu}|u', $tokens[ $long ]['content'][0] )
+				&& ucfirst( $tokens[ $long ]['content'] ) !== $tokens[ $long ]['content']
 			) {
 				$error = 'Doc comment long description must start with a capital letter';
 				$fix   = $phpcs_file->addFixableError( $error, $long, 'LongNotCapital' );
-				if ( $fix === true ) {
+				if ( true === $fix ) {
 					$phpcs_file->fixer->replaceToken( $long, ucfirst( $tokens[ $long ]['content'] ) );
 				}
 			}
@@ -110,7 +111,7 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff {
 			$comment_tag_type = $tokens[ $current_token ]['content'];
 
 			// Check to see if this token is an @ comment in the $doc_comment_tags array.
-			if ( $tokens[ $current_token ]['code'] === T_DOC_COMMENT_TAG && in_array( $comment_tag_type, $doc_comment_tags ) ) {
+			if ( T_DOC_COMMENT_TAG === $tokens[ $current_token ]['code'] && in_array( $comment_tag_type, $doc_comment_tags, true ) ) {
 
 				// Find the @ tag comment if there is one.
 				$tag_comment = $phpcs_file->findNext( T_DOC_COMMENT_STRING, ( $current_token + 1 ), ( $comment_end - 1 ) );
@@ -119,20 +120,18 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff {
 				if ( $tag_comment ) {
 					$full_tag_comment = $tokens[ $tag_comment ]['content'];
 
-					// echo '$full_tag_comment'.$full_tag_comment."\n\n";
-
 					$tag_description = false;
-					if ( $comment_tag_type === '@return' ) {
+					if ( '@return' === $comment_tag_type ) {
 						// Tags with the type description structure.
 
 						// Remove the type string from the description.
-						$tag_description = trim(preg_replace( '/^([\w\(\)]+)/', '', $full_tag_comment ));
+						$tag_description = trim( preg_replace( '/^([\w\(\)]+)/', '', $full_tag_comment ) );
 					} else {
 						// Comments with the type $variable description structure.
 
 						// Split the Class and variable name from the tag description.
 						$split_tag_comment = preg_split( '/\$[\w\d]+\ /', $full_tag_comment );
-						if ( count( $split_tag_comment ) >= 2 ) {
+						if ( 2 <= count( $split_tag_comment ) ) {
 							// Get the pure description if there is one.
 							$tag_description = $split_tag_comment[1];
 						}
@@ -143,12 +142,12 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff {
 
 						// Check for capital letter.
 						if ( $tag_description
-							&& preg_match( '|\p{Lu}|u', $tag_description[0] ) === 0
-							&& $tag_description !== ucfirst( $tag_description )
+							&& 0 === preg_match( '|\p{Lu}|u', $tag_description[0] )
+							&& ucfirst( $tag_description ) !== $tag_description
 						) {
 							$error = "Tag $comment_tag_type comment description must start with a capital letter";
 							$fix   = $phpcs_file->addFixableError( $error, $current_token, 'TagNotCapital' );
-							if ( $fix === true ) {
+							if ( true === $fix ) {
 								$fixed_tag_comment = str_replace( $tag_description, ucfirst( $tag_description ), $full_tag_comment );
 
 								$phpcs_file->fixer->replaceToken( $tag_comment, $fixed_tag_comment );
