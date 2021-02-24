@@ -227,6 +227,12 @@ export default function UserDimensionsPieChart( {
 				[ UI_DIMENSION_VALUE ]: newDimensionValue,
 				[ UI_ACTIVE_ROW_INDEX ]: index,
 			} );
+
+			trackEvent(
+				'all_traffic_widget',
+				'slice_select',
+				`${ dimensionName }:${ newDimensionValue }`,
+			);
 		}
 	};
 
