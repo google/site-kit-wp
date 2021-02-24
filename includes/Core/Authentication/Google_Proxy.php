@@ -105,7 +105,7 @@ class Google_Proxy {
 	 * @param array       $query_params Optional. Additional query parameters.
 	 * @return string URL to the setup page on the authentication proxy.
 	 */
-	public function get_setup_url( Credentials $credentials, array $query_params = array() ) {
+	public function setup_url( Credentials $credentials, array $query_params = array() ) {
 		$params = array_merge(
 			$query_params,
 			array(
@@ -152,7 +152,7 @@ class Google_Proxy {
 	 * @param array       $query_args  Optional. Additional query parameters.
 	 * @return string URL to the permissions page on the authentication proxy on success, or an empty string on failure.
 	 */
-	public function get_permissions_url( Credentials $credentials, array $query_args = array() ) {
+	public function permissions_url( Credentials $credentials, array $query_args = array() ) {
 		if ( $credentials->has() ) {
 			$creds                 = $credentials->get();
 			$query_args['site_id'] = $creds['oauth2_client_id'];
