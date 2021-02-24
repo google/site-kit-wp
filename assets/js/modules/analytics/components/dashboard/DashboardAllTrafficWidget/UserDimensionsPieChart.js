@@ -34,11 +34,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import {
-	UI_DIMENSION_COLOR,
-	UI_DIMENSION_VALUE,
-} from '../../../datastore/constants';
-import { numberFormat, sanitizeHTML } from '../../../../../util';
+import { UI_DIMENSION_COLOR, UI_DIMENSION_VALUE } from '../../../datastore/constants';
+import { numberFormat, sanitizeHTML, trackEvent } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChartV2 from '../../../../../components/GoogleChartV2';
 import Link from '../../../../../components/Link';
@@ -87,6 +84,12 @@ export default function UserDimensionsPieChart( {
 				[ UI_DIMENSION_COLOR ]: slices[ row ]?.color,
 				[ UI_DIMENSION_VALUE ]: newDimensionValue,
 			} );
+
+			trackEvent(
+				'all_traffic_widget',
+				'slice_select',
+				`${ dimensionName }:${ newDimensionValue }`,
+			);
 		}
 	};
 
@@ -125,11 +128,19 @@ export default function UserDimensionsPieChart( {
 						[ UI_DIMENSION_COLOR ]: '',
 						[ UI_DIMENSION_VALUE ]: '',
 					} );
+
+					trackEvent( 'all_traffic_widget', 'others_source_click', null );
 				} else {
 					setValues( {
 						[ UI_DIMENSION_COLOR ]: slices[ row ]?.color,
 						[ UI_DIMENSION_VALUE ]: newDimensionValue,
 					} );
+
+					trackEvent(
+						'all_traffic_widget',
+						'help_click',
+						`${ dimensionName }:${ newDimensionValue }`,
+					);
 				}
 			}
 		}
@@ -180,13 +191,14 @@ export default function UserDimensionsPieChart( {
 		absOthers.previous -= metrics[ 1 ].values[ 0 ];
 	} );
 
-	const getTooltipHelp = ( url, label ) => (
+	const getTooltipHelp = ( url, label, rowLabel ) => (
 		`<p>
 			<a
-				href=${ url }
-				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit"
+				href="${ url }"
+				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit googlesitekit-cta-link__tooltip"
 				target="_blank"
 				rel="noreferrer noopener"
+				data-row-label="${ rowLabel }"
 			>
 				${ label }
 			</a>
@@ -237,7 +249,8 @@ export default function UserDimensionsPieChart( {
 			if ( sourceLink && rowLabel === othersLabel ) {
 				tooltip += getTooltipHelp(
 					sourceLink,
-					__( 'See the detailed breakdown in Analytics', 'google-site-kit' )
+					__( 'See the detailed breakdown in Analytics', 'google-site-kit' ),
+					'others'
 				);
 			}
 
@@ -245,7 +258,8 @@ export default function UserDimensionsPieChart( {
 				tooltip += getTooltipHelp(
 					otherSupportURL,
 					/* translators: %s: pie slice label */
-					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel )
+					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel ),
+					rowLabel
 				);
 			}
 
@@ -253,7 +267,8 @@ export default function UserDimensionsPieChart( {
 				tooltip += getTooltipHelp(
 					notSetSupportURL,
 					/* translators: %s: pie slice label */
-					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel )
+					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel ),
+					rowLabel
 				);
 			}
 
