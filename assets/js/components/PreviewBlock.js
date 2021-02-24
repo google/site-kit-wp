@@ -28,6 +28,7 @@ import { debounce } from 'lodash';
  * Internal dependencies
  */
 import { getBreakpoint } from '../util/get-breakpoint';
+import { useBreakpoint } from '../hooks/useBreakpoint';
 
 function PreviewBlock( {
 	className,
@@ -42,46 +43,25 @@ function PreviewBlock( {
 	lgWidth,
 	lgHeight,
 } ) {
-	const [ blockWidth, setBlockWidth ] = useState( width );
-	const [ blockHeight, setBlockHeight ] = useState( height );
+	const breakpoint = useBreakpoint();
 
-	const handleResize = () => {
-		const breakpoint = getBreakpoint();
+	let blockWidth = width;
+	let blockHeight = height;
 
-		if ( 'small' === breakpoint && smWidth && smHeight ) {
-			setBlockWidth( smWidth );
-			setBlockHeight( smHeight );
+	if ( 'small' === breakpoint && smWidth && smHeight ) {
+		blockWidth = smWidth;
+		blockHeight = smHeight;
+	}
 
-			return;
-		}
+	if ( 'tablet' === breakpoint && mdWidth && mdHeight ) {
+		blockWidth = mdWidth;
+		blockHeight = mdHeight;
+	}
 
-		if ( 'tablet' === breakpoint && mdWidth && mdHeight ) {
-			setBlockWidth( mdWidth );
-			setBlockHeight( mdHeight );
-
-			return;
-		}
-
-		if ( ( 'xlarge' === breakpoint || 'desktop' === breakpoint ) && lgWidth && lgHeight ) {
-			setBlockWidth( lgWidth );
-			setBlockHeight( lgHeight );
-
-			return;
-		}
-
-		setBlockWidth( width );
-		setBlockHeight( height );
-	};
-
-	useEffect( () => {
-		handleResize();
-
-		const resize = debounce( handleResize, 100 );
-
-		global.addEventListener( 'resize', resize );
-
-		return () => global.removeEventListener( 'resize', resize );
-	} );
+	if ( ( 'xlarge' === breakpoint || 'desktop' === breakpoint ) && lgWidth && lgHeight ) {
+		blockWidth = lgWidth;
+		blockHeight = lgHeight;
+	}
 
 	return (
 		<div
