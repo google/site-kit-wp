@@ -50,7 +50,7 @@ export default function UserInputPreview( props ) {
 	} = props;
 
 	const settings = useSelect( ( select ) => select( CORE_USER ).getUserInputSettings() );
-
+	console.log(settings);
 	const {
 		USER_INPUT_ANSWERS_GOALS,
 		USER_INPUT_ANSWERS_HELP_NEEDED,
