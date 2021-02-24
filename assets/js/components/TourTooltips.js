@@ -60,7 +60,7 @@ export default function TourTooltips( { steps, tourID } ) {
 	const stepKey = `${ tourID }-step`;
 	const runKey = `${ tourID }-run`;
 	const { setValue } = useDispatch( CORE_UI );
-	const [ shouldSkipTour, setShouldSkipTour ] = useLocalStorage( 'sitekit__has-encountered-tour' );
+	const [ shouldSkipTour, setShouldSkipTour ] = useLocalStorage( `sitekit-${ tourID }__has-encountered-tour` );
 
 	const stepIndex = useSelect( ( select ) => select( CORE_UI ).getValue( stepKey ) );
 	const run = useSelect( ( select ) => select( CORE_UI ).getValue( runKey ) || false );

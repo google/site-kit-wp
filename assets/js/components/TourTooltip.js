@@ -100,6 +100,8 @@ export default function TourTooltip( {
 								className="googlesitekit-tooltip-button"
 								text
 								{ ...closeProps }
+								aria-label="Got it"
+								title="Got it"
 							>
 								Got it
 							</Button>
