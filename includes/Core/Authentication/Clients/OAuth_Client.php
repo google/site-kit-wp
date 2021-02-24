@@ -840,7 +840,7 @@ final class OAuth_Client {
 			$query_params['code'] = $access_code;
 		}
 
-		return $this->google_proxy->get_setup_url( $this->credentials, $query_params );
+		return $this->google_proxy->setup_url( $this->credentials, $query_params );
 	}
 
 	/**
@@ -884,7 +884,7 @@ final class OAuth_Client {
 			return '';
 		}
 
-		return $this->google_proxy->get_permissions_url(
+		return $this->google_proxy->permissions_url(
 			$this->credentials,
 			array( 'token' => $access_token )
 		);
