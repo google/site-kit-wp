@@ -72,7 +72,6 @@
     ],
     "lint": "phpcs",
     "lint-interactive": "phpcs -a",
-    "lint-debug": "phpcs -vvv",
     "lint-fix": "phpcbf",
     "test":  "phpunit"
   }
