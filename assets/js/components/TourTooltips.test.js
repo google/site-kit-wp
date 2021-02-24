@@ -19,16 +19,17 @@
 /**
  * Internal dependencies
  */
-import { render, createTestRegistry, fireEvent } from '../../../tests/js/test-utils';
+import { render, createTestRegistry, fireEvent, act } from '../../../tests/js/test-utils';
 import TourTooltips from './TourTooltips';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { muteFetch } from '../../../tests/js/utils';
 
 const SECOND_STEP = 1;
 const FINAL_STEP = 2;
 const TOUR_ID = 'mock-feature';
 const STEP_KEY = `${ TOUR_ID }-step`;
 const RUN_KEY = `${ TOUR_ID }-run`;
-const ENCOUNTERED_KEY = `sitekit-${ TOUR_ID }__has-encountered-tour`;
 const MOCK_STEPS = [
 	{
 		target: '.step-1',
@@ -62,9 +63,11 @@ const renderTourTooltipsWithMockUI = ( registry ) => render( (
 	</MockUIWrapper>
 ), { registry } );
 
+const fetchDismissTourRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/;
+
 describe( 'TourTooltips', () => {
 	let registry;
-	let select;
+
 	// store value to return default functionality on test teardown
 	const nativeCreateRange = global.document.createRange;
 
@@ -82,7 +85,7 @@ describe( 'TourTooltips', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		select = registry.select( CORE_UI );
+		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 	} );
 
 	afterAll( () => {
@@ -131,46 +134,45 @@ describe( 'TourTooltips', () => {
 	} );
 
 	it( 'should end tour when close icon is clicked', async () => {
-		const { getByRole, queryByRole } = renderTourTooltipsWithMockUI( registry );
+		muteFetch( fetchDismissTourRegExp, [] );
 
-		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
+		const { getByRole, queryByRole } = renderTourTooltipsWithMockUI( registry );
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /close/i } ) );
+		} );
 
 		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'should end tour when "Got it" button is clicked', async () => {
+		muteFetch( fetchDismissTourRegExp, [] );
+
 		registry.dispatch( CORE_UI ).setValue( STEP_KEY, FINAL_STEP );
 
 		const { getByRole, queryByRole } = renderTourTooltipsWithMockUI( registry );
-
-		fireEvent.click( getByRole( 'button', { name: /got it/i } ) );
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /got it/i } ) );
+		} );
 
 		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'should persist tour completion after tour closed', async () => {
+		muteFetch( fetchDismissTourRegExp, [] );
+
 		const { getByRole } = renderTourTooltipsWithMockUI( registry );
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /close/i } ) );
+		} );
 
-		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
-
-		expect( localStorage.setItem ).toHaveBeenCalledWith( ENCOUNTERED_KEY, 'true' );
-	} );
-
-	it( 'should start tour if no persisted tour completion exists', async () => {
-		renderTourTooltipsWithMockUI( registry );
-
-		expect( localStorage.getItem ).toHaveBeenCalledWith( ENCOUNTERED_KEY );
-		expect( localStorage.getItem( ENCOUNTERED_KEY ) ).toBeNull();
-		expect( select.getValue( RUN_KEY ) ).toBe( true );
+		expect( fetchMock ).toHaveFetched( fetchDismissTourRegExp );
 	} );
 
 	it( 'should not start tour if persisted tour completion is found', async () => {
-		localStorage.setItem( ENCOUNTERED_KEY, 'true' );
+		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [ TOUR_ID ] );
 
 		renderTourTooltipsWithMockUI( registry );
 
-		expect( localStorage.getItem ).toHaveBeenCalledWith( ENCOUNTERED_KEY );
-		expect( localStorage.getItem( ENCOUNTERED_KEY ) ).toBe( 'true' );
-		expect( select.getValue( RUN_KEY ) ).toBeUndefined();
+		expect( registry.select( CORE_UI ).getValue( RUN_KEY ) ).toBeUndefined();
 	} );
 } );
