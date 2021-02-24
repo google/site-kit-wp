@@ -38,6 +38,7 @@ import {
 	UI_DIMENSION_COLOR,
 	UI_DIMENSION_NAME,
 	UI_DIMENSION_VALUE,
+	UI_ACTIVE_ROW_INDEX,
 } from '../../../datastore/constants';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import { Select, Option } from '../../../../../material-components';
@@ -71,6 +72,7 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 			[ UI_DIMENSION_NAME ]: name,
 			[ UI_DIMENSION_VALUE ]: '',
 			[ UI_DIMENSION_COLOR ]: '',
+			[ UI_ACTIVE_ROW_INDEX ]: null,
 		} );
 
 		trackEvent( 'all_traffic_widget', 'tab_select', name );

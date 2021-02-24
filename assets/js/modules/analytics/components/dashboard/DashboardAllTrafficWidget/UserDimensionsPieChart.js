@@ -34,7 +34,11 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import { UI_DIMENSION_COLOR, UI_DIMENSION_VALUE } from '../../../datastore/constants';
+import {
+	UI_DIMENSION_COLOR,
+	UI_DIMENSION_VALUE,
+	UI_ACTIVE_ROW_INDEX,
+} from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML, trackEvent } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChartV2 from '../../../../../components/GoogleChartV2';
@@ -58,6 +62,7 @@ export default function UserDimensionsPieChart( {
 		path: '/analytics/answer/2820717',
 	} ) );
 	const dimensionColor = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) );
+	const activeRowIndex = useSelect( ( select ) => select( CORE_UI ).getValue( UI_ACTIVE_ROW_INDEX ) );
 
 	const { setValues } = useDispatch( CORE_UI );
 
@@ -120,6 +125,7 @@ export default function UserDimensionsPieChart( {
 			setValues( {
 				[ UI_DIMENSION_VALUE ]: '',
 				[ UI_DIMENSION_COLOR ]: '',
+				[ UI_ACTIVE_ROW_INDEX ]: null,
 			} );
 		} else {
 			const dataTable = chartWrapper.getDataTable();
@@ -131,14 +137,16 @@ export default function UserDimensionsPieChart( {
 					// Maintain the existing selection when clicking on the "Others" slice.
 					// We set a value here because otherwise Google Charts will show the
 					// "Others" slice as selected.
-					setValues( {
-						[ UI_DIMENSION_COLOR ]: dimensionColor || '',
-						[ UI_DIMENSION_VALUE ]: dimensionValue || '',
-					} );
+					if ( activeRowIndex === null || activeRowIndex === undefined ) {
+						chart.setSelection( [] );
+					} else {
+						chart.setSelection( [ { row: activeRowIndex } ] );
+					}
 				} else {
 					setValues( {
 						[ UI_DIMENSION_COLOR ]: slices[ row ]?.color,
 						[ UI_DIMENSION_VALUE ]: newDimensionValue,
+						[ UI_ACTIVE_ROW_INDEX ]: row,
 					} );
 
 					trackEvent(
@@ -162,6 +170,9 @@ export default function UserDimensionsPieChart( {
 
 				if ( selectedRow !== undefined && selectedRow !== null ) {
 					chart.setSelection( [ { row: selectedRow } ] );
+					setValues( {
+						[ UI_ACTIVE_ROW_INDEX ]: selectedRow,
+					} );
 
 					if ( dimensionColor !== slices[ selectedRow ]?.color ) {
 						setValues( {
@@ -175,6 +186,9 @@ export default function UserDimensionsPieChart( {
 			// ensure it is no longer selected in the chart.
 			if ( ! dimensionValue && chart.getSelection().length ) {
 				chart.setSelection( [] );
+				setValues( {
+					[ UI_ACTIVE_ROW_INDEX ]: null,
+				} );
 			}
 
 			// If no dimensionValue is set, unset the color.
