@@ -22,7 +22,6 @@
 import Card, { CardActions } from '@material/react-card';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import '@material/react-card/dist/card.css';
 
 /**
  * WordPress dependencies
