@@ -25,8 +25,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { DATE_RANGE_OFFSET } from '../../../adsense/datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import Layout from '../../../../components/layout/Layout';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
