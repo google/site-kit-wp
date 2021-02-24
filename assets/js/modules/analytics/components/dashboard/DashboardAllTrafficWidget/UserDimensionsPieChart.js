@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState, useEffect } from '@wordpress/element';
+import { useCallback, useState, useEffect, useRef } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { useInstanceId } from '@wordpress/compose';
 
@@ -35,11 +35,8 @@ import { useInstanceId } from '@wordpress/compose';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import {
-	UI_DIMENSION_COLOR,
-	UI_DIMENSION_VALUE,
-} from '../../../datastore/constants';
-import { numberFormat, sanitizeHTML } from '../../../../../util';
+import { UI_DIMENSION_COLOR, UI_DIMENSION_VALUE } from '../../../datastore/constants';
+import { numberFormat, sanitizeHTML, trackEvent } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import PreviewBlock from '../../../../../components/PreviewBlock';
@@ -47,6 +44,8 @@ import Link from '../../../../../components/Link';
 const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( { dimensionName, dimensionValue, sourceLink, loaded, report } ) {
+	const containerRef = useRef();
+
 	const [ chartLoaded, setChartLoaded ] = useState( false );
 	const [ selectable, setSelectable ] = useState( false );
 
@@ -85,6 +84,14 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 							[ UI_DIMENSION_VALUE ]: isOthers ? '' : newDimensionValue,
 							[ UI_DIMENSION_COLOR ]: isOthers ? '' : slices[ row ]?.color,
 						} );
+
+						if ( ! isOthers ) {
+							trackEvent(
+								'all_traffic_widget',
+								'slice_select',
+								`${ dimensionName }:${ newDimensionValue }`,
+							);
+						}
 					}
 				} else {
 					setValues( {
@@ -143,6 +150,32 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 	}, [ chartID, setValues ] );
 
 	useEffect( () => {
+		const onTooltipClick = ( event ) => {
+			const { target } = event || {};
+			if ( ! target?.classList?.contains( 'googlesitekit-cta-link__tooltip' ) ) {
+				return;
+			}
+
+			const label = target.dataset.rowLabel;
+			if ( label === '(other)' || label === '(not set)' ) {
+				trackEvent( 'all_traffic_widget', 'help_click', label );
+			} else if ( label === 'others' ) {
+				trackEvent( 'all_traffic_widget', 'others_source_click', null );
+			}
+		};
+
+		if ( containerRef.current ) {
+			containerRef.current.addEventListener( 'click', onTooltipClick );
+		}
+
+		return () => {
+			if ( containerRef.current ) {
+				containerRef.current.removeEventListener( 'click', onTooltipClick );
+			}
+		};
+	}, [ containerRef.current ] );
+
+	useEffect( () => {
 		if ( ! chartLoaded ) {
 			return;
 		}
@@ -186,13 +219,14 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 		absOthers.previous -= metrics[ 1 ].values[ 0 ];
 	} );
 
-	const getTooltipHelp = ( url, label ) => (
+	const getTooltipHelp = ( url, label, rowLabel ) => (
 		`<p>
 			<a
-				href=${ url }
-				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit"
+				href="${ url }"
+				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit googlesitekit-cta-link__tooltip"
 				target="_blank"
 				rel="noreferrer noopener"
+				data-row-label="${ rowLabel }"
 			>
 				${ label }
 			</a>
@@ -243,7 +277,8 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 			if ( sourceLink && rowLabel === othersLabel ) {
 				tooltip += getTooltipHelp(
 					sourceLink,
-					__( 'See the detailed breakdown in Analytics', 'google-site-kit' )
+					__( 'See the detailed breakdown in Analytics', 'google-site-kit' ),
+					'others'
 				);
 			}
 
@@ -251,7 +286,8 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 				tooltip += getTooltipHelp(
 					otherSupportURL,
 					/* translators: %s: pie slice label */
-					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel )
+					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel ),
+					rowLabel
 				);
 			}
 
@@ -259,7 +295,8 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 				tooltip += getTooltipHelp(
 					notSetSupportURL,
 					/* translators: %s: pie slice label */
-					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel )
+					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel ),
+					rowLabel
 				);
 			}
 
@@ -311,7 +348,7 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 					height="300px"
 					shape="circular"
 				/>
-				<div className={ classnames(
+				<div ref={ containerRef } className={ classnames(
 					'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
 					{
 						'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
