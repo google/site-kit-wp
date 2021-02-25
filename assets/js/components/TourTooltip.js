@@ -22,7 +22,11 @@
 import Card, { CardActions } from '@material/react-card';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import '@material/react-card/dist/card.css';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -56,6 +60,8 @@ export default function TourTooltip( {
 		active: indicatorIndex === index,
 	} );
 
+	const gotItText = __( 'Got it', 'google-site-kit' );
+
 	return (
 		<div className="googlesitekit-tour-tooltip" { ...tooltipProps }>
 			<Card className="googlesitekit-tooltip-card">
@@ -83,7 +89,7 @@ export default function TourTooltip( {
 								text
 								{ ...backProps }
 							>
-								Back
+								{ __( 'Back', 'google-site-kit' ) }
 							</Button>
 						) }
 						{ ! isLastStep && (
@@ -92,7 +98,7 @@ export default function TourTooltip( {
 								text
 								{ ...primaryProps }
 							>
-								Next
+								{ __( 'Next', 'google-site-kit' ) }
 							</Button>
 						) }
 						{ isLastStep && (
@@ -100,20 +106,21 @@ export default function TourTooltip( {
 								className="googlesitekit-tooltip-button"
 								text
 								{ ...closeProps }
-								aria-label="Got it"
-								title="Got it"
+								aria-label={ gotItText }
+								title={ gotItText }
 							>
-								Got it
+								{ gotItText }
 							</Button>
 						) }
 					</div>
 				</CardActions>
-				<button
+				<Button
 					className="googlesitekit-tooltip-close"
+					text
 					{ ...closeProps }
 				>
 					<CloseIcon width="14" height="14" />
-				</button>
+				</Button>
 			</Card>
 		</div>
 	);

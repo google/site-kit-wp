@@ -128,7 +128,7 @@ export const selectors = {
 	/**
 	 * Returns the service URL to an AdSense account report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param {Object} reportArgs URL parameters to be passed to the query.
 	 * @return {(string|undefined)} AdSense account site overview URL (or `undefined` if not loaded).

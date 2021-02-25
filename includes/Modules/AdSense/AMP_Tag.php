@@ -33,18 +33,31 @@ class AMP_Tag extends Module_AMP_Tag {
 	private $adsense_tag_printed = false;
 
 	/**
+	 * Web Story Ad Slot ID.
+	 *
+	 * @since 1.27.0
+	 * @var string
+	 */
+	private $story_ad_slot_id = '';
+
+	/**
 	 * Registers tag hooks.
 	 *
 	 * @since 1.24.0
 	 */
 	public function register() {
-		// For AMP Reader, and AMP Native and Transitional (if `wp_body_open` supported).
-		add_action( 'wp_body_open', $this->get_method_proxy( 'render' ), -9999 );
-		// For AMP Reader, and AMP Native and Transitional (as fallback).
-		add_filter( 'the_content', $this->get_method_proxy( 'amp_content_add_auto_ads' ) );
+		if ( is_singular( 'web-story' ) ) {
+			// If Web Stories are enabled, render the auto ads code.
+			add_action( 'web_stories_print_analytics', $this->get_method_proxy( 'render_story_auto_ads' ) );
+		} else {
+			// For AMP Reader, and AMP Native and Transitional (if `wp_body_open` supported).
+			add_action( 'wp_body_open', $this->get_method_proxy( 'render' ), -9999 );
+			// For AMP Reader, and AMP Native and Transitional (as fallback).
+			add_filter( 'the_content', $this->get_method_proxy( 'amp_content_add_auto_ads' ) );
 
-		// Load amp-auto-ads component for AMP Reader.
-		$this->enqueue_amp_reader_component_script( 'amp-auto-ads', 'https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js' );
+			// Load amp-auto-ads component for AMP Reader.
+			$this->enqueue_amp_reader_component_script( 'amp-auto-ads', 'https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js' );
+		}
 
 		$this->do_init_tag_action();
 	}
@@ -92,4 +105,30 @@ class AMP_Tag extends Module_AMP_Tag {
 		);
 	}
 
+	/**
+	 * Set Web Story Ad Slot ID
+	 *
+	 * @since 1.27.0
+	 *
+	 * @param string $ad_slot_id The Ad Slot ID.
+	 */
+	public function set_story_ad_slot_id( $ad_slot_id ) {
+		$this->story_ad_slot_id = $ad_slot_id;
+	}
+
+	/**
+	 * Adds the AMP Web Story auto ads code if enabled.
+	 *
+	 * @since 1.27.0
+	 */
+	private function render_story_auto_ads() {
+		$config = array(
+			'ad-attributes' => array(
+				'type'           => 'adsense',
+				'data-ad-client' => $this->tag_id,
+				'data-ad-slot'   => $this->story_ad_slot_id,
+			),
+		);
+		printf( '<amp-story-auto-ads><script type="application/json">%s</script></amp-story-auto-ads>', wp_json_encode( $config ) );
+	}
 }

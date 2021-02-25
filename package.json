@@ -152,6 +152,7 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-joyride": "^2.3.0",
+    "react-google-charts": "^3.0.15",
     "react-use": "^15.3.4",
     "svgxuse": "^1.2.6",
     "url-polyfill": "^1.1.9",

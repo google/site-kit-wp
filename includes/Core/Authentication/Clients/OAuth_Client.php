@@ -827,7 +827,7 @@ final class OAuth_Client {
 	 *
 	 * @since 1.0.0
 	 * @since 1.1.2 Added googlesitekit_proxy_setup_url_params filter.
-	 * @since n.e.x.t Error code is no longer used.
+	 * @since 1.27.0 Error code is no longer used.
 	 *
 	 * @param string $access_code Optional. Temporary access code for an undelegated access token. Default empty string.
 	 * @return string URL to the setup page on the authentication proxy.
@@ -840,7 +840,7 @@ final class OAuth_Client {
 			$query_params['code'] = $access_code;
 		}
 
-		return $this->google_proxy->get_setup_url( $this->credentials, $query_params );
+		return $this->google_proxy->setup_url( $this->credentials, $query_params );
 	}
 
 	/**
@@ -884,7 +884,7 @@ final class OAuth_Client {
 			return '';
 		}
 
-		return $this->google_proxy->get_permissions_url(
+		return $this->google_proxy->permissions_url(
 			$this->credentials,
 			array( 'token' => $access_token )
 		);

@@ -83,10 +83,8 @@ $indicator-inactive: #649df5;
 }
 
 .googlesitekit-tooltip-close {
-	background: none;
-	border: none;
-	cursor: pointer;
-	margin: 0;
+	height: auto;
+	min-width: auto;
 	padding: 0;
 	position: absolute;
 	right: 29px;

@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -32,9 +33,13 @@ import {
 	UseSnippetSwitch,
 } from '../common';
 import ProgressBar from '../../../../components/ProgressBar';
+import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
+import Link from '../../../../components/Link';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
+	const webStoriesActive = useSelect( ( select ) => select( CORE_SITE ).isWebStoriesActive() );
 	const clientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
 	const { existingTag, hasResolvedGetExistingTag } = useSelect( ( select ) => ( {
 		existingTag: select( STORE_NAME ).getExistingTag(),
@@ -63,6 +68,8 @@ export default function SettingsForm() {
 		uncheckedMessage = __( 'By not placing the code, AdSense will not show ads on your website unless you’ve already got some AdSense code.', 'google-site-kit' );
 	}
 
+	const supportURL = 'https://support.google.com/adsense/answer/10175505#create-an-ad-unit-for-web-stories';
+
 	return (
 		<div className="googlesitekit-adsense-settings-fields">
 			<ErrorNotices />
@@ -71,6 +78,24 @@ export default function SettingsForm() {
 				checkedMessage={ checkedMessage }
 				uncheckedMessage={ uncheckedMessage }
 			/>
+
+			{ webStoriesActive && (
+				<Fragment>
+					<WebStoriesAdUnitSelect />
+					<p>
+						{ __( 'This ad unit will be used for your Web Stories.', 'google-site-kit' ) }
+						{ ' ' }
+						<Link
+							href={ supportURL }
+							external
+							inherit
+							aria-label={ __( 'Learn more about Ad Sense Web Stories.', 'google-site-kit' ) }
+						>
+							{ __( 'Learn more', 'google-site-kit' ) }
+						</Link>
+					</p>
+				</Fragment>
+			) }
 		</div>
 	);
 }

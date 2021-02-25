@@ -665,6 +665,7 @@ final class Assets {
 			'timezone'         => get_option( 'timezone_string' ),
 			'siteName'         => get_bloginfo( 'name' ),
 			'enabledFeatures'  => Feature_Flags::get_enabled_features(),
+			'webStoriesActive' => defined( 'WEBSTORIES_VERSION' ),
 		);
 
 		/**
