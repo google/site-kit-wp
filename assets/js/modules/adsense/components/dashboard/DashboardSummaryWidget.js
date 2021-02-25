@@ -115,7 +115,6 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 							<Sparkline
 								data={ extractForSparkline( processedData.dataMap, 2 ) }
 								change={ 1 }
-								loadSmall={ false }
 							/>
 						}
 						context="compact"
@@ -138,7 +137,6 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 							<Sparkline
 								data={ extractForSparkline( processedData.dataMap, 1 ) }
 								change={ 1 }
-								loadSmall={ false }
 							/>
 						}
 						context="compact"
@@ -158,7 +156,6 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 							<Sparkline
 								data={ extractForSparkline( processedData.dataMap, 3 ) }
 								change={ 1 }
-								loadSmall={ false }
 							/>
 						}
 						context="compact"
