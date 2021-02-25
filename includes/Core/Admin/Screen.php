@@ -144,7 +144,7 @@ final class Screen {
 					 * until the JS runs.
 					 *
 					 * A user can pick a custom Admin Color Scheme, which is only available in admin_init
-					 * or later actions. add_menu_page runs in admin_menu actino, which precedes admin_init
+					 * or later actions. add_menu_page runs on the admin_menu action, which precedes admin_init
 					 * per https://codex.wordpress.org/Plugin_API/Action_Reference
 					 *
 					 * WordPress provides some color schemes out of the box, but they can also be added via
