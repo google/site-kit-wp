@@ -1275,7 +1275,7 @@ final class Authentication {
 	/**
 	 * Filters feature flags using features received from the proxy server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param boolean $feature_enabled Original value of the feature.
 	 * @param string  $feature_name    Feature name.
