@@ -25,7 +25,6 @@ final class Google_Icon {
 	 * @since n.e.x.t
 	 *
 	 * @param string $source SVG icon source.
-	 *
 	 * @return string Base64 representation of SVG
 	 */
 	public static function to_base64( $source = false ) {
@@ -46,4 +45,3 @@ final class Google_Icon {
 		return str_replace( 'white', esc_attr( $color ), self::XML );
 	}
 }
-
