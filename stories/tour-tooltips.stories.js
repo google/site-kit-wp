@@ -26,6 +26,7 @@ import { storiesOf } from '@storybook/react';
  */
 import Link from '../assets/js/components/Link';
 import TourTooltips from '../assets/js/components/TourTooltips';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 
 // Create Mock WP Dashboard component to decouple tests to prevent future false negative.
@@ -360,8 +361,12 @@ storiesOf( 'Global', module )
 			},
 		];
 
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+		};
+
 		return (
-			<WithTestRegistry>
+			<WithTestRegistry callback={ setupRegistry }>
 				<MockWPDashboard />
 				<TourTooltips steps={ steps } tourID="feature" />
 			</WithTestRegistry>
