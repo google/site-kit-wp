@@ -293,12 +293,7 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 
 	const options = { ...UserDimensionsPieChart.chartOptions };
 
-	if ( report?.[ 0 ]?.data?.rows?.length < 2 ) {
-		// Hide pie slice text when there is just one slice because it will overlap with the chart title.
-		options.pieSliceTextStyle.color = 'transparent';
-	}
-
-	if ( report?.[0]?.data?.rows?.length === 1 ) {
+	if ( report?.[ 0 ]?.data?.rows?.length === 1 ) {
 		// When there is only one row, the chart will add a label which we need to hide - see issue #2660
 		options.pieSliceText = 'none';
 	}
