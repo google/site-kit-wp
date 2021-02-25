@@ -14,6 +14,8 @@ namespace Google\Site_Kit\Core\Util;
  * Class for the Google SVG Icon
  *
  * @since n.e.x.t
+ * @access private
+ * @ignore
  */
 final class Google_Icon {
 
