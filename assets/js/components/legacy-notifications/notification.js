@@ -305,7 +305,7 @@ class Notification extends Component {
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-1
 							">
-								{ SmallImageSVG && <SmallImageSVG /> }
+								<SmallImageSVG />
 							</div>
 						}
 
