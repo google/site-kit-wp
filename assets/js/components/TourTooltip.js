@@ -114,12 +114,13 @@ export default function TourTooltip( {
 						) }
 					</div>
 				</CardActions>
-				<button
+				<Button
 					className="googlesitekit-tooltip-close"
+					text
 					{ ...closeProps }
 				>
 					<CloseIcon width="14" height="14" />
-				</button>
+				</Button>
 			</Card>
 		</div>
 	);
