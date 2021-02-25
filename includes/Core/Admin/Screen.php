@@ -156,7 +156,6 @@ final class Screen {
 					add_action(
 						'admin_init',
 						function() {
-
 							global $menu, $_wp_admin_css_colors;
 
 							$color_scheme = get_user_option( 'admin_color' ) ?: 'fresh';
