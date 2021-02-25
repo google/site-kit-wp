@@ -160,14 +160,14 @@ export default function UserDimensionsPieChart( {
 			if ( rowLabel === othersLabel ) {
 				switch ( dimensionName ) {
 					case 'ga:country':
-						tooltip += `<p>${ __( 'See the full list of locations in Analytics', 'google-site-kit' ) }`;
+						tooltip += `<p>${ __( 'See the full list of locations in Analytics', 'google-site-kit' ) }</p>`;
 						break;
 					case 'ga:deviceCategory':
-						tooltip += `<p>${ __( 'See the full list of devices in Analytics', 'google-site-kit' ) }`;
+						tooltip += `<p>${ __( 'See the full list of devices in Analytics', 'google-site-kit' ) }</p>`;
 						break;
 					case 'ga:channelGrouping':
 					default:
-						tooltip += `<p>${ __( 'See the full list of channels in Analytics', 'google-site-kit' ) }`;
+						tooltip += `<p>${ __( 'See the full list of channels in Analytics', 'google-site-kit' ) }</p>`;
 						break;
 				}
 			}
