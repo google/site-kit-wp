@@ -358,7 +358,7 @@ class Notification extends Component {
 								mdc-layout-grid__cell--span-4-desktop
 							">
 								<div className="googlesitekit-publisher-win__image-large">
-									{ WinImageSVG && <WinImageSVG /> }
+									<WinImageSVG />
 								</div>
 							</div>
 						}
