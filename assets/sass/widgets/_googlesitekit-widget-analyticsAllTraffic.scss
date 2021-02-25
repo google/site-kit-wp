@@ -129,16 +129,19 @@
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart {
+		height: 100%;
 		position: relative;
+		width: 100%;
+	}
 
-		&.googlesitekit-widget--analyticsAllTraffic__dimensions--loading {
-			visibility: hidden;
-		}
+	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart .googlesitekit-chart-v2-loading {
+		padding-bottom: 32px;
+		padding-top: 32px;
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__selectable {
 		// Use pointer when hovering over chart slice or legend entry.
-		.googlesitekit-line-chart > div > div > div > svg {
+		.googlesitekit-chart-v2 > div > div > div > svg {
 
 			& > g > path,
 			& > g > g {
@@ -182,12 +185,20 @@
 		}
 	}
 
+	.googlesitekit-widget--analyticsAllTraffic__totals {
+		// HACK: Fixes jumping of widget when a dimension is selected.
+		@media (min-width: $bp-desktop) {
+			height: 1px;
+		}
+	}
+
 	.googlesitekit-widget--analyticsAllTraffic__chart {
 		min-height: 368px;
 		position: relative;
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__legend {
+		margin-top: -6px;
 		text-align: center;
 	}
 
