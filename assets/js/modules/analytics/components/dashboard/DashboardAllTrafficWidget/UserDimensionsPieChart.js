@@ -197,6 +197,7 @@ export default function UserDimensionsPieChart( {
 
 			return tooltip;
 		},
+		hideEmpty: true,
 	} );
 
 	const { slices } = UserDimensionsPieChart.chartOptions;

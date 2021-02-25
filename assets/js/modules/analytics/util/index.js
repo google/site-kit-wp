@@ -68,6 +68,7 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 		maxSlices,
 		withOthers = false,
 		tooltipCallback,
+		hideEmpty = false,
 	} = options;
 
 	const data = reports[ 0 ].data;
@@ -111,7 +112,9 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 			rowData.push( tooltipCallback( row, rowData ) );
 		}
 
-		dataMap.push( rowData );
+		if ( ! ( hideEmpty && users < 1 ) ) {
+			dataMap.push( rowData );
+		}
 	}
 
 	if ( hasOthers && others > 0 ) {
