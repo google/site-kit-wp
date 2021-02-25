@@ -71,7 +71,9 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 
 	const half = Math.floor( data.length / 2 );
 	const latestData = data.slice( half );
-	const olderData = data.slice( 0, half );
+	// Make sure olderData has the same amount of entries as latestData
+	// by counting half off in reverse
+	const olderData = data.reverse().slice( half ).reverse();
 
 	const totalImpressions = sumObjectListValue( latestData, 'impressions' );
 	const totalOlderImpressions = sumObjectListValue( olderData, 'impressions' );
