@@ -41,7 +41,7 @@ final class Google_Icon {
 	 *
 	 * @return string SVG XML with the fill color replaced
 	 */
-	public static function replace_fill( $color ) {
+	public static function with_fill( $color ) {
 		return str_replace( 'white', esc_attr( $color ), self::XML );
 	}
 }
