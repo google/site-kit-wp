@@ -51,7 +51,6 @@ export default function UserDimensionsPieChart( {
 	dimensionValue,
 	loaded,
 	report,
-	sourceLink,
 } ) {
 	const [ selectable, setSelectable ] = useState( false );
 
@@ -79,8 +78,6 @@ export default function UserDimensionsPieChart( {
 			const label = target.dataset.rowLabel;
 			if ( label === '(other)' || label === '(not set)' ) {
 				trackEvent( 'all_traffic_widget', 'help_click', label );
-			} else if ( label === 'others' ) {
-				trackEvent( 'all_traffic_widget', 'others_source_click', null );
 			}
 		};
 
@@ -160,12 +157,19 @@ export default function UserDimensionsPieChart( {
 			);
 
 			const othersLabel = __( 'Others', 'google-site-kit' ).toLowerCase();
-			if ( sourceLink && rowLabel === othersLabel ) {
-				tooltip += getTooltipHelp(
-					sourceLink,
-					__( 'See the detailed breakdown in Analytics', 'google-site-kit' ),
-					'others'
-				);
+			if ( rowLabel === othersLabel ) {
+				switch ( dimensionName ) {
+					case 'ga:country':
+						tooltip += `<p>${ __( 'See the full list of locations in Analytics', 'google-site-kit' ) }</p>`;
+						break;
+					case 'ga:deviceCategory':
+						tooltip += `<p>${ __( 'See the full list of devices in Analytics', 'google-site-kit' ) }</p>`;
+						break;
+					case 'ga:channelGrouping':
+					default:
+						tooltip += `<p>${ __( 'See the full list of channels in Analytics', 'google-site-kit' ) }</p>`;
+						break;
+				}
 			}
 
 			if ( otherSupportURL && rowLabel === '(other)' ) {
@@ -499,7 +503,6 @@ UserDimensionsPieChart.chartOptions = {
 };
 
 UserDimensionsPieChart.propTypes = {
-	sourceLink: PropTypes.string,
 	dimensionName: PropTypes.string.isRequired,
 	dimensionValue: PropTypes.string,
 	report: PropTypes.arrayOf( PropTypes.object ),
