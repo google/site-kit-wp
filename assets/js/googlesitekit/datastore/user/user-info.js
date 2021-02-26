@@ -383,7 +383,7 @@ export const selectors = {
 	/**
 	 * Gets the initial version that the user used Site Kit with.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} `string` Site Kit version number,

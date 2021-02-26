@@ -502,7 +502,7 @@ export const selectors = {
 	/**
 	 * Returns true if this site has the Web Stories plugin enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} `true` if the Web Stories plugin is enabled, `false` if not. Returns `undefined` if not loaded.

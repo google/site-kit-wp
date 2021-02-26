@@ -393,7 +393,7 @@ final class Assets {
 					'in_footer'    => false,
 					'before_print' => function( $handle ) {
 						// The "42" version is important because it contains a fix for the tooltip flickering issue.
-						wp_add_inline_script( $handle, 'google.charts.load( "42", { packages: [ "corechart" ] } );' );
+						wp_add_inline_script( $handle, 'google.charts.load( "current", { packages: [ "corechart" ] } );' );
 					},
 				)
 			),

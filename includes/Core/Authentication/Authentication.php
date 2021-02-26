@@ -296,6 +296,9 @@ final class Authentication {
 		add_action(
 			'googlesitekit_authorize_user',
 			function () {
+				if ( ! $this->credentials->using_proxy() ) {
+					return;
+				}
 				$this->set_connected_proxy_url();
 				$this->require_user_input();
 			}
@@ -1275,7 +1278,7 @@ final class Authentication {
 	/**
 	 * Filters feature flags using features received from the proxy server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param boolean $feature_enabled Original value of the feature.
 	 * @param string  $feature_name    Feature name.
