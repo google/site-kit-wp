@@ -83,10 +83,7 @@ Button.displayName = 'Button';
 
 Button.propTypes = {
 	onClick: PropTypes.func,
-	children: PropTypes.oneOfType( [
-		PropTypes.arrayOf( PropTypes.node ),
-		PropTypes.node,
-	] ),
+	children: PropTypes.node,
 	href: PropTypes.string,
 	text: PropTypes.bool,
 	className: PropTypes.string,
