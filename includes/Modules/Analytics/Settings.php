@@ -56,6 +56,13 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					$default['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
 				}
 
+				// `canUseSnippet` is a computed setting, so this sets the value if settings have not been saved yet.
+				// This filter is documented below.
+				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', true );
+				if ( is_bool( $can_use_snippet ) ) {
+					$default['canUseSnippet'] = $can_use_snippet;
+				}
+
 				return $default;
 			}
 		);
