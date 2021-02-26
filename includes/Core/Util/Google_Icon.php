@@ -35,8 +35,7 @@ final class Google_Icon {
 	 * @param string $source SVG icon source.
 	 * @return string Base64 representation of SVG
 	 */
-	public static function to_base64( $source = false ) {
-		$svg = $source ? $source : self::XML;
+	public static function to_base64( $source = self::XML ) {
 		return base64_encode( $svg );
 	}
 
