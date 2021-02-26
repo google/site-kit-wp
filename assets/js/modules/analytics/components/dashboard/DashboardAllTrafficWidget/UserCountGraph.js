@@ -35,9 +35,8 @@ import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, UI_DIMENSION_COLOR } from '../../../datastore/constants';
-import GoogleChart from '../../../../../components/GoogleChart';
+import GoogleChartV2 from '../../../../../components/GoogleChartV2';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
-import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
 const { useSelect } = Data;
 
@@ -67,11 +66,6 @@ export default function UserCountGraph( { loaded, error, report } ) {
 			global.removeEventListener( 'resize', updateBreakpoints );
 		};
 	}, [] );
-
-	if ( ! loaded ) {
-		// On desktop, the real graph height is 350px, so match that here.
-		return <PreviewBlock width="100%" height="350px" shape="square" />;
-	}
 
 	if ( error ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
@@ -166,11 +160,14 @@ export default function UserCountGraph( { loaded, error, report } ) {
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__user-count-chart">
-			<GoogleChart
-				chartType="line"
+			<GoogleChartV2
+				chartType="LineChart"
 				data={ chartData }
+				height="368px"
+				loadingHeight="340px"
+				loaded={ loaded }
 				options={ chartOptions }
-				loadHeight={ 50 }
+				width="100%"
 			/>
 		</div>
 	);

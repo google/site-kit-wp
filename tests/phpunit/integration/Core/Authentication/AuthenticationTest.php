@@ -83,6 +83,49 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
+	public function test_register__googlesitekit_user_data() {
+		remove_all_filters( 'googlesitekit_user_data' );
+		$user_id      = $this->factory()->user->create();
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context, $user_id );
+		$auth         = new Authentication(
+			$context,
+			null,
+			$user_options
+		);
+		$auth->register();
+		$this->assertTrue( has_filter( 'googlesitekit_user_data' ) );
+
+		$user_data = apply_filters( 'googlesitekit_user_data', array() );
+		$this->assertEqualSets(
+			array(
+				'connectURL',
+				'initialVersion',
+				'userInputState',
+				'verified',
+			),
+			array_keys( $user_data )
+		);
+
+		// When a profile is set, additional data is added.
+		$email = 'wapuu.wordpress@gmail.com';
+		$photo = 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png';
+		$auth->profile()->set( compact( 'email', 'photo' ) );
+		$user_data = apply_filters( 'googlesitekit_user_data', array() );
+		$this->assertEqualSets(
+			array(
+				'connectURL',
+				'initialVersion',
+				'userInputState',
+				'verified',
+				'user',
+			),
+			array_keys( $user_data )
+		);
+		$this->assertEquals( $email, $user_data['user']['email'] );
+		$this->assertEquals( $photo, $user_data['user']['picture'] );
+	}
+
 	/**
 	 * @dataProvider option_action_provider
 	 * @param string $option
@@ -225,11 +268,12 @@ class AuthenticationTest extends TestCase {
 		remove_all_actions( 'admin_action_googlesitekit_proxy_setup' );
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
-		$context     = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$credentials = new Credentials( new Encrypted_Options( new Options( $context ) ) );
-		$auth        = new Authentication( $context );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$credentials  = new Credentials( new Encrypted_Options( new Options( $context ) ) );
+		$auth         = new Authentication( $context );
+		$google_proxy = $auth->get_google_proxy();
+
 		$auth->register();
-		$google_proxy = new Google_Proxy( $context );
 
 		$this->assertTrue( has_action( 'admin_action_googlesitekit_proxy_setup' ) );
 		$this->assertFalse( $credentials->has() );
@@ -732,6 +776,47 @@ class AuthenticationTest extends TestCase {
 
 			$this->assertEquals( $fake_proxy_credentials['client_id'], $query_args['site_id'] );
 		}
+	}
+
+	public function test_filter_features_via_proxy() {
+		remove_all_filters( 'googlesitekit_is_feature_enabled' );
+
+		$this->fake_proxy_site_connection();
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$authentication = new Authentication( $context );
+		$google_proxy   = $authentication->get_google_proxy();
+
+		$this->assertFalse( has_filter( 'googlesitekit_is_feature_enabled' ) );
+		$authentication->register();
+		$this->assertTrue( has_filter( 'googlesitekit_is_feature_enabled' ) );
+
+		add_filter(
+			'pre_http_request',
+			function ( $preempt, $args, $url ) use ( $google_proxy ) {
+				if ( $google_proxy->url( Google_Proxy::FEATURES_URI ) !== $url ) {
+					return $preempt;
+				}
+
+				$data = array(
+					'userInput'             => array( 'enabled' => true ),
+					'widgets.dashboard'     => array( 'enabled' => true ),
+					'widgets.pageDashboard' => array( 'enabled' => false ),
+				);
+
+				return array(
+					'headers'  => array(),
+					'body'     => wp_json_encode( $data ),
+					'response' => array( 'code' => 200 ),
+				);
+			},
+			10,
+			3
+		);
+
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'nonExisting' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'widgets.dashboard' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'widgets.pageDashboard' ) );
 	}
 
 	protected function get_user_option_keys() {

@@ -19,3 +19,8 @@
 export { default as report } from './report';
 export { default as adminbarSearchConsoleMockData } from './adminbar-search-console-mock-data';
 export { default as adminbarSearchConsoleOptions } from './adminbar-search-console-options';
+export { default as wpDashboardClicksArgs } from './wp-dashboard-clicks-args.json';
+export { default as wpDashboardClicksData } from './wp-dashboard-clicks-data.json';
+export { default as wpDashboardImpressionsArgs } from './wp-dashboard-impressions-args.json';
+export { default as wpDashboardImpressionsData } from './wp-dashboard-impressions-data.json';
+
