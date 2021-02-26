@@ -64,14 +64,14 @@ function SettingsModules() {
 	const byActiveNoInternals = ( active ) => ( module ) =>
 		! module.internal && active === module.active;
 
-	const getModulesByActive = ( active ) =>
+	const getModulesByStatus = ( { active } = {} ) =>
 		Object.values( modulesData )
 			.filter( byActiveNoInternals( active ) )
 			.sort( ( a, b ) => a.sort - b.sort )
 			.map( withDependantModulesText );
 
-	const activeModules = getModulesByActive( true );
-	const inactiveModules = getModulesByActive( false );
+	const activeModules = getModulesByStatus( { active: true } );
+	const inactiveModules = getModulesByStatus( { active: false } );
 
 	return (
 		<Switch>
