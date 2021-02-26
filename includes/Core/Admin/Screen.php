@@ -156,19 +156,24 @@ final class Screen {
 					add_action(
 						'admin_init',
 						function() {
-							global $menu, $_wp_admin_css_colors;
-
+							global $menu, $_wp_admin_css_colors, $pagenow;
 							$color_scheme = get_user_option( 'admin_color' ) ?: 'fresh';
 
-							if ( empty( $_wp_admin_css_colors[ $color_scheme ]->icon_colors['base'] ) ) {
+							$prefix = 'googlesitekit-';
+
+							// If we're on one of the sitekit pages, use the 'current' color, otherwise use the 'base' color.
+							// @see wp_admin_css_color().
+							$color_key = 'admin.php' === $pagenow && substr( filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING ), 0, strlen( $prefix ) ) === $prefix ? 'current' : 'base';
+
+							if ( empty( $_wp_admin_css_colors[ $color_scheme ]->icon_colors[ $color_key ] ) ) {
 								return;
 							}
 
-							$color = $_wp_admin_css_colors[ $color_scheme ]->icon_colors['base'];
+							$color = $_wp_admin_css_colors[ $color_scheme ]->icon_colors[ $color_key ];
 
 							foreach ( $menu as &$item ) {
 								if ( 'googlesitekit-dashboard' === $item[2] ) {
-									$item[6] = 'data:image/svg+xml;base64,' . Google_Icon::to_base64( Google_Icon::replace_fill( $color ) );
+									$item[6] = 'data:image/svg+xml;base64,' . Google_Icon::to_base64( Google_Icon::with_fill( $color ) );
 									break;
 								}
 							}
