@@ -47,7 +47,7 @@ function Link( {
 } ) {
 	// Note: the disabled attribute does not alter behavior of anchor tags,
 	// so if disabled we force it to be a button.
-	const isAnchor = href && ! disabled;
+	const isAnchor = typeof href !== 'undefined' && ! disabled;
 	const element = isAnchor ? 'a' : 'button';
 	// If `to` prop is set, a `react-router` link is expected
 	const isRouterLink = typeof to !== 'undefined';
