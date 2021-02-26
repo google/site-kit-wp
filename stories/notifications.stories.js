@@ -38,8 +38,6 @@ import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constant
 import rocketImage from '../assets/images/rocket.png';
 import thumbsUpImage from '../assets/images/thumbs-up.png';
 
-global._googlesitekitLegacyData.canAdsRun = true;
-
 storiesOf( 'Global/Notifications', module )
 	.add( 'Module Setup Complete', () => {
 		const setupRegistry = ( registry ) => {
