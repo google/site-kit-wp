@@ -33,7 +33,6 @@ import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
-import { getDateString } from '../../../../googlesitekit/datastore/user/utils/get-date-string';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
@@ -49,16 +48,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 		earningsURL,
 		impressionsURL,
 	} = useSelect( ( select ) => {
-		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
-
 		const referenceDate = select( CORE_USER ).getReferenceDate();
-
-		const todayArgs = {
-			startDate: referenceDate,
-			endDate: referenceDate,
-			metrics,
-		};
-
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -66,20 +56,17 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 		const periodArgs = {
 			startDate,
 			endDate,
-			metrics,
+			metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
 		};
 
-		// Get the first day of the month as an ISO 8601 date string without the time.
-		const startOfMonth = getDateString( new Date(
-			new Date( referenceDate ).getFullYear(),
-			new Date( referenceDate ).getMonth(),
-			1
-		) );
+		const todayArgs = {
+			...periodArgs,
+			startDate: referenceDate,
+			endDate: referenceDate,
+		};
 
 		const dailyArgs = {
-			startDate: startOfMonth,
-			endDate: referenceDate,
-			metrics,
+			...periodArgs,
 			dimensions: [ 'DATE' ],
 		};
 
@@ -198,5 +185,4 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 	);
 }
 
-// export default DashboardSummaryWidget;
 export default whenActive( { moduleName: 'adsense' } )( DashboardSummaryWidget );

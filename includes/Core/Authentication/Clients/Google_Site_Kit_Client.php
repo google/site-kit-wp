@@ -184,22 +184,18 @@ class Google_Site_Kit_Client extends Google_Client {
 			}
 			$this->setAccessToken( $token_response );
 
-			// TODO: In the future, once the old authentication mechanism no longer exists, this check can be removed.
-			// For now the below action should only fire for the proxy despite not clarifying that in the hook name.
-			if ( $this instanceof Google_Site_Kit_Proxy_Client ) {
-				/**
-				 * Fires when the current user has just been reauthorized to access Google APIs with a refreshed access token.
-				 *
-				 * In other words, this action fires whenever Site Kit has just obtained a new access token based on
-				 * the refresh token for the current user, which typically happens once every hour when using Site Kit,
-				 * since that is the lifetime of every access token.
-				 *
-				 * @since 1.25.0
-				 *
-				 * @param array $token_response Token response data.
-				 */
-				do_action( 'googlesitekit_reauthorize_user', $token_response );
-			}
+			/**
+			 * Fires when the current user has just been reauthorized to access Google APIs with a refreshed access token.
+			 *
+			 * In other words, this action fires whenever Site Kit has just obtained a new access token based on
+			 * the refresh token for the current user, which typically happens once every hour when using Site Kit,
+			 * since that is the lifetime of every access token.
+			 *
+			 * @since 1.25.0
+			 *
+			 * @param array $token_response Token response data.
+			 */
+			do_action( 'googlesitekit_reauthorize_user', $token_response );
 		}
 
 		return $token_response;
