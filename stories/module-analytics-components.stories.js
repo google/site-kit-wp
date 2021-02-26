@@ -77,6 +77,77 @@ generateReportBasedWidgetStories( {
 		dashboardUserGraphArgs,
 	],
 	Component: DashboardAllTrafficWidget,
+	additionalVariants: {
+		'One row of data': {
+			data: [
+				{
+					nextPageToken: null,
+					columnHeader: {
+						dimensions: [
+							'ga:channelGrouping',
+						],
+						metricHeader: {
+							metricHeaderEntries: [
+								{
+									name: 'ga:users',
+									type: 'INTEGER',
+								},
+							],
+						},
+					},
+				},
+				{
+					dataLastRefreshed: null,
+					isDataGolden: null,
+					rowCount: 1,
+					samplesReadCounts: null,
+					samplingSpaceSizes: null,
+					rows: [ {
+						dimensions: [ 'Organic Search' ],
+						metrics: [
+							{
+								values: [ '1951' ],
+							},
+							{
+								values: [ '510' ],
+							},
+						],
+					} ],
+					totals: [ {
+						values: [ '1951' ],
+					},
+					{
+						values: [ '510' ],
+					} ],
+					minimums: [
+						{
+							values: [ '1951' ],
+						},
+						{
+							values: [ '510' ],
+						},
+					],
+					maximums: [
+						{
+							values: [ '1951' ],
+						},
+						{
+							values: [ '510' ],
+						},
+					],
+				} ],
+			referenceDate: '2021-01-06',
+			options: {
+				startDate: '2020-12-09',
+				endDate: '2021-01-05',
+				compareStartDate: '2020-11-11',
+				compareEndDate: '2020-12-08',
+				metrics: [ {
+					expression: 'ga:users',
+				} ],
+			},
+		},
+	},
 	wrapWidget: false,
 	setup,
 } );
