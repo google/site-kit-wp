@@ -36,7 +36,7 @@ final class Google_Icon {
 	 * @return string Base64 representation of SVG
 	 */
 	public static function to_base64( $source = self::XML ) {
-		return base64_encode( $svg );
+		return base64_encode( $source );
 	}
 
 	/**
