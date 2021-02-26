@@ -73,7 +73,9 @@ const Button = forwardRef( ( {
 			{ ...extraProps }
 		>
 			{ icon }
-			<span className="mdc-button__label">{ children }</span>
+			{ children && (
+				<span className="mdc-button__label">{ children }</span>
+			) }
 			{ trailingIcon }
 		</SemanticButton>
 	);
@@ -83,7 +85,7 @@ Button.displayName = 'Button';
 
 Button.propTypes = {
 	onClick: PropTypes.func,
-	children: PropTypes.string.isRequired,
+	children: PropTypes.string,
 	href: PropTypes.string,
 	text: PropTypes.bool,
 	className: PropTypes.string,
