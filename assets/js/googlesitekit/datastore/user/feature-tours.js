@@ -71,7 +71,7 @@ const baseActions = {
 	/**
 	 * Dismisses the given tour by slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param {string} slug Tour slug to dismiss.
 	 * @return {Object} Generator instance.
@@ -131,7 +131,7 @@ const baseSelectors = {
 	/**
 	 * Gets the list of dismissed tours.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string[]|undefined)} Array of dismissed tour slugs,
@@ -144,7 +144,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether or not the given tour is dismissed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Tour slug to check.

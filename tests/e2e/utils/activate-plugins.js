@@ -24,7 +24,7 @@ import { switchUserToAdmin, switchUserToTest, visitAdminPage } from '@wordpress/
 /**
  * Activates installed plugins.
  *
- * @since n.e.x.t
+ * @since 1.27.0
  *
  * @param {Array.<string>} plugins Plugin slugs.
  */
