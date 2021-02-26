@@ -181,11 +181,6 @@ final class Screen {
 		// Enqueue base admin screen stylesheet.
 		$assets->enqueue_asset( 'googlesitekit-admin-css' );
 
-		// Helps detection of enabled ad blockers to warn users before activating or setup AdSense module.
-		if ( $this->is_ad_blocker_detection_required() ) {
-			$assets->enqueue_asset( 'googlesitekit-pagead2.ads' );
-		}
-
 		if ( $this->args['enqueue_callback'] ) {
 			call_user_func( $this->args['enqueue_callback'], $assets );
 		}
