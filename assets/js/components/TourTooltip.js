@@ -45,7 +45,7 @@ export default function TourTooltip( {
 	step,
 	tooltipProps,
 } ) {
-	const indicatorArray = createIncrementalArrayBySize( size );
+	const indicatorArray = size > 1 ? createIncrementalArrayBySize( size ) : [];
 	const getIndicatorClassName = ( indicatorIndex ) => classnames( 'googlesitekit-tooltip-indicator', {
 		active: indicatorIndex === index,
 	} );
