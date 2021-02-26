@@ -41,8 +41,8 @@ import SettingsModules from './SettingsModules';
 import { Cell, Grid, Row } from '../../material-components';
 
 function SettingsApp( { location: { pathname } } ) {
-	// Don't pass NavLink component if it would send you to same URL, prevents a warning.
-	const getTag = ( path ) => basePath === path ? 'button' : NavLink;
+	// Prevent pushing to hash history if it would send you to the same URL, prevents a warning.
+	const shouldReplaceHistory = ( path ) => false && basePath === path;
 	const [ , basePath ] = pathname.split( '/' );
 	const activeTab = SettingsApp.basePathToTabIndex[ basePath ];
 
@@ -58,13 +58,13 @@ function SettingsApp( { location: { pathname } } ) {
 						<Cell size={ 12 }>
 							<Layout>
 								<TabBar activeIndex={ activeTab }>
-									<Tab tag={ getTag( 'connected-services' ) } to="/connected-services">
+									<Tab tag={ NavLink } to="/connected-services" replace={ shouldReplaceHistory( 'connected-services' ) } >
 										<span className="mdc-tab__text-label">{ __( 'Connected Services', 'google-site-kit' ) }</span>
 									</Tab>
-									<Tab tag={ getTag( 'connect-more-services' ) } to="/connect-more-services">
+									<Tab tag={ NavLink } to="/connect-more-services" replace={ shouldReplaceHistory( 'connect-more-services' ) } >
 										<span className="mdc-tab__text-label">{ __( 'Connect More Services', 'google-site-kit' ) }</span>
 									</Tab>
-									<Tab tag={ getTag( 'admin-settings' ) } to="/admin-settings">
+									<Tab tag={ NavLink } to="/admin-settings" replace={ shouldReplaceHistory( 'admin-settings' ) } >
 										<span className="mdc-tab__text-label">{ __( 'Admin Settings', 'google-site-kit' ) }</span>
 									</Tab>
 								</TabBar>
