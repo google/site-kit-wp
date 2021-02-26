@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
 import { getModulesData } from '../../util';
 import Notification from './notification';
 import { modulesNotificationsToRequest, getModulesNotifications } from './util';
+import SunSmallSVG from '../../../svg/sun-small.svg';
 
 class DashboardModulesAlerts extends Component {
 	constructor( props ) {
@@ -74,7 +75,7 @@ class DashboardModulesAlerts extends Component {
 						title={ notification.title || '' }
 						description={ notification.description || '' }
 						blockData={ notification.blockData || [] }
-						WinImageSVG={ notification.WinImageSVG }
+						WinImageSVG={ SunSmallSVG }
 						format={ notification.format || 'small' }
 						learnMoreURL={ notification.learnMoreURL || '' }
 						learnMoreDescription={ notification.learnMoreDescription || '' }
