@@ -104,10 +104,10 @@ export default function SettingsView() {
 						{ __( 'Analytics Code Snippet', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ ! canUseSnippet && __( 'The code is controlled by the Tag Manager module.', 'google-site-kit' ) }
+						{ canUseSnippet === false && __( 'The code is controlled by the Tag Manager module.', 'google-site-kit' ) }
 						{ canUseSnippet && useSnippet && __( 'Snippet is inserted', 'google-site-kit' ) }
-						{ ( ! useSnippet && ! hasExistingTag ) && __( 'Snippet is not inserted', 'google-site-kit' ) }
-						{ ( ! useSnippet && hasExistingTag ) && __( 'Inserted by another plugin or theme', 'google-site-kit' ) }
+						{ canUseSnippet && ! useSnippet && ! hasExistingTag && __( 'Snippet is not inserted', 'google-site-kit' ) }
+						{ canUseSnippet && ! useSnippet && hasExistingTag && __( 'Inserted by another plugin or theme', 'google-site-kit' ) }
 					</p>
 				</div>
 			</div>

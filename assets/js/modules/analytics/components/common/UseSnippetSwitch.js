@@ -55,7 +55,7 @@ export default function UseSnippetSwitch() {
 				disabled={ ! canUseSnippet }
 			/>
 			<p>
-				{ ! canUseSnippet && __( 'The code is controlled by the Tag Manager module.', 'google-site-kit' ) }
+				{ canUseSnippet === false && __( 'The code is controlled by the Tag Manager module.', 'google-site-kit' ) }
 				{ canUseSnippet && useSnippet && __( 'Site Kit will add the code automatically.', 'google-site-kit' ) }
 				{ canUseSnippet && ! useSnippet && __( 'Site Kit will not add the code to your site.', 'google-site-kit' ) }
 			</p>
