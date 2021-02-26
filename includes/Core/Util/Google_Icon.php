@@ -45,7 +45,6 @@ final class Google_Icon {
 	 * @since n.e.x.t
 	 *
 	 * @param string $color Any valid color for css, either word or hex code.
-	 *
 	 * @return string SVG XML with the fill color replaced
 	 */
 	public static function with_fill( $color ) {
