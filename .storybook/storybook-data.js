@@ -65,7 +65,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+				readySelector: '.googlesitekit-chart-v2 > div[style="position: relative;"]',
 			},
 		},
 	},
@@ -79,7 +79,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+				readySelector: '.googlesitekit-chart-v2 > div[style="position: relative;"]',
 			},
 		},
 	},
