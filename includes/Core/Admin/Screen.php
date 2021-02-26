@@ -139,6 +139,19 @@ final class Screen {
 			}
 		}
 
+		// If $parent_slug is NULL then add_submenu_page does not add the title automatically.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( null === $parent_slug && isset( $_GET['page'] ) && $this->slug === $_GET['page'] ) {
+			add_filter(
+				'admin_title',
+				function ( $admin_title ) {
+					return $this->args['title'] . $admin_title;
+				},
+				10,
+				2
+			);
+		}
+
 		// If submenu item or not in menu, use add_submenu_page().
 		return (string) add_submenu_page(
 			$parent_slug,
