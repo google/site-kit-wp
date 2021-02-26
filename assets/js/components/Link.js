@@ -87,7 +87,7 @@ function Link( {
 				},
 			) }
 			href={ isAnchor ? href : undefined }
-			to={ isRouterLink ? to : undefined }
+			to={ to }
 			target={ isAnchor && external ? '_blank' : undefined }
 			rel={ external ? 'noopener noreferrer' : undefined }
 			disabled={ disabled }
