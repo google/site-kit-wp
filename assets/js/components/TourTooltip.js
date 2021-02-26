@@ -31,19 +31,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { createIncrementalArrayBySize } from '../util/create-incremental-array-by-size';
 import CloseIcon from '../../svg/close.svg';
 import Button from './Button';
-
-/**
- * Creates an array of length equal to size with incremental values starting at 0.
- *
- * @since n.e.x.t
- *
- * @param {number} size Array length.
- * @return {number[]} Array of incremental numbers.
- * @example createIncrementalArrayBySize(3); // [0, 1, 2]
- */
-const createIncrementalArrayBySize = ( size ) => new Array( size ).fill().map( ( _, i ) => i );
 
 export default function TourTooltip( {
 	backProps,
