@@ -34,7 +34,7 @@ import {
  * Resets Site Kit using a utility plugin.
  *
  * @since 1.0.0
- * @since n.e.x.t Option to reset persistent options.
+ * @since 1.27.0 Option to reset persistent options.
  *
  * @param {Object}  [options]            Reset options.
  * @param {boolean} [options.persistent] Additionally deletes persistent options.
