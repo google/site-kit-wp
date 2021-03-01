@@ -32,7 +32,7 @@ import classNames from 'classnames';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { isFeatureEnabled } from '../../features';
+import { useFeature } from '../../hooks/useFeature';
 import Header from '../Header';
 import Alert from '../Alert';
 import PageHeader from '../PageHeader';
@@ -50,7 +50,7 @@ function ModuleApp( { slug } ) {
 	const screenWidgetContext = useSelect( ( select ) => select( CORE_MODULES ).getScreenWidgetContext( slug ) );
 	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( slug ) );
 	const ModuleIcon = useSelect( ( select ) => select( CORE_MODULES ).getModuleIcon( slug ) );
-	const shouldRenderWidget = isFeatureEnabled( 'widgets.moduleScreens' ) && screenWidgetContext;
+	const shouldRenderWidget = useFeature( 'widgets.moduleScreens' ) && screenWidgetContext;
 	const moduleStatus = moduleConnected ? 'connected' : 'not-connected';
 
 	const moduleStatusText = sprintf(
