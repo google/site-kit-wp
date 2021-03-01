@@ -85,8 +85,18 @@
 			max-width: 100%;
 		}
 
-		svg {
-			width: 200px;
+		@media (max-width: $bp-mobileOnly ) {
+
+			svg {
+				width: 200px;
+			}
+		}
+
+		@media (min-width: $bp-desktop) {
+
+			svg {
+				width: 200px;
+			}
 		}
 	}
 
