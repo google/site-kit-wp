@@ -461,6 +461,7 @@ class AnalyticsTest extends TestCase {
 					'profileID'             => $_GET['profileId'],
 					'internalWebPropertyID' => $expected_internal_id,
 					'useSnippet'            => true,
+					'canUseSnippet'         => true,
 					'anonymizeIP'           => true,
 					'adsenseLinked'         => false,
 					'trackingDisabled'      => array( 'loggedinUsers' ),
