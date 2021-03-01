@@ -1,5 +1,5 @@
 /**
- * AdSense module constants.
+ * Search Console module constants
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,6 +16,5 @@
  * limitations under the License.
  */
 
-export const ERROR_CODE_ADBLOCKER_ACTIVE = 'adblocker_active';
-export const CONTEXT_MODULE_ADSENSE = 'moduleAdsense';
-export const AREA_MODULE_ADSENSE_MAIN = 'moduleAdsenseMain';
+export const CONTEXT_MODULE_SEARCH_CONSOLE = 'moduleSearchConsole';
+export const AREA_MODULE_SEARCH_CONSOLE_MAIN = 'moduleSearchConsoleMain';

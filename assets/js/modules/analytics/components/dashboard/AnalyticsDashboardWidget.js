@@ -32,16 +32,13 @@ import { __, _n, _x, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import AnalyticsIcon from '../../../../../svg/analytics.svg';
-import Header from '../../../../components/Header';
 import AnalyticsDashboardWidgetSiteStats from './AnalyticsDashboardWidgetSiteStats';
 import AnalyticsDashboardWidgetTopPagesTable from './AnalyticsDashboardWidgetTopPagesTable';
 import AnalyticsDashboardWidgetOverview from './AnalyticsDashboardWidgetOverview';
-import DateRangeSelector from '../../../../components/DateRangeSelector';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import Layout from '../../../../components/layout/Layout';
 import PageHeader from '../../../../components/PageHeader';
 import LegacyDashboardAcquisitionPieChart from './LegacyDashboardAcquisitionPieChart';
-import Alert from '../../../../components/Alert';
 import ProgressBar from '../../../../components/ProgressBar';
 import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
 import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
@@ -129,10 +126,6 @@ export default function AnalyticsDashboardWidget() {
 
 	return (
 		<Fragment>
-			<Header>
-				<DateRangeSelector />
-			</Header>
-			<Alert module="analytics" />
 			<div className="googlesitekit-module-page googlesitekit-module-page--analytics">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
