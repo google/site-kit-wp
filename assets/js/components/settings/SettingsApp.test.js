@@ -55,6 +55,8 @@ describe( 'SettingsApp', () => {
 			active: true,
 			setupComplete: true,
 		};
+
+		global._googlesitekitUserData.userInputState = 'missing';
 	} );
 
 	it( 'should change location hash & DOM correctly when module accordion clicked and opened', async () => {

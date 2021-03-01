@@ -371,7 +371,7 @@ class AuthenticationTest extends TestCase {
 
 		$this->assertEmpty( $user_input_state->get() );
 		do_action( 'googlesitekit_authorize_user', array() );
-		$this->assertEmpty( $user_input_state->get() );
+		$this->assertEquals( User_Input_State::VALUE_REQUIRED, $user_input_state->get() );
 	}
 
 	public function test_get_oauth_client() {
