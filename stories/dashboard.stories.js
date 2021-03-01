@@ -135,7 +135,7 @@ storiesOf( 'Dashboard', module )
 			</WithTestRegistry>
 		);
 	},
-	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
+	{ options: { readySelector: '.googlesitekit-chart-v2 > div[style="position: relative;"]' } } )
 	.add( 'Search Funnel', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
@@ -192,6 +192,6 @@ storiesOf( 'Dashboard', module )
 		);
 	}, {
 		options: {
-			readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+			readySelector: '.googlesitekit-chart-v2 > div[style="position: relative;"]',
 		},
 	} );
