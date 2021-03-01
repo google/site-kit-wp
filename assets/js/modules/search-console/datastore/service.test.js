@@ -17,20 +17,15 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { addQueryArgs } from '@wordpress/url';
-
-/**
  *
  * Internal dependencies
  */
 import {
 	createTestRegistry,
+	provideUserInfo,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'module/search-console service store', () => {
 	const userData = {
@@ -39,16 +34,17 @@ describe( 'module/search-console service store', () => {
 		name: 'admin',
 		picture: 'https://path/to/image',
 	};
+	const authuser = userData.email;
 	const baseURI = 'https://search.google.com/search-console';
 
 	let registry;
 
-	beforeAll( () => {
+	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_USER ).receiveUserInfo( userData );
+		provideUserInfo( registry, userData );
 	} );
 
-	afterAll( () => {
+	afterEach( () => {
 		unsubscribeFromAll( registry );
 	} );
 
@@ -56,29 +52,42 @@ describe( 'module/search-console service store', () => {
 		describe( 'getServiceURL', () => {
 			it( 'retrieves the correct URL with no arguments', async () => {
 				const serviceURL = registry.select( STORE_NAME ).getServiceURL();
-				expect( serviceURL ).toBe( addQueryArgs( baseURI, { authuser: userData.email } ) );
-			} );
-
-			it( 'adds the path parameter', () => {
-				const expectedURL = addQueryArgs( `${ baseURI }/test/path/to/deeplink`, { authuser: userData.email } );
-				const serviceURLNoSlashes = registry.select( STORE_NAME ).getServiceURL( { path: 'test/path/to/deeplink' } );
-				expect( serviceURLNoSlashes ).toEqual( expectedURL );
-				const serviceURLWithLeadingSlash = registry.select( STORE_NAME ).getServiceURL( { path: '/test/path/to/deeplink' } );
-				expect( serviceURLWithLeadingSlash ).toEqual( expectedURL );
-			} );
-
-			it( 'adds query args', async () => {
-				const path = '/test/path/to/deeplink';
-				const query = {
-					param1: '1',
-					param2: '2',
-				};
-				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { path, query } );
 				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
-				expect( serviceURL.split( '?' )[ 0 ].endsWith( path ) ).toBe( true );
-				expect( serviceURL ).toMatchQueryParameters( query );
+				expect( serviceURL ).toMatchQueryParameters( { authuser: userData.email } );
+			} );
+
+			it( 'appends the given path (without leading slash) to the path of the base URL', () => {
+				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { path: 'test/path/to/deeplink' } );
+				expect( serviceURL.startsWith( `${ baseURI }/test/path/to/deeplink` ) ).toBe( true );
+			} );
+
+			it( 'appends the given path (with leading slash) to the path of the base URL', () => {
+				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { path: '/test/path/to/deeplink' } );
+				expect( serviceURL.startsWith( `${ baseURI }/test/path/to/deeplink` ) ).toBe( true );
+			} );
+
+			it( 'merges given query args to the base service URL args', async () => {
+				const foo = 'bar';
+				const baz = 'buzz';
+				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { query: { foo, baz } } );
+				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
+				expect( serviceURL ).toMatchQueryParameters( { foo, baz, authuser } );
+			} );
+
+			it( 'does not take precedence over the authuser query arg', () => {
+				const query = {
+					authuser: 'bar', // conflicts with userData.email applied in the selector
+					baz: 'buzz',
+				};
+				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { query } );
+				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
+				expect( serviceURL ).toMatchQueryParameters( {
+					authuser: userData.email,
+					baz: 'buzz',
+				} );
 			} );
 		} );
+
 		describe( 'isDomainProperty', () => {
 			it( 'should identify if property is search console domain property', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( {
