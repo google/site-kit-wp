@@ -27,6 +27,8 @@ import { addQueryArgs } from '@wordpress/url';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { untrailingslashit } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
@@ -54,6 +56,34 @@ export const selectors = {
 			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, queryArgs );
 		}
 		return addQueryArgs( baseURI, queryArgs );
+	} ),
+
+	/**
+	 * Gets a URL to the report on the service.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state             Data store's state.
+	 * @param {Object} [reportArgs]      URL parameters to be passed to the query.
+	 * @param {string} [reportArgs.page] Page URL expression for scoping results.
+	 * @return {string} The URL to the service.
+	 */
+	getServiceReportURL: createRegistrySelector( ( select ) => ( state, reportArgs = {} ) => {
+		const propertyID = select( STORE_NAME ).getPropertyID();
+		const isDomainProperty = selectors.isDomainProperty( state );
+		const referenceSiteURL = select( CORE_SITE ).getReferenceSiteURL();
+		const {
+			page = isDomainProperty ? `*${ untrailingslashit( referenceSiteURL ) }` : undefined,
+		} = reportArgs;
+
+		const path = '/performance/search-analytics';
+		const query = {
+			page,
+			...reportArgs,
+			resource_id: propertyID,
+		};
+
+		return selectors.getServiceURL( state, { path, query } );
 	} ),
 
 	/**

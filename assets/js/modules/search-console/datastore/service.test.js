@@ -22,9 +22,11 @@
  */
 import {
 	createTestRegistry,
+	provideSiteInfo,
 	provideUserInfo,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME } from './constants';
 
 describe( 'module/search-console service store', () => {
@@ -37,11 +39,15 @@ describe( 'module/search-console service store', () => {
 	const authuser = userData.email;
 	const baseURI = 'https://search.google.com/search-console';
 
+	const propertyID = 'https://example.com';
+	const domainPropertyID = 'sc-domain:example.com';
+
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideUserInfo( registry, userData );
+		provideSiteInfo( registry );
 	} );
 
 	afterEach( () => {
@@ -88,21 +94,40 @@ describe( 'module/search-console service store', () => {
 			} );
 		} );
 
+		describe( 'getServiceReportURL', () => {
+			beforeEach( () => {
+				registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
+			} );
+
+			it( 'returns a deep link to a search-analytics report', () => {
+				const serviceURL = registry.select( STORE_NAME ).getServiceReportURL();
+				expect( serviceURL.startsWith( `${ baseURI }/performance/search-analytics` ) ).toBe( true );
+			} );
+
+			it( 'adds the `resource_id` query arg for the current property ID', () => {
+				const serviceURL = registry.select( STORE_NAME ).getServiceReportURL();
+				expect( serviceURL ).toMatchQueryParameters( { resource_id: propertyID } );
+			} );
+
+			it( 'sets a default `page` query arg for domain properties', () => {
+				registry.dispatch( STORE_NAME ).setPropertyID( domainPropertyID );
+				expect( registry.select( STORE_NAME ).isDomainProperty() ).toBe( true );
+				const serviceURL = registry.select( STORE_NAME ).getServiceReportURL();
+				const referenceSiteURL = registry.select( CORE_SITE ).getReferenceSiteURL();
+				expect( serviceURL ).toMatchQueryParameters( {
+					resource_id: domainPropertyID,
+					page: `*${ referenceSiteURL }`,
+				} );
+			} );
+		} );
+
 		describe( 'isDomainProperty', () => {
 			it( 'should identify if property is search console domain property', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( {
-					propertyID: 'http://sitekit.google.com',
-				} );
+				registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
+				expect( registry.select( STORE_NAME ).isDomainProperty() ).toBe( false );
 
-				let isDomainProperty = registry.select( STORE_NAME ).isDomainProperty();
-				expect( isDomainProperty ).toBe( false );
-
-				registry.dispatch( STORE_NAME ).setSettings( {
-					propertyID: 'sc-domain:sitekit.google.com',
-				} );
-
-				isDomainProperty = registry.select( STORE_NAME ).isDomainProperty();
-				expect( isDomainProperty ).toBe( true );
+				registry.dispatch( STORE_NAME ).setPropertyID( domainPropertyID );
+				expect( registry.select( STORE_NAME ).isDomainProperty() ).toBe( true );
 			} );
 		} );
 	} );
