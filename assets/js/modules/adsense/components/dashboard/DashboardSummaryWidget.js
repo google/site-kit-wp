@@ -139,6 +139,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 							link: rpmReportURL,
+							external: true,
 						} }
 						sparkline={ daily &&
 							<Sparkline
@@ -160,6 +161,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 							link: earningsURL,
+							external: true,
 						} }
 						change={ today.totals[ 0 ] }
 						changeDataUnit={ currencyCode }
@@ -182,6 +184,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 							link: impressionsURL,
+							external: true,
 						} }
 						sparkline={ daily &&
 							<Sparkline
