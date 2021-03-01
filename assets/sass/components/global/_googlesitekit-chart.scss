@@ -23,3 +23,20 @@
 		margin-top: $grid-gap-phone;
 	}
 }
+
+.googlesitekit-chart-v2--PieChart svg > g > g {
+	pointer-events: none;
+}
+
+.googlesitekit-chart-v2--PieChart svg > g:last-child > g:last-child {
+	pointer-events: none;
+}
+
+.googlesitekit-chart-v2--PieChart div.google-visualization-tooltip {
+	pointer-events: none;
+}
+
+.googlesitekit-chart-v2-loading__forced {
+	height: 100%;
+	width: 100%;
+}

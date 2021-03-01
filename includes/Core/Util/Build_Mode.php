@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Class for interacting with build mode configuration.
  *
- * @since n.e.x.t
+ * @since 1.27.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Build_Mode {
 	/**
 	 * Build mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 * @var string
 	 */
 	private static $mode = self::MODE_PRODUCTION;
@@ -32,7 +32,7 @@ class Build_Mode {
 	/**
 	 * Sets the build mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param string $mode Build mode.
 	 */
@@ -45,7 +45,7 @@ class Build_Mode {
 	/**
 	 * Gets the current build mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @return string Current mode.
 	 */
@@ -53,7 +53,7 @@ class Build_Mode {
 		/**
 		 * Filter the build mode.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.27.0
 		 *
 		 * @param string $mode The current build mode.
 		 */
