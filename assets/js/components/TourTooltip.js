@@ -24,11 +24,6 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { createIncrementalArrayBySize } from '../util/create-incremental-array-by-size';
@@ -39,7 +34,6 @@ export default function TourTooltip( {
 	backProps,
 	closeProps,
 	index,
-	isLastStep,
 	primaryProps,
 	size,
 	step,
@@ -49,8 +43,6 @@ export default function TourTooltip( {
 	const getIndicatorClassName = ( indicatorIndex ) => classnames( 'googlesitekit-tooltip-indicator', {
 		active: indicatorIndex === index,
 	} );
-
-	const gotItText = __( 'Got it', 'google-site-kit' );
 
 	return (
 		<div className="googlesitekit-tour-tooltip" { ...tooltipProps }>
@@ -79,29 +71,16 @@ export default function TourTooltip( {
 								text
 								{ ...backProps }
 							>
-								{ __( 'Back', 'google-site-kit' ) }
+								{ backProps.title }
 							</Button>
 						) }
-						{ ! isLastStep && (
-							<Button
-								className="googlesitekit-tooltip-button"
-								text
-								{ ...primaryProps }
-							>
-								{ __( 'Next', 'google-site-kit' ) }
-							</Button>
-						) }
-						{ isLastStep && (
-							<Button
-								className="googlesitekit-tooltip-button"
-								text
-								{ ...closeProps }
-								aria-label={ gotItText }
-								title={ gotItText }
-							>
-								{ gotItText }
-							</Button>
-						) }
+						<Button
+							className="googlesitekit-tooltip-button"
+							text
+							{ ...primaryProps }
+						>
+							{ primaryProps.title }
+						</Button>
 					</div>
 				</CardActions>
 				<Button

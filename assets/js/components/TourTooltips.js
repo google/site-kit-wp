@@ -24,6 +24,11 @@ import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -39,6 +44,14 @@ const joyrideStyles = {
 		overlayColor: 'rgba(0, 0, 0, 0.6)',
 		textColor: '#ffffff', // $c-white
 	},
+};
+
+// Provides button content as well as aria-label & title attribute values.
+const joyrideLocale = {
+	back: __( 'Back', 'google-site-kit' ),
+	close: __( 'Close', 'google-site-kit' ),
+	last: __( 'Got it', 'google-site-kit' ),
+	next: __( 'Next', 'google-site-kit' ),
 };
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-floater#props}. */
@@ -130,6 +143,7 @@ export default function TourTooltips( { steps, tourID } ) {
 			continuous
 			disableOverlayClose
 			floaterProps={ floaterProps }
+			locale={ joyrideLocale }
 			run={ run }
 			showProgress
 			stepIndex={ stepIndex }
