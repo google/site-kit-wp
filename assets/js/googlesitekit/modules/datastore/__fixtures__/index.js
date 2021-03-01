@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import modules from '../fixtures.json'; // TODO: move into this directory.
+import modules from './list.json';
 
 // Only Search Console and Site Verification are always active.
 const alwaysActive = [ 'search-console', 'site-verification' ];
