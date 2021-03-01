@@ -22,6 +22,7 @@
 import Data from 'googlesitekit-data';
 import baseModuleStore from './base';
 import accounts from './accounts';
+import adunits from './adunits';
 import alerts from './alerts';
 import clients from './clients';
 import report from './report';
@@ -35,6 +36,7 @@ import { STORE_NAME } from './constants';
 const store = Data.combineStores(
 	baseModuleStore,
 	accounts,
+	adunits,
 	alerts,
 	clients,
 	report,

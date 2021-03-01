@@ -28,9 +28,6 @@ import URLSearchWidget from '../../googlesitekit/widgets/components/URLSearchWid
 import {
 	CONTEXT_DASHBOARD,
 	CONTEXT_PAGE_DASHBOARD,
-	CONTEXT_MODULE_SEARCH_CONSOLE,
-	CONTEXT_MODULE_ANALYTICS,
-	CONTEXT_MODULE_ADSENSE,
 } from './default-contexts';
 import {
 	AREA_DASHBOARD_ALL_TRAFFIC,
@@ -42,9 +39,6 @@ import {
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
 	AREA_PAGE_DASHBOARD_POPULARITY,
 	AREA_PAGE_DASHBOARD_SPEED,
-	AREA_MODULE_SEARCH_CONSOLE_MAIN,
-	AREA_MODULE_ANALYTICS_MAIN,
-	AREA_MODULE_ADSENSE_MAIN,
 } from './default-areas';
 import { WIDGET_URL_SEARCH } from './default-widgets';
 import { WIDGET_AREA_STYLES, WIDGET_WIDTHS } from './datastore/constants';
@@ -167,35 +161,5 @@ export function registerDefaults( widgetsAPI ) {
 		[
 			AREA_DASHBOARD_POPULARITY,
 		],
-	);
-
-	widgetsAPI.registerWidgetArea(
-		AREA_MODULE_SEARCH_CONSOLE_MAIN,
-		{
-			priority: 1,
-			style: WIDGET_AREA_STYLES.BOXES,
-			title: __( 'Overview', 'google-site-kit' ),
-		},
-		CONTEXT_MODULE_SEARCH_CONSOLE,
-	);
-
-	widgetsAPI.registerWidgetArea(
-		AREA_MODULE_ANALYTICS_MAIN,
-		{
-			priority: 1,
-			style: WIDGET_AREA_STYLES.BOXES,
-			title: __( 'Overview', 'google-site-kit' ),
-		},
-		CONTEXT_MODULE_ANALYTICS,
-	);
-
-	widgetsAPI.registerWidgetArea(
-		AREA_MODULE_ADSENSE_MAIN,
-		{
-			priority: 1,
-			style: WIDGET_AREA_STYLES.BOXES,
-			title: __( 'Overview', 'google-site-kit' ),
-		},
-		CONTEXT_MODULE_ADSENSE,
 	);
 }
