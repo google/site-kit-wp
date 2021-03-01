@@ -34,9 +34,10 @@ const alwaysActive = [ 'search-console', 'site-verification' ];
  */
 export const withActive = ( ...slugs ) => {
 	const activeSlugs = alwaysActive.concat( slugs );
-	return modules.map( ( module ) => {
-		return { ...module, active: activeSlugs.includes( module.slug ) };
-	} );
+	return modules.map( ( module ) => ( {
+		...module,
+		active: activeSlugs.includes( module.slug ),
+	} ) );
 };
 
 export default withActive();
