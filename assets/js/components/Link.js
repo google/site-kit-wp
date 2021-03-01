@@ -28,8 +28,11 @@ import { Link as RouterLink } from 'react-router-dom';
  */
 import { _x } from '@wordpress/i18n';
 
+const ARIA_TEXT_DISABLED = _x( '(disabled)', 'screen reader text', 'google-site-kit' );
+const ARIA_TEXT_EXTERNAL = _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' );
+
 function Link( {
-	href,
+	href: hrefProp,
 	children,
 	className,
 	arrow,
@@ -42,32 +45,70 @@ function Link( {
 	danger,
 	disabled,
 	to,
-	'aria-label': ariaLabel,
+	'aria-label': ariaLabelProp,
 	...extraProps
 } ) {
-	// Note: the disabled attribute does not alter behavior of anchor tags,
-	// so if disabled we force it to be a button.
-	const isAnchor = typeof href !== 'undefined' && ! disabled;
-	const element = isAnchor ? 'a' : 'button';
-	// If `to` prop is set, a `react-router` link is expected
-	const isRouterLink = typeof to !== 'undefined';
-	const SemanticLink = isRouterLink ? RouterLink : element;
+	const hasStringAsChild = typeof children === 'string';
 
-	const getAriaLabel = () => {
-		let label = ariaLabel;
+	// Append `aria-label` with text if label exists, otherwise return text.
+	const getLabelWithText = ( text ) => {
+		const shouldUseChildrenAsLabel = hasStringAsChild && ! ariaLabelProp;
+		const ariaLabel = shouldUseChildrenAsLabel ? children : ariaLabelProp;
 
-		if ( ! external ) {
-			return label;
-		} else if ( typeof children === 'string' ) {
-			label = label || children;
-		}
-
-		const newTabText = _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' );
-		if ( label ) {
-			return `${ label } ${ newTabText }`;
-		}
-		return newTabText;
+		return Boolean( ariaLabel )
+			? `${ ariaLabel } ${ text }`
+			: text;
 	};
+
+	// Do not create `aria-label` value if it would be identical to `children`, redundant label (bad a11y).
+	const getNonIdenticalLabel = () => {
+		const childIsIdenticalValue = hasStringAsChild && children !== ariaLabelProp;
+
+		return childIsIdenticalValue ? undefined : ariaLabelProp;
+	};
+
+	const getElementType = () => {
+		// Disabled attribute does not alter behavior of anchors or links.
+		if ( disabled ) {
+			return 'BUTTON_DISABLED';
+		}
+
+		// Only `RouterLink` uses `to` prop.
+		if ( typeof to !== 'undefined' ) {
+			return 'ROUTER_LINK';
+		}
+
+		if ( external ) {
+			return 'ANCHOR_EXTERNAL';
+		}
+
+		return 'ANCHOR';
+	};
+
+	const getSemanticLink = ( elementType ) => {
+		switch ( elementType ) {
+			case 'BUTTON_DISABLED': return 'button';
+			case 'ROUTER_LINK': return RouterLink;
+			default: return 'a';
+		}
+	};
+
+	const getAriaLabel = ( elementType ) => {
+		switch ( elementType ) {
+			case 'ANCHOR_EXTERNAL': return getLabelWithText( ARIA_TEXT_EXTERNAL );
+			case 'BUTTON_DISABLED': return getLabelWithText( ARIA_TEXT_DISABLED );
+			default: return getNonIdenticalLabel();
+		}
+	};
+
+	const type = getElementType();
+	const SemanticLink = getSemanticLink( type );
+	const ariaLabel = getAriaLabel( type );
+
+	const isAnchor = type === 'ANCHOR' || type === 'ANCHOR_EXTERNAL';
+	const href = isAnchor ? hrefProp : undefined;
+	const rel = type === 'ANCHOR_EXTERNAL' ? 'noopener noreferrer' : undefined;
+	const target = type === 'ANCHOR_EXTERNAL' ? '_blank' : undefined;
 
 	return (
 		<SemanticLink
@@ -86,12 +127,12 @@ function Link( {
 					'googlesitekit-cta-link--disabled': disabled,
 				},
 			) }
-			href={ isAnchor ? href : undefined }
+			href={ href }
 			to={ to }
-			target={ isAnchor && external ? '_blank' : undefined }
-			rel={ external ? 'noopener noreferrer' : undefined }
+			target={ target }
+			rel={ rel }
 			disabled={ disabled }
-			aria-label={ getAriaLabel() }
+			aria-label={ ariaLabel }
 			{ ...extraProps }
 		>
 			{ children }
