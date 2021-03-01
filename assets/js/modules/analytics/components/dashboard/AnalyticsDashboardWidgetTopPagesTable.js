@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numFmt } from '../../../../util';
+import { getTimeInSeconds } from '../../../../util';
 import withData from '../../../../components/higherorder/withData';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -42,6 +42,8 @@ import TableOverflowContainer from '../../../../components/TableOverflowContaine
 import Link from '../../../../components/Link';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import ReportTable from '../../../../components/ReportTable';
+import Num from '../../../../components/Num';
+import Decimal from '../../../../components/Num/Decimal';
 
 const { useSelect } = Data;
 
@@ -103,22 +105,22 @@ const tableColumns = [
 	{
 		title: __( 'Pageviews', 'google-site-kit' ),
 		description: __( 'Pageviews', 'google-site-kit' ),
-		Component: ( { row } ) => numFmt( row.metrics[ 0 ].values[ 0 ], { style: 'decimal' } ),
+		field: 'metrics.0.values.0',
+		Component: ( { fieldValue } ) => <Decimal value={ fieldValue } />,
 	},
 	{
 		title: __( 'Unique Pageviews', 'google-site-kit' ),
 		description: __( 'Unique Pageviews', 'google-site-kit' ),
 		className: 'hidden-on-mobile',
-		Component: ( { row } ) => numFmt( row.metrics[ 0 ].values[ 1 ], { style: 'decimal' } ),
+		field: 'metrics.0.values.1',
+		Component: ( { fieldValue } ) => <Decimal value={ fieldValue } />,
 	},
 	{
 		title: __( 'Bounce Rate', 'google-site-kit' ),
 		description: __( 'Bounce Rate', 'google-site-kit' ),
 		className: 'hidden-on-mobile',
-		Component: ( { row } ) => {
-			const percent = Number( row.metrics[ 0 ].values[ 2 ] ) / 100;
-			return numFmt( percent, '%' );
-		},
+		field: 'metrics.0.values.2',
+		Component: ( { fieldValue } ) => <Num value={ Number( fieldValue ) / 100 } shorthand="%" />,
 	},
 ];
 
