@@ -37,6 +37,7 @@ import TableOverflowContainer from '../../../../components/TableOverflowContaine
 import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
+import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
 const { useSelect } = Data;
 
 function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
@@ -68,7 +69,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 
 		return {
 			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
-			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceURL(),
+			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL( 'content-publisher-overview', generateDateRangeArgs( { startDate, endDate } ) ),
 			data: select( MODULES_ANALYTICS ).getReport( args ),
 			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ),

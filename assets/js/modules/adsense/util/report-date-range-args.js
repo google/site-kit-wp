@@ -29,7 +29,7 @@ import { isValidDateString } from '../../../googlesitekit/datastore/user/utils/i
 /**
  * Generates an object with the appropriate structure to pass to report selectors.
  *
- * @since n.e.x.t
+ * @since 1.27.0
  *
  * @param {Object} dates           Object containing the start and end dates.
  * @param {string} dates.startDate Start date in YYYY-MM-DD format.

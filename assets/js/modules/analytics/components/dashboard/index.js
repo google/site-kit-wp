@@ -28,8 +28,6 @@ export { default as DashboardBounceRateWidget } from './DashboardBounceRateWidge
 export { default as DashboardGoalsWidget } from './DashboardGoalsWidget';
 export { default as DashboardUniqueVisitorsWidget } from './DashboardUniqueVisitorsWidget';
 export { default as LegacyAdSenseDashboardWidgetTopPagesTableSmall } from './LegacyAdSenseDashboardWidgetTopPagesTableSmall';
-export { default as LegacyAnalyticsAllTraffic } from './LegacyAnalyticsAllTraffic';
-export { default as LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources } from './LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
 export { default as LegacyAnalyticsDashboardWidgetPopularPagesTable } from './LegacyAnalyticsDashboardWidgetPopularPagesTable';
 export { default as LegacyAnalyticsDashboardWidgetTopAcquisitionSources } from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 export { default as LegacyAnalyticsDashboardWidgetTopLevel } from './LegacyAnalyticsDashboardWidgetTopLevel';
