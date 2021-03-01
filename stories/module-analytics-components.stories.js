@@ -80,72 +80,95 @@ generateReportBasedWidgetStories( {
 	additionalVariants: {
 		'One row of data': {
 			data: [
-				{
-					nextPageToken: null,
-					columnHeader: {
-						dimensions: [
-							'ga:channelGrouping',
-						],
-						metricHeader: {
-							metricHeaderEntries: [
+				[
+					{
+						nextPageToken: null,
+						columnHeader: {
+							dimensions: [
+								'ga:channelGrouping',
+							],
+							metricHeader: {
+								metricHeaderEntries: [
+									{
+										name: 'ga:users',
+										type: 'INTEGER',
+									},
+								],
+							},
+						},
+						data: {
+							dataLastRefreshed: null,
+							isDataGolden: null,
+							rowCount: 4,
+							samplesReadCounts: null,
+							samplingSpaceSizes: null,
+							rows: [
 								{
-									name: 'ga:users',
-									type: 'INTEGER',
+									dimensions: [
+										'Direct',
+									],
+									metrics: [
+										{
+											values: [
+												'767',
+											],
+										},
+										{
+											values: [
+												'883',
+											],
+										},
+									],
+								},
+							],
+							totals: [
+								{
+									values: [
+										'1382',
+									],
+								},
+								{
+									values: [
+										'1640',
+									],
+								},
+							],
+							minimums: [
+								{
+									values: [
+										'7',
+									],
+								},
+								{
+									values: [
+										'3',
+									],
+								},
+							],
+							maximums: [
+								{
+									values: [
+										'767',
+									],
+								},
+								{
+									values: [
+										'883',
+									],
 								},
 							],
 						},
 					},
-				},
-				{
-					dataLastRefreshed: null,
-					isDataGolden: null,
-					rowCount: 1,
-					samplesReadCounts: null,
-					samplingSpaceSizes: null,
-					rows: [ {
-						dimensions: [ 'Organic Search' ],
-						metrics: [
-							{
-								values: [ '1951' ],
-							},
-							{
-								values: [ '510' ],
-							},
-						],
-					} ],
-					totals: [ {
-						values: [ '1951' ],
-					},
-					{
-						values: [ '510' ],
-					} ],
-					minimums: [
-						{
-							values: [ '1951' ],
-						},
-						{
-							values: [ '510' ],
-						},
-					],
-					maximums: [
-						{
-							values: [ '1951' ],
-						},
-						{
-							values: [ '510' ],
-						},
-					],
-				} ],
+				],
+				dashboardUserTotalsData,
+				dashboardUserGraphData,
+			],
 			referenceDate: '2021-01-06',
-			options: {
-				startDate: '2020-12-09',
-				endDate: '2021-01-05',
-				compareStartDate: '2020-11-11',
-				compareEndDate: '2020-12-08',
-				metrics: [ {
-					expression: 'ga:users',
-				} ],
-			},
+			options: [
+				dashboardUserDimensionsArgs[ 'ga:channelGrouping' ],
+				dashboardUserTotalsArgs,
+				dashboardUserGraphArgs,
+			],
 		},
 	},
 	wrapWidget: false,
