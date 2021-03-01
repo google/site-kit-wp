@@ -36,8 +36,8 @@ import { isZeroReport } from '../../../analytics/util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
-import { numFmt } from '../../../../util';
 import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
+import Decimal from '../../../../components/Num/Decimal';
 const { useSelect } = Data;
 
 function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
@@ -136,13 +136,13 @@ const tableColumns = [
 	{
 		title: __( 'Revenue', 'google-site-kit' ),
 		tooltip: __( 'Revenue', 'google-site-kit' ),
-		Component: ( { row } ) => {
-			return numFmt( row.metrics[ 0 ].values[ 0 ], {
-				style: 'decimal',
-				minimumFractionDigits: 2,
-				maximumFractionDigits: 2,
-			} );
-		},
+		Component: ( { row } ) => (
+			<Decimal
+				value={ row.metrics[ 0 ].values[ 0 ] }
+				precision={ 2 }
+				fixed
+			/>
+		),
 	},
 ];
 
