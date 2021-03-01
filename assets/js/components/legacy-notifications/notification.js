@@ -306,6 +306,7 @@ class Notification extends Component {
 							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-1
+								googlesitekit-publisher-win__small-media
 							">
 								{ smallImage && <img className="googlesitekit-publisher-win__small-image" alt="" src={ smallImage } /> }
 								{ SmallImageSVG && <SmallImageSVG /> }

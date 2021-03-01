@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import Layout from '../layout/Layout';
 import Notification from '../legacy-notifications/notification';
 import SetupModule from './SetupModule';
-import thumbsUpImage from '../../../images/thumbs-up.png';
+import thumbsUpImage from '../../../svg/thumbs-up.svg';
 const { useSelect } = Data;
 
 const SettingsInactiveModules = () => {
@@ -54,7 +54,7 @@ const SettingsInactiveModules = () => {
 					title={ __( 'Congrats, you’ve connected all services!', 'google-site-kit' ) }
 					description={ __( 'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future.', 'google-site-kit' ) }
 					format="small"
-					smallImage={ global._googlesitekitLegacyData.admin.assetsRoot + thumbsUpImage }
+					SmallImageSVG={ thumbsUpImage }
 					type="win-success"
 				/>
 			</div>

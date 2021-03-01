@@ -36,7 +36,7 @@ import UserInputSettings from '../assets/js/components/notifications/UserInputSe
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 import rocketImage from '../assets/images/rocket.png';
-import thumbsUpImage from '../assets/images/thumbs-up.png';
+import thumbsUpImage from '../assets/svg/thumbs-up.svg';
 
 global._googlesitekitLegacyData.canAdsRun = true;
 
@@ -73,7 +73,7 @@ storiesOf( 'Global/Notifications', module )
 			learnMore={ __( 'Learn more', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="small"
-			smallImage={ thumbsUpImage }
+			SmallImageSVG={ thumbsUpImage }
 			type="win-success"
 		/>
 	) )

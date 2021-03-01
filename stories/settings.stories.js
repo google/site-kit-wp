@@ -31,7 +31,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SettingsModules from '../assets/js/components/settings/SettingsModules';
+// import SettingsModules from '../assets/js/components/settings/SettingsModules';
+import SettingsActiveModules from '../assets/js/components/settings/SettingsActiveModules';
+import SettingsInactiveModules from '../assets/js/components/settings/SettingsInactiveModules';
 import Layout from '../assets/js/components/layout/Layout';
 import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
 import SettingsAdmin from '../assets/js/components/settings/SettingsAdmin';
@@ -83,7 +85,7 @@ storiesOf( 'Settings', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry } >
 				<div className="mdc-layout-grid__inner">
-					<SettingsModules activeTab={ 0 } />
+					<SettingsActiveModules />
 				</div>
 			</WithTestRegistry>
 		);
@@ -144,7 +146,7 @@ storiesOf( 'Settings', module )
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<SettingsModules activeTab={ 1 } />
+				<SettingsInactiveModules activeTab={ 1 } />
 			</WithTestRegistry>
 		);
 	} )
