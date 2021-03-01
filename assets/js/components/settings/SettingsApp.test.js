@@ -41,14 +41,32 @@ describe( 'SettingsApp', () => {
 		registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 
-		provideModules( registry, [ {
-			slug: 'analytics',
-			name: 'Analytics',
-			active: true,
-			connected: true,
-			setupComplete: true,
-			SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
-		} ] );
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				name: 'Analytics',
+				active: true,
+				connected: true,
+				setupComplete: true,
+				SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
+			},
+			{
+				slug: 'optimize',
+				name: 'Optimize',
+				active: true,
+				connected: true,
+				setupComplete: true,
+				SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
+			},
+			{
+				slug: 'tagmanager',
+				name: 'Tag Manager',
+				active: true,
+				connected: true,
+				setupComplete: true,
+				SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
+			},
+		] );
 
 		global._googlesitekitLegacyData.modules.analytics = {
 			...global._googlesitekitLegacyData.modules.analytics,
