@@ -1101,10 +1101,6 @@ final class Authentication {
 	 * @since 1.22.0
 	 */
 	private function require_user_input() {
-		if ( ! Feature_Flags::enabled( 'userInput' ) ) {
-			return;
-		}
-
 		// Refresh user input settings from the proxy.
 		// This will ensure the user input state is updated as well.
 		$this->user_input_settings->set_settings( null );

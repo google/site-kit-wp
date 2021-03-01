@@ -30,7 +30,7 @@ import { WithTestRegistry } from '../tests/js/utils';
 storiesOf( 'User Input', module )
 	.add( 'UserInputApp', () => {
 		return (
-			<WithTestRegistry features={ [ 'userInput' ] }>
+			<WithTestRegistry>
 				<UserInputApp />
 			</WithTestRegistry>
 		);

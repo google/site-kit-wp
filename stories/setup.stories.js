@@ -70,7 +70,7 @@ storiesOf( 'Setup / Using Proxy', module )
 	} )
 	.add( 'Start [User Input]', () => {
 		return (
-			<WithTestRegistry features={ [ 'serviceSetupV2', 'userInput' ] }>
+			<WithTestRegistry features={ [ 'serviceSetupV2' ] }>
 				<SetupUsingProxy />
 			</WithTestRegistry>
 		);
@@ -79,7 +79,7 @@ storiesOf( 'Setup / Using Proxy', module )
 		global._googlesitekitLegacyData.setup.isSiteKitConnected = false;
 
 		return (
-			<WithTestRegistry features={ [ 'serviceSetupV2', 'userInput' ] }>
+			<WithTestRegistry features={ [ 'serviceSetupV2' ] }>
 				<SetupUsingProxy />
 			</WithTestRegistry>
 		);
@@ -107,7 +107,7 @@ storiesOf( 'Setup / Using Proxy', module )
 		return (
 			<WithTestRegistry
 				callback={ setupRegistry }
-				features={ [ 'serviceSetupV2', 'userInput' ] }
+				features={ [ 'serviceSetupV2' ] }
 			>
 				<SetupUsingProxy />
 			</WithTestRegistry>
