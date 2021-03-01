@@ -43,7 +43,7 @@ function GoogleSitekitModule() {
 		return <ModuleSetup moduleSlug={ moduleToSetup } />;
 	}
 
-	return <ModuleApp slug={ global.googlesitekitCurrentModule.slug } />;
+	return <ModuleApp moduleSlug={ global.googlesitekitCurrentModule.slug } />;
 }
 
 // Initialize the app once the DOM is ready.

@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { sprintf, __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 
 /**
@@ -35,7 +34,7 @@ import Data from 'googlesitekit-data';
 import { useFeature } from '../../hooks/useFeature';
 import Header from '../Header';
 import Alert from '../Alert';
-import PageHeader from '../PageHeader';
+import ModuleHeader from './ModuleHeader';
 import ModuleFooter from './ModuleFooter';
 import LegacyModuleApp from './LegacyModuleApp';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
@@ -45,50 +44,27 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 const { useSelect } = Data;
 
-function ModuleApp( { slug } ) {
-	const { name } = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) ) || {};
-	const screenWidgetContext = useSelect( ( select ) => select( CORE_MODULES ).getScreenWidgetContext( slug ) );
-	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( slug ) );
-	const ModuleIcon = useSelect( ( select ) => select( CORE_MODULES ).getModuleIcon( slug ) );
+function ModuleApp( { moduleSlug } ) {
+	const screenWidgetContext = useSelect( ( select ) => select( CORE_MODULES ).getScreenWidgetContext( moduleSlug ) );
+	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleSlug ) );
 	const shouldRenderWidget = useFeature( 'widgets.moduleScreens' ) && screenWidgetContext;
-	const moduleStatus = moduleConnected ? 'connected' : 'not-connected';
-
-	const moduleStatusText = sprintf(
-		/* translators: %s: module name. */
-		__( '%s is connected', 'google-site-kit' ),
-		name,
-	);
-
-	const ModuleHeader = () => (
-		<PageHeader
-			title={ name }
-			icon={
-				<ModuleIcon
-					className="googlesitekit-page-header__icon"
-					height="21"
-					width="23"
-				/>
-			}
-			status={ moduleStatus }
-			statusText={ moduleStatusText }
-		/>
-	);
+	const getModuleHeader = () => <ModuleHeader moduleSlug={ moduleSlug } />;
 
 	return (
 		<Fragment>
 			<Header>
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
-			<Alert module={ slug } />
+			<Alert module={ moduleSlug } />
 			{ shouldRenderWidget &&
 				<Fragment>
 					<WidgetContextRenderer
 						slug={ screenWidgetContext }
 						className={ classNames( [
 							'googlesitekit-module-page',
-							`googlesitekit-module-page--${ slug }`,
+							`googlesitekit-module-page--${ moduleSlug }`,
 						] ) }
-						Header={ ModuleHeader }
+						Header={ getModuleHeader }
 						Footer={ ModuleFooter }
 					/>
 				</Fragment>
@@ -99,7 +75,7 @@ function ModuleApp( { slug } ) {
 }
 
 ModuleApp.propTypes = {
-	slug: PropTypes.string,
+	moduleSlug: PropTypes.string,
 };
 
 export default ModuleApp;
