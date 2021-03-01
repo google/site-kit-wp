@@ -23,7 +23,7 @@ use WP_REST_Server;
 /**
  * Class for handling feature tour rest routes.
  *
- * @since n.e.x.t
+ * @since 1.27.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class REST_Feature_Tours_Controller {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 * @var Context
 	 */
 	protected $context;
@@ -40,7 +40,7 @@ class REST_Feature_Tours_Controller {
 	/**
 	 * User_Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 * @var User_Options
 	 */
 	protected $user_options;
@@ -48,7 +48,7 @@ class REST_Feature_Tours_Controller {
 	/**
 	 * Dismissed_Tours instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 * @var Dismissed_Tours
 	 */
 	protected $dismissed_tours;
@@ -56,7 +56,7 @@ class REST_Feature_Tours_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param Context      $context Plugin context.
 	 * @param User_Options $user_options Optional. User option API. Default is a new instance.
@@ -70,7 +70,7 @@ class REST_Feature_Tours_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 */
 	public function register() {
 		add_filter(
@@ -95,7 +95,7 @@ class REST_Feature_Tours_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */

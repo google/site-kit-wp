@@ -722,23 +722,19 @@ final class OAuth_Client {
 
 		$this->refresh_profile_data( 2 * MINUTE_IN_SECONDS );
 
-		// TODO: In the future, once the old authentication mechanism no longer exists, this check can be removed.
-		// For now the below action should only fire for the proxy despite not clarifying that in the hook name.
-		if ( $this->credentials->using_proxy() ) {
-			/**
-			 * Fires when the current user has just been authorized to access Google APIs.
-			 *
-			 * In other words, this action fires whenever Site Kit has just obtained a new set of access token and
-			 * refresh token for the current user, which may happen to set up the initial connection or to request
-			 * access to further scopes.
-			 *
-			 * @since 1.3.0
-			 * @since 1.6.0 The $token_response parameter was added.
-			 *
-			 * @param array $token_response Token response data.
-			 */
-			do_action( 'googlesitekit_authorize_user', $token_response );
-		}
+		/**
+		 * Fires when the current user has just been authorized to access Google APIs.
+		 *
+		 * In other words, this action fires whenever Site Kit has just obtained a new set of access token and
+		 * refresh token for the current user, which may happen to set up the initial connection or to request
+		 * access to further scopes.
+		 *
+		 * @since 1.3.0
+		 * @since 1.6.0 The $token_response parameter was added.
+		 *
+		 * @param array $token_response Token response data.
+		 */
+		do_action( 'googlesitekit_authorize_user', $token_response );
 
 		// This must happen after googlesitekit_authorize_user as the permissions checks depend on
 		// values set which affect the meta capability mapping.
@@ -827,7 +823,7 @@ final class OAuth_Client {
 	 *
 	 * @since 1.0.0
 	 * @since 1.1.2 Added googlesitekit_proxy_setup_url_params filter.
-	 * @since n.e.x.t Error code is no longer used.
+	 * @since 1.27.0 Error code is no longer used.
 	 *
 	 * @param string $access_code Optional. Temporary access code for an undelegated access token. Default empty string.
 	 * @return string URL to the setup page on the authentication proxy.
@@ -840,7 +836,7 @@ final class OAuth_Client {
 			$query_params['code'] = $access_code;
 		}
 
-		return $this->google_proxy->get_setup_url( $this->credentials, $query_params );
+		return $this->google_proxy->setup_url( $this->credentials, $query_params );
 	}
 
 	/**
@@ -884,7 +880,7 @@ final class OAuth_Client {
 			return '';
 		}
 
-		return $this->google_proxy->get_permissions_url(
+		return $this->google_proxy->permissions_url(
 			$this->credentials,
 			array( 'token' => $access_token )
 		);

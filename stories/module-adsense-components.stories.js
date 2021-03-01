@@ -141,8 +141,8 @@ generateReportBasedWidgetStories( {
 		},
 		{
 			// Custom start and end date for this widget to match data range: 'this-month',
-			startDate: '2020-09-01',
-			endDate: '2020-09-12',
+			startDate: '2020-08-15',
+			endDate: '2020-09-11',
 			metrics: [
 				'EARNINGS',
 				'PAGE_VIEWS_RPM',

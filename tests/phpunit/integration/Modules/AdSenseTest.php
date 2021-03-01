@@ -369,6 +369,7 @@ class AdSenseTest extends TestCase {
 				'clients',
 				'urlchannels',
 				'earnings',
+				'adunits',
 			),
 			$adsense->get_datapoints()
 		);

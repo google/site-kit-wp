@@ -1,0 +1,17 @@
+{
+  "kind": "adsense#adUnits",
+  "etag": "",
+  "nextPageToken": "",
+  "items": [
+    {
+      "id": "0123456789",
+      "kind": "adsense#adUnit",
+      "name": "Ad Unit Name 1"
+    },
+    {
+      "id": "1234567890",
+      "kind": "adsense#adUnit",
+      "name": "Ad Unit Name 2"
+    }
+  ]
+}
