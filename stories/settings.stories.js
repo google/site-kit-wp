@@ -69,16 +69,12 @@ storiesOf( 'Settings', module )
 		},
 	} )
 	.add( 'Connected Services', () => {
-		global._googlesitekitLegacyData = settingsData;
-		global._googlesitekitLegacyData.setupComplete = true;
-		global._googlesitekitLegacyData.modules.analytics.setupComplete = true;
-		global._googlesitekitLegacyData.modules[ 'search-console' ].setupComplete = true;
-		global._googlesitekitLegacyData.modules.adsense.setupComplete = true;
-		global._googlesitekitLegacyData.modules.adsense.active = true;
-		global._googlesitekitLegacyData.modules.adsense.settings.accountID = 'pub-XXXXXXXXXXXXXXXX';
-
 		const setupRegistry = ( registry ) => {
-			provideModules( registry );
+			provideModules( registry, [ {
+				slug: 'adsense',
+				active: true,
+				connected: true,
+			} ] );
 			provideModuleRegistrations( registry );
 		};
 
