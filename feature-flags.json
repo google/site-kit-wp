@@ -3,5 +3,6 @@
   "storeErrorNotifications",
   "userInput",
   "widgets.dashboard",
-  "widgets.pageDashboard"
+  "widgets.pageDashboard",
+  "widgets.moduleScreens"
 ]
