@@ -44,4 +44,5 @@ Num.propTypes = {
 		PropTypes.number,
 		PropTypes.string,
 	] ).isRequired,
+	shorthand: PropTypes.string,
 };
