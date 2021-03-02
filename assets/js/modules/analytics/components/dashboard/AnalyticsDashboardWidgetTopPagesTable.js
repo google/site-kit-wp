@@ -111,14 +111,14 @@ const tableColumns = [
 	{
 		title: __( 'Unique Pageviews', 'google-site-kit' ),
 		description: __( 'Unique Pageviews', 'google-site-kit' ),
-		className: 'hidden-on-mobile',
+		hideOnMobile: true,
 		field: 'metrics.0.values.1',
 		Component: ( { fieldValue } ) => <Decimal value={ fieldValue } />,
 	},
 	{
 		title: __( 'Bounce Rate', 'google-site-kit' ),
 		description: __( 'Bounce Rate', 'google-site-kit' ),
-		className: 'hidden-on-mobile',
+		hideOnMobile: true,
 		field: 'metrics.0.values.2',
 		Component: ( { fieldValue } ) => <Num value={ Number( fieldValue ) / 100 } shorthand="%" />,
 	},

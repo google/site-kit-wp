@@ -24,6 +24,7 @@ import get from 'lodash/get';
 import PropTypes from 'prop-types';
 
 export default function ReportTable( { rows, columns, className } ) {
+	const mobileColumns = columns.filter( ( col ) => col.hideOnMobile );
 	return (
 		<div
 			className={ classnames(
@@ -36,16 +37,18 @@ export default function ReportTable( { rows, columns, className } ) {
 				className={ classnames(
 					'googlesitekit-table__wrapper',
 					`googlesitekit-table__wrapper--${ columns.length }-col`,
+					`googlesitekit-table__wrapper--mobile-${ mobileColumns.length }-col`,
 				) }
 			>
 				<thead className="googlesitekit-table__head">
 					<tr className="googlesitekit-table__head-row">
 						{ columns.map(
-							( { title, description, primary, className: columnClassName }, colIndex ) => (
+							( { title, description, primary, hideOnMobile, className: columnClassName }, colIndex ) => (
 								<th
 									className={ classnames(
 										'googlesitekit-table__head-item',
 										{ 'googlesitekit-table__head-item--primary': primary },
+										{ 'hidden-on-mobile': hideOnMobile },
 										columnClassName,
 									) }
 									data-tooltip={ description }
@@ -66,13 +69,14 @@ export default function ReportTable( { rows, columns, className } ) {
 						>
 							{ columns
 								.filter( ( { Component, field } ) => Component || field )
-								.map( ( { Component, field, className: columnClassName }, colIndex ) => {
+								.map( ( { Component, field, hideOnMobile, className: columnClassName }, colIndex ) => {
 									const fieldValue = field && get( row, field );
 									return (
 										<td
 											key={ `googlesitekit-table__body-item-${ colIndex }` }
 											className={ classnames(
 												'googlesitekit-table__body-item',
+												{ 'hidden-on-mobile': hideOnMobile },
 												columnClassName
 											) }
 										>
@@ -108,6 +112,7 @@ ReportTable.propTypes = {
 			primary: PropTypes.bool,
 			className: PropTypes.string,
 			field: PropTypes.string,
+			hideOnMobile: PropTypes.bool,
 			Component: PropTypes.componentType,
 		} )
 	).isRequired,
