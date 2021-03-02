@@ -27,7 +27,7 @@ const screenshotsIndex = new Map();
 /**
  * Makes a screenshot of the current page.
  *
- * @since n.e.x.t
+ * @since 1.27.0
  *
  * @param {string} name    Screenshot name.
  * @param {Object} options Screenshot objects.
@@ -60,7 +60,7 @@ export async function screenshot( name, options = {} ) {
 /**
  * Makes a step and takes a screenshot.
  *
- * @since n.e.x.t
+ * @since 1.27.0
  *
  * @param {string}           name                   Step name.
  * @param {Function|Promise} cb                     Step callback function or a promise object.

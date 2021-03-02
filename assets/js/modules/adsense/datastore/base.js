@@ -34,6 +34,7 @@ const baseModuleStore = Modules.createModuleStore( 'adsense', {
 		'accountSetupComplete',
 		'siteSetupComplete',
 		'ownerID',
+		'webStoriesAdUnit',
 	],
 	adminPage: 'googlesitekit-module-adsense',
 	validateCanSubmitChanges,

@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
 /**
  * Class for representing a user's dismissed feature tours.
  *
- * @since n.e.x.t
+ * @since 1.27.0
  * @access private
  * @ignore
  */
@@ -33,7 +33,7 @@ class Dismissed_Tours extends User_Setting {
 	/**
 	 * Adds one or more tours to the list of dismissed tours.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param string ...$tour_slug The tour identifier to dismiss.
 	 */
@@ -46,7 +46,7 @@ class Dismissed_Tours extends User_Setting {
 	/**
 	 * Gets the value of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @return array Value set for the option, or default if not set.
 	 */
@@ -59,7 +59,7 @@ class Dismissed_Tours extends User_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @return string The type name.
 	 */
@@ -70,7 +70,7 @@ class Dismissed_Tours extends User_Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @return array The default value.
 	 */
@@ -81,7 +81,7 @@ class Dismissed_Tours extends User_Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @return Closure
 	 */

@@ -25,7 +25,7 @@
  *
  * For example, passing 196.385 returns [ 0, 3, 16, 385 ].
  *
- * @since n.e.x.t
+ * @since 1.27.0
  *
  * @param {number} seconds The number of seconds.
  * @return {Array} Array containing the hours, minutes, seconds and milliseconds.

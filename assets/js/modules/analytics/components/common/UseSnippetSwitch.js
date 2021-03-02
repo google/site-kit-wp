@@ -33,6 +33,7 @@ const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch() {
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
+	const canUseSnippet = useSelect( ( select ) => select( STORE_NAME ).getCanUseSnippet() );
 
 	const { setUseSnippet } = useDispatch( STORE_NAME );
 	const onChange = useCallback( () => {
@@ -51,10 +52,12 @@ export default function UseSnippetSwitch() {
 				checked={ useSnippet }
 				onClick={ onChange }
 				hideLabel={ false }
+				disabled={ ! canUseSnippet }
 			/>
 			<p>
-				{ useSnippet && __( 'Site Kit will add the code automatically.', 'google-site-kit' ) }
-				{ ! useSnippet && __( 'Site Kit will not add the code to your site.', 'google-site-kit' ) }
+				{ canUseSnippet === false && __( 'The code is controlled by the Tag Manager module.', 'google-site-kit' ) }
+				{ canUseSnippet && useSnippet && __( 'Site Kit will add the code automatically.', 'google-site-kit' ) }
+				{ canUseSnippet && ! useSnippet && __( 'Site Kit will not add the code to your site.', 'google-site-kit' ) }
 			</p>
 		</div>
 	);
