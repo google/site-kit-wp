@@ -52,7 +52,7 @@ function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero, WidgetRepor
 	};
 	const data = useSelect( ( select ) => select( STORE_NAME ).getReport( reportArgs ) );
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
-	const loading = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
+	const loading = useSelect( ( select ) => ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( {
 		...generateDateRangeArgs( dateRangeDates ),
 		page: url ? `!${ url }` : undefined,
