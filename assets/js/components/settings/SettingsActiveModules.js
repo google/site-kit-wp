@@ -29,6 +29,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import Data from 'googlesitekit-data';
 import Layout from '../layout/Layout';
 import SettingsModule from './settings-module';
+import { Cell } from '../../material-components';
 const { useDispatch, useSelect } = Data;
 
 const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) => {
@@ -39,11 +40,11 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 
 	const onEdit = useCallback( ( slug ) => {
 		setModuleState( slug, 'edit' );
-	}, [ setModuleState ] );
+	}, [] );
 
 	const onCancel = useCallback( ( slug ) => {
 		setModuleState( slug, 'view' );
-	}, [ setModuleState ] );
+	}, [] );
 
 	const onConfirm = useCallback( async ( slug ) => {
 		setIsSaving( true );
@@ -58,7 +59,7 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 		} else {
 			setError( submissionError );
 		}
-	}, [ submitChanges, setModuleState, setError ] );
+	}, [] );
 
 	const handleAccordion = useCallback( ( module, e ) => {
 		// Set focus on heading when clicked.
@@ -71,7 +72,7 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 			module,
 			isOpen ? 'view' : 'closed',
 		);
-	}, [ setModuleState, activeModule ] );
+	}, [ activeModule ] );
 
 	if ( ! modulesData ) {
 		return null;
@@ -82,35 +83,30 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 		.sort( ( module1, module2 ) => module1.sort - module2.sort );
 
 	return (
-		<div className="
-			mdc-layout-grid__cell
-			mdc-layout-grid__cell--span-12
-		">
+		<Cell size={ 12 }>
 			<Layout>
-				{ modules.map( ( module ) => {
-					return (
-						<SettingsModule
-							key={ module.slug + '-module' }
-							slug={ module.slug }
-							name={ module.name }
-							description={ module.description }
-							homepage={ module.homepage }
-							active={ module.active }
-							setupComplete={ module.active && module.connected }
-							onEdit={ onEdit }
-							onConfirm={ onConfirm }
-							onCancel={ onCancel }
-							isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
-							isOpen={ activeModule === module.slug && moduleState !== 'closed' }
-							handleAccordion={ handleAccordion }
-							isSaving={ isSaving }
-							provides={ module.features }
-							error={ error }
-						/>
-					);
-				} ) }
+				{ modules.map( ( module ) => (
+					<SettingsModule
+						key={ module.slug + '-module' }
+						slug={ module.slug }
+						name={ module.name }
+						description={ module.description }
+						homepage={ module.homepage }
+						active={ module.active }
+						setupComplete={ module.active && module.connected }
+						onEdit={ onEdit }
+						onConfirm={ onConfirm }
+						onCancel={ onCancel }
+						isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
+						isOpen={ activeModule === module.slug && moduleState !== 'closed' }
+						handleAccordion={ handleAccordion }
+						isSaving={ isSaving }
+						provides={ module.features }
+						error={ error }
+					/>
+				) ) }
 			</Layout>
-		</div>
+		</Cell>
 	);
 };
 

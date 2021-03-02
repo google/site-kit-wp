@@ -93,6 +93,13 @@ export async function submitChanges( { select, dispatch } ) {
 		if ( error ) {
 			return { error };
 		}
+
+		// Fetch the latest settings in the Analytics store so that we can update
+		// the filtered value of canUseSnippet.
+		const analyticsModuleConnected = select( CORE_MODULES ).isModuleConnected( 'analytics' );
+		if ( analyticsModuleConnected ) {
+			await dispatch( MODULES_ANALYTICS ).fetchGetSettings();
+		}
 	}
 
 	await API.invalidateCache( 'modules', 'tagmanager' );

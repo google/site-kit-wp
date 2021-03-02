@@ -29,15 +29,12 @@ import { __, _x, _n, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import AdSenseIcon from '../../../../../svg/adsense.svg';
 import AdSensePerformanceWidget from './AdSensePerformanceWidget';
-import Alert from '../../../../components/Alert';
 import DashboardAdSenseTopPages from './DashboardAdSenseTopPages';
 import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
 import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
 import ProgressBar from '../../../../components/ProgressBar';
 import ModuleSettingsWarning from '../../../../components/legacy-notifications/module-settings-warning';
-import DateRangeSelector from '../../../../components/DateRangeSelector';
 import HelpLink from '../../../../components/HelpLink';
-import Header from '../../../../components/Header';
 import PageHeader from '../../../../components/PageHeader';
 import Layout from '../../../../components/layout/Layout';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -130,13 +127,6 @@ export default function AdSenseDashboardWidget() {
 
 	return (
 		<Fragment>
-			<Header>
-				{ moduleStatus === 'connected' && <DateRangeSelector /> }
-			</Header>
-			<div className={ wrapperClass }>
-				<Alert module="adsense" />
-			</div>
-
 			<div className="googlesitekit-module-page googlesitekit-module-page--adsense">
 				<Grid>
 					<Row>

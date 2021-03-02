@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import Layout from '../layout/Layout';
 import Notification from '../legacy-notifications/notification';
 import SetupModule from './SetupModule';
+import { Cell, Grid, Row } from '../../material-components';
 import thumbsUpImage from '../../../svg/thumbs-up.svg';
 const { useSelect } = Data;
 
@@ -45,10 +46,7 @@ const SettingsInactiveModules = () => {
 
 	if ( ! modules.length ) {
 		return (
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-12
-			">
+			<Cell size={ 12 }>
 				<Notification
 					id="no-more-modules"
 					title={ __( 'Congrats, you’ve connected all services!', 'google-site-kit' ) }
@@ -57,26 +55,23 @@ const SettingsInactiveModules = () => {
 					SmallImageSVG={ thumbsUpImage }
 					type="win-success"
 				/>
-			</div>
+			</Cell>
 		);
 	}
 
 	return (
-		<div className="
-			mdc-layout-grid__cell
-			mdc-layout-grid__cell--span-12
-		">
+		<Cell size={ 12 }>
 			<Layout
 				header
 				title={ __( 'Connect More Services to Gain More Insights', 'google-site-kit' ) }
 				relative
 			>
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
+				<Grid>
+					<Row>
 						{ modules.map( ( module ) => (
-							<div
-								className="mdc-layout-grid__cell mdc-layout-grid__cell--span-4"
+							<Cell
 								key={ module.slug + '-module-wrapper' }
+								size={ 4 }
 							>
 								<SetupModule
 									key={ module.slug + '-module' }
@@ -84,12 +79,12 @@ const SettingsInactiveModules = () => {
 									name={ module.name }
 									description={ module.description }
 								/>
-							</div>
+							</Cell>
 						) ) }
-					</div>
-				</div>
+					</Row>
+				</Grid>
 			</Layout>
-		</div>
+		</Cell>
 	);
 };
 
