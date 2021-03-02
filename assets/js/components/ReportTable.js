@@ -25,8 +25,10 @@ import invariant from 'invariant';
 import PropTypes from 'prop-types';
 
 export default function ReportTable( { rows, columns, className, limit } ) {
+	columns.forEach( ( { Component, field = null } ) => {
+		invariant( Component || field !== null, 'each column must define a Component and/or a field.' );
+	} );
 	invariant( Number.isInteger( limit ) || limit === undefined, 'limit must be an integer, if provided.' );
-
 	const mobileColumns = columns.filter( ( col ) => col.hideOnMobile );
 
 	return (
@@ -71,10 +73,9 @@ export default function ReportTable( { rows, columns, className, limit } ) {
 							className="googlesitekit-table__body-row"
 							key={ `googlesitekit-table__body-row-${ rowIndex }` }
 						>
-							{ columns
-								.filter( ( { Component, field } ) => Component || field )
-								.map( ( { Component, field, hideOnMobile, className: columnClassName }, colIndex ) => {
-									const fieldValue = field && get( row, field );
+							{ columns.map(
+								( { Component, field, hideOnMobile, className: columnClassName }, colIndex ) => {
+									const fieldValue = field !== undefined ? get( row, field ) : undefined;
 									return (
 										<td
 											key={ `googlesitekit-table__body-item-${ colIndex }` }
