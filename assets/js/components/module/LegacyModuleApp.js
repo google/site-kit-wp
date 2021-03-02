@@ -1,5 +1,5 @@
 /**
- * AdSense module constants.
+ * Legacy ModuleApp component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,6 +16,18 @@
  * limitations under the License.
  */
 
-export const ERROR_CODE_ADBLOCKER_ACTIVE = 'adblocker_active';
-export const CONTEXT_MODULE_ADSENSE = 'moduleAdsense';
-export const AREA_MODULE_ADSENSE_MAIN = 'moduleAdsenseMain';
+/**
+ * WordPress dependencies
+ */
+import { withFilters } from '@wordpress/components';
+import { Component } from '@wordpress/element';
+
+/**
+ * A single module. Keeps track of its own active state and settings.
+ */
+class ModuleApp extends Component {
+	render() {
+		return null;
+	}
+}
+export default withFilters( `googlesitekit.ModuleApp-${ global.googlesitekitCurrentModule.slug }` )( ModuleApp );
