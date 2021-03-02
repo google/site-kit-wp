@@ -167,6 +167,7 @@ export const resolvers = {
 			timezone,
 			usingProxy,
 			webStoriesActive,
+			multipleUsers,
 		} = global._googlesitekitBaseData;
 		const {
 			currentEntityID,
@@ -190,6 +191,7 @@ export const resolvers = {
 			timezone,
 			usingProxy: !! usingProxy,
 			webStoriesActive,
+			multipleUsers,
 		} );
 	},
 };
