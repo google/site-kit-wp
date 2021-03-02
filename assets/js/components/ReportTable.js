@@ -23,7 +23,7 @@ import classnames from 'classnames';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
 
-export default function ReportTable( { rows, columns, className } ) {
+export default function ReportTable( { rows, columns, className, limit } ) {
 	const mobileColumns = columns.filter( ( col ) => col.hideOnMobile );
 	return (
 		<div
@@ -62,7 +62,7 @@ export default function ReportTable( { rows, columns, className } ) {
 				</thead>
 
 				<tbody className="googlesitekit-table__body">
-					{ rows.map( ( row, rowIndex ) => (
+					{ rows.slice( 0, limit ).map( ( row, rowIndex ) => (
 						<tr
 							className="googlesitekit-table__body-row"
 							key={ `googlesitekit-table__body-row-${ rowIndex }` }
@@ -117,4 +117,5 @@ ReportTable.propTypes = {
 		} )
 	).isRequired,
 	className: PropTypes.string,
+	limit: PropTypes.number,
 };

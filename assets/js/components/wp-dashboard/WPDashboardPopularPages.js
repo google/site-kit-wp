@@ -87,6 +87,7 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 				<ReportTable
 					rows={ data[ 0 ].data.rows }
 					columns={ tableColumns }
+					limit={ 5 }
 				/>
 			</TableOverflowContainer>
 		</div>
