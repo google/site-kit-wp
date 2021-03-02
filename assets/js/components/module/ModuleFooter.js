@@ -1,5 +1,5 @@
 /**
- * AdSense module constants.
+ * ModuleFooter component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,6 +16,26 @@
  * limitations under the License.
  */
 
-export const ERROR_CODE_ADBLOCKER_ACTIVE = 'adblocker_active';
-export const CONTEXT_MODULE_ADSENSE = 'moduleAdsense';
-export const AREA_MODULE_ADSENSE_MAIN = 'moduleAdsenseMain';
+/**
+ * External dependencies
+ */
+import classNames from 'classnames';
+
+/**
+ * Internal dependencies
+ */
+import HelpLink from '../HelpLink';
+
+const ModuleFooter = () => (
+	<div className="mdc-layout-grid__inner">
+		<div className={ classNames( [
+			'mdc-layout-grid__cell',
+			'mdc-layout-grid__cell--span-12',
+			'mdc-layout-grid__cell--align-right',
+		] ) }>
+			<HelpLink />
+		</div>
+	</div>
+);
+
+export default ModuleFooter;

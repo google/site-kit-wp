@@ -1,5 +1,5 @@
 /**
- * ModuleApp component.
+ * Tag Manager useGAPropertyIDEffect custom hook.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,15 +19,22 @@
 /**
  * WordPress dependencies
  */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 
 /**
- * A single module. Keeps track of its own active state and settings.
+ * Internal dependencies
  */
-class ModuleApp extends Component {
-	render() {
-		return null;
-	}
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../datastore/constants';
+const { useSelect, useDispatch } = Data;
+
+export default function useGAPropertyIDEffect() {
+	const singleAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
+	const { setGAPropertyID } = useDispatch( STORE_NAME );
+
+	useEffect( () => {
+		if ( singleAnalyticsPropertyID !== undefined ) {
+			setGAPropertyID( singleAnalyticsPropertyID || '' );
+		}
+	}, [ singleAnalyticsPropertyID ] );
 }
-export default withFilters( `googlesitekit.ModuleApp-${ global.googlesitekitCurrentModule.slug }` )( ModuleApp );
