@@ -93,7 +93,7 @@ const baseActions = {
 			type: SET_USER_INPUT_SETTING,
 			payload: {
 				settingID,
-				values,
+				values: values.map( ( value ) => value.trim() ),
 			},
 		};
 	},
