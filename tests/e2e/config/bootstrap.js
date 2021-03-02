@@ -321,7 +321,7 @@ beforeAll( async () => {
 	await setBrowserViewport( 'large' );
 
 	await deactivateUtilityPlugins();
-	await resetSiteKit();
+	await resetSiteKit( { persistent: true } );
 } );
 
 afterEach( async () => {

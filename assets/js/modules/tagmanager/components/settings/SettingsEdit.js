@@ -23,6 +23,7 @@ import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { useExistingTagEffect } from '../../hooks';
+import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
 import {
 	AccountCreate,
 	ExistingTagError,
@@ -41,6 +42,8 @@ export default function SettingsEdit() {
 
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
+	// Synchronize the gaPropertyID setting with the singular GA property ID in selected containers.
+	useGAPropertyIDEffect();
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below

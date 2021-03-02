@@ -30,13 +30,14 @@ import { STORE_NAME } from './constants';
 describe( 'core/user userInfo', () => {
 	const userDataGlobal = '_googlesitekitUserData';
 	const userData = {
-		connectURL: 'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&googlesitekit_connect=1&nonce=a1b2c3d4e5',
 		user: {
 			id: 1,
 			email: 'admin@example.com',
 			name: 'admin',
 			picture: 'https://path/to/image',
 		},
+		connectURL: 'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&googlesitekit_connect=1&nonce=a1b2c3d4e5',
+		initialVersion: '1.0.0',
 		verified: true,
 		userInputState: 'completed',
 	};
@@ -66,6 +67,20 @@ describe( 'core/user userInfo', () => {
 				expect( registry.select( STORE_NAME ).getUser() ).toMatchObject( user );
 			} );
 		} );
+
+		describe( 'receiveInitialSiteKitVersion', () => {
+			it( 'requires the initial version', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).receiveInitialSiteKitVersion();
+				} ).toThrow( 'initialVersion is required.' );
+			} );
+
+			it( 'sets the internal initialVersion state', () => {
+				registry.dispatch( STORE_NAME ).receiveInitialSiteKitVersion( '1.2.3' );
+				expect( registry.stores[ STORE_NAME ].store.getState().initialVersion ).toBe( '1.2.3' );
+			} );
+		} );
+
 		describe( 'receiveUserIsVerified', () => {
 			it( 'requires the userIsVerified param ', () => {
 				expect( () => {
@@ -175,6 +190,24 @@ describe( 'core/user userInfo', () => {
 				const { user } = initialState;
 				expect( userInfo ).toEqual( user );
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getInitialSiteKitVersion', () => {
+			it( 'uses a resolver to synchronously load data from a global variable', () => {
+				global[ userDataGlobal ] = { ...userData, initialVersion: '1.2.3' };
+
+				expect( registry.stores[ STORE_NAME ].store.getState().initialVersion ).toBeUndefined();
+				expect( registry.select( STORE_NAME ).hasStartedResolution( 'getInitialSiteKitVersion' ) ).toBe( false );
+				expect( registry.select( STORE_NAME ).getInitialSiteKitVersion() ).toBe( '1.2.3' );
+			} );
+
+			it( 'will return initial state (undefined) when no data is available', () => {
+				expect( global[ userDataGlobal ] ).toBeUndefined();
+				const initialVersion = registry.select( STORE_NAME ).getInitialSiteKitVersion();
+
+				expect( initialVersion ).toEqual( initialState.initialVersion );
+				expect( console ).toHaveErrored( 'Could not load core/user info.' );
 			} );
 		} );
 

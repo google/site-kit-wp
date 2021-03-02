@@ -85,6 +85,9 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		add_action(
 			'googlesitekit_authorize_user',
 			function() {
+				if ( ! $this->authentication->credentials()->using_proxy() ) {
+					return;
+				}
 				$this->user_options->set( Verification::OPTION, 'verified' );
 			}
 		);

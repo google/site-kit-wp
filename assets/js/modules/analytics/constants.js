@@ -1,5 +1,5 @@
 /**
- * Analytics wp-dashboard components.
+ * Analytics module constants
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,5 +16,5 @@
  * limitations under the License.
  */
 
-export { default as WPAnalyticsDashboardWidgetOverview } from './WPAnalyticsDashboardWidgetOverview';
-export { default as WPAnalyticsDashboardWidgetTopPagesTable } from './WPAnalyticsDashboardWidgetTopPagesTable';
+export const CONTEXT_MODULE_ANALYTICS = 'moduleAnalytics';
+export const AREA_MODULE_ANALYTICS_MAIN = 'moduleAnalyticsMain';

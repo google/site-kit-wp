@@ -268,7 +268,6 @@ export default function UserInputQuestionnaire() {
 			{ activeSlug === 'preview' && (
 				<UserInputPreview
 					submitChanges={ submitChanges }
-					back={ back }
 					goTo={ goTo }
 					error={ error }
 				/>

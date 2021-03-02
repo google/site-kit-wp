@@ -42,6 +42,12 @@ export { default as dashboardBounceRateWidgetData } from './dashboard-bounce-rat
 export { default as dashboardBounceRateWidgetArgs } from './dashboard-bounce-rate-widget-args.json';
 export { default as dashboardGoalsWidgetData } from './dashboard-goals-widget-data.json';
 export { default as dashboardGoalsWidgetArgs } from './dashboard-goals-widget-args.json';
+export { default as wpDashboardPopularPagesArgs } from './wp-dashboard-popular-pages-args.json';
+export { default as wpDashboardPopularPagesData } from './wp-dashboard-popular-pages-data.json';
+export { default as wpDashboardUniqueVisitorsArgs } from './wp-dashboard-unique-visitors-args.json';
+export { default as wpDashboardUniqueVisitorsData } from './wp-dashboard-unique-visitors-data.json';
+export { default as wpDashboardSessionDurationArgs } from './wp-dashboard-session-duration-args.json';
+export { default as wpDashboardSessionDurationData } from './wp-dashboard-session-duration-data.json';
 export * from './dashboard-unique-visitors-data';
 export * from './dashboard-unique-visitors-args';
 export { pageDashboardUniqueVisitorsSparkData, pageDashboardUniqueVisitorsVisitorData } from './page-dashboard-unique-visitors-data';
