@@ -21,10 +21,14 @@
  */
 import classnames from 'classnames';
 import get from 'lodash/get';
+import invariant from 'invariant';
 import PropTypes from 'prop-types';
 
 export default function ReportTable( { rows, columns, className, limit } ) {
+	invariant( Number.isInteger( limit ) || limit === undefined, 'limit must be an integer, if provided.' );
+
 	const mobileColumns = columns.filter( ( col ) => col.hideOnMobile );
+
 	return (
 		<div
 			className={ classnames(
