@@ -47,6 +47,7 @@ export * from './storage';
 export * from './i18n';
 export * from './helpers';
 export * from './markdown';
+export * from './convert-time';
 
 /**
  * Removes a parameter from a URL string.

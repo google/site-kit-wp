@@ -40,6 +40,7 @@ module.exports = {
 		const acronyms = [
 			'AMP',
 			'CTA',
+			'GA',
 			'GTM',
 			'HTML',
 			'ID',

@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
 import DataBlock from '../DataBlock';
 import Data from 'googlesitekit-data';
 import PreviewBlock from '../PreviewBlock';
-import ReportError from '../ReportError';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
@@ -35,7 +34,7 @@ import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
-const AdminBarUniqueVisitors = ( { WidgetReportZero } ) => {
+const AdminBarUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
@@ -61,7 +60,7 @@ const AdminBarUniqueVisitors = ( { WidgetReportZero } ) => {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( analyticsData ) ) {

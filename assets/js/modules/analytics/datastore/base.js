@@ -32,6 +32,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 		'propertyID',
 		'internalWebPropertyID',
 		'useSnippet',
+		'canUseSnippet',
 		'trackingDisabled',
 		'ownerID',
 	],

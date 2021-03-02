@@ -43,20 +43,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'dashboard--all-traffic',
-		kind: 'Dashboard',
-		name: 'All Traffic',
-		story: 'All Traffic',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
-			},
-		},
-	},
-	{
 		id: 'dashboard--post-searcher',
 		kind: 'Dashboard',
 		name: 'Post Searcher',
@@ -79,7 +65,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+				readySelector: '.googlesitekit-chart-v2 > div[style="position: relative;"]',
 			},
 		},
 	},
@@ -93,7 +79,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+				readySelector: '.googlesitekit-chart-v2 > div[style="position: relative;"]',
 			},
 		},
 	},

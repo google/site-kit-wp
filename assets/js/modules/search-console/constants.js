@@ -1,5 +1,5 @@
 /**
- * ModuleApp component.
+ * Search Console module constants
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,18 +16,5 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
-
-/**
- * A single module. Keeps track of its own active state and settings.
- */
-class ModuleApp extends Component {
-	render() {
-		return null;
-	}
-}
-export default withFilters( `googlesitekit.ModuleApp-${ global.googlesitekitCurrentModule.slug }` )( ModuleApp );
+export const CONTEXT_MODULE_SEARCH_CONSOLE = 'moduleSearchConsole';
+export const AREA_MODULE_SEARCH_CONSOLE_MAIN = 'moduleSearchConsoleMain';

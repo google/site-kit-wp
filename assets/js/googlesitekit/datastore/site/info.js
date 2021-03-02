@@ -104,6 +104,7 @@ export const reducer = ( state, { payload, type } ) => {
 				siteName,
 				timezone,
 				usingProxy,
+				webStoriesActive,
 			} = payload.siteInfo;
 
 			return {
@@ -122,6 +123,7 @@ export const reducer = ( state, { payload, type } ) => {
 					siteName,
 					timezone,
 					usingProxy,
+					webStoriesActive,
 				},
 			};
 		}
@@ -162,6 +164,7 @@ export const resolvers = {
 			siteName,
 			timezone,
 			usingProxy,
+			webStoriesActive,
 		} = global._googlesitekitBaseData;
 		const {
 			currentEntityID,
@@ -184,6 +187,7 @@ export const resolvers = {
 			siteName,
 			timezone,
 			usingProxy: !! usingProxy,
+			webStoriesActive,
 		} );
 	},
 };
@@ -494,6 +498,16 @@ export const selectors = {
 
 		return url.toString();
 	},
+
+	/**
+	 * Returns true if this site has the Web Stories plugin enabled.
+	 *
+	 * @since 1.27.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if the Web Stories plugin is enabled, `false` if not. Returns `undefined` if not loaded.
+	 */
+	isWebStoriesActive: getSiteInfoProperty( 'webStoriesActive' ),
 };
 
 export default {
