@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { get, isFinite, isPlainObject, omit } from 'lodash';
+import { get, isFinite, isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -40,7 +40,13 @@ import { __, sprintf, _x } from '@wordpress/i18n';
  * @param {(Intl.NumberFormatOptions)} [options] Optional formatting options.
  * @return {string}   		Human readable string indicating time elapsed.
  */
-const durationFormat = ( seconds, options = { unitDisplay: 'short' } ) => {
+const durationFormat = ( seconds, options = {} ) => {
+	options = {
+		unitDisplay: 'short',
+		...options,
+		style: 'unit',
+	};
+
 	seconds = parseInt( seconds, 10 );
 
 	if ( Number.isNaN( seconds ) ) {
@@ -54,28 +60,33 @@ const durationFormat = ( seconds, options = { unitDisplay: 'short' } ) => {
 
 	if ( hours ) {
 		hours = numberFormat( hours, {
+			...options,
 			style: 'unit',
 			unit: 'hour',
-			...options,
 		} );
 	}
 
 	if ( minutes ) {
 		minutes = numberFormat( minutes, {
+			...options,
 			style: 'unit',
 			unit: 'minute',
-			...options,
 		} );
 	}
 
 	seconds = numberFormat( seconds, {
+		...options,
 		style: 'unit',
 		unit: 'second',
-		...options,
 	} );
 
-	/* translators: 1: hours, 2: minutes, 3: seconds */
-	const formattedString = sprintf( _x( '%1$s %2$s %3$s', 'duration of time: hh mm ss', 'google-site-kit' ), hours, minutes, seconds );
+	const formattedString = sprintf(
+		/* translators: 1: seconds, 2: minutes, 3: hours */
+		_x( '%1$s %2$s %3$s', 'duration of time (numeric): hh mm ss', 'google-site-kit' ),
+		hours,
+		minutes,
+		seconds
+	);
 
 	return formattedString.trim();
 };
@@ -204,8 +215,7 @@ export const numFmt = ( number, options = {} ) => {
 	if ( 'metric' === style ) {
 		return readableLargeNumber( number );
 	} else if ( 'duration' === style ) {
-		formatOptions = omit( options, 'style' );
-		return durationFormat( number, formatOptions );
+		return durationFormat( number, options );
 	}
 
 	return numberFormat( number, formatOptions );
