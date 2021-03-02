@@ -41,7 +41,7 @@ export default function ReportTable( { rows, columns, className } ) {
 				<thead className="googlesitekit-table__head">
 					<tr className="googlesitekit-table__head-row">
 						{ columns.map(
-							( { title, description, primary, className: columnClassName }, i ) => (
+							( { title, description, primary, className: columnClassName }, colIndex ) => (
 								<th
 									className={ classnames(
 										'googlesitekit-table__head-item',
@@ -49,7 +49,7 @@ export default function ReportTable( { rows, columns, className } ) {
 										columnClassName,
 									) }
 									data-tooltip={ description }
-									key={ `googlesitekit-table__head-row-${ i }` }
+									key={ `googlesitekit-table__head-row-${ colIndex }` }
 								>
 									{ title }
 								</th>
@@ -59,18 +59,18 @@ export default function ReportTable( { rows, columns, className } ) {
 				</thead>
 
 				<tbody className="googlesitekit-table__body">
-					{ rows.map( ( row, i ) => (
+					{ rows.map( ( row, rowIndex ) => (
 						<tr
 							className="googlesitekit-table__body-row"
-							key={ `googlesitekit-table__body-row-${ i }` }
+							key={ `googlesitekit-table__body-row-${ rowIndex }` }
 						>
 							{ columns
 								.filter( ( { Component, field } ) => Component || field )
-								.map( ( { Component, field, className: columnClassName }, j ) => {
+								.map( ( { Component, field, className: columnClassName }, colIndex ) => {
 									const fieldValue = field && get( row, field );
 									return (
 										<td
-											key={ `googlesitekit-table__body-item-${ j }` }
+											key={ `googlesitekit-table__body-item-${ colIndex }` }
 											className={ classnames(
 												'googlesitekit-table__body-item',
 												columnClassName
