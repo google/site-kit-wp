@@ -28,12 +28,12 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport, reduceAdSenseData } from '../../util';
-import { getSiteKitAdminURL } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
@@ -44,6 +44,9 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 		today,
 		period,
 		daily,
+		rpmReportURL,
+		earningsURL,
+		impressionsURL,
 	} = useSelect( ( select ) => {
 		const referenceDate = select( CORE_USER ).getReferenceDate();
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
@@ -67,6 +70,8 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 			dimensions: [ 'DATE' ],
 		};
 
+		const dateRangeArgs = generateDateRangeArgs( { startDate, endDate } );
+
 		return {
 			today: select( STORE_NAME ).getReport( todayArgs ),
 			period: select( STORE_NAME ).getReport( periodArgs ),
@@ -77,6 +82,18 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ todayArgs ] ) ||
 				select( STORE_NAME ).getErrorForSelector( 'getReport', [ periodArgs ] ) ||
 				select( STORE_NAME ).getErrorForSelector( 'getReport', [ dailyArgs ] ),
+			rpmReportURL: select( STORE_NAME ).getServiceReportURL( {
+				...dateRangeArgs,
+				gm: 'pageViewsRpm',
+			} ),
+			earningsURL: select( STORE_NAME ).getServiceReportURL( {
+				...dateRangeArgs,
+				gm: 'earnings',
+			} ),
+			impressionsURL: select( STORE_NAME ).getServiceReportURL( {
+				...dateRangeArgs,
+				gm: 'monetizableImpressions',
+			} ),
 		};
 	} );
 
@@ -93,7 +110,6 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 	}
 
 	const processedData = reduceAdSenseData( daily.rows );
-	const href = getSiteKitAdminURL( 'googlesitekit-module-adsense', {} );
 
 	const currencyHeader = period.headers.find( ( header ) => null !== header.currency && 0 < header.currency.length );
 	const currencyCode = currencyHeader ? currencyHeader.currency : false;
@@ -109,7 +125,8 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 						datapointUnit={ currencyCode }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
-							link: href,
+							link: rpmReportURL,
+							external: true,
 						} }
 						sparkline={ daily &&
 							<Sparkline
@@ -129,7 +146,8 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 						datapointUnit={ currencyCode }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
-							link: href,
+							link: earningsURL,
+							external: true,
 						} }
 						change={ today.totals[ 0 ] }
 						changeDataUnit={ currencyCode }
@@ -150,7 +168,8 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 						datapoint={ period.totals[ 2 ] }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
-							link: href,
+							link: impressionsURL,
+							external: true,
 						} }
 						sparkline={ daily &&
 							<Sparkline
