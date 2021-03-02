@@ -29,12 +29,14 @@ import { numFmt } from '../../util';
 export default function Num( {
 	value,
 	shorthand,
-	children, // eslint-disable-line no-unused-vars
 	...options
 } ) {
 	if ( shorthand ) {
 		return numFmt( value, shorthand );
 	}
+
+	// Remove non-option props.
+	delete options.children;
 
 	return numFmt( value, options );
 }
