@@ -208,27 +208,4 @@ final class Screen {
 		</div>
 		<?php
 	}
-
-	/**
-	 * Verifies if it's required to detect and warn user to disable ad blocker in the current screen.
-	 *
-	 * Required on dashboard and settings page if module is inactive.
-	 * Required on adsense dashboard if module is active and not setup complete.
-	 *
-	 * @return bool True if ad blocker detection is required.
-	 */
-	private function is_ad_blocker_detection_required() {
-		$screens = array(
-			'googlesitekit-settings',
-			'googlesitekit-dashboard',
-			'googlesitekit-module-adsense',
-			'googlesitekit-splash',
-		);
-
-		if ( in_array( $this->slug, $screens, true ) ) {
-			return true;
-		}
-
-		return false;
-	}
 }
