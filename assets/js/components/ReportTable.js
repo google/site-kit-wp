@@ -31,7 +31,7 @@ export default function ReportTable( { rows, columns, className, limit } ) {
 		invariant( Component || field !== null, 'each column must define a Component and/or a field.' );
 	} );
 	invariant( Number.isInteger( limit ) || limit === undefined, 'limit must be an integer, if provided.' );
-	const mobileColumns = columns.filter( ( col ) => col.hideOnMobile );
+	const mobileColumns = columns.filter( ( col ) => ! col.hideOnMobile );
 
 	return (
 		<div
