@@ -167,7 +167,10 @@
 		position: absolute;
 		text-align: center;
 		text-transform: uppercase;
-		top: 50%;
+		// The -6px margin-top on the legend affects the parent height
+		// so we have to factor it in here to center the title
+		top: calc(50% - 6px);
+
 		transform: translate(-50%, -50%);
 
 		& span {
