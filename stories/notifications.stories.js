@@ -40,8 +40,6 @@ import { withConnected } from '../assets/js/googlesitekit/modules/datastore/__fi
 import rocketImage from '../assets/images/rocket.png';
 import thumbsUpImage from '../assets/images/thumbs-up.png';
 
-global._googlesitekitLegacyData.canAdsRun = true;
-
 storiesOf( 'Global/Notifications', module )
 	.add( 'Module Setup Complete', () => {
 		const setupRegistry = ( registry ) => {
