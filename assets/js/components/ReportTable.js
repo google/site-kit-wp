@@ -25,6 +25,8 @@ import invariant from 'invariant';
 import PropTypes from 'prop-types';
 
 export default function ReportTable( { rows, columns, className, limit } ) {
+	invariant( Array.isArray( rows ), 'rows must be an array.' );
+	invariant( Array.isArray( columns ), 'columns must be an array.' );
 	columns.forEach( ( { Component, field = null } ) => {
 		invariant( Component || field !== null, 'each column must define a Component and/or a field.' );
 	} );
