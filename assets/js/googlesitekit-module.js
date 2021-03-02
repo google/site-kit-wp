@@ -33,7 +33,7 @@ import { render } from '@wordpress/element';
 import './components/data';
 import './components/legacy-notifications';
 import Root from './components/Root';
-import ModuleApp from './components/module-app';
+import ModuleApp from './components/module/ModuleApp';
 import ModuleSetup from './components/setup/ModuleSetup';
 
 function GoogleSitekitModule() {
@@ -43,7 +43,7 @@ function GoogleSitekitModule() {
 		return <ModuleSetup moduleSlug={ moduleToSetup } />;
 	}
 
-	return <ModuleApp />;
+	return <ModuleApp moduleSlug={ global.googlesitekitCurrentModule.slug } />;
 }
 
 // Initialize the app once the DOM is ready.

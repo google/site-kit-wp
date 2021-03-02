@@ -296,6 +296,9 @@ final class Authentication {
 		add_action(
 			'googlesitekit_authorize_user',
 			function () {
+				if ( ! $this->credentials->using_proxy() ) {
+					return;
+				}
 				$this->set_connected_proxy_url();
 				$this->require_user_input();
 			}
