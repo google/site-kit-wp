@@ -32,12 +32,28 @@ const alwaysActive = [ 'search-console', 'site-verification' ];
  * @param {...string} slugs Active module slugs.
  * @return {Object[]} Array of module objects.
  */
-export const withActive = ( ...slugs ) => {
+export function withActive( ...slugs ) {
 	const activeSlugs = alwaysActive.concat( slugs );
 	return modules.map( ( module ) => ( {
 		...module,
 		active: activeSlugs.includes( module.slug ),
 	} ) );
-};
+}
+
+/**
+ * Makes a copy of the modules with the given module connection set.
+ *
+ * @since n.e.x.t
+ *
+ * @param {...string} slugs Active module slugs.
+ * @return {Object[]} Array of module objects.
+ */
+export function withConnected( ...slugs ) {
+	const activeSlugs = alwaysActive.concat( slugs );
+	return withActive( ...slugs ).map( ( module ) => ( {
+		...module,
+		connected: activeSlugs.includes( module.slug ),
+	} ) );
+}
 
 export default withActive();
