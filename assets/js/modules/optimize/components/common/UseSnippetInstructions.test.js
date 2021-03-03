@@ -29,7 +29,7 @@ import { STORE_NAME } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
-import fixtures from '../../../../googlesitekit/modules/datastore/fixtures.json';
+import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 
 describe( 'UseSnippetInstructions', () => {
 	let registry;
@@ -47,7 +47,7 @@ describe( 'UseSnippetInstructions', () => {
 
 	it( 'should render with analytics active and no useSnippet', async () => {
 		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-		registry.dispatch( CORE_MODULES ).receiveGetModules( fixtures );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'analytics' ) );
 		const { container } = render( <UseSnippetInstructions />, { registry } );
 
 		const selectedText = container.querySelector( 'p' );
@@ -65,7 +65,7 @@ describe( 'UseSnippetInstructions', () => {
 
 	it( 'should not render with analytics active and a useSnippet', async () => {
 		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-		registry.dispatch( CORE_MODULES ).receiveGetModules( fixtures );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'analytics' ) );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 
 		const { container } = render( <UseSnippetInstructions />, { registry } );
@@ -73,12 +73,11 @@ describe( 'UseSnippetInstructions', () => {
 	} );
 
 	it( 'should render with analytics active and no analytics useSnippet, also with tagmanager active and a gtm useSnippet', async () => {
-		const newFixtures = fixtures.map( ( fixture ) => {
-			if ( fixture.slug !== 'tagmanager' && fixture.slug !== 'optimize' ) {
-				return fixture;
-			}
-			return { ...fixture, active: true, connected: true };
-		} );
+		const newFixtures = withActive( 'analytics' ).map( ( fixture ) => (
+			fixture.slug === 'tagmanager' || fixture.slug === 'optimize'
+				? { ...fixture, active: true, connected: true }
+				: fixture
+		) );
 
 		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
 		registry.dispatch( CORE_MODULES ).receiveGetModules( newFixtures );

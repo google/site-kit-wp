@@ -39,7 +39,7 @@ import {
 } from '../../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
-import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/fixtures.json';
+import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
 
 const allCoreStores = [
 	coreForms,
