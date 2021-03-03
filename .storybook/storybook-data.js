@@ -65,7 +65,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart-v2 > div[style="position: relative;"]',
+				readySelector: '.googlesitekit-chart-v2',
 			},
 		},
 	},
@@ -79,7 +79,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart-v2 > div[style="position: relative;"]',
+				readySelector: '.googlesitekit-chart-v2',
 			},
 		},
 	},
@@ -205,7 +205,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+				readySelector: '.googlesitekit-line-chart',
 			},
 		},
 	},
@@ -219,7 +219,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+				readySelector: '.googlesitekit-line-chart',
 			},
 		},
 	},
@@ -233,7 +233,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+				readySelector: '.googlesitekit-line-chart',
 			},
 		},
 	},
