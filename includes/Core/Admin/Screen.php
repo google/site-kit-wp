@@ -181,11 +181,6 @@ final class Screen {
 		// Enqueue base admin screen stylesheet.
 		$assets->enqueue_asset( 'googlesitekit-admin-css' );
 
-		// Helps detection of enabled ad blockers to warn users before activating or setup AdSense module.
-		if ( $this->is_ad_blocker_detection_required() ) {
-			$assets->enqueue_asset( 'googlesitekit-pagead2.ads' );
-		}
-
 		if ( $this->args['enqueue_callback'] ) {
 			call_user_func( $this->args['enqueue_callback'], $assets );
 		}
@@ -212,28 +207,5 @@ final class Screen {
 			?>
 		</div>
 		<?php
-	}
-
-	/**
-	 * Verifies if it's required to detect and warn user to disable ad blocker in the current screen.
-	 *
-	 * Required on dashboard and settings page if module is inactive.
-	 * Required on adsense dashboard if module is active and not setup complete.
-	 *
-	 * @return bool True if ad blocker detection is required.
-	 */
-	private function is_ad_blocker_detection_required() {
-		$screens = array(
-			'googlesitekit-settings',
-			'googlesitekit-dashboard',
-			'googlesitekit-module-adsense',
-			'googlesitekit-splash',
-		);
-
-		if ( in_array( $this->slug, $screens, true ) ) {
-			return true;
-		}
-
-		return false;
 	}
 }
