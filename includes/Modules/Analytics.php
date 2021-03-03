@@ -957,6 +957,16 @@ final class Analytics extends Module
 		}
 
 		$dimension_filter_clauses = array();
+
+		$hostname         = wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+		$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
+		$dimension_filter->setDimensionName( 'ga:hostname' );
+		$dimension_filter->setOperator( 'EXACT' );
+		$dimension_filter->setExpressions( array( $hostname ) );
+		$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
+		$dimension_filter_clause->setFilters( array( $dimension_filter ) );
+		$dimension_filter_clauses[] = $dimension_filter_clause;
+
 		if ( ! empty( $args['dimension_filters'] ) ) {
 			$dimension_filters       = $args['dimension_filters'];
 			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
@@ -976,9 +986,7 @@ final class Analytics extends Module
 			$dimension_filter_clauses[] = $dimension_filter_clause;
 		}
 
-		if ( ! empty( $dimension_filter_clauses ) ) {
-			$request->setDimensionFilterClauses( $dimension_filter_clauses );
-		}
+		$request->setDimensionFilterClauses( $dimension_filter_clauses );
 
 		if ( ! empty( $args['row_limit'] ) ) {
 			$request->setPageSize( $args['row_limit'] );

@@ -41,6 +41,7 @@ import {
 	AccountCreate,
 	ExistingTagError,
 } from '../common';
+import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
@@ -56,6 +57,8 @@ export default function SetupMain( { finishSetup } ) {
 
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
+	// Synchronize the gaPropertyID setting with the singular GA property ID in selected containers.
+	useGAPropertyIDEffect();
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below

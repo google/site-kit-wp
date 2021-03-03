@@ -33,6 +33,7 @@ class Google_Proxy {
 	const SETUP_URI               = '/site-management/setup/';
 	const PERMISSIONS_URI         = '/site-management/permissions/';
 	const USER_INPUT_SETTINGS_URI = '/site-management/settings/';
+	const FEATURES_URI            = '/site-management/features/';
 	const ACTION_SETUP            = 'googlesitekit_proxy_setup';
 	const ACTION_PERMISSIONS      = 'googlesitekit_proxy_permissions';
 
@@ -58,7 +59,7 @@ class Google_Proxy {
 	/**
 	 * Returns the application name: a combination of the namespace and version.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @return string The application name.
 	 */
@@ -69,7 +70,7 @@ class Google_Proxy {
 	/**
 	 * Gets the list of features to declare support for when setting up with the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @return array Array of supported features.
 	 */
@@ -98,13 +99,13 @@ class Google_Proxy {
 	/**
 	 * Returns the setup URL to the authentication proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param array       $query_params Optional. Additional query parameters.
 	 * @return string URL to the setup page on the authentication proxy.
 	 */
-	public function get_setup_url( Credentials $credentials, array $query_params = array() ) {
+	public function setup_url( Credentials $credentials, array $query_params = array() ) {
 		$params = array_merge(
 			$query_params,
 			array(
@@ -121,7 +122,7 @@ class Google_Proxy {
 		/**
 		 * Filters parameters included in proxy setup URL.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.27.0
 		 */
 		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', $params );
 
@@ -145,13 +146,13 @@ class Google_Proxy {
 	 *
 	 * This only returns a URL if the user already has an access token set.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @param array       $query_args  Optional. Additional query parameters.
 	 * @return string URL to the permissions page on the authentication proxy on success, or an empty string on failure.
 	 */
-	public function get_permissions_url( Credentials $credentials, array $query_args = array() ) {
+	public function permissions_url( Credentials $credentials, array $query_args = array() ) {
 		if ( $credentials->has() ) {
 			$creds                 = $credentials->get();
 			$query_args['site_id'] = $creds['oauth2_client_id'];
@@ -188,6 +189,75 @@ class Google_Proxy {
 	}
 
 	/**
+	 * Sends a POST request to the Google Proxy server.
+	 *
+	 * @since 1.27.0
+	 *
+	 * @param string      $uri Endpoint to send the request to.
+	 * @param Credentials $credentials Credentials instance.
+	 * @param array       $args Array of request arguments.
+	 * @return array|WP_Error The response as an associative array or WP_Error on failure.
+	 */
+	private function request( $uri, $credentials, array $args = array() ) {
+		$request_args = array(
+			'headers' => ! empty( $args['headers'] ) && is_array( $args['headers'] ) ? $args['headers'] : array(),
+			'body'    => ! empty( $args['body'] ) && is_array( $args['body'] ) ? $args['body'] : array(),
+		);
+
+		if ( $credentials && $credentials instanceof Credentials ) {
+			if ( ! $credentials->has() ) {
+				return new WP_Error(
+					'oauth_credentials_not_exist',
+					__( 'OAuth credentials haven\'t been found.', 'google-site-kit' ),
+					array( 'status' => 401 )
+				);
+			}
+
+			$creds                               = $credentials->get();
+			$request_args['body']['site_id']     = $creds['oauth2_client_id'];
+			$request_args['body']['site_secret'] = $creds['oauth2_client_secret'];
+		}
+
+		if ( ! empty( $args['access_token'] ) && is_string( $args['access_token'] ) ) {
+			$request_args['headers']['Authorization'] = 'Bearer ' . $args['access_token'];
+		}
+
+		if ( isset( $args['mode'] ) && 'async' === $args['mode'] ) {
+			$request_args['timeout']  = 0.01;
+			$request_args['blocking'] = false;
+		}
+
+		if ( ! empty( $args['json_request'] ) ) {
+			$request_args['headers']['Content-Type'] = 'application/json';
+			$request_args['body']                    = wp_json_encode( $request_args['body'] );
+		}
+
+		$url      = $this->url( $uri );
+		$response = wp_remote_post( $url, $request_args );
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$code = wp_remote_retrieve_response_code( $response );
+		$body = wp_remote_retrieve_body( $response );
+		$body = json_decode( $body, true );
+		if ( $code < 200 || 299 < $code ) {
+			$message = is_array( $body ) && ! empty( $body['error'] ) ? $body['error'] : '';
+			return new WP_Error( 'request_failed', $message, array( 'status' => $code ) );
+		}
+
+		if ( is_null( $body ) ) {
+			return new WP_Error(
+				'failed_to_parse_response',
+				__( 'Failed to parse response.', 'google-site-kit' ),
+				array( 'status' => 500 )
+			);
+		}
+
+		return $body;
+	}
+
+	/**
 	 * Gets site fields.
 	 *
 	 * @since 1.5.0
@@ -214,34 +284,7 @@ class Google_Proxy {
 	 * @return array|WP_Error The response as an associative array or WP_Error on failure.
 	 */
 	public function fetch_site_fields( Credentials $credentials ) {
-		if ( ! $credentials->has() ) {
-			return new WP_Error( 'oauth_credentials_not_exist' );
-		}
-
-		$creds = $credentials->get();
-
-		$request_args = array(
-			'body' => array(
-				'site_id'     => $creds['oauth2_client_id'],
-				'site_secret' => $creds['oauth2_client_secret'],
-			),
-		);
-
-		$response = wp_remote_post( $this->url( self::OAUTH2_SITE_URI ), $request_args );
-
-		if ( is_wp_error( $response ) ) {
-			return $response;
-		}
-
-		$raw_body = wp_remote_retrieve_body( $response );
-
-		$response_data = json_decode( $raw_body, true );
-
-		if ( ! $response_data || isset( $response_data['error'] ) ) {
-			return new WP_Error( isset( $response_data['error'] ) ? $response_data['error'] : 'failed_to_parse_response' );
-		}
-
-		return $response_data;
+		return $this->request( self::OAUTH2_SITE_URI, $credentials );
 	}
 
 	/**
@@ -254,16 +297,14 @@ class Google_Proxy {
 	 * @return boolean|WP_Error Boolean do the site fields match or WP_Error on failure.
 	 */
 	public function are_site_fields_synced( Credentials $credentials ) {
-		$fetch_site_fields = $this->fetch_site_fields( $credentials );
-
-		if ( is_wp_error( $fetch_site_fields ) ) {
-			return $fetch_site_fields;
+		$site_fields = $this->fetch_site_fields( $credentials );
+		if ( is_wp_error( $site_fields ) ) {
+			return $site_fields;
 		}
 
 		$get_site_fields = $this->get_site_fields();
-
 		foreach ( $get_site_fields as $key => $site_field ) {
-			if ( ! array_key_exists( $key, $fetch_site_fields ) || $fetch_site_fields[ $key ] !== $site_field ) {
+			if ( ! array_key_exists( $key, $site_fields ) || $site_fields[ $key ] !== $site_field ) {
 				return false;
 			}
 		}
@@ -297,42 +338,10 @@ class Google_Proxy {
 	 * @since 1.20.0
 	 *
 	 * @param Credentials $credentials Credentials instance.
-	 * @return array Response data.
-	 *
-	 * @throws Exception Thrown when the request resulted in an error response,
-	 *                   or when credentials are not set.
+	 * @return array|WP_Error Response data on success, otherwise WP_Error object.
 	 */
 	public function unregister_site( Credentials $credentials ) {
-		if ( ! $credentials->has() ) {
-			throw new Exception( 'oauth_credentials_not_exist' );
-		}
-
-		$creds = $credentials->get();
-
-		$response = wp_remote_post(
-			$this->url( self::OAUTH2_DELETE_SITE_URI ),
-			array(
-				'body' => array(
-					'site_id'     => $creds['oauth2_client_id'],
-					'site_secret' => $creds['oauth2_client_secret'],
-				),
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			throw new Exception( $response->get_error_code() );
-		}
-
-		$raw_body      = wp_remote_retrieve_body( $response );
-		$response_data = json_decode( $raw_body, true );
-
-		if ( ! $response_data || isset( $response_data['error'] ) ) {
-			throw new Exception(
-				isset( $response_data['error'] ) ? $response_data['error'] : 'failed_to_parse_response'
-			);
-		}
-
-		return $response_data;
+		return $this->request( self::OAUTH2_DELETE_SITE_URI, $credentials );
 	}
 
 	/**
@@ -342,31 +351,47 @@ class Google_Proxy {
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @param string      $mode        Sync mode.
-	 * @return array Response of the wp_remote_post request or NULL if there are no credentials.
+	 * @return array|WP_Error Response of the wp_remote_post request.
 	 */
 	public function sync_site_fields( Credentials $credentials, $mode = 'async' ) {
-		if ( ! $credentials->has() ) {
-			return null;
-		}
-
-		$creds = $credentials->get();
-
-		$request_args = array(
-			'body' => array_merge(
-				$this->get_site_fields(),
-				array(
-					'site_id'     => $creds['oauth2_client_id'],
-					'site_secret' => $creds['oauth2_client_secret'],
-				)
-			),
+		return $this->request(
+			self::OAUTH2_SITE_URI,
+			$credentials,
+			array(
+				'mode' => $mode,
+				'body' => $this->get_site_fields(),
+			)
 		);
+	}
 
-		if ( 'async' === $mode ) {
-			$request_args['timeout']  = 0.01;
-			$request_args['blocking'] = false;
+	/**
+	 * Synchronizes user input settings with the proxy.
+	 *
+	 * @since 1.27.0
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @param string      $access_token Access token.
+	 * @param array|null  $settings     Settings array.
+	 * @return array|WP_Error Response of the wp_remote_post request.
+	 */
+	public function sync_user_input_settings( Credentials $credentials, $access_token, $settings = null ) {
+		$body = array();
+		if ( ! empty( $settings ) ) {
+			$body = array(
+				'settings'       => $settings,
+				'client_user_id' => (string) get_current_user_id(),
+			);
 		}
 
-		return wp_remote_post( $this->url( self::OAUTH2_SITE_URI ), $request_args );
+		return $this->request(
+			self::USER_INPUT_SETTINGS_URI,
+			$credentials,
+			array(
+				'json_request' => true,
+				'access_token' => $access_token,
+				'body'         => $body,
+			)
+		);
 	}
 
 	/**
@@ -376,13 +401,12 @@ class Google_Proxy {
 	 *
 	 * @param string $site_code        Site code identifying the site.
 	 * @param string $undelegated_code Undelegated code identifying the undelegated token.
-	 * @return array Response data containing site_id and site_secret.
-	 *
-	 * @throws Exception Thrown when the request resulted in an error response.
+	 * @return array|WP_Error Response data containing site_id and site_secret on success, WP_Error object on failure.
 	 */
 	public function exchange_site_code( $site_code, $undelegated_code ) {
-		$response = wp_remote_post(
-			$this->url( self::OAUTH2_SITE_URI ),
+		$response_data = $this->request(
+			self::OAUTH2_SITE_URI,
+			null,
 			array(
 				'body' => array(
 					'code'      => $undelegated_code,
@@ -391,23 +415,40 @@ class Google_Proxy {
 			)
 		);
 
-		if ( is_wp_error( $response ) ) {
-			throw new Exception( $response->get_error_code() );
-		}
-
-		$raw_body      = wp_remote_retrieve_body( $response );
-		$response_data = json_decode( $raw_body, true );
-
-		if ( ! $response_data || isset( $response_data['error'] ) ) {
-			throw new Exception(
-				isset( $response_data['error'] ) ? $response_data['error'] : 'failed_to_parse_response'
-			);
+		if ( is_wp_error( $response_data ) ) {
+			return $response_data;
 		}
 
 		if ( ! isset( $response_data['site_id'], $response_data['site_secret'] ) ) {
-			throw new Exception( 'oauth_credentials_not_exist' );
+			return new WP_Error(
+				'oauth_credentials_not_exist',
+				__( 'OAuth credentials haven\'t been found.', 'google-site-kit' ),
+				array( 'status' => 401 )
+			);
 		}
 
 		return $response_data;
 	}
+
+	/**
+	 * Gets remote features.
+	 *
+	 * @since 1.27.0
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @return array|WP_Error Response of the wp_remote_post request.
+	 */
+	public function get_features( Credentials $credentials ) {
+		return $this->request(
+			self::FEATURES_URI,
+			$credentials,
+			array(
+				'body' => array(
+					'platform' => 'wordpress/google-site-kit',
+					'version'  => GOOGLESITEKIT_VERSION,
+				),
+			)
+		);
+	}
+
 }

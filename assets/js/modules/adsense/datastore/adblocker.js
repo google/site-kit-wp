@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { detectAnyAdblocker } from 'just-detect-adblock';
 
 /**
  * Internal dependencies
@@ -28,6 +29,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 
 // Actions
+const CHECK_ADBLOCKER = 'CHECK_ADBLOCKER';
 const RECEIVE_IS_ADBLOCKER_ACTIVE = 'RECEIVE_IS_ADBLOCKER_ACTIVE';
 
 export const initialState = {
@@ -35,6 +37,12 @@ export const initialState = {
 };
 
 export const actions = {
+	*checkAdBlocker() {
+		return yield {
+			payload: {},
+			type: CHECK_ADBLOCKER,
+		};
+	},
 	receiveIsAdBlockerActive( isAdBlockerActive ) {
 		invariant( 'boolean' === typeof isAdBlockerActive, 'isAdBlockerActive must be boolean.' );
 		return {
@@ -44,7 +52,9 @@ export const actions = {
 	},
 };
 
-export const controls = {};
+export const controls = {
+	[ CHECK_ADBLOCKER ]: () => detectAnyAdblocker(),
+};
 
 export const reducer = ( state, { payload, type } ) => {
 	switch ( type ) {
@@ -74,10 +84,9 @@ export const resolvers = {
 			return;
 		}
 
-		// Global is set by ads.js entry point script.
-		const canAdsRun = global._googlesitekitLegacyData && global._googlesitekitLegacyData.canAdsRun;
+		const detected = yield actions.checkAdBlocker();
 
-		yield actions.receiveIsAdBlockerActive( ! canAdsRun );
+		yield actions.receiveIsAdBlockerActive( detected );
 	},
 };
 

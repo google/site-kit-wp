@@ -94,7 +94,6 @@ storiesOf( 'Settings', module )
 	} )
 	.add( 'Connect More Services', () => {
 		global._googlesitekitLegacyData = settingsData;
-		global._googlesitekitLegacyData.canAdsRun = true;
 		global._googlesitekitLegacyData.modules.analytics.active = false;
 		global._googlesitekitLegacyData.modules.analytics.setupComplete = false;
 		global._googlesitekitLegacyData.modules.adsense.active = true;
