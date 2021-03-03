@@ -56,11 +56,18 @@ export default function UserInputKeywords( { slug, max } ) {
 
 	const updateKeywords = useCallback( ( keywords ) => {
 		const EOT = String.fromCharCode( 4 );
-		const newKeywords = [ ...keywords, '', EOT ] // EOT is added to the end to properly combine two sequential empty spaces at the end.
+		let newKeywords = keywords
+			.map( ( keyword ) => keyword.trim() )
+			// EOT is added to the end to properly combine two sequential empty spaces at the end.
+			.concat( [ '', EOT ] )
 			.join( EOT )
-			.replace( new RegExp( `${ EOT }{3,}`, 'g' ), EOT ) // Combine two sequential empty spaces into one.
-			.split( EOT )
-			.slice( 0, max );
+			.replace( new RegExp( `${ EOT }{3,}`, 'g' ), EOT ); // Combine two sequential empty spaces into one.
+
+		if ( newKeywords === EOT ) {
+			newKeywords = [ '' ];
+		} else {
+			newKeywords = newKeywords.split( EOT ).slice( 0, max );
+		}
 
 		setUserInputSetting( slug, newKeywords );
 	}, [ slug ] );
