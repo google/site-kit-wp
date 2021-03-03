@@ -25,17 +25,17 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { useCallback, createInterpolateElement } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import { sanitizeHTML } from '../util';
 import { toggleTracking, trackEvent } from '../util/tracking';
 import Checkbox from './Checkbox';
+import Link from './Link';
 const { useSelect, useDispatch } = Data;
 
 export default function OptIn( { id, name, className, optinAction } ) {
@@ -62,17 +62,6 @@ export default function OptIn( { id, name, className, optinAction } ) {
 		return null;
 	}
 
-	const labelHTML = sprintf(
-		/* translators: %s: privacy policy URL */
-		__( 'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a href="%s" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>', 'google-site-kit' ),
-		'https://policies.google.com/privacy'
-	);
-
-	const allowedDOM = {
-		ALLOWED_TAGS: [ 'a' ],
-		ALLOWED_ATTR: [ 'href', 'target', 'rel' ],
-	};
-
 	return (
 		<div className={ classnames( 'googlesitekit-opt-in', className ) }>
 			<Checkbox
@@ -83,7 +72,17 @@ export default function OptIn( { id, name, className, optinAction } ) {
 				disabled={ saving }
 				onChange={ handleOptIn }
 			>
-				<span dangerouslySetInnerHTML={ sanitizeHTML( labelHTML, allowedDOM ) } />
+				{ createInterpolateElement(
+					__( 'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a>Google Privacy Policy</a>', 'google-site-kit' ),
+					{
+						a: <Link
+							key="link"
+							href={ 'https://policies.google.com/privacy' }
+							external
+							inherit
+						/>,
+					}
+				) }
 			</Checkbox>
 
 			{ error?.message && (
