@@ -141,7 +141,7 @@
 
 	.googlesitekit-widget--analyticsAllTraffic__selectable {
 		// Use pointer when hovering over chart slice or legend entry.
-		.googlesitekit-chart-v2 > div > div > div > svg {
+		.googlesitekit-chart-v2__inner > div > div > div > svg {
 
 			& > g > path,
 			& > g > g {
@@ -167,10 +167,7 @@
 		position: absolute;
 		text-align: center;
 		text-transform: uppercase;
-		// The -6px margin-top on the legend affects the parent height
-		// so we have to factor it in here to center the title
-		top: calc(50% - 6px);
-
+		top: 50%;
 		transform: translate(-50%, -50%);
 
 		& span {
