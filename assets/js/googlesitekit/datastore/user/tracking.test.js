@@ -46,7 +46,7 @@ describe( 'core/user tracking settings', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( 'saveUserTracking', () => {
+		describe( 'setTrackingEnabled', () => {
 			it.each( [
 				[ 'enable', true ],
 				[ 'disable', false ],
@@ -56,7 +56,7 @@ describe( 'core/user tracking settings', () => {
 					body: { enabled },
 				} );
 
-				await registry.dispatch( STORE_NAME ).saveUserTracking( enabled );
+				await registry.dispatch( STORE_NAME ).setTrackingEnabled( enabled );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched( coreUserTrackingSettingsEndpointRegExp, {
@@ -81,8 +81,8 @@ describe( 'core/user tracking settings', () => {
 					{ body: response, status: 500 }
 				);
 
-				await registry.dispatch( STORE_NAME ).saveUserTracking( ...args );
-				expect( registry.select( STORE_NAME ).getErrorForAction( 'saveUserTracking', args ) ).toMatchObject( response );
+				await registry.dispatch( STORE_NAME ).setTrackingEnabled( ...args );
+				expect( registry.select( STORE_NAME ).getErrorForAction( 'setTrackingEnabled', args ) ).toMatchObject( response );
 				expect( console ).toHaveErrored();
 			} );
 		} );
