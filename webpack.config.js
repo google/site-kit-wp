@@ -166,8 +166,6 @@ const webpackConfig = ( env, argv ) => {
 				'googlesitekit-wp-dashboard': './assets/js/googlesitekit-wp-dashboard.js',
 				'googlesitekit-base': './assets/js/googlesitekit-base.js',
 				'googlesitekit-module': './assets/js/googlesitekit-module.js',
-				// Needed to test if a browser extension blocks this by naming convention.
-				'pagead2.ads': './assets/js/pagead2.ads.js',
 			},
 			externals,
 			output: {
