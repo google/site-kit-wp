@@ -40,19 +40,22 @@ const { useSelect, useDispatch } = Data;
 
 export default function OptIn( { id, name, className, optinAction } ) {
 	const enabled = useSelect( ( select ) => select( CORE_USER ).isTrackingEnabled() );
-	const saving = useSelect( ( select ) => select( CORE_USER ).isSavingUserTracking() );
-	const error = useSelect( ( select ) => select( CORE_USER ).getErrorForAction( 'saveUserTracking', [ ! enabled ] ) );
+	const saving = useSelect( ( select ) => select( CORE_USER ).isSavingTrackingEnabled() );
+	const error = useSelect( ( select ) => select( CORE_USER ).getErrorForAction( 'setTrackingEnabled', [ ! enabled ] ) );
 
-	const { saveUserTracking } = useDispatch( CORE_USER );
-	const handleOptIn = useCallback( ( e ) => {
-		const checked = !! e.target.checked;
+	const { setTrackingEnabled } = useDispatch( CORE_USER );
+	const handleOptIn = useCallback( async ( e ) => {
+		const {
+			response,
+			error: responseError,
+		} = await setTrackingEnabled( !! e.target.checked );
 
-		toggleTracking( checked );
-		if ( checked ) {
-			trackEvent( 'tracking_plugin', optinAction );
+		if ( ! responseError ) {
+			toggleTracking( response.enabled );
+			if ( response.enabled ) {
+				trackEvent( 'tracking_plugin', optinAction );
+			}
 		}
-
-		saveUserTracking( checked );
 	}, [ enabled, optinAction ] );
 
 	if ( enabled === undefined ) {

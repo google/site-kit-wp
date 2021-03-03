@@ -37,7 +37,7 @@ const fetchGetTrackingStore = createFetchStore( {
 } );
 
 const fetchSaveTrackingStore = createFetchStore( {
-	baseName: 'saveTracking',
+	baseName: 'setTracking',
 	controlCallback: ( enabled ) => API.set( 'core', 'user', 'tracking', { enabled: !! enabled } ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( enabled ) => enabled,
@@ -45,36 +45,36 @@ const fetchSaveTrackingStore = createFetchStore( {
 
 const baseInitialState = {
 	tracking: undefined,
-	isSavingTracking: false,
+	isSavingTrackingEnabled: false,
 };
 
 // Actions
-const SET_USER_TRACKING_SAVING_FLAG = 'SET_USER_TRACKING_SAVING_FLAG';
+const SET_TRACKING_ENABLED_SAVING_ACTION = 'SET_TRACKING_ENABLED_SAVING_ACTION';
 
 const baseActions = {
 	/**
-	 * Saves user tracking settings.
+	 * Sets user tracking settings.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {boolean} enabled Tracking status.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*saveUserTracking( enabled ) {
-		yield clearError( 'saveUserTracking', [ enabled ] );
+	*setTrackingEnabled( enabled ) {
+		yield clearError( 'setTrackingEnabled', [ enabled ] );
 
 		yield {
-			type: SET_USER_TRACKING_SAVING_FLAG,
+			type: SET_TRACKING_ENABLED_SAVING_ACTION,
 			payload: { isSaving: true },
 		};
 
-		const { response, error } = yield fetchSaveTrackingStore.actions.fetchSaveTracking( enabled );
+		const { response, error } = yield fetchSaveTrackingStore.actions.fetchSetTracking( enabled );
 		if ( error ) {
-			yield receiveError( error, 'saveUserTracking', [ enabled ] );
+			yield receiveError( error, 'setTrackingEnabled', [ enabled ] );
 		}
 
 		yield {
-			type: SET_USER_TRACKING_SAVING_FLAG,
+			type: SET_TRACKING_ENABLED_SAVING_ACTION,
 			payload: { isSaving: false },
 		};
 
@@ -84,10 +84,10 @@ const baseActions = {
 
 export const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_USER_TRACKING_SAVING_FLAG: {
+		case SET_TRACKING_ENABLED_SAVING_ACTION: {
 			return {
 				...state,
-				isSavingTracking: payload.isSaving,
+				isSavingTrackingEnabled: payload.isSaving,
 			};
 		}
 		default: {
@@ -114,8 +114,8 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the user tracking settings are being saved, otherwise FALSE.
 	 */
-	isSavingUserTracking( state ) {
-		return !! state?.isSavingTracking;
+	isSavingTrackingEnabled( state ) {
+		return !! state?.isSavingTrackingEnabled;
 	},
 
 	/**
