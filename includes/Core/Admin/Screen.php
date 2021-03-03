@@ -150,20 +150,18 @@ final class Screen {
 					 * WordPress provides some color schemes out of the box, but they can also be added via
 					 * wp_admin_css_color()
 					 *
-					 * Our workaround is to set the icon and subsequently replace it in admin_init, which is
+					 * Our workaround is to set the icon and subsequently replace it in current_screen, which is
 					 * what we do in the following action.
 					 */
 					add_action(
-						'admin_init',
+						'current_screen',
 						function() {
 							global $menu, $_wp_admin_css_colors, $pagenow;
 							$color_scheme = get_user_option( 'admin_color' ) ?: 'fresh';
 
-							$prefix = 'googlesitekit-';
-
 							// If we're on one of the sitekit pages, use the 'current' color, otherwise use the 'base' color.
 							// @see wp_admin_css_color().
-							$color_key = 'admin.php' === $pagenow && substr( filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING ), 0, strlen( $prefix ) ) === $prefix ? 'current' : 'base';
+							$color_key = false === strpos( get_current_screen()->id, 'googlesitekit' ) ? 'base' : 'current';
 
 							if ( empty( $_wp_admin_css_colors[ $color_scheme ]->icon_colors[ $color_key ] ) ) {
 								return;
