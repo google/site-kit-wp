@@ -28,6 +28,7 @@ import GoogleLogoIcon from '../assets/svg/logo-g.svg';
 import SiteKitLogoIcon from '../assets/svg/logo-sitekit.svg';
 import WPDashboardApp from '../assets/js/components/wp-dashboard/WPDashboardApp';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import {
 	wpDashboardPopularPagesArgs,
 	wpDashboardPopularPagesData,
@@ -48,20 +49,20 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
-	provideModules,
 } from '../tests/js/utils';
 import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
+import { withActive, withConnected } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
 
 storiesOf( 'WordPress', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
-		provideModules( registry );
 
 		return storyFn( registry );
 	} )
 	.add( 'WordPress Dashboard', ( registry ) => {
+		registry.dispatch( CORE_MODULES ).receiveGetModules( withConnected( 'analytics' ) );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-23' );
 
 		// For <WPDashboardUniqueVisitors />
@@ -110,13 +111,7 @@ storiesOf( 'WordPress', module )
 		},
 	} )
 	.add( 'WordPress Dashboard (Analytics inactive)', ( registry ) => {
-		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: false,
-				connected: false,
-			},
-		] );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive() );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-23' );
 
 		// For <WPDashboardImpressions />
@@ -153,6 +148,7 @@ storiesOf( 'WordPress', module )
 		},
 	} )
 	.add( 'WordPress Dashboard (Data Unavailable)', ( registry ) => {
+		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'analytics' ) );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-23' );
 
 		// For <WPDashboardUniqueVisitors />

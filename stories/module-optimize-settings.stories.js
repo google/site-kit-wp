@@ -28,7 +28,7 @@ import { AMP_MODE_PRIMARY } from '../assets/js/googlesitekit/datastore/site/cons
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/optimize/datastore/constants';
-import fixtures from '../assets/js/googlesitekit/modules/datastore/fixtures.json';
+import fixtures from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import {
 	createTestRegistry,
 	provideSiteInfo,
