@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Screen;
 use Google\Site_Kit\Core\Admin\Screens;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -132,8 +133,8 @@ final class Tracking {
 	 * @return array Modified array of routes that contains tracking related routes.
 	 */
 	private function get_rest_routes( $routes ) {
-		$valid_user = function() {
-			return is_user_logged_in();
+		$can_authenticate = function() {
+			return current_user_can( Permissions::AUTHENTICATE );
 		};
 
 		$tracking_callback = function( WP_REST_Request $request ) {
@@ -153,7 +154,7 @@ final class Tracking {
 						array(
 							'methods'             => WP_REST_Server::READABLE,
 							'callback'            => $tracking_callback,
-							'permission_callback' => $valid_user,
+							'permission_callback' => $can_authenticate,
 						),
 						array(
 							'methods'             => WP_REST_Server::CREATABLE,
@@ -165,7 +166,7 @@ final class Tracking {
 
 								return $tracking_callback( $request );
 							},
-							'permission_callback' => $valid_user,
+							'permission_callback' => $can_authenticate,
 							'args'                => array(
 								'data' => array(
 									'type'       => 'object',
