@@ -55,7 +55,7 @@ let isAdBlockerActive = () => {};
 export const registerStore = ( registry ) => {
 	registerDataStore( registry );
 	// TODO: fix hack
-	isAdBlockerActive = () => registry.select( STORE_NAME ).isAdBlockerActive();
+	isAdBlockerActive = () => registry.__experimentalResolveSelect( STORE_NAME ).isAdBlockerActive();
 };
 
 export const registerModule = ( modules ) => {
@@ -68,8 +68,8 @@ export const registerModule = ( modules ) => {
 			SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
 			SetupComponent: SetupMain,
 			Icon: AdSenseIcon,
-			checkRequirements: () => {
-				if ( ! isAdBlockerActive() ) {
+			checkRequirements: async () => {
+				if ( ! await isAdBlockerActive() ) {
 					return;
 				}
 
