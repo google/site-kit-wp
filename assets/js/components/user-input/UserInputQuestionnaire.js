@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment, useEffect } from '@wordpress/element';
+import { useCallback, Fragment, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -51,6 +51,7 @@ export default function UserInputQuestionnaire() {
 	const steps = [ ...USER_INPUT_QUESTIONS_LIST, 'preview' ];
 
 	const [ activeSlug, setActiveSlug ] = useQueryArg( 'question', steps[ 0 ] );
+	const [ firstRender, setFirstRender ] = useState( true );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
 	const [ single, setSingle ] = useQueryArg( 'single', false );
 
@@ -123,6 +124,15 @@ export default function UserInputQuestionnaire() {
 
 	const goToPreview = useCallback( () => {
 		setActiveSlug( steps[ steps.length - 1 ] );
+	}, [ activeSlugIndex ] );
+
+	useEffect( () => {
+		if ( firstRender ) {
+			setFirstRender( false );
+			return;
+		}
+
+		global.document.getElementById( `googlesitekit-user-input-question-${ activeSlugIndex + 1 }` )?.scrollIntoView( { behavior: 'smooth' } );
 	}, [ activeSlugIndex ] );
 
 	// Update the callbacks and labels for the questions if the user is editing a *single question*.
