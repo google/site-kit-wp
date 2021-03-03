@@ -26,6 +26,7 @@ const path = require( 'path' );
  * External dependencies
  */
 const CircularDependencyPlugin = require( 'circular-dependency-plugin' );
+const ESLintPlugin = require( 'eslint-webpack-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
@@ -109,13 +110,6 @@ const rules = [
 					],
 				},
 			},
-			{
-				loader: 'eslint-loader',
-				options: {
-					quiet: true,
-					formatter: require( 'eslint' ).CLIEngine.getFormatter( 'stylish' ),
-				},
-			},
 		],
 		...noAMDParserRule,
 	},
@@ -172,8 +166,6 @@ const webpackConfig = ( env, argv ) => {
 				'googlesitekit-wp-dashboard': './assets/js/googlesitekit-wp-dashboard.js',
 				'googlesitekit-base': './assets/js/googlesitekit-base.js',
 				'googlesitekit-module': './assets/js/googlesitekit-module.js',
-				// Needed to test if a browser extension blocks this by naming convention.
-				'pagead2.ads': './assets/js/pagead2.ads.js',
 			},
 			externals,
 			output: {
@@ -238,7 +230,10 @@ const webpackConfig = ( env, argv ) => {
 				new CreateFileWebpack( {
 					path: './dist',
 					fileName: 'config.json',
-					content: JSON.stringify( { flagMode, features } ),
+					content: JSON.stringify( {
+						buildMode: flagMode,
+						features,
+					} ),
 				} ),
 				new ManifestPlugin( {
 					fileName: path.resolve( __dirname, 'includes/Core/Assets/Manifest.php' ),
@@ -259,6 +254,11 @@ const webpackConfig = ( env, argv ) => {
 				} ),
 				new DefinePlugin( {
 					'global.GOOGLESITEKIT_VERSION': JSON.stringify( GOOGLESITEKIT_VERSION ),
+				} ),
+				new ESLintPlugin( {
+					emitError: true,
+					emitWarning: true,
+					failOnError: true,
 				} ),
 			],
 			optimization: {
@@ -419,6 +419,8 @@ module.exports.default = ( env, argv ) => {
 		// Build the test files if we aren't doing a production build.
 		config.push( testBundle() );
 	}
+
+	config.stats = 'errors-warnings';
 
 	return config;
 };

@@ -31,12 +31,11 @@ import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-
 import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/search-console/util/is-zero-report';
 import PreviewBlock from '../PreviewBlock';
-import ReportError from '../ReportError';
 import DataBlock from '../DataBlock';
 import sumObjectListValue from '../../util/sum-object-list-value';
 const { useSelect } = Data;
 
-function AdminBarClicks( { WidgetReportZero } ) {
+function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
@@ -58,7 +57,7 @@ function AdminBarClicks( { WidgetReportZero } ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="search-console" error={ error } />;
+		return <WidgetReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( isZeroReport( searchConsoleData ) ) {

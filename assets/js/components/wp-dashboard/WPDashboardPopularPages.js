@@ -28,15 +28,13 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import PreviewTable from '../../components/PreviewTable';
-import ReportError from '../ReportError';
 import { numFmt } from '../../util';
 import TableOverflowContainer from '../../components/TableOverflowContainer';
 import { getDataTableFromData } from '../../components/data-table';
-import ReportZero from '../../components/ReportZero';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
-const WPDashboardPopularPages = () => {
+const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
@@ -72,11 +70,11 @@ const WPDashboardPopularPages = () => {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	const headers = [

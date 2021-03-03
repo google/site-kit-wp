@@ -34,11 +34,11 @@ import { getDataTableFromData } from '../../../../components/data-table';
 import SourceLink from '../../../../components/SourceLink';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import { isZeroReport } from '../../../analytics/util';
-import ReportError from '../../../../components/ReportError';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
 const { useSelect } = Data;
 
-function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero } ) {
+function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		isAdSenseLinked,
 		analyticsMainURL,
@@ -67,7 +67,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero } ) {
 
 		return {
 			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
-			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceURL(),
+			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL( 'content-publisher-overview', generateDateRangeArgs( { startDate, endDate } ) ),
 			data: select( MODULES_ANALYTICS ).getReport( args ),
 			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ),
@@ -87,7 +87,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero } ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {

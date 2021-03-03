@@ -1,5 +1,5 @@
 /**
- * WPSearchConsoleDashboardWidget component.
+ * Legacy ModuleApp component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,21 +19,15 @@
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { withFilters } from '@wordpress/components';
+import { Component } from '@wordpress/element';
 
 /**
- * Internal dependencies
+ * A single module. Keeps track of its own active state and settings.
  */
-import WPSearchConsoleDashboardWidgetOverview from './WPSearchConsoleDashboardWidgetOverview';
-
-class WPSearchConsoleDashboardWidget extends Component {
+class ModuleApp extends Component {
 	render() {
-		return (
-			<Fragment>
-				<WPSearchConsoleDashboardWidgetOverview />
-			</Fragment>
-		);
+		return null;
 	}
 }
-
-export default WPSearchConsoleDashboardWidget;
+export default withFilters( `googlesitekit.ModuleApp-${ global.googlesitekitCurrentModule.slug }` )( ModuleApp );

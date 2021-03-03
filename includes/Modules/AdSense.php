@@ -165,24 +165,29 @@ final class AdSense extends Module
 		$settings = $this->get_settings()->get();
 
 		return array(
-			'adsense_account_id'     => array(
+			'adsense_account_id'            => array(
 				'label' => __( 'AdSense account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'], 7 ),
 			),
-			'adsense_client_id'      => array(
+			'adsense_client_id'             => array(
 				'label' => __( 'AdSense client ID', 'google-site-kit' ),
 				'value' => $settings['clientID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['clientID'], 10 ),
 			),
-			'adsense_account_status' => array(
+			'adsense_account_status'        => array(
 				'label' => __( 'AdSense account status', 'google-site-kit' ),
 				'value' => $settings['accountStatus'],
 			),
-			'adsense_use_snippet'    => array(
+			'adsense_use_snippet'           => array(
 				'label' => __( 'AdSense snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
+			),
+			'adsense_web_stories_adunit_id' => array(
+				'label' => __( 'Web Stories Ad Unit ID', 'google-site-kit' ),
+				'value' => $settings['webStoriesAdUnit'],
+				'debug' => $settings['webStoriesAdUnit'],
 			),
 		);
 	}
@@ -196,6 +201,7 @@ final class AdSense extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
+			'GET:adunits'        => array( 'service' => 'adsense' ),
 			'GET:accounts'       => array( 'service' => 'adsense' ),
 			'GET:alerts'         => array( 'service' => 'adsense' ),
 			'GET:clients'        => array( 'service' => 'adsense' ),
@@ -221,6 +227,22 @@ final class AdSense extends Module
 			case 'GET:accounts':
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts->listAccounts();
+			case 'GET:adunits':
+				if ( ! isset( $data['accountID'] ) || ! isset( $data['clientID'] ) ) {
+					$option            = $this->get_settings()->get();
+					$data['accountID'] = $option['accountID'];
+					if ( empty( $data['accountID'] ) ) {
+						/* translators: %s: Missing parameter name */
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+					}
+					$data['clientID'] = $option['clientID'];
+					if ( empty( $data['clientID'] ) ) {
+						/* translators: %s: Missing parameter name */
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
+					}
+				}
+				$service = $this->get_service( 'adsense' );
+				return $service->accounts_adunits->listAccountsAdunits( $data['accountID'], $data['clientID'] );
 			case 'GET:alerts':
 				if ( ! isset( $data['accountID'] ) ) {
 					$option            = $this->get_settings()->get();
@@ -467,35 +489,6 @@ final class AdSense extends Module
 					gmdate( 'Y-m-d', strtotime( 'today' ) ),
 					gmdate( 'Y-m-d', strtotime( 'today' ) ),
 				);
-			case 'yesterday':
-				return array(
-					gmdate( 'Y-m-d', strtotime( 'yesterday' ) ),
-					gmdate( 'Y-m-d', strtotime( 'yesterday' ) ),
-				);
-			case 'same-day-last-week':
-				return array(
-					gmdate( 'Y-m-d', strtotime( '7 days ago' ) ),
-					gmdate( 'Y-m-d', strtotime( '7 days ago' ) ),
-				);
-			case 'this-month':
-				return array(
-					gmdate( 'Y-m-01' ),
-					gmdate( 'Y-m-d', strtotime( 'today' ) ),
-				);
-			case 'this-month-last-year':
-				$last_year          = intval( gmdate( 'Y' ) ) - 1;
-				$last_date_of_month = gmdate( 't', strtotime( $last_year . '-' . gmdate( 'm' ) . '-01' ) );
-
-				return array(
-					gmdate( $last_year . '-m-01' ),
-					gmdate( $last_year . '-m-' . $last_date_of_month ),
-				);
-			// Intentional fallthrough.
-			case 'prev-7-days':
-			case 'prev-14-days':
-			case 'prev-28-days':
-			case 'prev-90-days':
-				return $this->parse_date_range( $date_range, 1, 1, true );
 			// Intentional fallthrough.
 			case 'last-7-days':
 			case 'last-14-days':
@@ -746,18 +739,20 @@ final class AdSense extends Module
 	 * @since 1.24.0
 	 */
 	private function register_tag() {
-		// Web Stories support neither <amp-auto-ads> nor the script.
 		// TODO: 'amp_story' support can be phased out in the long term.
-		if ( is_singular( array( 'web-story', 'amp_story' ) ) ) {
+		if ( is_singular( array( 'amp_story' ) ) ) {
 			return;
 		}
 
 		$module_settings = $this->get_settings();
 		$settings        = $module_settings->get();
 
-		$tag = $this->context->is_amp()
-			? new AMP_Tag( $settings['clientID'], self::MODULE_SLUG )
-			: new Web_Tag( $settings['clientID'], self::MODULE_SLUG );
+		if ( $this->context->is_amp() ) {
+			$tag = new AMP_Tag( $settings['clientID'], self::MODULE_SLUG );
+			$tag->set_story_ad_slot_id( $settings['webStoriesAdUnit'] );
+		} else {
+			$tag = new Web_Tag( $settings['clientID'], self::MODULE_SLUG );
+		}
 
 		if ( ! $tag->is_tag_blocked() ) {
 			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );

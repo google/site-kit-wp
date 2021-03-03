@@ -1,5 +1,5 @@
 /**
- * Search Console wp-dashboard components.
+ * ModuleFooter component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,5 +16,26 @@
  * limitations under the License.
  */
 
-export { default as WPSearchConsoleDashboardWidget } from './WPSearchConsoleDashboardWidget';
-export { default as WPSearchConsoleDashboardWidgetOverview } from './WPSearchConsoleDashboardWidgetOverview';
+/**
+ * External dependencies
+ */
+import classNames from 'classnames';
+
+/**
+ * Internal dependencies
+ */
+import HelpLink from '../HelpLink';
+
+const ModuleFooter = () => (
+	<div className="mdc-layout-grid__inner">
+		<div className={ classNames( [
+			'mdc-layout-grid__cell',
+			'mdc-layout-grid__cell--span-12',
+			'mdc-layout-grid__cell--align-right',
+		] ) }>
+			<HelpLink />
+		</div>
+	</div>
+);
+
+export default ModuleFooter;
