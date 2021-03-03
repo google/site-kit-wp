@@ -38,7 +38,7 @@ import { __, sprintf, _x } from '@wordpress/i18n';
  *
  * @param {number}                     seconds   The number of seconds.
  * @param {(Intl.NumberFormatOptions)} [options] Optional formatting options.
- * @return {string}   		Human readable string indicating time elapsed.
+ * @return {string} Human readable string indicating time elapsed.
  */
 const durationFormat = ( seconds, options = {} ) => {
 	options = {
@@ -56,12 +56,15 @@ const durationFormat = ( seconds, options = {} ) => {
 	let hours = Math.floor( seconds / 60 / 60 ) || '';
 	let minutes = Math.floor( ( seconds / 60 ) % 60 ) || '';
 
-	seconds = Math.floor( seconds % 60 );
+	seconds = Math.floor( seconds % 60 ) || '';
+
+	if ( ! hours && ! minutes && ! seconds ) {
+		seconds = 0;
+	}
 
 	if ( hours ) {
 		hours = numberFormat( hours, {
 			...options,
-			style: 'unit',
 			unit: 'hour',
 		} );
 	}
@@ -69,23 +72,23 @@ const durationFormat = ( seconds, options = {} ) => {
 	if ( minutes ) {
 		minutes = numberFormat( minutes, {
 			...options,
-			style: 'unit',
 			unit: 'minute',
 		} );
 	}
 
-	seconds = numberFormat( seconds, {
-		...options,
-		style: 'unit',
-		unit: 'second',
-	} );
+	if ( '' !== seconds ) {
+		seconds = numberFormat( seconds, {
+			...options,
+			unit: 'second',
+		} );
+	}
 
 	const formattedString = sprintf(
-		/* translators: 1: seconds, 2: minutes, 3: hours */
-		_x( '%1$s %2$s %3$s', 'duration of time (numeric): hh mm ss', 'google-site-kit' ),
-		hours,
+		/* translators: 1: formatted seconds, 2: formatted minutes, 3: formatted hours */
+		_x( '%3$s %2$s %1$s', 'duration of time: hh mm ss', 'google-site-kit' ),
+		seconds,
 		minutes,
-		seconds
+		hours,
 	);
 
 	return formattedString.trim();

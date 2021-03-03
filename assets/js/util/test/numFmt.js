@@ -137,6 +137,48 @@ describe( 'numFmt', () => {
 			{ style: 'duration', unitDisplay: 'long' },
 			'3 hours 5 minutes 12 seconds',
 		],
+		[
+			'en_US',
+			65,
+			's',
+			'1m 5s',
+		],
+		[
+			'en_US',
+			125,
+			's',
+			'2m 5s',
+		],
+		[
+			'en_US',
+			35,
+			's',
+			'35s',
+		],
+		[
+			'en_US',
+			60,
+			's',
+			'1m',
+		],
+		[
+			'en_US',
+			( 60 * 60 * 3 ) + ( 60 * 5 ) + 12,
+			's',
+			'3h 5m 12s',
+		],
+		[
+			'en_US',
+			( 60 * 60 * 7 ) + ( 60 * 2 ) + 42,
+			's',
+			'7h 2m 42s',
+		],
+		[
+			'en_US',
+			0,
+			's',
+			'0s',
+		],
 	];
 
 	it.each( siteKitLocales )( 'formats numbers correctly with locale variant %s', ( locale, number, unit, expected ) => {
