@@ -4,7 +4,7 @@
 define( 'WP_DEBUG', true );
 
 // Set path to WordPress installation.
-define( 'ABSPATH', TESTS_PLUGIN_DIR . '/vendor/roots/wordpress/' );
+define( 'ABSPATH', dirname( dirname( __DIR__ ) ) . '/vendor/roots/wordpress/' );
 
 /*
  * This configuration file will be used by the copy of WordPress being tested.
@@ -15,10 +15,10 @@ define( 'ABSPATH', TESTS_PLUGIN_DIR . '/vendor/roots/wordpress/' );
  * DO NOT use a production database or one that is shared with something else.
  */
 
-define( 'DB_NAME', 'youremptytestdbnamehere' );
-define( 'DB_USER', 'yourusernamehere' );
-define( 'DB_PASSWORD', 'yourpasswordhere' );
-define( 'DB_HOST', 'localhost' );
+define( 'DB_NAME', 'wordpress_test' );
+define( 'DB_USER', 'root' );
+define( 'DB_PASSWORD', 'example' );
+define( 'DB_HOST', '127.0.0.1' );
 define( 'DB_CHARSET', 'utf8' );
 define( 'DB_COLLATE', '' );
 
