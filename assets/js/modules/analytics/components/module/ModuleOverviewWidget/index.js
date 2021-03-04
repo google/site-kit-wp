@@ -100,7 +100,10 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 				handleStatSelection={ setSelectedState }
 			/>
 
-			<SiteStats />
+			<SiteStats
+				selectedStat={ selectedStat }
+				report={ [ users, sessions, bounceRate, avgSessionDuration ][ selectedStat ] }
+			/>
 		</Widget>
 	);
 }

@@ -16,6 +16,133 @@
  * limitations under the License.
  */
 
-export default function SiteStats() {
-	return 'SiteStats';
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { extractAnalyticsDashboardData } from '../../../util';
+import { getCurrentDateRangeDayCount } from '../../../../../util/date-range';
+import GoogleChart from '../../../../../components/GoogleChart';
+import { Cell, Row, Grid } from '../../../../../material-components';
+const { useSelect } = Data;
+
+export default function SiteStats( { selectedStat, report } ) {
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
+
+	const dataMap = extractAnalyticsDashboardData( report, {
+		selectedStats: selectedStat,
+		selectedDataIndex: 0,
+		currentMonthMetricIndex: 0,
+		previousMonthMetricIndex: 1,
+		days: currentDayCount,
+	} );
+
+	const options = {
+		...SiteStats.options,
+		series: {
+			0: {
+				color: SiteStats.colorMap[ selectedStat ],
+				targetAxisIndex: 0,
+			},
+			1: {
+				color: SiteStats.colorMap[ selectedStat ],
+				targetAxisIndex: 0,
+				lineDashStyle: [ 3, 3 ],
+				lineWidth: 1,
+			},
+		},
+	};
+
+	return (
+		<Grid className="googlesitekit-analytics-site-stats">
+			<Row>
+				<Cell size={ 12 }>
+					<GoogleChart
+						chartType="line"
+						selectedStats={ [ selectedStat ] }
+						data={ dataMap }
+						options={ options }
+					/>
+				</Cell>
+			</Row>
+		</Grid>
+	);
 }
+
+SiteStats.propTypes = {
+	selectedStat: PropTypes.number.isRequired,
+	report: PropTypes.arrayOf( PropTypes.object ).isRequired,
+};
+
+SiteStats.colorMap = {
+	0: '#4285f4',
+	1: '#27bcd4',
+	2: '#1b9688',
+	3: '#673ab7',
+};
+
+SiteStats.options = {
+	chart: {
+		title: '',
+	},
+	curveType: 'line',
+	height: 270,
+	width: '100%',
+	chartArea: {
+		height: '80%',
+		width: '100%',
+		left: 60,
+	},
+	legend: {
+		position: 'top',
+		textStyle: {
+			color: '#616161',
+			fontSize: 12,
+		},
+	},
+	hAxis: {
+		format: 'M/d/yy',
+		gridlines: {
+			color: '#fff',
+		},
+		textStyle: {
+			color: '#616161',
+			fontSize: 12,
+		},
+	},
+	vAxis: {
+		gridlines: {
+			color: '#eee',
+		},
+		minorGridlines: {
+			color: '#eee',
+		},
+		textStyle: {
+			color: '#616161',
+			fontSize: 12,
+		},
+		titleTextStyle: {
+			color: '#616161',
+			fontSize: 12,
+			italic: false,
+		},
+	},
+	focusTarget: 'category',
+	crosshair: {
+		color: 'gray',
+		opacity: 0.1,
+		orientation: 'vertical',
+		trigger: 'both',
+	},
+	tooltip: {
+		isHtml: true, // eslint-disable-line sitekit/acronym-case
+		trigger: 'both',
+	},
+};

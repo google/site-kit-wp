@@ -131,15 +131,16 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
  *
  * @since 1.0.0
  *
- * @param {Array} rows          An array of rows to reduce.
- * @param {Array} selectedStats The currently selected stat we need to return data for.
+ * @param {Array}  rows           An array of rows to reduce.
+ * @param {number} selectedMetric The currently selected metric index.
+ * @param {number} selectedStats  The currently selected stat we need to return data for.
  * @return {Array} Array of selected stats from analytics row data.
  */
-function reduceAnalyticsRowsData( rows, selectedStats ) {
+function reduceAnalyticsRowsData( rows, selectedMetric, selectedStats ) {
 	const dataMap = [];
 	each( rows, ( row ) => {
 		if ( row.metrics ) {
-			const { values } = row.metrics[ 0 ];
+			const { values } = row.metrics[ selectedMetric ];
 			const dateString = row.dimensions[ 0 ];
 			const date = parseDimensionStringToDate( dateString );
 			dataMap.push( [
@@ -156,23 +157,29 @@ function reduceAnalyticsRowsData( rows, selectedStats ) {
  *
  * @since 1.0.0
  *
- * @param {Object} reports       The data returned from the Analytics API call.
- * @param {Array}  selectedStats The currently selected stat we need to return data for.
- * @param {number} days          The number of days to extract data for. Pads empty data days.
+ * @param {Object} reports The data returned from the Analytics API call.
+ * @param {Object} options Extraction options.
  * @return {Array} The dataMap ready for charting.
  */
-export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) => {
+export function extractAnalyticsDashboardData( reports, options ) {
 	if ( ! reports || ! reports.length ) {
 		return null;
 	}
+
 	// Data is returned as an object.
 	const rows = reports[ 0 ].data.rows;
-
 	if ( ! rows ) {
 		return false;
 	}
 
 	const rowLength = rows.length;
+	const {
+		selectedStats,
+		selectedDataIndex,
+		currentMonthMetricIndex = 0,
+		previousMonthMetricIndex = 0,
+		days,
+	} = options;
 
 	// Pad rows to 2 x number of days data points to accommodate new accounts.
 	if ( ( days * 2 ) > rowLength ) {
@@ -229,10 +236,10 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	];
 
 	// Split the results in two chunks of days, and process.
-	const lastMonthRows = rows.slice( rows.length - days, rows.length );
+	const lastMonthRows = rows.slice( rows.length - days );
+	const lastMonthData = reduceAnalyticsRowsData( lastMonthRows, currentMonthMetricIndex, selectedDataIndex );
 	const previousMonthRows = rows.slice( 0, rows.length - days );
-	const lastMonthData = reduceAnalyticsRowsData( lastMonthRows, selectedStats );
-	const previousMonthData = reduceAnalyticsRowsData( previousMonthRows, selectedStats );
+	const previousMonthData = reduceAnalyticsRowsData( previousMonthRows, previousMonthMetricIndex, selectedDataIndex );
 
 	const locale = getLocale();
 	const localeDateOptions = {
@@ -287,7 +294,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	} );
 
 	return dataMap;
-};
+}
 
 /**
  * Extracts the data required from an analytics 'site-analytics' request.

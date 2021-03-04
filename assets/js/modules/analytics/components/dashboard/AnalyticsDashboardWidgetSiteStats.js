@@ -118,8 +118,11 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 			return null;
 		}
 
-		const days = dateRangeSlug ? dateRangeSlug.match( /\d+/ ).map( Number )[ 0 ] : 28;
-		const dataMap = extractAnalyticsDashboardData( data, selectedStats, days );
+		const dataMap = extractAnalyticsDashboardData( data, {
+			selectedStats,
+			selectedDataIndex: selectedStats,
+			days: dateRangeSlug ? dateRangeSlug.match( /\d+/ ).map( Number )[ 0 ] : 28,
+		} );
 
 		if ( ! dataMap ) {
 			return null;
