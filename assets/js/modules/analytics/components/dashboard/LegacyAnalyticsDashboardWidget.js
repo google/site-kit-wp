@@ -32,9 +32,9 @@ import { __, _n, _x, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import AnalyticsIcon from '../../../../../svg/analytics.svg';
-import AnalyticsDashboardWidgetSiteStats from './AnalyticsDashboardWidgetSiteStats';
+import LegacyAnalyticsDashboardWidgetSiteStats from './LegacyAnalyticsDashboardWidgetSiteStats';
 import AnalyticsDashboardWidgetTopPagesTable from './AnalyticsDashboardWidgetTopPagesTable';
-import AnalyticsDashboardWidgetOverview from './AnalyticsDashboardWidgetOverview';
+import LegacyAnalyticsDashboardWidgetOverview from './LegacyAnalyticsDashboardWidgetOverview';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import Layout from '../../../../components/layout/Layout';
 import PageHeader from '../../../../components/PageHeader';
@@ -49,7 +49,7 @@ import { STORE_NAME } from '../../datastore/constants';
 
 const { useSelect } = Data;
 
-export default function AnalyticsDashboardWidget() {
+export default function LegacyAnalyticsDashboardWidget() {
 	const [ selectedStats, setSelectedStats ] = useState( [ 0 ] );
 	const [ receivingData, setReceivingData ] = useState( true );
 	const [ error, setError ] = useState( false );
@@ -174,13 +174,13 @@ export default function AnalyticsDashboardWidget() {
 								) }
 								headerCTALink={ visitorsOverview }
 							>
-								<AnalyticsDashboardWidgetOverview
+								<LegacyAnalyticsDashboardWidgetOverview
 									selectedStats={ selectedStats }
 									handleStatSelection={ handleStatSelection }
 									handleDataError={ handleDataError }
 									handleDataSuccess={ handleDataSuccess }
 								/>
-								<AnalyticsDashboardWidgetSiteStats
+								<LegacyAnalyticsDashboardWidgetSiteStats
 									selectedStats={ selectedStats }
 									series={ series }
 									vAxes={ vAxes }

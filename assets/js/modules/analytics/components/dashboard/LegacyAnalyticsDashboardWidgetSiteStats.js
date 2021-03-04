@@ -34,7 +34,7 @@ import { TYPE_MODULES } from '../../../../components/data';
 import { extractAnalyticsDashboardData, siteAnalyticsReportDataDefaults } from '../../util';
 import PreviewBlock from '../../../../components/PreviewBlock';
 
-class AnalyticsDashboardWidgetSiteStats extends Component {
+class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 	constructor( props ) {
 		super( props );
 
@@ -148,7 +148,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 }
 
 export default withData(
-	AnalyticsDashboardWidgetSiteStats,
+	LegacyAnalyticsDashboardWidgetSiteStats,
 	[
 		{
 			type: TYPE_MODULES,
