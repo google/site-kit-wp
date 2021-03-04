@@ -43,64 +43,37 @@ export default function Overview( props ) {
 		handleStatSelection,
 	} = props;
 
-	const getTotal = ( [ report ] ) => report?.data?.totals?.[0]?.values?.[0];
-	const getChange = ( [ report ], total ) => calculateChange( report?.data?.totals?.[1]?.values?.[0], total );
-
-	const totalUsers = getTotal( users );
-	const totalUsersChange = getChange( users, totalUsers );
-
-	const totalSessions = getTotal( sessions );
-	const totalSessionsChange = getChange( sessions, totalSessions );
-
-	const averageBounceRate = getTotal( bounce );
-	const averageBounceRateChange = getChange( bounce, averageBounceRate );
-
-	const averageSessionDuration = getTotal( duration );
-	const averageSessionDurationChange = getChange( duration, averageSessionDuration );
+	const getDatapointAndChange = ( [ report ], divider = 1 ) => ( {
+		datapoint: report?.data?.totals?.[0]?.values?.[0] / divider,
+		change: calculateChange(
+			report?.data?.totals?.[1]?.values?.[0],
+			report?.data?.totals?.[0]?.values?.[0],
+		),
+	} );
 
 	const dataBlocks = [
 		{
-			className: 'googlesitekit-data-block--users googlesitekit-data-block--button-1',
 			title: __( 'Users', 'google-site-kit' ),
-			datapoint: totalUsers,
-			change: totalUsersChange,
-			changeDataUnit: '%',
-			context: 'button',
-			selected: selectedStat === 0,
-			handleStatSelection,
+			className: 'googlesitekit-data-block--users googlesitekit-data-block--button-1',
+			...getDatapointAndChange( users ),
 		},
 		{
-			className: 'googlesitekit-data-block--sessions googlesitekit-data-block--button-2',
 			title: __( 'Sessions', 'google-site-kit' ),
-			datapoint: totalSessions,
-			change: totalSessionsChange,
-			changeDataUnit: '%',
-			context: 'button',
-			selected: selectedStat === 1,
-			handleStatSelection,
+			className: 'googlesitekit-data-block--sessions googlesitekit-data-block--button-2',
+			...getDatapointAndChange( sessions ),
 		},
 		{
-			className: 'googlesitekit-data-block--bounce googlesitekit-data-block--button-3',
 			title: __( 'Bounce Rate', 'google-site-kit' ),
-			datapoint: averageBounceRate / 100,
-			change: averageBounceRateChange,
-			changeDataUnit: '%',
-			context: 'button',
-			selected: selectedStat === 2,
-			handleStatSelection,
+			className: 'googlesitekit-data-block--bounce googlesitekit-data-block--button-3',
 			datapointUnit: '%',
 			invertChangeColor: true,
+			...getDatapointAndChange( bounce, 100 ),
 		},
 		{
-			className: 'googlesitekit-data-block--duration googlesitekit-data-block--button-4',
 			title: __( 'Session Duration', 'google-site-kit' ),
-			datapoint: averageSessionDuration,
+			className: 'googlesitekit-data-block--duration googlesitekit-data-block--button-4',
 			datapointUnit: 's',
-			change: averageSessionDurationChange,
-			changeDataUnit: '%',
-			context: 'button',
-			selected: selectedStat === 3,
-			handleStatSelection,
+			...getDatapointAndChange( duration ),
 		},
 	];
 
@@ -115,10 +88,10 @@ export default function Overview( props ) {
 							title={ block.title }
 							datapoint={ block.datapoint }
 							change={ block.change }
-							changeDataUnit={ block.changeDataUnit }
-							context={ block.context }
-							selected={ block.selected }
-							handleStatSelection={ block.handleStatSelection }
+							changeDataUnit="%"
+							context="button"
+							selected={ selectedStat === i }
+							handleStatSelection={ handleStatSelection }
 							datapointUnit={ block.datapointUnit }
 							invertChangeColor={ block.invertChangeColor }
 						/>
