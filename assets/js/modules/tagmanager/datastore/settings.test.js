@@ -38,6 +38,7 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 	muteFetch,
+	provideModules,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
@@ -72,15 +73,11 @@ describe( 'modules/tagmanager settings', () => {
 		accountID: '100',
 		containerID: 'GTM-WEB1234',
 		internalContainerID: '300',
-		// ampContainerID: '',
-		// internalAMPContainerID: '',
 		useSnippet: true,
 	};
 
 	const validSettingsAMP = {
 		accountID: '100',
-		// containerID: '',
-		// internalContainerID: '',
 		ampContainerID: 'GTM-AMP1234',
 		internalAMPContainerID: '399',
 		useSnippet: true,
@@ -98,6 +95,11 @@ describe( 'modules/tagmanager settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		// TODO: the analytics module should not be connected by default in the module fixtures assets/js/googlesitekit/modules/datastore/fixtures.json
+		provideModules( registry, [ {
+			slug: 'analytics',
+			active: false,
+		} ] );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 	} );
 
