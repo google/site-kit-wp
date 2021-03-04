@@ -157,6 +157,11 @@ final class Screen {
 						'current_screen',
 						function() {
 							global $menu, $_wp_admin_css_colors;
+
+							if ( ! is_array( $menu ) ) {
+								return;
+							}
+
 							$color_scheme = get_user_option( 'admin_color' ) ?: 'fresh';
 
 							// If we're on one of the sitekit pages, use the 'current' color, otherwise use the 'base' color.
