@@ -7,7 +7,7 @@
   "require-dev": {
     "automattic/vipwpcs": "^2",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
-    "roots/wordpress": "*",
+    "roots/wordpress": ">=4.7",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpunit/phpunit": "^5",
     "roave/security-advisories": "dev-master",
