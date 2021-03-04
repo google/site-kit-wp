@@ -28,6 +28,7 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
 import ProgressBar from '../../../../../components/ProgressBar';
+import Header from './Header';
 import Overview from './Overview';
 import SiteStats from './SiteStats';
 const { useSelect } = Data;
@@ -82,13 +83,14 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	}
 
 	return (
-		<Widget>
+		<Widget Header={ Header }>
 			<Overview
 				users={ users }
 				sessions={ sessions }
 				bounceRate={ bounceRate }
 				avgSessionDuration={ avgSessionDuration }
 			/>
+
 			<SiteStats />
 		</Widget>
 	);

@@ -35,6 +35,12 @@
 		&-title {
 			margin: 0;
 		}
+
+		& .mdc-layout-grid,
+		& .googlesitekit-layout__header-title {
+			margin: 0;
+			padding: 0;
+		}
 	}
 
 	&__footer {
