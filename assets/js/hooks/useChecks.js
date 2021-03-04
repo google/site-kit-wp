@@ -26,6 +26,7 @@ import { useEffect, useState } from '@wordpress/element';
  * All checks should be functions that throw their respective errors.
  *
  * @since 1.25.0
+ * @since n.e.x.t Checks are run sequentially rather than in parallel.
  *
  * @param {Function[]} checks Array of functions to run.
  * @return {Object} An object containing complete and error properties.
