@@ -56,6 +56,8 @@ jobs:
             ${{ runner.os }}-composer-
       - name: Composer Install
         run: composer install --no-interaction --no-progress
+      - name: Update PHPUnit
+        run: composer update phpunit/phpunit --with-dependencies --ignore-platform-reqs --no-scripts
       - name: Set up PHP test data
         run: tests/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
       - name: Run Unit Tests
