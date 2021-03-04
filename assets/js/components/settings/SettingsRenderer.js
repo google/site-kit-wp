@@ -1,7 +1,7 @@
 /**
  * Settings Renderer component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,26 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
 	const storeName = useSelect( ( select ) => select( CORE_MODULES ).getModuleStoreName( slug ) );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( CORE_MODULES ).isDoingSubmitChanges( slug ) );
 	const haveSettingsChanged = useSelect( ( select ) => select( storeName )?.haveSettingsChanged?.() || false );
-	const { SettingsEditComponent, SettingsViewComponent } = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) || {} );
+	const {
+		SettingsEditComponent,
+		SettingsViewComponent,
+		SettingsSetupIncompleteComponent,
+		moduleLoaded,
+		connected,
+	} = useSelect( ( select ) => {
+		const module = select( CORE_MODULES ).getModule( slug );
+		return {
+			...module,
+			moduleLoaded: !! module,
+		};
+	} );
 
 	// Rollback any temporary selections to saved values if settings have changed and no longer editing.
 	const { rollbackSettings } = useDispatch( storeName ) || {};
@@ -42,8 +54,10 @@ export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
 		}
 	}, [ rollbackSettings, haveSettingsChanged, isDoingSubmitChanges, isEditing ] );
 
-	if ( ! isOpen ) {
+	if ( ! isOpen || ! moduleLoaded ) {
 		return null;
+	} else if ( isOpen && ! connected ) {
+		return <SettingsSetupIncompleteComponent slug={ slug } />;
 	}
 
 	if ( isEditing && SettingsEditComponent ) {

@@ -1,7 +1,7 @@
 /**
  * `modules/adsense` data store
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 import Data from 'googlesitekit-data';
 import baseModuleStore from './base';
 import accounts from './accounts';
+import adunits from './adunits';
 import alerts from './alerts';
 import clients from './clients';
 import report from './report';
@@ -35,6 +36,7 @@ import { STORE_NAME } from './constants';
 const store = Data.combineStores(
 	baseModuleStore,
 	accounts,
+	adunits,
 	alerts,
 	clients,
 	report,
@@ -52,7 +54,8 @@ export const reducer = store.reducer;
 export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
-// Register this store on the global registry.
-Data.registerStore( STORE_NAME, store );
+export const registerStore = ( registry ) => {
+	registry.registerStore( STORE_NAME, store );
+};
 
 export default store;

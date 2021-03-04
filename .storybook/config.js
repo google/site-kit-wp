@@ -1,7 +1,7 @@
 /**
  * Storybook config.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,19 +30,11 @@ import '../assets/sass/adminbar.scss';
 import '../assets/sass/admin.scss';
 import './assets/sass/wp-admin.scss';
 import { bootstrapFetchMocks } from './fetch-mocks';
-import { disableFeature } from '../stories/utils/features';
 // TODO: Remove when legacy data API is removed.
 import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
 
 bootstrapFetchMocks();
 
-const resetFeatures = () => {
-	disableFeature( 'widgets.dashboard' );
-	disableFeature( 'widgets.pageDashboard' );
-	disableFeature( 'userInput' );
-	disableFeature( 'storeErrorNotifications' );
-	disableFeature( 'serviceSetupV2' );
-};
 const resetGlobals = () => {
 	global._googlesitekitLegacyData = cloneDeep( dashboardData );
 	global._googlesitekitLegacyData.admin.assetsRoot = '';
@@ -59,8 +51,8 @@ const resetGlobals = () => {
 		isFirstAdmin: true,
 		isOwner: true,
 		splashURL: 'http://example.com/wp-admin/admin.php?page=googlesitekit-splash',
-		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/?scope=openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fsiteverification%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fwebmasters%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fanalytics%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fanalytics.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fanalytics.manage.users%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fanalytics.edit&supports=credentials_retrieval%20short_verification_token%20file_verification&nonce=&site_id=storybooksiteid.apps.sitekit.withgoogle.com',
-		proxyPermissionsURL: 'https://sitekit.withgoogle.com/site-management/permissions/?token=storybooktoken&site_id=storybooksiteid.apps.sitekit.withgoogle.com',
+		proxySetupURL: 'http://example.com/wp-admin/index.php?action=googlesitekit_proxy_setup&nonce=abc123',
+		proxyPermissionsURL: 'http://example.com/wp-admin/index.php?action=googlesitekit_proxy_permissions&nonce=abc123',
 		trackingEnabled: false,
 		trackingID: 'UA-000000000-1',
 	};
@@ -70,12 +62,31 @@ const resetGlobals = () => {
 		currentEntityTitle: null,
 		currentEntityID: null,
 	};
+	global._googlesitekitUserData = {
+		user: {
+			id: 1,
+			name: 'Wapuu WordPress',
+			email: 'wapuu.wordpress@gmail.com',
+			picture: 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
+		},
+		connectURL: 'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&googlesitekit_connect=1&nonce=abc123',
+		verified: true,
+		userInputState: 'completed',
+		permissions: {
+			googlesitekit_authenticate: true,
+			googlesitekit_setup: true,
+			googlesitekit_view_posts_insights: true,
+			googlesitekit_view_dashboard: true,
+			googlesitekit_view_module_details: true,
+			googlesitekit_manage_options: true,
+			googlesitekit_publish_posts: true,
+		},
+	};
 };
 resetGlobals();
 
 addDecorator( ( story ) => {
 	resetGlobals();
-	resetFeatures();
 	return story();
 } );
 

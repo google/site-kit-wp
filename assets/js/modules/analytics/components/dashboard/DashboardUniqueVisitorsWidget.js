@@ -1,7 +1,7 @@
 /**
  * DashboardAllTrafficWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,24 +25,22 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import DataBlock from '../../../../components/data-block';
+import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
-import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
-import { changeToPercent, readableLargeNumber } from '../../../../util';
-import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
+import { calculateChange } from '../../../../util';
+import { getURLPath } from '../../../../util/getURLPath';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
-import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import { isZeroReport } from '../../util';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
-function DashboardUniqueVisitorsWidget() {
+function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } ) {
 	const {
 		loading,
 		error,
@@ -52,17 +50,26 @@ function DashboardUniqueVisitorsWidget() {
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
-		const accountID = store.getAccountID();
-		const profileID = store.getProfileID();
-		const internalWebPropertyID = store.getInternalWebPropertyID();
+		const {
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate,
+		} = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
 		const commonArgs = {
-			dateRange: select( CORE_USER ).getDateRange(),
+			startDate,
+			endDate,
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
 		if ( url ) {
 			commonArgs.url = url;
 		}
+
 		const sparklineArgs = {
 			dimensions: 'ga:date',
 			metrics: [
@@ -76,7 +83,8 @@ function DashboardUniqueVisitorsWidget() {
 
 		// This request needs to be separate from the sparkline request because it would result in a different total if it included the ga:date dimension.
 		const args = {
-			multiDateRange: 1,
+			compareStartDate,
+			compareEndDate,
 			metrics: [
 				{
 					expression: 'ga:users',
@@ -91,11 +99,10 @@ function DashboardUniqueVisitorsWidget() {
 			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
 			// Due to the nature of these queries, we need to run them separately.
 			sparkData: store.getReport( sparklineArgs ),
-			serviceURL: store.getServiceURL(
-				{
-					path: applyEntityToReportPath( url, `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ),
-				}
-			),
+			serviceURL: store.getServiceReportURL( 'visitors-overview', {
+				'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+				...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
+			} ),
 			visitorsData: store.getReport( args ),
 		};
 	} );
@@ -105,17 +112,17 @@ function DashboardUniqueVisitorsWidget() {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( sparkData ) || isZeroReport( visitorsData ) ) {
-		return <ReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	const sparkLineData = [
 		[
 			{ type: 'date', label: 'Day' },
-			{ type: 'number', label: 'Bounce Rate' },
+			{ type: 'number', label: 'Unique Visitors' },
 		],
 	];
 	const dataRows = sparkData[ 0 ].data.rows;
@@ -132,15 +139,15 @@ function DashboardUniqueVisitorsWidget() {
 	}
 
 	const { totals } = visitorsData[ 0 ].data;
-	const totalUsers = totals[ 0 ].values;
-	const previousTotalUsers = totals[ 1 ].values;
-	const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
+	const totalUsers = totals[ 0 ].values[ 0 ];
+	const previousTotalUsers = totals[ 1 ].values[ 0 ];
+	const totalUsersChange = calculateChange( previousTotalUsers, totalUsers );
 
 	return (
 		<DataBlock
 			className="overview-total-users"
 			title={ __( 'Unique Visitors', 'google-site-kit' ) }
-			datapoint={ readableLargeNumber( totalUsers ) }
+			datapoint={ totalUsers }
 			change={ totalUsersChange }
 			changeDataUnit="%"
 			source={ {
@@ -161,5 +168,6 @@ function DashboardUniqueVisitorsWidget() {
 
 export default whenActive( {
 	moduleName: 'analytics',
-	fallbackComponent: AnalyticsInactiveCTA,
+	FallbackComponent: ( { WidgetActivateModuleCTA } ) => <WidgetActivateModuleCTA moduleSlug="analytics" />,
+	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => <WidgetCompleteModuleActivationCTA moduleSlug="analytics" />,
 } )( DashboardUniqueVisitorsWidget );

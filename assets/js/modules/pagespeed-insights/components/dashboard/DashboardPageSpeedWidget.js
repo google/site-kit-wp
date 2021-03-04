@@ -1,7 +1,7 @@
 /**
  * Dashboard PageSpeed Widget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,29 +19,13 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME as MODULES_STORE } from '../../../../googlesitekit/modules/datastore/constants';
-import DashboardPageSpeedCTA from './DashboardPageSpeedCTA';
 import DashboardPageSpeed from './DashboardPageSpeed';
-const { useSelect } = Data;
-const { Widget } = Widgets.components;
+import whenActive from '../../../../util/when-active';
 
-function DashboardPageSpeedWidget() {
-	const pagespeedInsightsModule = useSelect( ( select ) => select( MODULES_STORE ).getModule( 'pagespeed-insights' ) );
-	if ( ! pagespeedInsightsModule ) {
-		return null;
-	}
-
-	const { active, connected } = pagespeedInsightsModule;
-	if ( ! active || ! connected ) {
-		return <DashboardPageSpeedCTA />;
-	}
-
+function DashboardPageSpeedWidget( { Widget } ) {
 	// Pass class to omit regular widget padding and legacy widget class to use original styles.
 	return (
 		<Widget
-			slug="pagespeedInsightsWebVitals"
 			className="googlesitekit-pagespeed-widget"
 			noPadding
 		>
@@ -50,4 +34,8 @@ function DashboardPageSpeedWidget() {
 	);
 }
 
-export default DashboardPageSpeedWidget;
+export default whenActive( {
+	moduleName: 'pagespeed-insights',
+	FallbackComponent: ( { WidgetActivateModuleCTA } ) => <WidgetActivateModuleCTA moduleSlug="pagespeed-insights" />,
+	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => <WidgetCompleteModuleActivationCTA moduleSlug="pagespeed-insights" />,
+} )( DashboardPageSpeedWidget );

@@ -1,7 +1,7 @@
 /**
  * Report normalization utility tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,6 +86,61 @@ describe( 'normalizeReportOptions', () => {
 			expect( metrics ).toEqual( [
 				{ expression: 'foo', alias: 'bar' },
 				{ expression: 'bar' },
+			] );
+		} );
+	} );
+
+	describe( 'dimensions', () => {
+		it( 'normalizes no dimensions into an empty array', () => {
+			expect( normalizeReportOptions() ).toMatchObject( { dimensions: [] } );
+			expect( normalizeReportOptions( {} ) ).toMatchObject( { dimensions: [] } );
+		} );
+
+		it( 'normalizes single string dimensions into an array of objects', () => {
+			const { dimensions } = normalizeReportOptions( { dimensions: 'foo' } );
+
+			expect( dimensions ).toEqual( [ { name: 'foo' } ] );
+		} );
+
+		it( 'normalizes an array of strings into an array of objects', () => {
+			const { dimensions } = normalizeReportOptions( { dimensions: [ 'foo', 'bar' ] } );
+
+			expect( dimensions ).toEqual( [
+				{ name: 'foo' },
+				{ name: 'bar' },
+			] );
+		} );
+
+		it( 'normalizes a single dimension object into an array of objects', () => {
+			const options = { dimensions: { name: 'foo' } };
+			const { dimensions } = normalizeReportOptions( options );
+
+			expect( dimensions ).toEqual( [
+				{ name: 'foo' },
+			] );
+		} );
+
+		it( 'normalizes an array of objects into the same values', () => {
+			const options = { dimensions: [
+				{ name: 'foo' },
+				{ name: 'bar' },
+			] };
+			const { dimensions } = normalizeReportOptions( options );
+			expect( dimensions ).toEqual( [
+				{ name: 'foo' },
+				{ name: 'bar' },
+			] );
+		} );
+
+		it( 'normalizes an array of strings and objects into an array of objects', () => {
+			const options = { dimensions: [
+				{ name: 'foo' },
+				'bar',
+			] };
+			const { dimensions } = normalizeReportOptions( options );
+			expect( dimensions ).toEqual( [
+				{ name: 'foo' },
+				{ name: 'bar' },
 			] );
 		} );
 	} );

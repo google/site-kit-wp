@@ -1,7 +1,7 @@
 /**
  * Optimize Settings stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,10 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import { AMP_MODE_PRIMARY } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/optimize/datastore/constants';
-import fixtures from '../assets/js/googlesitekit/modules/datastore/fixtures.json';
+import fixtures from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import {
 	createTestRegistry,
 	provideSiteInfo,

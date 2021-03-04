@@ -1,7 +1,7 @@
 /**
  * Notification component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import { Component, Fragment, createRef, isValidElement } from '@wordpress/eleme
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import { sanitizeHTML } from '../../util/sanitize';
 import { setCache, getCache, deleteCache } from '../data/cache';
-import DataBlock from '../data-block';
+import DataBlock from '../DataBlock';
 import Button from '../Button';
 import Warning from './warning';
 import Error from './error';
@@ -267,6 +267,7 @@ class Notification extends Component {
 
 		return (
 			<section
+				id={ id }
 				ref={ this.cardRef }
 				className={ classnames(
 					className,
@@ -334,6 +335,7 @@ class Notification extends Component {
 
 							{ ctaLink &&
 								<Button
+									className="googlesitekit-notification__cta"
 									href={ ctaLink }
 									target={ ctaTarget }
 									onClick={ this.handleCTAClick }

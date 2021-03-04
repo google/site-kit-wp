@@ -1,0 +1,15 @@
+{
+    "startDate":"2020-12-31",
+    "endDate":"2021-01-27",
+    "compareStartDate":"2020-12-03",
+    "compareEndDate":"2020-12-30",
+    "dimensions":"ga:date",
+    "limit":10,
+    "metrics":[
+      {
+        "expression":"ga:sessions",
+        "alias":"Sessions"
+      }
+    ],
+    "url":"https://www.sitekitbygoogle.com/blog/"
+  }

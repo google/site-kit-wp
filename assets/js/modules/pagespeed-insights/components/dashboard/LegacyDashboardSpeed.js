@@ -1,7 +1,7 @@
 /**
  * DashboardSpeed component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Layout from '../../../../components/layout/layout';
-import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
+import Layout from '../../../../components/layout/Layout';
+import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
 import DashboardPageSpeed from './DashboardPageSpeed';
 import { STORE_NAME } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;

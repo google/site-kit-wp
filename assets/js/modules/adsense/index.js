@@ -1,7 +1,7 @@
 /**
  * AdSense module initialization.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,11 @@
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
-import domReady from '@wordpress/dom-ready';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import Widgets from 'googlesitekit-widgets';
-import Data from 'googlesitekit-data';
-const { select } = Data;
-import './datastore';
 import { AREA_DASHBOARD_EARNINGS } from '../../googlesitekit/widgets/default-areas';
 import { fillFilterWithComponent } from '../../util';
 import { SetupMain } from './components/setup';
@@ -46,23 +40,9 @@ import {
 } from './components/dashboard';
 import AdSenseIcon from '../../../svg/adsense.svg';
 import { STORE_NAME } from './datastore/constants';
-import { ERROR_CODE_ADBLOCKER_ACTIVE } from './constants';
-
-addFilter(
-	'googlesitekit.ModuleSetupIncomplete',
-	'googlesitekit.AdSenseModuleSettingsSetupIncomplete',
-	fillFilterWithComponent( ( props ) => {
-		const { slug, OriginalComponent } = props;
-		if ( 'adsense' !== slug ) {
-			return <OriginalComponent { ...props } />;
-		}
-		return (
-			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<SettingsSetupIncomplete />
-			</div>
-		);
-	} )
-);
+import { ERROR_CODE_ADBLOCKER_ACTIVE, CONTEXT_MODULE_ADSENSE, AREA_MODULE_ADSENSE_MAIN } from './constants';
+import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
+import { registerStore as registerDataStore } from './datastore';
 
 addFilter(
 	'googlesitekit.AdSenseDashboardZeroData',
@@ -70,20 +50,26 @@ addFilter(
 	fillFilterWithComponent( DashboardZeroData )
 );
 
-domReady( () => {
-	// IMPORTANT: When updating arguments here, also update the same call in
-	// `provideModuleRegistrations`.
-	Modules.registerModule(
+let isAdBlockerActive = () => {};
+
+export const registerStore = ( registry ) => {
+	registerDataStore( registry );
+	// TODO: fix hack
+	isAdBlockerActive = () => registry.__experimentalResolveSelect( STORE_NAME ).isAdBlockerActive();
+};
+
+export const registerModule = ( modules ) => {
+	modules.registerModule(
 		'adsense',
 		{
-			storeName: 'modules/adsense',
+			storeName: STORE_NAME,
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
+			SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
 			SetupComponent: SetupMain,
 			Icon: AdSenseIcon,
-			checkRequirements: () => {
-				const isAdBlockerActive = select( STORE_NAME ).isAdBlockerActive();
-				if ( ! isAdBlockerActive ) {
+			checkRequirements: async () => {
+				if ( ! await isAdBlockerActive() ) {
 					return;
 				}
 
@@ -93,14 +79,17 @@ domReady( () => {
 					data: null,
 				};
 			},
+			screenWidgetContext: CONTEXT_MODULE_ADSENSE,
 		}
 	);
+};
 
-	Widgets.registerWidget(
+export const registerWidgets = ( widgets ) => {
+	widgets.registerWidget(
 		'adsenseSummary',
 		{
 			Component: DashboardSummaryWidget,
-			width: Widgets.WIDGET_WIDTHS.HALF,
+			width: widgets.WIDGET_WIDTHS.HALF,
 			priority: 1,
 			wrapWidget: false,
 
@@ -109,11 +98,11 @@ domReady( () => {
 			AREA_DASHBOARD_EARNINGS,
 		],
 	);
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'adsenseTopEarningPages',
 		{
 			Component: DashboardTopEarningPagesWidget,
-			width: Widgets.WIDGET_WIDTHS.HALF,
+			width: widgets.WIDGET_WIDTHS.HALF,
 			priority: 2,
 			wrapWidget: false,
 		},
@@ -121,4 +110,13 @@ domReady( () => {
 			AREA_DASHBOARD_EARNINGS,
 		],
 	);
-} );
+	widgets.registerWidgetArea(
+		AREA_MODULE_ADSENSE_MAIN,
+		{
+			priority: 1,
+			style: WIDGET_AREA_STYLES.BOXES,
+			title: __( 'Overview', 'google-site-kit' ),
+		},
+		CONTEXT_MODULE_ADSENSE,
+	);
+};

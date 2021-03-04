@@ -1,7 +1,7 @@
 /**
  * Public Widgets API entrypoint.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,21 @@
  */
 
 /**
- * WordPress dependencies
- */
-import domReady from '@wordpress/dom-ready';
-
-/**
  * Internal dependencies
  */
-import Widgets, { registerDefaults } from './googlesitekit/widgets';
+import Data from 'googlesitekit-data';
+import { registerStore, createWidgets, registerWidgets } from './googlesitekit/widgets';
+
+registerStore( Data );
+
+const Widgets = createWidgets( Data );
+registerWidgets( Widgets );
 
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
 }
 
-if ( global.googlesitekit.widgets === undefined ) {
-	global.googlesitekit.widgets = Widgets;
-}
-
-// register default widget areas
-domReady( () => {
-	registerDefaults( Widgets );
-} );
+global.googlesitekit.widgets = Widgets;
 
 // This is only exported for Jest and is not used in production.
 export default Widgets;

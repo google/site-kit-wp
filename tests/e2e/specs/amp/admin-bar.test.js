@@ -1,7 +1,7 @@
 /**
  * AMP admin bar tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { deactivatePlugin, activatePlugin, createURL } from '@wordpress/e2e-test-utils';
+import { deactivatePlugin, createURL } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
@@ -37,15 +37,19 @@ let mockBatchResponse;
 describe( 'AMP Admin Bar compatibility', () => {
 	beforeAll( async () => {
 		await setupSiteKit();
-		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
 		await activateAMPWithMode( 'primary' );
 
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
+			if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics?' ) ) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( mockBatchResponse ),
+					body: JSON.stringify( mockBatchResponse[ 'modules::search-console::searchanalytics::e74216dd17533dcb67fa2d433c23467c' ] ),
+				} );
+			} else if ( request.url().match( 'google-site-kit/v1/modules/analytics/data/report?' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( mockBatchResponse[ 'modules::analytics::report::db20ba9afa3000cd79e2888048a1700c' ] ),
 				} );
 			} else {
 				request.continue();
@@ -64,16 +68,16 @@ describe( 'AMP Admin Bar compatibility', () => {
 	} );
 
 	it( 'it has a functional Site Kit admin bar in AMP', async () => {
-		const { searchConsole } = adminBarMockResponses;
+		const { analytics, searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
-		mockBatchResponse = searchConsole;
+		mockBatchResponse = Object.assign( {}, analytics, searchConsole );
 
 		await expect( page ).toHaveValidAMPForUser();
 		await expect( page ).toHaveValidAMPForVisitor();
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics?' ) ),
 		] );
 
 		const adminBarApp = await page.$( '#js-googlesitekit-adminbar' );

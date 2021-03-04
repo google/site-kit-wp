@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Authentication\Clients\OAuth_Client
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -161,27 +161,6 @@ final class OAuth_Client {
 	private $client_credentials = false;
 
 	/**
-	 * Custom retry map to define which api responses should be retried based on our retry config.
-	 *
-	 * Copied from the default $retryMap within Google_Client/Task/Runner with the addition of lighthouseError.
-	 *
-	 * @since 1.22.0
-	 * @var array $retry_map Map of errors with retry counts.
-	 */
-	protected $retry_map = array(
-		'500'                   => Runner::TASK_RETRY_ALWAYS,
-		'503'                   => Runner::TASK_RETRY_ALWAYS,
-		'rateLimitExceeded'     => Runner::TASK_RETRY_ALWAYS,
-		'userRateLimitExceeded' => Runner::TASK_RETRY_ALWAYS,
-		6                       => Runner::TASK_RETRY_ALWAYS,  // CURLE_COULDNT_RESOLVE_HOST.
-		7                       => Runner::TASK_RETRY_ALWAYS,  // CURLE_COULDNT_CONNECT.
-		28                      => Runner::TASK_RETRY_ALWAYS,  // CURLE_OPERATION_TIMEOUTED.
-		35                      => Runner::TASK_RETRY_ALWAYS,  // CURLE_SSL_CONNECT_ERROR.
-		52                      => Runner::TASK_RETRY_ALWAYS,  // CURLE_GOT_NOTHING.
-		'lighthouseError'       => Runner::TASK_RETRY_NEVER,
-	);
-
-	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -247,22 +226,15 @@ final class OAuth_Client {
 			$client = new Google_Site_Kit_Client();
 		}
 
-		$application_name = $this->get_application_name();
-		// The application name is included in the Google client's user-agent for requests to Google APIs.
-		$client->setApplicationName( $application_name );
-
 		// Enable exponential retries, try up to three times.
 		$client->setConfig( 'retry', array( 'retries' => 3 ) );
-
-		// Set a custom retryMap for the REST Runner.
-		$client->setConfig( 'retry_map', $this->retry_map );
 
 		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
 		// By default this header uses the generic Guzzle client's user-agent and includes
 		// Guzzle, cURL, and PHP versions as it is normally shared.
 		// In our case however, the client is namespaced to be used by Site Kit only.
 		$http_client = $client->getHttpClient();
-		$http_client->setDefaultOption( 'headers/User-Agent', $application_name );
+		$http_client->setDefaultOption( 'headers/User-Agent', Google_Proxy::get_application_name() );
 
 		// Configure the Google_Client's HTTP client to use to use the same HTTP proxy as WordPress HTTP, if set.
 		if ( $this->http_proxy->is_enabled() ) {
@@ -750,23 +722,19 @@ final class OAuth_Client {
 
 		$this->refresh_profile_data( 2 * MINUTE_IN_SECONDS );
 
-		// TODO: In the future, once the old authentication mechanism no longer exists, this check can be removed.
-		// For now the below action should only fire for the proxy despite not clarifying that in the hook name.
-		if ( $this->credentials->using_proxy() ) {
-			/**
-			 * Fires when the current user has just been authorized to access Google APIs.
-			 *
-			 * In other words, this action fires whenever Site Kit has just obtained a new set of access token and
-			 * refresh token for the current user, which may happen to set up the initial connection or to request
-			 * access to further scopes.
-			 *
-			 * @since 1.3.0
-			 * @since 1.6.0 The $token_response parameter was added.
-			 *
-			 * @param array $token_response Token response data.
-			 */
-			do_action( 'googlesitekit_authorize_user', $token_response );
-		}
+		/**
+		 * Fires when the current user has just been authorized to access Google APIs.
+		 *
+		 * In other words, this action fires whenever Site Kit has just obtained a new set of access token and
+		 * refresh token for the current user, which may happen to set up the initial connection or to request
+		 * access to further scopes.
+		 *
+		 * @since 1.3.0
+		 * @since 1.6.0 The $token_response parameter was added.
+		 *
+		 * @param array $token_response Token response data.
+		 */
+		do_action( 'googlesitekit_authorize_user', $token_response );
 
 		// This must happen after googlesitekit_authorize_user as the permissions checks depend on
 		// values set which affect the meta capability mapping.
@@ -855,49 +823,20 @@ final class OAuth_Client {
 	 *
 	 * @since 1.0.0
 	 * @since 1.1.2 Added googlesitekit_proxy_setup_url_params filter.
+	 * @since 1.27.0 Error code is no longer used.
 	 *
 	 * @param string $access_code Optional. Temporary access code for an undelegated access token. Default empty string.
-	 * @param string $error_code  Optional. Error code, if the user should be redirected because of an error. Default empty string.
 	 * @return string URL to the setup page on the authentication proxy.
 	 */
-	public function get_proxy_setup_url( $access_code = '', $error_code = '' ) {
-		$query_params = array(
-			'scope'    => rawurlencode( implode( ' ', $this->get_required_scopes() ) ),
-			'supports' => rawurlencode( implode( ' ', $this->get_proxy_setup_supports() ) ),
-			'nonce'    => rawurlencode( wp_create_nonce( Google_Proxy::ACTION_SETUP ) ),
-		);
+	public function get_proxy_setup_url( $access_code = '' ) {
+		$scope = rawurlencode( implode( ' ', $this->get_required_scopes() ) );
 
+		$query_params = array( 'scope' => $scope );
 		if ( ! empty( $access_code ) ) {
 			$query_params['code'] = $access_code;
 		}
 
-		if ( $this->credentials->has() ) {
-			$query_params['site_id'] = $this->credentials->get()['oauth2_client_id'];
-		}
-
-		/**
-		 * Filters parameters included in proxy setup URL.
-		 *
-		 * @since 1.1.2
-		 *
-		 * @param string $access_code Temporary access code for an undelegated access token.
-		 * @param string $error_code  Error code, if the user should be redirected because of an error.
-		 */
-		$query_params = apply_filters( 'googlesitekit_proxy_setup_url_params', $query_params, $access_code, $error_code );
-
-		// If no site identification information is present, we need to provide details for a new site.
-		if ( empty( $query_params['site_id'] ) && empty( $query_params['site_code'] ) ) {
-			$site_fields  = array_map( 'rawurlencode', $this->google_proxy->get_site_fields() );
-			$query_params = array_merge( $query_params, $site_fields );
-		}
-
-		$user_fields  = array_map( 'rawurlencode', $this->google_proxy->get_user_fields() );
-		$query_params = array_merge( $query_params, $user_fields );
-
-		$query_params['application_name'] = rawurlencode( $this->get_application_name() );
-		$query_params['hl']               = get_user_locale();
-
-		return add_query_arg( $query_params, $this->google_proxy->url( Google_Proxy::SETUP_URI ) );
+		return $this->google_proxy->setup_url( $this->credentials, $query_params );
 	}
 
 	/**
@@ -926,41 +865,6 @@ final class OAuth_Client {
 	}
 
 	/**
-	 * Gets the list of features to declare support for when setting up with the proxy.
-	 *
-	 * @since 1.1.0
-	 * @since 1.1.2 Added 'credentials_retrieval'
-	 * @since 1.2.0 Added 'short_verification_token' (Supported as of 1.0.1)
-	 * @return array Array of supported features.
-	 */
-	private function get_proxy_setup_supports() {
-		return array_filter(
-			array(
-				'credentials_retrieval',
-				'short_verification_token',
-				$this->supports_file_verification() ? 'file_verification' : false,
-			)
-		);
-	}
-
-	/**
-	 * Checks if the site supports file-based site verification.
-	 *
-	 * The site must be a root install, with no path in the home URL
-	 * to be able to serve the verification response properly.
-	 *
-	 * @since 1.1.0
-	 * @see \WP_Rewrite::rewrite_rules for robots.txt
-	 *
-	 * @return bool
-	 */
-	private function supports_file_verification() {
-		$home_path = wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_PATH );
-
-		return ( ! $home_path || '/' === $home_path );
-	}
-
-	/**
 	 * Returns the permissions URL to the authentication proxy.
 	 *
 	 * This only returns a URL if the user already has an access token set.
@@ -976,28 +880,10 @@ final class OAuth_Client {
 			return '';
 		}
 
-		$query_args = array( 'token' => $access_token );
-
-		$credentials = $this->get_client_credentials();
-		if ( is_object( $credentials ) && ! empty( $credentials->web->client_id ) ) {
-			$query_args['site_id'] = $credentials->web->client_id;
-		}
-
-		$query_args['application_name'] = rawurlencode( $this->get_application_name() );
-		$query_args['hl']               = get_user_locale();
-
-		return add_query_arg( $query_args, $this->google_proxy->url( Google_Proxy::PERMISSIONS_URI ) );
-	}
-
-	/**
-	 * Returns the application name: a combination of the namespace and version.
-	 *
-	 * @since 1.8.1
-	 *
-	 * @return string The application name.
-	 */
-	private function get_application_name() {
-		return 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION;
+		return $this->google_proxy->permissions_url(
+			$this->credentials,
+			array( 'token' => $access_token )
+		);
 	}
 
 	/**

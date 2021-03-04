@@ -3,7 +3,7 @@
  *
  * This JavaScript loads on every admin page. Reserved for later.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import { render } from '@wordpress/element';
 import { trackEvent } from './util';
 import './components/legacy-notifications';
 import { ActivationApp } from './components/activation/activation-app';
-import Root from './components/root';
+import Root from './components/Root';
 
 domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-activation' );

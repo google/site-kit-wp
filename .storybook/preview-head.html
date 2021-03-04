@@ -38,6 +38,12 @@
 		allImagesLoaded,
 	] ).then( () => {
 		// Signal Backstop that the environment is ready to go.
-		console.log( 'backstopjs_ready' );
+		document.body.classList.add( 'backstopjs-ready' );
+	} );
+</script>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+	google.charts.load( 'current', {
+		packages: [ 'corechart' ],
 	} );
 </script>

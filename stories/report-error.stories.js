@@ -1,7 +1,7 @@
 /**
  * ReportError stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,9 @@ const error = {
 storiesOf( 'Global', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
-		const testModuleDefinition = createModuleStore( 'test-module' );
+		const testModuleDefinition = createModuleStore( 'test-module', {
+			storeName: 'modules/test-module',
+		} );
 		registry.registerStore( testModuleDefinition.STORE_NAME, testModuleDefinition );
 		provideModules( registry, [ { slug: 'test-module', name: 'Test Module' } ] );
 

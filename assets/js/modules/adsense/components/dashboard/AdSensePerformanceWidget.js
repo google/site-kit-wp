@@ -1,7 +1,7 @@
 /**
  * AdSensePerformanceWidget component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import AdSenseDashboardWidgetOverview from './AdSenseDashboardWidgetOverview';
 import AdSenseDashboardWidgetSiteStats from './AdSenseDashboardWidgetSiteStats';
 const { useSelect } = Data;

@@ -1,7 +1,7 @@
 /**
  * DashboardAllTrafficWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,24 +25,22 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import DataBlock from '../../../../components/data-block';
+import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
-import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
-import { changeToPercent } from '../../../../util';
-import applyEntityToReportPath from '../../util/applyEntityToReportPath';
-import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
+import { calculateChange } from '../../../../util';
+import { getURLPath } from '../../../../util/getURLPath';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
-function DashboardBounceRateWidget() {
+function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 	const {
 		data,
 		error,
@@ -51,13 +49,22 @@ function DashboardBounceRateWidget() {
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
-		const accountID = store.getAccountID();
-		const profileID = store.getProfileID();
-		const internalWebPropertyID = store.getInternalWebPropertyID();
+		const {
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate,
+		} = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+			weekdayAlign: true,
+		} );
 
 		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			multiDateRange: 1,
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate,
 			dimensions: 'ga:date',
 			metrics: [
 				{
@@ -75,11 +82,10 @@ function DashboardBounceRateWidget() {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
-			serviceURL: store.getServiceURL(
-				{
-					path: applyEntityToReportPath( url, `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ),
-				}
-			),
+			serviceURL: store.getServiceReportURL( 'visitors-overview', {
+				'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+				...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
+			} ),
 		};
 	} );
 
@@ -88,11 +94,11 @@ function DashboardBounceRateWidget() {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	const sparkLineData = [
@@ -115,18 +121,17 @@ function DashboardBounceRateWidget() {
 	}
 
 	const { totals } = data[ 0 ].data;
-	const lastMonth = totals[ 0 ].values;
-	const previousMonth = totals[ 1 ].values;
-	const averageBounceRate = lastMonth[ 0 ];
-	const averageBounceRateChange = changeToPercent( previousMonth[ 0 ], lastMonth[ 0 ] );
+	const bounceRate = totals[ 0 ].values[ 0 ] / 100.0;
+	const previousBounceRate = totals[ 1 ].values[ 0 ] / 100.0;
+	const bounceRateChange = calculateChange( previousBounceRate, bounceRate );
 
 	return (
 		<DataBlock
 			className="overview-bounce-rate"
 			title={ __( 'Bounce Rate', 'google-site-kit' ) }
-			datapoint={ Number( averageBounceRate ).toFixed( 2 ) }
+			datapoint={ bounceRate }
 			datapointUnit="%"
-			change={ averageBounceRateChange }
+			change={ bounceRateChange }
 			changeDataUnit="%"
 			invertChangeColor
 			source={ {
@@ -138,7 +143,7 @@ function DashboardBounceRateWidget() {
 				sparkLineData &&
 					<Sparkline
 						data={ sparkLineData }
-						change={ averageBounceRateChange }
+						change={ bounceRateChange }
 					/>
 			}
 		/>
@@ -147,5 +152,6 @@ function DashboardBounceRateWidget() {
 
 export default whenActive( {
 	moduleName: 'analytics',
-	fallbackComponent: AnalyticsInactiveCTA,
+	FallbackComponent: ( { WidgetActivateModuleCTA } ) => <WidgetActivateModuleCTA moduleSlug="analytics" />,
+	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => <WidgetCompleteModuleActivationCTA moduleSlug="analytics" />,
 } )( DashboardBounceRateWidget );

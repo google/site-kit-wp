@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Authentication\Authentication
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -183,6 +183,14 @@ final class Authentication {
 	protected $google_proxy;
 
 	/**
+	 * Initial_Version instance.
+	 *
+	 * @since 1.25.0
+	 * @var Initial_Version
+	 */
+	protected $initial_version;
+
+	/**
 	 * Flag set when site fields are synchronized during the current request.
 	 *
 	 * @var bool
@@ -221,6 +229,7 @@ final class Authentication {
 		$this->has_connected_admins = new Has_Connected_Admins( $this->options, $this->user_options );
 		$this->connected_proxy_url  = new Connected_Proxy_URL( $this->options );
 		$this->disconnected_reason  = new Disconnected_Reason( $this->user_options );
+		$this->initial_version      = new Initial_Version( $this->user_options );
 	}
 
 	/**
@@ -238,12 +247,14 @@ final class Authentication {
 		$this->connected_proxy_url->register();
 		$this->disconnected_reason->register();
 		$this->user_input_state->register();
+		$this->initial_version->register();
 
 		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
 		add_filter( 'googlesitekit_admin_data', $this->get_method_proxy( 'inline_js_admin_data' ) );
 		add_filter( 'googlesitekit_admin_notices', $this->get_method_proxy( 'authentication_admin_notices' ) );
 		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
 		add_filter( 'googlesitekit_setup_data', $this->get_method_proxy( 'inline_js_setup_data' ) );
+		add_filter( 'googlesitekit_is_feature_enabled', $this->get_method_proxy( 'filter_features_via_proxy' ), 10, 2 );
 
 		add_action( 'init', $this->get_method_proxy( 'handle_oauth' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
@@ -271,7 +282,6 @@ final class Authentication {
 				$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
 
 				$this->handle_site_code( $code, $site_code );
-				$this->require_user_input();
 				$this->redirect_to_proxy( $code );
 			}
 		);
@@ -283,7 +293,16 @@ final class Authentication {
 			}
 		);
 
-		add_action( 'googlesitekit_authorize_user', $this->get_method_proxy( 'set_connected_proxy_url' ) );
+		add_action(
+			'googlesitekit_authorize_user',
+			function () {
+				if ( ! $this->credentials->using_proxy() ) {
+					return;
+				}
+				$this->set_connected_proxy_url();
+				$this->require_user_input();
+			}
+		);
 
 		add_filter(
 			'googlesitekit_rest_routes',
@@ -306,24 +325,17 @@ final class Authentication {
 		add_filter(
 			'googlesitekit_user_data',
 			function( $user ) {
-				$user['connectURL'] = esc_url_raw( $this->get_connect_url() );
-
 				if ( $this->profile->has() ) {
 					$profile_data            = $this->profile->get();
 					$user['user']['email']   = $profile_data['email'];
 					$user['user']['picture'] = $profile_data['photo'];
 				}
 
-				$user['verified'] = $this->verification->has();
-
-				return $user;
-			}
-		);
-
-		add_filter(
-			'googlesitekit_user_data',
-			function( $user ) {
+				$user['connectURL']     = esc_url_raw( $this->get_connect_url() );
+				$user['initialVersion'] = $this->initial_version->get();
 				$user['userInputState'] = $this->user_input_state->get();
+				$user['verified']       = $this->verification->has();
+
 				return $user;
 			}
 		);
@@ -353,6 +365,15 @@ final class Authentication {
 				$this->cron_refresh_profile_data( $user_id );
 			}
 		);
+
+		// If no initial version set for the current user, set it when getting a new access token.
+		if ( ! $this->initial_version->get() ) {
+			$set_initial_version = function() {
+				$this->initial_version->set( GOOGLESITEKIT_VERSION );
+			};
+			add_action( 'googlesitekit_authorize_user', $set_initial_version );
+			add_action( 'googlesitekit_reauthorize_user', $set_initial_version );
+		}
 	}
 
 	/**
@@ -1038,17 +1059,15 @@ final class Authentication {
 			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
 		}
 
-		try {
-			$data = $this->google_proxy->exchange_site_code( $site_code, $code );
-
-			$this->credentials->set(
-				array(
-					'oauth2_client_id'     => $data['site_id'],
-					'oauth2_client_secret' => $data['site_secret'],
-				)
-			);
-		} catch ( Exception $exception ) {
-			$error_message = $exception->getMessage();
+		$data = $this->google_proxy->exchange_site_code( $site_code, $code );
+		if ( is_wp_error( $data ) ) {
+			$error_message = $data->get_error_message();
+			if ( empty( $error_message ) ) {
+				$error_message = $data->get_error_code();
+				if ( empty( $error_message ) ) {
+					$error_message = 'unknown_error';
+				}
+			}
 
 			// If missing verification, rely on the redirect back to the proxy,
 			// passing the site code instead of site ID.
@@ -1063,16 +1082,17 @@ final class Authentication {
 				return;
 			}
 
-			if ( ! $error_message ) {
-				$error_message = 'unknown_error';
-			}
-
 			$this->user_options->set( OAuth_Client::OPTION_ERROR_CODE, $error_message );
-			wp_safe_redirect(
-				$this->context->admin_url( 'splash' )
-			);
+			wp_safe_redirect( $this->context->admin_url( 'splash' ) );
 			exit;
 		}
+
+		$this->credentials->set(
+			array(
+				'oauth2_client_id'     => $data['site_id'],
+				'oauth2_client_secret' => $data['site_secret'],
+			)
+		);
 	}
 
 	/**
@@ -1085,15 +1105,12 @@ final class Authentication {
 			return;
 		}
 
+		// Refresh user input settings from the proxy.
+		// This will ensure the user input state is updated as well.
+		$this->user_input_settings->set_settings( null );
+
 		if ( User_Input_State::VALUE_COMPLETED !== $this->user_input_state->get() ) {
 			$this->user_input_state->set( User_Input_State::VALUE_REQUIRED );
-			// Set the `mode` query parameter in the proxy setup URL.
-			add_filter(
-				'googlesitekit_proxy_setup_url_params',
-				function ( $params ) {
-					return array_merge( $params, array( 'mode' => 'user_input' ) );
-				}
-			);
 		}
 	}
 
@@ -1256,6 +1273,38 @@ final class Authentication {
 				$this->user_input_state->set( $is_empty ? User_Input_State::VALUE_MISSING : User_Input_State::VALUE_COMPLETED );
 			}
 		}
+	}
+
+	/**
+	 * Filters feature flags using features received from the proxy server.
+	 *
+	 * @since 1.27.0
+	 *
+	 * @param boolean $feature_enabled Original value of the feature.
+	 * @param string  $feature_name    Feature name.
+	 * @return boolean State flag from the proxy server if it is available, otherwise the original value.
+	 */
+	private function filter_features_via_proxy( $feature_enabled, $feature_name ) {
+		if ( ! $this->credentials->has() ) {
+			return $feature_enabled;
+		}
+
+		$transient_name = 'googlesitekit_remote_features';
+		$features       = $this->transients->get( $transient_name );
+		if ( false === $features ) {
+			$features = $this->google_proxy->get_features( $this->credentials );
+			if ( is_wp_error( $features ) ) {
+				$this->transients->set( $transient_name, array(), HOUR_IN_SECONDS );
+			} else {
+				$this->transients->set( $transient_name, $features, DAY_IN_SECONDS );
+			}
+		}
+
+		if ( ! is_wp_error( $features ) && isset( $features[ $feature_name ]['enabled'] ) ) {
+			return filter_var( $features[ $feature_name ]['enabled'], FILTER_VALIDATE_BOOLEAN );
+		}
+
+		return $feature_enabled;
 	}
 
 }

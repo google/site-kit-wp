@@ -1,7 +1,7 @@
 /**
  * Modal Dialog Component Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ storiesOf( 'Global', module )
 				title={ __( 'Modal Dialog Title', 'google-site-kit' ) }
 				subtitle={ __( 'Modal Dialog Subtitle', 'google-site-kit' ) }
 				provides={ provides }
+				handleConfirm={ global.console.log.bind( null, 'Dialog::handleConfirm' ) }
 				danger
 			/>
 		);

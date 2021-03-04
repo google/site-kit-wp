@@ -1,0 +1,429 @@
+{
+  "ga:channelGrouping": [
+    {
+      "nextPageToken": null,
+      "columnHeader": {
+        "dimensions": [
+          "ga:channelGrouping"
+        ],
+        "metricHeader": {
+          "metricHeaderEntries": [
+            {
+              "name": "ga:users",
+              "type": "INTEGER"
+            }
+          ]
+        }
+      },
+      "data": {
+        "dataLastRefreshed": null,
+        "isDataGolden": null,
+        "rowCount": 4,
+        "samplesReadCounts": null,
+        "samplingSpaceSizes": null,
+        "rows": [
+          {
+            "dimensions": [
+              "Direct"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "767"
+                ]
+              },
+              {
+                "values": [
+                  "883"
+                ]
+              }
+            ]
+          },
+          {
+            "dimensions": [
+              "Organic Search"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "405"
+                ]
+              },
+              {
+                "values": [
+                  "531"
+                ]
+              }
+            ]
+          },
+          {
+            "dimensions": [
+              "Referral"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "203"
+                ]
+              },
+              {
+                "values": [
+                  "223"
+                ]
+              }
+            ]
+          },
+          {
+            "dimensions": [
+              "Social"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "7"
+                ]
+              },
+              {
+                "values": [
+                  "3"
+                ]
+              }
+            ]
+          }
+        ],
+        "totals": [
+          {
+            "values": [
+              "1382"
+            ]
+          },
+          {
+            "values": [
+              "1640"
+            ]
+          }
+        ],
+        "minimums": [
+          {
+            "values": [
+              "7"
+            ]
+          },
+          {
+            "values": [
+              "3"
+            ]
+          }
+        ],
+        "maximums": [
+          {
+            "values": [
+              "767"
+            ]
+          },
+          {
+            "values": [
+              "883"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "ga:country": [
+    {
+      "nextPageToken": "6",
+      "columnHeader": {
+        "dimensions": [
+          "ga:country"
+        ],
+        "metricHeader": {
+          "metricHeaderEntries": [
+            {
+              "name": "ga:users",
+              "type": "INTEGER"
+            }
+          ]
+        }
+      },
+      "data": {
+        "dataLastRefreshed": null,
+        "isDataGolden": null,
+        "rowCount": 104,
+        "samplesReadCounts": null,
+        "samplingSpaceSizes": null,
+        "rows": [
+          {
+            "dimensions": [
+              "United States"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "382"
+                ]
+              },
+              {
+                "values": [
+                  "448"
+                ]
+              }
+            ]
+          },
+          {
+            "dimensions": [
+              "Ukraine"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "129"
+                ]
+              },
+              {
+                "values": [
+                  "146"
+                ]
+              }
+            ]
+          },
+          {
+            "dimensions": [
+              "(other)"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "39"
+                ]
+              },
+              {
+                "values": [
+                  "2"
+                ]
+              }
+            ]
+          },
+          {
+            "dimensions": [
+              "(not set)"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "79"
+                ]
+              },
+              {
+                "values": [
+                  "3"
+                ]
+              }
+            ]
+          },
+          {
+            "dimensions": [
+              "India"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "74"
+                ]
+              },
+              {
+                "values": [
+                  "85"
+                ]
+              }
+            ]
+          },
+          {
+            "dimensions": [
+              "United Kingdom"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "61"
+                ]
+              },
+              {
+                "values": [
+                  "116"
+                ]
+              }
+            ]
+          },
+          {
+            "dimensions": [
+              "Canada"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "57"
+                ]
+              },
+              {
+                "values": [
+                  "45"
+                ]
+              }
+            ]
+          }
+        ],
+        "totals": [
+          {
+            "values": [
+              "1336"
+            ]
+          },
+          {
+            "values": [
+              "1576"
+            ]
+          }
+        ],
+        "minimums": [
+          {
+            "values": [
+              "0"
+            ]
+          },
+          {
+            "values": [
+              "0"
+            ]
+          }
+        ],
+        "maximums": [
+          {
+            "values": [
+              "382"
+            ]
+          },
+          {
+            "values": [
+              "448"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "ga:deviceCategory": [
+    {
+      "nextPageToken": null,
+      "columnHeader": {
+        "dimensions": [
+          "ga:deviceCategory"
+        ],
+        "metricHeader": {
+          "metricHeaderEntries": [
+            {
+              "name": "ga:users",
+              "type": "INTEGER"
+            }
+          ]
+        }
+      },
+      "data": {
+        "dataLastRefreshed": null,
+        "isDataGolden": null,
+        "rowCount": 3,
+        "samplesReadCounts": null,
+        "samplingSpaceSizes": null,
+        "rows": [
+          {
+            "dimensions": [
+              "desktop"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "1118"
+                ]
+              },
+              {
+                "values": [
+                  "1273"
+                ]
+              }
+            ]
+          },
+          {
+            "dimensions": [
+              "mobile"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "207"
+                ]
+              },
+              {
+                "values": [
+                  "294"
+                ]
+              }
+            ]
+          },
+          {
+            "dimensions": [
+              "tablet"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "11"
+                ]
+              },
+              {
+                "values": [
+                  "6"
+                ]
+              }
+            ]
+          }
+        ],
+        "totals": [
+          {
+            "values": [
+              "1336"
+            ]
+          },
+          {
+            "values": [
+              "1573"
+            ]
+          }
+        ],
+        "minimums": [
+          {
+            "values": [
+              "11"
+            ]
+          },
+          {
+            "values": [
+              "6"
+            ]
+          }
+        ],
+        "maximums": [
+          {
+            "values": [
+              "1118"
+            ]
+          },
+          {
+            "values": [
+              "1273"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

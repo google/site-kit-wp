@@ -1,7 +1,7 @@
 /**
  * Search Console dashboard utility functions.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,13 @@
 /**
  * External dependencies
  */
-import { each } from 'lodash';
+import each from 'lodash/each';
+import round from 'lodash/round';
 
 /**
  * Internal dependencies
  */
-import { changeToPercent, readableLargeNumber } from '../../../util';
+import { calculateChange } from '../../../util';
 export * from './is-zero-report';
 
 function reduceSearchConsoleData( rows ) {
@@ -43,14 +44,15 @@ function reduceSearchConsoleData( rows ) {
 	let totalCTR = 0;
 	let totalPosition = 0;
 	const count = rows.length;
+
 	each( rows, ( row ) => {
 		const date = new Date( row.keys[ 0 ] );
 		dataMap.push( [
 			( date.getMonth() + 1 ) + '/' + date.getUTCDate(),
 			row.clicks,
 			row.impressions,
-			row.ctr,
-			row.position,
+			round( row.ctr, 3 ),
+			round( row.position, 3 ),
 		] );
 		totalClicks += row.clicks;
 		totalImpressions += row.impressions;
@@ -58,25 +60,15 @@ function reduceSearchConsoleData( rows ) {
 		totalPosition += row.position;
 	} );
 
-	const totalClicksRaw = totalClicks;
-	const totalImpressionsRaw = totalImpressions;
-
-	totalClicks = readableLargeNumber( totalClicks );
-	totalImpressions = readableLargeNumber( totalImpressions );
-
 	// Do not divide by zero.
-	const averageCTR = count > 0 ? ( totalCTR / count * 100 ).toFixed( 1 ) : '0.0';
-	const averageCTRRaw = count > 0 ? totalCTR / count : 0.0;
-	const averagePosition = count > 0 ? ( totalPosition / count ).toFixed( 1 ) : '0.0';
+	const averageCTR = count > 0 ? totalCTR / count : 0.0;
+	const averagePosition = count > 0 ? totalPosition / count : 0.0;
 
 	return {
 		dataMap,
 		totalClicks,
-		totalClicksRaw,
 		totalImpressions,
-		totalImpressionsRaw,
 		averageCTR,
-		averageCTRRaw,
 		averagePosition,
 	};
 }
@@ -94,10 +86,10 @@ export const extractSearchConsoleDashboardData = ( rows ) => {
 		totalImpressions: latestData.totalImpressions,
 		averageCTR: latestData.averageCTR,
 		averagePosition: latestData.averagePosition,
-		totalClicksChange: changeToPercent( olderData.totalClicksRaw, latestData.totalClicksRaw ),
-		totalImpressionsChange: changeToPercent( olderData.totalImpressionsRaw, latestData.totalImpressionsRaw ),
-		averageCTRChange: changeToPercent( olderData.averageCTRRaw, latestData.averageCTRRaw ),
-		averagePositionChange: changeToPercent( olderData.averagePosition, latestData.averagePosition ),
+		totalClicksChange: calculateChange( olderData.totalClicks, latestData.totalClicks ),
+		totalImpressionsChange: calculateChange( olderData.totalImpressions, latestData.totalImpressions ),
+		averageCTRChange: calculateChange( olderData.averageCTR, latestData.averageCTR ),
+		averagePositionChange: calculateChange( olderData.averagePosition, latestData.averagePosition ),
 	};
 };
 

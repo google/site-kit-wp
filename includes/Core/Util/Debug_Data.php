@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Util\Debug_Data
  *
  * @package   Google\Site_Kit\Core\Util
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Class for integrating debug information with Site Health.
@@ -172,6 +173,7 @@ class Debug_Data {
 			'active_modules'       => $this->get_active_modules_field(),
 			'required_scopes'      => $this->get_required_scopes_field(),
 			'capabilities'         => $this->get_capabilities_field(),
+			'enabled_features'     => $this->get_feature_fields(),
 		);
 		$none   = __( 'None', 'google-site-kit' );
 
@@ -371,4 +373,25 @@ class Debug_Data {
 		return array_merge( array(), ...$fields_by_module );
 	}
 
+	/**
+	 * Gets the available features.
+	 *
+	 * @since 1.26.0
+	 *
+	 * @return array
+	 */
+	private function get_feature_fields() {
+		$value              = array();
+		$available_features = Feature_Flags::get_available_features();
+
+		foreach ( $available_features as $available_feature ) {
+			$enabled_feature             = Feature_Flags::enabled( $available_feature );
+			$value[ $available_feature ] = $enabled_feature ? '✅' : '⭕';
+		}
+
+		return array(
+			'label' => __( 'Features', 'google-site-kit' ),
+			'value' => $value,
+		);
+	}
 }

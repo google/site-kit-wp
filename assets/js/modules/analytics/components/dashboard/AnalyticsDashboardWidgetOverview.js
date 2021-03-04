@@ -1,7 +1,7 @@
 /**
  * AnalyticsDashboardWidgetOverview component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,10 @@ import { Component } from '@wordpress/element';
  */
 import {
 	getTimeInSeconds,
-	prepareSecondsForDisplay,
-	readableLargeNumber,
-	changeToPercent,
+	calculateChange,
 } from '../../../../util';
-import DataBlock from '../../../../components/data-block';
-import withData from '../../../../components/higherorder/withdata';
+import DataBlock from '../../../../components/DataBlock';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import {
 	calculateOverviewData,
@@ -100,13 +98,13 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			averageSessionDurationChange,
 		} = overviewData;
 
-		const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
+		const totalUsersChange = calculateChange( previousTotalUsers, totalUsers );
 
 		const dataBlocks = [
 			{
 				className: 'googlesitekit-data-block--users googlesitekit-data-block--button-1',
 				title: __( 'Users', 'google-site-kit' ),
-				datapoint: readableLargeNumber( totalUsers ),
+				datapoint: totalUsers,
 				change: totalUsersChange,
 				changeDataUnit: '%',
 				context: 'button',
@@ -116,7 +114,7 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			{
 				className: 'googlesitekit-data-block--sessions googlesitekit-data-block--button-2',
 				title: __( 'Sessions', 'google-site-kit' ),
-				datapoint: readableLargeNumber( totalSessions ),
+				datapoint: totalSessions,
 				change: totalSessionsChange,
 				changeDataUnit: '%',
 				context: 'button',
@@ -126,7 +124,7 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			{
 				className: 'googlesitekit-data-block--bounce googlesitekit-data-block--button-3',
 				title: __( 'Bounce Rate', 'google-site-kit' ),
-				datapoint: Number( averageBounceRate ).toFixed( 2 ),
+				datapoint: averageBounceRate / 100,
 				change: averageBounceRateChange,
 				changeDataUnit: '%',
 				context: 'button',
@@ -138,7 +136,8 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			{
 				className: 'googlesitekit-data-block--duration googlesitekit-data-block--button-4',
 				title: __( 'Session Duration', 'google-site-kit' ),
-				datapoint: prepareSecondsForDisplay( averageSessionDuration ),
+				datapoint: averageSessionDuration,
+				datapointUnit: 's',
 				change: averageSessionDurationChange,
 				changeDataUnit: '%',
 				context: 'button',

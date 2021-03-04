@@ -1,7 +1,7 @@
 /**
  * `core/modules` data store: module info.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,11 @@ import { WPComponent } from '@wordpress/element';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from './constants';
-import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
+import { CORE_SITE } from '../../datastore/site/constants';
+import { CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { listFormat } from '../../../util';
+import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -66,22 +67,29 @@ const moduleDefaults = {
 	Icon: null,
 	SettingsEditComponent: null,
 	SettingsViewComponent: null,
+	SettingsSetupIncompleteComponent: DefaultSettingsSetupIncomplete,
 	SetupComponent: null,
 };
 
 const normalizeModules = memize(
-	( modules ) => Object.keys( modules )
-		.map( ( slug ) => {
-			const module = { ...modules[ slug ], slug };
-			// Fill any `undefined` values with defaults.
-			defaults( module, { name: slug }, moduleDefaults );
+	( serverDefinitions, clientDefinitions ) => {
+		// Module properties in `clientDefinitions` will overwrite `serverDefinitions`
+		// but only for keys whose values are not `undefined`.
+		const modules = merge( {}, serverDefinitions, clientDefinitions );
 
-			return module;
-		} )
-		.sort( ( a, b ) => a.order - b.order )
-		.reduce( ( acc, module ) => {
-			return { ...acc, [ module.slug ]: module };
-		}, {} )
+		return Object.keys( modules )
+			.map( ( slug ) => {
+				const module = { ...modules[ slug ], slug };
+				// Fill any `undefined` values with defaults.
+				defaults( module, { name: slug }, moduleDefaults );
+
+				return module;
+			} )
+			.sort( ( a, b ) => a.order - b.order )
+			.reduce( ( acc, module ) => {
+				return { ...acc, [ module.slug ]: module };
+			}, {} );
+	}
 );
 
 const fetchGetModulesStore = createFetchStore( {
@@ -223,20 +231,22 @@ const baseActions = {
 	 * @since 1.20.0 Introduced the ability to register settings and setup components.
 	 * @since 1.22.0 Introduced the ability to add a checkRequirements function.
 	 * @since 1.23.0 Introduced the ability to register an Icon component.
-	 * @since n.e.x.t Introduced the ability to explictly define a module store name.
+	 * @since 1.24.0 Introduced the ability to explictly define a module store name.
 	 *
-	 * @param {string}      slug                             Module slug.
-	 * @param {Object}      [settings]                       Optional. Module settings.
-	 * @param {string}      [settings.storeName]             Optional. Module storeName. If none is provided we assume no store exists for this module.
-	 * @param {string}      [settings.name]                  Optional. Module name. Default is the slug.
-	 * @param {string}      [settings.description]           Optional. Module description. Default empty string.
-	 * @param {WPComponent} [settings.Icon]                  Optional. React component to render module icon. Default none.
-	 * @param {number}      [settings.order]                 Optional. Numeric indicator for module order. Default 10.
-	 * @param {string}      [settings.homepage]              Optional. Module homepage URL. Default empty string.
-	 * @param {WPComponent} [settings.SettingsEditComponent] Optional. React component to render the settings edit panel. Default none.
-	 * @param {WPComponent} [settings.SettingsViewComponent] Optional. React component to render the settings view panel. Default none.
-	 * @param {WPComponent} [settings.SetupComponent]        Optional. React component to render the setup panel. Default none.
-	 * @param {Function}    [settings.checkRequirements]     Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
+	 * @param {string}      slug                                        Module slug.
+	 * @param {Object}      [settings]                                  Optional. Module settings.
+	 * @param {string}      [settings.storeName]                        Optional. Module storeName. If none is provided we assume no store exists for this module.
+	 * @param {string}      [settings.name]                             Optional. Module name. Default is the slug.
+	 * @param {string}      [settings.description]                      Optional. Module description. Default empty string.
+	 * @param {WPComponent} [settings.Icon]                             Optional. React component to render module icon. Default none.
+	 * @param {number}      [settings.order]                            Optional. Numeric indicator for module order. Default 10.
+	 * @param {string}      [settings.homepage]                         Optional. Module homepage URL. Default empty string.
+	 * @param {WPComponent} [settings.SettingsEditComponent]            Optional. React component to render the settings edit panel. Default none.
+	 * @param {WPComponent} [settings.SettingsViewComponent]            Optional. React component to render the settings view panel. Default none.
+	 * @param {WPComponent} [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
+	 * @param {WPComponent} [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
+	 * @param {Function}    [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
+	 * @param {Function}    [settings.screenWidgetContext]              Optional. Get the registered context name for a given module.
 	 */
 	*registerModule( slug, {
 		storeName,
@@ -248,7 +258,9 @@ const baseActions = {
 		SettingsEditComponent,
 		SettingsViewComponent,
 		SetupComponent,
+		SettingsSetupIncompleteComponent,
 		checkRequirements = () => true,
+		screenWidgetContext,
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
 
@@ -262,7 +274,9 @@ const baseActions = {
 			SettingsEditComponent,
 			SettingsViewComponent,
 			SetupComponent,
+			SettingsSetupIncompleteComponent,
 			checkRequirements,
+			screenWidgetContext,
 		};
 
 		yield {
@@ -440,8 +454,6 @@ const baseResolvers = {
 		}
 	},
 };
-// Use the canActivateModule resolver for getCheckRequirementsError
-baseResolvers.getCheckRequirementsError = baseResolvers.canActivateModule;
 
 const baseSelectors = {
 	/**
@@ -483,11 +495,9 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		// Module properties in `clientDefinitions` will overwrite `serverDefinitions`
-		// but only for keys whose values are not `undefined`.
-		const modules = merge( {}, serverDefinitions, clientDefinitions );
-
-		return normalizeModules( modules );
+		// `normalizeModules` must be called with stable arguments directly from state.
+		// Redefining/spreading these will undermine the memoization!
+		return normalizeModules( serverDefinitions, clientDefinitions );
 	},
 
 	/**
@@ -619,7 +629,7 @@ const baseSelectors = {
 	 * Returns the store name if preset or null if there is no store name for this module.
 	 * Returns `undefined` if state is still loading or if said module doesn't exist.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.24.0
 	 *
 	 * @param {string} slug Module slug.
 	 * @return {(string|null|undefined)} `string` of the store name if a name has been set for this module.
@@ -776,11 +786,41 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {(null|Object)} Activation error for a module slug; `null` if there is no error or an error object if we cannot activate a given module.
 	 */
-	getCheckRequirementsError( state, slug ) {
+	getCheckRequirementsError: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		const requirementsStatus = state.checkRequirementsResults[ slug ];
-		return requirementsStatus === true ? null : requirementsStatus;
-	},
+
+		// Need to use registry selector here to ensure resolver is invoked.
+		if ( select( STORE_NAME ).canActivateModule( slug ) ) {
+			return null;
+		}
+
+		return state.checkRequirementsResults[ slug ];
+	} ),
+
+	/**
+	 * Gets the module's screenWidgetContext.
+	 *
+	 * Returns `null` if there is no registered context string for the given module.
+	 * Returns `string` the registered context string, screenWidgetContext for the given module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} moduleSlug Module slug.
+	 * @return {(null|string)}    The module's registered context string, or null.
+	 */
+	getScreenWidgetContext: createRegistrySelector( ( select ) => ( state, moduleSlug ) => {
+		invariant( moduleSlug, 'slug is required.' );
+		const modules = select( STORE_NAME ).getModules();
+
+		if ( ! modules ) {
+			return null;
+		}
+
+		const screenWidgetContext = modules[ moduleSlug ]?.screenWidgetContext;
+
+		return screenWidgetContext || null;
+	} ),
 };
 
 const store = Data.combineStores(

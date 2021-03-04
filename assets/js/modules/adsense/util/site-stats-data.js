@@ -1,7 +1,7 @@
 /**
  * Site stats utlities.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { readableLargeNumber, numberFormat, getLocale } from '../../../util';
+import { getLocale, numFmt } from '../../../util';
 
 /**
  * Gets data for a Google Chart from an adesnse report.
@@ -73,8 +73,8 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 		const prevMonth = parseFloat( ( previous?.rows || [] ).find( findRowByDate( previousDate ) )?.[ selectedColumn ] || 0 );
 
 		const difference = prevMonth !== 0
-			? ( currentMonth * 100 / prevMonth ) - 100
-			: 100; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 100
+			? ( currentMonth / prevMonth ) - 1
+			: 1; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 1
 
 		const dateRange = sprintf(
 			/* translators: 1: date for user stats, 2: previous date for user stats comparison */
@@ -83,9 +83,9 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 			previousDate.toLocaleDateString( locale, localeDateOptions ),
 		);
 
-		let tooltipData = readableLargeNumber( currentMonth, metadata?.currency );
+		let tooltipData = numFmt( currentMonth, metadata?.currency );
 		if ( metadata?.type === 'METRIC_RATIO' ) {
-			tooltipData = numberFormat( currentMonth, { style: 'percent' } );
+			tooltipData = numFmt( currentMonth, '%' );
 		}
 
 		const statInfo = sprintf(

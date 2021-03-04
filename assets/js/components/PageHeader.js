@@ -1,7 +1,7 @@
 /**
  * PageHeader component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-function PageHeader( props ) {
+export default function PageHeader( props ) {
 	const { title, icon, className, status, statusText, fullWidth, children } = props;
 
 	const widthClasses = fullWidth
@@ -97,5 +97,3 @@ PageHeader.defaultProps = {
 	statusText: '',
 	fullWidth: false,
 };
-
-export default PageHeader;

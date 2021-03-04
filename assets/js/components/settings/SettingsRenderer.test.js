@@ -1,7 +1,7 @@
 /**
  * SettingsRenderer tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,12 @@ describe( 'SettingsRenderer', () => {
 		registry = createTestRegistry();
 		registry.registerStore( testStoreName, storeDefinition );
 		registry.dispatch( testStoreName ).receiveGetSettings( { testSetting: 'initial value' } );
-		provideModules( registry );
+		provideModules( registry, [
+			{
+				slug,
+				connected: true,
+			},
+		] );
 	} );
 
 	describe( 'renders correctly', () => {

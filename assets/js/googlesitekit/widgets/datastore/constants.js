@@ -1,7 +1,7 @@
 /**
  * `core/widgets` data store: constants.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,3 +20,4 @@ export const WIDGET_AREA_STYLES = { BOXES: 'boxes', COMPOSITE: 'composite' };
 export const WIDGET_WIDTHS = { QUARTER: 'quarter', HALF: 'half', FULL: 'full' };
 
 export const STORE_NAME = 'core/widgets';
+export { STORE_NAME as CORE_WIDGETS };

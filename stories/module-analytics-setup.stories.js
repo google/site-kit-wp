@@ -1,7 +1,7 @@
 /**
  * Analytics Setup stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import { storiesOf } from '@storybook/react';
 import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME, ACCOUNT_CREATE, PROFILE_CREATE, PROVISIONING_SCOPE } from '../assets/js/modules/analytics/datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import {
 	WithTestRegistry,
 	createTestRegistry,
@@ -79,12 +79,12 @@ storiesOf( 'Analytics Module/Setup', module )
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -95,12 +95,12 @@ storiesOf( 'Analytics Module/Setup', module )
 		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -110,27 +110,27 @@ storiesOf( 'Analytics Module/Setup', module )
 	} )
 	.add( 'Create new view', ( registry ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		const { accountId, webPropertyId } = profiles[ 0 ];
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		const { internalWebPropertyId } = properties.find( ( property ) => webPropertyId === property.id );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: accountId } );
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			accountID: accountId,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: webPropertyId,
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).setSettings( {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			accountID: accountId,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: webPropertyId,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			internalWebPropertyID: internalWebPropertyId,
 			profileID: PROFILE_CREATE,
 			anonymizeIP: true,
@@ -151,12 +151,12 @@ storiesOf( 'Analytics Module/Setup', module )
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -180,12 +180,12 @@ storiesOf( 'Analytics Module/Setup', module )
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -209,12 +209,12 @@ storiesOf( 'Analytics Module/Setup', module )
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -226,19 +226,19 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add( 'Existing Tag w/ access', ( registry ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
 			propertyID: properties[ 0 ].id,
 		};
 
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
@@ -257,12 +257,12 @@ storiesOf( 'Analytics Module/Setup', module )
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
@@ -283,12 +283,12 @@ storiesOf( 'Analytics Module/Setup', module )
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
 

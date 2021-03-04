@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Modules\AdSense
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -23,14 +23,18 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
-use Google\Site_Kit\Core\Modules\Module_With_Blockable_Tags_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Modules\AdSense\AMP_Tag;
 use Google\Site_Kit\Modules\AdSense\Settings;
+use Google\Site_Kit\Modules\AdSense\Tag_Guard;
+use Google\Site_Kit\Modules\AdSense\Web_Tag;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense_Account;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense_Alert;
@@ -46,20 +50,17 @@ use WP_Error;
  */
 final class AdSense extends Module
 	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner {
+	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
-	use Module_With_Blockable_Tags_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Screen_Trait;
 	use Module_With_Settings_Trait;
 
 	/**
-	 * Internal flag for whether the AdSense tag has been printed.
-	 *
-	 * @since 1.0.0
-	 * @var bool
+	 * Module slug name.
 	 */
-	private $adsense_tag_printed = false;
+	const MODULE_SLUG = 'adsense';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -90,94 +91,7 @@ final class AdSense extends Module
 		}
 
 		// AdSense tag placement logic.
-		add_action(
-			'template_redirect',
-			function() {
-				// Bail early if we are checking for the tag presence from the back end.
-				if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
-					return;
-				}
-
-				if ( $this->is_tag_blocked() ) {
-					return;
-				}
-
-				$use_snippet = $this->get_data( 'use-snippet' );
-				if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
-					return;
-				}
-
-				$client_id = $this->get_data( 'client-id' );
-				if ( is_wp_error( $client_id ) || ! $client_id ) {
-					return;
-				}
-
-				// Web Stories support neither <amp-auto-ads> nor the script.
-				// TODO: 'amp_story' support can be phased out in the long term.
-				if ( is_singular( array( 'web-story', 'amp_story' ) ) ) {
-					return;
-				}
-
-				// At this point, we know the tag should be rendered, so let's take care of it
-				// for AMP and non-AMP.
-				if ( $this->context->is_amp() ) {
-					add_action( // For AMP Reader, and AMP Native and Transitional (if `wp_body_open` supported).
-						'wp_body_open',
-						function() use ( $client_id ) {
-							$this->print_amp_auto_ads( $client_id );
-						},
-						-9999
-					);
-
-					add_filter( // For AMP Reader, and AMP Native and Transitional (as fallback).
-						'the_content',
-						function( $content ) use ( $client_id ) {
-							// Only run for the primary application of the `the_content` filter.
-							if ( ! in_the_loop() ) {
-								return $content;
-							}
-							return $this->amp_content_add_auto_ads( $content, $client_id );
-						}
-					);
-
-					add_filter( // Load amp-auto-ads component for AMP Reader.
-						'amp_post_template_data',
-						function( $data ) {
-							return $this->amp_data_load_auto_ads_component( $data );
-						}
-					);
-
-					/**
-					 * Fires when the AdSense tag for AMP has been initialized.
-					 *
-					 * This means that the tag will be rendered in the current request.
-					 *
-					 * @since 1.14.0
-					 *
-					 * @param string $client_id AdSense client ID used in the tag.
-					 */
-					do_action( 'googlesitekit_adsense_init_tag_amp', $client_id );
-				} else {
-					add_action( // For non-AMP.
-						'wp_head',
-						function() use ( $client_id ) {
-							$this->output_adsense_script( $client_id );
-						}
-					);
-
-					/**
-					 * Fires when the AdSense tag has been initialized.
-					 *
-					 * This means that the tag will be rendered in the current request.
-					 *
-					 * @since 1.14.0
-					 *
-					 * @param string $client_id AdSense client ID used in the tag.
-					 */
-					do_action( 'googlesitekit_adsense_init_tag', $client_id );
-				}
-			}
-		);
+		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 	}
 
 	/**
@@ -208,21 +122,6 @@ final class AdSense extends Module
 			__( 'Monetize your website', 'google-site-kit' ),
 			__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
 		);
-
-		// Clear datapoints that don't need to be localized.
-		$idenfifier_args = array(
-			'source' => 'site-kit',
-			'url'    => rawurlencode( $this->context->get_reference_site_url() ),
-		);
-
-		$signup_args = array(
-			'utm_source' => 'site-kit',
-			'utm_medium' => 'wordpress_signup',
-		);
-
-		$info['accountURL'] = add_query_arg( $idenfifier_args, $this->get_data( 'account-url' ) );
-		$info['signupURL']  = add_query_arg( $signup_args, $info['accountURL'] );
-		$info['rootURL']    = add_query_arg( $idenfifier_args, 'https://www.google.com/adsense/' );
 
 		return $info;
 	}
@@ -256,60 +155,6 @@ final class AdSense extends Module
 	}
 
 	/**
-	 * Outputs the AdSense script tag.
-	 *
-	 * @since 1.0.0
-	 * @since 1.14.0 The `$client_id` parameter was added.
-	 *
-	 * @param string $client_id AdSense client ID to use in the snippet.
-	 */
-	protected function output_adsense_script( $client_id ) {
-		if ( $this->adsense_tag_printed ) {
-			return;
-		}
-
-		$this->adsense_tag_printed = true;
-
-		// If we haven't completed the account connection yet, we still insert the AdSense tag
-		// because it is required for account verification.
-		printf(
-			'<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"%s></script>', // // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-			$this->get_tag_block_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		);
-		printf(
-			'<script>(adsbygoogle = window.adsbygoogle || []).push(%s);</script>',
-			wp_json_encode(
-				array(
-					'google_ad_client'      => $client_id,
-					'enable_page_level_ads' => true,
-					'tag_partner'           => 'site_kit',
-				)
-			)
-		);
-	}
-
-	/**
-	 * Outputs the <amp-auto-ads> tag.
-	 *
-	 * @since 1.14.0
-	 *
-	 * @param string $client_id AdSense client ID to use in the snippet.
-	 */
-	protected function print_amp_auto_ads( $client_id ) {
-		if ( $this->adsense_tag_printed ) {
-			return;
-		}
-
-		$this->adsense_tag_printed = true;
-
-		printf(
-			'<amp-auto-ads type="adsense" data-ad-client="%s"%s></amp-auto-ads>',
-			esc_attr( $client_id ),
-			$this->get_tag_amp_block_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		);
-	}
-
-	/**
 	 * Gets an array of debug field definitions.
 	 *
 	 * @since 1.5.0
@@ -320,65 +165,30 @@ final class AdSense extends Module
 		$settings = $this->get_settings()->get();
 
 		return array(
-			'adsense_account_id'     => array(
+			'adsense_account_id'            => array(
 				'label' => __( 'AdSense account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'], 7 ),
 			),
-			'adsense_client_id'      => array(
+			'adsense_client_id'             => array(
 				'label' => __( 'AdSense client ID', 'google-site-kit' ),
 				'value' => $settings['clientID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['clientID'], 10 ),
 			),
-			'adsense_account_status' => array(
+			'adsense_account_status'        => array(
 				'label' => __( 'AdSense account status', 'google-site-kit' ),
 				'value' => $settings['accountStatus'],
 			),
-			'adsense_use_snippet'    => array(
+			'adsense_use_snippet'           => array(
 				'label' => __( 'AdSense snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
-		);
-	}
-
-	/**
-	 * Adds AMP auto ads script if opted in.
-	 *
-	 * This only affects AMP Reader mode, the others are automatically covered.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $data AMP template data.
-	 * @return array Filtered $data.
-	 */
-	protected function amp_data_load_auto_ads_component( $data ) {
-		$data['amp_component_scripts']['amp-auto-ads'] = 'https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js';
-		return $data;
-	}
-
-	/**
-	 * Adds the AMP auto ads tag if opted in.
-	 *
-	 * @since 1.0.0
-	 * @since 1.14.0 The `$client_id` parameter was added.
-	 *
-	 * @param string $content   The page content.
-	 * @param string $client_id AdSense client ID to use in the snippet.
-	 * @return string Filtered $content.
-	 */
-	protected function amp_content_add_auto_ads( $content, $client_id ) {
-		if ( $this->adsense_tag_printed ) {
-			return $content;
-		}
-
-		$this->adsense_tag_printed = true;
-
-		return sprintf(
-			'<amp-auto-ads type="adsense" data-ad-client="%s"%s></amp-auto-ads> %s',
-			esc_attr( $client_id ),
-			$this->get_tag_amp_block_on_consent_attribute(),
-			$content
+			'adsense_web_stories_adunit_id' => array(
+				'label' => __( 'Web Stories Ad Unit ID', 'google-site-kit' ),
+				'value' => $settings['webStoriesAdUnit'],
+				'debug' => $settings['webStoriesAdUnit'],
+			),
 		);
 	}
 
@@ -391,26 +201,14 @@ final class AdSense extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:account-id'      => array( 'service' => '' ),
-			'POST:account-id'     => array( 'service' => '' ),
-			'GET:account-status'  => array( 'service' => '' ),
-			'POST:account-status' => array( 'service' => '' ),
-			'GET:account-url'     => array( 'service' => '' ),
-			'GET:accounts'        => array( 'service' => 'adsense' ),
-			'GET:alerts'          => array( 'service' => 'adsense' ),
-			'GET:client-id'       => array( 'service' => '' ),
-			'POST:client-id'      => array( 'service' => '' ),
-			'GET:clients'         => array( 'service' => 'adsense' ),
-			'GET:connection'      => array( 'service' => '' ),
-			'POST:connection'     => array( 'service' => '' ),
-			'GET:earnings'        => array( 'service' => 'adsense' ),
-			'GET:notifications'   => array( 'service' => '' ),
-			'GET:reports-url'     => array( 'service' => '' ),
-			'POST:setup-complete' => array( 'service' => '' ),
-			'GET:tag-permission'  => array( 'service' => '' ),
-			'GET:urlchannels'     => array( 'service' => 'adsense' ),
-			'GET:use-snippet'     => array( 'service' => '' ),
-			'POST:use-snippet'    => array( 'service' => '' ),
+			'GET:adunits'        => array( 'service' => 'adsense' ),
+			'GET:accounts'       => array( 'service' => 'adsense' ),
+			'GET:alerts'         => array( 'service' => 'adsense' ),
+			'GET:clients'        => array( 'service' => 'adsense' ),
+			'GET:earnings'       => array( 'service' => 'adsense' ),
+			'GET:notifications'  => array( 'service' => '' ),
+			'GET:tag-permission' => array( 'service' => '' ),
+			'GET:urlchannels'    => array( 'service' => 'adsense' ),
 		);
 	}
 
@@ -426,82 +224,36 @@ final class AdSense extends Module
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:account-id':
-				return function() {
-					$option = $this->get_settings()->get();
-					if ( empty( $option['accountID'] ) ) {
-						return new WP_Error( 'account_id_not_set', __( 'AdSense account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-					}
-					return $option['accountID'];
-				};
-			case 'POST:account-id':
-				if ( ! isset( $data['accountID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$this->get_settings()->merge( array( 'accountID' => $data['accountID'] ) );
-					return true;
-				};
-			case 'GET:account-status':
-				return function() {
-					$option = $this->get_settings()->get();
-					if ( empty( $option['accountStatus'] ) ) {
-						return new WP_Error( 'account_status_not_set', __( 'AdSense account status not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-					}
-					return $option['accountStatus'];
-				};
-			case 'POST:account-status':
-				if ( ! isset( $data['accountStatus'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountStatus' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$this->get_settings()->merge( array( 'accountStatus' => $data['accountStatus'] ) );
-					return true;
-				};
-			case 'GET:account-url':
-				return function() {
-					$account_id = $this->get_data( 'account-id' );
-					if ( ! is_wp_error( $account_id ) && $account_id && $this->authentication->profile()->has() ) {
-						$profile_email = $this->authentication->profile()->get()['email'];
-						return add_query_arg(
-							array( 'authuser' => $profile_email ),
-							sprintf( 'https://www.google.com/adsense/new/%s/home', $account_id )
-						);
-					}
-					return 'https://www.google.com/adsense/signup/new';
-				};
 			case 'GET:accounts':
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts->listAccounts();
+			case 'GET:adunits':
+				if ( ! isset( $data['accountID'] ) || ! isset( $data['clientID'] ) ) {
+					$option            = $this->get_settings()->get();
+					$data['accountID'] = $option['accountID'];
+					if ( empty( $data['accountID'] ) ) {
+						/* translators: %s: Missing parameter name */
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+					}
+					$data['clientID'] = $option['clientID'];
+					if ( empty( $data['clientID'] ) ) {
+						/* translators: %s: Missing parameter name */
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
+					}
+				}
+				$service = $this->get_service( 'adsense' );
+				return $service->accounts_adunits->listAccountsAdunits( $data['accountID'], $data['clientID'] );
 			case 'GET:alerts':
 				if ( ! isset( $data['accountID'] ) ) {
-					$data['accountID'] = $this->get_data( 'account-id' );
-					if ( is_wp_error( $data['accountID'] ) || ! $data['accountID'] ) {
+					$option            = $this->get_settings()->get();
+					$data['accountID'] = $option['accountID'];
+					if ( empty( $data['accountID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_alerts->listAccountsAlerts( $data['accountID'] );
-			case 'GET:client-id':
-				return function() {
-					$option = $this->get_settings()->get();
-					if ( empty( $option['clientID'] ) ) {
-						return new WP_Error( 'client_id_not_set', __( 'AdSense client ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-					}
-					return $option['clientID'];
-				};
-			case 'POST:client-id':
-				if ( ! isset( $data['clientID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$this->get_settings()->merge( array( 'clientID' => $data['clientID'] ) );
-					return true;
-				};
 			case 'GET:clients':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -513,27 +265,6 @@ final class AdSense extends Module
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_adclients->listAccountsAdclients( $data['accountID'] );
-			case 'GET:connection':
-				return function() {
-					$option   = $this->get_settings()->get();
-					$defaults = array(
-						'accountID'     => '',
-						'clientID'      => '',
-						'accountStatus' => '',
-					);
-					return array_intersect_key( array_merge( $defaults, $option ), $defaults );
-				};
-			case 'POST:connection':
-				return function() use ( $data ) {
-					$this->get_settings()->merge(
-						array(
-							'accountID'     => $data['accountID'],
-							'clientID'      => $data['clientID'],
-							'accountStatus' => $data['accountStatus'],
-						)
-					);
-					return true;
-				};
 			case 'GET:earnings':
 				$start_date = $data['startDate'];
 				$end_date   = $data['endDate'];
@@ -603,7 +334,7 @@ final class AdSense extends Module
 							'winImage'      => 'sun-small.png',
 							'format'        => 'large',
 							'severity'      => 'win-info',
-							'ctaURL'        => $this->get_data( 'account-url' ),
+							'ctaURL'        => $this->get_account_url(),
 							'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
 							'ctaTarget'     => '_blank',
 						),
@@ -625,35 +356,6 @@ final class AdSense extends Module
 						$this->has_access_to_client( $data['clientID'] )
 					);
 				};
-			case 'GET:reports-url':
-				return function() {
-					$account_id = $this->get_data( 'account-id' );
-					if ( ! is_wp_error( $account_id ) && $account_id && $this->authentication->profile()->has() ) {
-						$profile_email = $this->authentication->profile()->get()['email'];
-						return add_query_arg(
-							array( 'authuser' => $profile_email ),
-							sprintf( 'https://www.google.com/adsense/new/%s/main/viewreports', $account_id )
-						);
-					}
-					return 'https://www.google.com/adsense/start';
-				};
-			case 'POST:setup-complete':
-				if ( ! isset( $data['clientID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$this->get_settings()->merge(
-						array(
-							'accountSetupComplete' => true,
-							'siteSetupComplete'    => true,
-							'clientID'             => $data['clientID'],
-							'useSnippet'           => $data['useSnippet'],
-						)
-					);
-
-					return true;
-				};
 			case 'GET:urlchannels':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -673,30 +375,6 @@ final class AdSense extends Module
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_urlchannels->listAccountsUrlchannels( $data['accountID'], $data['clientID'] );
-			case 'GET:use-snippet':
-				return function() {
-					$option = $this->get_settings()->get();
-
-					return ! empty( $option['useSnippet'] );
-				};
-			case 'POST:use-snippet':
-				if ( ! isset( $data['useSnippet'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						sprintf(
-						/* translators: %s: Missing parameter name */
-							__( 'Request parameter is empty: %s.', 'google-site-kit' ),
-							'useSnippet'
-						),
-						array( 'status' => 400 )
-					);
-				}
-
-				return function() use ( $data ) {
-					$this->get_settings()->merge( array( 'useSnippet' => $data['useSnippet'] ) );
-
-					return true;
-				};
 		}
 
 		return parent::create_data_request( $data );
@@ -714,18 +392,8 @@ final class AdSense extends Module
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:accounts':
-				$accounts = $response->getItems();
-				// TODO: Remove this ugly side-effect once no longer used.
-				if ( $data['maybeSetAccount'] && ! empty( $accounts ) ) {
-					$account_id = $this->get_data( 'account-id' );
-					if ( is_wp_error( $account_id ) || ! $account_id ) {
-						$this->set_data( 'account-id', array( 'accountID' => $accounts[0]->id ) );
-					}
-				}
-				return $accounts;
-
 			// Intentional fallthrough.
+			case 'GET:accounts':
 			case 'GET:alerts':
 			case 'GET:clients':
 			case 'GET:urlchannels':
@@ -735,6 +403,36 @@ final class AdSense extends Module
 		}
 
 		return parent::parse_data_response( $data, $response );
+	}
+
+	/**
+	 * Gets the service URL for the current account or signup if none.
+	 *
+	 * @since 1.25.0
+	 *
+	 * @return string
+	 */
+	protected function get_account_url() {
+		$profile = $this->authentication->profile();
+		$option  = $this->get_settings()->get();
+		$query   = array(
+			'source'     => 'site-kit',
+			'utm_source' => 'site-kit',
+			'utm_medium' => 'wordpress_signup',
+			'url'        => rawurlencode( $this->context->get_reference_site_url() ),
+		);
+
+		if ( ! empty( $option['accountID'] ) ) {
+			$url = sprintf( 'https://www.google.com/adsense/new/%s/home', $option['accountID'] );
+		} else {
+			$url = 'https://www.google.com/adsense/signup/new';
+		}
+
+		if ( $profile->has() ) {
+			$query['authuser'] = $profile->get()['email'];
+		}
+
+		return add_query_arg( $query, $url );
 	}
 
 	/**
@@ -791,35 +489,6 @@ final class AdSense extends Module
 					gmdate( 'Y-m-d', strtotime( 'today' ) ),
 					gmdate( 'Y-m-d', strtotime( 'today' ) ),
 				);
-			case 'yesterday':
-				return array(
-					gmdate( 'Y-m-d', strtotime( 'yesterday' ) ),
-					gmdate( 'Y-m-d', strtotime( 'yesterday' ) ),
-				);
-			case 'same-day-last-week':
-				return array(
-					gmdate( 'Y-m-d', strtotime( '7 days ago' ) ),
-					gmdate( 'Y-m-d', strtotime( '7 days ago' ) ),
-				);
-			case 'this-month':
-				return array(
-					gmdate( 'Y-m-01' ),
-					gmdate( 'Y-m-d', strtotime( 'today' ) ),
-				);
-			case 'this-month-last-year':
-				$last_year          = intval( gmdate( 'Y' ) ) - 1;
-				$last_date_of_month = gmdate( 't', strtotime( $last_year . '-' . gmdate( 'm' ) . '-01' ) );
-
-				return array(
-					gmdate( $last_year . '-m-01' ),
-					gmdate( $last_year . '-m-' . $last_date_of_month ),
-				);
-			// Intentional fallthrough.
-			case 'prev-7-days':
-			case 'prev-14-days':
-			case 'prev-28-days':
-			case 'prev-90-days':
-				return $this->parse_date_range( $date_range, 1, 1, true );
 			// Intentional fallthrough.
 			case 'last-7-days':
 			case 'last-14-days':
@@ -860,9 +529,10 @@ final class AdSense extends Module
 			)
 		);
 
-		$account_id = $this->get_data( 'account-id' );
-		if ( is_wp_error( $account_id ) ) {
-			return $account_id;
+		$option     = $this->get_settings()->get();
+		$account_id = $option['accountID'];
+		if ( empty( $account_id ) ) {
+			return new WP_Error( 'account_id_not_set', __( 'AdSense account ID not set.', 'google-site-kit' ) );
 		}
 
 		$opt_params = array(
@@ -909,12 +579,12 @@ final class AdSense extends Module
 		);
 
 		return array(
-			'slug'        => 'adsense',
+			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'AdSense', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Earn money by placing ads on your website. It’s free and easy.', 'google-site-kit' ),
 			'cta'         => __( 'Monetize Your Site.', 'google-site-kit' ),
 			'order'       => 2,
-			'homepage'    => add_query_arg( $idenfifier_args, $this->get_data( 'reports-url' ) ),
+			'homepage'    => add_query_arg( $idenfifier_args, 'https://www.google.com/adsense/start' ),
 			'learn_more'  => __( 'https://www.google.com/intl/en_us/adsense/start/', 'google-site-kit' ),
 		);
 	}
@@ -971,6 +641,7 @@ final class AdSense extends Module
 						'googlesitekit-modules',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
+						'googlesitekit-google-charts',
 					),
 				)
 			),
@@ -1061,4 +732,36 @@ final class AdSense extends Module
 		}
 		return $matches[1];
 	}
+
+	/**
+	 * Registers the AdSense tag.
+	 *
+	 * @since 1.24.0
+	 */
+	private function register_tag() {
+		// TODO: 'amp_story' support can be phased out in the long term.
+		if ( is_singular( array( 'amp_story' ) ) ) {
+			return;
+		}
+
+		$module_settings = $this->get_settings();
+		$settings        = $module_settings->get();
+
+		if ( $this->context->is_amp() ) {
+			$tag = new AMP_Tag( $settings['clientID'], self::MODULE_SLUG );
+			$tag->set_story_ad_slot_id( $settings['webStoriesAdUnit'] );
+		} else {
+			$tag = new Web_Tag( $settings['clientID'], self::MODULE_SLUG );
+		}
+
+		if ( ! $tag->is_tag_blocked() ) {
+			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+			$tag->use_guard( new Tag_Guard( $module_settings ) );
+
+			if ( $tag->can_register() ) {
+				$tag->register();
+			}
+		}
+	}
+
 }

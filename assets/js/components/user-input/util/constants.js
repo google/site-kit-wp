@@ -1,7 +1,7 @@
 /**
  * User Input Answers.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,14 @@ export const USER_INPUT_QUESTION_POST_FREQUENCY = 'postFrequency';
 export const USER_INPUT_QUESTION_GOALS = 'goals';
 export const USER_INPUT_QUESTION_HELP_NEEDED = 'helpNeeded';
 export const USER_INPUT_QUESTION_SEARCH_TERMS = 'searchTerms';
+
+export const USER_INPUT_QUESTIONS_LIST = [
+	USER_INPUT_QUESTION_ROLE,
+	USER_INPUT_QUESTION_POST_FREQUENCY,
+	USER_INPUT_QUESTION_GOALS,
+	USER_INPUT_QUESTION_HELP_NEEDED,
+	USER_INPUT_QUESTION_SEARCH_TERMS,
+];
 
 /**
  * Gets available answers for user input settings.

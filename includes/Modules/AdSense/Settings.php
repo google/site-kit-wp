@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Modules\AdSense\Settings
  *
  * @package   Google\Site_Kit\Modules\AdSense
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -158,6 +158,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'accountSetupComplete' => false,
 			'siteSetupComplete'    => false,
 			'useSnippet'           => true,
+			'webStoriesAdUnit'     => '',
 		);
 	}
 

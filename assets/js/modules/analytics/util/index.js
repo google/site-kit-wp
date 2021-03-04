@@ -1,7 +1,7 @@
 /**
  * Analytics utility functions.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import { __, sprintf, _x } from '@wordpress/i18n';
 import { getLocale } from '../../../util/i18n';
 import calculateOverviewData from './calculateOverviewData';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
-import { prepareSecondsForDisplay } from '../../../util';
+import { convertSecondsToArray, numFmt } from '../../../util';
 
 export { calculateOverviewData };
 
@@ -45,32 +45,83 @@ export * from './validation';
  * Extracts data required for a pie chart from the Analytics report information.
  *
  * @since 1.16.0 Added keyColumnIndex argument.
+ * @since 1.24.0 Updated the function signature to use options argument instead of keyColumnIndex.
  *
- * @param {Array}  reports        The array with reports data.
- * @param {number} keyColumnIndex The number of a column to extract metrics data from.
+ * @param {Array}    reports                   The array with reports data.
+ * @param {Object}   [options]                 Optional. Data extraction options.
+ * @param {number}   [options.keyColumnIndex]  Optional. The number of a column to extract metrics data from.
+ * @param {number}   [options.maxSlices]       Optional. Limit the number of slices to display.
+ * @param {boolean}  [options.withOthers]      Optional. Whether to add "Others" record to the data map. Only relevant
+ *                                             if `maxSlices` is passed. If passed, the final slice will be the
+ *                                             "Others" slice, i.e. the number of actual row slices will be
+ *                                             `maxSlices - 1`.
+ * @param {Function} [options.tooltipCallback] Optional. A callback function for tooltip column values.
  * @return {Array} Extracted data.
  */
-export function extractAnalyticsDataForTrafficChart( reports, keyColumnIndex ) {
+export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 	if ( ! reports || ! reports.length ) {
 		return null;
 	}
 
+	const {
+		keyColumnIndex = 0,
+		maxSlices,
+		withOthers = false,
+		tooltipCallback,
+	} = options;
+
 	const data = reports[ 0 ].data;
 	const rows = data.rows;
 
-	const totalUsers = data.totals[ 0 ].values[ keyColumnIndex ];
-	const dataMap = [
-		[ 'Source', 'Percent' ],
-	];
+	const withTooltips = typeof tooltipCallback === 'function';
+	const columns = [ 'Source', 'Percent' ];
+	if ( withTooltips ) {
+		columns.push( {
+			type: 'string',
+			role: 'tooltip',
+			p: {
+				html: true,
+			},
+		} );
+	}
 
-	each( rows, ( row ) => {
+	const totalUsers = data.totals[ 0 ].values[ keyColumnIndex ];
+	const dataMap = [ columns ];
+
+	let hasOthers = withOthers;
+	let rowsNumber = rows.length;
+	let others = 1;
+	if ( maxSlices > 0 ) {
+		hasOthers = withOthers && rows.length > maxSlices;
+		rowsNumber = Math.min( rows.length, hasOthers ? maxSlices - 1 : maxSlices );
+	} else {
+		hasOthers = false;
+		rowsNumber = rows.length;
+	}
+
+	for ( let i = 0; i < rowsNumber; i++ ) {
+		const row = rows[ i ];
 		const users = row.metrics[ 0 ].values[ keyColumnIndex ];
 		const percent = ( users / totalUsers );
 
-		const source = row.dimensions[ 0 ];
+		others -= percent;
 
-		dataMap.push( [ source, percent ] );
-	} );
+		const rowData = [ row.dimensions[ 0 ], percent ];
+		if ( withTooltips ) {
+			rowData.push( tooltipCallback( row, rowData ) );
+		}
+
+		dataMap.push( rowData );
+	}
+
+	if ( hasOthers && others > 0 ) {
+		const rowData = [ __( 'Others', 'google-site-kit' ), others ];
+		if ( withTooltips ) {
+			rowData.push( tooltipCallback( null, rowData ) );
+		}
+
+		dataMap.push( rowData );
+	}
 
 	return dataMap;
 }
@@ -150,24 +201,30 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	const dataLabels = [
 		__( 'Users', 'google-site-kit' ),
 		__( 'Sessions', 'google-site-kit' ),
-		__( 'Bounce Rate', 'google-site-kit' ),
+		__( 'Bounce Rate %', 'google-site-kit' ),
 		__( 'Session Duration', 'google-site-kit' ),
 	];
 
 	const dataFormats = [
 		( x ) => parseFloat( x ).toLocaleString(),
 		( x ) => parseFloat( x ).toLocaleString(),
-		( x ) => parseFloat( x ).toFixed( 2 ) + '%',
-		prepareSecondsForDisplay,
-
+		( x ) => numFmt( x / 100, {
+			style: 'percent',
+			signDisplay: 'never',
+			maximumFractionDigits: 2,
+		} ),
+		( x ) => numFmt( x, 's' ),
 	];
+
+	const isSessionDuration = dataLabels[ selectedStats ] === __( 'Session Duration', 'google-site-kit' );
+	const dataType = isSessionDuration ? 'timeofday' : 'number';
 
 	const dataMap = [
 		[
 			{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
 			{ type: 'string', role: 'tooltip', p: { html: true } },
-			{ type: 'number', label: dataLabels[ selectedStats ] },
-			{ type: 'number', label: __( 'Previous period', 'google-site-kit' ) },
+			{ type: dataType, label: dataLabels[ selectedStats ] },
+			{ type: dataType, label: __( 'Previous period', 'google-site-kit' ) },
 		],
 	];
 
@@ -191,8 +248,8 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 
 		const prevMonth = parseFloat( previousMonthData[ i ][ 1 ] );
 		const difference = prevMonth !== 0
-			? ( row[ 1 ] * 100 / prevMonth ) - 100
-			: 100; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 100
+			? ( row[ 1 ] / prevMonth ) - 1
+			: 1; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 1
 
 		const dateRange = sprintf(
 			/* translators: 1: date for user stats, 2: previous date for user stats comparison */
@@ -202,8 +259,8 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 		);
 
 		const statInfo = sprintf(
-			/* translators: 1: selected stat label, 2: numeric value of selected stat, 3: up or down arrow , 4: different change in percentage, %%: percent symbol */
-			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>', 'Stat information for chart tooltip', 'google-site-kit' ),
+		/* translators: 1: selected stat label, 2: numeric value of selected stat, 3: up or down arrow , 4: different change in percentage */
+			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s</em>', 'Stat information for chart tooltip', 'google-site-kit' ),
 			dataLabels[ selectedStats ],
 			dataFormats[ selectedStats ]( row[ 1 ] ),
 			`<svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="${ classnames( 'googlesitekit-change-arrow', {
@@ -212,7 +269,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 			} ) }">
 				<path d="M5.625 10L5.625 2.375L9.125 5.875L10 5L5 -1.76555e-07L-2.7055e-07 5L0.875 5.875L4.375 2.375L4.375 10L5.625 10Z" fill="currentColor" />
 			</svg>`,
-			Math.abs( difference ).toFixed( 2 ).replace( /(.00|0)$/, '' ), // .replace( ... ) removes trailing zeros
+			numFmt( Math.abs( difference ), '%' ),
 		);
 
 		dataMap.push( [
@@ -224,8 +281,8 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 				<p>${ dateRange }</p>
 				<p>${ statInfo }</p>
 			</div>`,
-			row[ 1 ],
-			previousMonthData[ i ][ 1 ],
+			isSessionDuration ? convertSecondsToArray( row[ 1 ] ) : row[ 1 ],
+			isSessionDuration ? convertSecondsToArray( previousMonthData[ i ][ 1 ] ) : previousMonthData[ i ][ 1 ],
 		] );
 	} );
 

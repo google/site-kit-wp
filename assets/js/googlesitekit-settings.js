@@ -1,7 +1,7 @@
 /**
  * Settings component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import { render } from '@wordpress/element';
  * Internal dependencies
  */
 import './components/legacy-notifications';
-import Root from './components/root';
+import Root from './components/Root';
 import SettingsApp from './components/settings/SettingsApp';
 
 // Initialize the app once the DOM is ready.

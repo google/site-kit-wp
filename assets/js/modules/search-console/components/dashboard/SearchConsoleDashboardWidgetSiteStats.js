@@ -1,7 +1,7 @@
 /**
  * SearchConsoleDashboardWidgetSiteStats component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import { Component } from '@wordpress/element';
  * Internal dependencies
  */
 import { decodeHTMLEntity, getTimeInSeconds } from '../../../../util';
-import withData from '../../../../components/higherorder/withdata';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import GoogleChart from '../../../../components/GoogleChart';
 import PreviewBlock from '../../../../components/PreviewBlock';
@@ -58,7 +58,7 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 			height: 270,
 			width: '100%',
 			chartArea: {
-				height: '80%',
+				height: '77%',
 				width: '87%',
 			},
 			legend: {
@@ -85,24 +85,24 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 				minorGridlines: {
 					color: '#eee',
 				},
-				textStyle: {
-					color: '#616161',
-					fontSize: 12,
-				},
-				titleTextStyle: {
-					color: '#616161',
-					fontSize: 12,
-					italic: false,
-				},
 			},
 		};
 
 		options.series = series;
 		options.vAxes = vAxes;
 
-		// Clean up chart if more than three stats are selected.
-		if ( 3 <= selectedStats.length ) {
-			options.vAxis.textPosition = 'none';
+		if ( selectedStats.length < 3 ) {
+			options.vAxis.textStyle = {
+				color: '#616161',
+				fontSize: 12,
+			};
+			options.vAxis.titleTextStyle = {
+				color: '#616161',
+				fontSize: 12,
+				italic: false,
+			};
+		} else {
+			// Clean up chart if three or more stats are selected.
 			options.vAxis.gridlines.color = '#fff';
 			options.vAxis.minorGridlines.color = '#fff';
 			options.chartArea.width = '98%';
@@ -126,6 +126,7 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 						<GoogleChart
+							chartType="line"
 							selectedStats={ selectedStats }
 							data={ processedData.dataMap }
 							options={ options }

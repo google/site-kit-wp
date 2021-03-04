@@ -1,7 +1,7 @@
 /**
  * AdSense Datastore Fixtures.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ export { default as accountsMultiple } from './accounts-multiple';
 export { default as clients } from './clients';
 export { default as clientsNoAFC } from './clients-no-afc';
 export { default as urlchannels } from './urlchannels';
+export { default as adunits } from './adunits';
 export { default as alerts } from './alerts';
 export { default as alertsGraylisted } from './alerts-graylisted';
 export { default as tagPermissionAccess } from './tag-permission-access';

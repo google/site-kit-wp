@@ -75,7 +75,7 @@
     }
   },
   "lint-staged": {
-    "assets/js/**/*.js": [
+    "*.js": [
       "eslint"
     ],
     "assets/sass/**/*.scss": [
@@ -124,6 +124,7 @@
     "@wordpress/element": "^2.16.0",
     "@wordpress/hooks": "^2.9.0",
     "@wordpress/i18n": "^3.14.0",
+    "@wordpress/icons": "^2.9.0",
     "@wordpress/keycodes": "^2.16.0",
     "@wordpress/scripts": "^12.2.0",
     "@wordpress/url": "^2.17.0",
@@ -138,6 +139,7 @@
     "intl": "^1.2.5",
     "intl-locales-supported": "^1.8.12",
     "invariant": "^2.2.4",
+    "just-detect-adblock": "^1.1.0",
     "lodash": "^4.17.19",
     "md5": "^2.2.1",
     "memize": "^1.1.0",
@@ -149,11 +151,12 @@
     "punycode": "^2.1.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
+    "react-google-charts": "^3.0.15",
     "react-use": "^15.3.4",
     "svgxuse": "^1.2.6",
     "url-polyfill": "^1.1.9",
+    "use-memo-one": "^1.1.2",
     "uuid": "^8.2.0",
-    "wait-promise": "^0.4.1",
     "whatwg-fetch": "^3.2.0"
   },
   "devDependencies": {
@@ -181,14 +184,14 @@
     "create-file-webpack": "^1.0.2",
     "css-loader": "^3.6.0",
     "cssnano": "^4.1.10",
-    "eslint": "^6.8.0",
-    "eslint-loader": "^4.0.2",
+    "eslint": "^7.20.0",
     "eslint-plugin-filenames": "^1.3.2",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jest": "^22.21.0",
     "eslint-plugin-jsdoc": "^30.5.1",
     "eslint-plugin-sitekit": "file:packages/eslint-plugin",
     "eslint-scope": "^5.1.0",
+    "eslint-webpack-plugin": "^2.5.1",
     "fetch-mock": "^9.10.3",
     "fetch-mock-jest": "^1.3.0",
     "file-loader": "^6.1.1",
@@ -204,13 +207,13 @@
     "jsdom": "^16.3.0",
     "lint-staged": "^10.2.11",
     "mini-css-extract-plugin": "^0.9.0",
-    "node-sass": "^4.14.1",
     "postcss-import-url": "^5.1.0",
     "postcss-loader": "^3.0.0",
     "postcss-preset-env": "^6.7.0",
     "puppeteer": "^1.20.0",
     "rimraf": "^3.0.2",
     "sanitize-filename": "^1.6.3",
+    "sass": "^1.30.0",
     "sass-loader": "^9.0.2",
     "semver-compare": "^1.0.0",
     "semver-regex": "^3.1.1",
@@ -224,7 +227,6 @@
     "webpack": "^4.43.0",
     "webpack-bundle-analyzer": "^3.8.0",
     "webpack-cli": "^3.3.12",
-    "webpack-feature-flags-plugin": "^1.0.1",
     "webpack-manifest-plugin": "^2.2.0",
     "webpack-stream": "^5.2.1",
     "webpackbar": "^4.0.0"

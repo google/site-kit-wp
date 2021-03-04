@@ -1,7 +1,7 @@
 /**
  * `core/user` data store
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,22 +20,24 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { createErrorStore } from '../../data/create-error-store';
 import authentication from './authentication';
 import dateRange from './date-range';
 import disconnect from './disconnect';
-import userInputSettings from './user-input-settings';
-import { createErrorStore } from '../../data/create-error-store';
+import featureTours from './feature-tours';
 import notifications from './notifications';
 import permissions from './permissions';
 import userInfo from './user-info';
+import userInputSettings from './user-input-settings';
 import { STORE_NAME } from './constants';
 
 const store = Data.combineStores(
 	Data.commonStore,
+	createErrorStore(),
 	authentication,
 	dateRange,
 	disconnect,
-	createErrorStore(),
+	featureTours,
 	notifications,
 	permissions,
 	userInfo,
@@ -51,7 +53,8 @@ export const {
 	selectors,
 } = store;
 
-// Register this store on the global registry.
-Data.registerStore( STORE_NAME, store );
+export const registerStore = ( registry ) => {
+	registry.registerStore( STORE_NAME, store );
+};
 
 export default store;

@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Notifications\Notifications.php
  *
  * @package   Google\Site_Kit\Core\Notifications
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -128,6 +128,12 @@ class Notifications {
 								),
 								$this->google_proxy->url( '/notifications/' )
 							);
+
+							// Return an empty array of notifications if the user isn't using the proxy.
+							if ( ! $this->credentials->using_proxy() ) {
+								return new WP_REST_Response( array() );
+							}
+
 							$response = wp_remote_get( $endpoint ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 
 							if ( is_wp_error( $response ) ) {
@@ -138,10 +144,6 @@ class Notifications {
 								$response = $this->parse_response( $response );
 							} catch ( Exception $e ) {
 								return new WP_Error( 'exception', $e->getMessage() );
-							}
-
-							if ( ! $this->credentials->using_proxy() ) {
-								return new WP_REST_Response( array() );
 							}
 
 							$data = array_map(

@@ -1,7 +1,7 @@
 /**
  * LegacyAnalyticsDashboardWidgetTopAcquisitionSources component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,16 +28,16 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import {
 	getTimeInSeconds,
-	numberFormat,
+	numFmt,
 } from '../../../../util';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
-import withData from '../../../../components/higherorder/withdata';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
 import MiniChart from '../../../../components/MiniChart';
 import { trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../../util';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
 
@@ -88,14 +88,21 @@ function LegacyAnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 	const totalUsers = data[ 0 ].data.totals[ 0 ].values[ 1 ];
 
 	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-		const percent = ( row.metrics[ 0 ].values[ 1 ] / totalUsers * 100 );
+		const change = row.metrics[ 0 ].values[ 1 ] / totalUsers;
 
 		return [
 			row.dimensions[ 0 ],
-			numberFormat( row.metrics[ 0 ].values[ 0 ] ),
-			numberFormat( row.metrics[ 0 ].values[ 1 ] ),
-			numberFormat( row.metrics[ 0 ].values[ 2 ] ),
-			<Fragment key={ 'minichart-analytics-top-as-' + i }><div className="googlesitekit-table__body-item-chart-wrap">{ `${ percent.toFixed( 2 ) }%` } <MiniChart percent={ percent.toFixed( 1 ) } index={ i } /></div></Fragment>,
+			numFmt( row.metrics[ 0 ].values[ 0 ], { style: 'decimal' } ),
+			numFmt( row.metrics[ 0 ].values[ 1 ], { style: 'decimal' } ),
+			numFmt( row.metrics[ 0 ].values[ 2 ], { style: 'decimal' } ),
+			(
+				<Fragment key={ 'minichart-analytics-top-as-' + i }>
+					<div className="googlesitekit-table__body-item-chart-wrap">
+						{ numFmt( change, '%' ) }
+						<MiniChart change={ change } index={ i } />
+					</div>
+				</Fragment>
+			),
 		];
 	} );
 

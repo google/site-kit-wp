@@ -1,7 +1,7 @@
 /**
  * Layout Component Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Layout from '../assets/js/components/layout/layout';
+import Layout from '../assets/js/components/layout/Layout';
 
 storiesOf( 'Global/Layout', module )
 	.add( 'Layout with Header Footer and CTAs', () => (

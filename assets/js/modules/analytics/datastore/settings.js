@@ -1,7 +1,7 @@
 /**
  * `modules/analytics` data store: settings.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { STORE_NAME as MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import { TYPE_MODULES } from '../../../components/data/constants';
 import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
@@ -63,7 +63,7 @@ export async function submitChanges( { select, dispatch } ) {
 
 		propertyID = property.id;
 		await dispatch( STORE_NAME ).setPropertyID( property.id );
-		await dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
+		await dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 	}
 
 	const profileID = select( STORE_NAME ).getProfileID();

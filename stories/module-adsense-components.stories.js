@@ -1,7 +1,7 @@
 /**
  * AdSense Module Component Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import { generateReportBasedWidgetStories } from './utils/generate-widget-storie
 import DashboardSummaryWidget from '../assets/js/modules/adsense/components/dashboard/DashboardSummaryWidget';
 import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
-import { STORE_NAME as ANALYTICS_STORE } from '../assets/js/modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense' ],
@@ -120,7 +120,9 @@ generateReportBasedWidgetStories( {
 	],
 	options: [
 		{
-			dateRange: 'today',
+			// Custom start and end date for this widget to match data range: 'today',
+			startDate: '2020-09-12',
+			endDate: '2020-09-12',
 			metrics: [
 				'EARNINGS',
 				'PAGE_VIEWS_RPM',
@@ -138,7 +140,9 @@ generateReportBasedWidgetStories( {
 			],
 		},
 		{
-			dateRange: 'this-month',
+			// Custom start and end date for this widget to match data range: 'this-month',
+			startDate: '2020-08-15',
+			endDate: '2020-09-11',
 			metrics: [
 				'EARNINGS',
 				'PAGE_VIEWS_RPM',
@@ -155,7 +159,7 @@ generateReportBasedWidgetStories( {
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense', 'analytics' ],
-	datastore: ANALYTICS_STORE,
+	datastore: MODULES_ANALYTICS,
 	group: 'AdSense Module/Components/Dashboard/Top Earning Pages Widget',
 	referenceDate: '2020-09-12',
 	data: [
@@ -411,8 +415,8 @@ generateReportBasedWidgetStories( {
 		},
 	},
 	additionalVariantCallbacks: {
-		Loaded: ( dispatch ) => dispatch( ANALYTICS_STORE ).setAdsenseLinked( true ),
-		'Data Unavailable': ( dispatch ) => dispatch( ANALYTICS_STORE ).setAdsenseLinked( true ),
-		Error: ( dispatch ) => dispatch( ANALYTICS_STORE ).setAdsenseLinked( true ),
+		Loaded: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
+		'Data Unavailable': ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
+		Error: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
 	},
 } );

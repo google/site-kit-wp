@@ -1,0 +1,11 @@
+{
+	"startDate": "2020-12-09",
+	"endDate": "2021-01-05",
+	"compareStartDate": "2020-11-11",
+	"compareEndDate": "2020-12-08",
+	"metrics": [
+		{
+      "expression": "ga:users"
+		}
+	]
+}

@@ -1,7 +1,7 @@
 /**
  * AnalyticsDashboardWidgetSiteStats component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import {
 	getTimeInSeconds,
 } from '../../../../util';
 import GoogleChart from '../../../../components/GoogleChart';
-import withData from '../../../../components/higherorder/withdata';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import { extractAnalyticsDashboardData, siteAnalyticsReportDataDefaults } from '../../util';
 import PreviewBlock from '../../../../components/PreviewBlock';
@@ -55,7 +55,8 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 			width: '100%',
 			chartArea: {
 				height: '80%',
-				width: '87%',
+				width: '100%',
+				left: 60,
 			},
 			legend: {
 				position: 'top',
@@ -99,7 +100,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 				trigger: 'both',
 			},
 			tooltip: {
-				isHtml: true, // eslint-disable-line sitekit/camelcase-acronyms
+				isHtml: true, // eslint-disable-line sitekit/acronym-case
 				trigger: 'both',
 			},
 		};
@@ -131,6 +132,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 						<GoogleChart
+							chartType="line"
 							selectedStats={ selectedStats }
 							data={ dataMap }
 							options={ options }

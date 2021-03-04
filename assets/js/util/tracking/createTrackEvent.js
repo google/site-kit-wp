@@ -3,6 +3,7 @@
  * Internal dependencies
  */
 import createDataLayerPush from './createDataLayerPush';
+import { enabledFeatures } from '../../features/index';
 
 /**
  * Returns a function which, when invoked tracks a single event.
@@ -55,6 +56,7 @@ export default function createTrackEvent( config, dataLayerTarget, _global ) {
 			dimension2: isFirstAdmin ? 'true' : 'false',
 			dimension3: userIDHash,
 			dimension4: global.GOOGLESITEKIT_VERSION || '',
+			dimension5: enabledFeatures.join( ', ' ),
 		};
 
 		return new Promise( ( resolve ) => {

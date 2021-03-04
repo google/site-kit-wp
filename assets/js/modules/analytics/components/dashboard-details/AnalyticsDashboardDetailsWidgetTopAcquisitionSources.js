@@ -1,7 +1,7 @@
 /**
  * AnalyticsDashboardDetailsWidgetTopAcquisitionSources component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,73 +20,33 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
-import Layout from '../../../../components/layout/layout';
-import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
-import LegacyDashboardAcquisitionPieChart from '../dashboard/LegacyDashboardAcquisitionPieChart';
-import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import applyEntityToReportPath from '../../util/applyEntityToReportPath';
-
-const { useSelect } = Data;
+import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
+import Layout from '../../../../components/layout/Layout';
+import { Cell } from '../../../../material-components';
+import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import DashboardAllTrafficWidget from '../dashboard/DashboardAllTrafficWidget';
 
 export default function AnalyticsDashboardDetailsWidgetTopAcquisitionSources() {
-	const serviceURL = useSelect( ( select ) => {
-		const accountID = select( STORE_NAME ).getAccountID();
-		const profileID = select( STORE_NAME ).getProfileID();
-		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		return select( STORE_NAME ).getServiceURL( { path: applyEntityToReportPath( url, `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ) } );
-	} );
+	const widgetComponentProps = getWidgetComponentProps( 'legacy-all-traffic-widget' );
+
 	return (
 		<Fragment>
-			<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-				">
+			<Cell size={ 12 }>
 				<DashboardModuleHeader
-					title={ __( 'All Traffic', 'google-site-kit' ) }
+					title={ __( 'Your Traffic at a Glance', 'google-site-kit' ) }
 					description={ __( 'How people found your page.', 'google-site-kit' ) }
 				/>
-			</div>
-			<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-				">
-				<Layout
-					className="googlesitekit-analytics-acquisition-sources"
-					footer
-					footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					footerCTALink={ serviceURL }
-				>
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-4-desktop
-									mdc-layout-grid__cell--span-8-tablet
-									mdc-layout-grid__cell--span-4-phone
-								">
-								<LegacyDashboardAcquisitionPieChart />
-							</div>
-							<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-8-desktop
-									mdc-layout-grid__cell--span-8-tablet
-									mdc-layout-grid__cell--span-4-phone
-								">
-								<LegacyAnalyticsDashboardWidgetTopAcquisitionSources />
-							</div>
-						</div>
-					</div>
+			</Cell>
+			<Cell size={ 12 }>
+				<Layout>
+					<DashboardAllTrafficWidget { ...widgetComponentProps } />
 				</Layout>
-			</div>
+			</Cell>
 		</Fragment>
 	);
 }

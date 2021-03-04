@@ -1,7 +1,7 @@
 /**
  * SettingsApp component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,84 +21,79 @@
  */
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { useHash } from 'react-use';
+import { useFirstMountState, useHash } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect } from '@wordpress/element';
+import { Fragment, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import SettingsAdmin from './settings-admin';
+import SettingsAdmin from './SettingsAdmin';
 import Header from '../Header';
 import PageHeader from '../PageHeader';
-import Layout from '../layout/layout';
+import Layout from '../layout/Layout';
 import HelpLink from '../HelpLink';
-import SettingsModules from './settings-modules';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import SettingsModules from './SettingsModules';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../material-components';
 
 const { useSelect, useDispatch } = Data;
 
+const hashFrom = ( tabID, slug, state ) => {
+	const fragments = [ tabID ];
+
+	if ( tabID === 'settings' && slug && state !== 'closed' ) {
+		fragments.push( slug );
+		if ( state ) {
+			fragments.push( state );
+		}
+	}
+
+	return fragments.join( '/' );
+};
+
+const parseHash = ( hashToParse ) => hashToParse.replace( '#', '' ).split( /\// );
+
 export default function SettingsApp() {
 	const [ hash, setHash ] = useHash();
-
-	const parseHash = ( hashToParse ) => hashToParse.replace( '#', '' ).split( /\// );
-
-	let [ activeTabID, moduleSlug, moduleState ] = parseHash( hash );
-	if ( ! activeTabID ) {
-		activeTabID = 'settings';
-	}
-
-	const isModuleActive = useSelect( ( select ) => moduleSlug ? select( CORE_MODULES ).isModuleActive( moduleSlug ) : null );
-
-	moduleSlug = isModuleActive && moduleSlug;
-	moduleState = useSelect( ( select ) => moduleSlug ? select( CORE_MODULES ).getModuleSettingsPanelState( moduleSlug ) : null );
-
+	const isFirstMount = useFirstMountState();
 	const { setModuleSettingsPanelState } = useDispatch( CORE_MODULES );
-
-	if ( moduleSlug && ! moduleState ) {
-		moduleState = 'view';
-	}
-
+	const [ initialActiveTabID, initialModuleSlug, initialModuleState ] = parseHash( hash );
+	const [ activeTabID, setActiveTabID ] = useState( initialActiveTabID || 'settings' );
+	const [ moduleSlug, setModuleSlug ] = useState( initialModuleSlug );
 	const activeTab = SettingsApp.tabToIndex[ activeTabID ];
 
-	const hashFrom = ( tabID, slug = moduleSlug, state = moduleState ) => {
-		const fragments = [ tabID ];
-
-		if ( tabID === 'settings' && slug && state !== 'closed' ) {
-			fragments.push( slug );
-			if ( state ) {
-				fragments.push( state );
-			}
+	if ( isFirstMount ) {
+		if ( initialModuleSlug ) {
+			setModuleSettingsPanelState( initialModuleSlug, initialModuleState );
 		}
+		if ( ! hash ) {
+			setHash( 'settings' );
+		}
+	}
 
-		return fragments.join( '/' );
-	};
+	const moduleState = useSelect( ( select ) => moduleSlug ? select( CORE_MODULES ).getModuleSettingsPanelState( moduleSlug ) : null );
 
 	const setModuleState = ( slug, state ) => {
+		if ( state === 'edit' || state === 'view' ) {
+			setModuleSlug( slug );
+		} else {
+			setModuleSlug( null );
+		}
 		setModuleSettingsPanelState( slug, state );
 		setHash( hashFrom( activeTabID, slug, state ) );
 	};
 
 	const handleTabUpdate = ( tabIndex ) => {
 		const newActiveTabID = SettingsApp.tabIDsByIndex[ tabIndex ];
+		setActiveTabID( newActiveTabID );
 		setHash( hashFrom( newActiveTabID ) );
 	};
-
-	useEffect( () => {
-		if ( isModuleActive && ! hash ) {
-			setHash( hashFrom( activeTabID ) );
-		} else if ( isModuleActive && moduleSlug && moduleState ) {
-			const hashParts = parseHash( hash );
-			// The 2nd index contains the current module state.
-			setModuleSettingsPanelState( moduleSlug, hashParts[ 2 ] || 'view' );
-		}
-	}, [ isModuleActive ] );
 
 	return (
 		<Fragment>

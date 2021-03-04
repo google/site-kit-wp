@@ -1,7 +1,7 @@
 /**
  * AnalyticsDashboardWidget component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,22 +32,19 @@ import { __, _n, _x, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import AnalyticsIcon from '../../../../../svg/analytics.svg';
-import Header from '../../../../components/Header';
 import AnalyticsDashboardWidgetSiteStats from './AnalyticsDashboardWidgetSiteStats';
 import AnalyticsDashboardWidgetTopPagesTable from './AnalyticsDashboardWidgetTopPagesTable';
 import AnalyticsDashboardWidgetOverview from './AnalyticsDashboardWidgetOverview';
-import DateRangeSelector from '../../../../components/DateRangeSelector';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
-import Layout from '../../../../components/layout/layout';
+import Layout from '../../../../components/layout/Layout';
 import PageHeader from '../../../../components/PageHeader';
 import LegacyDashboardAcquisitionPieChart from './LegacyDashboardAcquisitionPieChart';
-import Alert from '../../../../components/alert';
 import ProgressBar from '../../../../components/ProgressBar';
 import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
 import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
 import HelpLink from '../../../../components/HelpLink';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../datastore/constants';
 
 const { useSelect } = Data;
@@ -60,26 +57,9 @@ export default function AnalyticsDashboardWidget() {
 	const [ loading, setLoading ] = useState( true );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
-	const {
-		topContentServiceURL,
-		topAcquisitionServiceURL,
-		visitorsOverview,
-	} = useSelect( ( select ) => {
-		const accountID = select( STORE_NAME ).getAccountID();
-		const profileID = select( STORE_NAME ).getProfileID();
-		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
-		return {
-			topContentServiceURL: select( STORE_NAME ).getServiceURL(
-				{ path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
-			),
-			topAcquisitionServiceURL: select( STORE_NAME ).getServiceURL(
-				{ path: `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
-			),
-			visitorsOverview: select( STORE_NAME ).getServiceURL(
-				{ path: `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
-			),
-		};
-	} );
+	const topContentServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages' ) );
+	const topAcquisitionServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview' ) );
+	const visitorsOverview = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'visitors-overview' ) );
 
 	const handleStatSelection = ( stat ) => {
 		setSelectedStats( [ stat ] );
@@ -146,10 +126,6 @@ export default function AnalyticsDashboardWidget() {
 
 	return (
 		<Fragment>
-			<Header>
-				<DateRangeSelector />
-			</Header>
-			<Alert module="analytics" />
 			<div className="googlesitekit-module-page googlesitekit-module-page--analytics">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">

@@ -1,7 +1,7 @@
 /**
  * Admin stylesheet.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,6 +97,7 @@
 @import "components/global/googlesitekit-overlay";
 @import "components/global/googlesitekit-page";
 @import "components/global/googlesitekit-pagespeed-dashboard-widget";
+@import "components/global/googlesitekit-page-footer";
 @import "components/global/googlesitekit-page-header";
 @import "components/global/googlesitekit-percent-circle";
 @import "components/global/googlesitekit-post-searcher";
@@ -136,6 +137,7 @@
 @import "components/settings/googlesitekit-settings-module";
 @import "components/settings/googlesitekit-settings-module-warning";
 @import "components/settings/googlesitekit-settings-notice";
+@import "components/settings/googlesitekit-settings-user-input";
 
 // User Input
 @import "components/user-input/googlesitekit-user-input-module";
@@ -148,9 +150,12 @@
 @import "widgets/widget-area";
 @import "widgets/widget-context";
 @import "widgets/widgets";
-@import "widgets/googlesitekit-widget-analyticsAllTrafficV2";
+@import "widgets/googlesitekit-widget-adsense-performance";
+@import "widgets/googlesitekit-widget-analyticsAllTraffic";
 
 // Utilities
+@import "utilities/alignment";
+@import "utilities/font-weight";
 @import "utilities/margin";
 @import "utilities/overflow";
 @import "utilities/text-align";

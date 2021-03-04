@@ -1,7 +1,7 @@
 /**
  * MiniChart component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,16 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import GoogleChart from './GoogleChart';
 
-function MiniChart( { index, percent } ) {
+function MiniChart( { index, change } ) {
 	const colors = [
 		'#178EC5',
 		'#54B23B',
@@ -57,9 +62,10 @@ function MiniChart( { index, percent } ) {
 		width: 28,
 	};
 
+	const percent = +( change * 100 ).toFixed( 1 );
 	const data = [
 		[ 'source', 'percent' ],
-		[ '', +percent ],
+		[ '', percent ],
 		[ '', ( 100 - percent ) ],
 	];
 
@@ -78,5 +84,10 @@ function MiniChart( { index, percent } ) {
 		</div>
 	);
 }
+
+MiniChart.propTypes = {
+	index: PropTypes.number.isRequired,
+	change: PropTypes.number.isRequired,
+};
 
 export default MiniChart;

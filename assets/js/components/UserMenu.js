@@ -1,7 +1,7 @@
 /**
  * UserMenu component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,10 @@ import Dialog from './Dialog';
 import Button from './Button';
 import Menu from './Menu';
 import Modal from './Modal';
-import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
-
-const { useSelect } = Data;
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+const { useSelect, useDispatch } = Data;
 
 function UserMenu() {
 	const proxyPermissionsURL = useSelect( ( select ) => select( CORE_SITE ).getProxyPermissionsURL() );
@@ -47,6 +47,7 @@ function UserMenu() {
 	const [ menuOpen, toggleMenu ] = useState( false );
 	const menuButtonRef = useRef();
 	const menuRef = useRef();
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	useEffect( () => {
 		const handleMenuClose = ( e ) => {
@@ -98,7 +99,7 @@ function UserMenu() {
 				break;
 			case 1:
 				if ( proxyPermissionsURL ) {
-					global.location.assign( proxyPermissionsURL );
+					navigateTo( proxyPermissionsURL );
 				}
 				break;
 			default:
@@ -115,7 +116,7 @@ function UserMenu() {
 		clearWebStorage();
 
 		// Navigate back to the splash screen to reconnect.
-		global.location.assign( postDisconnectURL );
+		navigateTo( postDisconnectURL );
 	}, [ postDisconnectURL ] );
 
 	if ( ! userEmail ) {

@@ -1,7 +1,7 @@
 /**
  * Utility function to generate stories for widgets.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,16 +24,14 @@ import { storiesOf, Story } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME as CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
 	WithTestRegistry,
 	provideModules,
 	provideSiteInfo,
 } from '../../tests/js/utils';
-
-const { components: { Widget } } = Widgets;
+import { getWidgetComponentProps } from '../../assets/js/googlesitekit/widgets/util';
 
 /**
  * Generates stories for a report based widget using provided data.
@@ -80,9 +78,16 @@ export function generateReportBasedWidgetStories( {
 				};
 			} ) );
 
+			let currentEntityURL = null;
+			if ( Array.isArray( options ) && options[ 0 ].url ) {
+				currentEntityURL = options[ 0 ].url;
+			} else if ( options.url ) {
+				currentEntityURL = options.url;
+			}
+
 			// Set some site information.
 			provideSiteInfo( registry, {
-				currentEntityURL: options.url || null,
+				currentEntityURL,
 			} );
 
 			if ( referenceDate ) {
@@ -203,24 +208,26 @@ export function generateReportBasedWidgetStories( {
 		...customVariants,
 	};
 
-	let widget;
+	let widgetElement;
+
+	const slug = moduleSlugs.map( ( mapSlug ) => `${ mapSlug }-widget` ).join( ' ' );
+	const widgetComponentProps = getWidgetComponentProps( slug );
+
 	if ( wrapWidget ) {
-		const slugs = moduleSlugs.map( ( slug ) => {
-			return `${ slug }-widget`;
-		} );
-		widget = (
-			<Widget slug={ slugs.join( ' ' ) }>
-				<Component />
+		const { Widget } = widgetComponentProps;
+		widgetElement = (
+			<Widget>
+				<Component { ...widgetComponentProps } />
 			</Widget>
 		);
 	} else {
-		widget = <Component />;
+		widgetElement = <Component { ...widgetComponentProps } />;
 	}
 
 	Object.keys( variants ).forEach( ( variant ) => {
 		stories.add( variant, ( registry ) => (
 			<WithTestRegistry registry={ registry } callback={ variants[ variant ] }>
-				{ widget }
+				{ widgetElement }
 			</WithTestRegistry>
 		) );
 	} );

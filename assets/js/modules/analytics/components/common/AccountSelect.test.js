@@ -1,7 +1,7 @@
 /**
  * Account Select component tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 import AccountSelect from './AccountSelect';
 import { fireEvent, freezeFetch, render, waitFor } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
-import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 
 const setupRegistry = ( registry ) => {
@@ -105,7 +105,7 @@ describe( 'AccountSelect', () => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
 		const propertyID = properties[ 0 ].id;
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = properties[ 0 ].accountId;
 
 		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
@@ -114,7 +114,7 @@ describe( 'AccountSelect', () => {
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		const account = accounts.find( ( acct ) => acct.id === properties[ 0 ].accountId );
 		fireEvent.click( getByText( account.name ) );
 

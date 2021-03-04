@@ -1,7 +1,7 @@
 /**
  * Dashboard PageSpeed Widget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,23 +41,24 @@ import LabReportMetrics from '../common/LabReportMetrics';
 import FieldReportMetrics from '../common/FieldReportMetrics';
 import Recommendations from '../common/Recommendations';
 import ReportDetailsLink from '../common/ReportDetailsLink';
-import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
 	STORE_NAME,
 	STRATEGY_MOBILE,
 	STRATEGY_DESKTOP,
 	DATA_SRC_FIELD,
 	DATA_SRC_LAB,
-	FORM_DASH_WIDGET,
+	UI_STRATEGY,
+	UI_DATA_SOURCE,
 } from '../../datastore/constants';
 
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardPageSpeed() {
 	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
-	const strategy = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'strategy' ) ) || STRATEGY_MOBILE;
-	const dataSrc = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'dataSrc' ) ) || DATA_SRC_LAB;
+	const strategy = useSelect( ( select ) => select( CORE_UI ).getValue( UI_STRATEGY ) ) || STRATEGY_MOBILE;
+	const dataSrc = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DATA_SOURCE ) ) || DATA_SRC_LAB;
 
 	const {
 		isFetchingMobile,
@@ -79,13 +80,13 @@ export default function DashboardPageSpeed() {
 		};
 	} );
 
-	const { setValues } = useDispatch( CORE_FORMS );
+	const { setValues } = useDispatch( CORE_UI );
 	const { invalidateResolution } = useDispatch( STORE_NAME );
 
-	const setStrategyMobile = useCallback( () => setValues( FORM_DASH_WIDGET, { strategy: STRATEGY_MOBILE } ), [] );
-	const setStrategyDesktop = useCallback( () => setValues( FORM_DASH_WIDGET, { strategy: STRATEGY_DESKTOP } ), [] );
-	const setDataSrcField = useCallback( () => setValues( FORM_DASH_WIDGET, { dataSrc: DATA_SRC_FIELD } ), [] );
-	const setDataSrcLab = useCallback( () => setValues( FORM_DASH_WIDGET, { dataSrc: DATA_SRC_LAB } ), [] );
+	const setStrategyMobile = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_MOBILE } ), [] );
+	const setStrategyDesktop = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_DESKTOP } ), [] );
+	const setDataSrcField = useCallback( () => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_FIELD } ), [] );
+	const setDataSrcLab = useCallback( () => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_LAB } ), [] );
 
 	// Update the active tab for "In the Lab" or "In The Field".
 	const updateActiveTab = useCallback( ( dataSrcIndex ) => {

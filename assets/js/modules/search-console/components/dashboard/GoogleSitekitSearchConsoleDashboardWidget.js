@@ -1,7 +1,7 @@
 /**
  * GoogleSitekitSearchConsoleDashboardWidget component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,23 +32,21 @@ import { __, _n, _x, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import SearchConsoleIcon from '../../../../../svg/search-console.svg';
-import Header from '../../../../components/Header';
 import SearchConsoleDashboardWidgetSiteStats from './SearchConsoleDashboardWidgetSiteStats';
 import LegacySearchConsoleDashboardWidgetKeywordTable from './LegacySearchConsoleDashboardWidgetKeywordTable';
 import SearchConsoleDashboardWidgetOverview from './SearchConsoleDashboardWidgetOverview';
-import DateRangeSelector from '../../../../components/DateRangeSelector';
 import PageHeader from '../../../../components/PageHeader';
-import Layout from '../../../../components/layout/layout';
-import Alert from '../../../../components/alert';
+import Layout from '../../../../components/layout/Layout';
 import ProgressBar from '../../../../components/ProgressBar';
 import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
 import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
 import HelpLink from '../../../../components/HelpLink';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
-import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { untrailingslashit } from '../../../../util';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
@@ -64,9 +62,10 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 	const referenceSiteURL = useSelect( ( select ) => {
 		return untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 	} );
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 	const searchConsoleDeepArgs = {
 		resource_id: propertyID,
-		num_of_days: getCurrentDateRangeDayCount(),
+		...generateDateRangeArgs( { startDate, endDate } ),
 	};
 	if ( isDomainProperty && referenceSiteURL ) {
 		searchConsoleDeepArgs.page = `*${ referenceSiteURL }`;
@@ -165,10 +164,6 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 
 	return (
 		<Fragment>
-			<Header>
-				<DateRangeSelector />
-			</Header>
-			<Alert module="search-console" />
 			<div className="googlesitekit-module-page googlesitekit-module-page--search-console">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">

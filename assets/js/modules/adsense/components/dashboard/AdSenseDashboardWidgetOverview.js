@@ -1,7 +1,7 @@
 /**
  * AdSenseDashboardWidgetOverview component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { _x, sprintf } from '@wordpress/i18n';
 import { useEffect } from '@wordpress/element';
 
 /**
@@ -32,12 +31,11 @@ import { useEffect } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-import { Cell, Grid, Row } from '../../../../material-components';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import DataBlock from '../../../../components/data-block';
+import DataBlock from '../../../../components/DataBlock';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
-import { readableLargeNumber, changeToPercent, numberFormat } from '../../../../util';
+import { calculateChange } from '../../../../util';
 import { isZeroReport } from '../../util';
 const { useSelect } = Data;
 
@@ -109,69 +107,58 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 	const { totals: previousTotals } = previousRangeData;
 
 	return (
-		<Grid>
-			<Row>
-				<Cell alignTop smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
-					<DataBlock
-						stat={ 0 }
-						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-1"
-						title={ metrics[ headers[ 0 ].name ] }
-						datapoint={ readableLargeNumber( totals[ 0 ], headers[ 0 ]?.currency ) }
-						change={ previousTotals !== undefined ? changeToPercent( previousTotals[ 0 ], totals[ 0 ] ) : 0 }
-						changeDataUnit="%"
-						context="button"
-						selected={ selectedStats === 0 }
-						handleStatSelection={ () => handleStatSelection( 0 ) }
-					/>
-				</Cell>
+		<div className="googlesitekit-adsense-performance-overview">
+			<DataBlock
+				stat={ 0 }
+				className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-1"
+				title={ metrics[ headers[ 0 ].name ] }
+				datapoint={ totals[ 0 ] }
+				datapointUnit={ headers[ 0 ]?.currency }
+				change={ calculateChange( previousTotals[ 0 ], totals[ 0 ] ) }
+				changeDataUnit="%"
+				context="button"
+				selected={ selectedStats === 0 }
+				handleStatSelection={ () => handleStatSelection( 0 ) }
+			/>
 
-				<Cell alignTop smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
-					<DataBlock
-						stat={ 1 }
-						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-2"
-						title={ metrics[ headers[ 1 ].name ] }
-						datapoint={ readableLargeNumber( totals[ 1 ], headers[ 1 ]?.currency ) }
-						change={ previousTotals !== undefined ? changeToPercent( previousTotals[ 1 ], totals[ 1 ] ) : 0 }
-						changeDataUnit="%"
-						context="button"
-						selected={ selectedStats === 1 }
-						handleStatSelection={ () => handleStatSelection( 1 ) }
-					/>
-				</Cell>
+			<DataBlock
+				stat={ 1 }
+				className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-2"
+				title={ metrics[ headers[ 1 ].name ] }
+				datapoint={ totals[ 1 ] }
+				datapointUnit={ headers[ 1 ]?.currency }
+				change={ calculateChange( previousTotals[ 1 ], totals[ 1 ] ) }
+				changeDataUnit="%"
+				context="button"
+				selected={ selectedStats === 1 }
+				handleStatSelection={ () => handleStatSelection( 1 ) }
+			/>
 
-				<Cell alignTop smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
-					<DataBlock
-						stat={ 2 }
-						className="googlesitekit-data-block--impression googlesitekit-data-block--button-3"
-						title={ metrics[ headers[ 2 ].name ] }
-						datapoint={ readableLargeNumber( totals[ 2 ] ) }
-						change={ previousTotals !== undefined ? changeToPercent( previousTotals[ 2 ], totals[ 2 ] ) : 0 }
-						changeDataUnit="%"
-						context="button"
-						selected={ selectedStats === 2 }
-						handleStatSelection={ () => handleStatSelection( 2 ) }
-					/>
-				</Cell>
+			<DataBlock
+				stat={ 2 }
+				className="googlesitekit-data-block--impression googlesitekit-data-block--button-3"
+				title={ metrics[ headers[ 2 ].name ] }
+				datapoint={ totals[ 2 ] }
+				change={ calculateChange( previousTotals[ 2 ], totals[ 2 ] ) }
+				changeDataUnit="%"
+				context="button"
+				selected={ selectedStats === 2 }
+				handleStatSelection={ () => handleStatSelection( 2 ) }
+			/>
 
-				<Cell alignTop smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
-					<DataBlock
-						stat={ 3 }
-						className="googlesitekit-data-block--impression googlesitekit-data-block--button-4"
-						title={ metrics[ headers[ 3 ].name ] }
-						datapoint={ sprintf(
-							/* translators: %s: percentage value. */
-							_x( ' %1$s%%', 'AdSense performance Page CTA percentage', 'google-site-kit' ),
-							numberFormat( totals[ 3 ] * 100, { maximumFractionDigits: 2 } )
-						) }
-						change={ previousTotals !== undefined ? changeToPercent( previousTotals[ 3 ], totals[ 3 ] ) : 0 }
-						changeDataUnit="%"
-						context="button"
-						selected={ selectedStats === 3 }
-						handleStatSelection={ () => handleStatSelection( 3 ) }
-					/>
-				</Cell>
-			</Row>
-		</Grid>
+			<DataBlock
+				stat={ 3 }
+				className="googlesitekit-data-block--impression googlesitekit-data-block--button-4"
+				title={ metrics[ headers[ 3 ].name ] }
+				datapoint={ totals[ 3 ] }
+				datapointUnit={ '%' }
+				change={ calculateChange( previousTotals[ 3 ], totals[ 3 ] ) }
+				changeDataUnit="%"
+				context="button"
+				selected={ selectedStats === 3 }
+				handleStatSelection={ () => handleStatSelection( 3 ) }
+			/>
+		</div>
 	);
 }
 

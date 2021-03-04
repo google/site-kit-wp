@@ -1,7 +1,7 @@
 /**
  * `core/user` data store: constants.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
  */
 
 export const STORE_NAME = 'core/user';
+export { STORE_NAME as CORE_USER };
 
 export const DISCONNECTED_REASON_CONNECTED_URL_MISMATCH = 'connected_url_mismatch';
 

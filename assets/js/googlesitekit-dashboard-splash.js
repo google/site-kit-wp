@@ -1,7 +1,7 @@
 /**
  * DashboardSplash component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import { render, Fragment } from '@wordpress/element';
  */
 import { clearWebStorage } from './util';
 import './components/legacy-notifications';
-import Root from './components/root';
+import Root from './components/Root';
 import DashboardSplashApp from './components/dashboard-splash/DashboardSplashApp';
 import NotificationCounter from './components/legacy-notifications/notification-counter';
 

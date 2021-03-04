@@ -1,7 +1,7 @@
 /**
  * Webpack config.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,19 +26,15 @@ const path = require( 'path' );
  * External dependencies
  */
 const CircularDependencyPlugin = require( 'circular-dependency-plugin' );
+const ESLintPlugin = require( 'eslint-webpack-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { DefinePlugin, ProvidePlugin } = require( 'webpack' );
-const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
 const CreateFileWebpack = require( 'create-file-webpack' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
 const ImageminPlugin = require( 'imagemin-webpack' );
-
-/**
- * Internal dependencies
- */
-const featureFlags = require( './feature-flags.json' );
+const features = require( './feature-flags.json' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
@@ -114,13 +110,6 @@ const rules = [
 					],
 				},
 			},
-			{
-				loader: 'eslint-loader',
-				options: {
-					quiet: true,
-					formatter: require( 'eslint' ).CLIEngine.getFormatter( 'stylish' ),
-				},
-			},
 		],
 		...noAMDParserRule,
 	},
@@ -156,6 +145,8 @@ const webpackConfig = ( env, argv ) => {
 				'googlesitekit-datastore-site': './assets/js/googlesitekit-datastore-site.js',
 				'googlesitekit-datastore-user': './assets/js/googlesitekit-datastore-user.js',
 				'googlesitekit-datastore-forms': './assets/js/googlesitekit-datastore-forms.js',
+				'googlesitekit-datastore-location': './assets/js/googlesitekit-datastore-location.js',
+				'googlesitekit-datastore-ui': './assets/js/googlesitekit-datastore-ui.js',
 				'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
 				'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
 				'googlesitekit-modules-adsense': './assets/js/googlesitekit-modules-adsense.js',
@@ -175,14 +166,12 @@ const webpackConfig = ( env, argv ) => {
 				'googlesitekit-wp-dashboard': './assets/js/googlesitekit-wp-dashboard.js',
 				'googlesitekit-base': './assets/js/googlesitekit-base.js',
 				'googlesitekit-module': './assets/js/googlesitekit-module.js',
-				// Needed to test if a browser extension blocks this by naming convention.
-				'pagead2.ads': './assets/js/pagead2.ads.js',
 			},
 			externals,
 			output: {
-				filename: '[name].[contenthash].js',
+				filename: ( mode === 'production' ? '[name].[contenthash].js' : '[name].js' ),
 				path: path.join( __dirname, 'dist/assets/js' ),
-				chunkFilename: '[name].[chunkhash].js',
+				chunkFilename: ( mode === 'production' ? '[name].[chunkhash].js' : '[name].js' ),
 				publicPath: '',
 				/*
 					If multiple webpack runtimes (from different compilations) are used on the
@@ -238,17 +227,13 @@ const webpackConfig = ( env, argv ) => {
 					allowAsyncCycles: false,
 					cwd: process.cwd(),
 				} ),
-				new FeatureFlagsPlugin(
-					{ featureFlags },
-					{
-						modes: [ 'development', 'production' ],
-						mode: flagMode, // Default: mode; override with --flag-mode={mode}
-					},
-				),
 				new CreateFileWebpack( {
 					path: './dist',
 					fileName: 'config.json',
-					content: JSON.stringify( { flagMode } ),
+					content: JSON.stringify( {
+						buildMode: flagMode,
+						features,
+					} ),
 				} ),
 				new ManifestPlugin( {
 					fileName: path.resolve( __dirname, 'includes/Core/Assets/Manifest.php' ),
@@ -269,6 +254,11 @@ const webpackConfig = ( env, argv ) => {
 				} ),
 				new DefinePlugin( {
 					'global.GOOGLESITEKIT_VERSION': JSON.stringify( GOOGLESITEKIT_VERSION ),
+				} ),
+				new ESLintPlugin( {
+					emitError: true,
+					emitWarning: true,
+					failOnError: true,
 				} ),
 			],
 			optimization: {
@@ -302,7 +292,7 @@ const webpackConfig = ( env, argv ) => {
 						vendor: {
 							chunks: 'initial',
 							name: 'googlesitekit-vendor',
-							filename: 'googlesitekit-vendor.[contenthash].js',
+							filename: ( mode === 'production' ? 'googlesitekit-vendor.[contenthash].js' : 'googlesitekit-vendor.js' ),
 							enforce: true,
 							test: /[\\/]node_modules[\\/]/,
 						},
@@ -358,6 +348,7 @@ const webpackConfig = ( env, argv ) => {
 							{
 								loader: 'sass-loader',
 								options: {
+									implementation: require( 'sass' ),
 									sassOptions: {
 										includePaths: [ 'node_modules' ],
 									},
@@ -428,6 +419,8 @@ module.exports.default = ( env, argv ) => {
 		// Build the test files if we aren't doing a production build.
 		config.push( testBundle() );
 	}
+
+	config.stats = 'errors-warnings';
 
 	return config;
 };

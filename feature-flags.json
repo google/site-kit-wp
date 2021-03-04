@@ -1,19 +1,8 @@
-{
-  "widgets": {
-    "dashboard": {
-      "enabled": "development"
-    },
-    "pageDashboard": {
-      "enabled": "development"
-    }
-  },
-  "userInput": {
-    "enabled": "development"
-  },
-  "storeErrorNotifications": {
-    "enabled": "development"
-  },
-  "serviceSetupV2": {
-    "enabled": "development"
-  }
-}
+[
+  "serviceSetupV2",
+  "storeErrorNotifications",
+  "userInput",
+  "widgets.dashboard",
+  "widgets.pageDashboard",
+  "widgets.moduleScreens"
+]

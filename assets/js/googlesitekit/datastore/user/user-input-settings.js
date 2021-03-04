@@ -1,7 +1,7 @@
 /**
  * `core/user` settings store: user input settings.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,9 +56,11 @@ const fetchSaveUserInputSettingsStore = createFetchStore( {
 // Actions
 const SET_USER_INPUT_SETTINGS = 'SET_USER_INPUT_SETTINGS';
 const SET_USER_INPUT_SETTING = 'SET_USER_INPUT_SETTING';
+const SET_USER_INPUT_SETTINGS_SAVING_FLAG = 'SET_USER_INPUT_SETTINGS_SAVING_FLAG';
 
 const baseInitialState = {
 	inputSettings: undefined,
+	isSavingInputSettings: false,
 };
 
 const baseActions = {
@@ -113,11 +115,21 @@ const baseActions = {
 			[ key ]: settings[ key ]?.values || [],
 		} ), {} );
 
+		yield {
+			type: SET_USER_INPUT_SETTINGS_SAVING_FLAG,
+			payload: { isSaving: true },
+		};
+
 		const { response, error } = yield fetchSaveUserInputSettingsStore.actions.fetchSaveUserInputSettings( values );
 		if ( error ) {
 			// Store error manually since saveUserInputSettings signature differs from fetchSaveUserInputSettings.
 			yield receiveError( error, 'saveUserInputSettings', [] );
 		}
+
+		yield {
+			type: SET_USER_INPUT_SETTINGS_SAVING_FLAG,
+			payload: { isSaving: false },
+		};
 
 		return { response, error };
 	},
@@ -143,6 +155,12 @@ export const baseReducer = ( state, { type, payload } ) => {
 				},
 			};
 		}
+		case SET_USER_INPUT_SETTINGS_SAVING_FLAG: {
+			return {
+				...state,
+				isSavingInputSettings: payload.isSaving,
+			};
+		}
 		default: {
 			return state;
 		}
@@ -159,6 +177,18 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
+	/**
+	 * Determines whether the user input settings are being saved or not.
+	 *
+	 * @since 1.25.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the user input settings are being saved, otherwise FALSE.
+	 */
+	isSavingUserInputSettings( state ) {
+		return !! state?.isSavingInputSettings;
+	},
+
 	/**
 	 * Gets input settings info for this user.
 	 *

@@ -1,7 +1,7 @@
 /**
  * Search Console module initialization.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,11 @@
 /**
  * WordPress dependencies
  */
-import domReady from '@wordpress/dom-ready';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import Widgets from 'googlesitekit-widgets';
-import './datastore';
 import { SettingsView } from './components/settings';
 import DashboardImpressionsWidget from './components/dashboard/DashboardImpressionsWidget';
 import DashboardClicksWidget from './components/dashboard/DashboardClicksWidget';
@@ -38,24 +35,30 @@ import {
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/search-console.svg';
+import { STORE_NAME } from './datastore/constants';
+import { CONTEXT_MODULE_SEARCH_CONSOLE, AREA_MODULE_SEARCH_CONSOLE_MAIN } from './constants';
+import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 
-domReady( () => {
-	// IMPORTANT: When updating arguments here, also update the same call in
-	// `provideModuleRegistrations`.
-	Modules.registerModule(
+export { registerStore } from './datastore';
+
+export const registerModule = ( modules ) => {
+	modules.registerModule(
 		'search-console',
 		{
-			storeName: 'modules/search-console',
+			storeName: STORE_NAME,
 			SettingsViewComponent: SettingsView,
 			Icon: SearchConsoleIcon,
+			screenWidgetContext: CONTEXT_MODULE_SEARCH_CONSOLE,
 		}
 	);
+};
 
-	Widgets.registerWidget(
+export const registerWidgets = ( widgets ) => {
+	widgets.registerWidget(
 		'searchConsoleImpressions',
 		{
 			Component: DashboardImpressionsWidget,
-			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: true,
 		},
@@ -64,11 +67,11 @@ domReady( () => {
 			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 		],
 	);
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'searchConsoleClicks',
 		{
 			Component: DashboardClicksWidget,
-			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 2,
 			wrapWidget: true,
 		},
@@ -77,11 +80,11 @@ domReady( () => {
 			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 		],
 	);
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'searchConsolePopularKeywords',
 		{
 			Component: DashboardPopularKeywordsWidget,
-			width: [ Widgets.WIDGET_WIDTHS.HALF, Widgets.WIDGET_WIDTHS.FULL ],
+			width: [ widgets.WIDGET_WIDTHS.HALF, widgets.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
 		},
@@ -90,4 +93,13 @@ domReady( () => {
 			AREA_PAGE_DASHBOARD_POPULARITY,
 		],
 	);
-} );
+	widgets.registerWidgetArea(
+		AREA_MODULE_SEARCH_CONSOLE_MAIN,
+		{
+			priority: 1,
+			style: WIDGET_AREA_STYLES.BOXES,
+			title: __( 'Overview', 'google-site-kit' ),
+		},
+		CONTEXT_MODULE_SEARCH_CONSOLE,
+	);
+};

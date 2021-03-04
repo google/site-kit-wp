@@ -1,7 +1,7 @@
 /**
  * `core/site` data store, site info tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -261,6 +261,7 @@ describe( 'core/site site info', () => {
 			[ 'isAMP', 'ampMode' ],
 			[ 'isPrimaryAMP', 'ampMode' ],
 			[ 'isSecondaryAMP', 'ampMode' ],
+			[ 'isWebStoriesActive', 'webStoriesActive' ],
 		] )( `%s`, ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;

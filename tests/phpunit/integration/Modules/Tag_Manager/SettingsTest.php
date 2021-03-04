@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Tests\Modules\Tag_Manager\Settings
  *
  * @package   Google\Site_Kit\Tests\Modules\Tag_Manager
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -37,6 +37,7 @@ class SettingsTest extends SettingsTestCase {
 				'internalContainerID'    => '',
 				'internalAMPContainerID' => '',
 				'ownerID'                => 0,
+				'gaPropertyID'           => '',
 			),
 			get_option( Settings::OPTION )
 		);

@@ -1,7 +1,7 @@
 /**
  * Analytics Property Select component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME, PROPERTY_CREATE } from '../../datastore/constants';
-import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { isValidAccountID } from '../../util';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
@@ -63,7 +63,7 @@ export default function PropertySelect() {
 	const onChange = useCallback( ( index, item ) => {
 		const newPropertyID = item.dataset.value;
 		if ( propertyID !== newPropertyID ) {
-			selectProperty( newPropertyID, item.dataset.internalId ); // eslint-disable-line sitekit/camelcase-acronyms
+			selectProperty( newPropertyID, item.dataset.internalId ); // eslint-disable-line sitekit/acronym-case
 			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
 		}
 	}, [ propertyID ] );
@@ -87,11 +87,11 @@ export default function PropertySelect() {
 					id: PROPERTY_CREATE,
 					name: __( 'Set up a new property', 'google-site-kit' ),
 				} )
-				.map( ( { id, name, internalWebPropertyId }, index ) => ( // eslint-disable-line sitekit/camelcase-acronyms
+				.map( ( { id, name, internalWebPropertyId }, index ) => ( // eslint-disable-line sitekit/acronym-case
 					<Option
 						key={ index }
 						value={ id }
-						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/camelcase-acronyms
+						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
 					>
 						{ name }
 					</Option>

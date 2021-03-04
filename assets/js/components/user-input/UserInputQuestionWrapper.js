@@ -1,7 +1,7 @@
 /**
  * User Input Question Wrapper.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import Button from '../Button';
 import { Row, Cell } from '../../material-components';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
+import ErrorNotice from '../ErrorNotice';
 const { useSelect } = Data;
 
 export default function UserInputQuestionWrapper( props ) {
@@ -49,6 +50,7 @@ export default function UserInputQuestionWrapper( props ) {
 		nextLabel,
 		back,
 		backLabel,
+		error,
 	} = props;
 
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
@@ -79,15 +81,22 @@ export default function UserInputQuestionWrapper( props ) {
 						{ children }
 					</Row>
 
+					{ error && <ErrorNotice error={ error } /> }
+
 					{ isActive && (
 						<div className="googlesitekit-user-input__buttons">
 							{ back && (
-								<Button text onClick={ back }>
+								<Button
+									className="googlesitekit-user-input__buttons--back"
+									onClick={ back }
+									text
+								>
 									{ backLabel || __( 'Back', 'google-site-kit' ) }
 								</Button>
 							) }
 							{ next && (
 								<Button
+									className="googlesitekit-user-input__buttons--next"
 									onClick={ next }
 									disabled={ values.filter( ( value ) => value.trim().length > 0 ).length === 0 }
 								>
@@ -113,4 +122,5 @@ UserInputQuestionWrapper.propTypes = {
 	nextLabel: PropTypes.string,
 	back: PropTypes.func,
 	backLabel: PropTypes.string,
+	error: PropTypes.object,
 };

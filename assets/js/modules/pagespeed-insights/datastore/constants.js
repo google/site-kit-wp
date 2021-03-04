@@ -1,7 +1,7 @@
 /**
  * `modules/pagespeed-insights` data store constants.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,15 @@
  */
 
 export const STORE_NAME = 'modules/pagespeed-insights';
+export { STORE_NAME as MODULES_PAGESPEED_INSIGHTS };
 
-// Form ID for PageSpeed widget.
-export const FORM_DASH_WIDGET = 'pagespeedDashboardWidget';
 // Report strategies.
 export const STRATEGY_MOBILE = 'mobile';
 export const STRATEGY_DESKTOP = 'desktop';
 // Report data sources.
 export const DATA_SRC_LAB = 'data_lab';
 export const DATA_SRC_FIELD = 'data_field';
+
+// Dashboard widgets using the UI store.
+export const UI_STRATEGY = 'dashboardPageSpeedWidgetStrategy';
+export const UI_DATA_SOURCE = 'dashboardPageSpeedWidgetDataSource';

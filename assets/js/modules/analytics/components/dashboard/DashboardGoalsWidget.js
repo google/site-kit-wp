@@ -1,7 +1,7 @@
 /**
  * DashboardAllTrafficWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,24 +25,21 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import DataBlock from '../../../../components/data-block';
+import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import CTA from '../../../../components/legacy-notifications/cta';
-import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
-import { readableLargeNumber, changeToPercent } from '../../../../util';
+import { calculateChange } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
-import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
-
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
-function DashboardGoalsWidget() {
+function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 	const {
 		data,
 		error,
@@ -51,13 +48,23 @@ function DashboardGoalsWidget() {
 		goals,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
-		const accountID = store.getAccountID();
-		const profileID = store.getProfileID();
-		const internalWebPropertyID = store.getInternalWebPropertyID();
+
+		const {
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate,
+		} = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+			weekdayAlign: true,
+		} );
 
 		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			multiDateRange: 1,
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate,
 			dimensions: 'ga:date',
 			metrics: [
 				{
@@ -71,7 +78,9 @@ function DashboardGoalsWidget() {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ) || store.getErrorForSelector( 'getGoals', [] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ) || ! store.hasFinishedResolution( 'getGoals', [] ),
-			serviceURL: store.getServiceURL( { path: `/report/conversions-goals-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` } ),
+			serviceURL: store.getServiceReportURL( 'conversions-goals-overview', {
+				...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
+			} ),
 			goals: store.getGoals(),
 		};
 	} );
@@ -86,7 +95,7 @@ function DashboardGoalsWidget() {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( ! goals || ! Array.isArray( goals.items ) || ! goals.items.length ) {
@@ -101,7 +110,7 @@ function DashboardGoalsWidget() {
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <ReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	const sparkLineData = [
@@ -127,13 +136,13 @@ function DashboardGoalsWidget() {
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 	const goalCompletions = lastMonth[ 0 ];
-	const goalCompletionsChange = changeToPercent( previousMonth[ 0 ], lastMonth[ 0 ] );
+	const goalCompletionsChange = calculateChange( previousMonth[ 0 ], lastMonth[ 0 ] );
 
 	return (
 		<DataBlock
 			className="overview-goals-completed"
 			title={ __( 'Goals Completed', 'google-site-kit' ) }
-			datapoint={ readableLargeNumber( goalCompletions ) }
+			datapoint={ goalCompletions }
 			change={ goalCompletionsChange }
 			changeDataUnit="%"
 			source={ {
@@ -154,5 +163,6 @@ function DashboardGoalsWidget() {
 
 export default whenActive( {
 	moduleName: 'analytics',
-	fallbackComponent: AnalyticsInactiveCTA,
+	FallbackComponent: ( { WidgetActivateModuleCTA } ) => <WidgetActivateModuleCTA moduleSlug="analytics" />,
+	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => <WidgetCompleteModuleActivationCTA moduleSlug="analytics" />,
 } )( DashboardGoalsWidget );

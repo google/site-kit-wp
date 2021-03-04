@@ -1,7 +1,7 @@
 /**
  * Sparkline component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,28 +22,18 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { withInstanceId } from '@wordpress/compose';
-
-/**
  * Internal dependencies
  */
-import GoogleChart from './GoogleChart';
+import GoogleChartV2 from './GoogleChartV2';
 
 function Sparkline( {
-	data,
 	change,
-	// eslint-disable-next-line sitekit/camelcase-acronyms
-	instanceId,
+	data,
 	invertChangeColor,
-	loadSmall,
-	loadCompressed,
-	loadHeight,
-	loadText,
+	loadingHeight,
 } ) {
 	if ( ! data ) {
-		return 'loading...';
+		return null;
 	}
 
 	const positiveColor = ! invertChangeColor ? 'green' : 'red';
@@ -78,36 +68,24 @@ function Sparkline( {
 
 	return (
 		<div className="googlesitekit-analytics-sparkline-chart-wrap">
-			<GoogleChart
+			<GoogleChartV2
+				chartType="LineChart"
 				data={ data }
+				loadingHeight={ loadingHeight }
 				options={ chartOptions }
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				id={ `googlesitekit-sparkline-${ instanceId }` }
-				loadSmall={ loadSmall }
-				loadCompressed={ loadCompressed }
-				loadHeight={ loadHeight }
-				loadText={ loadText }
 			/>
 		</div>
 	);
 }
 
 Sparkline.propTypes = {
-	// eslint-disable-next-line sitekit/camelcase-acronyms
-	instanceId: PropTypes.number.isRequired,
 	invertChangeColor: PropTypes.bool,
-	loadSmall: PropTypes.bool,
-	loadCompressed: PropTypes.bool,
-	loadHeight: PropTypes.number,
-	loadText: PropTypes.bool,
+	loadingHeight: PropTypes.string,
 };
 
 Sparkline.defaultProps = {
 	invertChangeColor: false,
-	loadSmall: true,
-	loadCompressed: true,
-	loadHeight: 46,
-	loadText: false,
+	loadingHeight: '46px',
 };
 
-export default withInstanceId( Sparkline );
+export default Sparkline;
