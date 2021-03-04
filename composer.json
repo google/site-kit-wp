@@ -47,6 +47,7 @@
   },
   "scripts": {
     "post-install-cmd": [
+      "cp -n tests/phpunit/wp-tests-config-sample.php tests/phpunit/wp-tests-config.php || true",
       "@prefix-dependencies"
     ],
     "post-update-cmd": [
