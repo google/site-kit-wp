@@ -17,16 +17,84 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
+import ProgressBar from '../../../../../components/ProgressBar';
 import Overview from './Overview';
 import SiteStats from './SiteStats';
+const { useSelect } = Data;
 
-export default function ModuleOverviewWidget( { Widget } ) {
+export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
+	const {
+		users,
+		sessions,
+		bounceRate,
+		avgSessionDuration,
+		loaded,
+		error,
+	} = useSelect( ( select ) => {
+		const {
+			startDate,
+			endDate,
+			compareStartDate,
+			compareEndDate,
+		} = select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		return [ 'users', 'sessions', 'bounceRate', 'avgSessionDuration' ].reduce(
+			( acc, metric ) => {
+				const args = {
+					startDate,
+					endDate,
+					compareStartDate,
+					compareEndDate,
+					dimensions: 'ga:date',
+					metrics: [ `ga:${ metric }` ],
+				};
+
+				return {
+					...acc,
+					[ metric ]: select( MODULES_ANALYTICS ).getReport( args ),
+					loaded: acc.loaded && select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ),
+					error: acc.error || select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ),
+				};
+			},
+			{ loaded: true },
+		);
+	} );
+
+	if ( ! loaded ) {
+		return <ProgressBar />;
+	}
+
+	if ( error ) {
+		return <WidgetReportError error={ error } />;
+	}
+
 	return (
 		<Widget>
-			<Overview />
+			<Overview
+				users={ users }
+				sessions={ sessions }
+				bounceRate={ bounceRate }
+				avgSessionDuration={ avgSessionDuration }
+			/>
 			<SiteStats />
 		</Widget>
 	);
 }
+
+ModuleOverviewWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+	WidgetReportError: PropTypes.elementType.isRequired,
+};
