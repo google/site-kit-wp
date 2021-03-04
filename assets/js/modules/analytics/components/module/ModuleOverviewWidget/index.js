@@ -22,6 +22,11 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { useState } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -34,6 +39,8 @@ import SiteStats from './SiteStats';
 const { useSelect } = Data;
 
 export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
+	const [ selectedStat, setSelectedState ] = useState( 0 );
+
 	const {
 		users,
 		sessions,
@@ -87,8 +94,10 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 			<Overview
 				users={ users }
 				sessions={ sessions }
-				bounceRate={ bounceRate }
-				avgSessionDuration={ avgSessionDuration }
+				bounce={ bounceRate }
+				duration={ avgSessionDuration }
+				selectedStat={ selectedStat }
+				handleStatSelection={ setSelectedState }
 			/>
 
 			<SiteStats />
