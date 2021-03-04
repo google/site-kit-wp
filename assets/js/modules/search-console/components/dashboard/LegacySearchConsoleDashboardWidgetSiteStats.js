@@ -28,7 +28,7 @@ import { Component } from '@wordpress/element';
 import { decodeHTMLEntity, getTimeInSeconds } from '../../../../util';
 import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
-import GoogleChartV2 from '../../../../components/GoogleChartV2';
+import GoogleChart from '../../../../components/GoogleChart';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import { extractSearchConsoleDashboardData } from '../../util';
 
@@ -125,11 +125,11 @@ class LegacySearchConsoleDashboardWidgetSiteStats extends Component {
 			<section className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-						<GoogleChartV2
+						<GoogleChart
 							chartType="LineChart"
 							data={ processedData.dataMap }
 							options={ options }
-							selectedColumns={ selectedStats }
+							selectedStats={ selectedStats }
 						/>
 					</div>
 				</div>

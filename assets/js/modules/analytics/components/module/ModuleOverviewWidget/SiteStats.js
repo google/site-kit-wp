@@ -65,7 +65,7 @@ export default function SiteStats( { selectedStat, report } ) {
 			<Row>
 				<Cell size={ 12 }>
 					<GoogleChart
-						chartType="line"
+						chartType="LineChart"
 						selectedStats={ [ selectedStat ] }
 						data={ dataMap }
 						options={ options }

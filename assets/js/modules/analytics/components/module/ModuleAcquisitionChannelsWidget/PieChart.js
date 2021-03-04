@@ -35,7 +35,7 @@ export default function PieChart( { report } ) {
 			<GoogleChart
 				data={ processedData }
 				options={ PieChart.options }
-				chartType="pie"
+				chartType="PieChart"
 				id="overview-piechart"
 				loadHeight={ 205 }
 			/>

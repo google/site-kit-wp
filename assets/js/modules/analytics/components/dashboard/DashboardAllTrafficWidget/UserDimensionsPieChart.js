@@ -41,7 +41,7 @@ import {
 } from '../../../datastore/constants';
 import { numberFormat, sanitizeHTML, trackEvent, getChartDifferenceArrow, isSingleSlice } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
-import GoogleChartV2 from '../../../../../components/GoogleChartV2';
+import GoogleChart from '../../../../../components/GoogleChart';
 import Link from '../../../../../components/Link';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useDispatch, useSelect } = Data;
@@ -381,7 +381,7 @@ export default function UserDimensionsPieChart( {
 				}
 			) }>
 				{ /* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events */ }
-				<GoogleChartV2
+				<GoogleChart
 					chartType="PieChart"
 					data={ dataMap || [] }
 					getChartWrapper={ ( chartWrapper ) => {
@@ -402,7 +402,7 @@ export default function UserDimensionsPieChart( {
 						className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
 						dangerouslySetInnerHTML={ title }
 					/>
-				</GoogleChartV2>
+				</GoogleChart>
 
 				<div className={ classnames(
 					'googlesitekit-widget--analyticsAllTraffic__legend',

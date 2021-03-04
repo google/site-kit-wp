@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { getTimeInSeconds } from '../../../../util';
-import GoogleChartV2 from '../../../../components/GoogleChartV2';
+import GoogleChart from '../../../../components/GoogleChart';
 import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import Link from '../../../../components/Link';
@@ -89,7 +89,7 @@ const LegacyDashboardAcquisitionPieChart = ( { data, source } ) => {
 
 	return (
 		<div className="googlesitekit-chart googlesitekit-chart--pie">
-			<GoogleChartV2
+			<GoogleChart
 				chartType="PieChart"
 				data={ processedData }
 				loadingHeight={ 205 }
