@@ -156,7 +156,7 @@ final class Screen {
 					add_action(
 						'current_screen',
 						function() {
-							global $menu, $_wp_admin_css_colors, $pagenow;
+							global $menu, $_wp_admin_css_colors;
 							$color_scheme = get_user_option( 'admin_color' ) ?: 'fresh';
 
 							// If we're on one of the sitekit pages, use the 'current' color, otherwise use the 'base' color.
