@@ -72,6 +72,7 @@
     ],
     "lint": "phpcs",
     "lint-fix": "phpcbf",
-    "test":  "phpunit"
+    "test":  "phpunit",
+    "test:multisite": "@test --configuration=phpunit.multisite.xml"
   }
 }
