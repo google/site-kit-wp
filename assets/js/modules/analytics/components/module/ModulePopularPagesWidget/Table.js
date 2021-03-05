@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import PropTypes from 'prop-types';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -104,3 +105,7 @@ export default function Table( { report } ) {
 		</TableOverflowContainer>
 	);
 }
+
+Table.propTypes = {
+	report: PropTypes.arrayOf( PropTypes.object ).isRequired,
+};
