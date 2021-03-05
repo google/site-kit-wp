@@ -29,13 +29,20 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { extractAnalyticsDashboardData } from '../../../util';
 import { getCurrentDateRangeDayCount } from '../../../../../util/date-range';
 import GoogleChart from '../../../../../components/GoogleChart';
+import PreviewBlock from '../../../../../components/PreviewBlock';
 import { Cell, Row, Grid } from '../../../../../material-components';
 const { useSelect } = Data;
 
-export default function SiteStats( { selectedStat, report } ) {
+export default function SiteStats( { loaded, selectedStat, report } ) {
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 
+	if ( ! loaded ) {
+		return (
+			<PreviewBlock width="100%" height="270px" />
+		);
+	}
+
+	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 	const dataMap = extractAnalyticsDashboardData( report, {
 		selectedStats: selectedStat,
 		selectedDataIndex: 0,
@@ -77,8 +84,13 @@ export default function SiteStats( { selectedStat, report } ) {
 }
 
 SiteStats.propTypes = {
+	loaded: PropTypes.bool.isRequired,
 	selectedStat: PropTypes.number.isRequired,
-	report: PropTypes.arrayOf( PropTypes.object ).isRequired,
+	report: PropTypes.arrayOf( PropTypes.object ),
+};
+
+SiteStats.defaultProps = {
+	report: [],
 };
 
 SiteStats.colorMap = {

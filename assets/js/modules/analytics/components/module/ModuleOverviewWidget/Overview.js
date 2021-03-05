@@ -31,10 +31,12 @@ import { __ } from '@wordpress/i18n';
  */
 import { Grid, Row, Cell } from '../../../../../material-components';
 import DataBlock from '../../../../../components/DataBlock';
+import PreviewBlock from '../../../../../components/PreviewBlock';
 import { calculateChange } from '../../../../../util';
 
 export default function Overview( props ) {
 	const {
+		loaded,
 		users,
 		sessions,
 		bounce,
@@ -42,6 +44,12 @@ export default function Overview( props ) {
 		selectedStat,
 		handleStatSelection,
 	} = props;
+
+	if ( ! loaded ) {
+		return (
+			<PreviewBlock width="100%" height="190px" />
+		);
+	}
 
 	const getDatapointAndChange = ( [ report ], divider = 1 ) => ( {
 		datapoint: report?.data?.totals?.[0]?.values?.[0] / divider,
@@ -103,10 +111,18 @@ export default function Overview( props ) {
 }
 
 Overview.propTypes = {
-	users: PropTypes.arrayOf( PropTypes.object ).isRequired,
-	sessions: PropTypes.arrayOf( PropTypes.object ).isRequired,
-	bounce: PropTypes.arrayOf( PropTypes.object ).isRequired,
-	duration: PropTypes.arrayOf( PropTypes.object ).isRequired,
+	loaded: PropTypes.bool.isRequired,
+	users: PropTypes.arrayOf( PropTypes.object ),
+	sessions: PropTypes.arrayOf( PropTypes.object ),
+	bounce: PropTypes.arrayOf( PropTypes.object ),
+	duration: PropTypes.arrayOf( PropTypes.object ),
 	selectedStat: PropTypes.number.isRequired,
 	handleStatSelection: PropTypes.func.isRequired,
+};
+
+Overview.defaultProps = {
+	users: [],
+	sessions: [],
+	bounce: [],
+	duration: [],
 };

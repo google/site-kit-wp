@@ -32,7 +32,6 @@ import { useState } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
-import ProgressBar from '../../../../../components/ProgressBar';
 import Header from './Header';
 import Overview from './Overview';
 import SiteStats from './SiteStats';
@@ -81,10 +80,6 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		);
 	} );
 
-	if ( ! loaded ) {
-		return <ProgressBar />;
-	}
-
 	if ( error ) {
 		return <WidgetReportError error={ error } />;
 	}
@@ -92,6 +87,7 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	return (
 		<Widget Header={ Header }>
 			<Overview
+				loaded={ loaded }
 				users={ users }
 				sessions={ sessions }
 				bounce={ bounceRate }
@@ -101,6 +97,7 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 			/>
 
 			<SiteStats
+				loaded={ loaded }
 				selectedStat={ selectedStat }
 				report={ [ users, sessions, bounceRate, avgSessionDuration ][ selectedStat ] }
 			/>
