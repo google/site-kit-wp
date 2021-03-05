@@ -331,7 +331,6 @@ final class AdSense extends Module
 							'id'            => 'adsense-notification',
 							'description'   => $alert->getMessage(),
 							'isDismissible' => true,
-							'winImage'      => 'sun-small.png',
 							'format'        => 'large',
 							'severity'      => 'win-info',
 							'ctaURL'        => $this->get_account_url(),

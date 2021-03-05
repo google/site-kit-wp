@@ -29,7 +29,7 @@ import { applyFilters } from '@wordpress/hooks';
 import { getQueryParameter, getModulesData } from '../../util';
 import Notification from './notification';
 import ModulesList from '../ModulesList';
-import rocketImage from '../../../images/rocket.png';
+import RocketImageSVG from '../../../svg/rocket.svg';
 import UserInputSuccessNotification from '../notifications/UserInputSuccessNotification';
 
 class DashboardSetupAlerts extends Component {
@@ -82,7 +82,7 @@ class DashboardSetupAlerts extends Component {
 							title={ sprintf( __( 'Congrats on completing the setup for %s!', 'google-site-kit' ), winData.setupTitle ) }
 							description={ winData.description }
 							handleDismiss={ () => {} }
-							winImage={ global._googlesitekitLegacyData.admin.assetsRoot + rocketImage }
+							WinImageSVG={ RocketImageSVG }
 							dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 							format="large"
 							type="win-success"
