@@ -33,7 +33,7 @@ import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import AnalyticsIcon from '../../../../../svg/analytics.svg';
 import LegacyAnalyticsDashboardWidgetSiteStats from './LegacyAnalyticsDashboardWidgetSiteStats';
-import AnalyticsDashboardWidgetTopPagesTable from './AnalyticsDashboardWidgetTopPagesTable';
+import LegacyAnalyticsDashboardWidgetTopPagesTable from './LegacyAnalyticsDashboardWidgetTopPagesTable';
 import LegacyAnalyticsDashboardWidgetOverview from './LegacyAnalyticsDashboardWidgetOverview';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import Layout from '../../../../components/layout/Layout';
@@ -210,7 +210,7 @@ export default function LegacyAnalyticsDashboardWidget() {
 								footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 								footerCTALink={ topContentServiceURL }
 							>
-								<AnalyticsDashboardWidgetTopPagesTable />
+								<LegacyAnalyticsDashboardWidgetTopPagesTable />
 							</Layout>
 						</div>
 						<div className={ classnames(

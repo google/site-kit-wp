@@ -45,7 +45,7 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect, withSelect } = Data;
 
-const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
+const LegacyAnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 	const { data, colspan } = props;
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
@@ -133,18 +133,18 @@ const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 	);
 };
 
-AnalyticsDashboardWidgetTopPagesTable.propTypes = {
+LegacyAnalyticsDashboardWidgetTopPagesTable.propTypes = {
 	data: PropTypes.array,
 	colspan: PropTypes.number,
 };
 
-AnalyticsDashboardWidgetTopPagesTable.defaultProps = {
+LegacyAnalyticsDashboardWidgetTopPagesTable.defaultProps = {
 	data: null,
 	colspan: 12,
 };
 
 export default withData(
-	AnalyticsDashboardWidgetTopPagesTable,
+	LegacyAnalyticsDashboardWidgetTopPagesTable,
 	[
 		{
 			type: TYPE_MODULES,
