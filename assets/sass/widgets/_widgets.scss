@@ -54,12 +54,6 @@
 				padding: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
 			}
 		}
-
-		& .mdc-layout-grid,
-		& .googlesitekit-layout__header-title {
-			margin: 0;
-			padding: 0;
-		}
 	}
 
 	.googlesitekit-widget-area--composite & {
