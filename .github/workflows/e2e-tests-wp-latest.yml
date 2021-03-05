@@ -70,7 +70,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Composer Install
-        run: composer install --no-interaction --no-progress
+        run: composer install --no-interaction --no-progress --no-dev
 
       - name: Start environment
         run: npm run env:start
