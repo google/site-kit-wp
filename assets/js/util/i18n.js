@@ -24,7 +24,7 @@ import { get, isFinite, isPlainObject } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __, sprintf, _x } from '@wordpress/i18n';
 
 /**
  * Converts seconds to a display ready string indicating
@@ -33,28 +33,65 @@ import { __, sprintf } from '@wordpress/i18n';
  * For example, passing 65 returns '1m 5s'.
  *
  * @since 1.0.0
+ * @since n.e.x.t Refactored and renamed to improve localization.
+ * @private
  *
- * @param {number} seconds The number of seconds.
+ * @param {number}                     seconds   The number of seconds.
+ * @param {(Intl.NumberFormatOptions)} [options] Optional formatting options.
  * @return {string} Human readable string indicating time elapsed.
- *
  */
-export const prepareSecondsForDisplay = ( seconds ) => {
+const durationFormat = ( seconds, options = {} ) => {
+	options = {
+		unitDisplay: 'short',
+		...options,
+		style: 'unit',
+	};
+
 	seconds = parseInt( seconds, 10 );
 
-	if ( isNaN( seconds ) || 0 === seconds ) {
-		return '0.0s';
+	if ( Number.isNaN( seconds ) ) {
+		seconds = 0;
 	}
-	const results = {};
-	results.hours = Math.floor( seconds / 60 / 60 );
-	results.minutes = Math.floor( ( seconds / 60 ) % 60 );
-	results.seconds = Math.floor( seconds % 60 );
 
-	const returnString =
-		( results.hours ? results.hours + 'h ' : '' ) +
-		( results.minutes ? results.minutes + 'm ' : '' ) +
-		( results.seconds ? results.seconds + 's ' : '' );
+	let hours = Math.floor( seconds / 60 / 60 ) || '';
+	let minutes = Math.floor( ( seconds / 60 ) % 60 ) || '';
 
-	return returnString.trim();
+	seconds = Math.floor( seconds % 60 ) || '';
+
+	if ( ! hours && ! minutes && ! seconds ) {
+		seconds = 0;
+	}
+
+	if ( hours ) {
+		hours = numberFormat( hours, {
+			...options,
+			unit: 'hour',
+		} );
+	}
+
+	if ( minutes ) {
+		minutes = numberFormat( minutes, {
+			...options,
+			unit: 'minute',
+		} );
+	}
+
+	if ( '' !== seconds ) {
+		seconds = numberFormat( seconds, {
+			...options,
+			unit: 'second',
+		} );
+	}
+
+	const formattedString = sprintf(
+		/* translators: 1: formatted seconds, 2: formatted minutes, 3: formatted hours */
+		_x( '%3$s %2$s %1$s', 'duration of time: hh mm ss', 'google-site-kit' ),
+		seconds,
+		minutes,
+		hours,
+	);
+
+	return formattedString.trim();
 };
 
 /**
@@ -163,9 +200,9 @@ export const numFmt = ( number, options = {} ) => {
 			maximumFractionDigits: 2,
 		};
 	} else if ( 's' === options ) {
-		formatOptions = {
-			style: 'duration',
-		};
+		return durationFormat( number, {
+			unitDisplay: 'narrow',
+		} );
 	} else if ( !! options && typeof options === 'string' ) {
 		formatOptions = {
 			style: 'currency',
@@ -180,10 +217,8 @@ export const numFmt = ( number, options = {} ) => {
 
 	if ( 'metric' === style ) {
 		return readableLargeNumber( number );
-	}
-
-	if ( 'duration' === style ) {
-		return prepareSecondsForDisplay( number );
+	} else if ( 'duration' === style ) {
+		return durationFormat( number, options );
 	}
 
 	return numberFormat( number, formatOptions );

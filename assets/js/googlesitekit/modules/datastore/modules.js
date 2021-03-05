@@ -246,6 +246,7 @@ const baseActions = {
 	 * @param {WPComponent} [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {WPComponent} [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
 	 * @param {Function}    [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
+	 * @param {Function}    [settings.screenWidgetContext]              Optional. Get the registered context name for a given module.
 	 */
 	*registerModule( slug, {
 		storeName,
@@ -259,6 +260,7 @@ const baseActions = {
 		SetupComponent,
 		SettingsSetupIncompleteComponent,
 		checkRequirements = () => true,
+		screenWidgetContext,
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
 
@@ -274,6 +276,7 @@ const baseActions = {
 			SetupComponent,
 			SettingsSetupIncompleteComponent,
 			checkRequirements,
+			screenWidgetContext,
 		};
 
 		yield {
@@ -451,8 +454,6 @@ const baseResolvers = {
 		}
 	},
 };
-// Use the canActivateModule resolver for getCheckRequirementsError
-baseResolvers.getCheckRequirementsError = baseResolvers.canActivateModule;
 
 const baseSelectors = {
 	/**
@@ -785,11 +786,41 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {(null|Object)} Activation error for a module slug; `null` if there is no error or an error object if we cannot activate a given module.
 	 */
-	getCheckRequirementsError( state, slug ) {
+	getCheckRequirementsError: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		const requirementsStatus = state.checkRequirementsResults[ slug ];
-		return requirementsStatus === true ? null : requirementsStatus;
-	},
+
+		// Need to use registry selector here to ensure resolver is invoked.
+		if ( select( STORE_NAME ).canActivateModule( slug ) ) {
+			return null;
+		}
+
+		return state.checkRequirementsResults[ slug ];
+	} ),
+
+	/**
+	 * Gets the module's screenWidgetContext.
+	 *
+	 * Returns `null` if there is no registered context string for the given module.
+	 * Returns `string` the registered context string, screenWidgetContext for the given module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} moduleSlug Module slug.
+	 * @return {(null|string)}    The module's registered context string, or null.
+	 */
+	getScreenWidgetContext: createRegistrySelector( ( select ) => ( state, moduleSlug ) => {
+		invariant( moduleSlug, 'slug is required.' );
+		const modules = select( STORE_NAME ).getModules();
+
+		if ( ! modules ) {
+			return null;
+		}
+
+		const screenWidgetContext = modules[ moduleSlug ]?.screenWidgetContext;
+
+		return screenWidgetContext || null;
+	} ),
 };
 
 const store = Data.combineStores(

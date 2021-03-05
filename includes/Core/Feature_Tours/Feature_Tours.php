@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 /**
  * Class for handling feature tours.
  *
- * @since n.e.x.t
+ * @since 1.27.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Feature_Tours {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 * @var Context
 	 */
 	protected $context;
@@ -33,7 +33,7 @@ class Feature_Tours {
 	/**
 	 * User_Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 * @var User_Options
 	 */
 	protected $user_options;
@@ -41,7 +41,7 @@ class Feature_Tours {
 	/**
 	 * Dismissed_Tours instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 * @var Dismissed_Tours
 	 */
 	protected $dismissed_tours;
@@ -49,7 +49,7 @@ class Feature_Tours {
 	/**
 	 * REST_Feature_Tours_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 * @var REST_Feature_Tours_Controller
 	 */
 	protected $rest_controller;
@@ -57,7 +57,7 @@ class Feature_Tours {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param Context      $context Plugin context.
 	 * @param User_Options $user_options Optional. User option API. Default is a new instance.
@@ -72,7 +72,7 @@ class Feature_Tours {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 */
 	public function register() {
 		$this->dismissed_tours->register();

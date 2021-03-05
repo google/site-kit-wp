@@ -22,12 +22,24 @@
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
+
+import { detectAnyAdblocker as mockDetectAnyAdblocker } from 'just-detect-adblock';
+jest.mock( 'just-detect-adblock' );
+
+function stubIsAdBlockerDetected( detected ) {
+	mockDetectAnyAdblocker.mockImplementation(
+		() => new Promise( ( resolve ) => setTimeout( () => resolve( !! detected ) ) )
+	);
+}
 
 describe( 'modules/adsense adblocker', () => {
 	let registry;
+
+	beforeAll( () => jest.useRealTimers() );
+	afterAll( () => jest.useFakeTimers() );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -35,6 +47,7 @@ describe( 'modules/adsense adblocker', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
+		mockDetectAnyAdblocker.mockReset();
 	} );
 
 	describe( 'actions', () => {
@@ -55,35 +68,23 @@ describe( 'modules/adsense adblocker', () => {
 
 	describe( 'selectors', () => {
 		describe( 'isAdBlockerActive', () => {
-			it( 'uses a resolver to load status from a global variable by default', async () => {
-				if ( ! global._googlesitekitLegacyData ) {
-					global._googlesitekitLegacyData = {};
-				}
-				global._googlesitekitLegacyData.canAdsRun = true;
+			it( 'uses a resolver to query detection using detectAnyAdblocker', async () => {
+				stubIsAdBlockerDetected( false );
 
-				registry.select( STORE_NAME ).isAdBlockerActive();
-				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'isAdBlockerActive' ) );
+				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBeUndefined();
+				await untilResolved( registry, STORE_NAME ).isAdBlockerActive();
 
-				// canAdsRun global has opposite value of isAdBlockerActive.
 				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( false );
-
-				// Data must not be wiped after retrieving, as it could be used by other dependants.
-				expect( global._googlesitekitLegacyData.canAdsRun ).not.toEqual( undefined );
+				expect( mockDetectAnyAdblocker ).toHaveBeenCalled();
 			} );
 
-			it( 'resolver does not rely on global if status is already known', async () => {
-				if ( ! global._googlesitekitLegacyData ) {
-					global._googlesitekitLegacyData = {};
-				}
-				// Setting `canAdsRun` to `false` means an ad-blocker is enabled;
-				// if we can run ads, then we don't have an ad-blocker on.
-				global._googlesitekitLegacyData.canAdsRun = false;
-
-				// Set value to false, contrary to the global above which would result in this being true.
+			it( 'resolver does not rely on detection if status is already known', async () => {
+				stubIsAdBlockerDetected( true );
+				// Set value to false, contrary to the detection utility above which would result in this being true.
 				registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 
 				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( false );
-				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'isAdBlockerActive' ) );
+				await untilResolved( registry, STORE_NAME ).isAdBlockerActive();
 
 				// Value should still be false because the global with true is not considered.
 				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( false );
@@ -93,7 +94,7 @@ describe( 'modules/adsense adblocker', () => {
 				registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
 
 				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( true );
-				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'isAdBlockerActive' ) );
+				await untilResolved( registry, STORE_NAME ).isAdBlockerActive();
 
 				// Value should still be true since resolver should not have changed anything.
 				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( true );

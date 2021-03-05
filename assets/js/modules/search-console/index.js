@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { SettingsView } from './components/settings';
@@ -31,6 +36,8 @@ import {
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/search-console.svg';
 import { STORE_NAME } from './datastore/constants';
+import { CONTEXT_MODULE_SEARCH_CONSOLE, AREA_MODULE_SEARCH_CONSOLE_MAIN } from './constants';
+import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 
 export { registerStore } from './datastore';
 
@@ -41,6 +48,7 @@ export const registerModule = ( modules ) => {
 			storeName: STORE_NAME,
 			SettingsViewComponent: SettingsView,
 			Icon: SearchConsoleIcon,
+			screenWidgetContext: CONTEXT_MODULE_SEARCH_CONSOLE,
 		}
 	);
 };
@@ -84,5 +92,14 @@ export const registerWidgets = ( widgets ) => {
 			AREA_DASHBOARD_POPULARITY,
 			AREA_PAGE_DASHBOARD_POPULARITY,
 		],
+	);
+	widgets.registerWidgetArea(
+		AREA_MODULE_SEARCH_CONSOLE_MAIN,
+		{
+			priority: 1,
+			style: WIDGET_AREA_STYLES.BOXES,
+			title: __( 'Overview', 'google-site-kit' ),
+		},
+		CONTEXT_MODULE_SEARCH_CONSOLE,
 	);
 };
