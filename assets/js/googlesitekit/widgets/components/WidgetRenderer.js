@@ -34,10 +34,11 @@ import { STORE_NAME } from '../datastore/constants';
 import Widget from './Widget';
 import { getWidgetComponentProps } from '../util';
 import { HIDDEN_CLASS } from '../util/constants';
+import { Cell } from '../../../material-components';
 
 const { useSelect } = Data;
 
-const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
+const WidgetRenderer = ( { slug, OverrideComponent, columnWidth } ) => {
 	const widget = useSelect( ( select ) => select( STORE_NAME ).getWidget( slug ) );
 
 	const widgetComponentProps = useMemo( () => getWidgetComponentProps( slug ), [ slug ] );
@@ -72,21 +73,29 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 		widgetElement = <Widget widgetSlug={ slug }>{ widgetElement }</Widget>;
 	}
 
-	// Wrap the widget into a grid class.
-	if ( gridClassName ) {
+	if ( columnWidth === 0 ) {
 		return (
-			<div className={ gridClassName }>
+			<div className={ HIDDEN_CLASS }>
 				{ widgetElement }
 			</div>
 		);
+	} else if ( columnWidth >= 6 ) {
+		return (
+			<Cell size={ columnWidth }>
+				{ widgetElement }
+			</Cell>
+		);
 	}
-
-	return widgetElement;
+	return (
+		<Cell lgSize={ columnWidth } mdSize={ 4 } smSize={ 2 }>
+			{ widgetElement }
+		</Cell>
+	);
 };
 
 WidgetRenderer.propTypes = {
 	slug: PropTypes.string.isRequired,
-	gridClassName: PropTypes.string,
+	columnWidth: PropTypes.number,
 	OverrideComponent: PropTypes.elementType,
 };
 

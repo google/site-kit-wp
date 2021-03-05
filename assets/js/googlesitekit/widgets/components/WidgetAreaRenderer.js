@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import React from 'react';
 import PropTypes from 'prop-types';
 
 /**
@@ -85,16 +86,19 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	} );
 
 	// Render all widgets.
-	const widgetsOutput = activeWidgets.map( ( widget, i ) => (
-		<WidgetRenderer
-			OverrideComponent={ overrideComponents[ i ] ? () => {
-				const { Component, metadata } = overrideComponents[ i ];
-				return <Component { ...metadata } />;
-			} : undefined }
-			key={ widget.slug }
-			slug={ widget.slug }
-		/>
-	) );
+	const widgetsOutput = activeWidgets.map( ( widget, i ) => {
+		return (
+			<WidgetRenderer
+				columnWidth={ columnWidths[ i ] }
+				OverrideComponent={ overrideComponents[ i ] ? () => {
+					const { Component, metadata } = overrideComponents[ i ];
+					return <Component { ...metadata } />;
+				} : undefined }
+				key={ widget.slug }
+				slug={ widget.slug }
+			/>
+		);
+	} );
 
 	const { Icon, title, style, subtitle } = widgetArea;
 
