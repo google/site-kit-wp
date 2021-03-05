@@ -462,14 +462,6 @@ export default function UserDimensionsPieChart( {
 					) }
 				</div>
 			</div>
-
-			<PreviewBlock
-				width="300px"
-				height="300px"
-				shape="circular"
-				lgWidth="20px"
-				lgHeight="20px"
-			/>
 		</div>
 	);
 }

@@ -21,13 +21,10 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { useEffect, useState } from '@wordpress/element';
-import { debounce } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import { getBreakpoint } from '../util/get-breakpoint';
 import { useBreakpoint } from '../hooks/useBreakpoint';
 
 function PreviewBlock( {
@@ -36,31 +33,31 @@ function PreviewBlock( {
 	height,
 	shape,
 	padding,
-	smWidth,
-	smHeight,
-	mdWidth,
-	mdHeight,
-	lgWidth,
-	lgHeight,
+	smallWidth,
+	smallHeight,
+	tabletWidth,
+	tabletHeight,
+	desktopWidth,
+	desktopHeight,
 } ) {
 	const breakpoint = useBreakpoint();
 
 	let blockWidth = width;
 	let blockHeight = height;
 
-	if ( 'small' === breakpoint && smWidth && smHeight ) {
-		blockWidth = smWidth;
-		blockHeight = smHeight;
+	if ( 'small' === breakpoint && smallWidth && smallHeight ) {
+		blockWidth = smallWidth;
+		blockHeight = smallHeight;
 	}
 
-	if ( 'tablet' === breakpoint && mdWidth && mdHeight ) {
-		blockWidth = mdWidth;
-		blockHeight = mdHeight;
+	if ( 'tablet' === breakpoint && tabletWidth && tabletHeight ) {
+		blockWidth = tabletWidth;
+		blockHeight = tabletHeight;
 	}
 
-	if ( ( 'xlarge' === breakpoint || 'desktop' === breakpoint ) && lgWidth && lgHeight ) {
-		blockWidth = lgWidth;
-		blockHeight = lgHeight;
+	if ( ( 'xlarge' === breakpoint || 'desktop' === breakpoint ) && desktopWidth && desktopHeight ) {
+		blockWidth = desktopWidth;
+		blockHeight = desktopHeight;
 	}
 
 	return (
@@ -83,12 +80,19 @@ function PreviewBlock( {
 		</div>
 	);
 }
+
 PreviewBlock.propTypes = {
 	className: PropTypes.string,
 	width: PropTypes.string,
 	height: PropTypes.string,
 	shape: PropTypes.string,
 	padding: PropTypes.bool,
+	smallWidth: PropTypes.string,
+	smallHeight: PropTypes.string,
+	tabletWidth: PropTypes.string,
+	tabletHeight: PropTypes.string,
+	desktopWidth: PropTypes.string,
+	desktopHeight: PropTypes.string,
 };
 
 PreviewBlock.defaultProps = {
@@ -97,6 +101,12 @@ PreviewBlock.defaultProps = {
 	height: '100px',
 	shape: 'square',
 	padding: false,
+	smallWidth: undefined,
+	smallHeight: undefined,
+	tabletWidth: undefined,
+	tabletHeight: undefined,
+	desktopWidth: undefined,
+	desktopHeight: undefined,
 };
 
 export default PreviewBlock;

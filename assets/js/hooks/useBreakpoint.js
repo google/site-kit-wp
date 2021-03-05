@@ -1,5 +1,5 @@
 /**
- * `useQueryArg` hook.
+ * `useBreakpoint` hook.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,16 +17,16 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /**
- * Uses a location query param as a variable in a component.
+ * Retrieves the current breakpoint.
  *
- * @since 1.24.0
+ * @since n.e.x.t
  *
- * @return {Array} The getter and setter for the query param state.
+ * @return {string} The current breakpoint according to the window size.
  */
 export const useBreakpoint = () => {
 	const onlyWidth = useWindowWidth();
