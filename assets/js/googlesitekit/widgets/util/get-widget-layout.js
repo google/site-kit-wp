@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { WIDTH_GRID_COUNTER_MAP, WIDTH_GRID_CLASS_MAP } from './constants';
+import { WIDTH_GRID_COUNTER_MAP } from './constants';
 
 /**
  * Adjusts column widths to better fit into the current row knowing that the default sizes don't fill the row completely.
@@ -47,15 +47,15 @@ function resizeColumns( columnWidths, counter ) {
 	// correct usage should never apply, but is still useful to avoid infinite loops
 	// if the function was used incorrectly.
 	while ( counter !== 0 && i >= 0 ) {
-		const singleWidgetColumnWidths = [ ...columnWidths[ i ] ];
+		const singleWidgetColumnWidth = columnWidths[ i ];
 
 		// Replace the 3-column width with a 4-column width, or the 6-column
 		// width with an 8-column width so that the overall row expands from
 		// 9 to the full 12 columns.
-		if ( singleWidgetColumnWidths === 3 ) {
+		if ( singleWidgetColumnWidth === 3 ) {
 			counter -= 3;
 			columnWidths[ i ] = 4; // Correct the column width.
-		} else if ( singleWidgetColumnWidths === 6 ) {
+		} else if ( singleWidgetColumnWidth === 6 ) {
 			counter -= 6;
 			columnWidths[ i ] = 8; // Correct the column width.
 		}
@@ -89,7 +89,7 @@ function getWidgetSizes( counter, widget ) {
  * @since 1.25.0
  *
  * @param {Array.<Object>} activeWidgets List of active widgets.
- * @return {Object} Object with `classNames`, `columnWidths` and `rowIndexes`
+ * @return {Object} Object with `columnWidths` and `rowIndexes`
  *                  properties, each of which is an array with one item for
  *                  each active widget.
  */
@@ -97,7 +97,6 @@ export function getWidgetLayout( activeWidgets ) {
 	let counter = 0;
 	let rowIndex = 0;
 
-	const classNames = [].fill( null, 0, activeWidgets.length );
 	let columnWidths = [];
 	const rowIndexes = [];
 
@@ -159,16 +158,11 @@ export function getWidgetLayout( activeWidgets ) {
 			counter = 0;
 			rowIndex++;
 		}
-
-		// Actually set the class for the current widget. This must be set after
-		// potentially resizing classes, since in that case this will be the overflowing
-		// widget which should NOT be adjusted because it will be in the next row.
-		classNames[ i ] = WIDTH_GRID_CLASS_MAP[ width ];
 	} );
 
 	if ( counter === 9 ) {
 		[ columnWidths, counter ] = resizeColumns( columnWidths, counter );
 	}
 
-	return { classNames, columnWidths, rowIndexes };
+	return { columnWidths, rowIndexes };
 }

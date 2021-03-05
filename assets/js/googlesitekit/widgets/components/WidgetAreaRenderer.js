@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -68,7 +67,6 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 
 	// Compute the layout.
 	const {
-		classNames,
 		columnWidths,
 		rowIndexes,
 	} = getWidgetLayout( activeWidgets );
@@ -80,10 +78,8 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	// A combined CTA will span the combined width of all widgets that it was
 	// combined from.
 	const {
-		gridClassNames,
 		overrideComponents,
 	} = combineWidgets( activeWidgets, widgetStates, {
-		classNames,
 		columnWidths,
 		rowIndexes,
 	} );
@@ -91,7 +87,6 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	// Render all widgets.
 	const widgetsOutput = activeWidgets.map( ( widget, i ) => (
 		<WidgetRenderer
-			gridClassName={ classnames( gridClassNames[ i ] ) }
 			OverrideComponent={ overrideComponents[ i ] ? () => {
 				const { Component, metadata } = overrideComponents[ i ];
 				return <Component { ...metadata } />;
