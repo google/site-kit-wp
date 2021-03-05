@@ -59,7 +59,7 @@ class Google_Proxy {
 	/**
 	 * Returns the application name: a combination of the namespace and version.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @return string The application name.
 	 */
@@ -70,7 +70,7 @@ class Google_Proxy {
 	/**
 	 * Gets the list of features to declare support for when setting up with the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @return array Array of supported features.
 	 */
@@ -99,13 +99,13 @@ class Google_Proxy {
 	/**
 	 * Returns the setup URL to the authentication proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param array       $query_params Optional. Additional query parameters.
 	 * @return string URL to the setup page on the authentication proxy.
 	 */
-	public function get_setup_url( Credentials $credentials, array $query_params = array() ) {
+	public function setup_url( Credentials $credentials, array $query_params = array() ) {
 		$params = array_merge(
 			$query_params,
 			array(
@@ -122,7 +122,7 @@ class Google_Proxy {
 		/**
 		 * Filters parameters included in proxy setup URL.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.27.0
 		 */
 		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', $params );
 
@@ -146,13 +146,13 @@ class Google_Proxy {
 	 *
 	 * This only returns a URL if the user already has an access token set.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @param array       $query_args  Optional. Additional query parameters.
 	 * @return string URL to the permissions page on the authentication proxy on success, or an empty string on failure.
 	 */
-	public function get_permissions_url( Credentials $credentials, array $query_args = array() ) {
+	public function permissions_url( Credentials $credentials, array $query_args = array() ) {
 		if ( $credentials->has() ) {
 			$creds                 = $credentials->get();
 			$query_args['site_id'] = $creds['oauth2_client_id'];
@@ -191,7 +191,7 @@ class Google_Proxy {
 	/**
 	 * Sends a POST request to the Google Proxy server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param string      $uri Endpoint to send the request to.
 	 * @param Credentials $credentials Credentials instance.
@@ -367,7 +367,7 @@ class Google_Proxy {
 	/**
 	 * Synchronizes user input settings with the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
@@ -433,7 +433,7 @@ class Google_Proxy {
 	/**
 	 * Gets remote features.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @return array|WP_Error Response of the wp_remote_post request.

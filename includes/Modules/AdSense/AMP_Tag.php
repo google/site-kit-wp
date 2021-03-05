@@ -35,7 +35,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	/**
 	 * Web Story Ad Slot ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 * @var string
 	 */
 	private $story_ad_slot_id = '';
@@ -108,7 +108,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	/**
 	 * Set Web Story Ad Slot ID
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 *
 	 * @param string $ad_slot_id The Ad Slot ID.
 	 */
@@ -119,7 +119,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	/**
 	 * Adds the AMP Web Story auto ads code if enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 */
 	private function render_story_auto_ads() {
 		$config = array(

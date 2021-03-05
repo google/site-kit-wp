@@ -31,7 +31,7 @@ export const actions = {
 	/**
 	 * Stores site ui information.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 * @private
 	 *
 	 * @param {Object} values Ui data supplied as a map of keys to set and their respective values.
@@ -49,7 +49,7 @@ export const actions = {
 	/**
 	 * Sets a particular value for a key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 * @private
 	 *
 	 * @param {string} key   Ui key to set the value for.
@@ -100,7 +100,7 @@ export const selectors = {
 	/**
 	 * Gets the existing data by key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.27.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.

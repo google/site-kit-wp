@@ -1,3 +1,11 @@
+/**
+ * Mock enabledFeatures.
+ */
+jest.mock( '../../features/index', () => {
+	return {
+		enabledFeatures: [ 'feature1', 'feature2' ],
+	};
+} );
 
 /**
  * Internal dependencies
@@ -106,6 +114,7 @@ describe( 'trackEvent', () => {
 			dimension2: 'true',
 			dimension3: config.userIDHash,
 			dimension4: global.GOOGLESITEKIT_VERSION || '',
+			dimension5: 'feature1, feature2',
 		} ) );
 		expect( pushArgs[ 0 ][ 2 ] ).toHaveProperty( 'event_callback' );
 	} );
