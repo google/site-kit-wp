@@ -36,6 +36,7 @@ describe( 'getWidgetLayout', () => {
 	const getQuarterWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.QUARTER } );
 	const getHalfWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.HALF } );
 	const getFullWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.FULL } );
+	const getHalfOrFullWidget = ( slug ) => ( { slug, width: [ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.FULL ] } );
 
 	const getRegularState = () => null;
 	const getReportZeroState = ( moduleSlug ) => ( { Component: ReportZero, metadata: { moduleSlug } } );
@@ -166,6 +167,42 @@ describe( 'getWidgetLayout', () => {
 		const widgetStates = {};
 		const expectedColumnWidths = [ 3, 3, 6, 4, 8 ];
 		const expectedRowIndexes = [ 0, 0, 0, 1, 1 ];
+
+		const { columnWidths, rowIndexes } = getWidgetLayout( widgets, widgetStates );
+		expect( columnWidths ).toEqual( expectedColumnWidths );
+		expect( rowIndexes ).toEqual( expectedRowIndexes );
+	} );
+
+	it( 'chooses best supported widget width when the last widget is inactive', () => {
+		const widgets = [
+			getHalfOrFullWidget( 'widget1' ),
+			getHalfWidget( 'widget2' ),
+		];
+		const widgetStates = {
+			widget1: getRegularState(),
+			widget2: getNullState(),
+		};
+		const expectedColumnWidths = [ 12, 0 ];
+		const expectedRowIndexes = [ 0, 1 ];
+
+		const { columnWidths, rowIndexes } = getWidgetLayout( widgets, widgetStates );
+		expect( columnWidths ).toEqual( expectedColumnWidths );
+		expect( rowIndexes ).toEqual( expectedRowIndexes );
+	} );
+
+	it( 'chooses best supported widget width when a widget is inactive', () => {
+		const widgets = [
+			getHalfOrFullWidget( 'widget1' ),
+			getHalfWidget( 'widget2' ),
+			getFullWidget( 'widget3' ),
+		];
+		const widgetStates = {
+			widget1: getRegularState(),
+			widget2: getNullState(),
+			widget3: getRegularState(),
+		};
+		const expectedColumnWidths = [ 12, 0, 12 ];
+		const expectedRowIndexes = [ 0, 1, 1 ];
 
 		const { columnWidths, rowIndexes } = getWidgetLayout( widgets, widgetStates );
 		expect( columnWidths ).toEqual( expectedColumnWidths );
