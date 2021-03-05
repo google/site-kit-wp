@@ -30,6 +30,7 @@ import { MODULES_ANALYTICS } from '../../../datastore/constants';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Header from './Header';
 import Table from './Table';
+import Footer from './Footer';
 const { useSelect } = Data;
 
 export default function ModulePopularPagesWidget( { Widget, WidgetReportError } ) {
@@ -74,7 +75,7 @@ export default function ModulePopularPagesWidget( { Widget, WidgetReportError } 
 	}
 
 	return (
-		<Widget Header={ Header }>
+		<Widget Header={ Header } Footer={ Footer }>
 			{ ! loaded && (
 				<PreviewTable padding />
 			) }

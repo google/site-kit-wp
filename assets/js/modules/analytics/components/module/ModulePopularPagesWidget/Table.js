@@ -1,5 +1,5 @@
 /**
- * Header component the ModulePopularPagesWidget widget.
+ * Table component of the ModulePopularPagesWidget widget.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
