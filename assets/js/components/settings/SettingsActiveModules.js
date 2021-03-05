@@ -103,6 +103,7 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 						isSaving={ isSaving }
 						provides={ module.features }
 						error={ error }
+						autoActivate={ module.forceActive }
 					/>
 				) ) }
 			</Layout>

@@ -121,11 +121,12 @@ class SettingsModule extends Component {
 	}
 
 	deactivate() {
-		const { slug } = this.props;
+		const { autoActivate } = this.props;
 
-		if ( 'search-console' === slug ) {
+		if ( autoActivate ) {
 			return;
 		}
+
 		this.activateOrDeactivate();
 	}
 
@@ -226,8 +227,8 @@ class SettingsModule extends Component {
 			provides,
 			isSaving,
 			error,
+			autoActivate,
 		} = this.props;
-		const autoActivate = 'search-console' === slug;
 		const moduleKey = `${ slug }-module`;
 		const isConnected = applyFilters( `googlesitekit.Connected-${ slug }`, setupComplete );
 		const connectedClassName = isConnected
