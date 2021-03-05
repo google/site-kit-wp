@@ -33,7 +33,7 @@ import { __, sprintf, _x } from '@wordpress/i18n';
 import { getLocale } from '../../../util/i18n';
 import calculateOverviewData from './calculateOverviewData';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
-import { convertSecondsToArray, numFmt, prepareSecondsForDisplay } from '../../../util';
+import { convertSecondsToArray, numFmt } from '../../../util';
 
 export { calculateOverviewData };
 
@@ -213,7 +213,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 			signDisplay: 'never',
 			maximumFractionDigits: 2,
 		} ),
-		prepareSecondsForDisplay,
+		( x ) => numFmt( x, 's' ),
 	];
 
 	const isSessionDuration = dataLabels[ selectedStats ] === __( 'Session Duration', 'google-site-kit' );
