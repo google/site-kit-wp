@@ -1,5 +1,5 @@
 /**
- * Analytics module components.
+ * Analytics module page components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

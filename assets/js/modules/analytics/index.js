@@ -42,7 +42,7 @@ import DashboardPopularPagesWidget from './components/dashboard/DashboardPopular
 import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
-import ModuleOverviewWidget from './components/module/ModuleOverviewWidget';
+import { ModuleOverviewWidget, ModulePopularPagesWidget } from './components/module';
 
 export { registerStore } from './datastore';
 
@@ -144,6 +144,19 @@ export const registerWidgets = ( widgets ) => {
 			Component: ModuleOverviewWidget,
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
+			wrapWidget: false,
+		},
+		[
+			AREA_MODULE_ANALYTICS_MAIN,
+		],
+	);
+
+	widgets.registerWidget(
+		'analyticsModulePopularPages',
+		{
+			Component: ModulePopularPagesWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 2,
 			wrapWidget: false,
 		},
 		[

@@ -16,6 +16,76 @@
  * limitations under the License.
  */
 
-export default function ModulePopularPagesWidget() {
-	return 'ModulePopularPagesWidget';
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS } from '../../../datastore/constants';
+import PreviewTable from '../../../../../components/PreviewTable';
+import Header from './Header';
+import Table from './Table';
+const { useSelect } = Data;
+
+export default function ModulePopularPagesWidget( { Widget, WidgetReportError } ) {
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates() );
+
+	const args = {
+		startDate,
+		endDate,
+		dimensions: [
+			'ga:pageTitle',
+			'ga:pagePath',
+		],
+		metrics: [
+			{
+				expression: 'ga:pageviews',
+				alias: 'Pageviews',
+			},
+			{
+				expression: 'ga:uniquePageviews',
+				alias: 'Unique Pageviews',
+			},
+			{
+				expression: 'ga:bounceRate',
+				alias: 'Bounce rate',
+			},
+		],
+		orderby: [
+			{
+				fieldName: 'ga:pageviews',
+				sortOrder: 'DESCENDING',
+			},
+		],
+		limit: 10,
+	};
+
+	const report = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( args ) );
+	const loaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ) );
+
+	if ( error ) {
+		return <WidgetReportError error={ error } />;
+	}
+
+	return (
+		<Widget Header={ Header }>
+			{ ! loaded && (
+				<PreviewTable padding />
+			) }
+			{ loaded && (
+				<Table report={ report } />
+			) }
+		</Widget>
+	);
 }
+
+ModulePopularPagesWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+	WidgetReportError: PropTypes.elementType.isRequired,
+};

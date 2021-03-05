@@ -18,10 +18,12 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-widget--analyticsModuleOverview {
+	.googlesitekit-widget--analyticsModuleOverview,
+	.googlesitekit-widget--analyticsModulePopularPages {
 
 		.mdc-layout-grid,
-		.googlesitekit-layout__header-title {
+		.googlesitekit-layout__header-title,
+		.googlesitekit-table--with-list {
 			margin: 0;
 			padding: 0;
 		}
