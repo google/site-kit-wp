@@ -30,61 +30,6 @@ describe( 'getWidgetLayout', () => {
 	const halfOrQuarter = { width: [ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.QUARTER ] };
 	const fullOrHalf = { width: [ WIDGET_WIDTHS.FULL, WIDGET_WIDTHS.HALF ] };
 
-	it( 'computes expected class names', () => {
-		const widgets = [
-			// First row.
-			quarter,
-			quarter,
-			half,
-			// Second row.
-			half,
-			quarter,
-			// Third row.
-			full,
-		];
-
-		// Phone and tablet column widths are static based on the widget width.
-		// Desktop column widths usually are as well, except for the case where
-		// an entire row spans exactly 9 columns, in which case each widget
-		// will be expanded by a third to fill the entire 12 columns.
-		const expectedClassNames = [
-			[
-				'mdc-layout-grid__cell',
-				'mdc-layout-grid__cell--span-2-phone',
-				'mdc-layout-grid__cell--span-3-desktop',
-				'mdc-layout-grid__cell--span-4-tablet',
-			],
-			[
-				'mdc-layout-grid__cell',
-				'mdc-layout-grid__cell--span-2-phone',
-				'mdc-layout-grid__cell--span-3-desktop',
-				'mdc-layout-grid__cell--span-4-tablet',
-			],
-			[
-				'mdc-layout-grid__cell',
-				'mdc-layout-grid__cell--span-6-desktop',
-				'mdc-layout-grid__cell--span-8-tablet',
-			],
-			[
-				'mdc-layout-grid__cell',
-				'mdc-layout-grid__cell--span-8-desktop',
-				'mdc-layout-grid__cell--span-8-tablet',
-			],
-			[
-				'mdc-layout-grid__cell',
-				'mdc-layout-grid__cell--span-2-phone',
-				'mdc-layout-grid__cell--span-4-desktop',
-				'mdc-layout-grid__cell--span-4-tablet',
-			],
-			[
-				'mdc-layout-grid__cell',
-				'mdc-layout-grid__cell--span-12',
-			],
-		];
-
-		expect( getWidgetLayout( widgets ).classNames ).toEqual( expectedClassNames );
-	} );
-
 	it( 'computes expected column widths in a single row', () => {
 		const widgets = [ quarter, half, quarter ];
 		const expectedColumnWidths = [ 3, 6, 3 ];

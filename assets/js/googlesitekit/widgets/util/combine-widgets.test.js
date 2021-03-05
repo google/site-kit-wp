@@ -21,7 +21,6 @@
  */
 import { combineWidgets } from './combine-widgets';
 import { getWidgetLayout } from './get-widget-layout';
-import { WIDTH_GRID_CLASS_MAP, HIDDEN_CLASS } from './constants';
 import { WIDGET_WIDTHS } from '../datastore/constants';
 import ReportZero from '../../../components/ReportZero';
 import ActivateModuleCTA from '../../../components/ActivateModuleCTA';
@@ -53,12 +52,6 @@ describe( 'combineWidgets', () => {
 			test4: getActivateModuleCTAState( 'adsense' ),
 		};
 		const expected = {
-			gridClassNames: [
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
-			],
 			overrideComponents: [
 				null,
 				null,
@@ -87,12 +80,6 @@ describe( 'combineWidgets', () => {
 			test4: getReportZeroState( 'analytics' ),
 		};
 		const expected = {
-			gridClassNames: [
-				[ HIDDEN_CLASS ],
-				[ 'mdc-layout-grid__cell', 'mdc-layout-grid__cell--span-6' ],
-				[ HIDDEN_CLASS ],
-				[ 'mdc-layout-grid__cell', 'mdc-layout-grid__cell--span-6' ],
-			],
 			overrideComponents: [
 				null,
 				widgetStates.test2,
@@ -121,12 +108,6 @@ describe( 'combineWidgets', () => {
 			test4: getActivateModuleCTAState( 'analytics' ),
 		};
 		const expected = {
-			gridClassNames: [
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.HALF ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.HALF ],
-				[ HIDDEN_CLASS ],
-				[ 'mdc-layout-grid__cell', 'mdc-layout-grid__cell--span-12' ],
-			],
 			overrideComponents: [
 				null,
 				null,
@@ -159,14 +140,6 @@ describe( 'combineWidgets', () => {
 			test6: getCompleteModuleActivationCTAState( 'analytics' ),
 		};
 		const expected = {
-			gridClassNames: [
-				[ HIDDEN_CLASS ],
-				[ 'mdc-layout-grid__cell', 'mdc-layout-grid__cell--span-12' ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
-			],
 			overrideComponents: [
 				null,
 				widgetStates.test2,
