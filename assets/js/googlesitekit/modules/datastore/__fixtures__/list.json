@@ -5,11 +5,12 @@
     "description": "Google Site Verification allows you to manage ownership of your site.",
     "homepage": "https://www.google.com/webmasters/verification/home",
     "internal": true,
+    "order": 0,
     "active": true,
     "connected": true,
     "dependencies": [],
     "dependants": [],
-    "order": 10
+    "owner": null
   },
   {
     "slug": "search-console",
@@ -17,23 +18,25 @@
     "description": "Google Search Console and helps you understand how Google views your site and optimize its performance in search results.",
     "homepage": "https://search.google.com/search-console",
     "internal": false,
+    "order": 1,
     "active": true,
     "connected": true,
     "dependencies": [],
     "dependants": [],
-    "order": 10
+    "owner": null
   },
   {
     "slug": "adsense",
     "name": "AdSense",
     "description": "Earn money by placing ads on your website. It’s free and easy.",
-    "homepage": "https://www.google.com/adsense/start?source=site-kit&url=http://open-clownfish.jurassic.ninja",
+    "homepage": "https://www.google.com/adsense/start?source=site-kit&url=http://example.com",
     "internal": false,
-    "active": true,
+    "order": 2,
+    "active": false,
     "connected": false,
     "dependencies": [],
     "dependants": [],
-    "order": 10
+    "owner": null
   },
   {
     "slug": "analytics",
@@ -41,13 +44,14 @@
     "description": "Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.",
     "homepage": "https://analytics.google.com/analytics/web",
     "internal": false,
-    "active": true,
-    "connected": true,
+    "order": 3,
+    "active": false,
+    "connected": false,
     "dependencies": [],
     "dependants": [
       "optimize"
     ],
-    "order": 10
+    "owner": null
   },
   {
     "slug": "pagespeed-insights",
@@ -55,11 +59,12 @@
     "description": "Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA.",
     "homepage": "https://developers.google.com/speed/pagespeed/insights/",
     "internal": false,
-    "active": true,
+    "order": 4,
+    "active": false,
     "connected": true,
     "dependencies": [],
     "dependants": [],
-    "order": 10
+    "owner": null
   },
   {
     "slug": "optimize",
@@ -67,13 +72,14 @@
     "description": "Create free A/B tests that help you drive metric-based design solutions to your site.",
     "homepage": "https://optimize.google.com/optimize/home/",
     "internal": false,
+    "order": 5,
     "active": false,
     "connected": false,
     "dependencies": [
       "analytics"
     ],
     "dependants": [],
-    "order": 10
+    "owner": null
   },
   {
     "slug": "tagmanager",
@@ -81,10 +87,11 @@
     "description": "Tag Manager creates an easy to manage way to create tags on your site without updating code.",
     "homepage": "https://tagmanager.google.com/",
     "internal": false,
+    "order": 6,
     "active": false,
     "connected": false,
     "dependencies": [],
     "dependants": [],
-    "order": 10
+    "owner": null
   }
 ]

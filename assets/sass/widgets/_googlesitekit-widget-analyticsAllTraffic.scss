@@ -141,7 +141,7 @@
 
 	.googlesitekit-widget--analyticsAllTraffic__selectable {
 		// Use pointer when hovering over chart slice or legend entry.
-		.googlesitekit-chart-v2 > div > div > div > svg {
+		.googlesitekit-chart-v2__inner > div > div > div > svg {
 
 			& > g > path,
 			& > g > g {
