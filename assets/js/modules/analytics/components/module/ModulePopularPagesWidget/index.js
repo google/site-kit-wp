@@ -1,5 +1,5 @@
 /**
- * Analytics module components.
+ * ModulePopularPagesWidget component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,5 +16,6 @@
  * limitations under the License.
  */
 
-export { default as ModuleOverviewWidget } from './ModuleOverviewWidget';
-export { default as ModulePopularPagesWidget } from './ModulePopularPagesWidget';
+export default function ModulePopularPagesWidget() {
+	return 'ModulePopularPagesWidget';
+}
