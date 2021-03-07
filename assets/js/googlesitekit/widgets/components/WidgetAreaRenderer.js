@@ -79,6 +79,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	// A combined CTA will span the combined width of all widgets that it was
 	// combined from.
 	const {
+		gridColumnWidths,
 		overrideComponents,
 	} = combineWidgets( activeWidgets, widgetStates, {
 		columnWidths,
@@ -87,9 +88,18 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 
 	// Render all widgets.
 	const widgetsOutput = activeWidgets.map( ( widget, i ) => {
+		// if ( activeWidgets.length > 1 ) {
+		// 	console.log( {
+		// 		widget: widget.slug,
+		// 		columnWidths,
+		// 		rowIndexes,
+		// 		overrideComponents,
+		// 		gridColumnWidths,
+		// 	} );
+		// }
 		return (
 			<WidgetRenderer
-				columnWidth={ columnWidths[ i ] }
+				columnWidth={ gridColumnWidths[ i ] }
 				OverrideComponent={ overrideComponents[ i ] ? () => {
 					const { Component, metadata } = overrideComponents[ i ];
 					return <Component { ...metadata } />;

@@ -51,6 +51,7 @@ export function combineWidgets( activeWidgets, widgetStates, {
 	rowIndexes,
 } ) {
 	const overrideComponents = [];
+	const gridColumnWidths = [ ...columnWidths ];
 
 	let currentState = null;
 	let currentRowIndex = -1;
@@ -69,6 +70,8 @@ export function combineWidgets( activeWidgets, widgetStates, {
 				// state and row index, hide the widget entirely. Only the last
 				// similar instance will be rendered in this case.
 				columnWidthsBuffer.push( columnWidths[ i ] );
+				// Mark this column as width = 0, so we can hide it
+				gridColumnWidths[ i ] = 0;
 			} else if ( columnWidthsBuffer.length > 0 ) {
 				// If the state and row index do not match the next ones and
 				// there are already similar instances (from previous
@@ -80,6 +83,8 @@ export function combineWidgets( activeWidgets, widgetStates, {
 
 				overrideComponents[ i ] = currentState;
 
+				// This final column should have the combined width
+				gridColumnWidths[ i ] = columnWidthsBuffer.reduce( ( a, b ) => a + b, 0 );
 				// Reset the columnWidthsBuffer variable.
 				columnWidthsBuffer = [];
 			}
@@ -87,6 +92,7 @@ export function combineWidgets( activeWidgets, widgetStates, {
 	} );
 
 	return {
+		gridColumnWidths,
 		overrideComponents,
 	};
 }
