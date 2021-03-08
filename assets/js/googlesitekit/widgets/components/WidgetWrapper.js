@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import { HIDDEN_CLASS } from '../util/constants';
@@ -43,6 +48,11 @@ const WidgetWrapper = ( { gridColumnWidth, children } ) => {
 			{ children }
 		</Cell>
 	);
+};
+
+WidgetWrapper.propTypes = {
+	gridColumnWidth: PropTypes.number.isRequired,
+	children: PropTypes.element.isRequired,
 };
 
 export default WidgetWrapper;

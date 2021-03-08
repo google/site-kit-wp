@@ -124,6 +124,34 @@ exports[`WidgetAreaRenderer should not resize widgets in a row that is smaller t
 </div>
 `;
 
+exports[`WidgetAreaRenderer should not resize widgets in a row that is smaller than 9 columns (6) 1`] = `
+<div
+  class="googlesitekit-widget-area-widgets"
+>
+  <div
+    class="mdc-layout-grid__inner"
+  >
+    <div
+      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+    >
+      <div
+        class="googlesitekit-widget googlesitekit-widget--one"
+      >
+        <div
+          class="googlesitekit-widget__body"
+        >
+          <div>
+            Foo bar! Connected: 
+             yes
+            .
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column grid (3-3-3-3) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"

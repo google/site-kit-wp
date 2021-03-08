@@ -74,25 +74,6 @@ const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 	}
 
 	return widgetElement;
-
-	// if ( columnWidth === 0 ) {
-	// 	return (
-	// 		<div className={ HIDDEN_CLASS }>
-	// 			{ widgetElement }
-	// 		</div>
-	// 	);
-	// } else if ( columnWidth >= 6 ) {
-	// 	return (
-	// 		<Cell size={ columnWidth }>
-	// 			{ widgetElement }
-	// 		</Cell>
-	// 	);
-	// }
-	// return (
-	// 	<Cell lgSize={ columnWidth } mdSize={ 4 } smSize={ 2 }>
-	// 		{ widgetElement }
-	// 	</Cell>
-	// );
 };
 
 WidgetRenderer.propTypes = {
