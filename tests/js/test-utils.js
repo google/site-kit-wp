@@ -14,6 +14,7 @@ import { RegistryProvider } from '@wordpress/data';
  * Internal dependencies
  */
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
+import ScreenContextProvider from '../../assets/js/components/ScreenContextProvider';
 import { createTestRegistry } from './utils';
 
 // Override `@testing-library/react`'s render method with one that includes
@@ -23,18 +24,23 @@ import { createTestRegistry } from './utils';
  * Renders the given UI into a container to make assertions.
  *
  * @since 1.7.1
+ * @since 1.25.0 Added `features` option.
+ * @since n.e.x.t Added `screenContext` option.
  * @see {@link https://testing-library.com/docs/react-testing-library/api#render}
  * @private
  *
- * @param {*}        ui                    Any valid React child element.
- * @param {Object}   options               Render options.
- * @param {Function} options.setupRegistry A function which accepts the registry instance to configure it.
- * @param {Function} options.registry      A specific registry instance to use. Defaults to a fresh test registry with all stores.
+ * @param {*}        ui                      Any valid React child element.
+ * @param {Object}   [options]               Optional. Render options.
+ * @param {string[]} [options.features]      Feature flags to enable for this hook render.
+ * @param {string}   [options.screenContext] Screen context identifier.
+ * @param {Function} [options.setupRegistry] A function which accepts the registry instance to configure it.
+ * @param {Object}   [options.registry]      A specific registry instance to use. Defaults to a fresh test registry with all stores.
  * @return {Object} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result} as well as the `registry`.
  */
 const customRender = ( ui, options = {} ) => {
 	const {
 		features = [],
+		screenContext = null,
 		setupRegistry = ( r ) => r,
 		registry = createTestRegistry(),
 		...renderOptions
@@ -47,7 +53,9 @@ const customRender = ( ui, options = {} ) => {
 		return (
 			<RegistryProvider value={ registry }>
 				<FeaturesProvider value={ features }>
-					{ children }
+					<ScreenContextProvider value={ screenContext }>
+						{ children }
+					</ScreenContextProvider>
 				</FeaturesProvider>
 			</RegistryProvider>
 		);
@@ -80,18 +88,21 @@ const customRender = ( ui, options = {} ) => {
  *
  * @since 1.12.0
  * @since 1.25.0 Added `features` option.
+ * @since n.e.x.t Added `screenContext` option.
  * @private
  *
- * @param {Function} callback           The function that is called each render of the test component. This function should call one or more hooks for testing. The props passed into the callback will be the initialProps provided in the options to renderHook, unless new props are provided by a subsequent rerender call.
- * @param {Object}   [options]          Optional. An options object to modify the execution of the callback function. See the [renderHook Options](@link https://react-hooks-testing-library.com/reference/api#renderhook-options) section for more details.
- * @param {string[]} [options.features] Feature flags to enable for this hook render.
- * @param {Object}   [options.registry] Registry to use with the RegistryProvider. Default is a new test registry.
+ * @param {Function} callback                The function that is called each render of the test component. This function should call one or more hooks for testing. The props passed into the callback will be the initialProps provided in the options to renderHook, unless new props are provided by a subsequent rerender call.
+ * @param {Object}   [options]               Optional. An options object to modify the execution of the callback function. See the [renderHook Options](@link https://react-hooks-testing-library.com/reference/api#renderhook-options) section for more details.
+ * @param {string[]} [options.features]      Feature flags to enable for this hook render.
+ * @param {string}   [options.screenContext] Screen context identifier.
+ * @param {Object}   [options.registry]      Registry to use with the RegistryProvider. Default is a new test registry.
  * @return {Object} Object with `result`, `rerender`, `unmount`, and async utilities. @link https://react-hooks-testing-library.com/reference/api#renderhook-result.
  */
 const customRenderHook = (
 	callback,
 	{
 		features = [],
+		screenContext = null,
 		registry = createTestRegistry(),
 		...renderHookOptions
 	} = {}
@@ -99,7 +110,9 @@ const customRenderHook = (
 	const Wrapper = ( { children } ) => (
 		<RegistryProvider value={ registry }>
 			<FeaturesProvider value={ features }>
-				{ children }
+				<ScreenContextProvider value={ screenContext }>
+					{ children }
+				</ScreenContextProvider>
 			</FeaturesProvider>
 		</RegistryProvider>
 	);

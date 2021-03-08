@@ -31,10 +31,12 @@ import { enabledFeatures } from '../../features';
 import PermissionsModal from '../PermissionsModal';
 import RestoreSnapshots from '../RestoreSnapshots';
 import CollectModuleData from '../data/collect-module-data';
+import ScreenContextProvider from '../ScreenContextProvider';
 
 export default function Root( {
 	children,
 	registry,
+	screenContext,
 	// TODO: Remove legacy dataAPI prop support once phased out.
 	dataAPIContext,
 	dataAPIModuleArgs,
@@ -42,16 +44,18 @@ export default function Root( {
 	return (
 		<Data.RegistryProvider value={ registry }>
 			<FeaturesProvider value={ enabledFeatures }>
-				<ErrorHandler>
-					<RestoreSnapshots>
-						{ children }
-						{ dataAPIContext && (
-						// Legacy dataAPI support.
-							<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
-						) }
-					</RestoreSnapshots>
-					<PermissionsModal />
-				</ErrorHandler>
+				<ScreenContextProvider value={ screenContext }>
+					<ErrorHandler>
+						<RestoreSnapshots>
+							{ children }
+							{ dataAPIContext && (
+							// Legacy dataAPI support.
+								<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
+							) }
+						</RestoreSnapshots>
+						<PermissionsModal />
+					</ErrorHandler>
+				</ScreenContextProvider>
 			</FeaturesProvider>
 		</Data.RegistryProvider>
 	);
@@ -60,6 +64,7 @@ export default function Root( {
 Root.propTypes = {
 	children: PropTypes.node.isRequired,
 	registry: PropTypes.object,
+	screenContext: PropTypes.string,
 	dataAPIContext: PropTypes.string,
 	dataAPIModuleArgs: PropTypes.object,
 };

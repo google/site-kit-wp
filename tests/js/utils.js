@@ -40,6 +40,7 @@ import {
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
+import ScreenContextProvider from '../../assets/js/components/ScreenContextProvider';
 
 const allCoreStores = [
 	coreForms,
@@ -83,14 +84,21 @@ export const createTestRegistry = () => {
  * @since 1.7.1
  * @private
  *
- * @param {Object}    [props]          Component props.
- * @param {Function}  [props.callback] Function which receives the registry instance.
- * @param {WPElement} [props.children] Children components.
- * @param {string[]}  [props.features] Feature flags to enable for this test registry provider.
- * @param {Object}    [props.registry] Registry object; uses `createTestRegistry()` by default.
+ * @param {Object}    [props]               Component props.
+ * @param {Function}  [props.callback]      Function which receives the registry instance.
+ * @param {WPElement} [props.children]      Children components.
+ * @param {string[]}  [props.features]      Feature flags to enable for this test registry provider.
+ * @param {string}    [props.screenContext] Screen context identifier.
+ * @param {Object}    [props.registry]      Registry object; uses `createTestRegistry()` by default.
  * @return {WPElement} Wrapped components.
  */
-export function WithTestRegistry( { children, callback, features = [], registry = createTestRegistry() } = {} ) {
+export function WithTestRegistry( {
+	children,
+	callback,
+	features = [],
+	screenContext = null,
+	registry = createTestRegistry(),
+} = {} ) {
 	// Populate most basic data which should not affect any tests.
 	provideUserInfo( registry );
 
@@ -101,7 +109,9 @@ export function WithTestRegistry( { children, callback, features = [], registry 
 	return (
 		<RegistryProvider value={ registry }>
 			<FeaturesProvider value={ features }>
-				{ children }
+				<ScreenContextProvider value={ screenContext }>
+					{ children }
+				</ScreenContextProvider>
 			</FeaturesProvider>
 		</RegistryProvider>
 	);
