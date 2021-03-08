@@ -12,8 +12,8 @@ on:
       - synchronize
 
 jobs:
-  php-tests-wp-latest-multisite-php-7-4:
-    name: PHP (PHP 7.4, WordPress Latest, Multisite)
+  php-tests-wp-latest-php-8-0:
+    name: PHP (PHP 8.0, WordPress Latest)
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -31,7 +31,6 @@ jobs:
       MYSQL_DATABASE: wordpress_test
       MYSQL_ROOT_PASSWORD: root
       WP_VERSION: latest
-      WP_MULTISITE: '1'
     steps:
       - uses: actions/checkout@v2
       - name: Grant database access
@@ -44,7 +43,7 @@ jobs:
         with:
           extensions: mysqli
           tools: composer
-          php-version: '7.4'
+          php-version: '8.0'
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
@@ -57,7 +56,9 @@ jobs:
             ${{ runner.os }}-composer-
       - name: Composer Install
         run: composer install --no-interaction --no-progress
+      - name: Update PHPUnit
+        run: composer update phpunit/phpunit --with-dependencies --ignore-platform-reqs --no-scripts
       - name: Set up PHP test data
         run: tests/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
       - name: Run Unit Tests
-        run: composer test:multisite
+        run: composer test
