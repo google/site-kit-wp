@@ -31,11 +31,6 @@ if ( false !== getenv( 'WP_TESTS_DIR' ) ) {
 
 	$_test_root = getenv( 'WP_PHPUNIT__DIR' );
 
-	if ( ! file_exists( __DIR__ . '/wp-tests-config.php' ) ) {
-		printf( 'Tests config not found. Create your %s file first.' . "\n", str_replace( TESTS_PLUGIN_DIR . '/', '', __DIR__ . '/wp-tests-config.php' ) );
-		exit;
-	}
-
 	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 	putenv( sprintf( 'WP_PHPUNIT__TESTS_CONFIG=%s', __DIR__ . '/wp-tests-config.php' ) );
 }
