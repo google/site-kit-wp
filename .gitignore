@@ -14,7 +14,6 @@ npm-debug.log
 /dist
 /languages
 /storybook-static
-/tests/phpunit/wp-tests-config.php
 google-site-kit*.zip
 
 # Editors

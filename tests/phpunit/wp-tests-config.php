@@ -1,4 +1,12 @@
 <?php
+/**
+ * WordPress configuration file for PHPUnit tests.
+ *
+ * @package   Google\Site_Kit
+ * @copyright 2021 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
 
 // Test with WordPress debug mode (default).
 define( 'WP_DEBUG', true );
