@@ -24,14 +24,14 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useMemo } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
-import Widget from './Widget';
+import BaseWidget from './Widget';
 import { getWidgetComponentProps } from '../util';
 import { HIDDEN_CLASS } from '../util/constants';
 
@@ -39,11 +39,11 @@ const { useSelect } = Data;
 
 const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 	const widget = useSelect( ( select ) => select( STORE_NAME ).getWidget( slug ) );
-
-	const widgetComponentProps = useMemo( () => getWidgetComponentProps( slug ), [ slug ] );
+	const widgetComponentProps = getWidgetComponentProps( slug );
+	const { Widget, WidgetNull } = widgetComponentProps;
 
 	if ( ! widget ) {
-		return null;
+		return <WidgetNull />;
 	}
 
 	const { Component, wrapWidget } = widget;
@@ -58,9 +58,9 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 		// hidden via CSS.
 		widgetElement = (
 			<Fragment>
-				<Widget widgetSlug="overridden">
+				<BaseWidget widgetSlug="overridden">
 					<OverrideComponent />
-				</Widget>
+				</BaseWidget>
 				<div className={ HIDDEN_CLASS }>
 					{ widgetElement }
 				</div>
@@ -69,7 +69,7 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 	} else if ( wrapWidget ) {
 		// Otherwise, wrap the component only if that is requested for this
 		// widget.
-		widgetElement = <Widget widgetSlug={ slug }>{ widgetElement }</Widget>;
+		widgetElement = <Widget>{ widgetElement }</Widget>;
 	}
 
 	// Wrap the widget into a grid class.

@@ -542,12 +542,6 @@ final class Assets {
 			),
 			// End JSR Assets.
 			new Script(
-				'googlesitekit-pagead2.ads',
-				array(
-					'src' => $base_url . 'js/pagead2.ads.js',
-				)
-			),
-			new Script(
 				'googlesitekit-dashboard-splash',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-dashboard-splash.js',
