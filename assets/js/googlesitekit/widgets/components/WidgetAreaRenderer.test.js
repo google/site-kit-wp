@@ -51,8 +51,8 @@ const WidgetComponent = () => {
 	return ( <div>Foo bar! Connected: { isConnected ? ' yes' : 'no' }.</div> );
 };
 
-const WidgetComponentEmpty = () => {
-	return null;
+const WidgetComponentEmpty = ( { WidgetNull } ) => {
+	return <WidgetNull />;
 };
 
 const createWidgets = ( registry, areaName, widgets ) => {

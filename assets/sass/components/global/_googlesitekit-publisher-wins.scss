@@ -84,6 +84,13 @@
 			display: inline-block;
 			max-width: 100%;
 		}
+
+		@media (max-width: $bp-mobileOnly ), (min-width: $bp-desktop) {
+
+			svg {
+				width: 200px;
+			}
+		}
 	}
 
 	.googlesitekit-publisher-win__detect {
