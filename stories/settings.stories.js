@@ -141,7 +141,7 @@ storiesOf( 'Settings', module )
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<SettingsInactiveModules activeTab={ 1 } />
+				<SettingsInactiveModules />
 			</WithTestRegistry>
 		);
 	} )
