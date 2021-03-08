@@ -30,6 +30,7 @@ import { STORE_NAME, WIDGET_AREA_STYLES } from '../datastore/constants';
 import WidgetRenderer from './WidgetRenderer';
 import { getWidgetLayout, combineWidgets, getWidgetComponentProps } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
+import WidgetWrapper from './WidgetWrapper';
 const { useSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
@@ -88,25 +89,20 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 
 	// Render all widgets.
 	const widgetsOutput = activeWidgets.map( ( widget, i ) => {
-		// if ( activeWidgets.length > 1 ) {
-		// 	console.log( {
-		// 		widget: widget.slug,
-		// 		columnWidths,
-		// 		rowIndexes,
-		// 		overrideComponents,
-		// 		gridColumnWidths,
-		// 	} );
-		// }
 		return (
-			<WidgetRenderer
-				columnWidth={ gridColumnWidths[ i ] }
-				OverrideComponent={ overrideComponents[ i ] ? () => {
-					const { Component, metadata } = overrideComponents[ i ];
-					return <Component { ...metadata } />;
-				} : undefined }
-				key={ widget.slug }
-				slug={ widget.slug }
-			/>
+			<WidgetWrapper
+				key={ `${ widget.slug }-wrapper` }
+				gridColumnWidth={ gridColumnWidths[ i ] }
+			>
+				<WidgetRenderer
+					OverrideComponent={ overrideComponents[ i ] ? () => {
+						const { Component, metadata } = overrideComponents[ i ];
+						return <Component { ...metadata } />;
+					} : undefined }
+					key={ widget.slug }
+					slug={ widget.slug }
+				/>
+			</WidgetWrapper>
 		);
 	} );
 

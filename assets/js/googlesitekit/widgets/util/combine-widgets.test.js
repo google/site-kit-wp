@@ -52,6 +52,12 @@ describe( 'combineWidgets', () => {
 			test4: getActivateModuleCTAState( 'adsense' ),
 		};
 		const expected = {
+			gridColumnWidths: [
+				3,
+				3,
+				3,
+				3,
+			],
 			overrideComponents: [
 				null,
 				null,
@@ -80,6 +86,12 @@ describe( 'combineWidgets', () => {
 			test4: getReportZeroState( 'analytics' ),
 		};
 		const expected = {
+			gridColumnWidths: [
+				0,
+				6,
+				0,
+				6,
+			],
 			overrideComponents: [
 				null,
 				widgetStates.test2,
@@ -108,6 +120,12 @@ describe( 'combineWidgets', () => {
 			test4: getActivateModuleCTAState( 'analytics' ),
 		};
 		const expected = {
+			gridColumnWidths: [
+				6,
+				6,
+				0,
+				12,
+			],
 			overrideComponents: [
 				null,
 				null,
@@ -140,6 +158,14 @@ describe( 'combineWidgets', () => {
 			test6: getCompleteModuleActivationCTAState( 'analytics' ),
 		};
 		const expected = {
+			gridColumnWidths: [
+				0,
+				12,
+				3,
+				3,
+				3,
+				3,
+			],
 			overrideComponents: [
 				null,
 				widgetStates.test2,

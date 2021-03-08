@@ -34,11 +34,11 @@ import { STORE_NAME } from '../datastore/constants';
 import Widget from './Widget';
 import { getWidgetComponentProps } from '../util';
 import { HIDDEN_CLASS } from '../util/constants';
-import { Cell } from '../../../material-components';
+// import { Cell } from '../../../material-components';
 
 const { useSelect } = Data;
 
-const WidgetRenderer = ( { slug, OverrideComponent, columnWidth } ) => {
+const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 	const widget = useSelect( ( select ) => select( STORE_NAME ).getWidget( slug ) );
 
 	const widgetComponentProps = useMemo( () => getWidgetComponentProps( slug ), [ slug ] );
@@ -73,24 +73,26 @@ const WidgetRenderer = ( { slug, OverrideComponent, columnWidth } ) => {
 		widgetElement = <Widget widgetSlug={ slug }>{ widgetElement }</Widget>;
 	}
 
-	if ( columnWidth === 0 ) {
-		return (
-			<div className={ HIDDEN_CLASS }>
-				{ widgetElement }
-			</div>
-		);
-	} else if ( columnWidth >= 6 ) {
-		return (
-			<Cell size={ columnWidth }>
-				{ widgetElement }
-			</Cell>
-		);
-	}
-	return (
-		<Cell lgSize={ columnWidth } mdSize={ 4 } smSize={ 2 }>
-			{ widgetElement }
-		</Cell>
-	);
+	return widgetElement;
+
+	// if ( columnWidth === 0 ) {
+	// 	return (
+	// 		<div className={ HIDDEN_CLASS }>
+	// 			{ widgetElement }
+	// 		</div>
+	// 	);
+	// } else if ( columnWidth >= 6 ) {
+	// 	return (
+	// 		<Cell size={ columnWidth }>
+	// 			{ widgetElement }
+	// 		</Cell>
+	// 	);
+	// }
+	// return (
+	// 	<Cell lgSize={ columnWidth } mdSize={ 4 } smSize={ 2 }>
+	// 		{ widgetElement }
+	// 	</Cell>
+	// );
 };
 
 WidgetRenderer.propTypes = {

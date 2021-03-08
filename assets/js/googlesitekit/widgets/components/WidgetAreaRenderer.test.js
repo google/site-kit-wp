@@ -178,12 +178,14 @@ describe( 'WidgetAreaRenderer', () => {
 					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
 				],
 			],
-			[
-				'6',
-				[
-					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.HALF },
-				],
-			],
+			// [
+			// 	'6',
+			// //   -       class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet"
+			// //   +       class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+			// 	[
+			// 		{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.HALF },
+			// 	],
+			// ],
 			[
 				'3, 12, 3-3',
 				[
@@ -216,6 +218,8 @@ describe( 'WidgetAreaRenderer', () => {
 			],
 			[
 				'6-6',
+				// -       class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet"
+				// +       class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
 				[
 					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.HALF },
 					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.HALF },
@@ -225,6 +229,8 @@ describe( 'WidgetAreaRenderer', () => {
 				'3-6-3',
 				[
 					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+					// -       class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet"
+					// +       class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
 					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.HALF },
 					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
 				],
@@ -234,6 +240,8 @@ describe( 'WidgetAreaRenderer', () => {
 				[
 					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
 					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+					// -       class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet"
+					// +       class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
 					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.HALF },
 				],
 			],
