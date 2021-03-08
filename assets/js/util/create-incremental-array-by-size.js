@@ -1,5 +1,5 @@
 /**
- * Chart styles.
+ * Create Incremental Array by Size utility.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,31 +16,13 @@
  * limitations under the License.
  */
 
-.googlesitekit-chart {
-
-	.googlesitekit-chart__source {
-		font-size: 0.75rem;
-		margin-top: $grid-gap-phone;
-	}
-}
-
-.googlesitekit-chart-v2 {
-	position: relative;
-}
-
-.googlesitekit-chart-v2--PieChart svg > g > g {
-	pointer-events: none;
-}
-
-.googlesitekit-chart-v2--PieChart svg > g:last-child > g:last-child {
-	pointer-events: none;
-}
-
-.googlesitekit-chart-v2--PieChart div.google-visualization-tooltip {
-	pointer-events: none;
-}
-
-.googlesitekit-chart-v2-loading__forced {
-	height: 100%;
-	width: 100%;
-}
+/**
+ * Creates an array of length equal to size with incremental values starting at 0.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} size Array length.
+ * @return {number[]} Array of incremental numbers.
+ * @example createIncrementalArrayBySize(3); // [0, 1, 2]
+ */
+export const createIncrementalArrayBySize = ( size ) => new Array( size ?? 0 ).fill().map( ( _, i ) => i );

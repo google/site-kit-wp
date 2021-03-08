@@ -1,5 +1,5 @@
 /**
- * Chart styles.
+ * Create Incremental Array by Size utility tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,31 +16,25 @@
  * limitations under the License.
  */
 
-.googlesitekit-chart {
+/**
+ * Internal dependencies
+ */
+import { createIncrementalArrayBySize } from './create-incremental-array-by-size';
 
-	.googlesitekit-chart__source {
-		font-size: 0.75rem;
-		margin-top: $grid-gap-phone;
-	}
-}
+describe( 'createIncrementalArrayBySize', () => {
+	// [ size, expectedReturnValue ]
+	const valuesToTest = [
+		[ undefined, [] ],
+		[ null, [] ],
+		[ 0, [] ],
+		[ 1, [ 0 ] ],
+		[ 2, [ 0, 1 ] ],
+		[ 3, [ 0, 1, 2 ] ],
+		[ 4, [ 0, 1, 2, 3 ] ],
+		[ 5, [ 0, 1, 2, 3, 4 ] ],
+	];
 
-.googlesitekit-chart-v2 {
-	position: relative;
-}
-
-.googlesitekit-chart-v2--PieChart svg > g > g {
-	pointer-events: none;
-}
-
-.googlesitekit-chart-v2--PieChart svg > g:last-child > g:last-child {
-	pointer-events: none;
-}
-
-.googlesitekit-chart-v2--PieChart div.google-visualization-tooltip {
-	pointer-events: none;
-}
-
-.googlesitekit-chart-v2-loading__forced {
-	height: 100%;
-	width: 100%;
-}
+	it.each( valuesToTest )( 'with size equal to %s, should return %s', ( size, expected ) => {
+		expect( createIncrementalArrayBySize( size ) ).toEqual( expected );
+	} );
+} );

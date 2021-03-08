@@ -116,6 +116,100 @@ generateReportBasedWidgetStories( {
 		},
 	] ),
 	Component: DashboardAllTrafficWidget,
+	additionalVariants: {
+		'One row of data': {
+			data: [
+				[
+					{
+						nextPageToken: null,
+						columnHeader: {
+							dimensions: [
+								'ga:channelGrouping',
+							],
+							metricHeader: {
+								metricHeaderEntries: [
+									{
+										name: 'ga:users',
+										type: 'INTEGER',
+									},
+								],
+							},
+						},
+						data: {
+							dataLastRefreshed: null,
+							isDataGolden: null,
+							rowCount: 4,
+							samplesReadCounts: null,
+							samplingSpaceSizes: null,
+							rows: [
+								{
+									dimensions: [
+										'Direct',
+									],
+									metrics: [
+										{
+											values: [
+												'767',
+											],
+										},
+										{
+											values: [
+												'883',
+											],
+										},
+									],
+								},
+							],
+							totals: [
+								{
+									values: [
+										'1382',
+									],
+								},
+								{
+									values: [
+										'1640',
+									],
+								},
+							],
+							minimums: [
+								{
+									values: [
+										'7',
+									],
+								},
+								{
+									values: [
+										'3',
+									],
+								},
+							],
+							maximums: [
+								{
+									values: [
+										'767',
+									],
+								},
+								{
+									values: [
+										'883',
+									],
+								},
+							],
+						},
+					},
+				],
+				dashboardUserTotalsData,
+				dashboardUserGraphData,
+			],
+			referenceDate: '2021-01-06',
+			options: [
+				dashboardUserDimensionsArgs[ 'ga:channelGrouping' ],
+				dashboardUserTotalsArgs,
+				dashboardUserGraphArgs,
+			],
+		},
+	},
 	wrapWidget: false,
 	setup,
 } );

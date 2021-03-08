@@ -1,5 +1,5 @@
 /**
- * Chart styles.
+ * Is inactive widget utility.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,31 +16,19 @@
  * limitations under the License.
  */
 
-.googlesitekit-chart {
+/**
+ * Internal dependencies
+ */
+import Null from '../../../components/Null';
 
-	.googlesitekit-chart__source {
-		font-size: 0.75rem;
-		margin-top: $grid-gap-phone;
-	}
-}
-
-.googlesitekit-chart-v2 {
-	position: relative;
-}
-
-.googlesitekit-chart-v2--PieChart svg > g > g {
-	pointer-events: none;
-}
-
-.googlesitekit-chart-v2--PieChart svg > g:last-child > g:last-child {
-	pointer-events: none;
-}
-
-.googlesitekit-chart-v2--PieChart div.google-visualization-tooltip {
-	pointer-events: none;
-}
-
-.googlesitekit-chart-v2-loading__forced {
-	height: 100%;
-	width: 100%;
+/**
+ * Combines consecutive widgets with similar states within the same row.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object|null} widgetState Widget state (either an object with `Component` and `metadata`, or `null`).
+ * @return {boolean} True if widget is inactive, otherwise false.
+ */
+export function isInactiveWidgetState( widgetState ) {
+	return !! widgetState && widgetState.Component === Null;
 }

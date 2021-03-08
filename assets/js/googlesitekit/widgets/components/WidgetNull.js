@@ -1,5 +1,5 @@
 /**
- * Chart styles.
+ * WidgetNull component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,31 +16,28 @@
  * limitations under the License.
  */
 
-.googlesitekit-chart {
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
 
-	.googlesitekit-chart__source {
-		font-size: 0.75rem;
-		margin-top: $grid-gap-phone;
-	}
+/**
+ * Internal dependencies
+ */
+import useWidgetStateEffect from '../hooks/useWidgetStateEffect';
+import Null from '../../../components/Null';
+
+// This doesn't need to change.
+const metadata = {};
+
+// The supported props must match `Null` (except `widgetSlug`).
+export default function WidgetNull( { widgetSlug } ) {
+	useWidgetStateEffect( widgetSlug, Null, metadata );
+
+	return <Null />;
 }
 
-.googlesitekit-chart-v2 {
-	position: relative;
-}
-
-.googlesitekit-chart-v2--PieChart svg > g > g {
-	pointer-events: none;
-}
-
-.googlesitekit-chart-v2--PieChart svg > g:last-child > g:last-child {
-	pointer-events: none;
-}
-
-.googlesitekit-chart-v2--PieChart div.google-visualization-tooltip {
-	pointer-events: none;
-}
-
-.googlesitekit-chart-v2-loading__forced {
-	height: 100%;
-	width: 100%;
-}
+WidgetNull.propTypes = {
+	widgetSlug: PropTypes.string.isRequired,
+	...Null.propTypes,
+};

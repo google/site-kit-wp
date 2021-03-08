@@ -58,7 +58,7 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 			height: 270,
 			width: '100%',
 			chartArea: {
-				height: '80%',
+				height: '77%',
 				width: '87%',
 			},
 			legend: {
