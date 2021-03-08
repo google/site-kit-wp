@@ -62,151 +62,87 @@ const baseAllTrafficArgs = {
 	],
 };
 
+const allTrafficReports = generateData( [
+	{
+		...baseAllTrafficArgs,
+		dimensions: [
+			'ga:channelGrouping',
+		],
+		orderby: {
+			fieldName: 'ga:users',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 6,
+	},
+	{
+		...baseAllTrafficArgs,
+		dimensions: [
+			'ga:country',
+		],
+		orderby: {
+			fieldName: 'ga:users',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 6,
+	},
+	{
+		...baseAllTrafficArgs,
+		dimensions: [
+			'ga:deviceCategory',
+		],
+		orderby: {
+			fieldName: 'ga:users',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 6,
+	},
+	baseAllTrafficArgs,
+	{
+		startDate: '2020-12-09',
+		endDate: '2021-01-05',
+		dimensions: [
+			'ga:date',
+		],
+		metrics: [
+			{
+				expression: 'ga:users',
+			},
+		],
+	},
+] );
+
+// Used to modify an Analytics response to only include a single row,
+// e.g. if no more than one value of the dimension is available.
+function limitResponseToSingleRow( analyticsResponse ) {
+	return [
+		{
+			...analyticsResponse[ 0 ],
+			data: {
+				...analyticsResponse[ 0 ].data,
+				rows: [
+					analyticsResponse[ 0 ].data.rows[ 0 ],
+				],
+			},
+		},
+	];
+}
+
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/All Traffic Widget',
 	referenceDate: '2021-01-06',
-	...generateData( [
-		{
-			...baseAllTrafficArgs,
-			dimensions: [
-				'ga:channelGrouping',
-			],
-			orderby: {
-				fieldName: 'ga:users',
-				sortOrder: 'DESCENDING',
-			},
-			limit: 6,
-		},
-		{
-			...baseAllTrafficArgs,
-			dimensions: [
-				'ga:country',
-			],
-			orderby: {
-				fieldName: 'ga:users',
-				sortOrder: 'DESCENDING',
-			},
-			limit: 6,
-		},
-		{
-			...baseAllTrafficArgs,
-			dimensions: [
-				'ga:deviceCategory',
-			],
-			orderby: {
-				fieldName: 'ga:users',
-				sortOrder: 'DESCENDING',
-			},
-			limit: 6,
-		},
-		baseAllTrafficArgs,
-		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			dimensions: [
-				'ga:date',
-			],
-			metrics: [
-				{
-					expression: 'ga:users',
-				},
-			],
-		},
-	] ),
+	...allTrafficReports,
 	Component: DashboardAllTrafficWidget,
 	additionalVariants: {
 		'One row of data': {
+			options: allTrafficReports.options,
 			data: [
-				[
-					{
-						nextPageToken: null,
-						columnHeader: {
-							dimensions: [
-								'ga:channelGrouping',
-							],
-							metricHeader: {
-								metricHeaderEntries: [
-									{
-										name: 'ga:users',
-										type: 'INTEGER',
-									},
-								],
-							},
-						},
-						data: {
-							dataLastRefreshed: null,
-							isDataGolden: null,
-							rowCount: 4,
-							samplesReadCounts: null,
-							samplingSpaceSizes: null,
-							rows: [
-								{
-									dimensions: [
-										'Direct',
-									],
-									metrics: [
-										{
-											values: [
-												'767',
-											],
-										},
-										{
-											values: [
-												'883',
-											],
-										},
-									],
-								},
-							],
-							totals: [
-								{
-									values: [
-										'1382',
-									],
-								},
-								{
-									values: [
-										'1640',
-									],
-								},
-							],
-							minimums: [
-								{
-									values: [
-										'7',
-									],
-								},
-								{
-									values: [
-										'3',
-									],
-								},
-							],
-							maximums: [
-								{
-									values: [
-										'767',
-									],
-								},
-								{
-									values: [
-										'883',
-									],
-								},
-							],
-						},
-					},
-				],
-				dashboardUserTotalsData,
-				dashboardUserGraphData,
-			],
-			referenceDate: '2021-01-06',
-			options: [
-				dashboardUserDimensionsArgs[ 'ga:channelGrouping' ],
-				dashboardUserTotalsArgs,
-				dashboardUserGraphArgs,
+				limitResponseToSingleRow( allTrafficReports.data[ 0 ] ),
+				limitResponseToSingleRow( allTrafficReports.data[ 1 ] ),
+				limitResponseToSingleRow( allTrafficReports.data[ 2 ] ),
+				allTrafficReports.data[ 3 ],
+				allTrafficReports.data[ 4 ],
 			],
 		},
 	},
