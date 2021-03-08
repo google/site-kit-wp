@@ -66,6 +66,22 @@ describe( 'SettingsApp', () => {
 				setupComplete: true,
 				SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
 			},
+			{
+				slug: 'adsense',
+				name: 'AdSense',
+				active: true,
+				connected: true,
+				setupComplete: true,
+				SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
+			},
+			{
+				slug: 'pagespeed-insights',
+				name: 'PageSpeed Insights',
+				active: true,
+				connected: true,
+				setupComplete: true,
+				SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
+			},
 		] );
 
 		global._googlesitekitLegacyData.modules.analytics = {

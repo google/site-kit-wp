@@ -30,7 +30,7 @@ import Layout from '../layout/Layout';
 import Notification from '../legacy-notifications/notification';
 import SetupModule from './SetupModule';
 import { Cell, Grid, Row } from '../../material-components';
-import thumbsUpImage from '../../../svg/thumbs-up.svg';
+import ThumbsUpSVG from '../../../svg/thumbs-up.svg';
 const { useSelect } = Data;
 
 const SettingsInactiveModules = () => {
@@ -52,7 +52,7 @@ const SettingsInactiveModules = () => {
 					title={ __( 'Congrats, you’ve connected all services!', 'google-site-kit' ) }
 					description={ __( 'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future.', 'google-site-kit' ) }
 					format="small"
-					SmallImageSVG={ thumbsUpImage }
+					SmallImageSVG={ ThumbsUpSVG }
 					type="win-success"
 				/>
 			</Cell>
