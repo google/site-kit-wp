@@ -31,6 +31,7 @@ import { trackEvent } from './util';
 import './components/legacy-notifications';
 import { ActivationApp } from './components/activation/activation-app';
 import Root from './components/Root';
+import { SCREEN_CONTEXT_ACTIVATION } from './googlesitekit/constants';
 
 domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-activation' );
@@ -38,7 +39,15 @@ domReady( () => {
 	if ( renderTarget ) {
 		trackEvent( 'plugin_setup', 'plugin_activated' );
 
-		render( <Root dataAPIContext="Activation"><ActivationApp /></Root>, renderTarget );
+		render(
+			<Root
+				screenContext={ SCREEN_CONTEXT_ACTIVATION }
+				dataAPIContext="Activation"
+			>
+				<ActivationApp />
+			</Root>,
+			renderTarget
+		);
 
 		renderTarget.classList.remove( 'googlesitekit-activation--loading' );
 	}

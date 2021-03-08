@@ -34,17 +34,22 @@ import { trackEvent } from './util';
 import Root from './components/Root';
 import AdminBarApp from './components/adminbar/AdminBarApp';
 import './modules';
-
-export const GoogleSitekitAdminbar = () => {
-	return <AdminBarApp />;
-};
+import { SCREEN_CONTEXT_ADMIN_BAR } from './googlesitekit/constants';
 
 // Initialize the whole adminbar app.
 const init = once( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-adminbar-modules' );
 
 	if ( renderTarget ) {
-		render( <Root dataAPIContext="Adminbar"><GoogleSitekitAdminbar /></Root>, renderTarget );
+		render(
+			<Root
+				screenContext={ SCREEN_CONTEXT_ADMIN_BAR }
+				dataAPIContext="Adminbar"
+			>
+				<AdminBarApp />
+			</Root>,
+			renderTarget
+		);
 
 		trackEvent( 'admin_bar', 'page_stats_view' );
 	}

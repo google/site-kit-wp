@@ -35,6 +35,7 @@ import './components/legacy-notifications';
 import Root from './components/Root';
 import ModuleApp from './components/module/ModuleApp';
 import ModuleSetup from './components/setup/ModuleSetup';
+import { SCREEN_CONTEXT_MODULE_DASHBOARD } from './googlesitekit/constants';
 
 function GoogleSitekitModule() {
 	const { moduleToSetup, showModuleSetupWizard } = global._googlesitekitLegacyData.setup;
@@ -52,7 +53,11 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root dataAPIContext="Single" dataAPIModuleArgs={ global.googlesitekitCurrentModule } >
+			<Root
+				screenContext={ SCREEN_CONTEXT_MODULE_DASHBOARD }
+				dataAPIContext="Single"
+				dataAPIModuleArgs={ global.googlesitekitCurrentModule }
+			>
 				<GoogleSitekitModule />
 			</Root>,
 			renderTarget
