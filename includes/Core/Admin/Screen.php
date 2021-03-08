@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Admin;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Util\Google_Icon;
 use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
 
 /**
@@ -129,9 +130,60 @@ final class Screen {
 						$this->args['capability'],
 						$this->slug,
 						'',
-						$context->url( 'dist/assets/images/logo-g_white_small.png' )
+						'data:image/svg+xml;base64,' . Google_Icon::to_base64()
 					);
 					$menu_slug = $this->slug;
+
+					/**
+					 * An SVG icon file needs to be colored (filled) based on the theme color setting.
+					 *
+					 * This exists in js as wp.svgPainter() per:
+					 * https://github.com/WordPress/WordPress/blob/master/wp-admin/js/svg-painter.js
+					 *
+					 * The downside of the js approach is that we get a brief flash of an unstyled icon
+					 * until the JS runs.
+					 *
+					 * A user can pick a custom Admin Color Scheme, which is only available in admin_init
+					 * or later actions. add_menu_page runs on the admin_menu action, which precedes admin_init
+					 * per https://codex.wordpress.org/Plugin_API/Action_Reference
+					 *
+					 * WordPress provides some color schemes out of the box, but they can also be added via
+					 * wp_admin_css_color()
+					 *
+					 * Our workaround is to set the icon and subsequently replace it in current_screen, which is
+					 * what we do in the following action.
+					 */
+					add_action(
+						'current_screen',
+						function() {
+							global $menu, $_wp_admin_css_colors;
+
+							if ( ! is_array( $menu ) ) {
+								return;
+							}
+
+							$color_scheme = get_user_option( 'admin_color' ) ?: 'fresh';
+
+							// If we're on one of the sitekit pages, use the 'current' color, otherwise use the 'base' color.
+							// @see wp_admin_css_color().
+							$color_key = false === strpos( get_current_screen()->id, 'googlesitekit' ) ? 'base' : 'current';
+
+							if ( empty( $_wp_admin_css_colors[ $color_scheme ]->icon_colors[ $color_key ] ) ) {
+								return;
+							}
+
+							$color = $_wp_admin_css_colors[ $color_scheme ]->icon_colors[ $color_key ];
+
+							foreach ( $menu as &$item ) {
+								if ( 'googlesitekit-dashboard' === $item[2] ) {
+									$item[6] = 'data:image/svg+xml;base64,' . Google_Icon::to_base64( Google_Icon::with_fill( $color ) );
+									break;
+								}
+							}
+
+						},
+						100
+					);
 				}
 
 				// Set parent slug to actual slug of main Site Kit menu.
@@ -181,11 +233,6 @@ final class Screen {
 		// Enqueue base admin screen stylesheet.
 		$assets->enqueue_asset( 'googlesitekit-admin-css' );
 
-		// Helps detection of enabled ad blockers to warn users before activating or setup AdSense module.
-		if ( $this->is_ad_blocker_detection_required() ) {
-			$assets->enqueue_asset( 'googlesitekit-pagead2.ads' );
-		}
-
 		if ( $this->args['enqueue_callback'] ) {
 			call_user_func( $this->args['enqueue_callback'], $assets );
 		}
@@ -212,28 +259,5 @@ final class Screen {
 			?>
 		</div>
 		<?php
-	}
-
-	/**
-	 * Verifies if it's required to detect and warn user to disable ad blocker in the current screen.
-	 *
-	 * Required on dashboard and settings page if module is inactive.
-	 * Required on adsense dashboard if module is active and not setup complete.
-	 *
-	 * @return bool True if ad blocker detection is required.
-	 */
-	private function is_ad_blocker_detection_required() {
-		$screens = array(
-			'googlesitekit-settings',
-			'googlesitekit-dashboard',
-			'googlesitekit-module-adsense',
-			'googlesitekit-splash',
-		);
-
-		if ( in_array( $this->slug, $screens, true ) ) {
-			return true;
-		}
-
-		return false;
 	}
 }

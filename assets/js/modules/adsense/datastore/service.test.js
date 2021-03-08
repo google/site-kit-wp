@@ -165,6 +165,32 @@ describe( 'module/adsense service store', () => {
 					...reportArgs,
 				} );
 			} );
+
+			it( 'should add a `dd` argument to the query if there is a registered reference site URL', () => {
+				const reportArgs = { foo: 'bar' };
+
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( siteInfo );
+
+				const url = registry.select( STORE_NAME ).getServiceReportURL( reportArgs );
+				const domain = new URL( siteInfo.referenceSiteURL ).host;
+
+				expect( url ).toMatchQueryParameters( {
+					...reportArgs,
+					dd: `1YsiteY1Y${ domain }Y${ domain }`,
+				} );
+			} );
+
+			it( 'should not add a `dd` query argument when there is no referenceSiteURL', () => {
+				const reportArgs = { foo: 'bar' };
+
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: undefined } );
+
+				const url = registry.select( STORE_NAME ).getServiceReportURL( reportArgs );
+
+				expect( url ).toMatchQueryParameters( {
+					...reportArgs,
+				} );
+			} );
 		} );
 	} );
 } );

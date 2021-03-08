@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Class providing functions to reset the persistent plugin settings.
  *
- * @since n.e.x.t
+ * @since 1.27.0
  * @access private
  * @ignore
  */
