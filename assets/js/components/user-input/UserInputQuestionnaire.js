@@ -45,6 +45,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { Cell, Row } from '../../material-components';
+import { trackEvent } from '../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputQuestionnaire() {
@@ -91,7 +92,7 @@ export default function UserInputQuestionnaire() {
 	} = getUserInputAnwsers();
 
 	const next = useCallback( () => {
-		console.log( steps[ activeSlugIndex ] );
+		trackEvent( 'user_input', 'question_advance', steps[ activeSlugIndex ] );
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );
 	}, [ activeSlugIndex ] );
 
@@ -107,7 +108,7 @@ export default function UserInputQuestionnaire() {
 	}, [ activeSlugIndex ] );
 
 	const back = useCallback( () => {
-		console.log( steps[ activeSlugIndex ] );
+		trackEvent( 'user_input', 'question_advance', steps[ activeSlugIndex ] );
 		setActiveSlug( steps[ activeSlugIndex - 1 ] );
 	}, [ activeSlugIndex ] );
 
