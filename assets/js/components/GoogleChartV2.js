@@ -25,7 +25,7 @@ import { Chart } from 'react-google-charts';
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect, useLayoutEffect, useRef } from '@wordpress/element';
+import { useEffect, useLayoutEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -136,15 +136,17 @@ export default function GoogleChartV2( props ) {
 	}
 
 	return (
-		<Fragment>
+		<div
+			className={ classnames(
+				'googlesitekit-chart-v2',
+				`googlesitekit-chart-v2--${ chartType }`,
+				className
+			) }
+		>
 			<Chart
+				className="googlesitekit-chart-v2__inner"
 				chartEvents={ combinedChartEvents }
 				chartType={ chartType }
-				className={ classnames(
-					'googlesitekit-chart-v2',
-					`googlesitekit-chart-v2--${ chartType }`,
-					className
-				) }
 				loader={ loader }
 				height={ height }
 				getChartWrapper={ ( chartWrapper, google ) => {
@@ -170,7 +172,7 @@ export default function GoogleChartV2( props ) {
 				{ ...otherProps }
 			/>
 			{ children }
-		</Fragment>
+		</div>
 	);
 }
 

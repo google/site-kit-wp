@@ -36,8 +36,8 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 
 		$controller->register();
 
-		has_filter( 'googlesitekit_rest_routes' );
-		has_filter( 'googlesitekit_apifetch_preload_paths' );
+		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
 	}
 
 	public function test_get_dismissed_tours() {
