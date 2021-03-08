@@ -38,12 +38,10 @@ import ResetButton from '../ResetButton';
 import UserInputPreview from '../user-input/UserInputPreview';
 import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
 import UserInputSettings from '../notifications/UserInputSettings';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 const SettingsAdmin = () => {
-	const userInputEnabled = useFeature( 'userInput' );
-	const isUserInputCompleted = useSelect( ( select ) => userInputEnabled && select( CORE_USER ).getUserInputState() === 'completed' );
+	const isUserInputCompleted = useSelect( ( select ) => select( CORE_USER ).getUserInputState() === 'completed' );
 	const userInputURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -57,42 +55,40 @@ const SettingsAdmin = () => {
 
 	return (
 		<Fragment>
-			{ userInputEnabled && (
-				<Cell size={ 12 }>
-					{ isUserInputCompleted && (
-						<Layout>
-							<div className="
-								googlesitekit-settings-module
-								googlesitekit-settings-module--active
-								googlesitekit-settings-user-input
-							">
-								<div className="mdc-layout-grid">
-									<div className="mdc-layout-grid__inner">
-										<div className="
-											mdc-layout-grid__cell
-											mdc-layout-grid__cell--span-12
+			<Cell size={ 12 }>
+				{ isUserInputCompleted && (
+					<Layout>
+						<div className="
+							googlesitekit-settings-module
+							googlesitekit-settings-module--active
+							googlesitekit-settings-user-input
+						">
+							<div className="mdc-layout-grid">
+								<div className="mdc-layout-grid__inner">
+									<div className="
+										mdc-layout-grid__cell
+										mdc-layout-grid__cell--span-12
+									">
+										<h3 className="
+											googlesitekit-heading-4
+											googlesitekit-settings-module__title
 										">
-											<h3 className="
-												googlesitekit-heading-4
-												googlesitekit-settings-module__title
-											">
-												{ __( 'Your site goals', 'google-site-kit' ) }
-											</h3>
-											<p>
-												{ __( 'Based on your responses, Site Kit will show you metrics and suggestions that are specific to your site to help you achieve your goals', 'google-site-kit' ) }
-											</p>
-										</div>
+											{ __( 'Your site goals', 'google-site-kit' ) }
+										</h3>
+										<p>
+											{ __( 'Based on your responses, Site Kit will show you metrics and suggestions that are specific to your site to help you achieve your goals', 'google-site-kit' ) }
+										</p>
 									</div>
-									<UserInputPreview goTo={ goTo } noFooter />
 								</div>
+								<UserInputPreview goTo={ goTo } noFooter />
 							</div>
-						</Layout>
-					) }
-					{ ! isUserInputCompleted && (
-						<UserInputSettings isDimissable={ false } />
-					) }
-				</Cell>
-			) }
+						</div>
+					</Layout>
+				) }
+				{ ! isUserInputCompleted && (
+					<UserInputSettings isDimissable={ false } />
+				) }
+			</Cell>
 			<div className="
 				mdc-layout-grid__cell
 				mdc-layout-grid__cell--span-12

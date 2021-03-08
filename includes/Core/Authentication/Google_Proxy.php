@@ -89,9 +89,7 @@ class Google_Proxy {
 
 		// Informs the proxy the user input feature is already enabled locally.
 		// TODO: Remove once the feature is fully rolled out.
-		if ( Feature_Flags::enabled( 'userInput' ) ) {
-			$supports[] = 'user_input_flow_feature';
-		}
+		$supports[] = 'user_input_flow_feature';
 
 		return $supports;
 	}
