@@ -1,0 +1,25 @@
+{
+  "search.exclude": {
+    ".storybook/data": true,
+    "assets/vendor": true,
+    "dist/": true
+  },
+  "files.exclude": {
+    "dist/": true,
+    "node_modules/": true
+  },
+  "editor.formatOnSave": true,
+  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
+  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": true,
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": true,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
+  "jest.autoEnable": false,
+  "jest.pathToConfig": "./tests/js/jest.config.js",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.fixAll.eslint": true
+  },
+  "phpcs.enable": true,
+  "phpcs.executablePath": "vendor/bin/phpcs"
+}
