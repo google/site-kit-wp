@@ -37,7 +37,7 @@ async function toggleOptIn() {
 	await page.waitForSelector( '#googlesitekit-opt-in' );
 	await pageWait();
 	await Promise.all( [
-		page.waitForResponse( ( res ) => res.url().match( 'wp/v2/users/me' ) ),
+		page.waitForResponse( ( res ) => res.url().match( 'core/user/data/tracking' ) ),
 		expect( page ).toClick( '#googlesitekit-opt-in' ),
 	] );
 }
@@ -97,10 +97,10 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 	it( 'should check opt-in box when clicked', async () => {
 		await toggleOptIn();
 
-		await page.waitForSelector( '.mdc-checkbox.mdc-checkbox--selected #googlesitekit-opt-in' );
+		await page.waitForSelector( '#googlesitekit-opt-in:checked' );
 
 		// Ensure checked checkbox exists.
-		await expect( page ).toMatchElement( '.mdc-checkbox.mdc-checkbox--selected #googlesitekit-opt-in' );
+		await expect( page ).toMatchElement( '#googlesitekit-opt-in:checked' );
 	} );
 
 	it( 'should uncheck opt-in box when clicked', async () => {

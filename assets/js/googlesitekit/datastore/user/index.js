@@ -27,6 +27,7 @@ import disconnect from './disconnect';
 import featureTours from './feature-tours';
 import notifications from './notifications';
 import permissions from './permissions';
+import tracking from './tracking';
 import userInfo from './user-info';
 import userInputSettings from './user-input-settings';
 import { STORE_NAME } from './constants';
@@ -40,6 +41,7 @@ const store = Data.combineStores(
 	featureTours,
 	notifications,
 	permissions,
+	tracking,
 	userInfo,
 	userInputSettings,
 );

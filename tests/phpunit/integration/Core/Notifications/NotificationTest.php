@@ -34,7 +34,6 @@ class NotificationTest extends TestCase {
 			array(
 				'title'            => 'test-title',
 				'content'          => 'test-content',
-				'image'            => 'test-image-url',
 				'cta_url'          => 'test-cta-url',
 				'cta_label'        => 'test-cta-label',
 				'cta_target'       => 'test-cta-target',
@@ -49,7 +48,6 @@ class NotificationTest extends TestCase {
 			array(
 				'title'          => 'test-title',
 				'content'        => 'test-content',
-				'image'          => 'test-image-url',
 				'ctaURL'         => 'test-cta-url',
 				'ctaLabel'       => 'test-cta-label',
 				'ctaTarget'      => 'test-cta-target',

@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { createElement } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -45,14 +40,19 @@ const { useSelect } = Data;
  * @param {WPComponent|null} [options.IncompleteComponent] Optional. Fallback component to render when the module is active but not connected.
  * @return {Function} Enhancing function.
  */
-export default function whenActive( { moduleName, FallbackComponent = null, IncompleteComponent = null } ) {
-	return ( wrappedComponent ) => {
-		const whenActiveComponent = ( props ) => {
+export default function whenActive( {
+	moduleName,
+	FallbackComponent,
+	IncompleteComponent = null,
+} ) {
+	return ( WrappedComponent ) => {
+		const WhenActiveComponent = ( props ) => {
+			const { WidgetNull } = props;
 			// The following eslint rule is disabled because it treats the following hook as such that doesn't adhere
 			// the "rules of hooks" which is incorrect because the following hook is a valid one.
-
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleName ) );
+			const WhenFallbackComponent = FallbackComponent || WidgetNull;
 
 			// Return null if the module is not loaded yet or doesn't exist.
 			if ( ! module ) {
@@ -61,7 +61,7 @@ export default function whenActive( { moduleName, FallbackComponent = null, Inco
 
 			// Return a fallback if the module is not active.
 			if ( module.active === false ) {
-				return FallbackComponent !== null ? <FallbackComponent { ...props } /> : null;
+				return <WhenFallbackComponent { ...props } />;
 			}
 
 			// Return a fallback if the module is active but not connected yet.
@@ -69,19 +69,20 @@ export default function whenActive( { moduleName, FallbackComponent = null, Inco
 				if ( IncompleteComponent !== null ) {
 					return <IncompleteComponent { ...props } />;
 				}
-				// If there isn't a IncompleteComponent then use the FallbackComponent if available.
-				return FallbackComponent !== null ? <FallbackComponent { ...props } /> : null;
+
+				// If there isn't a IncompleteComponent then use the WhenFallbackComponent.
+				return <WhenFallbackComponent { ...props } />;
 			}
 
 			// Return the active and connected component.
-			return createElement( wrappedComponent, props );
+			return <WrappedComponent { ...props } />;
 		};
 
-		whenActiveComponent.displayName = `When${ kebabCaseToPascalCase( moduleName ) }Active`;
-		if ( wrappedComponent.displayName || wrappedComponent.name ) {
-			whenActiveComponent.displayName += `(${ wrappedComponent.displayName || wrappedComponent.name })`;
+		WhenActiveComponent.displayName = `When${ kebabCaseToPascalCase( moduleName ) }Active`;
+		if ( WrappedComponent.displayName || WrappedComponent.name ) {
+			WhenActiveComponent.displayName += `(${ WrappedComponent.displayName || WrappedComponent.name })`;
 		}
 
-		return whenActiveComponent;
+		return WhenActiveComponent;
 	};
 }
