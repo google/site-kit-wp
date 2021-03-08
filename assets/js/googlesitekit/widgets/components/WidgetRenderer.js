@@ -78,7 +78,6 @@ const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 
 WidgetRenderer.propTypes = {
 	slug: PropTypes.string.isRequired,
-	columnWidth: PropTypes.number,
 	OverrideComponent: PropTypes.elementType,
 };
 
