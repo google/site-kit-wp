@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { STORE_NAME } from './constants';
 import { baseControls } from '../../modules/datastore/modules';
-import { createRegistrySelector } from '@wordpress/data';
+const { createRegistrySelector } = Data;
 
 // Actions.
 const DISMISS_TOUR = 'DISMISS_TOUR';
