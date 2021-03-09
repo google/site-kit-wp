@@ -105,7 +105,7 @@ const baseActions = {
 		}() );
 	},
 
-	receiveReadyTours( readyTours, { viewContext } ) {
+	receiveReadyTours( readyTours, { viewContext } = {} ) {
 		invariant( Array.isArray( readyTours ), 'readyTours must be an array.' );
 		invariant( viewContext, 'viewContext is required.' );
 		return {
