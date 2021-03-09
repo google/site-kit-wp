@@ -135,6 +135,13 @@
 			margin: 0;
 			min-width: 0;
 			padding: 0 12px;
+
+			svg {
+
+				path {
+					fill: $c-user-input-placeholder;
+				}
+			}
 		}
 	}
 
