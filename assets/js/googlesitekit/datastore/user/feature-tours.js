@@ -90,6 +90,11 @@ const baseActions = {
 		invariant( slug, 'A tour slug is required to dismiss a tour.' );
 
 		return ( function* () {
+			const { select } = yield getRegistry();
+			if ( select( STORE_NAME ).isTourDismissed( slug ) ) {
+				const response = select( STORE_NAME ).getDismissedTours();
+				return { response, error: undefined };
+			}
 			// Dismiss the given tour immediately.
 			yield {
 				payload: { slug },
