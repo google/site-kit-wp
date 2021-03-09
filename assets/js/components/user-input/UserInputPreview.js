@@ -50,7 +50,8 @@ export default function UserInputPreview( props ) {
 		error,
 	} = props;
 
-	const [ single, question ] = useQueryArg( 'single', false );
+	const [ single ] = useQueryArg( 'single', false );
+	const [ question ] = useQueryArg( 'question', false );
 	const settings = useSelect( ( select ) => select( CORE_USER ).getUserInputSettings() );
 
 	useEffect( () => {
