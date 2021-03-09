@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useLocalStorage, useMount } from 'react-use';
+import { useMount } from 'react-use';
 import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
 import PropTypes from 'prop-types';
 
@@ -34,6 +34,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import TourTooltip from './TourTooltip';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 const { useSelect, useDispatch } = Data;
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
@@ -73,7 +74,7 @@ export default function TourTooltips( { steps, tourID } ) {
 	const stepKey = `${ tourID }-step`;
 	const runKey = `${ tourID }-run`;
 	const { setValue } = useDispatch( CORE_UI );
-	const [ shouldSkipTour, setShouldSkipTour ] = useLocalStorage( `sitekit-${ tourID }__has-encountered-tour` );
+	const { dismissTour } = useDispatch( CORE_USER );
 
 	const stepIndex = useSelect( ( select ) => select( CORE_UI ).getValue( stepKey ) );
 	const run = useSelect( ( select ) => select( CORE_UI ).getValue( runKey ) || false );
@@ -84,16 +85,7 @@ export default function TourTooltips( { steps, tourID } ) {
 	);
 
 	const startTour = () => {
-		// Checks if user has completed or skipped tour already, do not re-run tour if so.
-		if ( ! shouldSkipTour ) {
-			setValue( runKey, true );
-		}
-	};
-
-	const endTour = () => {
-		// Add to localStorage to avoid unwanted repeat viewing.
-		setShouldSkipTour( true );
-		setValue( runKey, false );
+		setValue( runKey, true );
 	};
 
 	/**
@@ -123,7 +115,7 @@ export default function TourTooltips( { steps, tourID } ) {
 		if ( shouldChangeStep ) {
 			changeStep( index, action );
 		} else if ( shouldEndTour ) {
-			endTour();
+			dismissTour( tourID );
 		}
 	};
 
