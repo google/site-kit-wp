@@ -61,7 +61,7 @@ final class Subscribe_With_Google extends Module
 	/**
 	 * Module slug name.
 	 */
-	const MODULE_SLUG = 'subscribewithgoogle';
+	const MODULE_SLUG = 'subscribe-with-google';
 
 	/**
 	 * Container usage context for web.
@@ -548,7 +548,7 @@ final class Subscribe_With_Google extends Module
 		return array(
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Subscribe with Google', 'Service name', 'google-site-kit' ),
-			'description' => __( 'Marshmallow lemon drops caramels muffin marzipan. Icing caramels halvah chocolate cake gummi bears. Sweet cookie candy canes marzipan. Marshmallow cookie candy canes dessert pie fruitcake biscuit chocolate bonbon.', 'google-site-kit' ),
+			'description' => __( 'Generate revenue from contributions and subscriptions.', 'google-site-kit' ),
 			'cta'         => __( 'Tag management made even simpler.', 'google-site-kit' ),
 			'order'       => 6,
 			'homepage'    => __( 'https://tagmanager.google.com/', 'google-site-kit' ),
@@ -600,15 +600,14 @@ final class Subscribe_With_Google extends Module
 
 		return array(
 			new Script(
-				'googlesitekit-modules-tagmanager',
+				'googlesitekit-modules-subscribe-with-google',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-modules-tagmanager.js',
+					'src'          => $base_url . 'js/googlesitekit-modules-subscribe-with-google.js',
 					'dependencies' => array(
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-datastore-site',
 						'googlesitekit-modules',
-						'googlesitekit-modules-analytics',
 						'googlesitekit-vendor',
 					),
 				)

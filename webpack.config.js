@@ -153,6 +153,7 @@ const webpackConfig = ( env, argv ) => {
 				'googlesitekit-modules-pagespeed-insights': 'assets/js/googlesitekit-modules-pagespeed-insights.js',
 				'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
 				'googlesitekit-modules-tagmanager': './assets/js/googlesitekit-modules-tagmanager.js',
+				'googlesitekit-modules-subscribe-with-google': './assets/js/googlesitekit-modules-subscribe-with-google.js',
 				'googlesitekit-modules-optimize': './assets/js/googlesitekit-modules-optimize.js',
 				'googlesitekit-user-input': './assets/js/googlesitekit-user-input.js',
 				// Old Modules
