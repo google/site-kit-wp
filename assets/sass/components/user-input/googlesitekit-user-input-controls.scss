@@ -83,13 +83,21 @@
 	.googlesitekit-user-input__text-options {
 		border: 2px solid $c-jumbo;
 		border-radius: 4px;
-		display: flex;
-		height: 56px;
 		margin: 13px 0 8px;
-		padding: 12px;
+		padding: 0 12px;
 
 		@media (min-width: $bp-tablet) {
 			margin-top: 0;
+		}
+
+		> div {
+			margin: 12px;
+			margin-left: 0;
+		}
+
+		.mdc-text-field,
+		.mdc-text-field__input {
+			background-color: transparent;
 		}
 
 		.mdc-text-field {
@@ -98,14 +106,17 @@
 		}
 
 		.mdc-text-field__input {
-			background-color: $c-white;
 			border: none;
 			margin: 0;
-			padding: 0 12px;
+			padding: 0 6px;
 
 			&::placeholder {
 				color: $c-user-input-placeholder;
 			}
+		}
+
+		.mdc-line-ripple {
+			display: none;
 		}
 	}
 
@@ -114,9 +125,8 @@
 		background-color: $c-solitude;
 		border-radius: 100px;
 		color: $c-denim;
-		display: flex;
+		display: inline-flex;
 		font-weight: 500;
-		margin-right: 12px;
 		padding: 3px 3px 3px 12px;
 		white-space: nowrap;
 
@@ -126,5 +136,13 @@
 			min-width: 0;
 			padding: 0 12px;
 		}
+	}
+
+	.googlesitekit-user-input__text-option + div {
+		margin-top: 0;
+	}
+
+	.googlesitekit-user-input__text-options > div:last-child {
+		margin-right: 0;
 	}
 }

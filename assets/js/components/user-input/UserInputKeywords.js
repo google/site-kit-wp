@@ -126,6 +126,7 @@ export default function UserInputKeywords( { slug, max } ) {
 							<Input
 								id={ `${ slug }-keyword-${ i }` }
 								value={ value }
+								size={ value.length > 0 ? value.length : undefined }
 								onChange={ onKeywordChange.bind( null, i ) }
 								onKeyDown={ onKeyDown.bind( null, i ) }
 							/>
