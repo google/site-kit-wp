@@ -22,10 +22,11 @@
 import { useEffect, useState } from '@wordpress/element';
 
 /**
- * Runs a series of asynchronous checks returning the first encountered error.
+ * Runs a series of checks returning the first encountered error.
  * All checks should be functions that throw their respective errors.
  *
  * @since 1.25.0
+ * @since n.e.x.t Checks are run sequentially rather than in parallel.
  *
  * @param {Function[]} checks Array of functions to run.
  * @return {Object} An object containing complete and error properties.
@@ -38,7 +39,9 @@ export function useChecks( checks ) {
 	useEffect( () => {
 		const runChecks = async () => {
 			try {
-				await Promise.all( stableChecks.map( ( check ) => check() ) );
+				for ( const check of stableChecks ) {
+					await check();
+				}
 			} catch ( err ) {
 				setError( err );
 			}

@@ -454,8 +454,6 @@ const baseResolvers = {
 		}
 	},
 };
-// Use the canActivateModule resolver for getCheckRequirementsError
-baseResolvers.getCheckRequirementsError = baseResolvers.canActivateModule;
 
 const baseSelectors = {
 	/**
@@ -788,11 +786,16 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {(null|Object)} Activation error for a module slug; `null` if there is no error or an error object if we cannot activate a given module.
 	 */
-	getCheckRequirementsError( state, slug ) {
+	getCheckRequirementsError: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		const requirementsStatus = state.checkRequirementsResults[ slug ];
-		return requirementsStatus === true ? null : requirementsStatus;
-	},
+
+		// Need to use registry selector here to ensure resolver is invoked.
+		if ( select( STORE_NAME ).canActivateModule( slug ) ) {
+			return null;
+		}
+
+		return state.checkRequirementsResults[ slug ];
+	} ),
 
 	/**
 	 * Gets the module's screenWidgetContext.

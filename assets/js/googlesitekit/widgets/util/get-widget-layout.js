@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { WIDTH_GRID_COUNTER_MAP, WIDTH_GRID_CLASS_MAP } from './constants';
+import { isInactiveWidgetState } from './is-inactive-widget-state';
 
 /**
  * Adjusts class names to better fit into the current row knowing that the default sizes don't fill the row completely.
@@ -97,20 +98,43 @@ function getWidgetSizes( counter, widget ) {
 }
 
 /**
+ * Gets the first active widget in a list of widgets, after a specified offset,
+ * based on a set of widget states specifying which widgets are inactive.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {number}         offset       The current index offset.
+ * @param {Array.<Object>} widgets      List of widgets.
+ * @param {Array.<Object>} widgetStates List of widget states.
+ * @return {Object|null} Object representing the next active widget from the widgets array,
+ * or null if no more active widgets exist.
+ */
+function getNextActiveWidget( offset, widgets, widgetStates ) {
+	while ( ++offset < widgets.length ) {
+		if ( ! isInactiveWidgetState( widgetStates[ widgets[ offset ].slug ] ) ) {
+			return widgets[ offset ];
+		}
+	}
+	return null;
+}
+
+/**
  * Gets widget class names as well as column widths and row indexes for an area.
  *
  * @since 1.25.0
  *
- * @param {Array.<Object>} activeWidgets List of active widgets.
+ * @param {Array.<Object>} widgets      List of widgets.
+ * @param {Array.<Object>} widgetStates List of widget states.
  * @return {Object} Object with `classNames`, `columnWidths` and `rowIndexes`
  *                  properties, each of which is an array with one item for
  *                  each active widget.
  */
-export function getWidgetLayout( activeWidgets ) {
+export function getWidgetLayout( widgets, widgetStates ) {
 	let counter = 0;
 	let rowIndex = 0;
 
-	let classNames = [].fill( null, 0, activeWidgets.length );
+	let classNames = [].fill( null, 0, widgets.length );
 	let columnWidths = [];
 	const rowIndexes = [];
 
@@ -118,15 +142,26 @@ export function getWidgetLayout( activeWidgets ) {
 	const descending = ( { counter: a }, { counter: b } ) => b - a;
 	const fitIntoRow = ( { counter: width } ) => width <= 12;
 
-	activeWidgets.forEach( ( widget, i ) => {
+	widgets.forEach( ( widget, i ) => {
+		// If a widget is inactive, we set null / 0 values and don't need to calculate a layout.
+		if ( isInactiveWidgetState( widgetStates[ widget.slug ] ) ) {
+			columnWidths.push( 0 );
+			classNames[ i ] = null;
+			rowIndexes.push( rowIndex );
+			return;
+		}
+
 		// Get available sizes for the current widget to select the most appropriate width for the current row.
 		let sizes = getWidgetSizes( counter, widget );
 
+		// Get the next active widget to help determine the best width for this widget.
+		const nextActiveWidget = getNextActiveWidget( i, widgets, widgetStates );
+
 		if (
 			// If it is the last widget in the entire widget area.
-			i + 1 === activeWidgets.length ||
+			null === nextActiveWidget ||
 			// Or the next widget can't fit into the current row anyway, then we can try to use alternative sizes.
-			getWidgetSizes( sizes.sort( ascending )[ 0 ].counter, activeWidgets[ i + 1 ] ).filter( fitIntoRow ).length === 0
+			getWidgetSizes( sizes.sort( ascending )[ 0 ].counter, nextActiveWidget ).filter( fitIntoRow ).length === 0
 		) {
 			// We need to check whether we have a size that can fit into the row and if so, try to get it.
 			const hasSizeThatCanFitIntoRow = sizes.some( fitIntoRow );
