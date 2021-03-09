@@ -110,6 +110,9 @@ describe( 'modules/adsense URL channels', () => {
 				const urlchannels = registry.select( STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
 				expect( urlchannels ).toEqual( undefined );
 				expect( console ).toHaveErrored();
+
+				const urlChannelsError = registry.select( STORE_NAME ).getErrorForSelector( 'getURLChannels', [ fakeAccountID, fakeClientID ] );
+				expect( urlChannelsError ).toEqual( response );
 			} );
 		} );
 	} );

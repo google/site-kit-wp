@@ -108,6 +108,17 @@ const otherURLChannelA = {
 };
 
 describe( 'determineAccountStatus', () => {
+	it( 'should return ACCOUNT_STATUS_PENDING if urlChannelsError has "Ad client not found." message', () => {
+		const params = {
+			urlChannelsError: {
+				code: '404',
+				message: 'Ad client not found.',
+			},
+		};
+
+		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_PENDING );
+	} );
+
 	it( 'returns none for noAdSenseAccount error', () => {
 		const params = {
 			accounts: undefined,
