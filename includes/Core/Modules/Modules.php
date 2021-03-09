@@ -25,6 +25,7 @@ use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
+use Google\Site_Kit\Modules\Subscribe_With_Google;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -120,6 +121,7 @@ final class Modules {
 		Tag_Manager::class,
 		AdSense::class,
 		PageSpeed_Insights::class,
+		Subscribe_With_Google::class,
 	);
 
 	/**
