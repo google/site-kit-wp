@@ -97,7 +97,6 @@ export default function UserInputQuestionnaire() {
 	}, [ activeSlugIndex ] );
 
 	const goTo = useCallback( ( num = 1, singleType = false ) => {
-		console.log( steps[ num - 1 ] );
 		// If we're going to a single question to edit it, set the query string here.
 		// We can't currently set it in the child component because the useQueryArg hook doesn't update in the parent.
 		setSingle( singleType );
@@ -108,7 +107,7 @@ export default function UserInputQuestionnaire() {
 	}, [ activeSlugIndex ] );
 
 	const back = useCallback( () => {
-		trackEvent( 'user_input', 'question_advance', steps[ activeSlugIndex ] );
+		trackEvent( 'user_input', 'question_return', steps[ activeSlugIndex ] );
 		setActiveSlug( steps[ activeSlugIndex - 1 ] );
 	}, [ activeSlugIndex ] );
 
@@ -126,7 +125,7 @@ export default function UserInputQuestionnaire() {
 	}, [ dashboardURL ] );
 
 	const goToPreview = useCallback( () => {
-		console.log( steps[ activeSlugIndex ] );
+		trackEvent( 'user_input', 'question_update', steps[ activeSlugIndex ] );
 		setActiveSlug( steps[ steps.length - 1 ] );
 	}, [ activeSlugIndex ] );
 

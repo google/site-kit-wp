@@ -33,10 +33,7 @@ import Button from '../Button';
 
 export default function UserInputPreviewGroup( { questionNumber, title, edit, values, options } ) {
 	const isOther = ( ( values.filter( ( value ) => ! options[ value ] )[ 0 ] || false ) && questionNumber !== 5 );
-	console.log(isOther);
-	if ( isOther ) {
-		console.log( isOther, values, questionNumber );
-	}
+
 	return (
 		<div className="googlesitekit-user-input__preview-group">
 			<div className="googlesitekit-user-input__preview-group-title">

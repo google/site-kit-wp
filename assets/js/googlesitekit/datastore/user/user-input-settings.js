@@ -89,7 +89,6 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setUserInputSetting( settingID, values ) {
-		console.log( settingID, values );
 		return {
 			type: SET_USER_INPUT_SETTING,
 			payload: {

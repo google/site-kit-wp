@@ -26,13 +26,14 @@ import PropTypes from 'prop-types';
  */
 import { useInstanceId as useInstanceID } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
+import { useEffect, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import Notification from '../legacy-notifications/notification';
-import { getTimeInSeconds } from '../../util';
+import { getTimeInSeconds, trackEvent } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import PersonSittingSVG from '../../../svg/person-sitting.svg';
@@ -42,6 +43,22 @@ export default function UserInputSettings( { onCTAClick, isDimissable } ) {
 	const instanceID = useInstanceID( UserInputSettings );
 	const ctaLink = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
 	const userInputState = useSelect( ( select ) => select( CORE_USER ).getUserInputState() );
+
+	useEffect( () => {
+		trackEvent( 'user_input', 'prompt_notification_view' );
+	}, [] );
+
+	const handleOnDismiss = useCallback( () => {
+		trackEvent( 'user_input', 'prompt_notification_dismiss' );
+	}, [] );
+
+	const handleOnCTAClick = useCallback( () => {
+		trackEvent( 'user_input', 'prompt_notification_start' );
+
+		if ( typeof onCTAClick === 'function' ) {
+			onCTAClick();
+		}
+	}, [ onCTAClick ] );
 
 	if ( userInputState === 'completed' ) {
 		return null;
@@ -57,10 +74,11 @@ export default function UserInputSettings( { onCTAClick, isDimissable } ) {
 			dismissExpires={ getTimeInSeconds( 'hour' ) * 3 }
 			ctaLink={ ctaLink }
 			ctaLabel={ __( 'Let’s go', 'google-site-kit' ) }
-			onCTAClick={ onCTAClick }
+			onCTAClick={ handleOnCTAClick }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			WinImageSVG={ ( props ) => <PersonSittingSVG width="100%" height="100%" { ...props } /> }
 			isDismissable={ isDimissable }
+			onDismiss={ handleOnDismiss }
 		/>
 	);
 }
