@@ -31,9 +31,35 @@ describe( 'core/user feature-tours', () => {
 	let registry;
 	let store;
 
+	const testTourA = {
+		slug: 'test-tour-a',
+		version: '2.0.0',
+		contexts: [ 'common-context' ],
+		steps: [
+			{
+				title: 'Test Tour A - Step 1 Title',
+				content: 'Test Tour A - Step 1 Content',
+				target: 'test-tour-a-step-1-target',
+			},
+		],
+	};
+	const testTourB = {
+		slug: 'test-tour-b',
+		version: '2.1.0',
+		contexts: [ 'common-context', 'b-only-context' ],
+		steps: [
+			{
+				title: 'Test Tour B - Step 1 Title',
+				content: 'Test Tour B - Step 1 Content',
+				target: 'test-tour-b-step-1-target',
+			},
+		],
+	};
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
+		registry.dispatch( STORE_NAME ).receiveInitialSiteKitVersion( '1.0.0' );
 	} );
 
 	describe( 'actions', () => {
@@ -72,6 +98,19 @@ describe( 'core/user feature-tours', () => {
 				expect( store.getState().dismissedTours ).toEqual(
 					expect.arrayContaining( [ 'tour-a', 'tour-b' ] )
 				);
+			} );
+		} );
+
+		describe( 'receiveTours', () => {
+			it( 'requires tours to be an array', () => {
+				expect( () => registry.dispatch( STORE_NAME ).receiveTours() )
+					.toThrow( 'tours must be an array' );
+			} );
+
+			it( 'receives a the given tours into the state', () => {
+				const tours = [ testTourA, testTourB ];
+				registry.dispatch( STORE_NAME ).receiveTours( tours );
+				expect( store.getState().tours ).toEqual( tours );
 			} );
 		} );
 	} );
@@ -115,6 +154,90 @@ describe( 'core/user feature-tours', () => {
 				expect( registry.select( STORE_NAME ).getDismissedTours() ).toEqual(
 					expect.arrayContaining( [ 'feature-x', 'tour-a' ] )
 				);
+			} );
+		} );
+
+		describe( 'getReadyTours', () => {
+			beforeEach( () => {
+				registry.dispatch( STORE_NAME ).receiveGetDismissedTours( [] );
+			} );
+
+			it( 'returns `undefined` while tour readiness is being resolved', () => {
+				expect(
+					registry.select( STORE_NAME ).getReadyTours( 'test-view-context' )
+				).toBeUndefined();
+			} );
+
+			it( 'returns an array of tours that qualify for the given view context', async () => {
+				registry.dispatch( STORE_NAME ).receiveTours( [ testTourA, testTourB ] );
+
+				expect(
+					await registry.__experimentalResolveSelect( STORE_NAME ).getReadyTours( 'common-context' )
+				).toEqual( [ testTourA, testTourB ] );
+
+				expect(
+					await registry.__experimentalResolveSelect( STORE_NAME ).getReadyTours( 'b-only-context' )
+				).toEqual( [ testTourB ] );
+			} );
+
+			it( 'returns an array of tours that have a version greater than the user’s initial Site Kit version', async () => {
+				const initialVersion = '1.0.0';
+				const tourVersion = '2.0.0';
+				registry.dispatch( STORE_NAME ).receiveInitialSiteKitVersion( initialVersion );
+				registry.dispatch( STORE_NAME ).receiveTours( [
+					{ ...testTourA, version: initialVersion },
+					{ ...testTourB, version: tourVersion },
+				] );
+				// Tour A's version matches the user's initial version, so only Tour B is returned.
+				const readyTours = await registry.__experimentalResolveSelect( STORE_NAME ).getReadyTours( 'common-context' );
+				expect( readyTours.map( ( { slug } ) => slug ) ).toEqual( [ testTourB.slug ] );
+			} );
+
+			it( 'returns an array of tours that have not been dismissed by the user yet', async () => {
+				registry.dispatch( STORE_NAME ).receiveTours( [ testTourA, testTourB ] );
+				registry.dispatch( STORE_NAME ).receiveGetDismissedTours( [ testTourB.slug ] );
+				// Tour B was received as dismissed, but A was not.
+				expect(
+					await registry.__experimentalResolveSelect( STORE_NAME ).getReadyTours( 'common-context' )
+				).toEqual( [ testTourA ] );
+			} );
+
+			it( 'returns an array of tours that use their own logic for checking additional requirements', async () => {
+				// Check A will resolve with `true` on the next tick.
+				const checkA = jest.fn(
+					async () => new Promise( ( resolve ) => setTimeout( resolve( true ) ) )
+				);
+				// Check B will resolve with `false` on the next tick.
+				const checkB = jest.fn(
+					async () => new Promise( ( resolve ) => setTimeout( resolve( false ) ) )
+				);
+				registry.dispatch( STORE_NAME ).receiveTours( [
+					{ ...testTourA, checkRequirements: checkA },
+					{ ...testTourB, checkRequirements: checkB },
+				] );
+
+				const readyTours = await registry.__experimentalResolveSelect( STORE_NAME ).getReadyTours( 'common-context' );
+				expect( readyTours.map( ( { slug } ) => slug ) ).toEqual( [ testTourA.slug ] );
+				// Check functions should be called with the registry as the first parameter.
+				const registryMatcher = expect.objectContaining( {
+					select: expect.any( Function ),
+					dispatch: expect.any( Function ),
+				} );
+				// The registry instance passed to the function is slightly different for some reason
+				// so we can't simply call `.toHaveBeenCalledWith( registry )`
+				expect( checkA ).toHaveBeenCalledWith( registryMatcher );
+				expect( checkB ).toHaveBeenCalledWith( registryMatcher );
+			} );
+		} );
+
+		describe( 'getTours', () => {
+			it( 'returns all tours in the store', () => {
+				const tours = [ testTourA, testTourB ];
+				registry.dispatch( STORE_NAME ).receiveTours( tours );
+
+				expect(
+					registry.select( STORE_NAME ).getTours()
+				).toEqual( tours );
 			} );
 		} );
 
