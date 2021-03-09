@@ -91,7 +91,7 @@ const baseActions = {
 
 		return ( function* () {
 			const { select } = yield getRegistry();
-			if ( select( STORE_NAME ).isTourDismissed( slug ) ) {
+			if ( select( STORE_NAME ).isFetchingDismissTour( slug ) ) {
 				const response = select( STORE_NAME ).getDismissedTours();
 				return { response, error: undefined };
 			}
