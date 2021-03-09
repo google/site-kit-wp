@@ -31,7 +31,7 @@ import { enabledFeatures } from '../../features';
 import PermissionsModal from '../PermissionsModal';
 import RestoreSnapshots from '../RestoreSnapshots';
 import CollectModuleData from '../data/collect-module-data';
-import ViewContextProvider from '../ViewContextProvider';
+import FeatureTours from '../FeatureTours';
 
 export default function Root( {
 	children,
@@ -44,18 +44,17 @@ export default function Root( {
 	return (
 		<Data.RegistryProvider value={ registry }>
 			<FeaturesProvider value={ enabledFeatures }>
-				<ViewContextProvider value={ viewContext }>
-					<ErrorHandler>
-						<RestoreSnapshots>
-							{ children }
-							{ dataAPIContext && (
-							// Legacy dataAPI support.
-								<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
-							) }
-						</RestoreSnapshots>
-						<PermissionsModal />
-					</ErrorHandler>
-				</ViewContextProvider>
+				<ErrorHandler>
+					<RestoreSnapshots>
+						{ children }
+						{ viewContext && <FeatureTours viewContext={ viewContext } /> }
+						{ dataAPIContext && (
+						// Legacy dataAPI support.
+							<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
+						) }
+					</RestoreSnapshots>
+					<PermissionsModal />
+				</ErrorHandler>
 			</FeaturesProvider>
 		</Data.RegistryProvider>
 	);
