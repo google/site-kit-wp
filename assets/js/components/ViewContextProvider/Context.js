@@ -1,5 +1,5 @@
 /**
- * React context for providing Screen Context.
+ * React context for providing View Context.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

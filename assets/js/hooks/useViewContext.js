@@ -1,7 +1,7 @@
 /**
- * Screen Context Provider component.
+ * View Context hook.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,15 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useContext } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
-import Context from './Context';
+import context from '../components/ViewContextProvider/Context';
 
-export const { Consumer, Provider } = Context;
-
-const ScreenContextProvider = Provider;
-
-export default ScreenContextProvider;
+export function useViewContext() {
+	return useContext( context );
+}

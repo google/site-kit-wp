@@ -1,5 +1,5 @@
 /**
- * `useScreenContext` hook tests.
+ * `useViewContext` hook tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import { renderHook } from '../../../tests/js/test-utils';
-import { useScreenContext } from './useScreenContext';
+import { useViewContext } from './useViewContext';
 
-describe( 'useScreenContext', () => {
+describe( 'useViewContext', () => {
 	it( 'should return `null` when there is no screen context set', () => {
 		const { result } = renderHook(
-			() => useScreenContext()
+			() => useViewContext()
 		);
 
 		expect( result.current ).toBe( null );
@@ -33,8 +33,8 @@ describe( 'useScreenContext', () => {
 
 	it( 'should return the current screen context set in the provider', () => {
 		const { result } = renderHook(
-			() => useScreenContext(),
-			{ screenContext: 'test-screen' }
+			() => useViewContext(),
+			{ viewContext: 'test-screen' }
 		);
 
 		expect( result.current ).toEqual( 'test-screen' );
