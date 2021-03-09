@@ -25,6 +25,7 @@ import { WIDGET_WIDTHS } from '../datastore/constants';
 import ReportZero from '../../../components/ReportZero';
 import ActivateModuleCTA from '../../../components/ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../../../components/CompleteModuleActivationCTA';
+import Null from '../../../components/Null';
 
 describe( 'combineWidgets', () => {
 	const getQuarterWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.QUARTER } );
@@ -34,6 +35,7 @@ describe( 'combineWidgets', () => {
 	const getReportZeroState = ( moduleSlug ) => ( { Component: ReportZero, metadata: { moduleSlug } } );
 	const getActivateModuleCTAState = ( moduleSlug ) => ( { Component: ActivateModuleCTA, metadata: { moduleSlug } } );
 	const getCompleteModuleActivationCTAState = ( moduleSlug ) => ( { Component: CompleteModuleActivationCTA, metadata: { moduleSlug } } );
+	const getNullState = () => ( { Component: Null, metadata: {} } );
 
 	// Every test case below corresponds to a matching story in `stories/widgets.stories.js` under
 	// "Global/Widgets/Widget Area/Special combination states".
@@ -66,7 +68,7 @@ describe( 'combineWidgets', () => {
 			],
 		};
 
-		const layout = getWidgetLayout( widgets );
+		const layout = getWidgetLayout( widgets, widgetStates );
 		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
 	} );
 
@@ -100,7 +102,7 @@ describe( 'combineWidgets', () => {
 			],
 		};
 
-		const layout = getWidgetLayout( widgets );
+		const layout = getWidgetLayout( widgets, widgetStates );
 		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
 	} );
 
@@ -134,7 +136,7 @@ describe( 'combineWidgets', () => {
 			],
 		};
 
-		const layout = getWidgetLayout( widgets );
+		const layout = getWidgetLayout( widgets, widgetStates );
 		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
 	} );
 
@@ -146,6 +148,7 @@ describe( 'combineWidgets', () => {
 			getQuarterWidget( 'test4' ),
 			getQuarterWidget( 'test5' ),
 			getQuarterWidget( 'test6' ),
+			getQuarterWidget( 'test7' ),
 		];
 		const widgetStates = {
 			// Only test1 and test2 will be combined. test3 has matching state but is within the following row,
@@ -156,6 +159,7 @@ describe( 'combineWidgets', () => {
 			test4: getCompleteModuleActivationCTAState( 'analytics' ),
 			test5: getRegularState(),
 			test6: getCompleteModuleActivationCTAState( 'analytics' ),
+			test7: getNullState( 'analytics' ),
 		};
 		const expected = {
 			gridColumnWidths: [
@@ -165,6 +169,7 @@ describe( 'combineWidgets', () => {
 				3,
 				3,
 				3,
+				0,
 			],
 			overrideComponents: [
 				null,
@@ -173,10 +178,11 @@ describe( 'combineWidgets', () => {
 				null,
 				null,
 				null,
+				null,
 			],
 		};
 
-		const layout = getWidgetLayout( widgets );
+		const layout = getWidgetLayout( widgets, widgetStates );
 		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
 	} );
 } );

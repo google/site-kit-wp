@@ -32,6 +32,7 @@ import { Component, Fragment } from '@wordpress/element';
  */
 import data, { TYPE_MODULES } from './data';
 import Notification from './legacy-notifications/notification';
+import SunSmallSVG from '../../svg/sun-small.svg';
 
 class Alert extends Component {
 	constructor( props ) {
@@ -82,6 +83,7 @@ class Alert extends Component {
 				key={ item.id }
 				title={ item.title }
 				description={ item.message || item.description }
+				WinImageSVG={ SunSmallSVG }
 				dismiss={ __( 'Dismiss', 'google-site-kit' ) }
 				isDismissable={ item.isDismissible }
 				format="small"

@@ -30,7 +30,7 @@ function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
  *
  * @since 1.25.0
  *
- * @param {Array.<Object>} activeWidgets       List of active widgets.
+ * @param {Array.<Object>} widgets             List of widgets.
  * @param {Object}         widgetStates        Map of widget slug and their
  *                                             state (either an object with
  *                                             `Component` and `metadata`, or
@@ -46,7 +46,7 @@ function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
  * 									entry is either an object with `Component` and `metadata`, or
  * 									`null` (similar to the `widgetStates` parameter).
  */
-export function combineWidgets( activeWidgets, widgetStates, {
+export function combineWidgets( widgets, widgetStates, {
 	columnWidths,
 	rowIndexes,
 } ) {
@@ -57,7 +57,7 @@ export function combineWidgets( activeWidgets, widgetStates, {
 	let currentRowIndex = -1;
 	let columnWidthsBuffer = [];
 
-	activeWidgets.forEach( ( widget, i ) => {
+	widgets.forEach( ( widget, i ) => {
 		overrideComponents.push( null );
 
 		currentState = widgetStates[ widget.slug ];
@@ -65,7 +65,7 @@ export function combineWidgets( activeWidgets, widgetStates, {
 
 		// If the current widget has a special state...
 		if ( currentState ) {
-			if ( stateAndRowMatch( currentState, widgetStates[ activeWidgets[ i + 1 ]?.slug ], currentRowIndex, rowIndexes[ i + 1 ] ) ) {
+			if ( stateAndRowMatch( currentState, widgetStates[ widgets[ i + 1 ]?.slug ], currentRowIndex, rowIndexes[ i + 1 ] ) ) {
 				// If the current widget state and row index match the next
 				// state and row index, hide the widget entirely. Only the last
 				// similar instance will be rendered in this case.

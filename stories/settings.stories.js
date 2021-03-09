@@ -37,6 +37,7 @@ import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin
 import SettingsAdmin from '../assets/js/components/settings/SettingsAdmin';
 import { provideModuleRegistrations, provideModules, provideSiteInfo, WithTestRegistry, untilResolved } from '../tests/js/utils';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 
 /**
  * Add components to the settings page.
@@ -155,6 +156,10 @@ storiesOf( 'Settings', module )
 
 		const setupRegistry = ( registry ) => {
 			provideSiteInfo( registry );
+
+			registry.dispatch( CORE_USER ).receiveGetTracking( {
+				enabled: false,
+			} );
 		};
 
 		return (
