@@ -26,7 +26,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 
-export const allTrafficWidget = {
+const allTrafficWidget = {
+	slug: 'allTrafficWidget',
 	contexts: [ VIEW_CONTEXT_DASHBOARD ],
 	version: '1.25.0',
 	steps: [
