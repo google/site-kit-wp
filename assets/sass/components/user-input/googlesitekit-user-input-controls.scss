@@ -43,6 +43,10 @@
 		margin: 0 0 20px;
 	}
 
+	.googlesitekit-user-input__select-options + .googlesitekit-user-input__note {
+		margin-left: 43px;
+	}
+
 	.googlesitekit-user-input__select-option {
 		align-items: center;
 		border-bottom: 1px solid $c-mercury;
@@ -84,9 +88,10 @@
 		border: 2px solid $c-jumbo;
 		border-radius: 4px;
 		display: flex;
-		height: 56px;
+		flex-wrap: wrap;
 		margin: 13px 0 8px;
-		padding: 12px;
+		min-height: 60px;
+		padding: 12px 12px 0;
 
 		@media (min-width: $bp-tablet) {
 			margin-top: 0;
@@ -94,6 +99,7 @@
 
 		.mdc-text-field {
 			height: 32px;
+			padding-bottom: 12px;
 			width: 100%;
 		}
 
@@ -116,7 +122,7 @@
 		color: $c-denim;
 		display: flex;
 		font-weight: 500;
-		margin-right: 12px;
+		margin: 0 12px 12px;
 		padding: 3px 3px 3px 12px;
 		white-space: nowrap;
 
