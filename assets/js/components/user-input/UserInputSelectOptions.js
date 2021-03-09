@@ -124,9 +124,9 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 			</div>
 
 			<p className="googlesitekit-user-input__note">
-				{ max === 1 && __( 'Choose only one (1) answer', 'google-site-kit' ) }
-				{ max === 2 && __( 'Choose only two (2) answers', 'google-site-kit' ) }
-				{ max === 3 && __( 'Choose only three (3) answers', 'google-site-kit' ) }
+				{ max === 1 && __( 'Choose up to one (1) answer', 'google-site-kit' ) }
+				{ max === 2 && __( 'Choose up to two (2) answers', 'google-site-kit' ) }
+				{ max === 3 && __( 'Choose up to three (3) answers', 'google-site-kit' ) }
 			</p>
 		</Cell>
 	);
