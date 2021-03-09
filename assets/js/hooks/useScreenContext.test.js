@@ -23,7 +23,7 @@ import { renderHook } from '../../../tests/js/test-utils';
 import { useViewContext } from './useViewContext';
 
 describe( 'useViewContext', () => {
-	it( 'should return `null` when there is no screen context set', () => {
+	it( 'should return `null` when there is no view context set', () => {
 		const { result } = renderHook(
 			() => useViewContext()
 		);
@@ -31,13 +31,13 @@ describe( 'useViewContext', () => {
 		expect( result.current ).toBe( null );
 	} );
 
-	it( 'should return the current screen context set in the provider', () => {
+	it( 'should return the current view context set in the provider', () => {
 		const { result } = renderHook(
 			() => useViewContext(),
-			{ viewContext: 'test-screen' }
+			{ viewContext: 'test-view' }
 		);
 
-		expect( result.current ).toEqual( 'test-screen' );
+		expect( result.current ).toEqual( 'test-view' );
 	} );
 } );
 
