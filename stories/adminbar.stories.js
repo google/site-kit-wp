@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { GoogleSitekitAdminbar } from '../assets/js/googlesitekit-adminbar';
+import AdminBarApp from '../assets/js/components/adminbar/AdminBarApp';
 import { googlesitekit as wpAdminBarData } from '../.storybook/data/blog---googlesitekit';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { provideModules, provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
@@ -98,7 +98,7 @@ storiesOf( 'Global', module )
 					<div id="js-googlesitekit-adminbar" className="ab-sub-wrapper googlesitekit-adminbar" style={ { display: 'block' } }>
 						<section id="js-googlesitekit-adminbar-modules" className="googlesitekit-adminbar-modules">
 							<WithTestRegistry callback={ setupRegistry }>
-								<GoogleSitekitAdminbar />
+								<AdminBarApp />
 							</WithTestRegistry>
 						</section>
 					</div>
@@ -123,7 +123,7 @@ storiesOf( 'Global', module )
 					<div id="js-googlesitekit-adminbar" className="ab-sub-wrapper googlesitekit-adminbar" style={ { display: 'block' } }>
 						<section id="js-googlesitekit-adminbar-modules" className="googlesitekit-adminbar-modules">
 							<WithTestRegistry callback={ setupRegistry }>
-								<GoogleSitekitAdminbar />
+								<AdminBarApp />
 							</WithTestRegistry>
 						</section>
 					</div>
