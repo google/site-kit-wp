@@ -32,8 +32,6 @@ import { __ } from '@wordpress/i18n';
 import Button from '../Button';
 
 export default function UserInputPreviewGroup( { questionNumber, title, edit, values, options } ) {
-	const isOther = ( ( values.filter( ( value ) => ! options[ value ] )[ 0 ] || false ) && questionNumber !== 5 );
-
 	return (
 		<div className="googlesitekit-user-input__preview-group">
 			<div className="googlesitekit-user-input__preview-group-title">
@@ -48,9 +46,6 @@ export default function UserInputPreviewGroup( { questionNumber, title, edit, va
 			<div className="googlesitekit-user-input__preview-answers">
 				{ values.map( ( value ) => (
 					<div key={ value } className="googlesitekit-user-input__preview-answer">
-						{ isOther && (
-							<span>Other: </span>
-						) } { ' ' }
 						{ options[ value ] || value }
 					</div>
 				) ) }
