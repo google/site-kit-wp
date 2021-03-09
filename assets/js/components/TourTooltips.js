@@ -77,7 +77,10 @@ export default function TourTooltips( { steps, tourID } ) {
 	const { dismissTour } = useDispatch( CORE_USER );
 
 	const stepIndex = useSelect( ( select ) => select( CORE_UI ).getValue( stepKey ) );
-	const run = useSelect( ( select ) => select( CORE_UI ).getValue( runKey ) || false );
+	const run = useSelect( ( select ) => {
+		return select( CORE_UI ).getValue( runKey ) &&
+			select( CORE_USER ).isTourDismissed( tourID ) === false;
+	} );
 
 	const changeStep = ( index, action ) => setValue(
 		stepKey,
@@ -86,6 +89,11 @@ export default function TourTooltips( { steps, tourID } ) {
 
 	const startTour = () => {
 		setValue( runKey, true );
+	};
+
+	const endTour = () => {
+		// Dismiss tour to avoid unwanted repeat viewing.
+		dismissTour( tourID );
 	};
 
 	/**
@@ -115,7 +123,7 @@ export default function TourTooltips( { steps, tourID } ) {
 		if ( shouldChangeStep ) {
 			changeStep( index, action );
 		} else if ( shouldEndTour ) {
-			dismissTour( tourID );
+			endTour();
 		}
 	};
 
