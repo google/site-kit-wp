@@ -168,6 +168,7 @@ const baseSelectors = {
 export const {
 	actions,
 	controls,
+	initialState,
 	reducer,
 	resolvers,
 	selectors,
@@ -187,6 +188,7 @@ export const {
 export default {
 	actions,
 	controls,
+	initialState,
 	reducer,
 	resolvers,
 	selectors,
