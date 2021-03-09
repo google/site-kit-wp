@@ -73,9 +73,7 @@ const Button = forwardRef( ( {
 			{ ...extraProps }
 		>
 			{ icon }
-			{ children && (
-				<span className="mdc-button__label">{ children }</span>
-			) }
+			{ children && <span className="mdc-button__label">{ children }</span> }
 			{ trailingIcon }
 		</SemanticButton>
 	);
