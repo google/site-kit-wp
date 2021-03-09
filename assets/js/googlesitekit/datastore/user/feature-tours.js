@@ -133,7 +133,9 @@ const baseControls = {
 
 		// Only tours with a version after a user's initial Site Kit version should qualify.
 		const initialVersion = registry.select( STORE_NAME ).getInitialSiteKitVersion();
-		if ( compareVersions.compare( initialVersion, tour.version, '>=' ) ) {
+		if ( ! initialVersion ) {
+			return false;
+		} else if ( compareVersions.compare( initialVersion, tour.version, '>=' ) ) {
 			return false;
 		}
 
