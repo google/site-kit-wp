@@ -51,7 +51,7 @@ const fetchGetDismissedToursStore = createFetchStore( {
 		};
 	},
 } );
-const { fetchGetDismissedTours, receiveGetDismissedTours } = fetchGetDismissedToursStore.actions;
+const { fetchGetDismissedTours } = fetchGetDismissedToursStore.actions;
 const fetchDismissTourStore = createFetchStore( {
 	baseName: 'dismissTour',
 	controlCallback: ( { slug } ) => API.set( 'core', 'user', 'dismiss-tour', { slug } ),
@@ -100,12 +100,8 @@ const baseActions = {
 				payload: { slug },
 				type: DISMISS_TOUR,
 			};
-			// Dispatch a request to persist the dismissal.
-			const { response, error } = yield fetchDismissTour( slug );
-			if ( ! error ) {
-				yield receiveGetDismissedTours( response );
-			}
-			return { response, error };
+			// Dispatch a request to persist and receive updated dismissed tours.
+			return yield fetchDismissTour( slug );
 		}() );
 	},
 
@@ -199,10 +195,7 @@ const baseResolvers = {
 	*getDismissedTours() {
 		const { select } = yield getRegistry();
 		if ( ! select( STORE_NAME ).getDismissedTours() ) {
-			const { response, error } = yield fetchGetDismissedTours();
-			if ( ! error ) {
-				yield receiveGetDismissedTours( response );
-			}
+			yield fetchGetDismissedTours();
 		}
 	},
 
