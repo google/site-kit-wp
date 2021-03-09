@@ -53,6 +53,12 @@ jobs:
       - name: Build
         run: npm run build:test
 
+      # E2E tests use a dedicated container, this is just for Composer.
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.x'
+          tools: composer
+
       - name: Get Composer Cache Directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
@@ -64,10 +70,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Composer Install
-        uses: php-actions/composer@v4
-        with:
-          dev: no
-          php_version: 7.3
+        run: composer install --no-interaction --no-progress --no-dev
 
       - name: Start environment
         run: npm run env:start
