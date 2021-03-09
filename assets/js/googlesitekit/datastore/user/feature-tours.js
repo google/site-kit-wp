@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { STORE_NAME } from './constants';
 import { baseControls } from '../../modules/datastore/modules';
+import featureTours from '../../../feature-tours';
 const { createRegistrySelector } = Data;
 
 // Actions.
@@ -65,6 +66,7 @@ const { fetchDismissTour } = fetchDismissTourStore.actions;
 
 const baseInitialState = {
 	dismissedTours: undefined,
+	tours: featureTours,
 };
 
 const baseActions = {
