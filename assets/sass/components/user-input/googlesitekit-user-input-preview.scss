@@ -64,10 +64,6 @@
 		word-break: break-word;
 
 		@include responsive-text("body1", "body3");
-
-		@media (min-width: $bp-tablet) {
-			border-radius: 100px;
-		}
 	}
 
 	.googlesitekit-user-input__preview-group {
