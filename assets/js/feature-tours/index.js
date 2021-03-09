@@ -25,11 +25,20 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 
 const allTrafficWidget = {
 	slug: 'allTrafficWidget',
 	contexts: [ VIEW_CONTEXT_DASHBOARD ],
 	version: '1.25.0',
+	checkRequirements: async ( registry ) => {
+		// Here we need to wait for the underlying selector to be resolved before selecting `isModuleConnected`.
+		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
+		if ( ! registry.select( CORE_MODULES ).isModuleConnected( 'analytics' ) ) {
+			return false;
+		}
+		return true;
+	},
 	steps: [
 		{
 			target: '.googlesitekit-widget--analyticsAllTraffic__user-count-chart',
