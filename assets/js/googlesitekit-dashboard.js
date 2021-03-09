@@ -32,7 +32,7 @@ import ModuleSetup from './components/setup/ModuleSetup';
 import DashboardApp from './components/dashboard/DashboardApp';
 import NotificationCounter from './components/legacy-notifications/notification-counter';
 import './components/legacy-notifications';
-import { SCREEN_CONTEXT_DASHBOARD } from './googlesitekit/constants';
+import { VIEW_CONTEXT_DASHBOARD } from './googlesitekit/constants';
 
 const GoogleSitekitDashboard = () => {
 	const { showModuleSetupWizard, moduleToSetup } = global._googlesitekitLegacyData.setup;
@@ -60,7 +60,7 @@ domReady( () => {
 	if ( renderTarget ) {
 		render(
 			<Root
-				screenContext={ SCREEN_CONTEXT_DASHBOARD }
+				viewContext={ VIEW_CONTEXT_DASHBOARD }
 				dataAPIContext="Dashboard"
 			>
 				<GoogleSitekitDashboard />

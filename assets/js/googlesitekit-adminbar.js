@@ -34,7 +34,6 @@ import { trackEvent } from './util';
 import Root from './components/Root';
 import AdminBarApp from './components/adminbar/AdminBarApp';
 import './modules';
-import { SCREEN_CONTEXT_ADMIN_BAR } from './googlesitekit/constants';
 
 // Initialize the whole adminbar app.
 const init = once( () => {
@@ -42,10 +41,7 @@ const init = once( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root
-				screenContext={ SCREEN_CONTEXT_ADMIN_BAR }
-				dataAPIContext="Adminbar"
-			>
+			<Root dataAPIContext="Adminbar">
 				<AdminBarApp />
 			</Root>,
 			renderTarget

@@ -24,10 +24,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SCREEN_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
+import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 
 export const allTrafficWidget = {
-	contexts: [ SCREEN_CONTEXT_DASHBOARD ],
+	contexts: [ VIEW_CONTEXT_DASHBOARD ],
 	version: '1.25.0',
 	steps: [
 		{

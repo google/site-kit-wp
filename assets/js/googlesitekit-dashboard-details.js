@@ -33,7 +33,7 @@ import { render } from '@wordpress/element';
 import './components/legacy-notifications';
 import DashboardDetailsApp from './components/dashboard-details/DashboardDetailsApp';
 import Root from './components/Root';
-import { SCREEN_CONTEXT_PAGE_DASHBOARD } from './googlesitekit/constants';
+import { VIEW_CONTEXT_PAGE_DASHBOARD } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
@@ -42,7 +42,7 @@ domReady( () => {
 	if ( renderTarget ) {
 		render(
 			<Root
-				screenContext={ SCREEN_CONTEXT_PAGE_DASHBOARD }
+				viewContext={ VIEW_CONTEXT_PAGE_DASHBOARD }
 				dataAPIContext="Dashboard"
 			>
 				<DashboardDetailsApp />

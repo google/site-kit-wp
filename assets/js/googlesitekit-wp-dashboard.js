@@ -34,7 +34,6 @@ import { render } from '@wordpress/element';
 import './components/data';
 import Root from './components/Root';
 import WPDashboardApp from './components/wp-dashboard/WPDashboardApp';
-import { SCREEN_CONTEXT_WP_DASHBOARD } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
@@ -42,10 +41,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root
-				screenContext={ SCREEN_CONTEXT_WP_DASHBOARD }
-				dataAPIContext="WPDashboard"
-			>
+			<Root dataAPIContext="WPDashboard">
 				<WPDashboardApp />
 			</Root>,
 			renderTarget
