@@ -644,10 +644,8 @@ final class Assets {
 	 */
 	private function get_inline_base_data() {
 		global $wpdb;
-
 		$site_url     = $this->context->get_reference_site_url();
 		$current_user = wp_get_current_user();
-		$users        = count_users();
 
 		$inline_data = array(
 			'homeURL'          => trailingslashit( $this->context->get_canonical_home_url() ),
@@ -662,7 +660,6 @@ final class Assets {
 			'siteName'         => get_bloginfo( 'name' ),
 			'enabledFeatures'  => Feature_Flags::get_enabled_features(),
 			'webStoriesActive' => defined( 'WEBSTORIES_VERSION' ),
-			'multipleUsers'    => $users['total_users'] > 1,
 		);
 
 		/**

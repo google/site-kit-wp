@@ -37,7 +37,7 @@ import UserInputQuestionNotice from './UserInputQuestionNotice';
 const { useSelect } = Data;
 
 export default function UserInputQuestionInfo( { title, description, scope, questionNumber, author } ) {
-	const isMultipleUser = useSelect( ( select ) => select( CORE_SITE ).isMultipleUsers() );
+	const hasMultipleUser = useSelect( ( select ) => select( CORE_SITE ).hasMultipleAdmins() );
 
 	return (
 		<Cell
@@ -65,7 +65,7 @@ export default function UserInputQuestionInfo( { title, description, scope, ques
 
 			<UserInputQuestionNotice />
 
-			{ scope === 'site' && isMultipleUser && (
+			{ scope === 'site' && hasMultipleUser && (
 				<p>
 					{ __( 'This question applies to the entire site and may have an effect for other users.', 'google-site-kit' ) }
 				</p>

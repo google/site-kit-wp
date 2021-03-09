@@ -105,7 +105,6 @@ export const reducer = ( state, { payload, type } ) => {
 				timezone,
 				usingProxy,
 				webStoriesActive,
-				multipleUsers,
 			} = payload.siteInfo;
 
 			return {
@@ -125,7 +124,6 @@ export const reducer = ( state, { payload, type } ) => {
 					timezone,
 					usingProxy,
 					webStoriesActive,
-					multipleUsers,
 				},
 			};
 		}
@@ -167,7 +165,6 @@ export const resolvers = {
 			timezone,
 			usingProxy,
 			webStoriesActive,
-			multipleUsers,
 		} = global._googlesitekitBaseData;
 		const {
 			currentEntityID,
@@ -191,7 +188,6 @@ export const resolvers = {
 			timezone,
 			usingProxy: !! usingProxy,
 			webStoriesActive,
-			multipleUsers,
 		} );
 	},
 };
@@ -512,16 +508,6 @@ export const selectors = {
 	 * @return {(boolean|undefined)} `true` if the Web Stories plugin is enabled, `false` if not. Returns `undefined` if not loaded.
 	 */
 	isWebStoriesActive: getSiteInfoProperty( 'webStoriesActive' ),
-
-	/**
-	 * Returns true if this site has multiple users.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} `true` if the site has multiple users, `false` if not. Returns `undefined` if not loaded.
-	 */
-	isMultipleUsers: getSiteInfoProperty( 'multipleUsers' ),
 };
 
 export default {
