@@ -30,9 +30,19 @@ import { render } from '../../../../tests/js/test-utils';
 describe( 'SettingsModules', () => {
 	// Create hash history to interact with HashRouter using `history.push`
 	const history = createHashHistory( { initialEntries: [ '/' ] } );
+	let savedLocationHash;
+
+	beforeAll( () => {
+		savedLocationHash = global.location.hash;
+	} );
 
 	beforeEach( () => {
 		global.location.hash = '';
+	} );
+
+	afterAll( () => {
+		// restore previous location hash after tests are complete
+		global.location.hash = savedLocationHash;
 	} );
 
 	it( 'should redirect from #connect to #/connect-more-services', async () => {
