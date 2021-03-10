@@ -126,7 +126,7 @@ export default function TourTooltips( { steps, tourID } ) {
 			if ( 'string' === typeof step.target ) {
 				el = global.document.querySelector( step.target );
 			}
-			el?.scrollIntoView( { block: 'center' } );
+			el?.scrollIntoView?.( { block: 'center' } );
 		}
 
 		if ( shouldChangeStep ) {
