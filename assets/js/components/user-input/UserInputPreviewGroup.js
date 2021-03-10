@@ -32,6 +32,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import Button from '../Button';
 
 export default function UserInputPreviewGroup( { questionNumber, title, edit, values, options } ) {
+	const trim = ( value ) => value.trim();
+	const notEmpty = ( value ) => value.length > 0;
 	/* translators: %s: other option */
 	const sprintfTemplate = questionNumber < 5 ? __( 'Other: %s', 'google-site-kit' ) : '%s';
 
@@ -47,7 +49,7 @@ export default function UserInputPreviewGroup( { questionNumber, title, edit, va
 			</div>
 
 			<div className="googlesitekit-user-input__preview-answers">
-				{ values.map( ( value ) => (
+				{ values.map( trim ).filter( notEmpty ).map( ( value ) => (
 					<div key={ value } className="googlesitekit-user-input__preview-answer">
 						{ options[ value ] || sprintf( sprintfTemplate, value ) }
 					</div>
