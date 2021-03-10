@@ -158,6 +158,9 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 		currentRange,
 	] );
 
+	// Set a flag in the core/ui store when all data is loaded.
+	// Currently only used by the feature tour to delay showing
+	// while the widget is in a loading state.
 	const { setValue } = useDispatch( CORE_UI );
 	useEffect( () => {
 		if ( firstLoad && pieChartLoaded && totalUsersLoaded && userCountGraphLoaded ) {
