@@ -141,7 +141,7 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 					</ListComponent>
 
 					<TextField
-						label={ __( 'Other', 'google-site-kit' ) }
+						label={ __( 'Type your own answer', 'google-site-kit' ) }
 						floatingLabelClassName="screen-reader-text"
 					>
 						<Input
