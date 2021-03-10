@@ -25,7 +25,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
+import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { UI_ALL_TRAFFIC_LOADED } from '../modules/analytics/datastore/constants';
 
 const allTrafficWidget = {
 	slug: 'allTrafficWidget',
@@ -37,6 +39,19 @@ const allTrafficWidget = {
 		if ( ! registry.select( CORE_MODULES ).isModuleConnected( 'analytics' ) ) {
 			return false;
 		}
+		// Wait for All Traffic widget to finish loading.
+		await new Promise( ( resolve ) => {
+			const resolveWhenLoaded = () => {
+				if ( registry.select( CORE_UI ).getValue( UI_ALL_TRAFFIC_LOADED ) ) {
+					resolve();
+				} else {
+					setTimeout( resolveWhenLoaded, 250 );
+				}
+			};
+
+			setTimeout( resolveWhenLoaded, 250 );
+		} );
+
 		return true;
 	},
 	steps: [
