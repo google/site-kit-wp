@@ -46,9 +46,8 @@ import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import { isZeroReport } from '../../../util';
 import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
-import { useDispatch } from '@wordpress/data';
 
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const [ firstLoad, setFirstLoad ] = useState( true );
