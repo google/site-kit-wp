@@ -99,7 +99,7 @@
 
 		.mdc-text-field {
 			height: 32px;
-			padding-bottom: 12px;
+			margin-bottom: 12px;
 			width: 100%;
 		}
 
@@ -124,7 +124,7 @@
 		font-weight: 500;
 		margin: 0 12px 12px;
 		padding: 3px 3px 3px 12px;
-		white-space: nowrap;
+		word-break: break-word;
 
 		button {
 			border-radius: 100px;
