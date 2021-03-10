@@ -548,7 +548,7 @@ final class Subscribe_With_Google extends Module
 		return array(
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Subscribe with Google', 'Service name', 'google-site-kit' ),
-			'description' => __( 'Generate revenue from contributions and subscriptions.', 'google-site-kit' ),
+			'description' => __( 'Generate revenue through your content by adding subscriptions or contributions to your publication.', 'google-site-kit' ),
 			'cta'         => __( 'Tag management made even simpler.', 'google-site-kit' ),
 			'order'       => 6,
 			'homepage'    => __( 'https://tagmanager.google.com/', 'google-site-kit' ),
