@@ -33,6 +33,10 @@ jobs:
       WP_VERSION: latest
       WP_MULTISITE: '1'
     steps:
+      - name: Cancel previous
+        uses: styfle/cancel-workflow-action@0.8.0
+        with:
+          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
       - name: Grant database access
         env:
