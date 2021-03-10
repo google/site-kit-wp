@@ -56,17 +56,26 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 			newValues.delete( value );
 		}
 
-		if ( name === slug + '-other' && checked === true ) {
-			inputRef.current.handleFocus();
+		if ( name === `${ slug }-other` && checked === true ) {
+			if ( inputRef.current ) {
+				inputRef.current.inputElement.focus();
+			}
 			setDisabled( false );
 		}
 
-		if ( type === 'radio' && id === slug + '-other' ) {
-			inputRef.current.handleFocus();
+		if ( type === 'radio' && id === `${ slug }-other` ) {
+			if ( inputRef.current ) {
+				inputRef.current.inputElement.focus();
+			}
 			setDisabled( false );
 		}
 
-		if ( type !== 'radio' && newValues.size === max && ! newValues.has( '' ) && ! newValues.has( other ) ) {
+		if (
+			type !== 'radio' &&
+			newValues.size === max &&
+			! newValues.has( '' ) &&
+			! newValues.has( other )
+		) {
 			setDisabled( true );
 		} else {
 			setDisabled( false );
@@ -139,7 +148,7 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 							id={ `${ slug }-select-options` }
 							value={ other }
 							onChange={ onOtherChange }
-							ref={ ( input ) => inputRef.current = input }
+							ref={ inputRef }
 							disabled={ disabled }
 						/>
 					</TextField>
