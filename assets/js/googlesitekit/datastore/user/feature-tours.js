@@ -114,7 +114,7 @@ const baseActions = {
 		};
 	},
 
-	receiveTours( tours ) {
+	receiveFeatureTours( tours ) {
 		invariant( Array.isArray( tours ), 'tours must be an array.' );
 		return {
 			payload: { tours },

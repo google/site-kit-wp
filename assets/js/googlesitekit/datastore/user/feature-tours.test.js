@@ -101,15 +101,15 @@ describe( 'core/user feature-tours', () => {
 			} );
 		} );
 
-		describe( 'receiveTours', () => {
+		describe( 'receiveFeatureTours', () => {
 			it( 'requires tours to be an array', () => {
-				expect( () => registry.dispatch( STORE_NAME ).receiveTours() )
+				expect( () => registry.dispatch( STORE_NAME ).receiveFeatureTours() )
 					.toThrow( 'tours must be an array' );
 			} );
 
 			it( 'receives a the given tours into the state', () => {
 				const tours = [ testTourA, testTourB ];
-				registry.dispatch( STORE_NAME ).receiveTours( tours );
+				registry.dispatch( STORE_NAME ).receiveFeatureTours( tours );
 				expect( store.getState().tours ).toEqual( tours );
 			} );
 		} );
@@ -187,7 +187,7 @@ describe( 'core/user feature-tours', () => {
 			} );
 
 			it( 'returns an array of tours that qualify for the given view context', async () => {
-				registry.dispatch( STORE_NAME ).receiveTours( [ testTourA, testTourB ] );
+				registry.dispatch( STORE_NAME ).receiveFeatureTours( [ testTourA, testTourB ] );
 
 				expect(
 					await registry.__experimentalResolveSelect( STORE_NAME ).getCurrentFeatureToursForView( 'common-context' )
@@ -202,7 +202,7 @@ describe( 'core/user feature-tours', () => {
 				const initialVersion = '1.0.0';
 				const tourVersion = '2.0.0';
 				registry.dispatch( STORE_NAME ).receiveInitialSiteKitVersion( initialVersion );
-				registry.dispatch( STORE_NAME ).receiveTours( [
+				registry.dispatch( STORE_NAME ).receiveFeatureTours( [
 					{ ...testTourA, version: initialVersion },
 					{ ...testTourB, version: tourVersion },
 				] );
@@ -212,7 +212,7 @@ describe( 'core/user feature-tours', () => {
 			} );
 
 			it( 'returns an array of tours that have not been dismissed by the user yet', async () => {
-				registry.dispatch( STORE_NAME ).receiveTours( [ testTourA, testTourB ] );
+				registry.dispatch( STORE_NAME ).receiveFeatureTours( [ testTourA, testTourB ] );
 				registry.dispatch( STORE_NAME ).receiveGetDismissedTours( [ testTourB.slug ] );
 				// Tour B was received as dismissed, but A was not.
 				expect(
@@ -229,7 +229,7 @@ describe( 'core/user feature-tours', () => {
 				const checkB = jest.fn(
 					async () => new Promise( ( resolve ) => setTimeout( resolve( false ) ) )
 				);
-				registry.dispatch( STORE_NAME ).receiveTours( [
+				registry.dispatch( STORE_NAME ).receiveFeatureTours( [
 					{ ...testTourA, checkRequirements: checkA },
 					{ ...testTourB, checkRequirements: checkB },
 				] );
@@ -251,7 +251,7 @@ describe( 'core/user feature-tours', () => {
 		describe( 'getFeatureTours', () => {
 			it( 'returns all tours in the store', () => {
 				const tours = [ testTourA, testTourB ];
-				registry.dispatch( STORE_NAME ).receiveTours( tours );
+				registry.dispatch( STORE_NAME ).receiveFeatureTours( tours );
 
 				expect(
 					registry.select( STORE_NAME ).getFeatureTours()
