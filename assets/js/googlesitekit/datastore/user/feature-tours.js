@@ -105,7 +105,7 @@ const baseActions = {
 		}() );
 	},
 
-	receiveReadyTours( readyTours, { viewContext } = {} ) {
+	receiveReadyFeatureTours( readyTours, { viewContext } = {} ) {
 		invariant( Array.isArray( readyTours ), 'readyTours must be an array.' );
 		invariant( viewContext, 'viewContext is required.' );
 		return {
@@ -216,7 +216,7 @@ const baseResolvers = {
 				readyTours.push( tour );
 			}
 		}
-		yield actions.receiveReadyTours( readyTours, { viewContext } );
+		yield actions.receiveReadyFeatureTours( readyTours, { viewContext } );
 	},
 };
 

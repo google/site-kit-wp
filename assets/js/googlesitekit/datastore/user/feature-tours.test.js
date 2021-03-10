@@ -114,20 +114,20 @@ describe( 'core/user feature-tours', () => {
 			} );
 		} );
 
-		describe( 'receiveReadyTours', () => {
+		describe( 'receiveReadyFeatureTours', () => {
 			it( 'requires readyTours to be an array', () => {
-				expect( () => registry.dispatch( STORE_NAME ).receiveReadyTours() )
+				expect( () => registry.dispatch( STORE_NAME ).receiveReadyFeatureTours() )
 					.toThrow( 'readyTours must be an array' );
 			} );
 
 			it( 'requires a viewContext to be provided for the readyTours', () => {
-				expect( () => registry.dispatch( STORE_NAME ).receiveReadyTours( [] ) )
+				expect( () => registry.dispatch( STORE_NAME ).receiveReadyFeatureTours( [] ) )
 					.toThrow( 'viewContext is required' );
 			} );
 
 			it( 'receives a the given readyTours into the state for the viewContext', () => {
 				const tours = [ testTourA, testTourB ];
-				registry.dispatch( STORE_NAME ).receiveReadyTours( tours, { viewContext: 'foo' } );
+				registry.dispatch( STORE_NAME ).receiveReadyFeatureTours( tours, { viewContext: 'foo' } );
 				expect( store.getState().readyTours.foo ).toEqual( tours );
 			} );
 		} );
