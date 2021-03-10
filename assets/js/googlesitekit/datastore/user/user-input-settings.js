@@ -64,7 +64,6 @@ const fetchSaveUserInputSettingsStore = createFetchStore( {
 // Actions
 const DELETE_CACHED_USER_INPUT_SETTINGS = 'DELETE_CACHED_USER_INPUT_SETTINGS';
 const GET_CACHED_USER_INPUT_SETTINGS = 'GET_CACHED_USER_INPUT_SETTINGS';
-const SET_USER_INPUT_SETTINGS = 'SET_USER_INPUT_SETTINGS';
 const SET_CACHED_USER_INPUT_SETTING = 'SET_CACHED_USER_INPUT_SETTING';
 const SET_USER_INPUT_SETTING = 'SET_USER_INPUT_SETTING';
 const SET_USER_INPUT_SETTINGS_SAVING_FLAG = 'SET_USER_INPUT_SETTINGS_SAVING_FLAG';
@@ -96,21 +95,6 @@ const baseActions = {
 
 		return cachedValues.cacheHit ? cachedValues.value : {};
 	},
-
-	/**
-	 * Sets user input settings.
-	 *
-	 * @since 1.19.0
-	 *
-	 * @param {Object} values User input settings.
-	 * @return {Object} Redux-style action.
-	 */
-	// setUserInputSettings( values ) {
-	// 	return {
-	// 		type: SET_USER_INPUT_SETTINGS,
-	// 		payload: { values },
-	// 	};
-	// },
 
 	/**
 	 * Sets user input setting.
@@ -204,12 +188,6 @@ export const baseControls = {
 
 export const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_USER_INPUT_SETTINGS: {
-			return {
-				...state,
-				inputSettings: payload.values,
-			};
-		}
 		case SET_USER_INPUT_SETTING: {
 			return {
 				...state,

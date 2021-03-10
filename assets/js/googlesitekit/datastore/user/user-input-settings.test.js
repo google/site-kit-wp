@@ -81,15 +81,6 @@ describe( 'core/user user-input-settings', () => {
 			registry.dispatch( STORE_NAME ).receiveGetUserInputSettings( coreUserInputSettingsExpectedResponse );
 		} );
 
-		describe( 'setUserInputSettings', () => {
-			it( 'should correctly set new settings', () => {
-				const newValues = { postFrequency: [ 'weekly' ] };
-
-				registry.dispatch( STORE_NAME ).setUserInputSettings( newValues );
-				expect( store.getState() ).toMatchObject( { inputSettings: newValues } );
-			} );
-		} );
-
 		describe( 'setUserInputSetting', () => {
 			it( 'should correctly set new values for the setting', () => {
 				const settingID = 'goals';
