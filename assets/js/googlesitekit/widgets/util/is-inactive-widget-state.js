@@ -24,7 +24,7 @@ import Null from '../../../components/Null';
 /**
  * Combines consecutive widgets with similar states within the same row.
  *
- * @since n.e.x.t
+ * @since 1.28.0
  *
  * @param {Object|null} widgetState Widget state (either an object with `Component` and `metadata`, or `null`).
  * @return {boolean} True if widget is inactive, otherwise false.
