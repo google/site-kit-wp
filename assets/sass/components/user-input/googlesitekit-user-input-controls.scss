@@ -118,16 +118,19 @@
 	.googlesitekit-user-input__text-option {
 		align-items: center;
 		background-color: $c-solitude;
-		border-radius: 100px;
+		border-radius: 30px;
 		color: $c-denim;
 		display: flex;
+		font-size: 14px;
 		font-weight: 500;
-		margin: 0 12px 12px;
-		padding: 3px 3px 3px 12px;
+		margin: 0 12px 12px 0;
+		min-height: 32px;
+		padding: 6px 3px 6px 14px;
 		word-break: break-word;
 
 		button {
-			border-radius: 100px;
+			border-radius: 30px;
+			height: auto;
 			margin: 0;
 			min-width: 0;
 			padding: 0 12px;
