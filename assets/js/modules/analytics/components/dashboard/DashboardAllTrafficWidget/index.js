@@ -31,6 +31,7 @@ import {
 	UI_DIMENSION_VALUE,
 	DATE_RANGE_OFFSET,
 	STORE_NAME,
+	UI_ALL_TRAFFIC_LOADED,
 } from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -45,6 +46,7 @@ import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import { isZeroReport } from '../../../util';
 import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
+import { useDispatch } from '@wordpress/data';
 
 const { useSelect } = Data;
 
@@ -156,6 +158,13 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 		dateRange,
 		currentRange,
 	] );
+
+	const { setValue } = useDispatch( CORE_UI );
+	useEffect( () => {
+		if ( firstLoad && pieChartLoaded && totalUsersLoaded && userCountGraphLoaded ) {
+			setValue( UI_ALL_TRAFFIC_LOADED, true );
+		}
+	}, [ firstLoad, pieChartLoaded, totalUsersLoaded, userCountGraphLoaded ] );
 
 	if ( pieChartError ) {
 		return <WidgetReportError moduleSlug="analytics" error={ pieChartError } />;
