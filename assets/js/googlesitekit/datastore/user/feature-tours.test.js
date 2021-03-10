@@ -175,14 +175,14 @@ describe( 'core/user feature-tours', () => {
 			} );
 		} );
 
-		describe( 'getReadyTours', () => {
+		describe( 'getCurrentFeatureToursForView', () => {
 			beforeEach( () => {
 				registry.dispatch( STORE_NAME ).receiveGetDismissedTours( [] );
 			} );
 
 			it( 'returns `undefined` while tour readiness is being resolved', () => {
 				expect(
-					registry.select( STORE_NAME ).getReadyTours( 'test-view-context' )
+					registry.select( STORE_NAME ).getCurrentFeatureToursForView( 'test-view-context' )
 				).toBeUndefined();
 			} );
 
@@ -190,11 +190,11 @@ describe( 'core/user feature-tours', () => {
 				registry.dispatch( STORE_NAME ).receiveTours( [ testTourA, testTourB ] );
 
 				expect(
-					await registry.__experimentalResolveSelect( STORE_NAME ).getReadyTours( 'common-context' )
+					await registry.__experimentalResolveSelect( STORE_NAME ).getCurrentFeatureToursForView( 'common-context' )
 				).toEqual( [ testTourA, testTourB ] );
 
 				expect(
-					await registry.__experimentalResolveSelect( STORE_NAME ).getReadyTours( 'b-only-context' )
+					await registry.__experimentalResolveSelect( STORE_NAME ).getCurrentFeatureToursForView( 'b-only-context' )
 				).toEqual( [ testTourB ] );
 			} );
 
@@ -207,7 +207,7 @@ describe( 'core/user feature-tours', () => {
 					{ ...testTourB, version: tourVersion },
 				] );
 				// Tour A's version matches the user's initial version, so only Tour B is returned.
-				const readyTours = await registry.__experimentalResolveSelect( STORE_NAME ).getReadyTours( 'common-context' );
+				const readyTours = await registry.__experimentalResolveSelect( STORE_NAME ).getCurrentFeatureToursForView( 'common-context' );
 				expect( readyTours.map( ( { slug } ) => slug ) ).toEqual( [ testTourB.slug ] );
 			} );
 
@@ -216,7 +216,7 @@ describe( 'core/user feature-tours', () => {
 				registry.dispatch( STORE_NAME ).receiveGetDismissedTours( [ testTourB.slug ] );
 				// Tour B was received as dismissed, but A was not.
 				expect(
-					await registry.__experimentalResolveSelect( STORE_NAME ).getReadyTours( 'common-context' )
+					await registry.__experimentalResolveSelect( STORE_NAME ).getCurrentFeatureToursForView( 'common-context' )
 				).toEqual( [ testTourA ] );
 			} );
 
@@ -234,7 +234,7 @@ describe( 'core/user feature-tours', () => {
 					{ ...testTourB, checkRequirements: checkB },
 				] );
 
-				const readyTours = await registry.__experimentalResolveSelect( STORE_NAME ).getReadyTours( 'common-context' );
+				const readyTours = await registry.__experimentalResolveSelect( STORE_NAME ).getCurrentFeatureToursForView( 'common-context' );
 				expect( readyTours.map( ( { slug } ) => slug ) ).toEqual( [ testTourA.slug ] );
 				// Check functions should be called with the registry as the first parameter.
 				const registryMatcher = expect.objectContaining( {

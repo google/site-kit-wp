@@ -201,7 +201,7 @@ const baseResolvers = {
 		}
 	},
 
-	*getReadyTours( viewContext ) {
+	*getCurrentFeatureToursForView( viewContext ) {
 		const registry = yield getRegistry();
 		const tours = registry.select( STORE_NAME ).getTours();
 		const readyTours = [];
@@ -245,7 +245,7 @@ const baseSelectors = {
 	 * @return {(Object[]|undefined)} Array of qualifying tour objects
 	 *                                `undefined` while readiness is being resolved.
 	 */
-	getReadyTours( state, viewContext ) {
+	getCurrentFeatureToursForView( state, viewContext ) {
 		return state.readyTours[ viewContext ];
 	},
 
