@@ -92,7 +92,7 @@ const baseActions = {
 		return ( function* () {
 			const { select } = yield getRegistry();
 			if ( select( STORE_NAME ).isFetchingDismissTour( slug ) ) {
-				const response = select( STORE_NAME ).getDismissedTours();
+				const response = select( STORE_NAME ).getDismissedFeatureTourSlugs();
 				return { response, error: undefined };
 			}
 			// Dismiss the given tour immediately.
@@ -141,7 +141,7 @@ const baseControls = {
 
 		// Check if the tour has already been dismissed.
 		// Here we need to first await the underlying selector with the asynchronous resolver.
-		await registry.__experimentalResolveSelect( STORE_NAME ).getDismissedTours();
+		await registry.__experimentalResolveSelect( STORE_NAME ).getDismissedFeatureTourSlugs();
 		if ( registry.select( STORE_NAME ).isTourDismissed( tour.slug ) ) {
 			return false;
 		}
@@ -194,9 +194,9 @@ const baseReducer = ( state, { type, payload } ) => {
 };
 
 const baseResolvers = {
-	*getDismissedTours() {
+	*getDismissedFeatureTourSlugs() {
 		const { select } = yield getRegistry();
-		if ( ! select( STORE_NAME ).getDismissedTours() ) {
+		if ( ! select( STORE_NAME ).getDismissedFeatureTourSlugs() ) {
 			yield fetchGetDismissedTours();
 		}
 	},
@@ -222,15 +222,16 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Gets the list of dismissed tours.
+	 * Gets the list of dismissed tour slugs.
 	 *
 	 * @since 1.27.0
+	 * @since n.e.x.t Renamed from getDismissedTours.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string[]|undefined)} Array of dismissed tour slugs,
 	 *                                `undefined` if not resolved yet.
 	 */
-	getDismissedTours( state ) {
+	getDismissedFeatureTourSlugs( state ) {
 		return state.dismissedTours;
 	},
 
@@ -272,7 +273,7 @@ const baseSelectors = {
 	 *                               `false` if not dismissed.
 	 */
 	isTourDismissed: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const dismissedTours = select( STORE_NAME ).getDismissedTours();
+		const dismissedTours = select( STORE_NAME ).getDismissedFeatureTourSlugs();
 
 		if ( undefined === dismissedTours ) {
 			return undefined;

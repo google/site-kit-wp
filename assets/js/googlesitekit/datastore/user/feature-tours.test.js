@@ -136,28 +136,28 @@ describe( 'core/user feature-tours', () => {
 	describe( 'selectors', () => {
 		const fetchGetDismissedToursRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/dismissed-tours/;
 
-		describe( 'getDismissedTours', () => {
+		describe( 'getDismissedFeatureTourSlugs', () => {
 			it( 'returns the initial state before the resolver runs', () => {
 				muteFetch( fetchGetDismissedToursRegExp, [] );
 
-				expect( registry.select( STORE_NAME ).getDismissedTours() ).toBe( initialState.dismissedTours );
+				expect( registry.select( STORE_NAME ).getDismissedFeatureTourSlugs() ).toBe( initialState.dismissedTours );
 			} );
 
 			it( 'receives dismissed tours from the fetch dispatched by the resolver', async () => {
 				fetchMock.getOnce( fetchGetDismissedToursRegExp, { body: [ 'feature-x' ] } );
 
-				registry.select( STORE_NAME ).getDismissedTours();
+				registry.select( STORE_NAME ).getDismissedFeatureTourSlugs();
 
-				await untilResolved( registry, STORE_NAME ).getDismissedTours();
+				await untilResolved( registry, STORE_NAME ).getDismissedFeatureTourSlugs();
 
-				expect( registry.select( STORE_NAME ).getDismissedTours() ).toEqual( [ 'feature-x' ] );
+				expect( registry.select( STORE_NAME ).getDismissedFeatureTourSlugs() ).toEqual( [ 'feature-x' ] );
 				expect( fetchMock ).toHaveFetched();
 			} );
 
 			it( 'does not fetch if there are already dismissed tours in state', () => {
 				registry.dispatch( STORE_NAME ).receiveGetDismissedTours( [] );
 
-				registry.select( STORE_NAME ).getDismissedTours();
+				registry.select( STORE_NAME ).getDismissedFeatureTourSlugs();
 
 				expect( fetchMock ).not.toHaveFetched();
 			} );
@@ -165,11 +165,11 @@ describe( 'core/user feature-tours', () => {
 			it( 'returns the list of dismissed tours', () => {
 				registry.dispatch( STORE_NAME ).receiveGetDismissedTours( [] );
 
-				expect( registry.select( STORE_NAME ).getDismissedTours() ).toEqual( [] );
+				expect( registry.select( STORE_NAME ).getDismissedFeatureTourSlugs() ).toEqual( [] );
 
 				registry.dispatch( STORE_NAME ).receiveGetDismissedTours( [ 'tour-a', 'feature-x' ] );
 
-				expect( registry.select( STORE_NAME ).getDismissedTours() ).toEqual(
+				expect( registry.select( STORE_NAME ).getDismissedFeatureTourSlugs() ).toEqual(
 					expect.arrayContaining( [ 'feature-x', 'tour-a' ] )
 				);
 			} );
@@ -270,7 +270,7 @@ describe( 'core/user feature-tours', () => {
 				expect( registry.select( STORE_NAME ).isTourDismissed( 'feature-x' ) ).toBe( true );
 			} );
 
-			it( 'will trigger the resolver for getDismissedTours and fetch if necessary', () => {
+			it( 'will trigger the resolver for getDismissedFeatureTourSlugs and fetch if necessary', () => {
 				muteFetch( fetchGetDismissedToursRegExp );
 
 				registry.select( STORE_NAME ).isTourDismissed( 'feature-x' );
