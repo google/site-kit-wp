@@ -203,7 +203,7 @@ const baseResolvers = {
 
 	*getCurrentFeatureToursForView( viewContext ) {
 		const registry = yield getRegistry();
-		const tours = registry.select( STORE_NAME ).getTours();
+		const tours = registry.select( STORE_NAME ).getFeatureTours();
 		const readyTours = [];
 
 		for ( const tour of tours ) {
@@ -258,7 +258,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {Object[]} Array of tour objects.
 	 */
-	getTours( state ) {
+	getFeatureTours( state ) {
 		return state.tours;
 	},
 

@@ -248,13 +248,13 @@ describe( 'core/user feature-tours', () => {
 			} );
 		} );
 
-		describe( 'getTours', () => {
+		describe( 'getFeatureTours', () => {
 			it( 'returns all tours in the store', () => {
 				const tours = [ testTourA, testTourB ];
 				registry.dispatch( STORE_NAME ).receiveTours( tours );
 
 				expect(
-					registry.select( STORE_NAME ).getTours()
+					registry.select( STORE_NAME ).getFeatureTours()
 				).toEqual( tours );
 			} );
 		} );
