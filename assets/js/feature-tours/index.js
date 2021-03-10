@@ -56,14 +56,16 @@ const allTrafficWidget = {
 	},
 	steps: [
 		{
-			target: '.googlesitekit-widget--analyticsAllTraffic__user-count-chart',
-			title: __( "It's now easier to see your site's traffic at a glance", 'google-site-kit' ),
+			target: '.googlesitekit-widget--analyticsAllTraffic__totals',
+			title: __( 'It’s now easier to see your site’s traffic at a glance', 'google-site-kit' ),
 			content: __( 'Check the trend graph to see how your traffic changed over time', 'google-site-kit' ),
+			placement: 'top',
 		},
 		{
-			target: '.googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
+			target: '.googlesitekit-widget--analyticsAllTraffic__dimensions',
 			title: __( 'See where your visitors come from', 'google-site-kit' ),
 			content: __( 'Click on the chart slices to see how each segment has changed over time', 'google-site-kit' ),
+			placement: 'top',
 		},
 		{
 			target: '.googlesitekit-header__date-range-selector-menu',
