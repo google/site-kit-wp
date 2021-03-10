@@ -29,6 +29,7 @@ import { getModulesData, listFormat } from '../../util';
 import SettingsAdmin from './SettingsAdmin';
 import SettingsConnectedServices from './SettingsConnectedServices';
 import SettingsConnectMoreServices from './SettingsConnectMoreServices';
+import SettingsAllServicesConnected from './SettingsAllServicesConnected';
 
 function SettingsModules() {
 	const modulesData = getModulesData();
@@ -80,7 +81,11 @@ function SettingsModules() {
 				<SettingsConnectedServices modules={ activeModules } />
 			</Route>
 			<Route path="/connect-more-services">
-				<SettingsConnectMoreServices modules={ inactiveModules } />
+				{ inactiveModules.length === 0 ? (
+					<SettingsAllServicesConnected />
+				) : (
+					<SettingsConnectMoreServices modules={ inactiveModules } />
+				) }
 			</Route>
 			<Route path="/admin-settings">
 				<SettingsAdmin />

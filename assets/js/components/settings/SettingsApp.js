@@ -70,7 +70,9 @@ function SettingsApp( { location: { pathname } } ) {
 								</TabBar>
 							</Layout>
 						</Cell>
-						<SettingsModules />
+						<Cell size={ 12 }>
+							<SettingsModules />
+						</Cell>
 						<Cell size={ 12 } alignRight>
 							<HelpLink />
 						</Cell>

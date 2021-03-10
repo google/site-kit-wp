@@ -20,8 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
-import { withRouter } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 /**
  * WordPress dependencies
@@ -33,58 +32,32 @@ import { __ } from '@wordpress/i18n';
  */
 import SettingsModule from './SettingsModule';
 import Layout from '../layout/Layout';
-import Notification from '../legacy-notifications/notification';
 import SettingsOverlay from './SettingsOverlay';
-import thumbsUpImage from '../../../images/thumbs-up.png';
+import { Cell, Grid, Row } from '../../material-components';
 
-function SettingsConnectMoreServices( { modules, match } ) {
-	const modulesAvailable = 0 < modules.length;
-	const isEditing = match.params.action === 'edit';
-
-	// Show congratulatory notification if no modules to connect.
-	if ( ! modulesAvailable ) {
-		return (
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-12
-			">
-				<Notification
-					id="no-more-modules"
-					title={ __( 'Congrats, you’ve connected all services!', 'google-site-kit' ) }
-					description={ __( 'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future.', 'google-site-kit' ) }
-					format="small"
-					smallImage={ global._googlesitekitLegacyData.admin.assetsRoot + thumbsUpImage }
-					type="win-success"
-				/>
-			</div>
-		);
-	}
+function SettingsConnectMoreServices( { modules } ) {
+	const { action } = useParams();
 
 	return (
-		<div className={ classnames(
-			'mdc-layout-grid__cell',
-			'mdc-layout-grid__cell--span-12',
-		) }>
-			<Layout
-				header
-				title={ __( 'Connect More Services to Gain More Insights', 'google-site-kit' ) }
-				relative
-			>
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						{ modules.map( ( module ) => (
-							<div
-								className="mdc-layout-grid__cell mdc-layout-grid__cell--span-4"
-								key={ module.slug + '-module-wrapper' }
-							>
-								<SettingsModule module={ module } />
-							</div>
-						) ) }
-					</div>
-				</div>
-				{ isEditing && <SettingsOverlay /> }
-			</Layout>
-		</div>
+		<Layout
+			header
+			title={ __( 'Connect More Services to Gain More Insights', 'google-site-kit' ) }
+			relative
+		>
+			<Grid>
+				<Row>
+					{ modules.map( ( module ) => (
+						<Cell
+							size={ 4 }
+							key={ module.slug }
+						>
+							<SettingsModule module={ module } />
+						</Cell>
+					) ) }
+				</Row>
+			</Grid>
+			{ action === 'edit' && <SettingsOverlay /> }
+		</Layout>
 	);
 }
 
@@ -109,4 +82,4 @@ SettingsConnectMoreServices.propTypes = {
 	).isRequired,
 };
 
-export default withRouter( SettingsConnectMoreServices );
+export default SettingsConnectMoreServices;

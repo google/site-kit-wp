@@ -33,19 +33,14 @@ function SettingsConnectedServices( { modules } ) {
 	}
 
 	return (
-		<div className="
-			mdc-layout-grid__cell
-			mdc-layout-grid__cell--span-12
-		">
-			<Layout>
-				{ modules.map( ( module ) => (
-					<SettingsModule
-						module={ module }
-						key={ module.slug + '-module-wrapper' }
-					/>
-				) ) }
-			</Layout>
-		</div>
+		<Layout>
+			{ modules.map( ( module ) => (
+				<SettingsModule
+					module={ module }
+					key={ module.slug + '-module-wrapper' }
+				/>
+			) ) }
+		</Layout>
 	);
 }
 
