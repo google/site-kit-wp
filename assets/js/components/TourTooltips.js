@@ -112,13 +112,22 @@ export default function TourTooltips( { steps, tourID } ) {
 	 * @param {JoyrideCallbackData} data Data object provided via `react-joyride` callback prop.
 	 */
 	const handleJoyrideCallback = ( data ) => {
-		const { action, index, status, type } = data;
+		const { action, index, status, step, type } = data;
 
 		const hasCloseAction = action === ACTIONS.CLOSE;
 		const shouldChangeStep = ! hasCloseAction && [ EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND ].includes( type );
 		const isFinishedOrSkipped = [ STATUS.FINISHED, STATUS.SKIPPED ].includes( status );
 		const shouldCloseFromButtonClick = hasCloseAction && type === EVENTS.STEP_AFTER;
 		const shouldEndTour = isFinishedOrSkipped || shouldCloseFromButtonClick;
+
+		// Center the target in the viewport when transitioning to the step.
+		if ( EVENTS.STEP_BEFORE === type ) {
+			let el = step.target;
+			if ( 'string' === typeof step.target ) {
+				el = global.document.querySelector( step.target );
+			}
+			el?.scrollIntoView( { block: 'center' } );
+		}
 
 		if ( shouldChangeStep ) {
 			changeStep( index, action );
@@ -142,6 +151,7 @@ export default function TourTooltips( { steps, tourID } ) {
 			callback={ handleJoyrideCallback }
 			continuous
 			disableOverlayClose
+			disableScrolling
 			floaterProps={ floaterProps }
 			locale={ joyrideLocale }
 			run={ run }
