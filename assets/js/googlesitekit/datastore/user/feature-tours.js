@@ -253,6 +253,7 @@ const baseSelectors = {
 	 * Gets a list of all tour objects.
 	 *
 	 * @since n.e.x.t
+	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object[]} Array of tour objects.
