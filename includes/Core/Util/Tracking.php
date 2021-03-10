@@ -127,7 +127,7 @@ final class Tracking {
 	/**
 	 * Gets tracking routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.28.0
 	 *
 	 * @param array $routes Array of routes.
 	 * @return array Modified array of routes that contains tracking related routes.

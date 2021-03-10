@@ -68,7 +68,7 @@ const ANALYTICS_DIMENSION_OPTIONS = {
 /**
  * Gets metric key.
  *
- * @since n.e.x.t
+ * @since 1.28.0
  *
  * @param {string|Object} metric Metric name or object.
  * @return {string} Metric key.
@@ -80,7 +80,7 @@ function getMetricKey( metric ) {
 /**
  * Gets metric type.
  *
- * @since n.e.x.t
+ * @since 1.28.0
  *
  * @param {string|Object} metric Metric name or object.
  * @return {string} Type of the metric.
@@ -92,7 +92,7 @@ function getMetricType( metric ) {
 /**
  * Generates and returns metric values.
  *
- * @since n.e.x.t
+ * @since 1.28.0
  *
  * @param {string} type  Metric type.
  * @param {number} count Maximum number of values to generate.
@@ -128,7 +128,7 @@ function generateMetricValues( type, count ) {
 /**
  * Sorts report rows and returns it.
  *
- * @since n.e.x.t
+ * @since 1.28.0
  *
  * @param {Array.<Object>}        rows    Array of rows to sort.
  * @param {Array.<Object>}        metrics Array of report metrics.
@@ -167,7 +167,7 @@ function sortRows( rows, metrics, orderby ) {
 /**
  * Generates mock data for Analytics reports.
  *
- * @since n.e.x.t
+ * @since 1.28.0
  *
  * @param {Object} args Report options.
  * @return {Array.<Object>} An array with generated report.

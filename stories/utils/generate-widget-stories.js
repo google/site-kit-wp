@@ -238,7 +238,7 @@ export function generateReportBasedWidgetStories( {
 /**
  * Creates and returns a new report data generator using provided factory function.
  *
- * @since n.e.x.t
+ * @since 1.28.0
  *
  * @param {Function} factory The factory function.
  * @return {Function} The report data generator.
