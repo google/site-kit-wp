@@ -84,7 +84,12 @@ describe( 'core/user user-input-settings', () => {
 		describe( 'setUserInputSetting', () => {
 			it( 'should correctly set new values for the setting', () => {
 				const settingID = 'goals';
-				const values = [ 'goal3', 'goal4', 'goal5' ];
+				const values = [
+					'              goal3',
+					'             goal4        ',
+					'goal5            ',
+					'goal6',
+				];
 
 				registry.dispatch( STORE_NAME ).setUserInputSetting( settingID, values );
 				expect( store.getState() ).toMatchObject( {
@@ -92,7 +97,7 @@ describe( 'core/user user-input-settings', () => {
 						...coreUserInputSettingsExpectedResponse,
 						[ settingID ]: {
 							...coreUserInputSettingsExpectedResponse[ settingID ],
-							values,
+							values: [ 'goal3', 'goal4', 'goal5', 'goal6' ],
 						},
 					},
 				} );

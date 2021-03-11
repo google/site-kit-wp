@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Class for the Google SVG Icon
  *
- * @since n.e.x.t
+ * @since 1.28.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ final class Google_Icon {
 	/**
 	 * Returns a base64 encoded version of the SVG.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.28.0
 	 *
 	 * @param string $source SVG icon source.
 	 * @return string Base64 representation of SVG
@@ -42,7 +42,7 @@ final class Google_Icon {
 	/**
 	 * Returns SVG XML with fill color replaced.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.28.0
 	 *
 	 * @param string $color Any valid color for css, either word or hex code.
 	 * @return string SVG XML with the fill color replaced
