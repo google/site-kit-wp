@@ -26,21 +26,12 @@ import { ESCAPE } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { clearWebStorage } from '../../util';
-import Dialog from '../Dialog';
 import Button from '../Button';
-import Menu from '../Menu';
-import Modal from '../Modal';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-//import HelpMenuLink from '../HelpMenuLink';
+import LinkMenu from '../LinkMenu';
 import HelpIcon from '../../../svg/help.svg';
 import VisuallyHidden from '../VisuallyHidden';
-const { useSelect, useDispatch } = Data;
-/*
-const defaultMenuItems = [
+
+const defaultMenuLinks = [
 	{
 		label: __( 'Fix common issues', 'google-site-kit' ),
 		href: 'https://sitekit.withgoogle.com/documentation/fix-common-issues/',
@@ -54,17 +45,13 @@ const defaultMenuItems = [
 		href: 'https://wordpress.org/support/plugin/google-site-kit/',
 	},
 ];
-*/
-function HelpMenu( { children } ) {
-	const proxyPermissionsURL = useSelect( ( select ) => select( CORE_SITE ).getProxyPermissionsURL() );
-	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
-	const postDisconnectURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { googlesitekit_context: 'revoked' } ) );
 
-	const [ dialogActive, toggleDialog ] = useState( false );
+function HelpMenu( { otherMenuLinks } ) {
 	const [ menuOpen, toggleMenu ] = useState( false );
 	const menuButtonRef = useRef();
 	const menuRef = useRef();
-	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	const menuLinks = Array.isArray( otherMenuLinks ) ? [ ...otherMenuLinks, ...defaultMenuLinks ] : defaultMenuLinks;
 
 	useEffect( () => {
 		const handleMenuClose = ( e ) => {
@@ -81,22 +68,12 @@ function HelpMenu( { children } ) {
 			}
 		};
 
-		const handleDialogClose = ( e ) => {
-			// Close if Escape key is pressed.
-			if ( ESCAPE === e.keyCode ) {
-				toggleDialog( false );
-				toggleMenu( false );
-			}
-		};
-
 		global.addEventListener( 'mouseup', handleMenuClose );
 		global.addEventListener( 'keyup', handleMenuClose );
-		global.addEventListener( 'keyup', handleDialogClose );
 
 		return () => {
 			global.removeEventListener( 'mouseup', handleMenuClose );
 			global.removeEventListener( 'keyup', handleMenuClose );
-			global.removeEventListener( 'keyup', handleDialogClose );
 		};
 	}, [] );
 
@@ -104,48 +81,12 @@ function HelpMenu( { children } ) {
 		toggleMenu( ! menuOpen );
 	}, [ menuOpen ] );
 
-	const handleDialog = useCallback( () => {
-		toggleDialog( ! dialogActive );
-		toggleMenu( false );
-	}, [ dialogActive ] );
-
-	const handleMenuItemSelect = useCallback( ( index ) => {
-		switch ( index ) {
-			case 0:
-				handleDialog();
-				break;
-			case 1:
-				if ( proxyPermissionsURL ) {
-					navigateTo( proxyPermissionsURL );
-				}
-				break;
-			default:
-				handleMenu();
-		}
-	}, [ proxyPermissionsURL, handleMenu, handleDialog ] );
-
-	// Log the user out if they confirm the dialog.
-	const handleUnlinkConfirm = useCallback( () => {
-		// Close the modal.
-		toggleDialog( false );
-
-		// Clear caches.
-		clearWebStorage();
-
-		// Navigate back to the splash screen to reconnect.
-		navigateTo( postDisconnectURL );
-	}, [ postDisconnectURL ] );
-
-	if ( ! userEmail ) {
-		return null;
-	}
-
 	const visuallyHiddenText = () => {
 		return (
 			<VisuallyHidden>Help</VisuallyHidden>
 		);
 	};
-	// TODO: children needs a different render approach
+
 	return (
 		<Fragment>
 			<div className="googlesitekit-user-selector googlesitekit-dropdown-menu mdc-menu-surface--anchor">
@@ -157,64 +98,18 @@ function HelpMenu( { children } ) {
 					icon={ <HelpIcon width="20" height="20" /> }
 					aria-haspopup="menu"
 					aria-expanded={ menuOpen }
-					aria-controls="user-menu"
+					aria-controls="help-menu"
 				>
 					{ visuallyHiddenText() }
 				</Button>
-				{ children }
-				<Menu
+				<LinkMenu
 					ref={ menuRef }
 					menuOpen={ menuOpen }
-					menuItems={
-						[
-							__( 'Disconnect', 'google-site-kit' ),
-						].concat(
-							proxyPermissionsURL ? [
-								__( 'Manage sites…', 'google-site-kit' ),
-							] : [],
-						)
-					}
-					onSelected={ handleMenuItemSelect }
-					id="user-menu" />
+					menuLinks={ menuLinks }
+					id="help-menu" />
 			</div>
-			<Modal>
-				<Dialog
-					dialogActive={ dialogActive }
-					handleConfirm={ handleUnlinkConfirm }
-					handleDialog={ handleDialog }
-					title={ __( 'Disconnect', 'google-site-kit' ) }
-					subtitle={ __( 'Disconnecting Site Kit by Google will remove your access to all services. After disconnecting, you will need to re-authorize to restore service.', 'google-site-kit' ) }
-					confirmButton={ __( 'Disconnect', 'google-site-kit' ) }
-					danger
-				/>
-			</Modal>
 		</Fragment>
-
 	);
 }
 
 export default HelpMenu;
-
-/*
-	<div className="mdc-menu mdc-menu-surface">
-					<ul
-						aria-hidden={ false }
-						aria-orientation="vertical"
-						className="mdc-list"
-						role="menu"
-						tabIndex="-1"
-					>
-						{ children }
-						{ defaultMenuItems.map( ( { href, label }, i ) => {
-							return (
-								<HelpMenuLink
-									key={ `google-sitekit-help-menu-link-${ i }` }
-									href={ href }
-									label={ label }
-								/>
-							);
-						} )
-						}
-					</ul>
-				</div>
-*/
