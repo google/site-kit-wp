@@ -66,6 +66,7 @@ describe( 'core/user user-input-settings', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
+		registry.dispatch( STORE_NAME ).receiveUserInputState( 'completed' );
 	} );
 
 	afterAll( () => {
