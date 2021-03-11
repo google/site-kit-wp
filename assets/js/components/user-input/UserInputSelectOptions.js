@@ -99,6 +99,7 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 	};
 
 	const ListComponent = max === 1 ? Radio : Checkbox;
+
 	const items = Object.keys( options ).map( ( optionSlug ) => {
 		const props = {
 			id: `${ slug }-${ optionSlug }`,
@@ -133,7 +134,7 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 						id={ `${ slug }-other` }
 						name={ max === 1 ? slug : `${ slug }-other` }
 						value={ other }
-						checked={ values.includes( other ) }
+						checked={ values.includes( other.trim() ) }
 						disabled={ max > 1 && values.length >= max && ! values.includes( other ) }
 						{ ...onClickProps }
 					>
