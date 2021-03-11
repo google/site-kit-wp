@@ -110,6 +110,7 @@ export default function SetupMain( { finishSetup } ) {
 		accounts,
 		clients,
 		alerts,
+		urlChannels,
 		accountsError,
 		alertsError,
 		urlChannelsError,
