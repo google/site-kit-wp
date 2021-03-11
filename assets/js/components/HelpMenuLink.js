@@ -1,5 +1,5 @@
 /**
- * PageFooter component.
+ * HelpMenuLink component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,15 +19,19 @@
 /**
  * Internal dependencies
  */
-import HelpLink from './HelpLink';
-import { useFeature } from '../hooks/useFeature';
+import Link from './Link';
 
-export default function PageFooter() {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
-
+const HelpMenuLink = ( { href, label } ) => {
 	return (
-		<div className="googlesitekit-page-footer">
-			{ ! helpVisibilityEnabled && ( <HelpLink /> ) }
-		</div>
+		<li
+			className="mdc-list-item"
+			cole="menuitem"
+		>
+			<Link href={ href } external>
+				{ label }
+			</Link>
+		</li>
 	);
-}
+};
+
+export default HelpMenuLink;

@@ -4,5 +4,6 @@
   "userInput",
   "widgets.dashboard",
   "widgets.pageDashboard",
-  "widgets.moduleScreens"
+  "widgets.moduleScreens",
+  "helpVisibility"
 ]
