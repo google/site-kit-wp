@@ -74,12 +74,13 @@ export const selectors = {
 		const referenceSiteURL = select( CORE_SITE ).getReferenceSiteURL();
 		const {
 			page = isDomainProperty ? `*${ untrailingslashit( referenceSiteURL ) }` : undefined,
+			...args
 		} = reportArgs;
 
 		const path = '/performance/search-analytics';
 		const query = {
 			page,
-			...reportArgs,
+			...args,
 			resource_id: propertyID,
 		};
 

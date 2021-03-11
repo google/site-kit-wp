@@ -119,6 +119,17 @@ describe( 'module/search-console service store', () => {
 					page: `*${ referenceSiteURL }`,
 				} );
 			} );
+
+			it( 'sets a default `page` query arg for domain properties that takes precedence over an `undefined` page report arg', () => {
+				registry.dispatch( STORE_NAME ).setPropertyID( domainPropertyID );
+				expect( registry.select( STORE_NAME ).isDomainProperty() ).toBe( true );
+				const serviceURL = registry.select( STORE_NAME ).getServiceReportURL( { page: undefined } );
+				const referenceSiteURL = registry.select( CORE_SITE ).getReferenceSiteURL();
+				expect( serviceURL ).toMatchQueryParameters( {
+					resource_id: domainPropertyID,
+					page: `*${ referenceSiteURL }`,
+				} );
+			} );
 		} );
 
 		describe( 'isDomainProperty', () => {
