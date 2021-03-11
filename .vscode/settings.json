@@ -1,12 +1,16 @@
 {
   "search.exclude": {
     ".storybook/data": true,
-    "assets/vendor": true,
-    "dist/": true
+    "dist/": true,
+    "node_modules/": true,
+    "third-party/": true,
+    "vendor/": true
   },
   "files.exclude": {
     "dist/": true,
-    "node_modules/": true
+    "node_modules/": true,
+    "third-party/": true,
+    "vendor/": true
   },
   "editor.formatOnSave": true,
   "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
