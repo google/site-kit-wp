@@ -37,7 +37,7 @@ import TableOverflowContainer from '../../../../components/TableOverflowContaine
 import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
-import Decimal from '../../../../components/Num/Decimal';
+import { numFmt } from '../../../../util';
 const { useSelect } = Data;
 
 function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
@@ -136,12 +136,13 @@ const tableColumns = [
 	{
 		title: __( 'Revenue', 'google-site-kit' ),
 		tooltip: __( 'Revenue', 'google-site-kit' ),
-		Component: ( { row } ) => (
-			<Decimal
-				value={ row.metrics[ 0 ].values[ 0 ] }
-				precision={ 2 }
-				fixed
-			/>
+		Component: ( { row } ) => numFmt(
+			row.metrics[ 0 ].values[ 0 ],
+			{
+				style: 'decimal',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+			}
 		),
 	},
 ];

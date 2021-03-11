@@ -34,8 +34,8 @@ import { isZeroReport } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import ReportTable from '../../../../components/ReportTable';
-import Decimal from '../../../../components/Num/Decimal';
 import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
+import { numFmt } from '../../../../util';
 
 const { useSelect } = Data;
 
@@ -128,7 +128,7 @@ const tableColumns = [
 	{
 		title: __( 'Views', 'google-site-kit' ),
 		field: 'metrics.0.values.0',
-		Component: ( { fieldValue } ) => <Decimal value={ fieldValue } />,
+		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
 	},
 ];
 

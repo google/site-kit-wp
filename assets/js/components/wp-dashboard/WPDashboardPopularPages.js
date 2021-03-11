@@ -31,8 +31,8 @@ import PreviewTable from '../../components/PreviewTable';
 import TableOverflowContainer from '../../components/TableOverflowContainer';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 import ReportTable from '../ReportTable';
-import Decimal from '../Num/Decimal';
 import DetailsPermaLinks from '../DetailsPermaLinks';
+import { numFmt } from '../../util';
 const { useSelect } = Data;
 
 const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
@@ -108,7 +108,7 @@ const tableColumns = [
 		title: __( 'Pageviews', 'google-site-kit' ),
 		description: __( 'Pageviews', 'google-site-kit' ),
 		field: 'metrics.0.values.0',
-		Component: ( { fieldValue } ) => <Decimal value={ fieldValue } />,
+		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
 	},
 ];
 

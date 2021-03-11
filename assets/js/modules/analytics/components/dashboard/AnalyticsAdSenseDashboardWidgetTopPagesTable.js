@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds } from '../../../../util';
+import { getTimeInSeconds, numFmt } from '../../../../util';
 import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import PreviewTable from '../../../../components/PreviewTable';
@@ -37,7 +37,6 @@ import AnalyticsAdSenseDashboardWidgetLayout from './AnalyticsAdSenseDashboardWi
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import Link from '../../../../components/Link';
 import ReportTable from '../../../../components/ReportTable';
-import Decimal from '../../../../components/Num/Decimal';
 const { useSelect } = Data;
 
 const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
@@ -90,19 +89,33 @@ const tableColumns = [
 		title: __( 'Earnings', 'google-site-kit' ),
 		description: __( 'Earnings', 'google-site-kit' ),
 		field: 'metrics.0.values.0',
-		Component: ( { fieldValue } ) => <Decimal value={ fieldValue } precision={ 2 } fixed />,
+		Component: ( { fieldValue } ) => numFmt(
+			fieldValue,
+			{
+				style: 'decimal',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+			}
+		),
 	},
 	{
 		title: __( 'Page RPM', 'google-site-kit' ),
 		description: __( 'Page RPM', 'google-site-kit' ),
 		field: 'metrics.0.values.1',
-		Component: ( { fieldValue } ) => <Decimal value={ fieldValue } precision={ 2 } fixed />,
+		Component: ( { fieldValue } ) => numFmt(
+			fieldValue,
+			{
+				style: 'decimal',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+			}
+		),
 	},
 	{
 		title: __( 'Impressions', 'google-site-kit' ),
 		description: __( 'Impressions', 'google-site-kit' ),
 		field: 'metrics.0.values.2',
-		Component: ( { fieldValue } ) => <Decimal value={ fieldValue } />,
+		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
 	},
 ];
 

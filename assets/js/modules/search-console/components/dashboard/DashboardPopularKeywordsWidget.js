@@ -36,7 +36,7 @@ import TableOverflowContainer from '../../../../components/TableOverflowContaine
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
-import Decimal from '../../../../components/Num/Decimal';
+import { numFmt } from '../../../../util';
 const { useSelect } = Data;
 
 function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
@@ -123,12 +123,12 @@ const tableColumns = [
 	{
 		title: __( 'Clicks', 'google-site-kit' ),
 		description: __( 'Number of times users clicked on your content in search results', 'google-site-kit' ),
-		Component: ( { row } ) => <Decimal value={ row.clicks } />,
+		Component: ( { row } ) => numFmt( row.clicks, { style: 'decimal' } ),
 	},
 	{
 		title: __( 'Impressions', 'google-site-kit' ),
 		description: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
-		Component: ( { row } ) => <Decimal value={ row.impressions } />,
+		Component: ( { row } ) => numFmt( row.impressions, { style: 'decimal' } ),
 	},
 ];
 
