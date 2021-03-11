@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -39,6 +39,7 @@ import UserInputPreview from '../user-input/UserInputPreview';
 import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
 import UserInputSettings from '../notifications/UserInputSettings';
 import { useFeature } from '../../hooks/useFeature';
+import { trackEvent } from '../../util';
 const { useSelect, useDispatch } = Data;
 
 const SettingsAdmin = () => {
@@ -48,12 +49,20 @@ const SettingsAdmin = () => {
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const goTo = ( questionIndex = 1 ) => {
+		trackEvent( 'user_input', 'settings_edit', USER_INPUT_QUESTIONS_LIST[ questionIndex - 1 ] );
+
 		navigateTo( addQueryArgs( userInputURL, {
 			question: USER_INPUT_QUESTIONS_LIST[ questionIndex - 1 ],
 			redirect_url: global.location.href,
 			single: 'settings', // Allows the user to edit a single question then return to the settings page.
 		} ) );
 	};
+
+	useEffect( () => {
+		if ( isUserInputCompleted ) {
+			trackEvent( 'user_input', 'settings_view' );
+		}
+	}, [ isUserInputCompleted ] );
 
 	return (
 		<Fragment>
@@ -89,7 +98,7 @@ const SettingsAdmin = () => {
 						</Layout>
 					) }
 					{ ! isUserInputCompleted && (
-						<UserInputSettings isDimissable={ false } />
+						<UserInputSettings isDismissable={ false } />
 					) }
 				</Cell>
 			) }

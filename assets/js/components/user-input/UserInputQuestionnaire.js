@@ -84,6 +84,12 @@ export default function UserInputQuestionnaire() {
 		}
 	}, [ answeredUntilIndex, activeSlugIndex ] );
 
+	useEffect( () => {
+		if ( activeSlug === 'preview' ) {
+			trackEvent( 'user_input', 'summary_view' );
+		}
+	}, [ activeSlug ] );
+
 	const {
 		USER_INPUT_ANSWERS_GOALS,
 		USER_INPUT_ANSWERS_HELP_NEEDED,
@@ -91,12 +97,20 @@ export default function UserInputQuestionnaire() {
 		USER_INPUT_ANSWERS_ROLE,
 	} = getUserInputAnwsers();
 
+	const isSettings = single === 'settings';
+
 	const next = useCallback( () => {
 		trackEvent( 'user_input', 'question_advance', steps[ activeSlugIndex ] );
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );
 	}, [ activeSlugIndex ] );
 
 	const goTo = useCallback( ( num = 1, singleType = false ) => {
+		trackEvent(
+			'user_input',
+			'summary_edit',
+			steps[ num - 1 ],
+		);
+
 		// If we're going to a single question to edit it, set the query string here.
 		// We can't currently set it in the child component because the useQueryArg hook doesn't update in the parent.
 		setSingle( singleType );
@@ -104,7 +118,7 @@ export default function UserInputQuestionnaire() {
 			setActiveSlug( steps[ num - 1 ] );
 			global.scrollTo( 0, 0 );
 		}
-	}, [ activeSlugIndex ] );
+	}, [ activeSlugIndex, isSettings ] );
 
 	const back = useCallback( () => {
 		trackEvent( 'user_input', 'question_return', steps[ activeSlugIndex ] );
@@ -112,6 +126,12 @@ export default function UserInputQuestionnaire() {
 	}, [ activeSlugIndex ] );
 
 	const submitChanges = useCallback( async () => {
+		trackEvent(
+			'user_input',
+			isSettings ? 'question_submit' : 'summary_submit',
+			isSettings ? steps[ activeSlugIndex ] : undefined,
+		);
+
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
 			const url = new URL( redirectURL || dashboardURL );
@@ -122,7 +142,7 @@ export default function UserInputQuestionnaire() {
 
 			navigateTo( url.toString() );
 		}
-	}, [ dashboardURL ] );
+	}, [ dashboardURL, isSettings ] );
 
 	const goToPreview = useCallback( () => {
 		trackEvent( 'user_input', 'question_update', steps[ activeSlugIndex ] );

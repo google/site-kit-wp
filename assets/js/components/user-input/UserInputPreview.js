@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useEffect } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,13 +33,11 @@ import { Fragment, useEffect } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Row } from '../../material-components';
-import { trackEvent } from '../../util';
 import Button from '../Button';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import { getUserInputAnwsers } from './util/constants';
 import ErrorNotice from '../ErrorNotice';
-import useQueryArg from '../../hooks/useQueryArg';
 const { useSelect } = Data;
 
 export default function UserInputPreview( props ) {
@@ -50,13 +48,7 @@ export default function UserInputPreview( props ) {
 		error,
 	} = props;
 
-	const [ single ] = useQueryArg( 'single', false );
-	const [ question ] = useQueryArg( 'question', false );
 	const settings = useSelect( ( select ) => select( CORE_USER ).getUserInputSettings() );
-
-	useEffect( () => {
-		trackEvent( 'user_input', 'summary_view' );
-	}, [] );
 
 	const {
 		USER_INPUT_ANSWERS_GOALS,
@@ -64,29 +56,6 @@ export default function UserInputPreview( props ) {
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
 		USER_INPUT_ANSWERS_ROLE,
 	} = getUserInputAnwsers();
-
-	const isSettings = single === 'settings';
-
-	const handleGoTo = ( num, singleType, slug ) => {
-		trackEvent(
-			'user_input',
-			isSettings ? 'settings_edit' : 'summary_edit',
-			slug
-		);
-		goTo( num, singleType );
-	};
-
-	const handleSubmit = () => {
-		trackEvent(
-			'user_input',
-			isSettings ? 'summary_submit' : 'question_submit',
-			question,
-		);
-
-		if ( typeof submitChanges === 'function' ) {
-			submitChanges();
-		}
-	};
 
 	return (
 		<div className="googlesitekit-user-input__preview">
@@ -98,7 +67,7 @@ export default function UserInputPreview( props ) {
 								<UserInputPreviewGroup
 									questionNumber={ 1 }
 									title={ __( 'Which best describes your team/role relation to this site?', 'google-site-kit' ) }
-									edit={ handleGoTo.bind( null, 1, 'user-input', 'role' ) }
+									edit={ goTo.bind( null, 1, 'user-input' ) }
 									values={ settings?.role?.values || [] }
 									options={ USER_INPUT_ANSWERS_ROLE }
 								/>
@@ -106,7 +75,7 @@ export default function UserInputPreview( props ) {
 								<UserInputPreviewGroup
 									questionNumber={ 2 }
 									title={ __( 'How often do you create new posts for this site?', 'google-site-kit' ) }
-									edit={ handleGoTo.bind( null, 2, 'user-input', 'postFrequency' ) }
+									edit={ goTo.bind( null, 2, 'user-input' ) }
 									values={ settings?.postFrequency?.values || [] }
 									options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
 								/>
@@ -114,7 +83,7 @@ export default function UserInputPreview( props ) {
 								<UserInputPreviewGroup
 									questionNumber={ 3 }
 									title={ __( 'What are the goals of this site?', 'google-site-kit' ) }
-									edit={ handleGoTo.bind( null, 3, 'user-input', 'goals' ) }
+									edit={ goTo.bind( null, 3, 'user-input' ) }
 									values={ settings?.goals?.values || [] }
 									options={ USER_INPUT_ANSWERS_GOALS }
 								/>
@@ -123,7 +92,7 @@ export default function UserInputPreview( props ) {
 								<UserInputPreviewGroup
 									questionNumber={ 4 }
 									title={ __( 'What do you need help most with for this site?', 'google-site-kit' ) }
-									edit={ handleGoTo.bind( null, 4, 'user-input', 'helpNeeded' ) }
+									edit={ goTo.bind( null, 4, 'user-input' ) }
 									values={ settings?.helpNeeded?.values || [] }
 									options={ USER_INPUT_ANSWERS_HELP_NEEDED }
 								/>
@@ -131,7 +100,7 @@ export default function UserInputPreview( props ) {
 								<UserInputPreviewGroup
 									questionNumber={ 5 }
 									title={ __( 'To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for:', 'google-site-kit' ) }
-									edit={ handleGoTo.bind( null, 5, 'user-input', 'searchTerms' ) }
+									edit={ goTo.bind( null, 5, 'user-input' ) }
 									values={ settings?.searchTerms?.values || [] }
 								/>
 							</Cell>
@@ -146,7 +115,7 @@ export default function UserInputPreview( props ) {
 								<div className="googlesitekit-user-input__buttons">
 									<Button
 										className="googlesitekit-user-input__buttons--next"
-										onClick={ handleSubmit }
+										onClick={ submitChanges }
 									>
 										{ __( 'Submit', 'google-site-kit' ) }
 									</Button>

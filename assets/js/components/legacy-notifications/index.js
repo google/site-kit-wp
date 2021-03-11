@@ -26,7 +26,7 @@ import { addFilter } from '@wordpress/hooks';
  */
 import { isFeatureEnabled } from '../../features';
 import { createAddToFilter } from '../../util/helpers';
-import { getQueryParameter } from '../../util';
+import { getQueryParameter, trackEvent } from '../../util';
 import DashboardCoreSiteAlerts from './dashboard-core-site-alerts';
 import DashboardSetupAlerts from './dashboard-setup-alerts';
 import DashboardModulesAlerts from './dashboard-modules-alerts';
@@ -39,7 +39,17 @@ const notification = getQueryParameter( 'notification' );
 const addCoreSiteNotifications = createAddToFilter( <DashboardCoreSiteAlerts /> );
 const addSetupNotifications = createAddToFilter( <DashboardSetupAlerts /> );
 const addModulesNotifications = createAddToFilter( <DashboardModulesAlerts /> );
-const addUserInputSettings = createAddToFilter( <UserInputSettings /> );
+const addUserInputSettings = createAddToFilter(
+	<UserInputSettings
+		isDismissable={ true }
+		onDismiss={ () => {
+			trackEvent( 'user_input', 'prompt_notification_dismiss' );
+		} }
+		onCTAClick={ () => {
+			trackEvent( 'user_input', 'prompt_notification_start' );
+		} }
+	/>
+);
 const addAuthNotification = createAddToFilter( <UnsatisfiedScopesAlert /> );
 
 addFilter( 'googlesitekit.DashboardNotifications',

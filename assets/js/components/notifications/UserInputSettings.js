@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { useInstanceId as useInstanceID } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
-import { useEffect, useCallback } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,26 +39,16 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import PersonSittingSVG from '../../../svg/person-sitting.svg';
 const { useSelect } = Data;
 
-export default function UserInputSettings( { onCTAClick, isDimissable } ) {
+export default function UserInputSettings( { onCTAClick, onDismiss, isDismissable } ) {
 	const instanceID = useInstanceID( UserInputSettings );
 	const ctaLink = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
 	const userInputState = useSelect( ( select ) => select( CORE_USER ).getUserInputState() );
 
 	useEffect( () => {
-		trackEvent( 'user_input', 'prompt_notification_view' );
-	}, [] );
-
-	const handleOnDismiss = useCallback( () => {
-		trackEvent( 'user_input', 'prompt_notification_dismiss' );
-	}, [] );
-
-	const handleOnCTAClick = useCallback( () => {
-		trackEvent( 'user_input', 'prompt_notification_start' );
-
-		if ( typeof onCTAClick === 'function' ) {
-			onCTAClick();
+		if ( isDismissable ) {
+			trackEvent( 'user_input', 'prompt_notification_view' );
 		}
-	}, [ onCTAClick ] );
+	}, [ isDismissable ] );
 
 	if ( userInputState === 'completed' ) {
 		return null;
@@ -74,11 +64,11 @@ export default function UserInputSettings( { onCTAClick, isDimissable } ) {
 			dismissExpires={ getTimeInSeconds( 'hour' ) * 3 }
 			ctaLink={ ctaLink }
 			ctaLabel={ __( 'Let’s go', 'google-site-kit' ) }
-			onCTAClick={ handleOnCTAClick }
+			onCTAClick={ onCTAClick }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			WinImageSVG={ ( props ) => <PersonSittingSVG width="100%" height="100%" { ...props } /> }
-			isDismissable={ isDimissable }
-			onDismiss={ handleOnDismiss }
+			isDismissable={ isDismissable }
+			onDismiss={ onDismiss }
 		/>
 	);
 }
@@ -86,9 +76,6 @@ export default function UserInputSettings( { onCTAClick, isDimissable } ) {
 UserInputSettings.propTypes = {
 	// Used to bypass link functionality within Storybook to avoid breakage.
 	onCTAClick: PropTypes.func,
-	isDimissable: PropTypes.bool,
-};
-
-UserInputSettings.defaultProps = {
-	isDimissable: true,
+	onDismiss: PropTypes.func,
+	isDismissable: PropTypes.bool,
 };

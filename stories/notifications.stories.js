@@ -127,7 +127,7 @@ storiesOf( 'Global/Notifications', module )
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<UserInputSettings onCTAClick={ ( event ) => event.preventDefault() } />
+				<UserInputSettings isDismissable={ true } onCTAClick={ ( event ) => event.preventDefault() } />
 			</WithTestRegistry>
 		);
 	} )
