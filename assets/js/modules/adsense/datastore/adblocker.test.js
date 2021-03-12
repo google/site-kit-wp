@@ -22,6 +22,7 @@
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
+	muteFetch,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -70,12 +71,25 @@ describe( 'modules/adsense adblocker', () => {
 		describe( 'isAdBlockerActive', () => {
 			it( 'uses a resolver to query detection using detectAnyAdblocker', async () => {
 				stubIsAdBlockerDetected( false );
+				muteFetch( 'path:/favicon.ico' );
 
 				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBeUndefined();
 				await untilResolved( registry, STORE_NAME ).isAdBlockerActive();
 
 				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( false );
 				expect( mockDetectAnyAdblocker ).toHaveBeenCalled();
+			} );
+
+			it( 'falls back to a test request to a well-known static asset with bait in the query string', async () => {
+				stubIsAdBlockerDetected( false );
+				fetchMock.getOnce( 'path:/favicon.ico', { throws: new TypeError( 'Failed to fetch' ) } );
+
+				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBeUndefined();
+				await untilResolved( registry, STORE_NAME ).isAdBlockerActive();
+
+				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( true );
+				expect( mockDetectAnyAdblocker ).toHaveBeenCalled();
+				expect( fetchMock ).toHaveFetched( 'path:/favicon.ico' );
 			} );
 
 			it( 'resolver does not rely on detection if status is already known', async () => {
@@ -88,6 +102,7 @@ describe( 'modules/adsense adblocker', () => {
 
 				// Value should still be false because the global with true is not considered.
 				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( false );
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'returns true if ad blocker is received as active', async () => {
@@ -98,6 +113,7 @@ describe( 'modules/adsense adblocker', () => {
 
 				// Value should still be true since resolver should not have changed anything.
 				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( true );
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 		} );
 	} );
