@@ -58,7 +58,7 @@ class Has_Multiple_Admins {
 		if ( false === $admins_count ) {
 			$user_query_args = array(
 				'number'      => 1,
-				'role'        => 'Administrator',
+				'role__in'    => array( 'Administrator' ),
 				'count_total' => true,
 			);
 
