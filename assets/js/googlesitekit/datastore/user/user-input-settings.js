@@ -109,10 +109,13 @@ const baseActions = {
 		const registry = yield Data.commonActions.getRegistry();
 		yield clearError( 'saveUserInputSettings', [] );
 
+		const trim = ( value ) => value.trim();
+		const notEmpty = ( value ) => value.length > 0;
+
 		const settings = registry.select( STORE_NAME ).getUserInputSettings();
 		const values = Object.keys( settings ).reduce( ( accum, key ) => ( {
 			...accum,
-			[ key ]: settings[ key ]?.values || [],
+			[ key ]: ( settings[ key ]?.values || [] ).map( trim ).filter( notEmpty ),
 		} ), {} );
 
 		yield {

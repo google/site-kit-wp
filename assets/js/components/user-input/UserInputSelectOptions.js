@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useState, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -41,17 +41,44 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
 	const [ other, setOther ] = useState( values.filter( ( value ) => ! options[ value ] )[ 0 ] || '' );
 	const { setUserInputSetting } = useDispatch( CORE_USER );
+	const inputRef = useRef();
+	const [ disabled, setDisabled ] = useState( false );
 
 	// Need to make sure that dependencies list always has the same number of elements.
 	const dependencies = values.concat( Array( max ) ).slice( 0, max );
 
 	const onClick = useCallback( ( event ) => {
 		const { target } = event;
-		const { value, checked } = target;
+		const { value, checked, name, type, id } = target;
 
 		const newValues = new Set( [ value, ...values ] );
 		if ( ! checked ) {
 			newValues.delete( value );
+		}
+
+		if ( name === `${ slug }-other` && checked === true ) {
+			if ( inputRef.current ) {
+				inputRef.current.inputElement.focus();
+			}
+			setDisabled( false );
+		}
+
+		if ( type === 'radio' && id === `${ slug }-other` ) {
+			if ( inputRef.current ) {
+				inputRef.current.inputElement.focus();
+			}
+			setDisabled( false );
+		}
+
+		if (
+			type !== 'radio' &&
+			newValues.size === max &&
+			! newValues.has( '' ) &&
+			! newValues.has( other )
+		) {
+			setDisabled( true );
+		} else {
+			setDisabled( false );
 		}
 
 		setUserInputSetting( slug, Array.from( newValues ).slice( 0, max ) );
@@ -72,6 +99,7 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 	};
 
 	const ListComponent = max === 1 ? Radio : Checkbox;
+
 	const items = Object.keys( options ).map( ( optionSlug ) => {
 		const props = {
 			id: `${ slug }-${ optionSlug }`,
@@ -106,18 +134,23 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 						id={ `${ slug }-other` }
 						name={ max === 1 ? slug : `${ slug }-other` }
 						value={ other }
-						checked={ values.includes( other ) }
+						checked={ values.includes( other.trim() ) }
 						disabled={ max > 1 && values.length >= max && ! values.includes( other ) }
 						{ ...onClickProps }
 					>
 						{ __( 'Other:', 'google-site-kit' ) }
 					</ListComponent>
 
-					<TextField>
+					<TextField
+						label={ __( 'Type your own answer', 'google-site-kit' ) }
+						floatingLabelClassName="screen-reader-text"
+					>
 						<Input
 							id={ `${ slug }-select-options` }
 							value={ other }
 							onChange={ onOtherChange }
+							ref={ inputRef }
+							disabled={ disabled }
 						/>
 					</TextField>
 				</div>
