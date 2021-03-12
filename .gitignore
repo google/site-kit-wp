@@ -26,6 +26,7 @@ tmtags
 Session.vim
 *.swp
 .vscode/*
+!.vscode/settings.json
 
 # Mac OSX
 .DS_Store

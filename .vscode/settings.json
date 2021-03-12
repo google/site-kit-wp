@@ -12,12 +12,6 @@
     "third-party/": true,
     "vendor/": true
   },
-  "editor.formatOnSave": true,
-  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
-  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": true,
-  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
-  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": true,
-  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
   "jest.autoEnable": false,
   "jest.pathToConfig": "./tests/js/jest.config.js",
   "editor.codeActionsOnSave": {
