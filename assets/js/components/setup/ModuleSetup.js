@@ -39,6 +39,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import HelpMenu from '../help/HelpMenu';
+import HelpMenuLink from '../help/HelpMenuLink';
 import { useFeature } from '../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
@@ -83,7 +84,15 @@ export default function ModuleSetup( { moduleSlug } ) {
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && <HelpMenu /> }
+				{ helpVisibilityEnabled && (
+					<HelpMenu>
+						{ moduleSlug === 'adsense' && (
+							<HelpMenuLink href="https://support.google.com/adsense/">
+								{ __( 'Get help with AdSense', 'google-site-kit' ) }
+							</HelpMenuLink>
+						) }
+					</HelpMenu>
+				) }
 			</Header>
 			<div className="googlesitekit-setup">
 				<div className="mdc-layout-grid">

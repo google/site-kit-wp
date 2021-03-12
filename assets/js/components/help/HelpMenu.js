@@ -65,26 +65,20 @@ function HelpMenu( { children } ) {
 		toggleMenu( ! menuOpen );
 	}, [ menuOpen ] );
 
-	const visuallyHiddenText = () => {
-		return (
-			<VisuallyHidden>Help</VisuallyHidden>
-		);
-	};
-
 	return (
 		<Fragment>
 			<div className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-help-menu mdc-menu-surface--anchor">
 				<Button
-					ref={ menuButtonRef }
-					className="googlesitekit-header__dropdown googlesitekit-help-menu__button mdc-button--dropdown"
-					text
-					onClick={ handleMenu }
-					icon={ <HelpIcon width="20" height="20" /> }
-					aria-haspopup="menu"
-					aria-expanded={ menuOpen }
 					aria-controls="help-menu"
+					aria-expanded={ menuOpen }
+					aria-haspopup="menu"
+					className="googlesitekit-header__dropdown googlesitekit-help-menu__button mdc-button--dropdown"
+					icon={ <HelpIcon width="20" height="20" /> }
+					onClick={ handleMenu }
+					ref={ menuButtonRef }
+					text
 				>
-					{ visuallyHiddenText() }
+					<VisuallyHidden>{ __( 'Help', 'google-site-kit' ) }</VisuallyHidden>
 				</Button>
 				<Menu
 					ref={ menuRef }

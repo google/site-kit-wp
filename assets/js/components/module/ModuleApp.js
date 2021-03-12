@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * External dependencies
@@ -40,6 +41,7 @@ import LegacyModuleApp from './LegacyModuleApp';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import HelpMenu from '../help/HelpMenu';
 import DateRangeSelector from '../DateRangeSelector';
+import HelpMenuLink from '../help/HelpMenuLink';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 const { useSelect } = Data;
@@ -54,7 +56,15 @@ function ModuleApp( { moduleSlug } ) {
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && <HelpMenu /> }
+				{ helpVisibilityEnabled && (
+					<HelpMenu>
+						{ moduleSlug === 'adsense' && (
+							<HelpMenuLink href="https://support.google.com/adsense/">
+								{ __( 'Get help with AdSense', 'google-site-kit' ) }
+							</HelpMenuLink>
+						) }
+					</HelpMenu>
+				) }
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
 			<Alert module={ moduleSlug } />
