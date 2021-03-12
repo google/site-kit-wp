@@ -20,8 +20,8 @@
  * WordPress dependencies
  */
 import { Fragment, useState, useRef, useEffect, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 import { ESCAPE } from '@wordpress/keycodes';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -54,14 +54,14 @@ function HelpMenu( { otherMenuLinks } ) {
 	const menuLinks = Array.isArray( otherMenuLinks ) ? [ ...otherMenuLinks, ...defaultMenuLinks ] : defaultMenuLinks;
 
 	useEffect( () => {
-		const handleMenuClose = ( e ) => {
+		const handleMenuClose = ( event ) => {
 			if ( menuButtonRef?.current && menuRef?.current ) {
 				// Close the menu if the user presses the Escape key
 				// or if they click outside of the menu.
 				if (
-					( ( 'keyup' === e.type && ESCAPE === e.keyCode ) || 'mouseup' === e.type ) &&
-					! menuButtonRef.current.contains( e.target ) &&
-					! menuRef.current.contains( e.target )
+					( ( 'keyup' === event.type && ESCAPE === event.keyCode ) || 'mouseup' === event.type ) &&
+					! menuButtonRef.current.contains( event.target ) &&
+					! menuRef.current.contains( event.target )
 				) {
 					toggleMenu( false );
 				}
