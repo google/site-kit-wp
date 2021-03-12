@@ -138,6 +138,12 @@ export function getWidgetLayout( widgets, widgetStates ) {
 
 		// Get available sizes for the current widget to select the most appropriate width for the current row.
 		let sizes = getWidgetSizes( counter, widget );
+		console.log( `
+			get sizes:
+			counter: ${ counter }
+			sizes ->  counter: ${ sizes[ 0 ].counter }, width: ${ sizes[ 0 ].width }
+
+		` );
 
 		// Get the next active widget to help determine the best width for this widget.
 		const nextActiveWidget = getNextActiveWidget( i, widgets, widgetStates );
@@ -169,6 +175,11 @@ export function getWidgetLayout( widgets, widgetStates ) {
 		// Increase column counter based on width.
 		counter += WIDTH_GRID_COUNTER_MAP[ width ];
 
+		console.log( `
+		counter: ${ counter }
+		columns: ${ columnWidths } 
+		rows: ${ rowIndexes }
+		` );
 		// If counter is going above 12, this widget is too wide for the current row.
 		// So it's going to be the first widget in the next row instead.
 		if ( counter > 12 ) {

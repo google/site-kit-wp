@@ -106,19 +106,19 @@ describe( 'WidgetAreaRenderer', () => {
 
 		await waitFor( () => {
 			expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
-		} );
+		}, { timeout: 2000 } );
 	} );
 
-	it.each(
+	it.only.each(
 		[
-			[
-				'12, 3-6 -> 12, 4-8',
-				[
-					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
-					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
-					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.HALF },
-				],
-			],
+			// [
+			// 	'12, 3-6 -> 12, 4-8',
+			// 	[
+			// 		{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
+			// 		{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+			// 		{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.HALF },
+			// 	],
+			// ],
 			[
 				'3, 12, 3-6, 6 -> 3, 12, 4-8, 6',
 				[
@@ -129,36 +129,36 @@ describe( 'WidgetAreaRenderer', () => {
 					{ Component: WidgetComponent, slug: 'five', width: WIDGET_WIDTHS.HALF },
 				],
 			],
-			[
-				'3-3-3, 6 -> 4-4-4, 6',
-				[
-					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
-					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
-					{ Component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.HALF },
-				],
-			],
-			[
-				'3-3-3, 12 -> 4-4-4, 12',
-				[
-					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
-					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
-					{ Component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.FULL },
-				],
-			],
-			[
-				'3-3-3, 12, 3-3-3 -> 4-4-4, 12, 4-4-4',
-				[
-					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
-					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
-					{ Component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.FULL },
-					{ Component: WidgetComponent, slug: 'five', width: WIDGET_WIDTHS.QUARTER },
-					{ Component: WidgetComponent, slug: 'six', width: WIDGET_WIDTHS.QUARTER },
-					{ Component: WidgetComponent, slug: 'seven', width: WIDGET_WIDTHS.QUARTER },
-				],
-			],
+			// [
+			// 	'3-3-3, 6 -> 4-4-4, 6',
+			// 	[
+			// 		{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+			// 		{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+			// 		{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+			// 		{ Component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.HALF },
+			// 	],
+			// ],
+			// [
+			// 	'3-3-3, 12 -> 4-4-4, 12',
+			// 	[
+			// 		{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+			// 		{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+			// 		{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+			// 		{ Component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.FULL },
+			// 	],
+			// ],
+			// [
+			// 	'3-3-3, 12, 3-3-3 -> 4-4-4, 12, 4-4-4',
+			// 	[
+			// 		{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+			// 		{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+			// 		{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+			// 		{ Component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.FULL },
+			// 		{ Component: WidgetComponent, slug: 'five', width: WIDGET_WIDTHS.QUARTER },
+			// 		{ Component: WidgetComponent, slug: 'six', width: WIDGET_WIDTHS.QUARTER },
+			// 		{ Component: WidgetComponent, slug: 'seven', width: WIDGET_WIDTHS.QUARTER },
+			// 	],
+			// ],
 		]
 	)( 'should resize widgets in a row that spans 9 columns to fill the full 12 columns (%s)', async ( testName, widgets ) => {
 		createWidgets( registry, areaName, widgets );

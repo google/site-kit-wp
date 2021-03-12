@@ -60,7 +60,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	} );
 
 	// Render all widgets.
-	const widgetsOutput = activeWidgets.map( ( widget, i ) => {
+	const widgetsOutput = widgets.map( ( widget, i ) => {
 		return (
 			<WidgetWrapper
 				key={ `${ widget.slug }-wrapper` }

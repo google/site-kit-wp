@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import { getWidgetLayout } from './get-widget-layout';
+import ReportZero from '../../../components/ReportZero';
+import ActivateModuleCTA from '../../../components/ActivateModuleCTA';
 import { WIDGET_WIDTHS } from '../datastore/constants';
 import Null from '../../../components/Null';
 
@@ -37,7 +39,89 @@ describe( 'getWidgetLayout', () => {
 	const getHalfOrFullWidget = ( slug ) => ( { slug, width: [ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.FULL ] } );
 
 	const getRegularState = () => null;
+	const getReportZeroState = ( moduleSlug ) => ( { Component: ReportZero, metadata: { moduleSlug } } );
+	const getActivateModuleCTAState = ( moduleSlug ) => ( { Component: ActivateModuleCTA, metadata: { moduleSlug } } );
 	const getNullState = () => ( { Component: Null, metadata: {} } );
+
+	it( 'computes expected columnWidths', () => {
+		const widgets = [
+			// First row.
+			getQuarterWidget( 'test1' ),
+			getQuarterWidget( 'test2' ),
+			getHalfWidget( 'test3' ),
+			// Second row.
+			getHalfWidget( 'test4' ),
+			getQuarterWidget( 'test5' ),
+			// Third row.
+			getFullWidget( 'test6' ),
+			getFullWidget( 'test7' ),
+		];
+		const widgetStates = {
+			test1: getRegularState(),
+			test2: getReportZeroState( 'search-console' ),
+			test3: getReportZeroState( 'analytics' ),
+			test4: getActivateModuleCTAState( 'adsense' ),
+			test5: getActivateModuleCTAState( 'adsense' ),
+			test6: getActivateModuleCTAState( 'adsense' ),
+			test7: getNullState(),
+		};
+
+		// Phone and tablet column widths are static based on the widget width.
+		// Desktop column widths usually are as well, except for the case where
+		// an entire row spans exactly 9 columns, in which case each widget
+		// will be expanded by a third to fill the entire 12 columns.
+		const expectedClassNames = [
+			[ // 3
+				'mdc-layout-grid__cell',
+				'mdc-layout-grid__cell--span-2-phone',
+				'mdc-layout-grid__cell--span-3-desktop',
+				'mdc-layout-grid__cell--span-4-tablet',
+			],
+			[ // 3
+				'mdc-layout-grid__cell',
+				'mdc-layout-grid__cell--span-2-phone',
+				'mdc-layout-grid__cell--span-3-desktop',
+				'mdc-layout-grid__cell--span-4-tablet',
+			],
+			[ // 6
+				'mdc-layout-grid__cell',
+				'mdc-layout-grid__cell--span-6-desktop',
+				'mdc-layout-grid__cell--span-8-tablet',
+			],
+			[ // 8
+				'mdc-layout-grid__cell',
+				'mdc-layout-grid__cell--span-8-desktop',
+				'mdc-layout-grid__cell--span-8-tablet',
+			],
+			[ // 4
+				'mdc-layout-grid__cell',
+				'mdc-layout-grid__cell--span-2-phone',
+				'mdc-layout-grid__cell--span-4-desktop',
+				'mdc-layout-grid__cell--span-4-tablet',
+			],
+			[ // 12
+				'mdc-layout-grid__cell',
+				'mdc-layout-grid__cell--span-12',
+			],
+			null,
+		];
+		const expectedColumnWidths = [
+			3, 3, 6,
+			8, 4,
+			12,
+			0,
+		];
+		const expectedRowIndexes = [
+			0, 0, 0,
+			1, 1,
+			2,
+			2,
+		];
+
+		const { columnWidths, rowIndexes } = getWidgetLayout( widgets, widgetStates );
+		expect( columnWidths ).toEqual( expectedColumnWidths );
+		expect( rowIndexes ).toEqual( expectedRowIndexes );
+	} );
 
 	it( 'computes expected column widths in a single row', () => {
 		const widgets = [
@@ -60,10 +144,52 @@ describe( 'getWidgetLayout', () => {
 	} );
 
 	it( 'computes expected column widths across multiple rows', () => {
-		const widgets = [ half, half, full, quarter, half, quarter, quarter, quarter, quarter, quarter ];
+		const widgets = [
+			half, half,
+			full,
+			quarter, half, quarter,
+			quarter, quarter, quarter, quarter,
+		];
 		const widgetStates = {};
-		const expectedColumnWidths = [ 6, 6, 12, 3, 6, 3, 3, 3, 3, 3 ];
-		const expectedRowIndexes = [ 0, 0, 1, 2, 2, 2, 3, 3, 3, 3 ];
+		const expectedColumnWidths = [
+			6, 6,
+			12,
+			3, 6, 3,
+			3, 3, 3, 3,
+		];
+		const expectedRowIndexes = [
+			0, 0,
+			1,
+			2, 2, 2,
+			3, 3, 3, 3,
+		];
+
+		const { columnWidths, rowIndexes } = getWidgetLayout( widgets, widgetStates );
+		expect( columnWidths ).toEqual( expectedColumnWidths );
+		expect( rowIndexes ).toEqual( expectedRowIndexes );
+	} );
+
+	it.only( 'expands a row with 9 columns to 12 columns', () => {
+		// A row of 3, 12, 3-6, 6 should become 3, 12, 4-8, 6
+		const widgets = [
+			quarter,
+			full,
+			quarter, half, // this row is 9 columns wide
+			half,
+		];
+		const widgetStates = {};
+		const expectedColumnWidths = [
+			3,
+			12,
+			4, 8,
+			6,
+		];
+		const expectedRowIndexes = [
+			0,
+			1,
+			2, 2,
+			3,
+		];
 
 		const { columnWidths, rowIndexes } = getWidgetLayout( widgets, widgetStates );
 		expect( columnWidths ).toEqual( expectedColumnWidths );
@@ -71,10 +197,25 @@ describe( 'getWidgetLayout', () => {
 	} );
 
 	it( 'expands 3/4 rows into full-width rows', () => {
-		const widgets = [ half, quarter, full, quarter, quarter, quarter, half, quarter ];
+		const widgets = [
+			half, quarter,
+			full,
+			quarter, quarter, quarter,
+			half, quarter,
+		];
 		const widgetStates = {};
-		const expectedColumnWidths = [ 8, 4, 12, 4, 4, 4, 8, 4 ];
-		const expectedRowIndexes = [ 0, 0, 1, 2, 2, 2, 3, 3 ];
+		const expectedColumnWidths = [
+			8, 4,
+			12,
+			4, 4, 4,
+			8, 4,
+		];
+		const expectedRowIndexes = [
+			0, 0,
+			1,
+			2, 2, 2,
+			3, 3,
+		];
 
 		const { columnWidths, rowIndexes } = getWidgetLayout( widgets, widgetStates );
 		expect( columnWidths ).toEqual( expectedColumnWidths );

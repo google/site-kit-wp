@@ -81,10 +81,16 @@ export function combineWidgets( widgets, widgetStates, {
 				// and pass all common metadata as props.
 				columnWidthsBuffer.push( columnWidths[ i ] );
 
+				// Get total (desktop) column width. For tablet and phone,
+				// the component should span the full width as by definition
+				// it is at least a "half" widget wide (which has that behavior).
+				const combinedColumnWidth = columnWidthsBuffer.reduce( ( sum, columnWidth ) => sum + columnWidth, 0 );
+
 				overrideComponents[ i ] = currentState;
 
 				// This final column should have the combined width
-				gridColumnWidths[ i ] = columnWidthsBuffer.reduce( ( a, b ) => a + b, 0 );
+				gridColumnWidths[ i ] = combinedColumnWidth;
+
 				// Reset the columnWidthsBuffer variable.
 				columnWidthsBuffer = [];
 			}
