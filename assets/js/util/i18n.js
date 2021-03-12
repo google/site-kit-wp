@@ -47,6 +47,28 @@ const durationFormat = ( seconds, options = {} ) => {
 		style: 'unit',
 	};
 
+	// Some browsers, e.g. Safari, throw a RangeError when options.style is
+	// not one of decimal, percent, or currency.
+	function testNumberFormat() {
+		try {
+			// test call to numberFormat
+			numberFormat( 10, {
+				...options,
+				unit: 'hour',
+			} );
+			return true;
+		} catch ( e ) {
+			return false;
+		}
+	}
+
+	const browserSupportsStyleUnit = testNumberFormat();
+	let formattedString = '';
+
+	if ( ! browserSupportsStyleUnit ) {
+		options.style = 'decimal';
+	}
+
 	seconds = parseInt( seconds, 10 );
 
 	if ( Number.isNaN( seconds ) ) {
@@ -83,13 +105,21 @@ const durationFormat = ( seconds, options = {} ) => {
 		} );
 	}
 
-	const formattedString = sprintf(
+	//  Use a fully internationalized approach in browsers that support it, with a fallback to XXh YYm ZZs.
+	if ( browserSupportsStyleUnit ) {
+		formattedString = sprintf(
 		/* translators: 1: formatted seconds, 2: formatted minutes, 3: formatted hours */
-		_x( '%3$s %2$s %1$s', 'duration of time: hh mm ss', 'google-site-kit' ),
-		seconds,
-		minutes,
-		hours,
-	);
+			_x( '%3$s %2$s %1$s', 'duration of time: hh mm ss', 'google-site-kit' ),
+			seconds,
+			minutes,
+			hours,
+		);
+	} else {
+		formattedString =
+		( hours ? hours + 'h ' : '' ) +
+		( minutes ? minutes + 'm ' : '' ) +
+		( seconds ? seconds + 's ' : '' );
+	}
 
 	return formattedString.trim();
 };
