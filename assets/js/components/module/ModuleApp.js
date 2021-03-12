@@ -38,13 +38,14 @@ import ModuleHeader from './ModuleHeader';
 import ModuleFooter from './ModuleFooter';
 import LegacyModuleApp from './LegacyModuleApp';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
-
+import HelpMenu from '../help/HelpMenu';
 import DateRangeSelector from '../DateRangeSelector';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 const { useSelect } = Data;
 
 function ModuleApp( { moduleSlug } ) {
+	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const screenWidgetContext = useSelect( ( select ) => select( CORE_MODULES ).getScreenWidgetContext( moduleSlug ) );
 	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleSlug ) );
 	const shouldRenderWidget = useFeature( 'widgets.moduleScreens' ) && screenWidgetContext;
@@ -53,6 +54,7 @@ function ModuleApp( { moduleSlug } ) {
 	return (
 		<Fragment>
 			<Header>
+				{ helpVisibilityEnabled && <HelpMenu /> }
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
 			<Alert module={ moduleSlug } />

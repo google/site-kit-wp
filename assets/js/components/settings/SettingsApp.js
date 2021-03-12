@@ -41,6 +41,8 @@ import HelpLink from '../HelpLink';
 import SettingsModules from './SettingsModules';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../material-components';
+import HelpMenu from '../help/HelpMenu';
+import { useFeature } from '../../hooks/useFeature';
 
 const { useSelect, useDispatch } = Data;
 
@@ -62,6 +64,7 @@ const parseHash = ( hashToParse ) => hashToParse.replace( '#', '' ).split( /\// 
 export default function SettingsApp() {
 	const [ hash, setHash ] = useHash();
 	const isFirstMount = useFirstMountState();
+	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const { setModuleSettingsPanelState } = useDispatch( CORE_MODULES );
 	const [ initialActiveTabID, initialModuleSlug, initialModuleState ] = parseHash( hash );
 	const [ activeTabID, setActiveTabID ] = useState( initialActiveTabID || 'settings' );
@@ -97,7 +100,10 @@ export default function SettingsApp() {
 
 	return (
 		<Fragment>
-			<Header />
+			<Header>
+				{ helpVisibilityEnabled && <HelpMenu /> }
+			</Header>
+
 			<div className="googlesitekit-module-page">
 				<Grid>
 					<Row>

@@ -27,31 +27,15 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Button from '../Button';
-import LinkMenu from '../LinkMenu';
 import HelpIcon from '../../../svg/help.svg';
 import VisuallyHidden from '../VisuallyHidden';
+import HelpMenuLink from './HelpMenuLink';
+import Menu from '../Menu';
 
-const defaultMenuLinks = [
-	{
-		label: __( 'Fix common issues', 'google-site-kit' ),
-		href: 'https://sitekit.withgoogle.com/documentation/fix-common-issues/',
-	},
-	{
-		label: __( 'Read help docs', 'google-site-kit' ),
-		href: 'https://sitekit.withgoogle.com/documentation/',
-	},
-	{
-		label: __( 'Get support', 'google-site-kit' ),
-		href: 'https://wordpress.org/support/plugin/google-site-kit/',
-	},
-];
-
-function HelpMenu( { otherMenuLinks } ) {
+function HelpMenu( { children } ) {
 	const [ menuOpen, toggleMenu ] = useState( false );
 	const menuButtonRef = useRef();
 	const menuRef = useRef();
-
-	const menuLinks = Array.isArray( otherMenuLinks ) ? [ ...otherMenuLinks, ...defaultMenuLinks ] : defaultMenuLinks;
 
 	useEffect( () => {
 		const handleMenuClose = ( event ) => {
@@ -89,10 +73,10 @@ function HelpMenu( { otherMenuLinks } ) {
 
 	return (
 		<Fragment>
-			<div className="googlesitekit-user-selector googlesitekit-dropdown-menu mdc-menu-surface--anchor">
+			<div className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-help-menu mdc-menu-surface--anchor">
 				<Button
 					ref={ menuButtonRef }
-					className="googlesitekit-header__dropdown mdc-button--dropdown"
+					className="googlesitekit-header__dropdown googlesitekit-help-menu__button mdc-button--dropdown"
 					text
 					onClick={ handleMenu }
 					icon={ <HelpIcon width="20" height="20" /> }
@@ -102,11 +86,22 @@ function HelpMenu( { otherMenuLinks } ) {
 				>
 					{ visuallyHiddenText() }
 				</Button>
-				<LinkMenu
+				<Menu
 					ref={ menuRef }
 					menuOpen={ menuOpen }
-					menuLinks={ menuLinks }
-					id="help-menu" />
+					id="help-menu"
+				>
+					{ children }
+					<HelpMenuLink href="https://sitekit.withgoogle.com/documentation/fix-common-issues/">
+						{ __( 'Fix common issues', 'google-site-kit' ) }
+					</HelpMenuLink>
+					<HelpMenuLink href="https://sitekit.withgoogle.com/documentation/">
+						{ __( 'Read help docs', 'google-site-kit' ) }
+					</HelpMenuLink>
+					<HelpMenuLink href="https://wordpress.org/support/plugin/google-site-kit/">
+						{ __( 'Get support', 'google-site-kit' ) }
+					</HelpMenuLink>
+				</Menu>
 			</div>
 		</Fragment>
 	);

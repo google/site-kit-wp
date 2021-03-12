@@ -1,5 +1,5 @@
 /**
- * HelpMenuLink component.
+ * Help menu styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,29 +16,10 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
- * Internal dependencies
- */
-import Link from '../Link';
-
-function HelpMenuLink( { children, href } ) {
-	return (
-		<li className="mdc-list-item" role="menuitem">
-			<Link className="mdc-list-item__text" href={ href } external hideExternalIndicator>
-				{ children }
-			</Link>
-		</li>
-	);
+.googlesitekit-header .googlesitekit-user-selector .googlesitekit-help-menu__button {
+	margin-right: 0;
 }
 
-HelpMenuLink.propTypes = {
-	children: PropTypes.node.isRequired,
-	href: PropTypes.string.isRequired,
-};
-
-export default HelpMenuLink;
+.googlesitekit-plugin .googlesitekit-help-menu .mdc-menu-surface {
+	width: auto;
+}

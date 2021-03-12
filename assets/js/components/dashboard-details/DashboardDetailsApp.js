@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -34,9 +35,12 @@ import DateRangeSelector from '../DateRangeSelector';
 import { Grid, Row, Cell } from '../../material-components/layout';
 import { useFeature } from '../../hooks/useFeature';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import HelpMenu from '../help/HelpMenu';
+import HelpMenuLink from '../help/HelpMenuLink';
 const { useSelect } = Data;
 
 export default function DashboardDetailsApp() {
+	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const pageDashboardWidgetsEnabled = useFeature( 'widgets.pageDashboard' );
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
@@ -48,6 +52,13 @@ export default function DashboardDetailsApp() {
 	return (
 		<Fragment>
 			<Header>
+				{ helpVisibilityEnabled && (
+					<HelpMenu>
+						<HelpMenuLink href="#TBD">
+							{ __( 'Get help with AdSense', 'google-site-kit' ) }
+						</HelpMenuLink>
+					</HelpMenu>
+				) }
 				{ currentEntityURL && <DateRangeSelector /> }
 			</Header>
 

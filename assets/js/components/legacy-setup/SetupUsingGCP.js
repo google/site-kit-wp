@@ -223,6 +223,10 @@ class SetupUsingGCP extends Component {
 		return (
 			<Fragment>
 				<Header />
+				{ /*
+					Note: this component doesn't use hooks and thus can't access the
+					feature flags, so we don't render the HelpMenu here.
+				*/ }
 				<div className="googlesitekit-wizard">
 					<div className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">
@@ -286,9 +290,7 @@ class SetupUsingGCP extends Component {
 											</div>
 										}
 									</section>
-									{ showVerificationSteps &&
-										wizardStepComponent
-									}
+									{ showVerificationSteps && wizardStepComponent }
 								</Layout>
 							</div>
 						</div>

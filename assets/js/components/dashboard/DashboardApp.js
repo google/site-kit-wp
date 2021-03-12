@@ -42,9 +42,7 @@ export default function DashboardApp() {
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && (
-					<HelpMenu children="" />
-				) }
+				{ helpVisibilityEnabled && <HelpMenu /> }
 				<DateRangeSelector />
 			</Header>
 

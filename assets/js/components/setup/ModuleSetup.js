@@ -38,9 +38,13 @@ import { getSiteKitAdminURL } from '../../util';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import HelpMenu from '../help/HelpMenu';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function ModuleSetup( { moduleSlug } ) {
+	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
+
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const settingsPageURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
@@ -78,7 +82,9 @@ export default function ModuleSetup( { moduleSlug } ) {
 
 	return (
 		<Fragment>
-			<Header />
+			<Header>
+				{ helpVisibilityEnabled && <HelpMenu /> }
+			</Header>
 			<div className="googlesitekit-setup">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">

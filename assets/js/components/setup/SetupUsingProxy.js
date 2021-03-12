@@ -46,9 +46,11 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { useFeature } from '../../hooks/useFeature';
+import HelpMenu from '../help/HelpMenu';
 const { useSelect, useDispatch } = Data;
 
 function SetupUsingProxy() {
+	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const serviceSetupV2Enabled = useFeature( 'serviceSetupV2' );
 
 	const {
@@ -103,7 +105,9 @@ function SetupUsingProxy() {
 
 	return (
 		<Fragment>
-			<Header />
+			<Header>
+				{ helpVisibilityEnabled && <HelpMenu /> }
+			</Header>
 			{ errorMessage && (
 				<Notification
 					id="setup_error"

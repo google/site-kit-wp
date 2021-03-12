@@ -26,6 +26,7 @@ import { storiesOf } from '@storybook/react';
  */
 import Header from '../assets/js/components/Header';
 import DateRangeSelector from '../assets/js/components/DateRangeSelector';
+import HelpMenu from '../assets/js/components/help/HelpMenu';
 import { createTestRegistry, provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Global', module )
@@ -48,6 +49,15 @@ storiesOf( 'Global', module )
 			<WithTestRegistry features={ [ 'storeErrorNotifications' ] } registry={ registry }>
 				<Header>
 					<DateRangeSelector />
+				</Header>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Plugin Header with Help Menu ', ( registry ) => {
+		return (
+			<WithTestRegistry features={ [ 'helpVisibility', 'storeErrorNotifications' ] } registry={ registry }>
+				<Header>
+					<HelpMenu />
 				</Header>
 			</WithTestRegistry>
 		);
