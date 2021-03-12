@@ -1,5 +1,5 @@
 /**
- * HelpMenu styles.
+ * HelpMenuLink styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,10 +16,7 @@
  * limitations under the License.
  */
 
-.googlesitekit-header .googlesitekit-user-selector .googlesitekit-help-menu__button {
-	margin-right: 0;
-}
-
-.googlesitekit-plugin .googlesitekit-help-menu .mdc-menu-surface {
-	width: auto;
+.googlesitekit-plugin .googlesitekit-help-menu-link .googlesitekit-cta-link {
+	color: $c-nearblack;
+	font-size: 16px;
 }
