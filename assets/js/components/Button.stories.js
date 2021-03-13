@@ -17,57 +17,38 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
 import Button from './Button';
 
-storiesOf( 'Global', module )
-	.add( 'Buttons', () => {
-		return (
-			<div>
-				<p>
-					<Button>
-						Default Button
-					</Button>
-				</p>
-				<p>
-					<Button className="googlesitekit-button--hover">
-						VRT: Default Button Hover
-					</Button>
-				</p>
-				<p>
-					<Button
-						href="http://google.com"
-					>
-						Default Button Link
-					</Button>
-				</p>
-				<p>
-					<Button
-						href="http://google.com"
-						danger
-					>
-						Danger Button
-					</Button>
-				</p>
-				<p>
-					<Button
-						disabled
-					>
-						Disabled Button
-					</Button>
-				</p>
-			</div>
-		);
-	}, {
-		options: {
-			hoverSelector: '.googlesitekit-button--hover',
-			postInteractionWait: 3000, // Wait for shadows to animate.
-			onReadyScript: 'mouse.js',
-		},
-	} );
+export const DefaultButton = () =>
+	<Button>Default Button</Button>;
+DefaultButton.storyName = 'Default button';
+
+export const DefaultButtonWithHover = () =>
+	<Button className="googlesitekit-button--hover">VRT: Default Button Hover</Button>;
+DefaultButtonWithHover.storyName = 'Default button with hover';
+DefaultButtonWithHover.args = {
+	options: {
+		hoverSelector: '.googlesitekit-button--hover',
+		postInteractionWait: 3000, // Wait for shadows to animate.
+		onReadyScript: 'mouse.js',
+	},
+};
+
+export const DefaultButtonWithLink = () =>
+	<Button href="http://google.com">Default Button Link</Button>;
+DefaultButtonWithLink.storyName = 'Default button with link';
+
+export const DefaultButtonWithDanger = () =>
+	<Button href="http://google.com" danger>Danger Button</Button>;
+DefaultButtonWithDanger.storyName = 'Default button with danger attribute';
+
+export const DefaultButtonWithDisabled = () =>
+	<Button disabled>Disabled Button</Button>;
+DefaultButtonWithDisabled.storyName = 'Default button with disabled attribute';
+
+export default {
+	title: 'Components/Button',
+	component: Button,
+};
