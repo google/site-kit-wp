@@ -33,7 +33,7 @@ import { __, sprintf, _x } from '@wordpress/i18n';
  * For example, passing 65 returns '1m 5s'.
  *
  * @since 1.0.0
- * @since n.e.x.t Refactored and renamed to improve localization.
+ * @since 1.28.0 Refactored and renamed to improve localization.
  * @private
  *
  * @param {number}                     seconds   The number of seconds.

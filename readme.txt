@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.7
 Requires PHP:      5.6
-Stable tag:        1.27.0
+Stable tag:        1.28.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -87,6 +87,39 @@ We plan to expand the plugin’s capabilities and integrations in the future; we
 If you have some ideas to improve the plugin or to solve a bug, feel free to raise an issue or submit a pull request in the [GitHub repository for the plugin](https://github.com/google/site-kit-wp). Please stick to the [contributing guidelines](https://github.com/google/site-kit-wp/blob/master/CONTRIBUTING.md). You can also contribute to the plugin by translating it. Simply visit [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/google-site-kit) to get started.
 
 == Changelog ==
+
+= 1.28.0 =
+
+**Added**
+
+* Implement React components for rendering tooltip tours. See [#2626](https://github.com/google/site-kit-wp/issues/2626).
+
+**Enhanced**
+
+* Automatically focus the "Other" text input upon selecting the "Other" option in a list of radio buttons or checkboxes. See [#2897](https://github.com/google/site-kit-wp/issues/2897).
+* Update copy to clarify multiple choice behavior in user input flow. See [#2857](https://github.com/google/site-kit-wp/issues/2857).
+* Update links on new version of AdSense dashboard summary widget to deep link to the respective area in the AdSense frontend. See [#2774](https://github.com/google/site-kit-wp/issues/2774).
+* Include site URL in AdSense report deep links to point to the appropriate report. See [#2773](https://github.com/google/site-kit-wp/issues/2773).
+* Add support for PHP 8 and ensure its maintenance via CI. Props TorbenLundsgaard. See [#2724](https://github.com/google/site-kit-wp/issues/2724).
+* The `googlesitekit_authorize_user` and `googlesitekit_reauthorize_user` actions are now also fired when not using the authentication service flow. See [#2693](https://github.com/google/site-kit-wp/issues/2693).
+* Implement infrastructure for rendering widgets in Site Kit module screens. See [#2653](https://github.com/google/site-kit-wp/issues/2653).
+* Use reliable and React-friendly approach for detecting whether a widget is inactive and should not be rendered. See [#2612](https://github.com/google/site-kit-wp/issues/2612).
+* Enhance localization of duration formatting. See [#2588](https://github.com/google/site-kit-wp/issues/2588).
+* Filter all Analytics API requests to only include results for the current domain. See [#2554](https://github.com/google/site-kit-wp/issues/2554).
+* Rely exclusively on SVGs for graphics and remove other image support. See [#2468](https://github.com/google/site-kit-wp/issues/2468).
+
+**Fixed**
+
+* Improve UX around entering search terms in the user input flow. See [#2842](https://github.com/google/site-kit-wp/issues/2842).
+* Fix various visual glitches in the user input flow summary view and trim free text content entered for any "Other" choice. See [#2837](https://github.com/google/site-kit-wp/issues/2837).
+* Change to preview / next button behaviour in User Input flow. See [#2829](https://github.com/google/site-kit-wp/issues/2829).
+* Fix AdSense bug where `Ad Client not found` error would be displayed in certain cases where an account is still pending. See [#2812](https://github.com/google/site-kit-wp/issues/2812).
+* Fix bug where AdGuard and uBlock ad blockers were no longer being recognized by Site Kit by implementing a more holistic solution for ad blocker detection relying on the `just-detect-adblock` library. See [#2794](https://github.com/google/site-kit-wp/issues/2794).
+* Update link on AdSense module page to point to Analytics which is more accurate due to the source of the data. See [#2772](https://github.com/google/site-kit-wp/issues/2772).
+* Fix Search Console x-axis labels on 90 day charts. See [#2747](https://github.com/google/site-kit-wp/issues/2747).
+* Fix text issue with All Traffic pie chart. See [#2660](https://github.com/google/site-kit-wp/issues/2660).
+* Fix problem where Analytics snippet placement would not be re-instated after disconnecting Tag Manager module when it was previously taking care of the Analytics tag. See [#2579](https://github.com/google/site-kit-wp/issues/2579).
+* Fix bug where tracking opt-in was not working for multisite administrators when not being a member of the site. See [#2103](https://github.com/google/site-kit-wp/issues/2103).
 
 = 1.27.0 =
 
