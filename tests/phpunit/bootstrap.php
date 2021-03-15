@@ -24,7 +24,18 @@ if ( false !== getenv( 'WP_TESTS_DIR' ) ) {
 } elseif ( file_exists( '/tmp/wordpress-tests-lib/includes/bootstrap.php' ) ) {
 	$_test_root = '/tmp/wordpress-tests-lib';
 } else {
-	$_test_root = dirname( dirname( dirname( dirname( TESTS_PLUGIN_DIR ) ) ) ) . '/tests/phpunit';
+	// Ensure Composer autoloader is available.
+	require_once TESTS_PLUGIN_DIR . '/vendor/autoload.php';
+
+	if ( ! getenv( 'WP_PHPUNIT__DIR' ) ) {
+		printf( '%s is not defined. Run `composer install` to install the WordPress tests library.' . "\n", 'WP_PHPUNIT__DIR' );
+		exit;
+	}
+
+	$_test_root = getenv( 'WP_PHPUNIT__DIR' );
+
+	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+	putenv( sprintf( 'WP_PHPUNIT__TESTS_CONFIG=%s', __DIR__ . '/wp-tests-config.php' ) );
 }
 
 $GLOBALS['wp_tests_options'] = array(
