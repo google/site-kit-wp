@@ -19,7 +19,6 @@ services:
       - ../../tests/e2e/mu-plugins:/var/www/html/wp-content/mu-plugins
     depends_on:
       - mysql
-      - http_proxy
     networks:
       - internal_network
 
@@ -30,6 +29,8 @@ services:
       - 9002:80
     volumes:
       - ./config/nginx-http-proxy.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - wordpress
     networks:
       - default
       - internal_network
