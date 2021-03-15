@@ -1,6 +1,6 @@
 <?php
 /**
- * WordPress configuration file for PHPUnit tests.
+ * WordPress configuration file for PHPUnit tests using `wp-phpunit` library.
  *
  * @package   Google\Site_Kit
  * @copyright 2021 Google LLC
@@ -23,6 +23,11 @@ define( 'ABSPATH', dirname( dirname( __DIR__ ) ) . '/vendor/roots/wordpress/' );
  * DO NOT use a production database or one that is shared with something else.
  */
 
+/*
+ * These database credentials refer to the `mysql` service in the Site Kit local
+ * environment docker configuration. Run `npm run env:start` before running the
+ * PHPUnit tests using this file.
+ */
 define( 'DB_NAME', 'wordpress_test' );
 define( 'DB_USER', 'root' );
 define( 'DB_PASSWORD', 'example' );
@@ -30,12 +35,6 @@ define( 'DB_HOST', '127.0.0.1:9306' );
 define( 'DB_CHARSET', 'utf8' );
 define( 'DB_COLLATE', '' );
 
-/**#@+
- * Authentication Unique Keys and Salts.
- *
- * Change these to different unique phrases!
- * You can generate these using the {@link https://api.wordpress.org/secret-key/1.1/salt/ WordPress.org secret-key service}
- */
 define( 'AUTH_KEY', 'put your unique phrase here' );
 define( 'SECURE_AUTH_KEY', 'put your unique phrase here' );
 define( 'LOGGED_IN_KEY', 'put your unique phrase here' );
@@ -45,8 +44,8 @@ define( 'SECURE_AUTH_SALT', 'put your unique phrase here' );
 define( 'LOGGED_IN_SALT', 'put your unique phrase here' );
 define( 'NONCE_SALT', 'put your unique phrase here' );
 
-define( 'WP_TESTS_DOMAIN', 'example.org' );
-define( 'WP_TESTS_EMAIL', 'admin@example.org' );
+define( 'WP_TESTS_DOMAIN', 'example.com' );
+define( 'WP_TESTS_EMAIL', 'admin@example.com' );
 define( 'WP_TESTS_TITLE', 'Test Blog' );
 
 define( 'WP_PHP_BINARY', 'php' );
