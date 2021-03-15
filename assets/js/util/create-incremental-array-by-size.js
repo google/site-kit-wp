@@ -19,7 +19,7 @@
 /**
  * Creates an array of length equal to size with incremental values starting at 0.
  *
- * @since n.e.x.t
+ * @since 1.28.0
  *
  * @param {number} size Array length.
  * @return {number[]} Array of incremental numbers.

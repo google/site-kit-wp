@@ -105,7 +105,7 @@ export default function TourTooltips( { steps, tourID } ) {
 	 * @property {number} index  Step index.
 	 * @property {string} type   Specific type (tour, step, beacon).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.28.0
 	 * @see {@link https://docs.react-joyride.com/callback} Example data provided by `react-joyride`.
 	 * @see {@link https://docs.react-joyride.com/constants} State & lifecycle constants used by `react-joyride`.
 	 *

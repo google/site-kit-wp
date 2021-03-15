@@ -803,7 +803,7 @@ const baseSelectors = {
 	 * Returns `null` if there is no registered context string for the given module.
 	 * Returns `string` the registered context string, screenWidgetContext for the given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.28.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} moduleSlug Module slug.
