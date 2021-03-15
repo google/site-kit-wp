@@ -346,6 +346,7 @@ class Tag_ManagerTest extends TestCase {
 				'cta',
 				'sort',
 				'homepage',
+				'learnMore',
 				'required',
 				'autoActivate',
 				'internal',

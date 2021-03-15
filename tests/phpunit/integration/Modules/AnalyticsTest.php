@@ -266,6 +266,7 @@ class AnalyticsTest extends TestCase {
 				'cta',
 				'sort',
 				'homepage',
+				'learnMore',
 				'required',
 				'autoActivate',
 				'internal',
