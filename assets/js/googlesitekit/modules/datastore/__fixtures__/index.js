@@ -29,7 +29,7 @@ import modules from './list.json';
  * @param {...string} slugs Active module slugs.
  * @return {Object[]} Array of module objects.
  */
-export function withActive( slugs ) {
+export function withActive( ...slugs ) {
 	return modules.map( ( module ) => ( {
 		...module,
 		active: module.forceActive || ( slugs?.includes( module.slug ) || false ),
@@ -44,7 +44,7 @@ export function withActive( slugs ) {
  * @param {...string} slugs Active module slugs.
  * @return {Object[]} Array of module objects.
  */
-export function withConnected( slugs ) {
+export function withConnected( ...slugs ) {
 	return withActive( ...slugs ).map( ( module ) => ( {
 		...module,
 		connected: module.forceActive || ( slugs?.includes( module.slug ) || false ),

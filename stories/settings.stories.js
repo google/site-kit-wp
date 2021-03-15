@@ -31,7 +31,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-// import SettingsModules from '../assets/js/components/settings/SettingsModules';
 import SettingsActiveModules from '../assets/js/components/settings/SettingsActiveModules';
 import SettingsInactiveModules from '../assets/js/components/settings/SettingsInactiveModules';
 import Layout from '../assets/js/components/layout/Layout';

@@ -74,7 +74,6 @@ const SettingsInactiveModules = () => {
 								size={ 4 }
 							>
 								<SetupModule
-									key={ module.slug + '-module' }
 									slug={ module.slug }
 									name={ module.name }
 									description={ module.description }

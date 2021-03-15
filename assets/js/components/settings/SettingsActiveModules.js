@@ -53,7 +53,7 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 
 		setIsSaving( false );
 
-		if ( ! error ) {
+		if ( ! submissionError ) {
 			setModuleState( slug, 'view' );
 			clearWebStorage();
 		} else {
