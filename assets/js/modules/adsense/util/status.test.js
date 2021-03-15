@@ -109,12 +109,6 @@ const otherURLChannelA = {
 
 describe( 'determineAccountStatus', () => {
 	test.each( [
-		[ 'ACCOUNT_STATUS_PENDING if urlChannelsError has "Ad client not found." message', ACCOUNT_STATUS_PENDING, {
-			urlChannelsError: {
-				code: '404',
-				message: 'Ad client not found.',
-			},
-		} ],
 		[ 'none for noAdSenseAccount error', ACCOUNT_STATUS_NONE, {
 			accounts: undefined,
 			previousAccountID: '',
@@ -183,10 +177,23 @@ describe( 'determineAccountStatus', () => {
 			previousAccountID: '',
 			previousClientID: '',
 		} ],
-		[ 'approved for single account, no alerts, and AFC client', ACCOUNT_STATUS_APPROVED, {
+		[ 'pending for "Ad client not found" URL channels error', ACCOUNT_STATUS_PENDING, {
 			accounts: [ accountA ],
 			alerts: [ otherAlert ],
 			clients: [ afcClientA, afsClientA ],
+			urlChannels: undefined,
+			previousAccountID: '',
+			previousClientID: '',
+			urlChannelsError: {
+				code: '404',
+				message: 'Ad client not found.',
+			},
+		} ],
+		[ 'approved for single account, no alerts, AFC client, and URL channels', ACCOUNT_STATUS_APPROVED, {
+			accounts: [ accountA ],
+			alerts: [ otherAlert ],
+			clients: [ afcClientA, afsClientA ],
+			urlChannels: [],
 			previousAccountID: '',
 			previousClientID: '',
 		} ],

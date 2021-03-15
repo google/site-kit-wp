@@ -46,9 +46,10 @@ export const SITE_STATUS_ADDED = 'added';
  * @param {(Array|undefined)}  data.accounts          List of account objects retrieved from the API.
  * @param {(Array|undefined)}  data.clients           List of client objects retrieved from the API.
  * @param {(Array|undefined)}  data.alerts            List of alert objects retrieved from the API.
+ * @param {(Array|undefined)}  data.urlChannels       List of URL channel objects retrieved from the API.
  * @param {(Object|undefined)} data.accountsError     Error object if account API request failed.
  * @param {(Object|undefined)} data.alertsError       Error object if alert API request failed.
- * @param {(Object|undefined)} data.urlChannelsError  Error object if getURLChannels request failed.
+ * @param {(Object|undefined)} data.urlChannelsError  Error object if URL Channel API request failed.
  * @param {(string|undefined)} data.previousAccountID Account ID, if already known from before.
  * @param {(string|undefined)} data.previousClientID  Client ID, if already known from before.
  * @return {(string|undefined)} Account status determined, or undefined if one of the required
@@ -59,16 +60,13 @@ export function determineAccountStatus( data ) {
 		accounts,
 		clients,
 		alerts,
+		urlChannels,
 		accountsError,
 		alertsError,
 		urlChannelsError,
 		previousAccountID,
 		previousClientID,
 	} = data;
-
-	if ( urlChannelsError ) {
-		return urlChannelsErrorToStatus( urlChannelsError );
-	}
 
 	if ( undefined === accounts || undefined === previousAccountID ) {
 		return accountsErrorToStatus( accountsError );
@@ -99,6 +97,10 @@ export function determineAccountStatus( data ) {
 	const clientID = determineClientID( { clients, previousClientID } );
 	if ( ! clientID ) {
 		return ACCOUNT_STATUS_NO_CLIENT;
+	}
+
+	if ( undefined === urlChannels ) {
+		return urlChannelsErrorToStatus( urlChannelsError );
 	}
 
 	return ACCOUNT_STATUS_APPROVED;

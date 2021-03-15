@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { createAddToFilter } from '../../util/helpers';
-import { getSiteKitAdminURL, getModulesData } from '../../util';
+import { getModulesData } from '../../util';
 import AdSenseDashboardWidget from './components/dashboard/AdSenseDashboardWidget';
 import LegacyDashboardEarnings from './components/dashboard/LegacyDashboardEarnings';
 
@@ -48,23 +48,6 @@ if ( modulesData.adsense.active ) {
 			'googlesitekit.DashboardEarningModule',
 			addLegacyDashboardEarnings, 50 );
 	} else {
-		const {
-			reAuth,
-			currentScreen,
-		} = global._googlesitekitLegacyData.admin;
-		const id = currentScreen ? currentScreen.id : null;
-
-		if ( ! reAuth && 'site-kit_page_googlesitekit-module-adsense' === id ) {
-			// Setup incomplete: redirect to the setup flow.
-			global.location = getSiteKitAdminURL(
-				`googlesitekit-module-${ slug }`,
-				{
-					reAuth: true,
-					slug,
-				}
-			);
-		}
-
 		// Show module as connected in the settings when status is pending review.
 		addFilter( `googlesitekit.Connected-${ slug }`,
 			'googlesitekit.AdSenseModuleConnected', ( isConnected ) => {
