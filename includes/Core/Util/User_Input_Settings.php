@@ -126,59 +126,18 @@ class User_Input_Settings {
 	 * @return array|WP_Error User input settings.
 	 */
 	private function sync_with_proxy( $settings = null ) {
-		$user_input_settings_url = $this->authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
-		$creds                   = $this->authentication->credentials()->get();
-
-		$user_input_settings_args = array(
-			'headers' => array(
-				'Authorization' => 'Bearer ' . $this->authentication->get_oauth_client()->get_access_token(),
-				'Content-Type'  => 'application/json',
-			),
-			'body'    => array(
-				'site_id'     => $creds['oauth2_client_id'],
-				'site_secret' => $creds['oauth2_client_secret'],
-			),
-		);
-
-		if ( ! empty( $settings ) ) {
-			$user_input_settings_args['body']['settings']       = $settings;
-			$user_input_settings_args['body']['client_user_id'] = (string) get_current_user_id();
-		}
-
-		// JSON encode the body.
-		$user_input_settings_args['body'] = wp_json_encode( $user_input_settings_args['body'] );
-
-		$response = wp_remote_post( $user_input_settings_url, $user_input_settings_args );
-
+		$creds    = $this->authentication->credentials();
+		$token    = $this->authentication->get_oauth_client()->get_access_token();
+		$response = $this->authentication->get_google_proxy()->sync_user_input_settings( $creds, $token, $settings );
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
 
-		$code     = wp_remote_retrieve_response_code( $response );
-		$body     = wp_remote_retrieve_body( $response );
-		$settings = json_decode( $body, true );
-
-		if ( $code < 200 || 299 < $code ) {
-			if ( is_array( $settings ) && ! empty( $settings['error'] ) ) {
-				return new WP_Error(
-					$settings['error'],
-					/* translators: %s: Google Proxy API Error Message */
-					sprintf( __( 'User input settings request failed with error: %s', 'google-site-kit' ), $settings['error'] ),
-					array( 'status' => $code )
-				);
-			}
-			return new WP_Error(
-				'user_input_settings_request_failed',
-				__( 'User input settings request failed.', 'google-site-kit' ),
-				array( 'status' => $code )
-			);
+		if ( is_array( $response ) ) {
+			$this->cache_settings( $response );
 		}
 
-		if ( is_array( $settings ) ) {
-			$this->cache_settings( $settings );
-		}
-
-		return $settings;
+		return $response;
 	}
 
 	/**

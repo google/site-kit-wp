@@ -17,6 +17,7 @@ import * as coreForms from '../../assets/js/googlesitekit/datastore/forms';
 import * as coreLocation from '../../assets/js/googlesitekit/datastore/location';
 import * as coreModules from '../../assets/js/googlesitekit/modules';
 import * as coreSite from '../../assets/js/googlesitekit/datastore/site';
+import * as coreUi from '../../assets/js/googlesitekit/datastore/ui';
 import * as coreUser from '../../assets/js/googlesitekit/datastore/user';
 import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
 import * as modulesAdSense from '../../assets/js/modules/adsense';
@@ -38,7 +39,7 @@ import {
 } from '../../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
-import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/fixtures.json';
+import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
 
 const allCoreStores = [
 	coreForms,
@@ -46,6 +47,7 @@ const allCoreStores = [
 	coreModules,
 	coreSite,
 	coreUser,
+	coreUi,
 	coreWidgets,
 ];
 const allCoreModules = [

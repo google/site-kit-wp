@@ -39,10 +39,24 @@ import { getAvailableDateRanges } from '../../../../../util/date-range';
 import ChangeArrow from '../../../../../components/ChangeArrow';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
-const { useSelect } = Data;
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import {
+	UI_DIMENSION_COLOR,
+	UI_DIMENSION_VALUE,
+} from '../../../datastore/constants';
+import Link from '../../../../../components/Link';
+const { useSelect, useDispatch } = Data;
 
 export default function TotalUserCount( { loaded, error, report, dimensionValue } ) {
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+
+	const { setValues } = useDispatch( CORE_UI );
+	const showAllUsers = () => {
+		setValues( {
+			[ UI_DIMENSION_VALUE ]: '',
+			[ UI_DIMENSION_COLOR ]: '',
+		} );
+	};
 
 	if ( ! loaded ) {
 		return (
@@ -83,7 +97,8 @@ export default function TotalUserCount( { loaded, error, report, dimensionValue 
 				{ ! dimensionValue && __( 'All Users', 'google-site-kit' ) }
 				{ dimensionValue && (
 					<Fragment>
-						{ __( 'All Users', 'google-site-kit' ) }
+						{ dimensionValue && <Link onClick={ showAllUsers }>{ __( 'All Users', 'google-site-kit' ) }</Link> }
+						{ ! dimensionValue && __( 'All Users', 'google-site-kit' ) }
 						<Icon icon={ chevronRight } size="18" fill="currentColor" />
 						{ dimensionValue }
 					</Fragment>

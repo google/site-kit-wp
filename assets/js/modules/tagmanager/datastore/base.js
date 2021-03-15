@@ -33,6 +33,7 @@ let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 		'internalAMPContainerID',
 		'useSnippet',
 		'ownerID',
+		'gaPropertyID',
 	],
 	submitChanges,
 	validateCanSubmitChanges,
@@ -41,9 +42,9 @@ let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 // Rename generated pieces to adhere to our convention.
 baseModuleStore = ( ( { actions, selectors, ...store } ) => {
 	// eslint-disable-next-line sitekit/acronym-case
-	const { setAmpContainerID, ...restActions } = actions;
+	const { setAmpContainerID, setGaPropertyID, ...restActions } = actions;
 	// eslint-disable-next-line sitekit/acronym-case
-	const { getAmpContainerID, ...restSelectors } = selectors;
+	const { getAmpContainerID, getGaPropertyID, ...restSelectors } = selectors;
 
 	return {
 		...store,
@@ -51,11 +52,15 @@ baseModuleStore = ( ( { actions, selectors, ...store } ) => {
 			...restActions,
 			// eslint-disable-next-line sitekit/acronym-case
 			setAMPContainerID: setAmpContainerID,
+			// eslint-disable-next-line sitekit/acronym-case
+			setGAPropertyID: setGaPropertyID,
 		},
 		selectors: {
 			...restSelectors,
 			// eslint-disable-next-line sitekit/acronym-case
 			getAMPContainerID: getAmpContainerID,
+			// eslint-disable-next-line sitekit/acronym-case
+			getGAPropertyID: getGaPropertyID,
 		},
 	};
 } )( baseModuleStore );

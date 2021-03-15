@@ -19,31 +19,40 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useState, useEffect } from '@wordpress/element';
+import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
-import { useInstanceId } from '@wordpress/compose';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
-import { numberFormat, sanitizeHTML } from '../../../../../util';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import {
+	UI_DIMENSION_COLOR,
+	UI_DIMENSION_VALUE,
+	UI_ACTIVE_ROW_INDEX,
+} from '../../../datastore/constants';
+import { numberFormat, sanitizeHTML, trackEvent } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
-import GoogleChart from '../../../../../components/GoogleChart';
+import GoogleChartV2 from '../../../../../components/GoogleChartV2';
+import Link from '../../../../../components/Link';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useDispatch, useSelect } = Data;
 
-export default function UserDimensionsPieChart( { dimensionName, dimensionValue, sourceLink, loaded, report } ) {
-	const [ chartLoaded, setChartLoaded ] = useState( false );
+export default function UserDimensionsPieChart( {
+	dimensionName,
+	dimensionValue,
+	loaded,
+	report,
+} ) {
+	const [ selectable, setSelectable ] = useState( false );
 
 	const otherSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
 		path: '/analytics/answer/1009671',
@@ -51,69 +60,37 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 	const notSetSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
 		path: '/analytics/answer/2820717',
 	} ) );
+	const dimensionColor = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) );
+	const activeRowIndex = useSelect( ( select ) => select( CORE_UI ).getValue( UI_ACTIVE_ROW_INDEX ) );
 
-	// Create a unique chartID to use for this component's GoogleChart child component.
-	const chartID = `user-dimensions-pie-chart-${ useInstanceId( UserDimensionsPieChart ) }`;
+	const { setValues } = useDispatch( CORE_UI );
 
-	const { setValues } = useDispatch( CORE_FORMS );
-	const onReady = useCallback( () => {
-		setChartLoaded( true );
-
-		const chartData = GoogleChart.charts.get( chartID );
-		const { chart, onSelect } = chartData || {};
-		const { slices } = UserDimensionsPieChart.chartOptions;
-
-		if ( chart && ! onSelect ) {
-			chartData.onSelect = global.google.visualization.events.addListener( chart, 'select', () => {
-				const { row } = chart.getSelection()?.[ 0 ] || {};
-				if ( row !== null && row !== undefined ) {
-					const { dataTable } = GoogleChart.charts.get( chartID ) || {};
-					if ( dataTable ) {
-						const newDimensionValue = dataTable.getValue( row, 0 );
-						const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
-
-						setValues(
-							FORM_ALL_TRAFFIC_WIDGET,
-							{
-								dimensionValue: isOthers ? '' : newDimensionValue,
-								dimensionColor: isOthers ? '' : slices[ row ]?.color,
-							}
-						);
-					}
-				} else {
-					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionValue: '', dimensionColor: '' } );
-				}
-			} );
-		}
-	}, [ chartID, dimensionName, setValues ] );
+	const chartWrapperRef = useRef();
+	const containerRef = useRef();
 
 	useEffect( () => {
-		if ( ! chartLoaded ) {
-			return;
-		}
-
-		const chartData = GoogleChart.charts.get( chartID );
-		const { chart } = chartData || {};
-		if ( chart && report?.[ 0 ]?.data?.rows ) {
-			// If there is a dimension value set but the initialized chart does not have a selection yet,
-			// find the matching row index and initially select it in the chart.
-			if ( dimensionValue && ! chart.getSelection().length ) {
-				const { slices } = UserDimensionsPieChart.chartOptions;
-				const selectedRow = report[ 0 ].data.rows.findIndex( ( row ) => row.dimensions.includes( dimensionValue ) );
-				if ( selectedRow && slices[ selectedRow ]?.color ) {
-					chart.setSelection( [ { row: selectedRow } ] );
-					setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: slices[ selectedRow ]?.color } );
-				}
+		const onTooltipClick = ( event ) => {
+			const { target } = event || {};
+			if ( ! target?.classList?.contains( 'googlesitekit-cta-link__tooltip' ) ) {
+				return;
 			}
 
-			// If there is no dimension value set but the initialized chart does have a selection,
-			// ensure it is no longer selected in the chart.
-			if ( ! dimensionValue && chart.getSelection().length ) {
-				chart.setSelection( [] );
-				setValues( FORM_ALL_TRAFFIC_WIDGET, { dimensionColor: '' } );
+			const label = target.dataset.rowLabel;
+			if ( label === '(other)' || label === '(not set)' ) {
+				trackEvent( 'all_traffic_widget', 'help_click', label );
 			}
+		};
+
+		if ( containerRef.current ) {
+			containerRef.current.addEventListener( 'click', onTooltipClick );
 		}
-	}, [ chartLoaded, chartID, dimensionValue, JSON.stringify( report ) ] );
+
+		return () => {
+			if ( containerRef.current ) {
+				containerRef.current.removeEventListener( 'click', onTooltipClick );
+			}
+		};
+	}, [ containerRef.current ] );
 
 	const absOthers = {
 		current: report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],
@@ -125,13 +102,14 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 		absOthers.previous -= metrics[ 1 ].values[ 0 ];
 	} );
 
-	const getTooltipHelp = ( url, label ) => (
+	const getTooltipHelp = ( url, label, rowLabel ) => (
 		`<p>
 			<a
-				href=${ url }
-				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit"
+				href="${ url }"
+				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit googlesitekit-cta-link__tooltip"
 				target="_blank"
 				rel="noreferrer noopener"
+				data-row-label="${ rowLabel }"
 			>
 				${ label }
 			</a>
@@ -179,18 +157,27 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 			);
 
 			const othersLabel = __( 'Others', 'google-site-kit' ).toLowerCase();
-			if ( sourceLink && rowLabel === othersLabel ) {
-				tooltip += getTooltipHelp(
-					sourceLink,
-					__( 'See the detailed breakdown in Analytics', 'google-site-kit' )
-				);
+			if ( rowLabel === othersLabel ) {
+				switch ( dimensionName ) {
+					case 'ga:country':
+						tooltip += `<p>${ __( 'See the full list of locations in Analytics', 'google-site-kit' ) }</p>`;
+						break;
+					case 'ga:deviceCategory':
+						tooltip += `<p>${ __( 'See the full list of devices in Analytics', 'google-site-kit' ) }</p>`;
+						break;
+					case 'ga:channelGrouping':
+					default:
+						tooltip += `<p>${ __( 'See the full list of channels in Analytics', 'google-site-kit' ) }</p>`;
+						break;
+				}
 			}
 
 			if ( otherSupportURL && rowLabel === '(other)' ) {
 				tooltip += getTooltipHelp(
 					otherSupportURL,
 					/* translators: %s: pie slice label */
-					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel )
+					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel ),
+					rowLabel
 				);
 			}
 
@@ -198,7 +185,8 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 				tooltip += getTooltipHelp(
 					notSetSupportURL,
 					/* translators: %s: pie slice label */
-					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel )
+					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel ),
+					rowLabel
 				);
 			}
 
@@ -215,6 +203,150 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 		},
 	} );
 
+	const { slices } = UserDimensionsPieChart.chartOptions;
+
+	const onLegendClick = ( index ) => {
+		if ( ! chartWrapperRef.current ) {
+			return;
+		}
+
+		const newDimensionValue = chartWrapperRef.current.getDataTable().getValue( index, 0 );
+		const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
+
+		// Do not do anything as "Others" should not be selectable.
+		if ( isOthers ) {
+			return;
+		}
+
+		const { row } = chartWrapperRef.current.getChart().getSelection()?.[ 0 ] || {};
+		if ( row === index ) {
+			setValues( {
+				[ UI_DIMENSION_VALUE ]: '',
+				[ UI_DIMENSION_COLOR ]: '',
+				[ UI_ACTIVE_ROW_INDEX ]: null,
+			} );
+		} else if ( newDimensionValue ) {
+			setValues( {
+				[ UI_DIMENSION_COLOR ]: slices[ row ]?.color,
+				[ UI_DIMENSION_VALUE ]: newDimensionValue,
+				[ UI_ACTIVE_ROW_INDEX ]: index,
+			} );
+
+			trackEvent(
+				'all_traffic_widget',
+				'slice_select',
+				`${ dimensionName }:${ newDimensionValue }`,
+			);
+		}
+	};
+
+	const onMouseOut = () => {
+		setSelectable( false );
+	};
+
+	const onMouseOver = ( event, { chartWrapper } ) => {
+		const { row } = event;
+
+		if ( row === undefined || row === null ) {
+			setSelectable( false );
+		}
+
+		const dataTable = chartWrapper.getDataTable();
+		setSelectable( dataTable.getValue( row, 0 ) !== __( 'Others', 'google-site-kit' ) );
+	};
+
+	const onSelect = ( { chartWrapper } ) => {
+		const chart = chartWrapper.getChart();
+		const { row } = chart.getSelection()?.[ 0 ] || {};
+
+		if ( row === null || row === undefined ) {
+			setValues( {
+				[ UI_DIMENSION_VALUE ]: '',
+				[ UI_DIMENSION_COLOR ]: '',
+				[ UI_ACTIVE_ROW_INDEX ]: null,
+			} );
+		} else {
+			const dataTable = chartWrapper.getDataTable();
+			if ( dataTable ) {
+				const newDimensionValue = dataTable.getValue( row, 0 );
+				const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
+
+				if ( isOthers ) {
+					// Maintain the existing selection when clicking on the "Others" slice.
+					// We set a value here because otherwise Google Charts will show the
+					// "Others" slice as selected.
+					if ( activeRowIndex === null || activeRowIndex === undefined ) {
+						chart.setSelection( [] );
+					} else {
+						chart.setSelection( [ { row: activeRowIndex } ] );
+					}
+				} else {
+					setValues( {
+						[ UI_DIMENSION_COLOR ]: slices[ row ]?.color,
+						[ UI_DIMENSION_VALUE ]: newDimensionValue,
+						[ UI_ACTIVE_ROW_INDEX ]: row,
+					} );
+
+					trackEvent(
+						'all_traffic_widget',
+						'slice_select',
+						`${ dimensionName }:${ newDimensionValue }`,
+					);
+				}
+			}
+		}
+	};
+
+	const onReady = ( { chartWrapper } ) => {
+		const chart = chartWrapper.getChart();
+
+		// If there is a dimension value set but the initialized chart does not have a
+		// selection yet, find the matching row index and initially select it in the chart.
+		if ( dimensionValue && ! chart.getSelection().length ) {
+			// Look in the real data map, which includes headings, therefore subtract 1.
+			const selectedRow = dataMap.findIndex( ( row ) => row[ 0 ] === dimensionValue ) - 1;
+
+			if ( selectedRow >= 0 ) {
+				// If the new data includes the original dimension value, re-select it and adjust the color as needed.
+				chart.setSelection( [ { row: selectedRow } ] );
+				if (
+					activeRowIndex !== selectedRow ||
+					( slices[ selectedRow ]?.color || dimensionColor ) !== dimensionColor
+				) {
+					setValues( {
+						[ UI_ACTIVE_ROW_INDEX ]: selectedRow,
+						[ UI_DIMENSION_COLOR ]: slices[ selectedRow ]?.color || dimensionColor,
+					} );
+				}
+			} else {
+				// If the new data does not include the original dimension value, unset it to match the empty selection.
+				setValues( {
+					[ UI_DIMENSION_VALUE ]: '',
+					[ UI_DIMENSION_COLOR ]: '',
+					[ UI_ACTIVE_ROW_INDEX ]: null,
+				} );
+			}
+		}
+
+		// If there is no dimension value set but the initialized chart does have a selection,
+		// ensure it is no longer selected in the chart.
+		if ( ! dimensionValue && chart.getSelection().length ) {
+			chart.setSelection( [] );
+			if ( activeRowIndex !== null ) {
+				setValues( {
+					[ UI_ACTIVE_ROW_INDEX ]: null,
+				} );
+			}
+		}
+
+		// If no dimensionValue is set, unset the color.
+		if ( ! dimensionValue && dimensionColor !== '' ) {
+			setValues( {
+				[ UI_DIMENSION_COLOR ]: '',
+			} );
+		}
+	};
+
 	const labels = {
 		'ga:channelGrouping': __( '<span>By</span> channels', 'google-site-kit' ),
 		'ga:country': __( '<span>By</span> locations', 'google-site-kit' ),
@@ -226,57 +358,113 @@ export default function UserDimensionsPieChart( { dimensionName, dimensionValue,
 		ALLOWED_ATTR: [],
 	};
 
-	const title = chartLoaded
+	const title = loaded
 		? sanitizeHTML( labels[ dimensionName ] || '', sanitizeArgs )
 		: { __html: '' };
 
 	const options = { ...UserDimensionsPieChart.chartOptions };
-	if ( report?.[ 0 ]?.data?.rows?.length < 2 ) {
-		// Hide pie slice text when there is just one slice because it will overlap with the chart title.
-		options.pieSliceTextStyle.color = 'transparent';
+
+	if ( report?.[ 0 ]?.data?.rows?.length === 1 ) {
+		// When there is only one row, the chart will add a label which we need to hide - see issue #2660
+		options.pieSliceText = 'none';
+	}
+
+	if ( dimensionValue?.length ) {
+		options.tooltip.trigger = 'selection';
+	} else {
+		options.tooltip.trigger = 'focus';
 	}
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
-			<PreviewBlock
-				className={ classnames( {
-					'googlesitekit-widget--analyticsAllTraffic__dimensions--not-loading': loaded,
-					'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
-				} ) }
-				width="282px"
-				height="282px"
-				shape="circular"
-			/>
-			<div className={ classnames(
+			<div ref={ containerRef } className={ classnames(
 				'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
 				{
-					'googlesitekit-widget--analyticsAllTraffic__dimensions--loading': ! loaded,
+					'googlesitekit-widget--analyticsAllTraffic__slice-selected': !! dimensionValue,
+					'googlesitekit-widget--analyticsAllTraffic__selectable': selectable,
 				}
 			) }>
-				<GoogleChart
-					chartID={ chartID }
-					chartType="pie"
-					options={ options }
+				{ /* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events */ }
+				<GoogleChartV2
+					chartType="PieChart"
 					data={ dataMap || [] }
-					loadHeight={ 50 }
+					getChartWrapper={ ( chartWrapper ) => {
+						chartWrapperRef.current = chartWrapper;
+					} }
+					height="368px"
+					loaded={ loaded }
+					loadingHeight="300px"
+					loadingWidth="300px"
+					onMouseOut={ onMouseOut }
+					onMouseOver={ onMouseOver }
 					onReady={ onReady }
-				/>
-				<div
-					className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
-					dangerouslySetInnerHTML={ title }
-				/>
+					onSelect={ onSelect }
+					options={ options }
+					width="100%"
+				>
+					<div
+						className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
+						dangerouslySetInnerHTML={ title }
+					/>
+				</GoogleChartV2>
+
+				<div className="googlesitekit-widget--analyticsAllTraffic__legend">
+					{ loaded && dataMap?.slice( 1 ).map( ( [ label ], i ) => {
+						const isActive = label === dimensionValue;
+						const sliceColor = slices[ i ]?.color;
+						const isOthers = __( 'Others', 'google-site-kit' ) === label;
+
+						return (
+							<Link
+								key={ label }
+								onClick={ () => onLegendClick( i ) }
+								className={ classnames(
+									'googlesitekit-widget--analyticsAllTraffic__legend-slice',
+									{
+										'googlesitekit-widget--analyticsAllTraffic__legend-active': isActive,
+										'googlesitekit-widget--analyticsAllTraffic__legend-others': isOthers,
+									}
+								) }
+							>
+								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: sliceColor } } />
+
+								<span className="googlesitekit-widget--analyticsAllTraffic__label" data-label={ label }>
+									{ label }
+								</span>
+
+								<span className="googlesitekit-widget--analyticsAllTraffic__underlay" style={ { backgroundColor: sliceColor } } />
+							</Link>
+						);
+					} ) }
+
+					{ ! loaded && (
+						<Fragment>
+							<div className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
+								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
+								<PreviewBlock height="18px" width="68px" shape="square" />
+							</div>
+
+							<div className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
+								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
+								<PreviewBlock height="18px" width="52px" shape="square" />
+							</div>
+
+							<div className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
+								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
+								<PreviewBlock height="18px" width="40px" shape="square" />
+							</div>
+
+							<div className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
+								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
+								<PreviewBlock height="18px" width="52px" shape="square" />
+							</div>
+						</Fragment>
+					) }
+				</div>
 			</div>
 		</div>
 	);
 }
-
-UserDimensionsPieChart.propTypes = {
-	sourceLink: PropTypes.string,
-	dimensionName: PropTypes.string.isRequired,
-	dimensionValue: PropTypes.string,
-	report: PropTypes.arrayOf( PropTypes.object ),
-	loaded: PropTypes.bool,
-};
 
 UserDimensionsPieChart.defaultProps = {
 	dimensionName: 'ga:channelGrouping',
@@ -284,21 +472,16 @@ UserDimensionsPieChart.defaultProps = {
 
 UserDimensionsPieChart.chartOptions = {
 	chartArea: {
-		left: 0,
+		left: 'auto',
 		height: 300,
-		top: 50,
+		top: 'auto',
 		width: '100%',
 	},
 	backgroundColor: 'transparent',
 	fontSize: 12,
-	height: 380,
+	height: 368,
 	legend: {
-		alignment: 'center',
-		position: 'bottom',
-		textStyle: {
-			color: 'black',
-			fontSize: 12,
-		},
+		position: 'none',
 	},
 	pieHole: 0.6,
 	pieSliceTextStyle: {
@@ -318,4 +501,11 @@ UserDimensionsPieChart.chartOptions = {
 		trigger: 'focus',
 	},
 	width: '100%',
+};
+
+UserDimensionsPieChart.propTypes = {
+	dimensionName: PropTypes.string.isRequired,
+	dimensionValue: PropTypes.string,
+	report: PropTypes.arrayOf( PropTypes.object ),
+	loaded: PropTypes.bool,
 };

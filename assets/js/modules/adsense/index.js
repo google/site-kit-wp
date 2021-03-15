@@ -40,7 +40,8 @@ import {
 } from './components/dashboard';
 import AdSenseIcon from '../../../svg/adsense.svg';
 import { STORE_NAME } from './datastore/constants';
-import { ERROR_CODE_ADBLOCKER_ACTIVE } from './constants';
+import { ERROR_CODE_ADBLOCKER_ACTIVE, CONTEXT_MODULE_ADSENSE, AREA_MODULE_ADSENSE_MAIN } from './constants';
+import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 import { registerStore as registerDataStore } from './datastore';
 
 addFilter(
@@ -54,7 +55,7 @@ let isAdBlockerActive = () => {};
 export const registerStore = ( registry ) => {
 	registerDataStore( registry );
 	// TODO: fix hack
-	isAdBlockerActive = () => registry.select( STORE_NAME ).isAdBlockerActive();
+	isAdBlockerActive = () => registry.__experimentalResolveSelect( STORE_NAME ).isAdBlockerActive();
 };
 
 export const registerModule = ( modules ) => {
@@ -67,8 +68,8 @@ export const registerModule = ( modules ) => {
 			SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
 			SetupComponent: SetupMain,
 			Icon: AdSenseIcon,
-			checkRequirements: () => {
-				if ( ! isAdBlockerActive() ) {
+			checkRequirements: async () => {
+				if ( ! await isAdBlockerActive() ) {
 					return;
 				}
 
@@ -78,6 +79,7 @@ export const registerModule = ( modules ) => {
 					data: null,
 				};
 			},
+			screenWidgetContext: CONTEXT_MODULE_ADSENSE,
 		}
 	);
 };
@@ -107,5 +109,14 @@ export const registerWidgets = ( widgets ) => {
 		[
 			AREA_DASHBOARD_EARNINGS,
 		],
+	);
+	widgets.registerWidgetArea(
+		AREA_MODULE_ADSENSE_MAIN,
+		{
+			priority: 1,
+			style: WIDGET_AREA_STYLES.BOXES,
+			title: __( 'Overview', 'google-site-kit' ),
+		},
+		CONTEXT_MODULE_ADSENSE,
 	);
 };

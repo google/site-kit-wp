@@ -316,6 +316,19 @@ export const selectors = {
 	getWidgetState( state, slug ) {
 		return state.widgetStates[ slug ] || null;
 	},
+
+	/**
+	 * Returns all widget states.
+	 *
+	 * @since 1.28.0
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object} Widget states, keyed by slug, with a value containing the component and metadata.
+	 */
+	getWidgetStates( state ) {
+		return state.widgetStates;
+	},
 };
 
 export default {

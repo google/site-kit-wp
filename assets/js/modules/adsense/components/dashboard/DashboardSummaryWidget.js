@@ -28,57 +28,49 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport, reduceAdSenseData } from '../../util';
-import { getSiteKitAdminURL } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
-import ReportError from '../../../../components/ReportError';
-import { getDateString } from '../../../../googlesitekit/datastore/user/utils/get-date-string';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
-function DashboardSummaryWidget( { Widget, WidgetReportZero } ) {
+function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		error,
 		loading,
 		today,
 		period,
 		daily,
+		rpmReportURL,
+		earningsURL,
+		impressionsURL,
 	} = useSelect( ( select ) => {
-		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
-
 		const referenceDate = select( CORE_USER ).getReferenceDate();
-
-		const todayArgs = {
-			startDate: referenceDate,
-			endDate: referenceDate,
-			metrics,
-		};
-
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
+
 		const periodArgs = {
 			startDate,
 			endDate,
-			metrics,
+			metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
 		};
 
-		// Get the first day of the month as an ISO 8601 date string without the time.
-		const startOfMonth = getDateString( new Date(
-			new Date( referenceDate ).getFullYear(),
-			new Date( referenceDate ).getMonth(),
-			1
-		) );
+		const todayArgs = {
+			...periodArgs,
+			startDate: referenceDate,
+			endDate: referenceDate,
+		};
 
 		const dailyArgs = {
-			startDate: startOfMonth,
-			endDate: referenceDate,
-			metrics,
+			...periodArgs,
 			dimensions: [ 'DATE' ],
 		};
+
+		const dateRangeArgs = generateDateRangeArgs( { startDate, endDate } );
 
 		return {
 			today: select( STORE_NAME ).getReport( todayArgs ),
@@ -90,6 +82,18 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero } ) {
 			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ todayArgs ] ) ||
 				select( STORE_NAME ).getErrorForSelector( 'getReport', [ periodArgs ] ) ||
 				select( STORE_NAME ).getErrorForSelector( 'getReport', [ dailyArgs ] ),
+			rpmReportURL: select( STORE_NAME ).getServiceReportURL( {
+				...dateRangeArgs,
+				gm: 'pageViewsRpm',
+			} ),
+			earningsURL: select( STORE_NAME ).getServiceReportURL( {
+				...dateRangeArgs,
+				gm: 'earnings',
+			} ),
+			impressionsURL: select( STORE_NAME ).getServiceReportURL( {
+				...dateRangeArgs,
+				gm: 'monetizableImpressions',
+			} ),
 		};
 	} );
 
@@ -98,7 +102,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero } ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="adsense" error={ error } />;
+		return <WidgetReportError moduleSlug="adsense" error={ error } />;
 	}
 
 	if ( isZeroReport( today ) && isZeroReport( period ) && isZeroReport( daily ) ) {
@@ -106,7 +110,6 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero } ) {
 	}
 
 	const processedData = reduceAdSenseData( daily.rows );
-	const href = getSiteKitAdminURL( 'googlesitekit-module-adsense', {} );
 
 	const currencyHeader = period.headers.find( ( header ) => null !== header.currency && 0 < header.currency.length );
 	const currencyCode = currencyHeader ? currencyHeader.currency : false;
@@ -122,13 +125,13 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero } ) {
 						datapointUnit={ currencyCode }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
-							link: href,
+							link: rpmReportURL,
+							external: true,
 						} }
 						sparkline={ daily &&
 							<Sparkline
 								data={ extractForSparkline( processedData.dataMap, 2 ) }
 								change={ 1 }
-								loadSmall={ false }
 							/>
 						}
 						context="compact"
@@ -143,7 +146,8 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero } ) {
 						datapointUnit={ currencyCode }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
-							link: href,
+							link: earningsURL,
+							external: true,
 						} }
 						change={ today.totals[ 0 ] }
 						changeDataUnit={ currencyCode }
@@ -151,7 +155,6 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero } ) {
 							<Sparkline
 								data={ extractForSparkline( processedData.dataMap, 1 ) }
 								change={ 1 }
-								loadSmall={ false }
 							/>
 						}
 						context="compact"
@@ -165,13 +168,13 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero } ) {
 						datapoint={ period.totals[ 2 ] }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
-							link: href,
+							link: impressionsURL,
+							external: true,
 						} }
 						sparkline={ daily &&
 							<Sparkline
 								data={ extractForSparkline( processedData.dataMap, 3 ) }
 								change={ 1 }
-								loadSmall={ false }
 							/>
 						}
 						context="compact"
@@ -182,5 +185,4 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero } ) {
 	);
 }
 
-// export default DashboardSummaryWidget;
 export default whenActive( { moduleName: 'adsense' } )( DashboardSummaryWidget );

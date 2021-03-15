@@ -31,14 +31,14 @@ import { provideModules, provideSiteInfo, WithTestRegistry } from '../tests/js/u
 import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { adminbarSearchConsoleMockData, adminbarSearchConsoleOptions } from '../assets/js/modules/search-console/datastore/__fixtures__';
-import { adminBarAnalyticsTotalUsersMockData, adminBarAnalyticsTotalUsersOptions, adminBarAnalyticsSessionsMockData, adminBarAnalyticsSessionsOptions } from '../assets/js/modules/analytics/datastore/__fixtures__';
+import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 
 storiesOf( 'Global', module )
 	.add( 'Admin Bar', () => {
 		global._googlesitekitLegacyData = wpAdminBarData;
 
 		const setupRegistry = ( registry ) => {
-			// Set the Story site information.
+			// Set some site information.
 			provideSiteInfo( registry, {
 				currentEntityURL: 'https://www.sitekitbygoogle.com/blog/',
 				currentEntityTitle: 'Blog test post for Google Site Kit',
@@ -55,11 +55,66 @@ storiesOf( 'Global', module )
 			// Mock both Search Console widgets data
 			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( adminbarSearchConsoleMockData, { options: adminbarSearchConsoleOptions } );
 
-			// Mock Total Users widget data
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( adminBarAnalyticsTotalUsersMockData, { options: adminBarAnalyticsTotalUsersOptions } );
+			[
+				// Mock Total Users widget data
+				{
+					startDate: '2020-12-31',
+					endDate: '2021-01-27',
+					compareStartDate: '2020-12-03',
+					compareEndDate: '2020-12-30',
+					metrics: [
+						{
+							expression: 'ga:users',
+							alias: 'Total Users',
+						},
+					],
+					url: 'https://www.sitekitbygoogle.com/blog/',
+				},
 
-			// Mock Sessions widget data
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( adminBarAnalyticsSessionsMockData, { options: adminBarAnalyticsSessionsOptions } );
+				// Mock Sessions widget data
+				{
+					startDate: '2020-12-31',
+					endDate: '2021-01-27',
+					compareStartDate: '2020-12-03',
+					compareEndDate: '2020-12-30',
+					dimensions: 'ga:date',
+					limit: 10,
+					metrics: [
+						{
+							expression: 'ga:sessions',
+							alias: 'Sessions',
+						},
+					],
+					url: 'https://www.sitekitbygoogle.com/blog/',
+				},
+			].forEach( ( options ) => {
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( getAnalyticsMockResponse( options ), { options } );
+			} );
+		};
+
+		return (
+			<div id="wpadminbar">
+				<div className="googlesitekit-plugin">
+					<div id="js-googlesitekit-adminbar" className="ab-sub-wrapper googlesitekit-adminbar" style={ { display: 'block' } }>
+						<section id="js-googlesitekit-adminbar-modules" className="googlesitekit-adminbar-modules">
+							<WithTestRegistry callback={ setupRegistry }>
+								<GoogleSitekitAdminbar />
+							</WithTestRegistry>
+						</section>
+					</div>
+				</div>
+			</div>
+		);
+	} )
+	.add( 'Admin Bar Zero Data', () => {
+		global._googlesitekitLegacyData = wpAdminBarData;
+
+		const setupRegistry = ( registry ) => {
+			// Set the Story site information.
+			provideSiteInfo( registry, {
+				currentEntityURL: 'https://www.sitekitbygoogle.com/blog/',
+				currentEntityTitle: 'Blog test post for Google Site Kit',
+			} );
 		};
 
 		return (
@@ -76,3 +131,4 @@ storiesOf( 'Global', module )
 			</div>
 		);
 	} );
+
