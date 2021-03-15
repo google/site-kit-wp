@@ -70,11 +70,23 @@ storiesOf( 'Settings', module )
 	} )
 	.add( 'Connected Services', () => {
 		const setupRegistry = ( registry ) => {
-			provideModules( registry, [ {
-				slug: 'adsense',
-				active: true,
-				connected: true,
-			} ] );
+			provideModules( registry, [
+				{
+					slug: 'adsense',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'pagespeed-insights',
+					active: true,
+					connected: true,
+				},
+			] );
 			provideModuleRegistrations( registry );
 		};
 
