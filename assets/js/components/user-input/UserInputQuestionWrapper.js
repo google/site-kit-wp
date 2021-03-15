@@ -98,7 +98,7 @@ export default function UserInputQuestionWrapper( props ) {
 								<Button
 									className="googlesitekit-user-input__buttons--next"
 									onClick={ next }
-									disabled={ values.filter( ( value ) => value.trim().length > 0 ).length === 0 }
+									disabled={ values.some( ( value ) => value.trim().length === 0 ) || values.length === 0 }
 								>
 									{ nextLabel || __( 'Next', 'google-site-kit' ) }
 								</Button>
