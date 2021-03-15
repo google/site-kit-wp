@@ -38,7 +38,6 @@ function resizeColumns( columnWidths, counter ) {
 	if ( counter !== 9 ) {
 		return [ columnWidths, counter ];
 	}
-
 	columnWidths = [ ...columnWidths ];
 
 	// Start counting backwards from the last item.
@@ -48,15 +47,13 @@ function resizeColumns( columnWidths, counter ) {
 	// correct usage should never apply, but is still useful to avoid infinite loops
 	// if the function was used incorrectly.
 	while ( counter !== 0 && i >= 0 ) {
-		const singleWidgetColumnWidth = columnWidths[ i ];
-
 		// Replace the 3-column width with a 4-column width, or the 6-column
 		// width with an 8-column width so that the overall row expands from
 		// 9 to the full 12 columns.
-		if ( singleWidgetColumnWidth === 3 ) {
+		if ( columnWidths[ i ] === 3 ) {
 			counter -= 3;
 			columnWidths[ i ] = 4; // Correct the column width.
-		} else if ( singleWidgetColumnWidth === 6 ) {
+		} else if ( columnWidths[ i ] === 6 ) {
 			counter -= 6;
 			columnWidths[ i ] = 8; // Correct the column width.
 		}
@@ -107,6 +104,29 @@ function getNextActiveWidget( offset, widgets, widgetStates ) {
 }
 
 /**
+ * Gets a map of which columns are in which rows.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<number>} rows    The list of rows.
+ * @param {Array.<number>} columns The list of columns.
+ * @return {Object} Object where the keys are the rows and
+ * 									the values are arrays of columns in that
+ * 									row.
+ */
+function getRowColumnMap( rows, columns ) {
+	const rowColMap = {};
+	rows.forEach( ( row, index ) => {
+		if ( rowColMap[ row ] ) {
+			rowColMap[ row ].push( columns[ index ] );
+		} else {
+			rowColMap[ row ] = [ columns[ index ] ];
+		}
+	} );
+	return rowColMap;
+}
+
+/**
  * Gets widget class names as well as column widths and row indexes for an area.
  *
  * @since 1.25.0
@@ -130,6 +150,7 @@ export function getWidgetLayout( widgets, widgetStates ) {
 
 	widgets.forEach( ( widget, i ) => {
 		// If a widget is inactive, we set null / 0 values and don't need to calculate a layout.
+
 		if ( isInactiveWidgetState( widgetStates[ widget.slug ] ) ) {
 			columnWidths.push( 0 );
 			rowIndexes.push( rowIndex );
@@ -138,12 +159,6 @@ export function getWidgetLayout( widgets, widgetStates ) {
 
 		// Get available sizes for the current widget to select the most appropriate width for the current row.
 		let sizes = getWidgetSizes( counter, widget );
-		console.log( `
-			get sizes:
-			counter: ${ counter }
-			sizes ->  counter: ${ sizes[ 0 ].counter }, width: ${ sizes[ 0 ].width }
-
-		` );
 
 		// Get the next active widget to help determine the best width for this widget.
 		const nextActiveWidget = getNextActiveWidget( i, widgets, widgetStates );
@@ -175,11 +190,6 @@ export function getWidgetLayout( widgets, widgetStates ) {
 		// Increase column counter based on width.
 		counter += WIDTH_GRID_COUNTER_MAP[ width ];
 
-		console.log( `
-		counter: ${ counter }
-		columns: ${ columnWidths } 
-		rows: ${ rowIndexes }
-		` );
 		// If counter is going above 12, this widget is too wide for the current row.
 		// So it's going to be the first widget in the next row instead.
 		if ( counter > 12 ) {
@@ -192,7 +202,18 @@ export function getWidgetLayout( widgets, widgetStates ) {
 			// If the column count without the overflowing widget is exactly 9, expand
 			// the widths of these widgets slightly to fill the entire 12 columns.
 			if ( counter === 9 ) {
-				[ columnWidths, counter ] = resizeColumns( columnWidths, counter );
+				// First zip the rows and columns
+				const rowColMap = getRowColumnMap( rowIndexes, columnWidths );
+				// Extract the columns on the current row to be resized (we
+				// don't want to include the overflowing widget or previously
+				// calculated rows)
+				let resizeRow = rowColMap[ rowIndex ];
+				// Resize them
+				[ resizeRow, counter ] = resizeColumns( resizeRow, counter );
+				// Insert the resized row back in
+				rowColMap[ rowIndex ] = resizeRow;
+				// Update the columnWidths with the resized row
+				columnWidths = Object.values( rowColMap ).flat();
 			}
 
 			// See above, initial counter for the next row of widgets.
@@ -203,6 +224,11 @@ export function getWidgetLayout( widgets, widgetStates ) {
 			counter = 0;
 			rowIndex++;
 		}
+
+		// Actually set the columnWidth for the current widget. This must be set after
+		// potentially resizing, since in that case this will be the overflowing
+		// widget which should NOT be adjusted because it will be in the next row.
+		columnWidths[ i ] = WIDTH_GRID_COUNTER_MAP[ width ];
 	} );
 
 	if ( counter === 9 ) {

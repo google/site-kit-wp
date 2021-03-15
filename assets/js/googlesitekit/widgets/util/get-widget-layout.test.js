@@ -70,41 +70,6 @@ describe( 'getWidgetLayout', () => {
 		// Desktop column widths usually are as well, except for the case where
 		// an entire row spans exactly 9 columns, in which case each widget
 		// will be expanded by a third to fill the entire 12 columns.
-		const expectedClassNames = [
-			[ // 3
-				'mdc-layout-grid__cell',
-				'mdc-layout-grid__cell--span-2-phone',
-				'mdc-layout-grid__cell--span-3-desktop',
-				'mdc-layout-grid__cell--span-4-tablet',
-			],
-			[ // 3
-				'mdc-layout-grid__cell',
-				'mdc-layout-grid__cell--span-2-phone',
-				'mdc-layout-grid__cell--span-3-desktop',
-				'mdc-layout-grid__cell--span-4-tablet',
-			],
-			[ // 6
-				'mdc-layout-grid__cell',
-				'mdc-layout-grid__cell--span-6-desktop',
-				'mdc-layout-grid__cell--span-8-tablet',
-			],
-			[ // 8
-				'mdc-layout-grid__cell',
-				'mdc-layout-grid__cell--span-8-desktop',
-				'mdc-layout-grid__cell--span-8-tablet',
-			],
-			[ // 4
-				'mdc-layout-grid__cell',
-				'mdc-layout-grid__cell--span-2-phone',
-				'mdc-layout-grid__cell--span-4-desktop',
-				'mdc-layout-grid__cell--span-4-tablet',
-			],
-			[ // 12
-				'mdc-layout-grid__cell',
-				'mdc-layout-grid__cell--span-12',
-			],
-			null,
-		];
 		const expectedColumnWidths = [
 			3, 3, 6,
 			8, 4,
@@ -169,7 +134,7 @@ describe( 'getWidgetLayout', () => {
 		expect( rowIndexes ).toEqual( expectedRowIndexes );
 	} );
 
-	it.only( 'expands a row with 9 columns to 12 columns', () => {
+	it( 'expands a row with 9 columns to 12 columns', () => {
 		// A row of 3, 12, 3-6, 6 should become 3, 12, 4-8, 6
 		const widgets = [
 			quarter,
