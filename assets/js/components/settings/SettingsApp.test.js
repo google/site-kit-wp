@@ -171,6 +171,11 @@ describe( 'SettingsApp', () => {
 	} );
 
 	it( 'should change location hash & DOM correctly when tab is clicked and changed', async () => {
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/core\/user\/data\/tracking/,
+			{ body: { enabled: true }, status: 200 }
+		);
+
 		const { findByText, getAllByRole } = render( <SettingsApp />, { features, registry } );
 
 		fireEvent.click( getAllByRole( 'tab' )[ 1 ] );

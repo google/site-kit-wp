@@ -1,5 +1,5 @@
 /**
- * Is inactive widget utility.
+ * Create Incremental Array by Size utility.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,18 +17,12 @@
  */
 
 /**
- * Internal dependencies
- */
-import Null from '../../../components/Null';
-
-/**
- * Combines consecutive widgets with similar states within the same row.
+ * Creates an array of length equal to size with incremental values starting at 0.
  *
  * @since 1.28.0
  *
- * @param {Object|null} widgetState Widget state (either an object with `Component` and `metadata`, or `null`).
- * @return {boolean} True if widget is inactive, otherwise false.
+ * @param {number} size Array length.
+ * @return {number[]} Array of incremental numbers.
+ * @example createIncrementalArrayBySize(3); // [0, 1, 2]
  */
-export function isInactiveWidgetState( widgetState ) {
-	return !! widgetState && widgetState.Component === Null;
-}
+export const createIncrementalArrayBySize = ( size ) => new Array( size ?? 0 ).fill().map( ( _, i ) => i );

@@ -626,7 +626,7 @@ final class Tag_Manager extends Module
 	/**
 	 * Filters whether or not the Analytics module's snippet should be controlled by its `useSnippet` setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.28.0
 	 *
 	 * @param boolean $original_value Original value of useSnippet setting.
 	 * @return boolean Filtered value.
