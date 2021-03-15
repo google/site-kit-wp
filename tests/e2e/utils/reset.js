@@ -32,13 +32,19 @@ import {
 
 /**
  * Resets Site Kit using a utility plugin.
+ *
+ * @since 1.0.0
+ * @since 1.27.0 Option to reset persistent options.
+ *
+ * @param {Object}  [options]            Reset options.
+ * @param {boolean} [options.persistent] Additionally deletes persistent options.
  */
-export async function resetSiteKit() {
+export async function resetSiteKit( { persistent = false } = {} ) {
 	if ( ! page.url().includes( '/wp-admin' ) ) {
 		await visitAdminPage( '/' );
 	}
 
-	await Promise.all( [
+	const promises = [
 		wpApiFetch( {
 			path: 'google-site-kit/v1/core/site/data/reset',
 			method: 'post',
@@ -46,7 +52,19 @@ export async function resetSiteKit() {
 		clearLocalStorage(),
 		clearSessionStorage(),
 		page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/core/site/data/reset' ) ),
-	] );
+	];
+
+	if ( persistent ) {
+		promises.push(
+			wpApiFetch( {
+				path: 'google-site-kit/v1/core/site/data/reset-persistent',
+				method: 'post',
+			} ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/core/site/data/reset-persistent' ) )
+		);
+	}
+
+	await Promise.all( promises );
 
 	// Prevent "Cannot log after tests are done." errors.
 	if ( '1' === process.env.DEBUG_REST ) {

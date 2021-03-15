@@ -32,12 +32,11 @@ import { useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { DATE_RANGE_OFFSET, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
-import GoogleChart from '../../../../../components/GoogleChart';
+import { DATE_RANGE_OFFSET, UI_DIMENSION_COLOR } from '../../../datastore/constants';
+import GoogleChartV2 from '../../../../../components/GoogleChartV2';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
-import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
 const { useSelect } = Data;
 
@@ -48,7 +47,7 @@ const X_LARGE_AND_ABOVE_MEDIA_QUERY = '(min-width: 1281px)';
 export default function UserCountGraph( { loaded, error, report } ) {
 	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 	const dateRangeNumberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
-	const graphLineColor = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionColor' ) || '#1a73e8' );
+	const graphLineColor = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) || '#1a73e8' );
 
 	const [ xSmallOnly, setXSmallOnly ] = useState( global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY ) );
 	const [ mobileToDesktop, setMobileToDesktop ] = useState( global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY ) );
@@ -67,11 +66,6 @@ export default function UserCountGraph( { loaded, error, report } ) {
 			global.removeEventListener( 'resize', updateBreakpoints );
 		};
 	}, [] );
-
-	if ( ! loaded ) {
-		// On desktop, the real graph height is 350px, so match that here.
-		return <PreviewBlock width="100%" height="350px" shape="square" />;
-	}
 
 	if ( error ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
@@ -109,9 +103,13 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	// On xsmall devices, increase the outer tick offset on mobile to make both ticks visible without ellipsis.
 	if ( xSmallOnly.matches ) {
 		if ( dateRangeNumberOfDays > 28 ) {
-			outerTickOffset = 5;
+			outerTickOffset = 8;
 		} else if ( dateRangeNumberOfDays > 7 ) {
-			outerTickOffset = 2;
+			outerTickOffset = 3;
+		}
+
+		if ( dateRangeNumberOfDays > 7 ) {
+			totalTicks = 3;
 		}
 	}
 
@@ -131,7 +129,7 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	// On devices larger than desktop, add a third and fourth tick.
 	if ( xLargeAndAbove.matches ) {
 		if ( dateRangeNumberOfDays > 28 ) {
-			outerTickOffset = 3;
+			outerTickOffset = 5;
 		}
 
 		if ( dateRangeNumberOfDays > 7 ) {
@@ -162,11 +160,14 @@ export default function UserCountGraph( { loaded, error, report } ) {
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__user-count-chart">
-			<GoogleChart
-				chartType="line"
+			<GoogleChartV2
+				chartType="LineChart"
 				data={ chartData }
+				height="368px"
+				loadingHeight="340px"
+				loaded={ loaded }
 				options={ chartOptions }
-				loadHeight={ 50 }
+				width="100%"
 			/>
 		</div>
 	);

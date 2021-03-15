@@ -26,20 +26,27 @@ import TabBar from '@material/react-tab-bar';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import {
+	UI_DIMENSION_COLOR,
+	UI_DIMENSION_NAME,
+	UI_DIMENSION_VALUE,
+	UI_ACTIVE_ROW_INDEX,
+} from '../../../datastore/constants';
 import PreviewBlock from '../../../../../components/PreviewBlock';
+import { Select, Option } from '../../../../../material-components';
+import { trackEvent } from '../../../../../util';
 const { useDispatch } = Data;
 
 export default function DimensionTabs( { dimensionName, loaded } ) {
-	const { setValues } = useDispatch( CORE_FORMS );
+	const { setValues } = useDispatch( CORE_UI );
 
 	const tabs = [
 		{
@@ -59,11 +66,16 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 	const activeTab = tabs.findIndex( ( v ) => v.dimensionName === dimensionName );
 
 	const handleTabUpdate = useCallback( ( index ) => {
-		setValues( FORM_ALL_TRAFFIC_WIDGET, {
-			dimensionName: tabs[ index ].dimensionName,
-			dimensionValue: '',
-			dimensionColor: '',
+		const { dimensionName: name } = tabs[ index ] || {};
+
+		setValues( {
+			[ UI_DIMENSION_NAME ]: name,
+			[ UI_DIMENSION_VALUE ]: '',
+			[ UI_DIMENSION_COLOR ]: '',
+			[ UI_ACTIVE_ROW_INDEX ]: null,
 		} );
+
+		trackEvent( 'all_traffic_widget', 'tab_select', name );
 	} );
 
 	if ( ! loaded ) {
@@ -77,22 +89,46 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 	}
 
 	return (
-		<TabBar
-			activeIndex={ activeTab }
-			handleActiveIndexUpdate={ handleTabUpdate }
-		>
-			{
-				tabs.map( ( tab ) => (
-					<Tab
-						key={ tab.dimensionName }
-						className="mdc-tab--min-width"
-						focusOnActivate={ false }
-					>
-						<span className="mdc-tab__text-label">{ tab.tabText }</span>
-					</Tab>
-				) )
-			}
-		</TabBar>
+		<Fragment>
+			<div className="googlesitekit-widget--analyticsAllTraffic__tabs hidden-on-mobile">
+				<TabBar
+					activeIndex={ activeTab }
+					handleActiveIndexUpdate={ handleTabUpdate }
+				>
+					{
+						tabs.map( ( tab ) => (
+							<Tab
+								key={ tab.dimensionName }
+								className="mdc-tab--min-width"
+								focusOnActivate={ false }
+							>
+								<span className="mdc-tab__text-label">{ tab.tabText }</span>
+							</Tab>
+						) )
+					}
+				</TabBar>
+			</div>
+
+			<div className="googlesitekit-widget--analyticsAllTraffic__tabs--small">
+				<Select
+					enhanced
+					onEnhancedChange={ handleTabUpdate }
+					outlined
+					value={ `dimension-name-${ activeTab }` }
+				>
+					{
+						tabs.map( ( tab, index ) => (
+							<Option
+								key={ index }
+								value={ `dimension-name-${ index }` }
+							>
+								{ tab.tabText }
+							</Option>
+						) )
+					}
+				</Select>
+			</div>
+		</Fragment>
 	);
 }
 

@@ -78,13 +78,6 @@ export default function SetupForm( { finishSetup } ) {
 			// If submitChanges was successful, disable autoSubmit (in case it was restored).
 			setValues( FORM_SETUP, { autoSubmit: false } );
 
-			// If a singular property ID is set in the container(s) and Analytics is active,
-			// we disable the snippet output via Analytics to prevent duplicate measurement.
-			if ( singleAnalyticsPropertyID && analyticsModuleActive ) {
-				dispatchAnalytics.setUseSnippet( false );
-				await throwOnError( () => dispatchAnalytics.saveSettings() );
-			}
-
 			// If submitting with Analytics setup, and Analytics is not active,
 			// activate it, and navigate to its reauth/setup URL to proceed with its setup.
 			if ( submitMode === SETUP_MODE_WITH_ANALYTICS && ! analyticsModuleActive ) {

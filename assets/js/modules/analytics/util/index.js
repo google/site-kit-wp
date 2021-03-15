@@ -33,7 +33,7 @@ import { __, sprintf, _x } from '@wordpress/i18n';
 import { getLocale } from '../../../util/i18n';
 import calculateOverviewData from './calculateOverviewData';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
-import { numFmt, prepareSecondsForDisplay } from '../../../util';
+import { convertSecondsToArray, numFmt } from '../../../util';
 
 export { calculateOverviewData };
 
@@ -201,7 +201,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	const dataLabels = [
 		__( 'Users', 'google-site-kit' ),
 		__( 'Sessions', 'google-site-kit' ),
-		__( 'Bounce Rate', 'google-site-kit' ),
+		__( 'Bounce Rate %', 'google-site-kit' ),
 		__( 'Session Duration', 'google-site-kit' ),
 	];
 
@@ -213,15 +213,18 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 			signDisplay: 'never',
 			maximumFractionDigits: 2,
 		} ),
-		prepareSecondsForDisplay,
+		( x ) => numFmt( x, 's' ),
 	];
+
+	const isSessionDuration = dataLabels[ selectedStats ] === __( 'Session Duration', 'google-site-kit' );
+	const dataType = isSessionDuration ? 'timeofday' : 'number';
 
 	const dataMap = [
 		[
 			{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
 			{ type: 'string', role: 'tooltip', p: { html: true } },
-			{ type: 'number', label: dataLabels[ selectedStats ] },
-			{ type: 'number', label: __( 'Previous period', 'google-site-kit' ) },
+			{ type: dataType, label: dataLabels[ selectedStats ] },
+			{ type: dataType, label: __( 'Previous period', 'google-site-kit' ) },
 		],
 	];
 
@@ -278,8 +281,8 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 				<p>${ dateRange }</p>
 				<p>${ statInfo }</p>
 			</div>`,
-			row[ 1 ],
-			previousMonthData[ i ][ 1 ],
+			isSessionDuration ? convertSecondsToArray( row[ 1 ] ) : row[ 1 ],
+			isSessionDuration ? convertSecondsToArray( previousMonthData[ i ][ 1 ] ) : previousMonthData[ i ][ 1 ],
 		] );
 	} );
 

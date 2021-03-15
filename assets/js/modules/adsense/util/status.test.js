@@ -108,8 +108,8 @@ const otherURLChannelA = {
 };
 
 describe( 'determineAccountStatus', () => {
-	it( 'returns none for noAdSenseAccount error', () => {
-		const params = {
+	test.each( [
+		[ 'none for noAdSenseAccount error', ACCOUNT_STATUS_NONE, {
 			accounts: undefined,
 			previousAccountID: '',
 			accountsError: {
@@ -120,20 +120,12 @@ describe( 'determineAccountStatus', () => {
 					reason: 'noAdSenseAccount',
 				},
 			},
-		};
-		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_NONE );
-	} );
-
-	it( 'returns none for no accounts', () => {
-		const params = {
+		} ],
+		[ 'none for no accounts', ACCOUNT_STATUS_NONE, {
 			accounts: [],
 			previousAccountID: '',
-		};
-		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_NONE );
-	} );
-
-	it( 'returns disapproved for disapprovedAccount error', () => {
-		const params = {
+		} ],
+		[ 'disapproved for disapprovedAccount error', ACCOUNT_STATUS_DISAPPROVED, {
 			accounts: undefined,
 			previousAccountID: '',
 			accountsError: {
@@ -144,41 +136,19 @@ describe( 'determineAccountStatus', () => {
 					reason: 'disapprovedAccount',
 				},
 			},
-		};
-		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_DISAPPROVED );
-	} );
-
-	it( 'returns multiple for multiple accounts without account ID provided', () => {
-		const params = {
+		} ],
+		[ 'multiple for multiple accounts without account ID provided', ACCOUNT_STATUS_MULTIPLE, {
 			accounts: [ accountA, accountB ],
 			previousAccountID: '',
-		};
-		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_MULTIPLE );
-	} );
-
-	it( 'does not return multiple for multiple accounts with account ID provided', () => {
-		// There are multiple accounts here, but by passing previousAccountID
-		// we indicate the user already selected it.
-		const params = {
-			accounts: [ accountA, accountB ],
-			previousAccountID: accountB.id,
-		};
-		expect( determineAccountStatus( params ) ).not.toEqual( ACCOUNT_STATUS_MULTIPLE );
-	} );
-
-	it( 'returns graylisted when there is a GRAYLISTED_PUBLISHER alert', () => {
-		const params = {
+		} ],
+		[ 'graylisted when there is a GRAYLISTED_PUBLISHER alert', ACCOUNT_STATUS_GRAYLISTED, {
 			accounts: [ accountA ],
 			alerts: [ graylistedAlert, otherAlert ],
 			clients: [],
 			previousAccountID: '',
 			previousClientID: '',
-		};
-		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_GRAYLISTED );
-	} );
-
-	it( 'returns pending for accountPendingReview error', () => {
-		const params = {
+		} ],
+		[ 'pending for accountPendingReview error', ACCOUNT_STATUS_PENDING, {
 			accounts: [ accountA ],
 			clients: [ afcClientA ],
 			alerts: undefined,
@@ -192,8 +162,53 @@ describe( 'determineAccountStatus', () => {
 					reason: 'accountPendingReview',
 				},
 			},
+		} ],
+		[ 'no-client for no clients', ACCOUNT_STATUS_NO_CLIENT, {
+			accounts: [ accountA ],
+			alerts: [ otherAlert ],
+			clients: [],
+			previousAccountID: '',
+			previousClientID: '',
+		} ],
+		[ 'no-client for AFS clients only', ACCOUNT_STATUS_NO_CLIENT, {
+			accounts: [ accountA ],
+			alerts: [ otherAlert ],
+			clients: [ afsClientA ],
+			previousAccountID: '',
+			previousClientID: '',
+		} ],
+		[ 'pending for "Ad client not found" URL channels error', ACCOUNT_STATUS_PENDING, {
+			accounts: [ accountA ],
+			alerts: [ otherAlert ],
+			clients: [ afcClientA, afsClientA ],
+			urlChannels: undefined,
+			previousAccountID: '',
+			previousClientID: '',
+			urlChannelsError: {
+				code: '404',
+				message: 'Ad client not found.',
+			},
+		} ],
+		[ 'approved for single account, no alerts, AFC client, and URL channels', ACCOUNT_STATUS_APPROVED, {
+			accounts: [ accountA ],
+			alerts: [ otherAlert ],
+			clients: [ afcClientA, afsClientA ],
+			urlChannels: [],
+			previousAccountID: '',
+			previousClientID: '',
+		} ],
+	] )( 'should return %s', ( _, expected, params ) => {
+		expect( determineAccountStatus( params ) ).toBe( expected );
+	} );
+
+	it( 'does not return multiple for multiple accounts with account ID provided', () => {
+		// There are multiple accounts here, but by passing previousAccountID
+		// we indicate the user already selected it.
+		const params = {
+			accounts: [ accountA, accountB ],
+			previousAccountID: accountB.id,
 		};
-		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_PENDING );
+		expect( determineAccountStatus( params ) ).not.toEqual( ACCOUNT_STATUS_MULTIPLE );
 	} );
 
 	it( 'does not return pending for accountPendingReview error if no clients loaded', () => {
@@ -213,39 +228,6 @@ describe( 'determineAccountStatus', () => {
 			},
 		};
 		expect( determineAccountStatus( params ) ).toEqual( undefined );
-	} );
-
-	it( 'returns no-client for no clients', () => {
-		const params = {
-			accounts: [ accountA ],
-			alerts: [ otherAlert ],
-			clients: [],
-			previousAccountID: '',
-			previousClientID: '',
-		};
-		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_NO_CLIENT );
-	} );
-
-	it( 'returns no-client for AFS clients only', () => {
-		const params = {
-			accounts: [ accountA ],
-			alerts: [ otherAlert ],
-			clients: [ afsClientA ],
-			previousAccountID: '',
-			previousClientID: '',
-		};
-		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_NO_CLIENT );
-	} );
-
-	it( 'returns approved for single account, no alerts, and AFC client', () => {
-		const params = {
-			accounts: [ accountA ],
-			alerts: [ otherAlert ],
-			clients: [ afcClientA, afsClientA ],
-			previousAccountID: '',
-			previousClientID: '',
-		};
-		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_APPROVED );
 	} );
 
 	it.each(

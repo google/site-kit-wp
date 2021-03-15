@@ -22,10 +22,11 @@
 import { useEffect, useState } from '@wordpress/element';
 
 /**
- * Runs a series of asynchronous checks returning the first encountered error.
+ * Runs a series of checks returning the first encountered error.
  * All checks should be functions that throw their respective errors.
  *
  * @since 1.25.0
+ * @since 1.28.0 Checks are run sequentially rather than in parallel.
  *
  * @param {Function[]} checks Array of functions to run.
  * @return {Object} An object containing complete and error properties.

@@ -33,8 +33,6 @@ import DashboardModuleHeader from '../assets/js/components/dashboard/DashboardMo
 import CTA from '../assets/js/components/legacy-notifications/cta';
 import { createAddToFilter } from '../assets/js/util/helpers';
 import Layout from '../assets/js/components/layout/Layout';
-import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
-import LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
 import LegacyDashboardSearchFunnelInner from '../assets/js/modules/search-console/components/dashboard/LegacyDashboardSearchFunnelInner';
 import LegacyAnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetTopLevel';
 import LegacySearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/components/dashboard/LegacySearchConsoleDashboardWidgetTopLevel';
@@ -54,53 +52,6 @@ storiesOf( 'Dashboard', module )
 			description={ __( 'Description of Module', 'google-site-kit' ) }
 		/>
 	) )
-	.add( 'All Traffic', () => {
-		global._googlesitekitLegacyData = analyticsDashboardData;
-
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-				accountID: '123456789',
-				propertyID: '123456789',
-				internalWebPropertyID: '123456789',
-				profileID: '123456789',
-			} );
-		};
-
-		// Load the datacache with data.
-		setTimeout( () => {
-			doAction(
-				'googlesitekit.moduleLoaded',
-				'Dashboard'
-			);
-		}, 250 );
-		return (
-			<WithTestRegistry callback={ setupRegistry } >
-				<Layout className="googlesitekit-dashboard-all-traffic">
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-4-desktop
-							mdc-layout-grid__cell--span-4-tablet
-							mdc-layout-grid__cell--span-4-phone
-						">
-								<LegacyDashboardAcquisitionPieChart source />
-							</div>
-							<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-8-desktop
-							mdc-layout-grid__cell--span-4-tablet
-							mdc-layout-grid__cell--span-4-phone
-						">
-								<LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
-							</div>
-						</div>
-					</div>
-				</Layout>
-			</WithTestRegistry>
-		);
-	},
-	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
 	.add( 'Post Searcher', () => {
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -184,7 +135,7 @@ storiesOf( 'Dashboard', module )
 			</WithTestRegistry>
 		);
 	},
-	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
+	{ options: { readySelector: '.googlesitekit-chart-v2 > div[style="position: relative;"]' } } )
 	.add( 'Search Funnel', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
@@ -241,6 +192,6 @@ storiesOf( 'Dashboard', module )
 		);
 	}, {
 		options: {
-			readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+			readySelector: '.googlesitekit-chart-v2 > div[style="position: relative;"]',
 		},
 	} );

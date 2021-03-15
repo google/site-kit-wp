@@ -181,7 +181,7 @@ function SetupUsingProxy() {
 																	{ __( 'Sign in with Google', 'google-site-kit' ) }
 																</Button>
 																{ inProgressFeedback }
-																{ ! isSecondAdmin && isResettable && <ResetButton /> }
+																{ ! isSecondAdmin && isResettable && complete && <ResetButton /> }
 															</div>
 														</Fragment>
 													) }

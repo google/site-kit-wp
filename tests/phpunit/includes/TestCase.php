@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests;
 
 use Closure;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Core\Util\JSON_File;
@@ -37,11 +38,15 @@ class TestCase extends \WP_UnitTestCase {
 	public static function tearDownAfterClass() {
 		parent::tearDownAfterClass();
 		self::reset_feature_flags();
+		self::reset_build_mode();
 	}
 
 	protected static function reset_feature_flags() {
-		Feature_Flags::set_mode( Feature_Flags::MODE_PRODUCTION );
 		Feature_Flags::set_features( self::$featureFlagsConfig );
+	}
+
+	protected static function reset_build_mode() {
+		Build_Mode::set_mode( Build_Mode::MODE_PRODUCTION );
 	}
 
 	/**
@@ -139,39 +144,6 @@ class TestCase extends \WP_UnitTestCase {
 	 */
 	protected function get_testcase() {
 		return $this;
-	}
-
-	protected function checkRequirements() {
-		parent::checkRequirements();
-
-		/**
-		 * Proper handling for MS group annotation handling was fixed in 5.1
-		 * @see https://core.trac.wordpress.org/ticket/43863
-		 */
-		if ( version_compare( $GLOBALS['wp_version'], '5.1', '<' ) ) {
-			$annotations = $this->getAnnotations();
-			$groups      = array();
-
-			if ( ! empty( $annotations['class']['group'] ) ) {
-				$groups = array_merge( $groups, $annotations['class']['group'] );
-			}
-			if ( ! empty( $annotations['method']['group'] ) ) {
-				$groups = array_merge( $groups, $annotations['method']['group'] );
-			}
-
-			if ( ! empty( $groups ) ) {
-				if ( in_array( 'ms-required', $groups, true ) ) {
-					if ( ! is_multisite() ) {
-						$this->markTestSkipped( 'Test only runs on Multisite' );
-					}
-				}
-				if ( in_array( 'ms-excluded', $groups, true ) ) {
-					if ( is_multisite() ) {
-						$this->markTestSkipped( 'Test does not run on Multisite' );
-					}
-				}
-			}
-		}
 	}
 
 	/**

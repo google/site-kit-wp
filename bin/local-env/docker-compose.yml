@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   wordpress:
-    image: wordpress
+    image: wordpress:5.6-php7.4
     restart: always
     environment:
       WORDPRESS_DB_HOST: mysql
