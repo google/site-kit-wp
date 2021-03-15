@@ -106,7 +106,7 @@ describe( 'WidgetAreaRenderer', () => {
 
 		await waitFor( () => {
 			expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
-		}, { timeout: 2000 } );
+		} );
 	} );
 
 	it.each(

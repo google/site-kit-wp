@@ -42,9 +42,9 @@ function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
  * @param {Array.<number>} layout.rowIndexes   List of row indexes for each
  *                                             widget.
  * @return {Object} Object with `overrideComponents` property, both of which are a
- * 									list with one item for each widget. Every `overrideComponents`
- * 									entry is either an object with `Component` and `metadata`, or
- * 									`null` (similar to the `widgetStates` parameter).
+ * 					list with one item for each widget. Every `overrideComponents`
+ * 					entry is either an object with `Component` and `metadata`, or
+ * 					`null` (similar to the `widgetStates` parameter).
  */
 export function combineWidgets( widgets, widgetStates, {
 	columnWidths,

@@ -111,8 +111,8 @@ function getNextActiveWidget( offset, widgets, widgetStates ) {
  * @param {Array.<number>} rows    The list of rows.
  * @param {Array.<number>} columns The list of columns.
  * @return {Object} Object where the keys are the rows and
- * 									the values are arrays of columns in that
- * 									row.
+ * 					the values are arrays of columns in that
+ * 					row.
  */
 function getRowColumnMap( rows, columns ) {
 	const rowColMap = {};
