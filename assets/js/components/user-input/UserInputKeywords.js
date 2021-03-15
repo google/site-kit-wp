@@ -27,7 +27,7 @@ import classnames from 'classnames';
  */
 import { useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { ENTER } from '@wordpress/keycodes';
+import { ENTER, BACKSPACE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -87,6 +87,17 @@ export default function UserInputKeywords( { slug, max } ) {
 
 	const onKeyDown = useCallback( ( index, { keyCode } ) => {
 		const nonEmptyValues = values.filter( ( value ) => value.length > 0 );
+		const nonEmptyValuesLength = nonEmptyValues.length;
+
+		// if the length is than 3 and the BACKSPACE key is pressed, call the deleteKeyword function passing nonEmptyValuesLength - 1 as the index to delete.
+		if ( nonEmptyValuesLength < 3 && keyCode === BACKSPACE ) {
+			deleteKeyword( nonEmptyValuesLength - 1 );
+			// set the focus to the input text again using the same logic when the ENTER or COMMA keys are pressed, but this time, having the following selector:
+			setTimeout( () =>
+				focusInput( `#${ slug }-keyword-${ nonEmptyValuesLength - 1 }` )
+			, 50 );
+		}
+
 		if ( ( keyCode === ENTER || keyCode === COMMA ) && nonEmptyValues.length < max ) {
 			updateKeywords( [
 				...values.slice( 0, index + 1 ),
@@ -94,16 +105,24 @@ export default function UserInputKeywords( { slug, max } ) {
 				...values.slice( index + 1 ),
 			] );
 
-			setTimeout( () => {
-				const input = keywordsContainer.current.querySelector( `#${ slug }-keyword-${ index + 1 }` );
-				if ( input ) {
-					input.focus();
-				}
-			}, 50 );
+			setTimeout( () =>
+				focusInput( `#${ slug }-keyword-${ index + 1 }` )
+			, 50 );
 		}
 	}, [ keywordsContainer.current, ...dependencies ] );
 
+	const focusInput = ( querySelector ) => {
+		const input = keywordsContainer.current.querySelector( querySelector );
+		if ( input ) {
+			input.focus();
+		}
+	};
+
 	const onKeywordDelete = useCallback( ( index ) => {
+		deleteKeyword( index );
+	}, dependencies );
+
+	const deleteKeyword = useCallback( ( index ) => {
 		updateKeywords( [
 			...values.slice( 0, index ),
 			...values.slice( index + 1 ),
