@@ -33,65 +33,113 @@ import { __, sprintf, _x } from '@wordpress/i18n';
  * For example, passing 65 returns '1m 5s'.
  *
  * @since 1.0.0
- * @since n.e.x.t Refactored and renamed to improve localization.
+ * @since 1.28.0 Refactored and renamed to improve localization.
  * @private
  *
- * @param {number}                     seconds   The number of seconds.
- * @param {(Intl.NumberFormatOptions)} [options] Optional formatting options.
+ * @param {number}                     durationInSeconds The number of seconds.
+ * @param {(Intl.NumberFormatOptions)} [options]         Optional formatting options.
  * @return {string} Human readable string indicating time elapsed.
  */
-const durationFormat = ( seconds, options = {} ) => {
-	options = {
-		unitDisplay: 'short',
-		...options,
-		style: 'unit',
-	};
+const durationFormat = ( durationInSeconds, options = {} ) => {
+	const { formatUnit, formatDecimal } = createDurationFormat( durationInSeconds, options );
 
-	seconds = parseInt( seconds, 10 );
+	try {
+		// Some browsers, e.g. Safari, throw a RangeError when options.style is
+		// not one of decimal, percent, or currency.
+		return formatUnit();
+	} catch {
+		// Fallback to XXh YYm ZZs using localized decimals with hardcoded units.
+		return formatDecimal();
+	}
+};
 
-	if ( Number.isNaN( seconds ) ) {
-		seconds = 0;
+/**
+ * Creates duration formatting utilities.
+ *
+ * Not intended to be used directly.
+ * Use `numFmt( number, { style: 'duration' } )` instead.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {number} durationInSeconds Duration to format.
+ * @param {Object} [options]         Formatting options.
+ * @return {Object} Formatting functions.
+ */
+export const createDurationFormat = ( durationInSeconds, options = {} ) => {
+	durationInSeconds = parseInt( durationInSeconds, 10 );
+
+	if ( Number.isNaN( durationInSeconds ) ) {
+		durationInSeconds = 0;
 	}
 
-	let hours = Math.floor( seconds / 60 / 60 ) || '';
-	let minutes = Math.floor( ( seconds / 60 ) % 60 ) || '';
+	const hours = Math.floor( durationInSeconds / 60 / 60 );
+	const minutes = Math.floor( ( durationInSeconds / 60 ) % 60 );
+	const seconds = Math.floor( durationInSeconds % 60 );
 
-	seconds = Math.floor( seconds % 60 ) || '';
-
-	if ( ! hours && ! minutes && ! seconds ) {
-		seconds = 0;
-	}
-
-	if ( hours ) {
-		hours = numberFormat( hours, {
-			...options,
-			unit: 'hour',
-		} );
-	}
-
-	if ( minutes ) {
-		minutes = numberFormat( minutes, {
-			...options,
-			unit: 'minute',
-		} );
-	}
-
-	if ( '' !== seconds ) {
-		seconds = numberFormat( seconds, {
-			...options,
-			unit: 'second',
-		} );
-	}
-
-	const formattedString = sprintf(
-		/* translators: 1: formatted seconds, 2: formatted minutes, 3: formatted hours */
-		_x( '%3$s %2$s %1$s', 'duration of time: hh mm ss', 'google-site-kit' ),
-		seconds,
-		minutes,
+	return {
 		hours,
-	);
+		minutes,
+		seconds,
+		formatUnit() {
+			const { unitDisplay = 'short', ...restOptions } = options;
+			const commonOptions = {
+				unitDisplay,
+				...restOptions,
+				style: 'unit',
+			};
 
-	return formattedString.trim();
+			if ( durationInSeconds === 0 ) {
+				return numberFormat( seconds, { ...commonOptions, unit: 'second' } );
+			}
+
+			return sprintf(
+				/* translators: 1: formatted seconds, 2: formatted minutes, 3: formatted hours */
+				_x( '%3$s %2$s %1$s', 'duration of time: hh mm ss', 'google-site-kit' ),
+				seconds ? numberFormat( seconds, { ...commonOptions, unit: 'second' } ) : '',
+				minutes ? numberFormat( minutes, { ...commonOptions, unit: 'minute' } ) : '',
+				hours ? numberFormat( hours, { ...commonOptions, unit: 'hour' } ) : '',
+			).trim();
+		},
+		/**
+		 * Formats the duration using integers and translatable strings.
+		 * This is only used as a fallback when the above `formatUnit` fails.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {string} Formatted duration.
+		 */
+		formatDecimal() {
+			const formattedSeconds = sprintf(
+				// translators: %s number of seconds with "s" as the abbreviated unit.
+				__( '%ds', 'google-site-kit' ),
+				seconds
+			);
+
+			if ( durationInSeconds === 0 ) {
+				return formattedSeconds;
+			}
+
+			const formattedMinutes = sprintf(
+				// translators: %s number of minutes with "m" as the abbreviated unit.
+				__( '%dm', 'google-site-kit' ),
+				minutes
+			);
+			const formattedHours = sprintf(
+				// translators: %s number of hours with "h" as the abbreviated unit.
+				__( '%dh', 'google-site-kit' ),
+				hours
+			);
+
+			return sprintf(
+				/* translators: 1: formatted seconds, 2: formatted minutes, 3: formatted hours */
+				_x( '%3$s %2$s %1$s', 'duration of time: hh mm ss', 'google-site-kit' ),
+				seconds ? formattedSeconds : '',
+				minutes ? formattedMinutes : '',
+				hours ? formattedHours : '',
+			).trim();
+		},
+	};
 };
 
 /**
