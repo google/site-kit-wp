@@ -44,10 +44,10 @@ const fetchGetDismissedToursStore = createFetchStore( {
 	controlCallback: () => {
 		return API.get( 'core', 'user', 'dismissed-tours', {}, { useCache: false } );
 	},
-	reducerCallback: ( state, dismissedTours ) => {
+	reducerCallback: ( state, dismissedTourSlugs ) => {
 		return {
 			...state,
-			dismissedTours,
+			dismissedTourSlugs,
 		};
 	},
 } );
@@ -55,10 +55,10 @@ const { fetchGetDismissedTours } = fetchGetDismissedToursStore.actions;
 const fetchDismissTourStore = createFetchStore( {
 	baseName: 'dismissTour',
 	controlCallback: ( { slug } ) => API.set( 'core', 'user', 'dismiss-tour', { slug } ),
-	reducerCallback: ( state, dismissedTours ) => {
+	reducerCallback: ( state, dismissedTourSlugs ) => {
 		return {
 			...state,
-			dismissedTours,
+			dismissedTourSlugs,
 		};
 	},
 	argsToParams: ( slug ) => ( { slug } ),
@@ -70,11 +70,11 @@ const { fetchDismissTour } = fetchDismissTourStore.actions;
 
 const baseInitialState = {
 	// Array of dismissed tour slugs.
-	dismissedTours: undefined,
+	dismissedTourSlugs: undefined,
 	// Array of tour objects.
 	tours: featureTours,
 	// Map of [viewContext]: ordered array of tour objects.
-	readyTours: {},
+	viewTours: {},
 };
 
 const baseActions = {
@@ -105,16 +105,16 @@ const baseActions = {
 		}() );
 	},
 
-	receiveReadyFeatureTours( readyTours, { viewContext } = {} ) {
-		invariant( Array.isArray( readyTours ), 'readyTours must be an array.' );
+	receiveFeatureToursForView( viewTours, { viewContext } = {} ) {
+		invariant( Array.isArray( viewTours ), 'viewTours must be an array.' );
 		invariant( viewContext, 'viewContext is required.' );
 		return {
-			payload: { readyTours, viewContext },
+			payload: { viewTours, viewContext },
 			type: RECEIVE_READY_TOURS,
 		};
 	},
 
-	receiveFeatureTours( tours ) {
+	receiveAllFeatureTours( tours ) {
 		invariant( Array.isArray( tours ), 'tours must be an array.' );
 		return {
 			payload: { tours },
@@ -159,23 +159,23 @@ const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case DISMISS_TOUR: {
 			const { slug } = payload;
-			const { dismissedTours = [] } = state;
-			if ( dismissedTours.includes( slug ) ) {
+			const { dismissedTourSlugs = [] } = state;
+			if ( dismissedTourSlugs.includes( slug ) ) {
 				return state;
 			}
 			return {
 				...state,
-				dismissedTours: dismissedTours.concat( slug ),
+				dismissedTourSlugs: dismissedTourSlugs.concat( slug ),
 			};
 		}
 
 		case RECEIVE_READY_TOURS: {
-			const { viewContext, readyTours } = payload;
+			const { viewContext, viewTours } = payload;
 			return {
 				...state,
-				readyTours: {
-					...state.readyTours,
-					[ viewContext ]: readyTours,
+				viewTours: {
+					...state.viewTours,
+					[ viewContext ]: viewTours,
 				},
 			};
 		}
@@ -201,10 +201,10 @@ const baseResolvers = {
 		}
 	},
 
-	*getCurrentFeatureToursForView( viewContext ) {
+	*getFeatureToursForView( viewContext ) {
 		const registry = yield getRegistry();
-		const tours = registry.select( STORE_NAME ).getFeatureTours();
-		const readyTours = [];
+		const tours = registry.select( STORE_NAME ).getAllFeatureTours();
+		const viewTours = [];
 
 		for ( const tour of tours ) {
 			const tourQualifies = yield {
@@ -213,10 +213,10 @@ const baseResolvers = {
 			};
 
 			if ( tourQualifies ) {
-				readyTours.push( tour );
+				viewTours.push( tour );
 			}
 		}
-		yield actions.receiveReadyFeatureTours( readyTours, { viewContext } );
+		yield actions.receiveFeatureToursForView( viewTours, { viewContext } );
 	},
 };
 
@@ -226,13 +226,14 @@ const baseSelectors = {
 	 *
 	 * @since 1.27.0
 	 * @since n.e.x.t Renamed from getDismissedTours.
+	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string[]|undefined)} Array of dismissed tour slugs,
 	 *                                `undefined` if not resolved yet.
 	 */
 	getDismissedFeatureTourSlugs( state ) {
-		return state.dismissedTours;
+		return state.dismissedTourSlugs;
 	},
 
 	/**
@@ -245,8 +246,8 @@ const baseSelectors = {
 	 * @return {(Object[]|undefined)} Array of qualifying tour objects
 	 *                                `undefined` while readiness is being resolved.
 	 */
-	getCurrentFeatureToursForView( state, viewContext ) {
-		return state.readyTours[ viewContext ];
+	getFeatureToursForView( state, viewContext ) {
+		return state.viewTours[ viewContext ];
 	},
 
 	/**
@@ -258,7 +259,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {Object[]} Array of tour objects.
 	 */
-	getFeatureTours( state ) {
+	getAllFeatureTours( state ) {
 		return state.tours;
 	},
 
@@ -274,13 +275,13 @@ const baseSelectors = {
 	 *                               `false` if not dismissed.
 	 */
 	isTourDismissed: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const dismissedTours = select( STORE_NAME ).getDismissedFeatureTourSlugs();
+		const dismissedTourSlugs = select( STORE_NAME ).getDismissedFeatureTourSlugs();
 
-		if ( undefined === dismissedTours ) {
+		if ( undefined === dismissedTourSlugs ) {
 			return undefined;
 		}
 
-		return dismissedTours.includes( slug );
+		return dismissedTourSlugs.includes( slug );
 	} ),
 };
 

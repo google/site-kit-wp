@@ -71,15 +71,15 @@ describe( 'core/user feature-tours', () => {
 					.toThrow( /a tour slug is required/i );
 			} );
 
-			it( 'adds the slug to dismissedTours immediately', () => {
+			it( 'adds the slug to dismissedTourSlugs immediately', () => {
 				muteFetch( fetchDismissTourRegExp, [] );
 
-				expect( store.getState().dismissedTours ).toBe( initialState.dismissedTours );
-				expect( store.getState().dismissedTours || [] ).not.toContain( 'test-tour' );
+				expect( store.getState().dismissedTourSlugs ).toBe( initialState.dismissedTourSlugs );
+				expect( store.getState().dismissedTourSlugs || [] ).not.toContain( 'test-tour' );
 
 				registry.dispatch( STORE_NAME ).dismissTour( 'test-tour' );
 
-				expect( store.getState().dismissedTours ).toContain( 'test-tour' );
+				expect( store.getState().dismissedTourSlugs ).toContain( 'test-tour' );
 			} );
 
 			it( 'dispatches a fetch request to persist the dismissal', async () => {
@@ -95,40 +95,40 @@ describe( 'core/user feature-tours', () => {
 
 				await registry.dispatch( STORE_NAME ).dismissTour( 'tour-b' );
 
-				expect( store.getState().dismissedTours ).toEqual(
+				expect( store.getState().dismissedTourSlugs ).toEqual(
 					expect.arrayContaining( [ 'tour-a', 'tour-b' ] )
 				);
 			} );
 		} );
 
-		describe( 'receiveFeatureTours', () => {
+		describe( 'receiveAllFeatureTours', () => {
 			it( 'requires tours to be an array', () => {
-				expect( () => registry.dispatch( STORE_NAME ).receiveFeatureTours() )
+				expect( () => registry.dispatch( STORE_NAME ).receiveAllFeatureTours() )
 					.toThrow( 'tours must be an array' );
 			} );
 
 			it( 'receives a the given tours into the state', () => {
 				const tours = [ testTourA, testTourB ];
-				registry.dispatch( STORE_NAME ).receiveFeatureTours( tours );
+				registry.dispatch( STORE_NAME ).receiveAllFeatureTours( tours );
 				expect( store.getState().tours ).toEqual( tours );
 			} );
 		} );
 
-		describe( 'receiveReadyFeatureTours', () => {
-			it( 'requires readyTours to be an array', () => {
-				expect( () => registry.dispatch( STORE_NAME ).receiveReadyFeatureTours() )
-					.toThrow( 'readyTours must be an array' );
+		describe( 'receiveFeatureToursForView', () => {
+			it( 'requires viewTours to be an array', () => {
+				expect( () => registry.dispatch( STORE_NAME ).receiveFeatureToursForView() )
+					.toThrow( 'viewTours must be an array' );
 			} );
 
-			it( 'requires a viewContext to be provided for the readyTours', () => {
-				expect( () => registry.dispatch( STORE_NAME ).receiveReadyFeatureTours( [] ) )
+			it( 'requires a viewContext to be provided for the viewTours', () => {
+				expect( () => registry.dispatch( STORE_NAME ).receiveFeatureToursForView( [] ) )
 					.toThrow( 'viewContext is required' );
 			} );
 
-			it( 'receives a the given readyTours into the state for the viewContext', () => {
+			it( 'receives a the given viewTours into the state for the viewContext', () => {
 				const tours = [ testTourA, testTourB ];
-				registry.dispatch( STORE_NAME ).receiveReadyFeatureTours( tours, { viewContext: 'foo' } );
-				expect( store.getState().readyTours.foo ).toEqual( tours );
+				registry.dispatch( STORE_NAME ).receiveFeatureToursForView( tours, { viewContext: 'foo' } );
+				expect( store.getState().viewTours.foo ).toEqual( tours );
 			} );
 		} );
 	} );
@@ -140,7 +140,7 @@ describe( 'core/user feature-tours', () => {
 			it( 'returns the initial state before the resolver runs', () => {
 				muteFetch( fetchGetDismissedToursRegExp, [] );
 
-				expect( registry.select( STORE_NAME ).getDismissedFeatureTourSlugs() ).toBe( initialState.dismissedTours );
+				expect( registry.select( STORE_NAME ).getDismissedFeatureTourSlugs() ).toBe( initialState.dismissedTourSlugs );
 			} );
 
 			it( 'receives dismissed tours from the fetch dispatched by the resolver', async () => {
@@ -175,26 +175,26 @@ describe( 'core/user feature-tours', () => {
 			} );
 		} );
 
-		describe( 'getCurrentFeatureToursForView', () => {
+		describe( 'getFeatureToursForView', () => {
 			beforeEach( () => {
 				registry.dispatch( STORE_NAME ).receiveGetDismissedTours( [] );
 			} );
 
 			it( 'returns `undefined` while tour readiness is being resolved', () => {
 				expect(
-					registry.select( STORE_NAME ).getCurrentFeatureToursForView( 'test-view-context' )
+					registry.select( STORE_NAME ).getFeatureToursForView( 'test-view-context' )
 				).toBeUndefined();
 			} );
 
 			it( 'returns an array of tours that qualify for the given view context', async () => {
-				registry.dispatch( STORE_NAME ).receiveFeatureTours( [ testTourA, testTourB ] );
+				registry.dispatch( STORE_NAME ).receiveAllFeatureTours( [ testTourA, testTourB ] );
 
 				expect(
-					await registry.__experimentalResolveSelect( STORE_NAME ).getCurrentFeatureToursForView( 'common-context' )
+					await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' )
 				).toEqual( [ testTourA, testTourB ] );
 
 				expect(
-					await registry.__experimentalResolveSelect( STORE_NAME ).getCurrentFeatureToursForView( 'b-only-context' )
+					await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'b-only-context' )
 				).toEqual( [ testTourB ] );
 			} );
 
@@ -202,21 +202,21 @@ describe( 'core/user feature-tours', () => {
 				const initialVersion = '1.0.0';
 				const tourVersion = '2.0.0';
 				registry.dispatch( STORE_NAME ).receiveInitialSiteKitVersion( initialVersion );
-				registry.dispatch( STORE_NAME ).receiveFeatureTours( [
+				registry.dispatch( STORE_NAME ).receiveAllFeatureTours( [
 					{ ...testTourA, version: initialVersion },
 					{ ...testTourB, version: tourVersion },
 				] );
 				// Tour A's version matches the user's initial version, so only Tour B is returned.
-				const readyTours = await registry.__experimentalResolveSelect( STORE_NAME ).getCurrentFeatureToursForView( 'common-context' );
-				expect( readyTours.map( ( { slug } ) => slug ) ).toEqual( [ testTourB.slug ] );
+				const viewTours = await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' );
+				expect( viewTours.map( ( { slug } ) => slug ) ).toEqual( [ testTourB.slug ] );
 			} );
 
 			it( 'returns an array of tours that have not been dismissed by the user yet', async () => {
-				registry.dispatch( STORE_NAME ).receiveFeatureTours( [ testTourA, testTourB ] );
+				registry.dispatch( STORE_NAME ).receiveAllFeatureTours( [ testTourA, testTourB ] );
 				registry.dispatch( STORE_NAME ).receiveGetDismissedTours( [ testTourB.slug ] );
 				// Tour B was received as dismissed, but A was not.
 				expect(
-					await registry.__experimentalResolveSelect( STORE_NAME ).getCurrentFeatureToursForView( 'common-context' )
+					await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' )
 				).toEqual( [ testTourA ] );
 			} );
 
@@ -229,13 +229,13 @@ describe( 'core/user feature-tours', () => {
 				const checkB = jest.fn(
 					async () => new Promise( ( resolve ) => setTimeout( resolve( false ) ) )
 				);
-				registry.dispatch( STORE_NAME ).receiveFeatureTours( [
+				registry.dispatch( STORE_NAME ).receiveAllFeatureTours( [
 					{ ...testTourA, checkRequirements: checkA },
 					{ ...testTourB, checkRequirements: checkB },
 				] );
 
-				const readyTours = await registry.__experimentalResolveSelect( STORE_NAME ).getCurrentFeatureToursForView( 'common-context' );
-				expect( readyTours.map( ( { slug } ) => slug ) ).toEqual( [ testTourA.slug ] );
+				const viewTours = await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' );
+				expect( viewTours.map( ( { slug } ) => slug ) ).toEqual( [ testTourA.slug ] );
 				// Check functions should be called with the registry as the first parameter.
 				const registryMatcher = expect.objectContaining( {
 					select: expect.any( Function ),
@@ -248,13 +248,13 @@ describe( 'core/user feature-tours', () => {
 			} );
 		} );
 
-		describe( 'getFeatureTours', () => {
+		describe( 'getAllFeatureTours', () => {
 			it( 'returns all tours in the store', () => {
 				const tours = [ testTourA, testTourB ];
-				registry.dispatch( STORE_NAME ).receiveFeatureTours( tours );
+				registry.dispatch( STORE_NAME ).receiveAllFeatureTours( tours );
 
 				expect(
-					registry.select( STORE_NAME ).getFeatureTours()
+					registry.select( STORE_NAME ).getAllFeatureTours()
 				).toEqual( tours );
 			} );
 		} );

@@ -30,7 +30,7 @@ import TourTooltips from './TourTooltips';
 const { useSelect } = Data;
 
 export default function FeatureTours( { viewContext } ) {
-	const nextTour = useSelect( ( select ) => select( CORE_USER ).getCurrentFeatureToursForView( viewContext )?.[ 0 ] );
+	const nextTour = useSelect( ( select ) => select( CORE_USER ).getFeatureToursForView( viewContext )?.[ 0 ] );
 
 	if ( ! nextTour ) {
 		return null;
