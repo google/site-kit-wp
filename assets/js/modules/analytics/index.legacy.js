@@ -24,7 +24,7 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import { getSiteKitAdminURL, getModulesData } from '../../util';
+import { getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
 import AnalyticsDashboardWidget from './components/dashboard/AnalyticsDashboardWidget';
 import LegacyAnalyticsDashboardWidgetTopLevel from './components/dashboard/LegacyAnalyticsDashboardWidgetTopLevel';
@@ -37,25 +37,6 @@ import LegacyDashboardAllTraffic from './components/dashboard/DashboardAllTraffi
 const slug = 'analytics';
 
 const modulesData = getModulesData();
-
-// If setup is not complete, show the signup flow.
-if ( ! modulesData[ slug ].setupComplete ) {
-	const {
-		reAuth,
-		currentScreen,
-	} = global._googlesitekitLegacyData.admin;
-	const id = currentScreen ? currentScreen.id : null;
-	if ( ! reAuth && 'site-kit_page_googlesitekit-module-analytics' === id ) {
-		// Setup incomplete: redirect to the setup flow.
-		global.location = getSiteKitAdminURL(
-			`googlesitekit-module-${ slug }`,
-			{
-				reAuth: true,
-				slug,
-			}
-		);
-	}
-}
 
 if ( modulesData.analytics.active ) {
 	const addAnalyticsDashboardWidget = createAddToFilter( <AnalyticsDashboardWidget /> );
