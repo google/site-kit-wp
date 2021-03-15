@@ -70,11 +70,9 @@ export default function UserInputQuestionnaire() {
 		return {
 			isSavingSettings: select( CORE_USER ).isSavingUserInputSettings( userInputSettings ),
 			error: select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] ),
-			answeredUntilIndex: USER_INPUT_QUESTIONS_LIST.findIndex( ( question ) => userInputSettings[ question ].values.length === 0 ),
+			answeredUntilIndex: USER_INPUT_QUESTIONS_LIST.findIndex( ( question ) => userInputSettings?.[ question ]?.values?.length === 0 ),
 		};
 	} );
-
-	global.console.log( isSavingSettings );
 
 	useEffect( () => {
 		if ( answeredUntilIndex === -1 ) {
@@ -270,7 +268,6 @@ export default function UserInputQuestionnaire() {
 			{ activeSlug === 'preview' && (
 				<UserInputPreview
 					submitChanges={ submitChanges }
-					back={ back }
 					goTo={ goTo }
 					error={ error }
 				/>

@@ -17,6 +17,7 @@
  */
 
 export { activateAMPWithMode, setAMPMode } from './activate-amp-and-set-mode';
+export { activatePlugins } from './activate-plugins';
 export { clearSessionStorage } from './clear-session-storage';
 export { createWaitForFetchRequests } from './create-wait-for-fetch-requests';
 export { deactivateUtilityPlugins } from './deactivate-utility-plugins';
@@ -43,3 +44,4 @@ export { testSiteNotification } from './test-site-notification';
 export { useRequestInterception } from './use-request-interception';
 export { wpApiFetch } from './wp-api-fetch';
 export * from './features';
+export * from './step-and-screenshot';

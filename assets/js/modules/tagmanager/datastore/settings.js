@@ -67,8 +67,8 @@ export async function submitChanges( { select, dispatch } ) {
 			return { error };
 		}
 
-		await dispatch( STORE_NAME ).setContainerID( container.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
-		await dispatch( STORE_NAME ).setInternalContainerID( container.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
+		await dispatch( STORE_NAME ).setContainerID( container.publicId ); // eslint-disable-line sitekit/acronym-case
+		await dispatch( STORE_NAME ).setInternalContainerID( container.containerId ); // eslint-disable-line sitekit/acronym-case
 	}
 
 	const ampContainerID = select( STORE_NAME ).getAMPContainerID();
@@ -81,8 +81,8 @@ export async function submitChanges( { select, dispatch } ) {
 			return { error };
 		}
 
-		await dispatch( STORE_NAME ).setAMPContainerID( container.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
-		await dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
+		await dispatch( STORE_NAME ).setAMPContainerID( container.publicId ); // eslint-disable-line sitekit/acronym-case
+		await dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId ); // eslint-disable-line sitekit/acronym-case
 	}
 
 	// This action shouldn't be called if settings haven't changed,
@@ -92,6 +92,13 @@ export async function submitChanges( { select, dispatch } ) {
 
 		if ( error ) {
 			return { error };
+		}
+
+		// Fetch the latest settings in the Analytics store so that we can update
+		// the filtered value of canUseSnippet.
+		const analyticsModuleConnected = select( CORE_MODULES ).isModuleConnected( 'analytics' );
+		if ( analyticsModuleConnected ) {
+			await dispatch( MODULES_ANALYTICS ).fetchGetSettings();
 		}
 	}
 

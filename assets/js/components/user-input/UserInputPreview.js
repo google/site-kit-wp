@@ -43,7 +43,6 @@ const { useSelect } = Data;
 export default function UserInputPreview( props ) {
 	const {
 		noFooter,
-		back,
 		goTo,
 		submitChanges,
 		error,
@@ -114,8 +113,12 @@ export default function UserInputPreview( props ) {
 								<UserInputQuestionNotice />
 
 								<div className="googlesitekit-user-input__buttons">
-									<Button text onClick={ back }>{ __( 'Back', 'google-site-kit' ) }</Button>
-									<Button onClick={ submitChanges }>{ __( 'Submit', 'google-site-kit' ) }</Button>
+									<Button
+										className="googlesitekit-user-input__buttons--next"
+										onClick={ submitChanges }
+									>
+										{ __( 'Submit', 'google-site-kit' ) }
+									</Button>
 								</div>
 							</div>
 						) }
@@ -129,7 +132,6 @@ export default function UserInputPreview( props ) {
 UserInputPreview.propTypes = {
 	submitChanges: PropTypes.func,
 	noFooter: PropTypes.bool,
-	back: PropTypes.func,
 	goTo: PropTypes.func.isRequired,
 	redirectURL: PropTypes.string,
 	errors: PropTypes.object,

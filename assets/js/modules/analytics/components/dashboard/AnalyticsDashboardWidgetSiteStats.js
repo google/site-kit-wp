@@ -55,7 +55,8 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 			width: '100%',
 			chartArea: {
 				height: '80%',
-				width: '87%',
+				width: '100%',
+				left: 60,
 			},
 			legend: {
 				position: 'top',
@@ -99,7 +100,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 				trigger: 'both',
 			},
 			tooltip: {
-				isHtml: true, // eslint-disable-line sitekit/camelcase-acronyms
+				isHtml: true, // eslint-disable-line sitekit/acronym-case
 				trigger: 'both',
 			},
 		};

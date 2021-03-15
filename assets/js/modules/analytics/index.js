@@ -19,15 +19,11 @@
 /**
  * WordPress dependencies
  */
-import domReady from '@wordpress/dom-ready';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import Widgets from 'googlesitekit-widgets';
-import './datastore';
-import { STORE_NAME } from './datastore/constants';
 import {
 	AREA_DASHBOARD_ALL_TRAFFIC,
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
@@ -43,11 +39,14 @@ import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
 import AnalyticsIcon from '../../../svg/analytics.svg';
+import { STORE_NAME } from './datastore/constants';
+import { CONTEXT_MODULE_ANALYTICS, AREA_MODULE_ANALYTICS_MAIN } from './constants';
+import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 
-domReady( () => {
-	// IMPORTANT: When updating arguments here, also update the same call in
-	// `provideModuleRegistrations`.
-	Modules.registerModule(
+export { registerStore } from './datastore';
+
+export const registerModule = ( modules ) => {
+	modules.registerModule(
 		'analytics',
 		{
 			storeName: STORE_NAME,
@@ -55,14 +54,17 @@ domReady( () => {
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
 			Icon: AnalyticsIcon,
+			screenWidgetContext: CONTEXT_MODULE_ANALYTICS,
 		}
 	);
+};
 
-	Widgets.registerWidget(
+export const registerWidgets = ( widgets ) => {
+	widgets.registerWidget(
 		'analyticsAllTraffic',
 		{
 			Component: DashboardAllTrafficWidget,
-			width: Widgets.WIDGET_WIDTHS.FULL,
+			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
 		},
@@ -72,11 +74,11 @@ domReady( () => {
 		],
 	);
 
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'analyticsUniqueVisitors',
 		{
 			Component: DashboardUniqueVisitorsWidget,
-			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 3,
 			wrapWidget: true,
 		},
@@ -86,11 +88,11 @@ domReady( () => {
 		],
 	);
 
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'analyticsGoals',
 		{
 			Component: DashboardGoalsWidget,
-			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 4,
 			wrapWidget: true,
 		},
@@ -99,11 +101,11 @@ domReady( () => {
 		],
 	);
 
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'analyticsBounceRate',
 		{
 			Component: DashboardBounceRateWidget,
-			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 4,
 			wrapWidget: true,
 		},
@@ -112,11 +114,11 @@ domReady( () => {
 		],
 	);
 
-	Widgets.registerWidget(
+	widgets.registerWidget(
 		'analyticsPopularPages',
 		{
 			Component: DashboardPopularPagesWidget,
-			width: Widgets.WIDGET_WIDTHS.HALF,
+			width: widgets.WIDGET_WIDTHS.HALF,
 			priority: 2,
 			wrapWidget: false,
 		},
@@ -124,4 +126,14 @@ domReady( () => {
 			AREA_DASHBOARD_POPULARITY,
 		],
 	);
-} );
+
+	widgets.registerWidgetArea(
+		AREA_MODULE_ANALYTICS_MAIN,
+		{
+			priority: 1,
+			style: WIDGET_AREA_STYLES.BOXES,
+			title: __( 'Overview', 'google-site-kit' ),
+		},
+		CONTEXT_MODULE_ANALYTICS,
+	);
+};

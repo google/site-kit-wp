@@ -17,38 +17,21 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import Link from '../Link';
-import LegacyWPDashboardModules from './LegacyWPDashboardModules';
-import WPDashboardImpressions from './WPDashboardImpressions';
-import WPDashboardClicks from './WPDashboardClicks';
-import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
-import WPDashboardSessionDuration from './WPDashboardSessionDuration';
-import ActivateModuleCTA from '../ActivateModuleCTA';
-import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
+import WPDashboardWidgets from './WPDashboardWidgets';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 const WPDashboardApp = () => {
-	const widgetsWPDashboardEnabled = useFeature( 'widgets.wpDashboard' );
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
-	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
-	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
 
 	if ( dashboardURL === undefined ) {
 		return null;
@@ -61,32 +44,7 @@ const WPDashboardApp = () => {
 					{ __( 'Visit your Site Kit Dashboard', 'google-site-kit' ) }
 				</Link>
 			</div>
-			{ widgetsWPDashboardEnabled && (
-				<div className={ classnames(
-					'googlesitekit-wp-dashboard-stats',
-					{ 'googlesitekit-wp-dashboard-stats--fourup': analyticsModuleActive && analyticsModuleConnected }
-				) }>
-					{ analyticsModuleActive && analyticsModuleConnected && (
-						<Fragment>
-							<WPDashboardUniqueVisitors />
-							<WPDashboardSessionDuration />
-						</Fragment>
-					) }
-					<WPDashboardImpressions />
-					<WPDashboardClicks />
-					{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
-						<div className="googlesitekit-wp-dashboard-stats__cta">
-							{ ! analyticsModuleActive && (
-								<ActivateModuleCTA moduleSlug="analytics" />
-							) }
-							{ analyticsModuleActive && (
-								<CompleteModuleActivationCTA moduleSlug="analytics" />
-							) }
-						</div>
-					) }
-				</div>
-			) }
-			<LegacyWPDashboardModules />
+			<WPDashboardWidgets />
 		</div>
 	);
 };

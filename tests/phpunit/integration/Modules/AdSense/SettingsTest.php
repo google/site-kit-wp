@@ -63,6 +63,7 @@ class SettingsTest extends SettingsTestCase {
 				'siteSetupComplete'    => false,
 				'useSnippet'           => true,
 				'ownerID'              => 0,
+				'webStoriesAdUnit'     => '',
 			),
 			get_option( Settings::OPTION )
 		);
