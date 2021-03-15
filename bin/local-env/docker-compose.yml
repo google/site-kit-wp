@@ -21,6 +21,10 @@ services:
       - mysql
     networks:
       - internal_network
+    extra_hosts:
+      - "sitekit.withgoogle.com:127.0.0.1"
+      - "www.googleapis.com:127.0.0.1"
+      - "searchconsole.googleapis.com:127.0.0.1"
 
   http_proxy:
     image: nginx
