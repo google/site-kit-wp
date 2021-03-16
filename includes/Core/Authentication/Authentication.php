@@ -159,6 +159,14 @@ final class Authentication {
 	protected $has_connected_admins;
 
 	/**
+	 * Has_Multiple_Admins instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Has_Multiple_Admins
+	 */
+	protected $has_multiple_admins;
+
+	/**
 	 * Connected_Proxy_URL instance.
 	 *
 	 * @since 1.17.0
@@ -227,6 +235,7 @@ final class Authentication {
 		$this->profile              = new Profile( $this->user_options );
 		$this->owner_id             = new Owner_ID( $this->options );
 		$this->has_connected_admins = new Has_Connected_Admins( $this->options, $this->user_options );
+		$this->has_multiple_admins  = new Has_Multiple_Admins( $this->transients );
 		$this->connected_proxy_url  = new Connected_Proxy_URL( $this->options );
 		$this->disconnected_reason  = new Disconnected_Reason( $this->user_options );
 		$this->initial_version      = new Initial_Version( $this->user_options );
@@ -813,6 +822,7 @@ final class Authentication {
 								'resettable'         => $this->options->has( Credentials::OPTION ),
 								'setupCompleted'     => $this->is_setup_completed(),
 								'hasConnectedAdmins' => $this->has_connected_admins->get(),
+								'hasMultipleAdmins'  => $this->has_multiple_admins->get(),
 								'ownerID'            => $this->owner_id->get(),
 							);
 
