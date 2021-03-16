@@ -22,6 +22,7 @@ jobs:
   build:
     name: Check
     runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
     steps:
       - uses: preactjs/compressed-size-action@v2
         with:
