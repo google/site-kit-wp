@@ -135,7 +135,7 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 						name={ max === 1 ? slug : `${ slug }-other` }
 						value={ other }
 						checked={ values.includes( other.trim() ) }
-						disabled={ max > 1 && values.length >= max && ! values.includes( other ) }
+						disabled={ max > 1 && values.length >= max && ! values.includes( other.trim() ) }
 						{ ...onClickProps }
 					>
 						{ __( 'Other:', 'google-site-kit' ) }
