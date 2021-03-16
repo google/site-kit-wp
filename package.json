@@ -24,7 +24,6 @@
     "pretest": "npm run build:production -- --display=none",
     "pretest:visualtest": "npm run build:storybook",
     "test": "npm run test:js:watch",
-    "test:bundlesize": "bundlesize",
     "test:visualtest": "npm run backstopjs -- --storybook-host=./dist/",
     "test:visualapprove": "backstop approve --config=tests/backstop/config.js",
     "test:analyze": "npm run build:production -- --env.analyze=true --json --progress --profile > /tmp/stats.json && cp ./dist/assets/js/*.js /tmp && webpack-bundle-analyzer /tmp/stats.json",
@@ -48,16 +47,6 @@
   },
   "browserslist": [
     "extends @wordpress/browserslist-config"
-  ],
-  "bundlesize": [
-    {
-      "path": "./dist/*.js",
-      "maxSize": "270 kB"
-    },
-    {
-      "path": "./dist/assets/js/googlesitekit-*.js",
-      "maxSize": "280 kB"
-    }
   ],
   "repository": {
     "type": "git",
@@ -177,7 +166,6 @@
     "babel-loader": "^8.1.0",
     "babel-plugin-lodash": "^3.3.4",
     "backstopjs": "~4.4.0",
-    "bundlesize": "^0.18.0",
     "circular-dependency-plugin": "^5.2.0",
     "create-file-webpack": "^1.0.2",
     "css-loader": "^3.6.0",
