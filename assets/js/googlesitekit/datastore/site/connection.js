@@ -164,6 +164,20 @@ const baseSelectors = {
 
 		return typeof connection !== 'undefined' ? connection.setupCompleted : connection;
 	} ),
+
+	/**
+	 * Gets the Site Kit information about admin users.
+	 *
+	 * Returns `true` if the site has multiple admins, `false` if it has just one admin.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} Multiple admins status.
+	 */
+	hasMultipleAdmins: createRegistrySelector( ( select ) => () => {
+		return select( STORE_NAME ).getConnection()?.hasMultipleAdmins;
+	} ),
 };
 
 const store = Data.combineStores(
