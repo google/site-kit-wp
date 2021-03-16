@@ -22,16 +22,6 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-/**
- * WordPress dependencies
- */
-import { useCallback } from '@wordpress/element';
-
-/**
- * Internal dependencies
- */
-import { MDCFormField, MDCCheckbox } from '../material-components';
-
 const Checkbox = ( {
 	onChange,
 	id,
@@ -41,19 +31,8 @@ const Checkbox = ( {
 	disabled,
 	children,
 } ) => {
-	const formFieldRef = useCallback( ( el ) => {
-		if ( el !== null ) {
-			const formField = new MDCFormField( el );
-			const checkboxEl = el.querySelector( '.mdc-checkbox' );
-
-			if ( checkboxEl ) {
-				formField.input = new MDCCheckbox( checkboxEl );
-			}
-		}
-	}, [] );
-
 	return (
-		<div className="mdc-form-field" ref={ formFieldRef }>
+		<div className="mdc-form-field">
 			<div
 				className={ classnames(
 					'mdc-checkbox',

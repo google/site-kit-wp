@@ -36,7 +36,8 @@ import UserInputQuestionnaire from './UserInputQuestionnaire';
 const { useSelect } = Data;
 
 export default function UserInputApp() {
-	const userInputEnabled = useFeature( 'userInput' );
+	let userInputEnabled = useFeature( 'userInput' );
+	userInputEnabled = true;
 	const { hasFinishedGettingInputSettings } = useSelect( ( select ) => ( {
 		userInputSettings: select( CORE_USER ).getUserInputSettings(), // This will be used in the children components.
 		hasFinishedGettingInputSettings: select( CORE_USER ).hasFinishedResolution( 'getUserInputSettings' ),
