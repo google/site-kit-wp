@@ -41,3 +41,4 @@ jobs:
         uses: preactjs/compressed-size-action@v2
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          pattern: "./dist/assets/**/*.{css,js}"
