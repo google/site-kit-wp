@@ -30,9 +30,14 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numFmt } from '../../../../util';
+import { numFmt } from '../../../../util';
 import { getDataTableFromData } from '../../../../components/data-table';
-import { STORE_NAME } from '../../datastore/constants';
+import Link from '../../../../components/Link';
+import PreviewTable from '../../../../components/PreviewTable';
+import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import isZeroReport from '../../../search-console/util/is-zero-report';
 const { useSelect } = Data;
 
 function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
@@ -42,31 +47,51 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 	// 	return null;
 	// }
 
-	const reportArgs = {
-
-	};
-
 	const {
 		data,
 		isLoading,
 		error,
+		serviceURL,
 	} = useSelect( ( select ) => {
-		const data = select( STORE_NAME ).getReport( reportArgs );
-		const isLoading = select( STORE_NAME ).hasFinishedResolution();
-		const error = select( STORE_NAME ).getErrorForSelector(); select( STORE_NAME ).getReport( reportArgs );
-		const href = '/';
-		const serviceURL = select( STORE_NAME ).getServiceReportURL( 'content-pages', {
-			'explorer-table.plotKeys': '[]',
-			'_r.drilldown': `analytics.pagePath:${ href }`,
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
 		} );
+		const reportArgs = {
+			startDate,
+			endDate,
+			dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+			metrics: [
+				{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
+				{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
+				{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
+			],
+			orderby: {
+				fieldName: 'ga:adsenseRevenue',
+				sortOrder: 'DESCENDING',
+			},
+			limit: 10,
+		};
+
+		const href = '/';
 
 		return {
-			data,
-			error,
-			isLoading,
-			serviceURL,
+			data: select( MODULES_ANALYTICS ).getReport( reportArgs ),
+			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ),
+			isLoading: select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ),
+			serviceURL: select( STORE_NAME ).getServiceReportURL( 'content-pages', {
+				'explorer-table.plotKeys': '[]',
+				'_r.drilldown': `analytics.pagePath:${ href }`,
+			} ),
 		};
 	} );
+
+	if ( error ) {
+		return <WidgetReportError error={ error } moduleSlug="adsense" />;
+	}
+
+	if ( isLoading ) {
+		return <PreviewTable padding />;
+	}
 
 	const { rows } = data?.[ 0 ]?.data || {};
 	if ( ! Array.isArray( rows ) ) {
@@ -118,17 +143,7 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 		hideHeader: false,
 		chartsEnabled: false,
 		links: rows.map( ( row ) => row.dimensions[ 1 ] || '/' ),
-		PrimaryLink: withSelect( ( select, { href = '/' } ) => {
-			const serviceURL = select( STORE_NAME ).getServiceReportURL( 'content-pages', {
-				'explorer-table.plotKeys': '[]',
-				'_r.drilldown': `analytics.pagePath:${ href }`,
-			} );
-
-			return {
-				href: serviceURL,
-				external: true,
-			};
-		} )( Link ),
+		PrimaryLink: <Link href={ serviceURL } external />,
 	};
 
 	const dataTable = getDataTableFromData( dataMapped, headers, options );
@@ -143,9 +158,9 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 }
 
 ModuleTopEarningPagesWidget.propTypes = {
-	Widget: PropTypes.element.isRequired,
-	WidgetReportZero: PropTypes.element.isRequired,
-	WidgetReportError: PropTypes.element.isRequired,
+	// Widget: PropTypes.element.isRequired,
+	// WidgetReportZero: PropTypes.element.isRequired,
+	// WidgetReportError: PropTypes.element.isRequired,
 };
 
 export default ModuleTopEarningPagesWidget;

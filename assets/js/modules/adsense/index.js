@@ -38,6 +38,7 @@ import {
 	DashboardSummaryWidget,
 	DashboardTopEarningPagesWidget,
 } from './components/dashboard';
+import ModuleTopEarningPagesWidget from './components/module/ModuleTopEarningPagesWidget';
 import AdSenseIcon from '../../../svg/adsense.svg';
 import { STORE_NAME } from './datastore/constants';
 import { ERROR_CODE_ADBLOCKER_ACTIVE, CONTEXT_MODULE_ADSENSE, AREA_MODULE_ADSENSE_MAIN } from './constants';
@@ -118,5 +119,16 @@ export const registerWidgets = ( widgets ) => {
 			title: __( 'Overview', 'google-site-kit' ),
 		},
 		CONTEXT_MODULE_ADSENSE,
+	);
+
+	widgets.registerWidget(
+		'adsenseModuleTopEarningPages',
+		{
+			Component: ModuleTopEarningPagesWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 2,
+			wrapWidget: false,
+		},
+		[ AREA_MODULE_ADSENSE_MAIN ],
 	);
 };
