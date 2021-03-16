@@ -55,7 +55,7 @@ const baseActions = {
 	/**
 	 * Sets user tracking settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.28.0
 	 *
 	 * @param {boolean} enabled Tracking status.
 	 * @return {Object} Object with `response` and `error`.
@@ -109,7 +109,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the user tracking settings are being saved or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.28.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the user tracking settings are being saved, otherwise FALSE.
@@ -121,7 +121,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the user tracking is enabled or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.28.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} TRUE if user tracking enabled, otherwise FALSE.

@@ -40,6 +40,6 @@ jobs:
       - name: Build JS (Production Version, with tests)
         run: npm run build:test
       - name: Bundlesize
-        run: npm run test:bundlesize
-        env:
-          BUNDLESIZE_GITHUB_TOKEN: ${{ secrets.BUNDLESIZE_GITHUB_TOKEN }}
+        uses: preactjs/compressed-size-action@v2
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
