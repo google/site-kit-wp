@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback, useRef } from '@wordpress/element';
+import { useCallback, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ENTER, BACKSPACE } from '@wordpress/keycodes';
 
@@ -42,6 +42,7 @@ const { useSelect, useDispatch } = Data;
 
 export default function UserInputKeywords( { slug, max } ) {
 	const keywordsContainer = useRef();
+	const [ canDeleteKeyword, setCanDeleteKeyword ] = useState( false );
 
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
 	const { setUserInputSetting } = useDispatch( CORE_USER );
@@ -85,18 +86,9 @@ export default function UserInputKeywords( { slug, max } ) {
 		] );
 	}, dependencies );
 
-	const onKeyDown = useCallback( ( index, { keyCode } ) => {
+	const onKeyDown = useCallback( ( index, { keyCode, target } ) => {
 		const nonEmptyValues = values.filter( ( value ) => value.length > 0 );
 		const nonEmptyValuesLength = nonEmptyValues.length;
-
-		// if the length is than 3 and the BACKSPACE key is pressed, call the deleteKeyword function passing nonEmptyValuesLength - 1 as the index to delete.
-		if ( nonEmptyValuesLength < 3 && keyCode === BACKSPACE ) {
-			deleteKeyword( nonEmptyValuesLength - 1 );
-			// set the focus to the input text again using the same logic when the ENTER or COMMA keys are pressed, but this time, having the following selector:
-			setTimeout( () =>
-				focusInput( `#${ slug }-keyword-${ nonEmptyValuesLength - 1 }` )
-			, 50 );
-		}
 
 		if ( ( keyCode === ENTER || keyCode === COMMA ) && nonEmptyValues.length < max ) {
 			updateKeywords( [
@@ -105,11 +97,28 @@ export default function UserInputKeywords( { slug, max } ) {
 				...values.slice( index + 1 ),
 			] );
 
+			setCanDeleteKeyword( true ); // New keyword has been added, so hitting backspace now will remove it
 			setTimeout( () =>
 				focusInput( `#${ slug }-keyword-${ index + 1 }` )
 			, 50 );
 		}
-	}, [ keywordsContainer.current, ...dependencies ] );
+
+		if ( keyCode === BACKSPACE && canDeleteKeyword ) {
+			deleteKeyword( nonEmptyValuesLength - 1 );
+			setTimeout( () =>
+				focusInput( `#${ slug }-keyword-${ nonEmptyValuesLength - 1 }` )
+			, 50 );
+		}
+
+		if ( target.value.length <= 1 && keyCode === BACKSPACE ) {
+			// user deleted the only character, or just landed in this input after
+			// deleting a keyword so hitting backspace again should delete the previous keyword
+			setCanDeleteKeyword( true );
+		} else {
+			// user is typing, so backspace should delete the last character
+			setCanDeleteKeyword( false );
+		}
+	}, [ keywordsContainer.current, ...dependencies, canDeleteKeyword ] );
 
 	const focusInput = ( querySelector ) => {
 		const input = keywordsContainer.current.querySelector( querySelector );
@@ -127,7 +136,9 @@ export default function UserInputKeywords( { slug, max } ) {
 			...values.slice( 0, index ),
 			...values.slice( index + 1 ),
 		] );
-	}, dependencies );
+		// After deleting a keyword, hitting backspace will delete the next keyword
+		setCanDeleteKeyword( true );
+	}, dependencies, canDeleteKeyword );
 
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
