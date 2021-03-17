@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -29,24 +29,23 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import Data from 'googlesitekit-data';
 import Layout from '../layout/Layout';
 import SettingsModule from './settings-module';
-import { Cell } from '../../material-components';
 const { useDispatch, useSelect } = Data;
 
 const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) => {
 	const { submitChanges } = useDispatch( CORE_MODULES );
 	const [ error, setError ] = useState( false );
 	const [ isSaving, setIsSaving ] = useState( false );
-	const modulesData = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
+	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 
-	const onEdit = useCallback( ( slug ) => {
+	const onEdit = ( slug ) => {
 		setModuleState( slug, 'edit' );
-	}, [] );
+	};
 
-	const onCancel = useCallback( ( slug ) => {
+	const onCancel = ( slug ) => {
 		setModuleState( slug, 'view' );
-	}, [] );
+	};
 
-	const onConfirm = useCallback( async ( slug ) => {
+	const onConfirm = async ( slug ) => {
 		setIsSaving( true );
 
 		const { error: submissionError } = await submitChanges( slug );
@@ -59,9 +58,9 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 		} else {
 			setError( submissionError );
 		}
-	}, [] );
+	};
 
-	const handleAccordion = useCallback( ( module, e ) => {
+	const handleAccordion = ( module, e ) => {
 		// Set focus on heading when clicked.
 		e.target.closest( '.googlesitekit-settings-module__header' ).focus();
 
@@ -72,42 +71,40 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 			module,
 			isOpen ? 'view' : 'closed',
 		);
-	}, [ activeModule ] );
+	};
 
-	if ( ! modulesData ) {
+	if ( ! modules ) {
 		return null;
 	}
 
-	const modules = Object.values( modulesData )
+	const sortedModules = Object.values( modules )
 		.filter( ( module ) => ! module.internal && module.active )
 		.sort( ( module1, module2 ) => module1.sort - module2.sort );
 
 	return (
-		<Cell size={ 12 }>
-			<Layout>
-				{ modules.map( ( module ) => (
-					<SettingsModule
-						key={ module.slug + '-module' }
-						slug={ module.slug }
-						name={ module.name }
-						description={ module.description }
-						homepage={ module.homepage }
-						active={ module.active }
-						setupComplete={ module.active && module.connected }
-						onEdit={ onEdit }
-						onConfirm={ onConfirm }
-						onCancel={ onCancel }
-						isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
-						isOpen={ activeModule === module.slug && moduleState !== 'closed' }
-						handleAccordion={ handleAccordion }
-						isSaving={ isSaving }
-						provides={ module.features }
-						error={ error }
-						autoActivate={ module.forceActive }
-					/>
-				) ) }
-			</Layout>
-		</Cell>
+		<Layout>
+			{ sortedModules.map( ( module ) => (
+				<SettingsModule
+					key={ module.slug }
+					slug={ module.slug }
+					name={ module.name }
+					description={ module.description }
+					homepage={ module.homepage }
+					active={ module.active }
+					setupComplete={ module.active && module.connected }
+					onEdit={ onEdit }
+					onConfirm={ onConfirm }
+					onCancel={ onCancel }
+					isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
+					isOpen={ activeModule === module.slug && moduleState !== 'closed' }
+					handleAccordion={ handleAccordion }
+					isSaving={ isSaving }
+					provides={ module.features }
+					error={ error }
+					autoActivate={ module.forceActive }
+				/>
+			) ) }
+		</Layout>
 	);
 };
 

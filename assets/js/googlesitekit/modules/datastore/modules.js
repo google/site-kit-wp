@@ -845,13 +845,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		// A module with this slug couldn't be found; return `null` to signify the
-		// "not found" state.
-		if ( modules[ slug ] === undefined ) {
-			return null;
-		}
-
-		return Array.isArray( modules[ slug ].features ) ? modules[ slug ].features : [];
+		return Array.isArray( modules[ slug ]?.features ) ? modules[ slug ].features : [];
 	} ),
 };
 

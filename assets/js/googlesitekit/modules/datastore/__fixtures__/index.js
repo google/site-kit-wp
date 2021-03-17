@@ -32,7 +32,7 @@ import modules from './list.json';
 export function withActive( ...slugs ) {
 	return modules.map( ( module ) => ( {
 		...module,
-		active: module.forceActive || ( slugs?.includes( module.slug ) || false ),
+		active: module.forceActive || ( slugs.includes( module.slug ) ),
 	} ) );
 }
 
@@ -47,7 +47,7 @@ export function withActive( ...slugs ) {
 export function withConnected( ...slugs ) {
 	return withActive( ...slugs ).map( ( module ) => ( {
 		...module,
-		connected: module.forceActive || ( slugs?.includes( module.slug ) || false ),
+		connected: slugs.includes( module.slug ),
 	} ) );
 }
 

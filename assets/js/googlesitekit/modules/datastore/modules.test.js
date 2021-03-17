@@ -799,5 +799,53 @@ describe( 'core/modules modules', () => {
 				expect( isConnected ).toBeUndefined();
 			} );
 		} );
+
+		describe( 'getModuleFeatures', () => {
+			it( 'returns undefined when no modules are loaded', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+				const slug = 'analytics';
+				const featuresLoaded = registry.select( STORE_NAME ).getModuleFeatures( slug );
+
+				// The modules will be undefined whilst loading.
+				expect( featuresLoaded ).toBeUndefined();
+			} );
+
+			it( `returns features when modules are loaded`, async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+				const slug = 'analytics';
+				registry.select( STORE_NAME ).getModuleFeatures( slug );
+
+				// Wait for loading to complete.
+				await untilResolved( registry, STORE_NAME ).getModules();
+
+				const featuresLoaded = registry.select( STORE_NAME ).getModuleFeatures( slug );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( featuresLoaded ).toMatchObject( fixturesKeyValue[ slug ].features );
+			} );
+
+			it( `returns an empty array when requesting features for a non-existent module`, async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+				const slug = 'non-existent-slug';
+				registry.select( STORE_NAME ).getModuleFeatures( slug );
+
+				// Wait for loading to complete.
+				await untilResolved( registry, STORE_NAME ).getModules();
+
+				const namesLoaded = registry.select( STORE_NAME ).getModuleFeatures( slug );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( namesLoaded ).toMatchObject( {} );
+			} );
+		} );
 	} );
 } );

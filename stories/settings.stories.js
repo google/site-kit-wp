@@ -39,6 +39,7 @@ import SettingsAdmin from '../assets/js/components/settings/SettingsAdmin';
 import { provideModuleRegistrations, provideModules, provideSiteInfo, WithTestRegistry, untilResolved } from '../tests/js/utils';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { withConnected } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
 
 /**
  * Add components to the settings page.
@@ -70,23 +71,7 @@ storiesOf( 'Settings', module )
 	} )
 	.add( 'Connected Services', () => {
 		const setupRegistry = ( registry ) => {
-			provideModules( registry, [
-				{
-					slug: 'adsense',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'analytics',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'pagespeed-insights',
-					active: true,
-					connected: true,
-				},
-			] );
+			registry.dispatch( CORE_MODULES ).receiveGetModules( withConnected( 'adsense', 'analytics', 'pagespeed-insights' ) );
 			provideModuleRegistrations( registry );
 		};
 

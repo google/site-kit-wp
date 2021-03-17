@@ -44,43 +44,30 @@ describe( 'SettingsApp', () => {
 		provideModules( registry, [
 			{
 				slug: 'analytics',
-				name: 'Analytics',
 				active: true,
 				connected: true,
-				setupComplete: true,
 				SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
 			},
 			{
 				slug: 'optimize',
-				name: 'Optimize',
 				active: true,
 				connected: true,
-				setupComplete: true,
-				SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
 			},
 			{
 				slug: 'tagmanager',
-				name: 'Tag Manager',
 				active: true,
 				connected: true,
-				setupComplete: true,
-				SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
 			},
 			{
 				slug: 'adsense',
-				name: 'AdSense',
 				active: true,
 				connected: true,
-				setupComplete: true,
-				SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
 			},
 			{
 				slug: 'pagespeed-insights',
-				name: 'PageSpeed Insights',
 				active: true,
 				connected: true,
 				setupComplete: true,
-				SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
 			},
 		] );
 

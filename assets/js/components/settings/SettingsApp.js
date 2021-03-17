@@ -126,17 +126,21 @@ export default function SettingsApp() {
 
 						{
 							activeTabID === 'settings' && (
-								<SettingsActiveModules
-									activeModule={ moduleSlug }
-									moduleState={ moduleState }
-									setModuleState={ setModuleState }
-								/>
+								<Cell size={ 12 }>
+									<SettingsActiveModules
+										activeModule={ moduleSlug }
+										moduleState={ moduleState }
+										setModuleState={ setModuleState }
+									/>
+								</Cell>
 							)
 						}
 
 						{
 							activeTabID === 'connect' && (
-								<SettingsInactiveModules />
+								<Cell size={ 12 }>
+									<SettingsInactiveModules />
+								</Cell>
 							)
 						}
 

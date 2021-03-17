@@ -46,44 +46,40 @@ const SettingsInactiveModules = () => {
 
 	if ( ! modules.length ) {
 		return (
-			<Cell size={ 12 }>
-				<Notification
-					id="no-more-modules"
-					title={ __( 'Congrats, you’ve connected all services!', 'google-site-kit' ) }
-					description={ __( 'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future.', 'google-site-kit' ) }
-					format="small"
-					SmallImageSVG={ ThumbsUpSVG }
-					type="win-success"
-				/>
-			</Cell>
+			<Notification
+				id="no-more-modules"
+				title={ __( 'Congrats, you’ve connected all services!', 'google-site-kit' ) }
+				description={ __( 'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future.', 'google-site-kit' ) }
+				format="small"
+				SmallImageSVG={ ThumbsUpSVG }
+				type="win-success"
+			/>
 		);
 	}
 
 	return (
-		<Cell size={ 12 }>
-			<Layout
-				header
-				title={ __( 'Connect More Services to Gain More Insights', 'google-site-kit' ) }
-				relative
-			>
-				<Grid>
-					<Row>
-						{ modules.map( ( module ) => (
-							<Cell
-								key={ module.slug + '-module-wrapper' }
-								size={ 4 }
-							>
-								<SetupModule
-									slug={ module.slug }
-									name={ module.name }
-									description={ module.description }
-								/>
-							</Cell>
-						) ) }
-					</Row>
-				</Grid>
-			</Layout>
-		</Cell>
+		<Layout
+			header
+			title={ __( 'Connect More Services to Gain More Insights', 'google-site-kit' ) }
+			relative
+		>
+			<Grid>
+				<Row>
+					{ modules.map( ( module ) => (
+						<Cell
+							key={ module.slug }
+							size={ 4 }
+						>
+							<SetupModule
+								slug={ module.slug }
+								name={ module.name }
+								description={ module.description }
+							/>
+						</Cell>
+					) ) }
+				</Row>
+			</Grid>
+		</Layout>
 	);
 };
 
