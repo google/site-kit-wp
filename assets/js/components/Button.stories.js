@@ -24,7 +24,6 @@ import Button from './Button';
 export const DefaultButton = () =>
 	<Button>Default Button</Button>;
 DefaultButton.storyName = 'Default button';
-
 export const DefaultButtonWithHover = () =>
 	<Button className="googlesitekit-button--hover">VRT: Default Button Hover</Button>;
 DefaultButtonWithHover.storyName = 'Default button with hover';
