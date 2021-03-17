@@ -18,8 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      # See https://github.com/marketplace/actions/cancel-workflow-action#advanced
-      - uses: styfle/cancel-workflow-action@0.6.0
+      - name: Get all workflow ids and set to env variable
+        run: echo "WORKFLOW_IDS_TO_CANCEL=$(curl https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows -s | jq -r '.workflows | map(.id|tostring) | join(",")')" >> $GITHUB_ENV
+
+      - uses: styfle/cancel-workflow-action@0.8.0
         with:
-          workflow_id: compressed-size.yml,e2e-tests-wp-4-7.yml,e2e-tests-wp-4-9-gutenberg.yml,e2e-tests-wp-latest.yml,e2e-tests-wp-nightly.yml,js-css-lint.yml,js-tests.yml,php-lint.yml,php-tests-wp-4-7-php-5-6.yml,php-tests-wp-latest-multisite-php-7-4.yml,php-tests-wp-latest-php-7-4.yml,php-tests-wp-latest-php-8-0.yml,php-tests-wp-nightly-php-7-4.yml,storybook.yml,visual-regression.yml,zips.yml
+          workflow_id: ${{ env.WORKFLOW_IDS_TO_CANCEL }}
           access_token: ${{ github.token }}
