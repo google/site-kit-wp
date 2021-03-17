@@ -23,13 +23,15 @@ import { createTestRegistry } from './utils';
  * Renders the given UI into a container to make assertions.
  *
  * @since 1.7.1
+ * @since 1.25.0 Added `features` option.
  * @see {@link https://testing-library.com/docs/react-testing-library/api#render}
  * @private
  *
- * @param {*}        ui                    Any valid React child element.
- * @param {Object}   options               Render options.
- * @param {Function} options.setupRegistry A function which accepts the registry instance to configure it.
- * @param {Function} options.registry      A specific registry instance to use. Defaults to a fresh test registry with all stores.
+ * @param {*}        ui                      Any valid React child element.
+ * @param {Object}   [options]               Optional. Render options.
+ * @param {string[]} [options.features]      Feature flags to enable for this hook render.
+ * @param {Function} [options.setupRegistry] A function which accepts the registry instance to configure it.
+ * @param {Object}   [options.registry]      A specific registry instance to use. Defaults to a fresh test registry with all stores.
  * @return {Object} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result} as well as the `registry`.
  */
 const customRender = ( ui, options = {} ) => {

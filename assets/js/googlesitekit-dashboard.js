@@ -32,6 +32,7 @@ import ModuleSetup from './components/setup/ModuleSetup';
 import DashboardApp from './components/dashboard/DashboardApp';
 import NotificationCounter from './components/legacy-notifications/notification-counter';
 import './components/legacy-notifications';
+import { VIEW_CONTEXT_DASHBOARD } from './googlesitekit/constants';
 
 const GoogleSitekitDashboard = () => {
 	const { showModuleSetupWizard, moduleToSetup } = global._googlesitekitLegacyData.setup;
@@ -57,6 +58,14 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard' );
 
 	if ( renderTarget ) {
-		render( <Root dataAPIContext="Dashboard"><GoogleSitekitDashboard /></Root>, renderTarget );
+		render(
+			<Root
+				viewContext={ VIEW_CONTEXT_DASHBOARD }
+				dataAPIContext="Dashboard"
+			>
+				<GoogleSitekitDashboard />
+			</Root>,
+			renderTarget
+		);
 	}
 } );
