@@ -33,7 +33,8 @@ function HelpMenuLink( { children, href } ) {
 				className="mdc-list-item__text"
 				href={ href }
 				external
-				hideExternalIndicator inherit
+				hideExternalIndicator
+				inherit
 			>
 				{ children }
 			</Link>

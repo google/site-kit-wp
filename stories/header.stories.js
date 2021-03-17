@@ -53,7 +53,7 @@ storiesOf( 'Global', module )
 			</WithTestRegistry>
 		);
 	} )
-	.add( 'Plugin Header with Help Menu ', ( registry ) => {
+	.add( 'Plugin Header with Help Menu', ( registry ) => {
 		return (
 			<WithTestRegistry features={ [ 'helpVisibility', 'storeErrorNotifications' ] } registry={ registry }>
 				<Header>

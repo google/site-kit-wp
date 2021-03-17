@@ -29,7 +29,7 @@ export default function PageFooter() {
 
 	return (
 		<div className="googlesitekit-page-footer">
-			{ ! helpVisibilityEnabled && ( <HelpLink /> ) }
+			{ ! helpVisibilityEnabled && <HelpLink /> }
 		</div>
 	);
 }

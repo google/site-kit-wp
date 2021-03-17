@@ -83,7 +83,7 @@ function HelpMenu( { children } ) {
 				<Menu
 					ref={ menuRef }
 					menuOpen={ menuOpen }
-					id="help-menu"
+					id="googlesitekit-help-menu"
 				>
 					{ children }
 					<HelpMenuLink href="https://sitekit.withgoogle.com/documentation/fix-common-issues/">
