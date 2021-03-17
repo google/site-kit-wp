@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useLocalStorage, useMount } from 'react-use';
+import { useMount } from 'react-use';
 import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
 import PropTypes from 'prop-types';
 
@@ -34,6 +34,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import TourTooltip from './TourTooltip';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 const { useSelect, useDispatch } = Data;
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
@@ -73,10 +74,13 @@ export default function TourTooltips( { steps, tourID } ) {
 	const stepKey = `${ tourID }-step`;
 	const runKey = `${ tourID }-run`;
 	const { setValue } = useDispatch( CORE_UI );
-	const [ shouldSkipTour, setShouldSkipTour ] = useLocalStorage( `sitekit-${ tourID }__has-encountered-tour` );
+	const { dismissTour } = useDispatch( CORE_USER );
 
 	const stepIndex = useSelect( ( select ) => select( CORE_UI ).getValue( stepKey ) );
-	const run = useSelect( ( select ) => select( CORE_UI ).getValue( runKey ) || false );
+	const run = useSelect( ( select ) => {
+		return select( CORE_UI ).getValue( runKey ) &&
+			select( CORE_USER ).isTourDismissed( tourID ) === false;
+	} );
 
 	const changeStep = ( index, action ) => setValue(
 		stepKey,
@@ -84,16 +88,12 @@ export default function TourTooltips( { steps, tourID } ) {
 	);
 
 	const startTour = () => {
-		// Checks if user has completed or skipped tour already, do not re-run tour if so.
-		if ( ! shouldSkipTour ) {
-			setValue( runKey, true );
-		}
+		setValue( runKey, true );
 	};
 
 	const endTour = () => {
-		// Add to localStorage to avoid unwanted repeat viewing.
-		setShouldSkipTour( true );
-		setValue( runKey, false );
+		// Dismiss tour to avoid unwanted repeat viewing.
+		dismissTour( tourID );
 	};
 
 	/**
@@ -112,13 +112,22 @@ export default function TourTooltips( { steps, tourID } ) {
 	 * @param {JoyrideCallbackData} data Data object provided via `react-joyride` callback prop.
 	 */
 	const handleJoyrideCallback = ( data ) => {
-		const { action, index, status, type } = data;
+		const { action, index, status, step, type } = data;
 
 		const hasCloseAction = action === ACTIONS.CLOSE;
 		const shouldChangeStep = ! hasCloseAction && [ EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND ].includes( type );
 		const isFinishedOrSkipped = [ STATUS.FINISHED, STATUS.SKIPPED ].includes( status );
 		const shouldCloseFromButtonClick = hasCloseAction && type === EVENTS.STEP_AFTER;
 		const shouldEndTour = isFinishedOrSkipped || shouldCloseFromButtonClick;
+
+		// Center the target in the viewport when transitioning to the step.
+		if ( EVENTS.STEP_BEFORE === type ) {
+			let el = step.target;
+			if ( 'string' === typeof step.target ) {
+				el = global.document.querySelector( step.target );
+			}
+			el?.scrollIntoView?.( { block: 'center' } );
+		}
 
 		if ( shouldChangeStep ) {
 			changeStep( index, action );
@@ -142,6 +151,7 @@ export default function TourTooltips( { steps, tourID } ) {
 			callback={ handleJoyrideCallback }
 			continuous
 			disableOverlayClose
+			disableScrolling
 			floaterProps={ floaterProps }
 			locale={ joyrideLocale }
 			run={ run }

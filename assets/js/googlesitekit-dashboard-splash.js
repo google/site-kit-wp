@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { render, Fragment } from '@wordpress/element';
+import { render } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -31,15 +31,6 @@ import Root from './components/Root';
 import DashboardSplashApp from './components/dashboard-splash/DashboardSplashApp';
 import NotificationCounter from './components/legacy-notifications/notification-counter';
 
-const GoogleSitekitDashboardSplash = () => {
-	return (
-		<Fragment>
-			<NotificationCounter />
-			<DashboardSplashApp />
-		</Fragment>
-	);
-};
-
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	if ( global._googlesitekitLegacyData.admin.resetSession ) {
@@ -49,6 +40,12 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard-splash' );
 
 	if ( renderTarget ) {
-		render( <Root dataAPIContext="Splash"><GoogleSitekitDashboardSplash /></Root>, renderTarget );
+		render(
+			<Root dataAPIContext="Splash">
+				<NotificationCounter />
+				<DashboardSplashApp />
+			</Root>,
+			renderTarget
+		);
 	}
 } );

@@ -232,7 +232,9 @@ export const resolvers = {
 		}
 
 		const { initialVersion } = global._googlesitekitUserData;
-		yield actions.receiveInitialSiteKitVersion( initialVersion );
+		if ( initialVersion ) {
+			yield actions.receiveInitialSiteKitVersion( initialVersion );
+		}
 	},
 
 	*isVerified() {

@@ -1,5 +1,5 @@
 /**
- * User input.
+ * Feature Tours component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,31 +19,31 @@
 /**
  * External dependencies
  */
-import './modules';
-
-/**
- * WordPress dependencies
- */
-import domReady from '@wordpress/dom-ready';
-import { render } from '@wordpress/element';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
-import './components/legacy-notifications';
-import Root from './components/Root';
-import UserInputApp from './components/user-input/UserInputApp';
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import TourTooltips from './TourTooltips';
+const { useSelect } = Data;
 
-// Initialize the app once the DOM is ready.
-domReady( () => {
-	const renderTarget = document.getElementById( 'js-googlesitekit-user-input' );
+export default function FeatureTours( { viewContext } ) {
+	const nextTour = useSelect( ( select ) => select( CORE_USER ).getFeatureToursForView( viewContext )?.[ 0 ] );
 
-	if ( renderTarget ) {
-		render(
-			<Root dataAPIContext="UserInput">
-				<UserInputApp />
-			</Root>,
-			renderTarget
-		);
+	if ( ! nextTour ) {
+		return null;
 	}
-} );
+
+	return (
+		<TourTooltips
+			tourID={ nextTour.slug }
+			steps={ nextTour.steps }
+		/>
+	);
+}
+
+FeatureTours.propTypes = {
+	viewContext: PropTypes.string,
+};
