@@ -37,6 +37,8 @@ import data, { TYPE_CORE } from '../data';
 import { trackEvent, clearWebStorage, getSiteKitAdminURL } from '../../util';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
+import HelpMenu from '../help/HelpMenu';
+import { useFeature } from '../../hooks/useFeature';
 
 class SetupUsingGCP extends Component {
 	constructor( props ) {
@@ -185,6 +187,8 @@ class SetupUsingGCP extends Component {
 			isSiteKitConnected,
 		} = this.state;
 
+		const { helpVisibilityEnabled } = this.props;
+
 		if ( this.isSetupFinished() ) {
 			const redirectURL = getSiteKitAdminURL(
 				'googlesitekit-dashboard',
@@ -222,11 +226,9 @@ class SetupUsingGCP extends Component {
 
 		return (
 			<Fragment>
-				<Header />
-				{ /*
-					Note: this component doesn't use hooks and thus can't access the
-					feature flags, so we don't render the HelpMenu here.
-				*/ }
+				<Header>
+					{ helpVisibilityEnabled && <HelpMenu /> }
+				</Header>
 				<div className="googlesitekit-wizard">
 					<div className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">
@@ -301,4 +303,17 @@ class SetupUsingGCP extends Component {
 	}
 }
 
-export default SetupUsingGCP;
+const withHelpVisibilityFeatureFlag = ( WrappedComponent ) => {
+	return ( props ) => {
+		const helpVisibilityEnabled = useFeature( 'helpVisibility' );
+
+		return (
+			<WrappedComponent
+				{ ...props }
+				helpVisibilityEnabled={ helpVisibilityEnabled }
+			/>
+		);
+	};
+};
+
+export default withHelpVisibilityFeatureFlag( SetupUsingGCP );
