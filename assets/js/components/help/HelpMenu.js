@@ -67,7 +67,7 @@ function HelpMenu( { children } ) {
 
 	return (
 		<Fragment>
-			<div className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-help-menu mdc-menu-surface--anchor">
+			<div className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu googlesitekit-help-menu mdc-menu-surface--anchor">
 				<Button
 					aria-controls="help-menu"
 					aria-expanded={ menuOpen }

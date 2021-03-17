@@ -1,0 +1,15 @@
+.googlesitekit-dropdown-menu {
+
+	.googlesitekit-header__dropdown {
+		// align the dropdown with it's button
+		margin-right: -8px;
+	}
+
+	&.googlesitekit-dropdown-menu__icon-menu {
+
+		.mdc-button--dropdown {
+			background-image: none;
+			padding-right: $grid-gap-phone / 2;
+		}
+	}
+}
