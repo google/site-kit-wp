@@ -52,7 +52,10 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root dataAPIContext="Single" dataAPIModuleArgs={ global.googlesitekitCurrentModule } >
+			<Root
+				dataAPIContext="Single"
+				dataAPIModuleArgs={ global.googlesitekitCurrentModule }
+			>
 				<GoogleSitekitModule />
 			</Root>,
 			renderTarget
