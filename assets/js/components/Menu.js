@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import useMergedRef from '@react-hook/merged-ref';
 
@@ -34,6 +35,7 @@ import { MDCMenu } from '../material-components';
 
 const Menu = forwardRef( ( {
 	children,
+	className,
 	menuOpen,
 	menuItems,
 	onSelected,
@@ -71,7 +73,7 @@ const Menu = forwardRef( ( {
 
 	return (
 		<div
-			className="mdc-menu mdc-menu-surface"
+			className={ classnames( 'mdc-menu', 'mdc-menu-surface', className ) }
 			ref={ mergedRefs }
 		>
 			<ul
@@ -100,6 +102,7 @@ const Menu = forwardRef( ( {
 Menu.displayName = 'Menu';
 
 Menu.propTypes = {
+	className: PropTypes.string,
 	children: PropTypes.node,
 	menuOpen: PropTypes.bool.isRequired,
 	menuItems: PropTypes.array,

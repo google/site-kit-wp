@@ -22,12 +22,18 @@
 import { storiesOf } from '@storybook/react';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Header from '../assets/js/components/Header';
 import DateRangeSelector from '../assets/js/components/DateRangeSelector';
 import HelpMenu from '../assets/js/components/help/HelpMenu';
 import { createTestRegistry, provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
+import HelpMenuLink from '../assets/js/components/help/HelpMenuLink';
 
 storiesOf( 'Global', module )
 	.addDecorator( ( storyFn ) => {
@@ -58,6 +64,19 @@ storiesOf( 'Global', module )
 			<WithTestRegistry features={ [ 'helpVisibility', 'storeErrorNotifications' ] } registry={ registry }>
 				<Header>
 					<HelpMenu />
+				</Header>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Plugin Header with custom Help Menu links', ( registry ) => {
+		return (
+			<WithTestRegistry features={ [ 'helpVisibility', 'storeErrorNotifications' ] } registry={ registry }>
+				<Header>
+					<HelpMenu>
+						<HelpMenuLink href="#">
+							{ __( 'Get help with AdSense', 'google-site-kit' ) }
+						</HelpMenuLink>
+					</HelpMenu>
 				</Header>
 			</WithTestRegistry>
 		);

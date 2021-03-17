@@ -28,13 +28,14 @@ import Link from '../Link';
 
 function HelpMenuLink( { children, href } ) {
 	return (
-		<li className="googlesitekit-help-menu-link mdc-list-item" role="menuitem">
+		<li className="googlesitekit-help-menu-link mdc-list-item" role="none">
 			<Link
 				className="mdc-list-item__text"
 				href={ href }
 				external
 				hideExternalIndicator
 				inherit
+				role="menuitem"
 			>
 				{ children }
 			</Link>
