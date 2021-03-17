@@ -32,13 +32,14 @@ class ModulesTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
-				'analytics'          => 'Google\\Site_Kit\\Modules\\Analytics',
-				'optimize'           => 'Google\\Site_Kit\\Modules\\Optimize',
-				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
-				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
-				'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
-				'tagmanager'         => 'Google\\Site_Kit\\Modules\\Tag_Manager',
+				'adsense'               => 'Google\\Site_Kit\\Modules\\AdSense',
+				'analytics'             => 'Google\\Site_Kit\\Modules\\Analytics',
+				'optimize'              => 'Google\\Site_Kit\\Modules\\Optimize',
+				'pagespeed-insights'    => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+				'search-console'        => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'site-verification'     => 'Google\\Site_Kit\\Modules\\Site_Verification',
+				'subscribe-with-google' => 'Google\\Site_Kit\\Modules\\Subscribe_With_Google',
+				'tagmanager'            => 'Google\\Site_Kit\\Modules\\Tag_Manager',
 			),
 			$available
 		);
