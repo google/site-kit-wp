@@ -73,7 +73,7 @@ function HelpMenu( { children } ) {
 					aria-expanded={ menuOpen }
 					aria-haspopup="menu"
 					className="googlesitekit-header__dropdown googlesitekit-help-menu__button mdc-button--dropdown"
-					icon={ <HelpIcon fill="#476282" width="20" height="20" /> }
+					icon={ <HelpIcon fill="currentColor" width="20" height="20" /> }
 					onClick={ handleMenu }
 					ref={ menuButtonRef }
 					text
