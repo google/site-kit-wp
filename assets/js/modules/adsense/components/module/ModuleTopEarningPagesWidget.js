@@ -34,11 +34,230 @@ import { numFmt } from '../../../../util';
 import { getDataTableFromData } from '../../../../components/data-table';
 import Link from '../../../../components/Link';
 import PreviewTable from '../../../../components/PreviewTable';
+import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
-import isZeroReport from '../../../search-console/util/is-zero-report';
+import { isZeroReport } from '../../../analytics/util/is-zero-report';
+import { isRestrictedMetricsError } from '../../../analytics/util/error';
 const { useSelect } = Data;
+
+const fixture = {
+	data: [
+		{
+			nextPageToken: '10',
+			columnHeader: {
+				dimensions: [
+					'ga:pageTitle',
+					'ga:pagePath',
+				],
+				metricHeader: {
+					metricHeaderEntries: [
+						{
+							name: 'Earnings',
+							type: 'CURRENCY',
+						},
+						{
+							name: 'Page RPM',
+							type: 'CURRENCY',
+						},
+						{
+							name: 'Impressions',
+							type: 'INTEGER',
+						},
+					],
+				},
+			},
+			data: {
+				dataLastRefreshed: null,
+				isDataGolden: null,
+				rowCount: 316,
+				samplesReadCounts: null,
+				samplingSpaceSizes: null,
+				rows: [
+					{
+						dimensions: [
+							'Site Kit Top Earning Page 1',
+							'/',
+						],
+						metrics: [
+							{
+								values: [
+									'0.76352',
+									'0.6059682539682539',
+									'499',
+								],
+							},
+						],
+					},
+					{
+						dimensions: [
+							'Site Kit Top Earning Page 2',
+							'/site-kit-top-earning-page-2/',
+						],
+						metrics: [
+							{
+								values: [
+									'0.371714',
+									'10.32538888888889',
+									'38',
+								],
+							},
+						],
+					},
+					{
+						dimensions: [
+							'Site Kit Top Earning Page 3',
+							'/site-kit-top-earning-page-3/',
+						],
+						metrics: [
+							{
+								values: [
+									'0.286556',
+									'0.8790061349693251',
+									'825',
+								],
+							},
+						],
+					},
+					{
+						dimensions: [
+							'Site Kit Top Earning Page 4',
+							'/site-kit-top-earning-page-4/',
+						],
+						metrics: [
+							{
+								values: [
+									'0.212868',
+									'5.60178947368421',
+									'68',
+								],
+							},
+						],
+					},
+					{
+						dimensions: [
+							'Site Kit Top Earning Page 5',
+							'/site-kit-top-earning-page-5/',
+						],
+						metrics: [
+							{
+								values: [
+									'0.152164',
+									'15.2164',
+									'22',
+								],
+							},
+						],
+					},
+					{
+						dimensions: [
+							'Site Kit Top Earning Page 6',
+							'/site-kit-top-earning-page-6/',
+						],
+						metrics: [
+							{
+								values: [
+									'0.036977',
+									'0.33015178571428566',
+									'144',
+								],
+							},
+						],
+					},
+					{
+						dimensions: [
+							'Site Kit Top Earning Page 7',
+							'/site-kit-top-earning-page-7/',
+						],
+						metrics: [
+							{
+								values: [
+									'0.029555',
+									'0.29555',
+									'206',
+								],
+							},
+						],
+					},
+					{
+						dimensions: [
+							'Site Kit Top Earning Page 8',
+							'/site-kit-top-earning-page-8/',
+						],
+						metrics: [
+							{
+								values: [
+									'0.028485',
+									'1.0173214285714285',
+									'35',
+								],
+							},
+						],
+					},
+					{
+						dimensions: [
+							'Site Kit Top Earning Page 9',
+							'/site-kit-top-earning-page-9/',
+						],
+						metrics: [
+							{
+								values: [
+									'0.024269',
+									'0.3677121212121212',
+									'81',
+								],
+							},
+						],
+					},
+					{
+						dimensions: [
+							'Site Kit Top Earning Page 10',
+							'/site-kit-top-earning-page-10/',
+						],
+						metrics: [
+							{
+								values: [
+									'0.019556',
+									'1.777818181818182',
+									'13',
+								],
+							},
+						],
+					},
+				],
+				totals: [
+					{
+						values: [
+							'2.150211',
+							'0.6847805732484076',
+							'4304',
+						],
+					},
+				],
+				minimums: [
+					{
+						values: [
+							'0.0',
+							'0.0',
+							'1',
+						],
+					},
+				],
+				maximums: [
+					{
+						values: [
+							'0.76352',
+							'15.2164',
+							'825',
+						],
+					},
+				],
+			},
+		},
+	],
+};
 
 function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	// Do not return zero data callout here since it will already be
@@ -48,6 +267,7 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 	// }
 
 	const {
+		isAdSenseLinked,
 		data,
 		isLoading,
 		error,
@@ -75,17 +295,26 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 		const href = '/';
 
 		return {
-			data: select( MODULES_ANALYTICS ).getReport( reportArgs ),
+			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
+			// data: select( MODULES_ANALYTICS ).getReport( reportArgs ),
+			data: fixture.data,
 			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ),
-			isLoading: select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ),
-			serviceURL: select( STORE_NAME ).getServiceReportURL( 'content-pages', {
-				'explorer-table.plotKeys': '[]',
-				'_r.drilldown': `analytics.pagePath:${ href }`,
-			} ),
+			// isLoading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ),
+			isLoading: false,
+			// serviceURL: select( STORE_NAME ).getServiceReportURL( 'content-pages', {
+			// 	'explorer-table.plotKeys': '[]',
+			// 	'_r.drilldown': `analytics.pagePath:${ href }`,
+			// } ),
 		};
 	} );
 
-	if ( error ) {
+	// A restricted metrics error will cause this value to change in the resolver
+	// so this check should happen before an error, which is only relevant if they are linked.
+	// if ( ! isAdSenseLinked ) {
+	// 	return <AdSenseLinkCTA />;
+	// }
+
+	if ( error && ! isRestrictedMetricsError( error ) ) {
 		return <WidgetReportError error={ error } moduleSlug="adsense" />;
 	}
 
@@ -93,7 +322,11 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 		return <PreviewTable padding />;
 	}
 
+	if ( isZeroReport( data ) ) {
+		return <WidgetReportZero module="adsense" />;
+	}
 	const { rows } = data?.[ 0 ]?.data || {};
+
 	if ( ! Array.isArray( rows ) ) {
 		return null;
 	}
@@ -143,17 +376,15 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 		hideHeader: false,
 		chartsEnabled: false,
 		links: rows.map( ( row ) => row.dimensions[ 1 ] || '/' ),
-		PrimaryLink: <Link href={ serviceURL } external />,
+		PrimaryLink: () => <Link href="www.google.com" external />,
 	};
 
 	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
 	return (
-		<AnalyticsAdSenseDashboardWidgetLayout>
-			<TableOverflowContainer>
-				{ dataTable }
-			</TableOverflowContainer>
-		</AnalyticsAdSenseDashboardWidgetLayout>
+		<TableOverflowContainer>
+			{ dataTable }
+		</TableOverflowContainer>
 	);
 }
 
