@@ -43,6 +43,10 @@ storiesOf( 'Setup / Using GCP', module )
 				requiredScopes: [],
 				grantedScopes: [],
 			} );
+
+			dispatch( CORE_USER ).receiveGetTracking( {
+				enabled: false,
+			} );
 		};
 
 		return (

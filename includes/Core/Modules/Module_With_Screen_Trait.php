@@ -42,15 +42,33 @@ trait Module_With_Screen_Trait {
 	 */
 	final public function get_screen() {
 		if ( null === $this->screen ) {
-			$this->screen = new Screen(
-				Screens::PREFIX . 'module-' . $this->slug,
+			$module_screen_slug = 'module-' . $this->slug;
+			$this->screen       = new Screen(
+				Screens::PREFIX . $module_screen_slug,
 				array(
-					'title'            => $this->name,
-					'capability'       => Permissions::VIEW_MODULE_DETAILS,
-					'enqueue_callback' => function( Assets $assets ) {
+					'title'               => $this->name,
+					'capability'          => Permissions::VIEW_MODULE_DETAILS,
+					'enqueue_callback'    => function ( Assets $assets ) {
 						$assets->enqueue_asset( 'googlesitekit-module' );
 					},
-					'render_callback'  => function( Context $context ) {
+					'initialize_callback' => function () use ( $module_screen_slug ) {
+						$reauth = $this->context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
+						// If the module is not set up yet, and `reAuth` is not enabled
+						// via the query parameter, then redirect to this URL.
+						if ( ! $reauth && ! $this->is_connected() ) {
+							wp_safe_redirect(
+								$this->context->admin_url(
+									$module_screen_slug,
+									array(
+										'slug'   => $this->slug,
+										'reAuth' => true,
+									)
+								)
+							);
+							exit();
+						}
+					},
+					'render_callback'     => function ( Context $context ) {
 						$module_info = $this->prepare_info_for_js();
 						?>
 						<script type="text/javascript">var googlesitekitCurrentModule = <?php echo wp_json_encode( $module_info ); ?>;

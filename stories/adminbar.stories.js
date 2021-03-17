@@ -24,14 +24,14 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { GoogleSitekitAdminbar } from '../assets/js/googlesitekit-adminbar';
+import AdminBarApp from '../assets/js/components/adminbar/AdminBarApp';
 import { googlesitekit as wpAdminBarData } from '../.storybook/data/blog---googlesitekit';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { provideModules, provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { adminbarSearchConsoleMockData, adminbarSearchConsoleOptions } from '../assets/js/modules/search-console/datastore/__fixtures__';
-import { adminBarAnalyticsTotalUsersMockData, adminBarAnalyticsTotalUsersOptions, adminBarAnalyticsSessionsMockData, adminBarAnalyticsSessionsOptions } from '../assets/js/modules/analytics/datastore/__fixtures__';
+import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 
 storiesOf( 'Global', module )
 	.add( 'Admin Bar', () => {
@@ -55,11 +55,41 @@ storiesOf( 'Global', module )
 			// Mock both Search Console widgets data
 			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( adminbarSearchConsoleMockData, { options: adminbarSearchConsoleOptions } );
 
-			// Mock Total Users widget data
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( adminBarAnalyticsTotalUsersMockData, { options: adminBarAnalyticsTotalUsersOptions } );
+			[
+				// Mock Total Users widget data
+				{
+					startDate: '2020-12-31',
+					endDate: '2021-01-27',
+					compareStartDate: '2020-12-03',
+					compareEndDate: '2020-12-30',
+					metrics: [
+						{
+							expression: 'ga:users',
+							alias: 'Total Users',
+						},
+					],
+					url: 'https://www.sitekitbygoogle.com/blog/',
+				},
 
-			// Mock Sessions widget data
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( adminBarAnalyticsSessionsMockData, { options: adminBarAnalyticsSessionsOptions } );
+				// Mock Sessions widget data
+				{
+					startDate: '2020-12-31',
+					endDate: '2021-01-27',
+					compareStartDate: '2020-12-03',
+					compareEndDate: '2020-12-30',
+					dimensions: 'ga:date',
+					limit: 10,
+					metrics: [
+						{
+							expression: 'ga:sessions',
+							alias: 'Sessions',
+						},
+					],
+					url: 'https://www.sitekitbygoogle.com/blog/',
+				},
+			].forEach( ( options ) => {
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( getAnalyticsMockResponse( options ), { options } );
+			} );
 		};
 
 		return (
@@ -68,7 +98,7 @@ storiesOf( 'Global', module )
 					<div id="js-googlesitekit-adminbar" className="ab-sub-wrapper googlesitekit-adminbar" style={ { display: 'block' } }>
 						<section id="js-googlesitekit-adminbar-modules" className="googlesitekit-adminbar-modules">
 							<WithTestRegistry callback={ setupRegistry }>
-								<GoogleSitekitAdminbar />
+								<AdminBarApp />
 							</WithTestRegistry>
 						</section>
 					</div>
@@ -93,7 +123,7 @@ storiesOf( 'Global', module )
 					<div id="js-googlesitekit-adminbar" className="ab-sub-wrapper googlesitekit-adminbar" style={ { display: 'block' } }>
 						<section id="js-googlesitekit-adminbar-modules" className="googlesitekit-adminbar-modules">
 							<WithTestRegistry callback={ setupRegistry }>
-								<GoogleSitekitAdminbar />
+								<AdminBarApp />
 							</WithTestRegistry>
 						</section>
 					</div>

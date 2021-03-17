@@ -43,7 +43,7 @@ export function withActive( ...slugs ) {
 /**
  * Makes a copy of the modules with the given module connection set.
  *
- * @since n.e.x.t
+ * @since 1.28.0
  *
  * @param {...string} slugs Active module slugs.
  * @return {Object[]} Array of module objects.

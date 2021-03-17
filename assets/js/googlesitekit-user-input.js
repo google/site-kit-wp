@@ -39,6 +39,11 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-user-input' );
 
 	if ( renderTarget ) {
-		render( <Root dataAPIContext="UserInput"><UserInputApp /></Root>, renderTarget );
+		render(
+			<Root dataAPIContext="UserInput">
+				<UserInputApp />
+			</Root>,
+			renderTarget
+		);
 	}
 } );
