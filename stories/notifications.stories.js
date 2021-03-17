@@ -43,7 +43,7 @@ import ThumbsUpSVG from '../assets/svg/thumbs-up.svg';
 storiesOf( 'Global/Notifications', module )
 	.add( 'Module Setup Complete', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( CORE_MODULES ).receiveGetModules( withConnected( 'analytics', 'pagespeed-insights' ) );
+			registry.dispatch( CORE_MODULES ).receiveGetModules( withConnected( 'search-console', 'adsense', 'analytics', 'pagespeed-insights' ) );
 			provideModuleRegistrations( registry );
 			registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( false );
 		};
