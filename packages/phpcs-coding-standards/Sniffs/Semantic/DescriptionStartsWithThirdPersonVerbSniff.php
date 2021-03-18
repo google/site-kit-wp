@@ -38,9 +38,9 @@ class DescriptionStartsWithThirdPersonVerbSniff implements Sniff {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param \PHP_CodeSniffer\Files\File $phpcs_file The current file being checked.
-	 * @param int                         $stack_ptr  The position of the current token in the
-	 *                                                stack passed in $tokens.
+	 * @param File $phpcs_file The current file being checked.
+	 * @param int  $stack_ptr  The position of the current token in the
+	 *                         stack passed in $tokens.
 	 */
 	public function process( File $phpcs_file, $stack_ptr ) {
 		$tokens      = $phpcs_file->getTokens();
