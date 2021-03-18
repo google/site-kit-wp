@@ -42,7 +42,6 @@ class CommentHasSinceTag implements Sniff {
 	 * @param \PHP_CodeSniffer\Files\File $phpcs_file The current file being checked.
 	 * @param int                         $stack_ptr  The position of the current token in the
 	 *                                                stack passed in $tokens.
-	 * @return void
 	 */
 	public function process( File $phpcs_file, $stack_ptr ) {
 		$tokens        = $phpcs_file->getTokens();
