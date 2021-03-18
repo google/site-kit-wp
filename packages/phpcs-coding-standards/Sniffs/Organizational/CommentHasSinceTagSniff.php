@@ -27,7 +27,7 @@ class CommentHasSinceTag implements Sniff {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array(int)
+	 * @return string[]
 	 */
 	public function register() {
 		return array( T_DOC_COMMENT_OPEN_TAG );
