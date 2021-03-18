@@ -23,9 +23,16 @@ import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
 import { submitChanges, validateCanSubmitChanges } from './settings';
 
-let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
+let baseModuleStore = Modules.createModuleStore( 'subscribe-with-google', {
 	storeName: STORE_NAME,
 	settingSlugs: [
+		'publicationName',
+		'publicationID',
+		'revenueModel',
+		'products',
+		'defaultProductPerPostType',
+
+		// TODO: Delete these Tag Manager slugs.
 		'accountID',
 		'ampContainerID',
 		'containerID',

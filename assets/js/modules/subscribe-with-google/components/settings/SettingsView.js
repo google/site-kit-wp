@@ -32,7 +32,11 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const publicationName = useSelect( ( select ) => select( STORE_NAME ).getPublicationName() );
+	const publicationID = useSelect( ( select ) => select( STORE_NAME ).getPublicationID() );
+	const revenueModel = useSelect( ( select ) => select( STORE_NAME ).getRevenueModel() );
+	const products = useSelect( ( select ) => select( STORE_NAME ).getProducts() );
+	const defaultProductPerPostType = useSelect( ( select ) => select( STORE_NAME ).getDefaultProductPerPostType() );
 
 	return (
 		<Fragment>
@@ -45,7 +49,7 @@ export default function SettingsView() {
 						{ __( 'Publication name', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ accountID } />
+						<DisplaySetting value={ publicationName } />
 					</p>
 				</div>
 
@@ -54,7 +58,7 @@ export default function SettingsView() {
 						{ __( 'Publication ID', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ accountID } />
+						<DisplaySetting value={ publicationID } />
 					</p>
 				</div>
 
@@ -63,7 +67,7 @@ export default function SettingsView() {
 						{ __( 'Revenue model', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ accountID } />
+						<DisplaySetting value={ revenueModel } />
 					</p>
 				</div>
 			</div>
@@ -74,7 +78,7 @@ export default function SettingsView() {
 						{ __( 'Product(s)', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ accountID } />
+						<DisplaySetting value={ products } />
 					</p>
 				</div>
 
@@ -83,7 +87,7 @@ export default function SettingsView() {
 						{ __( 'Post Types default to', 'google-site-kit' ) } (?)
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ accountID } />
+						<DisplaySetting value={ defaultProductPerPostType } />
 					</p>
 				</div>
 			</div>
