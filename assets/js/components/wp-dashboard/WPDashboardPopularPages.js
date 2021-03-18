@@ -28,10 +28,11 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import PreviewTable from '../../components/PreviewTable';
-import { numFmt } from '../../util';
 import TableOverflowContainer from '../../components/TableOverflowContainer';
-import { getDataTableFromData } from '../../components/data-table';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
+import ReportTable from '../ReportTable';
+import DetailsPermaLinks from '../DetailsPermaLinks';
+import { numFmt } from '../../util';
 const { useSelect } = Data;
 
 const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
@@ -77,49 +78,39 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
-	const headers = [
-		{
-			title: __( 'Title', 'google-site-kit' ),
-			tooltip: __( 'Page Title', 'google-site-kit' ),
-			primary: true,
-		},
-		{
-			title: __( 'Pageviews', 'google-site-kit' ),
-			tooltip: __( 'Pageviews', 'google-site-kit' ),
-		},
-	];
-	const links = [];
-	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-		const [ title, url ] = row.dimensions;
-		links[ i ] = url;
-
-		return [
-			title,
-			numFmt( row.metrics[ 0 ].values[ 0 ], { style: 'decimal' } ),
-		];
-	} );
-
-	const options = {
-		chartsEnabled: true,
-		links,
-		cap: 5,
-		showURLs: true,
-		useAdminURLs: true,
-	};
-
-	const dataTable = getDataTableFromData( dataMapped, headers, options );
-
 	return (
 		<div className="googlesitekit-search-console-widget">
 			<h2 className="googlesitekit-search-console-widget__title">
 				{ __( 'Top content over the last 28 days', 'google-site-kit' ) }
 			</h2>
 			<TableOverflowContainer>
-				{ dataTable }
+				<ReportTable
+					rows={ data[ 0 ].data.rows }
+					columns={ tableColumns }
+					limit={ 5 }
+				/>
 			</TableOverflowContainer>
 		</div>
 	);
 };
+
+const tableColumns = [
+	{
+		title: __( 'Title', 'google-site-kit' ),
+		description: __( 'Page Title', 'google-site-kit' ),
+		primary: true,
+		Component: ( { row } ) => {
+			const [ title, path ] = row.dimensions;
+			return <DetailsPermaLinks title={ title } path={ path } />;
+		},
+	},
+	{
+		title: __( 'Pageviews', 'google-site-kit' ),
+		description: __( 'Pageviews', 'google-site-kit' ),
+		field: 'metrics.0.values.0',
+		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+	},
+];
 
 export default WPDashboardPopularPages;
 

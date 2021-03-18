@@ -121,7 +121,7 @@ export default function UserInputKeywords( { slug, max } ) {
 						} ) }
 					>
 						<TextField
-							label={ i + 1 === values.length ? __( 'Minimum one (1), maximum three (3) keywords', 'google-site-kit' ) : '' }
+							label={ i + 1 === values.length ? __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' ) : '' }
 							noLabel
 						>
 							<Input

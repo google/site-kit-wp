@@ -1,5 +1,5 @@
 /**
- * User input.
+ * `useBreakpoint` hook.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,31 +19,31 @@
 /**
  * External dependencies
  */
-import './modules';
+import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /**
- * WordPress dependencies
+ * Retrieves the current breakpoint.
+ *
+ * @since n.e.x.t
+ *
+ * @return {string} The current breakpoint according to the window size.
  */
-import domReady from '@wordpress/dom-ready';
-import { render } from '@wordpress/element';
+export const useBreakpoint = () => {
+	const onlyWidth = useWindowWidth();
 
-/**
- * Internal dependencies
- */
-import './components/legacy-notifications';
-import Root from './components/Root';
-import UserInputApp from './components/user-input/UserInputApp';
-
-// Initialize the app once the DOM is ready.
-domReady( () => {
-	const renderTarget = document.getElementById( 'js-googlesitekit-user-input' );
-
-	if ( renderTarget ) {
-		render(
-			<Root dataAPIContext="UserInput">
-				<UserInputApp />
-			</Root>,
-			renderTarget
-		);
+	if ( onlyWidth > 1280 ) {
+		return 'xlarge';
 	}
-} );
+
+	if ( onlyWidth > 960 ) {
+		return 'desktop';
+	}
+
+	if ( onlyWidth > 600 ) {
+		return 'tablet';
+	}
+
+	return 'small';
+};
+
+export default useBreakpoint;

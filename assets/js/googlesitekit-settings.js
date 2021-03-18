@@ -39,6 +39,11 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'googlesitekit-settings-wrapper' );
 
 	if ( renderTarget ) {
-		render( <Root dataAPIContext="Settings"><SettingsApp /></Root>, renderTarget );
+		render(
+			<Root dataAPIContext="Settings">
+				<SettingsApp />
+			</Root>,
+			renderTarget
+		);
 	}
 } );
