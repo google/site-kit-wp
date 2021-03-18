@@ -34,7 +34,7 @@ import { actions as errorStoreActions } from '../../data/create-error-store';
 const { commonActions, createRegistryControl, createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
 
-const CACHE_KEY_NAME = 'fetchGetUserInputSettingsStore.fetchGetUserInputSettingsStore';
+const CACHE_KEY_NAME = 'userInputSettings';
 
 function fetchStoreReducerCallback( state, inputSettings ) {
 	return { ...state, inputSettings };
@@ -73,10 +73,11 @@ const baseActions = {
 	 * Gets cached user input settings and save them to the data store.
 	 *
 	 * @since n.e.x.t
+	 * @private
 	 *
 	 * @return {Object} Cached user input answer values.
 	 */
-	*fetchCachedUserInputSettings() {
+	*setUserInputSettingsFromCache() {
 		const cachedValues = yield {
 			type: GET_CACHED_USER_INPUT_SETTINGS,
 			payload: {},
@@ -103,13 +104,15 @@ const baseActions = {
 	 */
 	*setUserInputSetting( settingID, values ) {
 		const registry = yield Data.commonActions.getRegistry();
+
+		const trimmedValues = values.map( ( value ) => value.trim() );
 		if ( registry.select( STORE_NAME ).getUserInputState() !== 'completed' ) {
 			// Save this setting in the cache.
 			yield {
 				type: SET_CACHED_USER_INPUT_SETTING,
 				payload: {
 					settingID,
-					values,
+					values: trimmedValues,
 				},
 			};
 		}
@@ -118,7 +121,7 @@ const baseActions = {
 			type: SET_USER_INPUT_SETTING,
 			payload: {
 				settingID,
-				values: values.map( ( value ) => value.trim() ),
+				values: trimmedValues,
 			},
 		};
 	},
@@ -214,12 +217,12 @@ const baseResolvers = {
 	*getUserInputSettings() {
 		const { select } = yield commonActions.getRegistry();
 
-		if ( ! select( STORE_NAME ).getUserInputSettings() && select( STORE_NAME ).getUserInputState() === 'completed' ) {
+		if ( ! select( STORE_NAME ).getUserInputSettings() ) {
 			yield fetchGetUserInputSettingsStore.actions.fetchGetUserInputSettings();
 		}
 
 		if ( select( STORE_NAME ).getUserInputState() !== 'completed' ) {
-			yield baseActions.fetchCachedUserInputSettings();
+			yield baseActions.setUserInputSettingsFromCache();
 		}
 	},
 };
