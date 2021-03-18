@@ -44,7 +44,7 @@ class CommentTagsCorrectlyGrouped implements Sniff {
 	 */
 	public function process( File $phpcs_file, $stack_ptr ) {
 		$tokens        = $phpcs_file->getTokens();
-		$comment_end   = $phpcs_file->findNext( T_DOC_COMMENT_CLOSE_TAG, ( $stack_ptr + 1 ) );
+		$comment_end   = $phpcs_file->findNext( T_DOC_COMMENT_CLOSE_TAG, $stack_ptr + 1 );
 		$comment_start = $tokens[ $comment_end ]['comment_opener'];
 
 		// List of @ comment types to check.
@@ -91,9 +91,9 @@ class CommentTagsCorrectlyGrouped implements Sniff {
 
 			$comment       = '';
 			$comment_lines = array();
-			if ( T_DOC_COMMENT_STRING === $tokens[ ( $tag + 2 ) ]['code'] ) {
+			if ( T_DOC_COMMENT_STRING === $tokens[ $tag + 2 ]['code'] ) {
 				$matches = array();
-				preg_match( '/([^$&.]+)(?:((?:\.\.\.)?(?:\$|&)[^\s]+)(?:(\s+)(.*))?)?/', $tokens[ ( $tag + 2 ) ]['content'], $matches );
+				preg_match( '/([^$&.]+)(?:((?:\.\.\.)?(?:\$|&)[^\s]+)(?:(\s+)(.*))?)?/', $tokens[ $tag + 2 ]['content'], $matches );
 
 				if ( true === isset( $matches[2] ) ) {
 
@@ -101,17 +101,17 @@ class CommentTagsCorrectlyGrouped implements Sniff {
 						$comment         = $matches[4];
 						$comment_lines[] = array(
 							'comment' => $comment,
-							'token'   => ( $tag + 2 ),
+							'token'   => $tag + 2,
 						);
 
 						// Any strings until the next tag belong to this comment.
-						if ( isset( $tokens[ $comment_start ]['comment_tags'][ ( $pos + 1 ) ] ) === true ) {
-							$end = $tokens[ $comment_start ]['comment_tags'][ ( $pos + 1 ) ];
+						if ( isset( $tokens[ $comment_start ]['comment_tags'][ $pos + 1 ] ) === true ) {
+							$end = $tokens[ $comment_start ]['comment_tags'][ $pos + 1 ];
 						} else {
 							$end = $tokens[ $comment_start ]['comment_closer'];
 						}
 
-						for ( $i = ( $tag + 3 ); $i < $end; $i++ ) {
+						for ( $i = $tag + 3; $i < $end; $i++ ) {
 							if ( T_DOC_COMMENT_STRING === $tokens[ $i ]['code'] ) {
 								$comment        .= ' ' . $tokens[ $i ]['content'];
 								$comment_lines[] = array(

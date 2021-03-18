@@ -44,7 +44,7 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff {
 	 */
 	public function process( File $phpcs_file, $stack_ptr ) {
 		$tokens      = $phpcs_file->getTokens();
-		$comment_end = $phpcs_file->findNext( T_DOC_COMMENT_CLOSE_TAG, ( $stack_ptr + 1 ) );
+		$comment_end = $phpcs_file->findNext( T_DOC_COMMENT_CLOSE_TAG, $stack_ptr + 1 );
 
 		$empty = array(
 			T_DOC_COMMENT_WHITESPACE,
@@ -58,7 +58,7 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff {
 			'@return',
 		);
 
-		$short = $phpcs_file->findNext( $empty, ( $stack_ptr + 1 ), $comment_end, true );
+		$short = $phpcs_file->findNext( $empty, $stack_ptr + 1, $comment_end, true );
 
 		// Account for the fact that a short description might cover
 		// multiple lines.
@@ -87,7 +87,7 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff {
 			}
 		}
 
-		$long = $phpcs_file->findNext( $empty, ( $short_end + 1 ), ( $comment_end - 1 ), true );
+		$long = $phpcs_file->findNext( $empty, $short_end + 1, $comment_end - 1, true );
 
 		if ( T_DOC_COMMENT_STRING === $tokens[ $long ]['code'] ) {
 
@@ -103,7 +103,7 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff {
 		}
 
 		// Look through all @ comments in the current doc comment.
-		$current_token = $phpcs_file->findNext( T_DOC_COMMENT_TAG, ( $short_end + 1 ), ( $comment_end - 1 ) );
+		$current_token = $phpcs_file->findNext( T_DOC_COMMENT_TAG, $short_end + 1, $comment_end - 1 );
 		while ( $current_token ) {
 
 			$comment_tag_type = $tokens[ $current_token ]['content'];
@@ -112,7 +112,7 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff {
 			if ( T_DOC_COMMENT_TAG === $tokens[ $current_token ]['code'] && in_array( $comment_tag_type, $doc_comment_tags, true ) ) {
 
 				// Find the @ tag comment if there is one.
-				$tag_comment = $phpcs_file->findNext( T_DOC_COMMENT_STRING, ( $current_token + 1 ), ( $comment_end - 1 ) );
+				$tag_comment = $phpcs_file->findNext( T_DOC_COMMENT_STRING, $current_token + 1, $comment_end - 1 );
 
 				// Check each comment for capitalisation.
 				if ( $tag_comment ) {
@@ -155,7 +155,7 @@ class DescriptionStartsWithCapitalLetterSniff implements Sniff {
 				}
 			}
 			// Look through all @ comments in the current doc comment.
-			$current_token = $phpcs_file->findNext( T_DOC_COMMENT_TAG, ( $current_token + 1 ), ( $comment_end - 1 ) );
+			$current_token = $phpcs_file->findNext( T_DOC_COMMENT_TAG, $current_token + 1, $comment_end - 1 );
 		}
 	}
 }

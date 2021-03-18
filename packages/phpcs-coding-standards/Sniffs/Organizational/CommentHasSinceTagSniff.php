@@ -44,7 +44,7 @@ class CommentHasSinceTag implements Sniff {
 	 */
 	public function process( File $phpcs_file, $stack_ptr ) {
 		$tokens        = $phpcs_file->getTokens();
-		$comment_end   = $phpcs_file->findNext( T_DOC_COMMENT_CLOSE_TAG, ( $stack_ptr + 1 ) );
+		$comment_end   = $phpcs_file->findNext( T_DOC_COMMENT_CLOSE_TAG, $stack_ptr + 1 );
 		$comment_start = $tokens[ $comment_end ]['comment_opener'];
 
 		// Check for full stop on doc block tags.

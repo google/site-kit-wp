@@ -44,24 +44,24 @@ class DescriptionStartsWithThirdPersonVerbSniff implements Sniff {
 	 */
 	public function process( File $phpcs_file, $stack_ptr ) {
 		$tokens      = $phpcs_file->getTokens();
-		$comment_end = $phpcs_file->findNext( T_DOC_COMMENT_CLOSE_TAG, ( $stack_ptr + 1 ) );
+		$comment_end = $phpcs_file->findNext( T_DOC_COMMENT_CLOSE_TAG, $stack_ptr + 1 );
 
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		$last_token = ( $phpcs_file->numTokens - 1 );
+		$last_token = $phpcs_file->numTokens - 1;
 
 		$empty = array(
 			T_DOC_COMMENT_WHITESPACE,
 			T_DOC_COMMENT_STAR,
 		);
 
-		$short = $phpcs_file->findNext( $empty, ( $stack_ptr + 1 ), $comment_end, true );
+		$short = $phpcs_file->findNext( $empty, $stack_ptr + 1, $comment_end, true );
 
 		// Account for the fact that a short description might cover
 		// multiple lines.
 		$short_content = $tokens[ $short ]['content'];
 
 		// Search between this comment and the next.
-		$next_comment = $phpcs_file->findNext( T_DOC_COMMENT_OPEN_TAG, ( $stack_ptr + 1 ) );
+		$next_comment = $phpcs_file->findNext( T_DOC_COMMENT_OPEN_TAG, $stack_ptr + 1 );
 
 		// If this is the last comment we need to check between the comment and the end of the file to find it's subject.
 		if ( ! $next_comment ) {
@@ -69,7 +69,7 @@ class DescriptionStartsWithThirdPersonVerbSniff implements Sniff {
 		}
 
 		// Only continue if this comment is on a method or function.
-		$is_function = $phpcs_file->findNext( T_FUNCTION, ( $stack_ptr + 1 ), ( $next_comment - 1 ) );
+		$is_function = $phpcs_file->findNext( T_FUNCTION, $stack_ptr + 1, ( $next_comment - 1 ) );
 
 		// Remove any trailing white spaces which are detected by other sniffs.
 		$short_content = trim( $short_content );

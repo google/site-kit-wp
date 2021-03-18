@@ -44,7 +44,7 @@ class CommentTagsDescriptionsAligned implements Sniff {
 	 */
 	public function process( File $phpcs_file, $stack_ptr ) {
 		$tokens        = $phpcs_file->getTokens();
-		$comment_end   = $phpcs_file->findNext( T_DOC_COMMENT_CLOSE_TAG, ( $stack_ptr + 1 ) );
+		$comment_end   = $phpcs_file->findNext( T_DOC_COMMENT_CLOSE_TAG, $stack_ptr + 1 );
 		$comment_start = $tokens[ $comment_end ]['comment_opener'];
 
 		// List of @ comment types to check.
@@ -68,7 +68,7 @@ class CommentTagsDescriptionsAligned implements Sniff {
 			$pre_tag_whitespace          = $tokens[ ( $tag - 1 ) ];
 			$full_tag                    = $tokens[ $tag ];
 			$full_tag_comment_whitespace = $tokens[ ( $tag + 1 ) ];
-			$full_comment                = $tokens[ ( $tag + 2 ) ];
+			$full_comment                = $tokens[ $tag + 2 ];
 
 			$comment_tag_type = $tokens[ $tag ]['content'];
 			$tag_token        = $tag;
@@ -127,22 +127,22 @@ class CommentTagsDescriptionsAligned implements Sniff {
 
 						$comment_lines[] = array(
 							'comment' => $comment,
-							'token'   => ( $tag + 2 ),
+							'token'   => $tag + 2,
 							'indent'  => $tag_description_indent,
 						);
 
 						// Any strings until the next tag belong to this comment.
-						if ( isset( $tokens[ $comment_start ]['comment_tags'][ ( $pos + 1 ) ] ) === true ) {
-							$end = $tokens[ $comment_start ]['comment_tags'][ ( $pos + 1 ) ];
+						if ( isset( $tokens[ $comment_start ]['comment_tags'][ $pos + 1 ] ) === true ) {
+							$end = $tokens[ $comment_start ]['comment_tags'][ $pos + 1 ];
 						} else {
 							$end = $tokens[ $comment_start ]['comment_closer'];
 						}
 
-						for ( $i = ( $tag + 3 ); $i < $end; $i++ ) {
+						for ( $i = $tag + 3; $i < $end; $i++ ) {
 							if ( T_DOC_COMMENT_STRING === $tokens[ $i ]['code'] ) {
 								$indent = 0;
-								if ( T_DOC_COMMENT_WHITESPACE === $tokens[ ( $i - 1 ) ]['code'] ) {
-									$indent = $tokens[ ( $i - 1 ) ]['length'];
+								if ( T_DOC_COMMENT_WHITESPACE === $tokens[ $i - 1 ]['code'] ) {
+									$indent = $tokens[ $i - 1 ]['length'];
 								}
 
 								$comment        .= ' ' . $tokens[ $i ]['content'];
