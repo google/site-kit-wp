@@ -37,9 +37,3 @@ jobs:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
       - name: Jest Tests
         run: npm run test:js
-      - name: Build JS (Production Version, with tests)
-        run: npm run build:test
-      - name: Bundlesize
-        run: npm run test:bundlesize
-        env:
-          BUNDLESIZE_GITHUB_TOKEN: ${{ secrets.BUNDLESIZE_GITHUB_TOKEN }}

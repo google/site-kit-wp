@@ -27,6 +27,7 @@ use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_ReportRequest;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Resource_ManagementWebproperties;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_OrderBy;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperty;
@@ -461,6 +462,7 @@ class AnalyticsTest extends TestCase {
 					'profileID'             => $_GET['profileId'],
 					'internalWebPropertyID' => $expected_internal_id,
 					'useSnippet'            => true,
+					'canUseSnippet'         => true,
 					'anonymizeIP'           => true,
 					'adsenseLinked'         => false,
 					'trackingDisabled'      => array( 'loggedinUsers' ),
@@ -707,6 +709,33 @@ class AnalyticsTest extends TestCase {
 		$this->assertTrue( $result[1] instanceof Google_Service_AnalyticsReporting_OrderBy );
 		$this->assertEquals( 'sessions', $result[1]->getFieldName() );
 		$this->assertEquals( 'ASCENDING', $result[1]->getSortOrder() );
+	}
+
+	public function test_create_analytics_site_data_request() {
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$analytics = new Analytics( $context );
+
+		$reflected_create_analytics_site_data_request_method = new ReflectionMethod( 'Google\Site_Kit\Modules\Analytics', 'create_analytics_site_data_request' );
+		$reflected_create_analytics_site_data_request_method->setAccessible( true );
+
+		$result = $reflected_create_analytics_site_data_request_method->invoke( $analytics, array() );
+		$this->assertTrue( $result instanceof Google_Service_AnalyticsReporting_ReportRequest );
+
+		$clauses = $result->getDimensionFilterClauses();
+		$this->assertTrue( is_array( $clauses ) );
+		$this->assertTrue( count( $clauses ) > 0 );
+
+		$filters = $clauses[0]->getFilters();
+		$this->assertTrue( is_array( $filters ) );
+		$this->assertEquals( 1, count( $filters ) );
+		$this->assertEquals( 'ga:hostname', $filters[0]->getDimensionName() );
+		$this->assertEquals( 'EXACT', $filters[0]->getOperator() );
+
+		$hostname    = wp_parse_url( $context->get_reference_site_url(), PHP_URL_HOST );
+		$expressions = $filters[0]->getExpressions();
+		$this->assertTrue( is_array( $expressions ) );
+		$this->assertEquals( 1, count( $expressions ) );
+		$this->assertEquals( $hostname, $expressions[0] );
 	}
 
 }
