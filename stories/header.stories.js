@@ -28,27 +28,36 @@ import Header from '../assets/js/components/Header';
 import DateRangeSelector from '../assets/js/components/DateRangeSelector';
 import { createTestRegistry, provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
 
-storiesOf( 'Global', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		provideUserAuthentication( registry );
-		provideSiteInfo( registry );
+const withRegistry = ( Story ) => {
+	const registry = createTestRegistry();
+	provideUserAuthentication( registry );
+	provideSiteInfo( registry );
 
-		return storyFn( registry );
-	} )
-	.add( 'Plugin Header', ( registry ) => {
+	return (
+		<WithTestRegistry registry={ registry }>
+			<Story />
+		</WithTestRegistry>
+	);
+};
+
+storiesOf( 'Global', module )
+	.add( 'Plugin Header', () => {
 		return (
-			<WithTestRegistry registry={ registry }>
-				<Header />
-			</WithTestRegistry>
+			<Header />
 		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Plugin Header with Date Selector', ( registry ) => {
+	.add( 'Plugin Header with Date Selector', () => {
 		return (
-			<WithTestRegistry features={ [ 'storeErrorNotifications' ] } registry={ registry }>
-				<Header>
-					<DateRangeSelector />
-				</Header>
-			</WithTestRegistry>
+			<Header>
+				<DateRangeSelector />
+			</Header>
 		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} );
