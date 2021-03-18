@@ -37,6 +37,7 @@
 @import "@material/menu/mdc-menu";
 @import "@material/menu-surface/mdc-menu-surface";
 @import "@material/radio/mdc-radio";
+@import "@material/react-card/index";
 @import "@material/react-select/index";
 @import "@material/react-tab/index";
 @import "@material/react-tab-bar/index";
@@ -97,6 +98,7 @@
 @import "components/global/googlesitekit-overlay";
 @import "components/global/googlesitekit-page";
 @import "components/global/googlesitekit-pagespeed-dashboard-widget";
+@import "components/global/googlesitekit-page-footer";
 @import "components/global/googlesitekit-page-header";
 @import "components/global/googlesitekit-percent-circle";
 @import "components/global/googlesitekit-post-searcher";
@@ -145,6 +147,9 @@
 @import "components/user-input/googlesitekit-user-input-controls";
 @import "components/user-input/googlesitekit-user-input-notification";
 
+// Tour Tooltip
+@import "components/tour-tooltip/googlesitekit-tour-tooltip";
+
 // Widget Styles
 @import "widgets/widget-area";
 @import "widgets/widget-context";
@@ -154,6 +159,9 @@
 
 // Utilities
 @import "utilities/alignment";
+@import "utilities/display";
+@import "utilities/font-weight";
 @import "utilities/margin";
 @import "utilities/overflow";
+@import "utilities/overflow-wrap";
 @import "utilities/text-align";

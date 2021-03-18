@@ -36,13 +36,13 @@ import CTA from '../../../../components/legacy-notifications/cta';
 import { calculateChange } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
-import ReportError from '../../../../components/ReportError';
-
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
-function DashboardGoalsWidget( { WidgetReportZero } ) {
+function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 	const {
 		data,
+		totalUsers,
 		error,
 		loading,
 		serviceURL,
@@ -75,11 +75,34 @@ function DashboardGoalsWidget( { WidgetReportZero } ) {
 			],
 		};
 
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+
+		const totalUsersArgs = {
+			startDate,
+			endDate,
+			url, // see note below
+			compareStartDate,
+			compareEndDate,
+			metrics: [
+				{
+					expression: 'ga:users',
+					alias: 'Total Users',
+				},
+			],
+		};
+
+		const isLoading = ! store.hasFinishedResolution( 'getReport', [ args ] ) ||
+			! store.hasFinishedResolution( 'getGoals', [] ) ||
+			! store.hasFinishedResolution( 'getReport', [ totalUsersArgs ] );
+
 		return {
 			data: store.getReport( args ),
+			totalUsers: store.getReport( totalUsersArgs ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ) || store.getErrorForSelector( 'getGoals', [] ),
-			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ) || ! store.hasFinishedResolution( 'getGoals', [] ),
-			serviceURL: store.getServiceReportURL( 'conversions-goals-overview' ),
+			loading: isLoading,
+			serviceURL: store.getServiceReportURL( 'conversions-goals-overview', {
+				...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
+			} ),
 			goals: store.getGoals(),
 		};
 	} );
@@ -94,7 +117,7 @@ function DashboardGoalsWidget( { WidgetReportZero } ) {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( ! goals || ! Array.isArray( goals.items ) || ! goals.items.length ) {
@@ -108,7 +131,7 @@ function DashboardGoalsWidget( { WidgetReportZero } ) {
 		);
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isZeroReport( totalUsers ) ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 

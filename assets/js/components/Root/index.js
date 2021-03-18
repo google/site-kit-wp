@@ -32,10 +32,12 @@ import { enabledFeatures } from '../../features';
 import PermissionsModal from '../PermissionsModal';
 import RestoreSnapshots from '../RestoreSnapshots';
 import CollectModuleData from '../data/collect-module-data';
+import FeatureTours from '../FeatureTours';
 
 export default function Root( {
 	children,
 	registry,
+	viewContext = null,
 	// TODO: Remove legacy dataAPI prop support once phased out.
 	dataAPIContext,
 	dataAPIModuleArgs,
@@ -47,6 +49,7 @@ export default function Root( {
 					<RestoreSnapshots>
 						<HashRouter>
 							{ children }
+							{ viewContext && <FeatureTours viewContext={ viewContext } /> }
 							{ dataAPIContext && (
 							// Legacy dataAPI support.
 								<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
@@ -63,6 +66,7 @@ export default function Root( {
 Root.propTypes = {
 	children: PropTypes.node.isRequired,
 	registry: PropTypes.object,
+	viewContext: PropTypes.string,
 	dataAPIContext: PropTypes.string,
 	dataAPIModuleArgs: PropTypes.object,
 };

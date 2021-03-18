@@ -26,32 +26,36 @@ import { useState, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
-import { FORM_ALL_TRAFFIC_WIDGET, DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import {
+	UI_DIMENSION_NAME,
+	UI_DIMENSION_VALUE,
+	DATE_RANGE_OFFSET,
+	STORE_NAME,
+	UI_ALL_TRAFFIC_LOADED,
+} from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
 import { getURLPath } from '../../../../../util/getURLPath';
 import whenActive from '../../../../../util/when-active';
 import SourceLink from '../../../../../components/SourceLink';
-import ReportError from '../../../../../components/ReportError';
-import ReportZero from '../../../../../components/ReportZero';
 import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import { isZeroReport } from '../../../util';
-const { Widget } = Widgets.components;
-const { useSelect } = Data;
+import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
 
-function DashboardAllTrafficWidget() {
+const { useSelect, useDispatch } = Data;
+
+function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const [ firstLoad, setFirstLoad ] = useState( true );
 	const [ currentRange, setCurrentRange ] = useState( '' );
 
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const dimensionName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionName' ) || 'ga:channelGrouping' );
-	const dimensionValue = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ALL_TRAFFIC_WIDGET, 'dimensionValue' ) );
+	const dimensionName = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DIMENSION_NAME ) || 'ga:channelGrouping' );
+	const dimensionValue = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DIMENSION_VALUE ) );
 	const entityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
 	const {
@@ -104,17 +108,17 @@ function DashboardAllTrafficWidget() {
 		totalsArgs.dimensionFilters = { [ dimensionName ]: dimensionValue };
 	}
 
-	const pieChartLoaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ pieArgs ] ) );
-	const pieChartError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ pieArgs ] ) );
-	const pieChartReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( pieArgs ) );
+	const pieChartLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ pieArgs ] ) );
+	const pieChartError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ pieArgs ] ) );
+	const pieChartReport = useSelect( ( select ) => select( STORE_NAME ).getReport( pieArgs ) );
 
-	const userCountGraphLoaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ graphArgs ] ) );
-	const userCountGraphError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ graphArgs ] ) );
-	const userCountGraphReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( graphArgs ) );
+	const userCountGraphLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ graphArgs ] ) );
+	const userCountGraphError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ graphArgs ] ) );
+	const userCountGraphReport = useSelect( ( select ) => select( STORE_NAME ).getReport( graphArgs ) );
 
-	const totalUsersLoaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ totalsArgs ] ) );
-	const totalUsersError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ totalsArgs ] ) );
-	const totalUsersReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( totalsArgs ) );
+	const totalUsersLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ totalsArgs ] ) );
+	const totalUsersError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ totalsArgs ] ) );
+	const totalUsersReport = useSelect( ( select ) => select( STORE_NAME ).getReport( totalsArgs ) );
 
 	let reportType;
 	switch ( dimensionName ) {
@@ -130,15 +134,14 @@ function DashboardAllTrafficWidget() {
 			break;
 	}
 
-	let reportArgs = {};
+	const reportArgs = generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } );
+
 	if ( entityURL ) {
-		reportArgs = {
-			'explorer-table.plotKeys': '[]',
-			'_r.drilldown': `analytics.pagePath:${ getURLPath( entityURL ) }`,
-		};
+		reportArgs[ 'explorer-table.plotKeys' ] = '[]';
+		reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath( entityURL ) }`;
 	}
 
-	const serviceReportURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( reportType, reportArgs ) );
+	const serviceReportURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( reportType, reportArgs ) );
 
 	useEffect( () => {
 		if ( dateRange !== currentRange ) {
@@ -155,20 +158,28 @@ function DashboardAllTrafficWidget() {
 		currentRange,
 	] );
 
+	// Set a flag in the core/ui store when all data is loaded.
+	// Currently only used by the feature tour to delay showing
+	// while the widget is in a loading state.
+	const { setValue } = useDispatch( CORE_UI );
+	useEffect( () => {
+		if ( firstLoad && pieChartLoaded && totalUsersLoaded && userCountGraphLoaded ) {
+			setValue( UI_ALL_TRAFFIC_LOADED, true );
+		}
+	}, [ firstLoad, pieChartLoaded, totalUsersLoaded, userCountGraphLoaded ] );
+
 	if ( pieChartError ) {
-		return <ReportError moduleSlug="analytics" error={ pieChartError } />;
+		return <WidgetReportError moduleSlug="analytics" error={ pieChartError } />;
 	}
 
 	if ( isZeroReport( pieChartReport ) ) {
-		// TODO: Replace with `props.WidgetReportZero` once legacy dashboard UI has been removed.
-		return <ReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	return (
 		<Widget
-			slug="analyticsAllTraffic"
 			className="googlesitekit-widget--footer-v2"
-			footer={ () => (
+			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
 					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
@@ -212,7 +223,6 @@ function DashboardAllTrafficWidget() {
 						<UserDimensionsPieChart
 							dimensionName={ dimensionName }
 							dimensionValue={ dimensionValue }
-							sourceLink={ serviceReportURL }
 							loaded={ pieChartLoaded && ! firstLoad }
 							report={ pieChartReport }
 						/>

@@ -58,7 +58,7 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 			height: 270,
 			width: '100%',
 			chartArea: {
-				height: '80%',
+				height: '77%',
 				width: '87%',
 			},
 			legend: {
@@ -85,24 +85,24 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 				minorGridlines: {
 					color: '#eee',
 				},
-				textStyle: {
-					color: '#616161',
-					fontSize: 12,
-				},
-				titleTextStyle: {
-					color: '#616161',
-					fontSize: 12,
-					italic: false,
-				},
 			},
 		};
 
 		options.series = series;
 		options.vAxes = vAxes;
 
-		// Clean up chart if more than three stats are selected.
-		if ( 3 <= selectedStats.length ) {
-			options.vAxis.textPosition = 'none';
+		if ( selectedStats.length < 3 ) {
+			options.vAxis.textStyle = {
+				color: '#616161',
+				fontSize: 12,
+			};
+			options.vAxis.titleTextStyle = {
+				color: '#616161',
+				fontSize: 12,
+				italic: false,
+			};
+		} else {
+			// Clean up chart if three or more stats are selected.
 			options.vAxis.gridlines.color = '#fff';
 			options.vAxis.minorGridlines.color = '#fff';
 			options.chartArea.width = '98%';

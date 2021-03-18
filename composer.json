@@ -7,17 +7,19 @@
   "require-dev": {
     "automattic/vipwpcs": "^2",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
+    "roots/wordpress": ">=4.7",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
-    "phpunit/phpunit": "^5",
+    "phpunit/phpunit": "^5 || ^6 || ^7",
     "roave/security-advisories": "dev-master",
     "squizlabs/php_codesniffer": "^3.3",
-    "wp-coding-standards/wpcs": "^2"
+    "wp-coding-standards/wpcs": "^2",
+    "wp-phpunit/wp-phpunit": ">=4.7"
   },
   "require": {
     "php": ">=5.6",
     "ext-json": "*",
     "ext-openssl": "*",
-    "google/apiclient": "^2.0",
+    "google/apiclient": "^2.9.1",
     "google/apiclient-services": ">=0.157",
     "guzzlehttp/guzzle": "^5.3.3"
   },
@@ -39,6 +41,9 @@
       "php": "5.6"
     },
     "sort-packages": true
+  },
+  "extra": {
+    "wordpress-install-dir": "vendor/roots/wordpress"
   },
   "scripts": {
     "post-install-cmd": [
@@ -72,6 +77,7 @@
     ],
     "lint": "phpcs",
     "lint-fix": "phpcbf",
-    "test":  "phpunit"
+    "test":  "phpunit",
+    "test:multisite": "@test --configuration=phpunit.multisite.xml"
   }
 }

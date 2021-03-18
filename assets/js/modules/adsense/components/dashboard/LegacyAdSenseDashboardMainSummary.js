@@ -132,7 +132,6 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 											<Sparkline
 												data={ extractForSparkline( processedData.dataMap, 2 ) }
 												change={ 1 }
-												loadSmall={ false }
 											/>
 										}
 										context="compact"
@@ -157,7 +156,6 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 											<Sparkline
 												data={ extractForSparkline( processedData.dataMap, 1 ) }
 												change={ 1 }
-												loadSmall={ false }
 											/>
 										}
 										context="compact"
@@ -179,7 +177,6 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 											<Sparkline
 												data={ extractForSparkline( processedData.dataMap, 3 ) }
 												change={ 1 }
-												loadSmall={ false }
 											/>
 										}
 										context="compact"
@@ -238,7 +235,7 @@ export default withData(
 			identifier: 'adsense',
 			datapoint: 'earnings',
 			data: {
-				dateRange: 'this-month',
+				// dateRange not set here to inherit from googlesitekit.dateRange filter: last-x-days
 				dimensions: [ 'DATE' ],
 			},
 			priority: 1,

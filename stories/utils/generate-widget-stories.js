@@ -24,7 +24,6 @@ import { storiesOf, Story } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Widgets from 'googlesitekit-widgets';
 import { CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
@@ -32,8 +31,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 } from '../../tests/js/utils';
-
-const { components: { Widget } } = Widgets;
+import { getWidgetComponentProps } from '../../assets/js/googlesitekit/widgets/util';
 
 /**
  * Generates stories for a report based widget using provided data.
@@ -210,27 +208,54 @@ export function generateReportBasedWidgetStories( {
 		...customVariants,
 	};
 
-	let widget;
+	let widgetElement;
+
+	const slug = moduleSlugs.map( ( mapSlug ) => `${ mapSlug }-widget` ).join( ' ' );
+	const widgetComponentProps = getWidgetComponentProps( slug );
+
 	if ( wrapWidget ) {
-		const slugs = moduleSlugs.map( ( slug ) => {
-			return `${ slug }-widget`;
-		} );
-		widget = (
-			<Widget slug={ slugs.join( ' ' ) }>
-				<Component />
+		const { Widget } = widgetComponentProps;
+		widgetElement = (
+			<Widget>
+				<Component { ...widgetComponentProps } />
 			</Widget>
 		);
 	} else {
-		widget = <Component />;
+		widgetElement = <Component { ...widgetComponentProps } />;
 	}
 
 	Object.keys( variants ).forEach( ( variant ) => {
 		stories.add( variant, ( registry ) => (
 			<WithTestRegistry registry={ registry } callback={ variants[ variant ] }>
-				{ widget }
+				{ widgetElement }
 			</WithTestRegistry>
 		) );
 	} );
 
 	return stories;
+}
+
+/**
+ * Creates and returns a new report data generator using provided factory function.
+ *
+ * @since 1.28.0
+ *
+ * @param {Function} factory The factory function.
+ * @return {Function} The report data generator.
+ */
+export function makeReportDataGenerator( factory ) {
+	return ( options ) => {
+		const results = { options };
+
+		if ( Array.isArray( options ) ) {
+			results.data = [];
+			for ( let i = 0; i < options.length; i++ ) {
+				results.data.push( factory( options[ i ] ) );
+			}
+		} else {
+			results.data = factory( options );
+		}
+
+		return results;
+	};
 }

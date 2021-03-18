@@ -31,7 +31,6 @@ import { addAction, applyFilters, doAction, addFilter, removeFilter, hasAction }
 /**
  * Internal dependencies
  */
-import { getCurrentDateRangeSlug } from '../../util/date-range';
 import { fillFilterWithComponent } from '../../util/helpers';
 import { getQueryParameter } from '../../util/standalone';
 import { isWPError } from '../../util/errors';
@@ -44,74 +43,9 @@ import { trackAPIError } from '../../util/api';
 
 export { TYPE_CORE, TYPE_MODULES };
 
-/**
- * Gets a copy of the given data request object with the data.dateRange populated via filter, if not set.
- * Respects the current dateRange value, if set.
- *
- * @since 1.0.0
- *
- * @param {Object} originalRequest Data request object.
- * @param {string} dateRange       Default date range slug to use if not specified in the request.
- * @return {Object} New data request object.
- */
-const requestWithDateRange = ( originalRequest, dateRange ) => {
-	// Make copies for reference safety, ensuring data exists.
-	const request = { data: {}, ...originalRequest };
-	// Use the dateRange in request.data if passed, fallback to provided default value.
-
-	// Provide the prev-dateRange-days to allow withData to handle the queries for <AdSensePerformanceWidget /> - see #317.
-	if ( request.data.dateRange === 'prev-date-range-placeholder' ) {
-		const prevDateRange = dateRange.replace( 'last', 'prev' );
-		request.data = {
-			...request.data,
-			dateRange: prevDateRange,
-		};
-		return request;
-	}
-
-	request.data = { dateRange, ...request.data };
-
-	return request;
-};
-
 const dataAPI = {
 
 	maxRequests: 10,
-
-	/**
-	 * Gets data for multiple requests from the cache in a single batch process.
-	 *
-	 * This is a replica of combinedGet but only fetching data from cache. No requests are done.
-	 * Likely this will be removed after refactoring.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param {Array.<{maxAge: Date, type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest An array of data requests to resolve.
-	 * @return {Promise} A promise for the cache lookup.
-	 */
-	combinedGetFromCache( combinedRequest ) {
-		return new Promise( ( resolve, reject ) => {
-			try {
-				const responseData = [];
-				const dateRange = getCurrentDateRangeSlug();
-				each( combinedRequest, ( originalRequest ) => {
-					const request = requestWithDateRange( originalRequest, dateRange );
-					request.key = getCacheKey( request.type, request.identifier, request.datapoint, request.data );
-					const cache = getCache( request.key, request.maxAge );
-
-					if ( 'undefined' !== typeof cache ) {
-						responseData[ request.key ] = cache;
-
-						this.resolve( request, cache );
-					}
-				} );
-
-				resolve( responseData );
-			} catch ( err ) {
-				reject();
-			}
-		} );
-	},
 
 	// Disabled because the typing of the `combinedRequest` param causes the JSDoc rules
 	// to format things quite strangely.
@@ -130,9 +64,7 @@ const dataAPI = {
 		// First, resolve any cache matches immediately, queue resolution of the rest.
 		let dataRequest = [];
 		let cacheDelay = 25;
-		const dateRange = getCurrentDateRangeSlug();
-		each( combinedRequest, ( originalRequest ) => {
-			const request = requestWithDateRange( originalRequest, dateRange );
+		each( combinedRequest, ( request ) => {
 			request.key = getCacheKey( request.type, request.identifier, request.datapoint, request.data );
 			const cache = getCache( request.key, request.maxAge );
 
@@ -209,7 +141,9 @@ const dataAPI = {
 					const { datapoint, type, identifier } = dataRequest[ requestIndex ];
 
 					this.handleWPError( {
-						method: 'POST',
+						// Report as GET requests as this is the internal method
+						// rather than the method of the batch request itself.
+						method: 'GET',
 						datapoint,
 						type,
 						identifier,
@@ -234,15 +168,15 @@ const dataAPI = {
 			} );
 
 			// Resolve any returned data requests, then re-request the remainder after a pause.
-		} ).catch( ( err ) => {
+		} ).catch( ( error ) => {
 			// Handle the error and give up trying.
-			console.warn( 'Error caught during combinedGet', err ); // eslint-disable-line no-console
+			console.warn( 'Error caught during combinedGet', `code:${ error.code }`, `error:"${ error.message }"` ); // eslint-disable-line no-console
 		} );
 	},
 
 	handleWPError( { method, datapoint, type, identifier, error } ) {
 		// eslint-disable-next-line no-console
-		console.warn( 'WP Error in data response', error );
+		console.warn( 'WP Error in data response', `method:${ method }`, `type:${ type }`, `identifier:${ identifier }`, `datapoint:${ datapoint }`, `error:"${ error.message }"` );
 
 		trackAPIError( { method, datapoint, type, identifier, error } );
 

@@ -18,6 +18,7 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-widget.googlesitekit-widget--legacy-all-traffic-widget,
 	.googlesitekit-widget.googlesitekit-widget--analyticsAllTraffic {
 
 		.mdc-tab-scroller__scroll-content {
@@ -43,6 +44,10 @@
 		.mdc-tab__text-label {
 			letter-spacing: normal;
 			text-transform: none;
+		}
+
+		.googlesitekit-widget__footer {
+			padding-top: 0;
 		}
 	}
 
@@ -73,6 +78,7 @@
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions {
+		min-height: 450px;
 		padding-top: 30px;
 		position: relative;
 
@@ -104,6 +110,11 @@
 		svg {
 			vertical-align: bottom;
 		}
+
+		.googlesitekit-cta-link {
+			font-size: 1em;
+			letter-spacing: 0.04em;
+		}
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__totalcount--loading {
@@ -118,19 +129,32 @@
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart {
+		height: 100%;
 		position: relative;
+		width: 100%;
+	}
 
-		&.googlesitekit-widget--analyticsAllTraffic__dimensions--loading {
-			visibility: hidden;
-		}
+	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart .googlesitekit-chart-v2-loading {
+		padding-bottom: 32px;
+		padding-top: 32px;
+	}
 
+	.googlesitekit-widget--analyticsAllTraffic__selectable {
 		// Use pointer when hovering over chart slice or legend entry.
-		.googlesitekit-line-chart > div > div > div > svg {
+		.googlesitekit-chart-v2__inner > div > div > div > svg {
 
 			& > g > path,
 			& > g > g {
 				cursor: pointer;
 			}
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__slice-selected {
+		// Allow interacting with tooltip (e.g. to click links) when slice is
+		// selected.
+		.googlesitekit-chart-v2--PieChart div.google-visualization-tooltip {
+			pointer-events: auto;
 		}
 	}
 
@@ -151,6 +175,14 @@
 		}
 	}
 
+	.googlesitekit-widget--analyticsAllTraffic__tabs--small {
+		text-align: center;
+
+		@media (min-width: $bp-tablet) {
+			display: none;
+		}
+	}
+
 	.googlesitekit-widget--analyticsAllTraffic__tabs--loading {
 		display: flex;
 		flex-direction: row;
@@ -158,6 +190,99 @@
 
 		.googlesitekit-preview-block {
 			margin: 0 10px;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__totals {
+		// HACK: Fixes jumping of widget when a dimension is selected.
+		@media (min-width: $bp-desktop) {
+			margin-bottom: $grid-gap-desktop * -1;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__chart {
+		min-height: 368px;
+		position: relative;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend {
+		margin-top: -6px;
+		text-align: center;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend-slice {
+		align-items: center;
+		border-radius: 4px;
+		color: $c-cape-cod;
+		display: inline-flex;
+		font-size: 12px;
+		font-weight: $fw-primary-normal;
+		margin: 0 4px 0 0;
+		padding: 7px 4px;
+		position: relative;
+
+		&:hover {
+			text-decoration: none;
+		}
+
+		&:focus {
+			outline: none;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__label {
+		display: flex;
+		flex-direction: column;
+
+		&::after {
+			content: attr(data-label);
+			display: inline-flex;
+			font-weight: $fw-primary-medium;
+			height: 0;
+			visibility: hidden;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__dot {
+		border-radius: 50%;
+		display: inline-block;
+		height: 12px;
+		margin: 0 4px 0 0;
+		width: 12px;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__underlay {
+		display: block;
+		height: 100%;
+		left: 0;
+		opacity: 0;
+		position: absolute;
+		top: 0;
+		transition: opacity $t-default ease-in-out;
+		width: 100%;
+		z-index: 1;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend-active {
+		font-weight: $fw-primary-medium;
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend-active,
+	.googlesitekit-widget--analyticsAllTraffic__legend-slice:hover {
+
+		.googlesitekit-widget--analyticsAllTraffic__underlay {
+			opacity: 0.16;
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend-others {
+		cursor: text;
+
+		&:hover {
+
+			.googlesitekit-widget--analyticsAllTraffic__underlay {
+				opacity: 0;
+			}
 		}
 	}
 }
