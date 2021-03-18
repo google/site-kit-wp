@@ -25,7 +25,7 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { trackEvent } from '../../util';
-import UserInputSettings from '../notifications/UserInputSettings';
+import UserInputSettings from './UserInputSettings';
 
 const UserInputPromptNotification = () => {
 	useEffect( () => {
