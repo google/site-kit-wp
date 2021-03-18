@@ -107,7 +107,7 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <WidgetReportZero module="adsense" />;
+		return <WidgetReportZero moduleSlug="adsense" />;
 	}
 
 	const { rows } = data?.[ 0 ]?.data || {};
