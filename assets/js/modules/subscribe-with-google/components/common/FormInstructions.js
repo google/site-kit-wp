@@ -1,5 +1,5 @@
 /**
- * Tag Manager Form Instructions component.
+ * Subscribe with Google Form Instructions component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

@@ -1,5 +1,5 @@
 /**
- * Tag Manager Use Snippet Switch component.
+ * Subscribe with Google Use Snippet Switch component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

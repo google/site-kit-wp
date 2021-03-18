@@ -1,5 +1,5 @@
 /**
- * Tag Manager module initialization.
+ * Subscribe with Google module initialization.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

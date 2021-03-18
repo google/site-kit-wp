@@ -1,5 +1,5 @@
 /**
- * Tag Manager useGAPropertyIDEffect custom hook.
+ * Subscribe with Google useGAPropertyIDEffect custom hook.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

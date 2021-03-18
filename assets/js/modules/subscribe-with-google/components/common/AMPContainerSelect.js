@@ -1,5 +1,5 @@
 /**
- * Tag Manager AMP Container Select component.
+ * Subscribe with Google AMP Container Select component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

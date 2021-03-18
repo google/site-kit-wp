@@ -1,5 +1,5 @@
 /**
- * Tag Manager Existing Tag Notice component.
+ * Subscribe with Google Existing Tag Notice component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

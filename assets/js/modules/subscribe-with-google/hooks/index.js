@@ -1,5 +1,5 @@
 /**
- * Tag Manager custom hooks.
+ * Subscribe with Google custom hooks.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

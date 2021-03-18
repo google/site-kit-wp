@@ -1,5 +1,5 @@
 /**
- * Tag Manager Setup Error Notice component.
+ * Subscribe with Google Setup Error Notice component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

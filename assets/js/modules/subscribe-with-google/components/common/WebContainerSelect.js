@@ -1,5 +1,5 @@
 /**
- * Tag Manager Web Container Select component.
+ * Subscribe with Google Web Container Select component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

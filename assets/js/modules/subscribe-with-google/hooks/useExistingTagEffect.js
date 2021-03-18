@@ -1,5 +1,5 @@
 /**
- * Tag Manager useExistingTag custom hook.
+ * Subscribe with Google useExistingTag custom hook.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

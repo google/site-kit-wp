@@ -1,5 +1,5 @@
 /**
- * Tag Manager Account Select component.
+ * Subscribe with Google Account Select component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

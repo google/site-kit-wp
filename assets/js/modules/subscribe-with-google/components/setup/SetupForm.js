@@ -1,5 +1,5 @@
 /**
- * Tag Manager Setup Form component.
+ * Subscribe with Google Setup Form component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

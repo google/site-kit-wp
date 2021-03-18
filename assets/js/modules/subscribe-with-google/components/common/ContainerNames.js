@@ -1,5 +1,5 @@
 /**
- * Tag Manager container names component.
+ * Subscribe with Google container names component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

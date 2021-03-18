@@ -1,5 +1,5 @@
 /**
- * Tag Manager Account Create component.
+ * Subscribe with Google Account Create component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

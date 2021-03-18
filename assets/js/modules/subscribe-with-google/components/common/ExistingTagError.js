@@ -1,5 +1,5 @@
 /**
- * Tag Manager Existing Tag Error component.
+ * Subscribe with Google Existing Tag Error component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
