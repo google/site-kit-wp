@@ -26,14 +26,13 @@ import PropTypes from 'prop-types';
  */
 import { useInstanceId as useInstanceID } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
-import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import Notification from '../legacy-notifications/notification';
-import { getTimeInSeconds, trackEvent } from '../../util';
+import { getTimeInSeconds } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import PersonSittingSVG from '../../../svg/person-sitting.svg';
@@ -43,12 +42,6 @@ export default function UserInputSettings( { onCTAClick, onDismiss, isDismissabl
 	const instanceID = useInstanceID( UserInputSettings );
 	const ctaLink = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
 	const userInputState = useSelect( ( select ) => select( CORE_USER ).getUserInputState() );
-
-	useEffect( () => {
-		if ( isDismissable ) {
-			trackEvent( 'user_input', 'prompt_notification_view' );
-		}
-	}, [ isDismissable ] );
 
 	if ( userInputState === 'completed' ) {
 		return null;

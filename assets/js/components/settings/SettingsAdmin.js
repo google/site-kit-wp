@@ -49,13 +49,16 @@ const SettingsAdmin = () => {
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const goTo = ( questionIndex = 1 ) => {
-		trackEvent( 'user_input', 'settings_edit', USER_INPUT_QUESTIONS_LIST[ questionIndex - 1 ] );
+		const questionSlug = USER_INPUT_QUESTIONS_LIST[ questionIndex - 1 ];
+		if ( questionSlug ) {
+			trackEvent( 'user_input', 'settings_edit', questionSlug );
 
-		navigateTo( addQueryArgs( userInputURL, {
-			question: USER_INPUT_QUESTIONS_LIST[ questionIndex - 1 ],
-			redirect_url: global.location.href,
-			single: 'settings', // Allows the user to edit a single question then return to the settings page.
-		} ) );
+			navigateTo( addQueryArgs( userInputURL, {
+				question: questionSlug,
+				redirect_url: global.location.href,
+				single: 'settings', // Allows the user to edit a single question then return to the settings page.
+			} ) );
+		}
 	};
 
 	useEffect( () => {
