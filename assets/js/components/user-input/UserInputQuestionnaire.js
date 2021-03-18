@@ -136,7 +136,7 @@ export default function UserInputQuestionnaire() {
 		// we need to select use a one-based index, hence the ` + 1` here for
 		// the `activeSlugIndex` selector.
 		global.document.getElementById( `googlesitekit-user-input-question-${ activeSlugIndex + 1 }` )?.scrollIntoView( { behavior: 'smooth' } );
-	}, [ activeSlugIndex, shouldScrollToActiveQuestion ] );
+	}, [ activeSlugIndex ] );
 
 	// Update the callbacks and labels for the questions if the user is editing a *single question*.
 	let backCallback = back;
