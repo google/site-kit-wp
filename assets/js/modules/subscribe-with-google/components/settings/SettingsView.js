@@ -27,84 +27,64 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME } from '../../datastore/constants';
-import {
-	ExistingTagError,
-	ExistingTagNotice,
-} from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
-	const ampContainerID = useSelect( ( select ) => select( STORE_NAME ).getAMPContainerID() );
-	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
-	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
-	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 
 	return (
 		<Fragment>
 
-			{ /* Prevent showing ExistingTagError and general error notice at the same time. */ }
-			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } /> }
-			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
-			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
+			<StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } />
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Account', 'google-site-kit' ) }
+						{ __( 'Publication name', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ accountID } />
 					</p>
 				</div>
 
-				{ ( ! isAMP || isSecondaryAMP ) && (
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ isSecondaryAMP && __( 'Web Container ID', 'google-site-kit' ) }
-							{ ! isSecondaryAMP && __( 'Container ID', 'google-site-kit' ) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting value={ containerID } />
-						</p>
-					</div>
-				) }
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Publication ID', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ accountID } />
+					</p>
+				</div>
 
-				{ isAMP && (
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ isSecondaryAMP && __( 'AMP Container ID', 'google-site-kit' ) }
-							{ ! isSecondaryAMP && __( 'Container ID', 'google-site-kit' ) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting value={ ampContainerID } />
-						</p>
-					</div>
-				) }
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Revenue model', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ accountID } />
+					</p>
+				</div>
 			</div>
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Subscribe with Google Code Snippet', 'google-site-kit' ) }
+						{ __( 'Product(s)', 'google-site-kit' ) }
 					</h5>
-
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ useSnippet && __( 'Snippet is inserted', 'google-site-kit' ) }
-						{ ! useSnippet && __( 'Snippet is not inserted', 'google-site-kit' ) }
+						<DisplaySetting value={ accountID } />
 					</p>
+				</div>
 
-					{ hasExistingTag && (
-						<p>
-							{ __( 'Placing two tags at the same time is not recommended.', 'google-site-kit' ) }
-						</p>
-					) }
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Post Types default to', 'google-site-kit' ) } (?)
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ accountID } />
+					</p>
 				</div>
 			</div>
 		</Fragment>
