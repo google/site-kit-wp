@@ -120,8 +120,16 @@ export default function UserInputKeywords( { slug, max } ) {
 							'googlesitekit-user-input__text-option': values.length > i + 1 || value.length > 0,
 						} ) }
 					>
+						<label
+							htmlFor={ `${ slug }-keyword-${ i }` }
+							className="screen-reader-text"
+						>
+							{ __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' ) }
+						</label>
 						<TextField
-							label={ i + 1 === values.length ? __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' ) : '' }
+							label={ values.length === 1 && values[ 0 ] === ''
+								? __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' )
+								: '' }
 							noLabel
 						>
 							<Input
