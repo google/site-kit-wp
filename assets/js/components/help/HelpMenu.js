@@ -68,7 +68,7 @@ function HelpMenu( { children } ) {
 		<Fragment>
 			<div className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu googlesitekit-help-menu mdc-menu-surface--anchor">
 				<Button
-					aria-controls="help-menu"
+					aria-controls="googlesitekit-help-menu"
 					aria-expanded={ menuOpen }
 					aria-label={ __( 'Open Help menu', 'google-site-kit' ) }
 					aria-haspopup="menu"
