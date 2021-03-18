@@ -17,7 +17,7 @@
  */
 
 export { default as AnalyticsAdSenseDashboardWidgetLayout } from './AnalyticsAdSenseDashboardWidgetLayout';
-export { default as AnalyticsAdSenseDashboardWidgetTopPagesTable } from './AnalyticsAdSenseDashboardWidgetTopPagesTable';
+export { default as LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable } from './LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable';
 export { default as AnalyticsDashboardWidget } from './AnalyticsDashboardWidget';
 export { default as AnalyticsDashboardWidgetOverview } from './AnalyticsDashboardWidgetOverview';
 export { default as AnalyticsDashboardWidgetSiteStats } from './AnalyticsDashboardWidgetSiteStats';
