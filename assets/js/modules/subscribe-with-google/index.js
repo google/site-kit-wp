@@ -21,7 +21,7 @@
  */
 import { SetupMain } from '../tagmanager/components/setup';
 import { SettingsEdit, SettingsView } from '../tagmanager/components/settings';
-import TagManagerIcon from '../../../svg/subscribe-with-google.svg';
+import SubscribeWithGoogleIcon from '../../../svg/subscribe-with-google.svg';
 import { STORE_NAME } from '../tagmanager/datastore/constants';
 
 export { registerStore } from '../tagmanager/datastore';
@@ -34,7 +34,7 @@ export const registerModule = ( modules ) => {
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
-			Icon: TagManagerIcon,
+			Icon: SubscribeWithGoogleIcon,
 		}
 	);
 };
