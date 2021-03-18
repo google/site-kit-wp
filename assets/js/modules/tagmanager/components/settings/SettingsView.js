@@ -92,7 +92,7 @@ export default function SettingsView() {
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Tag Manager Code Snippet', 'google-site-kit' ) }
+						{ __( 'Subscribe with Google Code Snippet', 'google-site-kit' ) }
 					</h5>
 
 					<p className="googlesitekit-settings-module__meta-item-data">
