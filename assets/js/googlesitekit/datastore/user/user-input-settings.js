@@ -42,18 +42,13 @@ function fetchStoreReducerCallback( state, inputSettings ) {
 
 const fetchGetUserInputSettingsStore = createFetchStore( {
 	baseName: 'getUserInputSettings',
-	controlCallback: async () => {
-		return API.get( 'core', 'user', 'user-input-settings', undefined, { useCache: false } );
-	},
+	controlCallback: async () => API.get( 'core', 'user', 'user-input-settings', undefined, { useCache: false } ),
 	reducerCallback: fetchStoreReducerCallback,
 } );
 
 const fetchSaveUserInputSettingsStore = createFetchStore( {
 	baseName: 'saveUserInputSettings',
-	controlCallback: ( settings ) => {
-		return API.set( 'core', 'user', 'user-input-settings', { settings } )
-		;
-	},
+	controlCallback: ( settings ) => API.set( 'core', 'user', 'user-input-settings', { settings } ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: ( settings ) => {
