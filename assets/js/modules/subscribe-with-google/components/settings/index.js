@@ -15,3 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+export { default as SettingsEdit } from './SettingsEdit';
+export { default as SettingsForm } from './SettingsForm';
+export { default as SettingsView } from './SettingsView';

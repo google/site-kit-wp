@@ -20,11 +20,11 @@
  * Internal dependencies
  */
 import { SetupMain } from './components/setup';
-import { SettingsEdit, SettingsView } from '../tagmanager/components/settings';
+import { SettingsEdit, SettingsView } from '../subscribe-with-google/components/settings';
 import SubscribeWithGoogleIcon from '../../../svg/subscribe-with-google.svg';
 import { STORE_NAME } from './datastore/constants';
 
-export { registerStore } from '../tagmanager/datastore';
+export { registerStore } from '../subscribe-with-google/datastore';
 
 export const registerModule = ( modules ) => {
 	modules.registerModule(
