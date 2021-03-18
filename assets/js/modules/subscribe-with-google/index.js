@@ -22,7 +22,7 @@
 import { SetupMain } from '../tagmanager/components/setup';
 import { SettingsEdit, SettingsView } from '../tagmanager/components/settings';
 import SubscribeWithGoogleIcon from '../../../svg/subscribe-with-google.svg';
-import { STORE_NAME } from '../tagmanager/datastore/constants';
+import { STORE_NAME } from '../subscribe-with-google/datastore/constants';
 
 export { registerStore } from '../tagmanager/datastore';
 
