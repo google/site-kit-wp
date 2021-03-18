@@ -16,7 +16,17 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin .googlesitekit-help-menu-link .googlesitekit-cta-link {
-	color: $c-nearblack;
-	font-size: 16px;
+.googlesitekit-plugin .googlesitekit-help-menu-link {
+
+	padding: 0;
+
+	.googlesitekit-cta-link {
+		align-items: center;
+		color: $c-nearblack;
+		display: flex;
+		font-size: 16px;
+		height: 100%;
+		padding: 0 16px;
+		width: 100%;
+	}
 }
