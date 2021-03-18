@@ -1,5 +1,5 @@
 /**
- * Tag Manager module initialization.
+ * Tag Manager useGAPropertyIDEffect custom hook.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,25 +17,24 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
-import { SetupMain } from './components/setup';
-import { SettingsEdit, SettingsView } from '../tagmanager/components/settings';
-import SubscribeWithGoogleIcon from '../../../svg/subscribe-with-google.svg';
-import { STORE_NAME } from './datastore/constants';
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../datastore/constants';
+const { useSelect, useDispatch } = Data;
 
-export { registerStore } from '../tagmanager/datastore';
+export default function useGAPropertyIDEffect() {
+	const singleAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
+	const { setGAPropertyID } = useDispatch( STORE_NAME );
 
-export const registerModule = ( modules ) => {
-	modules.registerModule(
-		'subscribe-with-google',
-		{
-			storeName: STORE_NAME,
-			SettingsEditComponent: SettingsEdit,
-			SettingsViewComponent: SettingsView,
-			SetupComponent: SetupMain,
-			Icon: SubscribeWithGoogleIcon,
+	useEffect( () => {
+		if ( singleAnalyticsPropertyID !== undefined ) {
+			setGAPropertyID( singleAnalyticsPropertyID || '' );
 		}
-	);
-};
-
+	}, [ singleAnalyticsPropertyID ] );
+}
