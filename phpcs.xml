@@ -2,7 +2,7 @@
 <ruleset name="Site Kit by Google Project Rules">
 
 	<!-- Include Google Site Kit's Custom Coding Standards -->
-	<rule ref="./includes/CodingStandards/GoogleSiteKit">
+	<rule ref="./packages/phpcs-coding-standards">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
