@@ -33,12 +33,21 @@ import { render } from '@wordpress/element';
 import './components/legacy-notifications';
 import DashboardDetailsApp from './components/dashboard-details/DashboardDetailsApp';
 import Root from './components/Root';
+import { VIEW_CONTEXT_PAGE_DASHBOARD } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard-details' );
 
 	if ( renderTarget ) {
-		render( <Root dataAPIContext="Dashboard"><DashboardDetailsApp /></Root>, renderTarget );
+		render(
+			<Root
+				viewContext={ VIEW_CONTEXT_PAGE_DASHBOARD }
+				dataAPIContext="Dashboard"
+			>
+				<DashboardDetailsApp />
+			</Root>,
+			renderTarget
+		);
 	}
 } );

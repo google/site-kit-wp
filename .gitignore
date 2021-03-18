@@ -25,7 +25,8 @@ tmtags
 *.un~
 Session.vim
 *.swp
-.vscode
+.vscode/*
+!.vscode/settings.json
 
 # Mac OSX
 .DS_Store

@@ -40,6 +40,11 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-wp-dashboard' );
 
 	if ( renderTarget ) {
-		render( <Root dataAPIContext="WPDashboard"><WPDashboardApp /></Root>, renderTarget );
+		render(
+			<Root dataAPIContext="WPDashboard">
+				<WPDashboardApp />
+			</Root>,
+			renderTarget
+		);
 	}
 } );

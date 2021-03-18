@@ -41,3 +41,4 @@ export const UI_DIMENSION_NAME = 'dashboardAllTrafficWidgetDimensionName';
 export const UI_DIMENSION_COLOR = 'dashboardAllTrafficWidgetDimensionColor';
 export const UI_DIMENSION_VALUE = 'dashboardAllTrafficWidgetDimensionValue';
 export const UI_ACTIVE_ROW_INDEX = 'dashboardAllTrafficWidgetActiveRowIndex';
+export const UI_ALL_TRAFFIC_LOADED = 'dashboardAllTrafficWidgetLoaded';
