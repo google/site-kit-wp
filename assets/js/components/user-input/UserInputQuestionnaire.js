@@ -132,6 +132,9 @@ export default function UserInputQuestionnaire() {
 			return;
 		}
 
+		// The `activeSlugIndex` deals with a zero-based index, but the IDs
+		// we need to select use a one-based index, hence the ` + 1` here for
+		// the `activeSlugIndex` selector.
 		global.document.getElementById( `googlesitekit-user-input-question-${ activeSlugIndex + 1 }` )?.scrollIntoView( { behavior: 'smooth' } );
 	}, [ activeSlugIndex ] );
 
