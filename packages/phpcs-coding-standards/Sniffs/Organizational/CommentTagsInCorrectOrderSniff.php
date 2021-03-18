@@ -4,14 +4,13 @@
  *
  * @since n.e.x.t
  *
- * @category  PHP
- * @package   PHP_CodeSniffer
+ * @package   Google\Site_Kit_CS
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace PHP_CodeSniffer\Standards\GoogleSiteKit\Sniffs\Semantic;
+namespace Google\Site_Kit_CS\Sniffs\Semantic;
 
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
