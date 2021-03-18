@@ -35,7 +35,7 @@ import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import PreviewTable from '../../../../components/PreviewTable';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
-// import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
+import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
@@ -46,225 +46,9 @@ import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import ModuleHeader from '../common/ModuleHeader';
 const { useSelect } = Data;
 
-const fixture = {
-	data: [
-		{
-			nextPageToken: '10',
-			columnHeader: {
-				dimensions: [
-					'ga:pageTitle',
-					'ga:pagePath',
-				],
-				metricHeader: {
-					metricHeaderEntries: [
-						{
-							name: 'Earnings',
-							type: 'CURRENCY',
-						},
-						{
-							name: 'Page RPM',
-							type: 'CURRENCY',
-						},
-						{
-							name: 'Impressions',
-							type: 'INTEGER',
-						},
-					],
-				},
-			},
-			data: {
-				dataLastRefreshed: null,
-				isDataGolden: null,
-				rowCount: 316,
-				samplesReadCounts: null,
-				samplingSpaceSizes: null,
-				rows: [
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 1',
-							'/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.76352',
-									'0.6059682539682539',
-									'499',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 2',
-							'/site-kit-top-earning-page-2/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.371714',
-									'10.32538888888889',
-									'38',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 3',
-							'/site-kit-top-earning-page-3/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.286556',
-									'0.8790061349693251',
-									'825',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 4',
-							'/site-kit-top-earning-page-4/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.212868',
-									'5.60178947368421',
-									'68',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 5',
-							'/site-kit-top-earning-page-5/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.152164',
-									'15.2164',
-									'22',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 6',
-							'/site-kit-top-earning-page-6/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.036977',
-									'0.33015178571428566',
-									'144',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 7',
-							'/site-kit-top-earning-page-7/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.029555',
-									'0.29555',
-									'206',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 8',
-							'/site-kit-top-earning-page-8/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.028485',
-									'1.0173214285714285',
-									'35',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 9',
-							'/site-kit-top-earning-page-9/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.024269',
-									'0.3677121212121212',
-									'81',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 10',
-							'/site-kit-top-earning-page-10/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.019556',
-									'1.777818181818182',
-									'13',
-								],
-							},
-						],
-					},
-				],
-				totals: [
-					{
-						values: [
-							'2.150211',
-							'0.6847805732484076',
-							'4304',
-						],
-					},
-				],
-				minimums: [
-					{
-						values: [
-							'0.0',
-							'0.0',
-							'1',
-						],
-					},
-				],
-				maximums: [
-					{
-						values: [
-							'0.76352',
-							'15.2164',
-							'825',
-						],
-					},
-				],
-			},
-		},
-	],
-};
-
 function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
-	//	isAdSenseLinked,
+		isAdSenseLinked,
 		data,
 		isLoading,
 		error,
@@ -297,11 +81,9 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 
 		return {
 			isAdSenseLinked: analyticsStore.getAdsenseLinked(),
-			// data: analyticsStore.getReport( reportArgs ),
-			data: fixture.data,
+			data: analyticsStore.getReport( reportArgs ),
 			error: analyticsStore.getErrorForSelector( 'getReport', [ reportArgs ] ),
-			// isLoading: ! analyticsStore.hasFinishedResolution( 'getReport', [ reportArgs ] ),
-			isLoading: false,
+			isLoading: ! analyticsStore.hasFinishedResolution( 'getReport', [ reportArgs ] ),
 			analyticsMainURL: analyticsStore.getServiceReportURL(
 				'content-publisher-overview',
 				generateDateRangeArgs( { startDate, endDate } )
@@ -310,17 +92,11 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 		};
 	} );
 
-	// Do not return zero data callout here since it will already be
-	// present on the page from other sources.
-	// if ( isDataZeroForReporting( data ) ) {
-	// 	return null;
-	// }
-
 	// A restricted metrics error will cause this value to change in the resolver
 	// so this check should happen before an error, which is only relevant if they are linked.
-	// if ( ! isAdSenseLinked ) {
-	// 	return <AdSenseLinkCTA />;
-	// }
+	if ( ! isAdSenseLinked ) {
+		return <AdSenseLinkCTA />;
+	}
 
 	if ( error && ! isRestrictedMetricsError( error ) ) {
 		return <WidgetReportError error={ error } moduleSlug="adsense" />;
@@ -353,7 +129,7 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 						)
 					}
 					ctaLink={ analyticsMainURL }
-					ctaLabel="See full stats on Analytics"
+					ctaLabel="See full stats in Analytics"
 				/>
 			) }
 		>
