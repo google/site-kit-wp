@@ -51,7 +51,7 @@ export default function UserInputQuestionnaire() {
 	const steps = [ ...USER_INPUT_QUESTIONS_LIST, 'preview' ];
 
 	const [ activeSlug, setActiveSlug ] = useQueryArg( 'question', steps[ 0 ] );
-	const [ firstRender, setFirstRender ] = useState( true );
+	const [ shouldScrollToActiveQuestion, setShouldScrollToActiveQuestion ] = useState( false );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
 	const [ single, setSingle ] = useQueryArg( 'single', false );
 
@@ -127,8 +127,8 @@ export default function UserInputQuestionnaire() {
 	}, [ activeSlugIndex ] );
 
 	useEffect( () => {
-		if ( firstRender ) {
-			setFirstRender( false );
+		if ( ! shouldScrollToActiveQuestion ) {
+			setShouldScrollToActiveQuestion( true );
 			return;
 		}
 
@@ -136,7 +136,7 @@ export default function UserInputQuestionnaire() {
 		// we need to select use a one-based index, hence the ` + 1` here for
 		// the `activeSlugIndex` selector.
 		global.document.getElementById( `googlesitekit-user-input-question-${ activeSlugIndex + 1 }` )?.scrollIntoView( { behavior: 'smooth' } );
-	}, [ activeSlugIndex ] );
+	}, [ activeSlugIndex, shouldScrollToActiveQuestion ] );
 
 	// Update the callbacks and labels for the questions if the user is editing a *single question*.
 	let backCallback = back;
