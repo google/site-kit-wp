@@ -70,6 +70,7 @@ const resetGlobals = () => {
 			picture: 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
 		},
 		connectURL: 'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&googlesitekit_connect=1&nonce=abc123',
+		initialVersion: '',
 		verified: true,
 		userInputState: 'completed',
 		permissions: {
@@ -100,3 +101,7 @@ addDecorator( ( story ) => (
 // TODO Would be nice if this wrote to a file. This logs our Storybook data to the browser console. Currently it gets put in .storybook/storybook-data and used in tests/backstop/scenarios.js.
 // eslint-disable-next-line no-console
 console.log( '__STORYBOOK_CLIENT_API__.raw()', global.__STORYBOOK_CLIENT_API__.raw() );
+
+export const parameters = {
+	layout: 'fullscreen',
+};
