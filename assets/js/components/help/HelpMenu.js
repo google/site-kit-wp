@@ -73,7 +73,7 @@ function HelpMenu( { children } ) {
 					aria-label={ __( 'Open Help menu', 'google-site-kit' ) }
 					aria-haspopup="menu"
 					className="googlesitekit-header__dropdown googlesitekit-help-menu__button googlesitekit-margin-right-0 mdc-button--dropdown"
-					icon={ <HelpIcon fill="currentColor" width="20" height="20" /> }
+					icon={ <HelpIcon width="20" height="20" /> }
 					onClick={ handleMenu }
 					ref={ menuButtonRef }
 					text
