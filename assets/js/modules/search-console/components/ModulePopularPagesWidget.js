@@ -24,68 +24,63 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
+import { __, _x, sprintf, _n } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	numFmt,
-	untrailingslashit,
-} from '../../../../util';
-import { getDataTableFromData } from '../../../../components/data-table';
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
-import PreviewTable from '../../../../components/PreviewTable';
-import SourceLink from '../../../../components/SourceLink';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import { numFmt } from '../../../util';
+import { MODULES_SEARCH_CONSOLE, STORE_NAME, DATE_RANGE_OFFSET } from '../datastore/constants';
+import PreviewTable from '../../../components/PreviewTable';
+import Link from '../../../components/Link';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import TableOverflowContainer from '../../../components/TableOverflowContainer';
+import ReportTable from '../../../components/ReportTable';
 import { isZeroReport } from '../util/is-zero-report';
-import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import { getCurrentDateRangeDayCount } from '../../../util/date-range';
+import { generateDateRangeArgs } from '../util/report-date-range-args';
+import ModuleHeader from './common/ModuleHeader';
 
 const { useSelect } = Data;
 
 function ModulePopularPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
-	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
-	const referenceSiteURL = useSelect( ( select ) => {
-		return untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
+	const {
+		data,
+		isLoading,
+		error,
+		baseServiceURL,
+		currentDayCount,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		const dateRangeDates = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
+		const dateRange = select( CORE_USER ).getDateRange();
+		const { startDate, endDate } = dateRangeDates;
+
+		const reportArgs = {
+			startDate,
+			endDate,
+			url: url || undefined,
+			dimensions: 'query',
+			limit: 10,
+		};
+
+		return {
+			data: store.getReport( reportArgs ),
+			isLoading: ! store.hasFinishedResolution( 'getReport', [ reportArgs ] ),
+			error: store.getErrorForSelector( 'getReport', [ reportArgs ] ),
+			baseServiceURL: store.getServiceReportURL( {
+				...generateDateRangeArgs( dateRangeDates ),
+				page: url ? `!${ url }` : undefined,
+			} ),
+			currentDayCount: getCurrentDateRangeDayCount( dateRange ),
+		};
 	} );
-	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 
-	const data = useSelect( ( select ) => select( STORE_NAME ).getReport( {
-		startDate,
-		endDate,
-		dimensions: 'query',
-		limit: 10,
-	} ) );
-
-	const isLoading = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution() );
-
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector() );
-
-	const baseServiceURLArgs = {
-		resource_id: domain,
-		...generateDateRangeArgs( { startDate, endDate } ),
-	};
-
-	if ( url ) {
-		baseServiceURLArgs.page = `!${ url }`;
-	} else if ( isDomainProperty && referenceSiteURL ) {
-		baseServiceURLArgs.page = `*${ referenceSiteURL }`;
-	}
-
-	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
-		{
-			path: '/performance/search-analytics',
-			query: baseServiceURLArgs,
-		}
-	) );
-
-	if ( ! isLoading ) {
+	if ( isLoading ) {
 		return <PreviewTable padding />;
 	}
 
@@ -97,64 +92,76 @@ function ModulePopularPagesWidget( { Widget, WidgetReportZero, WidgetReportError
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
-	const headers = [
-		{
-			title: __( 'Keyword', 'google-site-kit' ),
-			tooltip: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
-			primary: true,
-		},
-		{
-			title: __( 'Clicks', 'google-site-kit' ),
-			tooltip: __( 'Number of times users clicked on your content in search results', 'google-site-kit' ),
-		},
-		{
-			title: __( 'Impressions', 'google-site-kit' ),
-			tooltip: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
-		},
-	];
-	const links = [];
-
-	const dataMapped = data.map( ( row, i ) => {
-		const query = row.keys[ 0 ];
-		links[ i ] = addQueryArgs( baseServiceURL, { query: `!${ query }` } );
-		return [
-			query,
-			numFmt( row.clicks, { style: 'decimal' } ),
-			numFmt( row.impressions, { style: 'decimal' } ),
-		];
-	} );
-
-	const options = {
-		hideHeader: false,
-		chartsEnabled: false,
-		links,
-	};
-
-	const dataTable = getDataTableFromData( dataMapped, headers, options );
-
 	return (
 		<Widget
 			noPadding
-			Footer={ () => (
-				<SourceLink
-					className="googlesitekit-data-block__source"
-					name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-					href={ baseServiceURL }
-					external
+			Header={ () => (
+				<ModuleHeader
+					title={ sprintf(
+						/* translators: %s: number of days */
+						_n( 'Top search queries over the last %s day', 'Top search queries over last %s days', currentDayCount, 'google-site-kit', ),
+						currentDayCount,
+					) }
+					ctaLink={ baseServiceURL }
+					ctaLabel={ sprintf(
+						/* translators: %s: module name. */
+						__( 'See full stats in %s', 'google-site-kit' ),
+						_x( 'Search Console', 'Service name', 'google-site-kit' )
+					) }
 				/>
 			) }
 		>
 			<TableOverflowContainer>
-				{ dataTable }
+				<ReportTable rows={ data } columns={ tableColumns } />
 			</TableOverflowContainer>
 		</Widget>
 	);
 }
 
+const tableColumns = [
+	{
+		title: __( 'Keyword', 'google-site-kit' ),
+		description: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
+		primary: true,
+		field: 'keys.0',
+		Component: ( { fieldValue } ) => {
+			const searchAnalyticsURL = useSelect( ( select ) => {
+				const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
+				const url = select( CORE_SITE ).getCurrentEntityURL();
+				return select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
+					...generateDateRangeArgs( { startDate, endDate } ),
+					query: `!${ fieldValue }`,
+					page: url ? `!${ url }` : undefined,
+				} );
+			} );
+
+			return (
+				<Link
+					href={ searchAnalyticsURL }
+					external
+					inherit
+				>
+					{ fieldValue }
+				</Link>
+			);
+		},
+	},
+	{
+		title: __( 'Clicks', 'google-site-kit' ),
+		description: __( 'Number of times users clicked on your content in search results', 'google-site-kit' ),
+		Component: ( { row } ) => numFmt( row.clicks, { style: 'decimal' } ),
+	},
+	{
+		title: __( 'Impressions', 'google-site-kit' ),
+		description: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
+		Component: ( { row } ) => numFmt( row.impressions, { style: 'decimal' } ),
+	},
+];
+
 ModulePopularPagesWidget.propTypes = {
-	Widget: PropTypes.element,
-	WidgetReportZero: PropTypes.element,
-	WidgetReportError: PropTypes.element,
+	Widget: PropTypes.func.isRequired,
+	WidgetReportZero: PropTypes.func.isRequired,
+	WidgetReportError: PropTypes.func.isRequired,
 };
 
 export default ModulePopularPagesWidget;
