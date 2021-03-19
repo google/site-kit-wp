@@ -101,7 +101,6 @@ export default function UserInputQuestionnaire() {
 		setSingle( singleType );
 		if ( steps.length >= num && num > 0 ) {
 			setActiveSlug( steps[ num - 1 ] );
-			global.scrollTo( 0, 0 );
 		}
 	}, [ activeSlugIndex ] );
 
@@ -132,11 +131,8 @@ export default function UserInputQuestionnaire() {
 			return;
 		}
 
-		// The `activeSlugIndex` deals with a zero-based index, but the IDs
-		// we need to select use a one-based index, hence the ` + 1` here for
-		// the `activeSlugIndex` selector.
-		global.document.getElementById( `googlesitekit-user-input-question-${ activeSlugIndex + 1 }` )?.scrollIntoView( { behavior: 'smooth' } );
-	}, [ activeSlugIndex ] );
+		global.document.querySelector( '#googlesitekit-user-input-container' )?.scrollIntoView( { behavior: 'smooth' } );
+	}, [ activeSlug ] );
 
 	// Update the callbacks and labels for the questions if the user is editing a *single question*.
 	let backCallback = back;
@@ -179,7 +175,7 @@ export default function UserInputQuestionnaire() {
 	}
 
 	return (
-		<Fragment>
+		<div id="googlesitekit-user-input-container">
 			{ settingsProgress }
 
 			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_ROLE ) && (
@@ -285,6 +281,6 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				/>
 			) }
-		</Fragment>
+		</div>
 	);
 }
