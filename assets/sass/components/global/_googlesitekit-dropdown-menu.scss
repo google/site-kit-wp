@@ -1,5 +1,5 @@
 /**
- * Margin utility styles.
+ * Dropdown menu styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,21 +16,22 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+.googlesitekit-dropdown-menu {
 
-	.googlesitekit-margin-bottom-0 {
-		margin-bottom: 0 !important;
+	.googlesitekit-header__dropdown {
+		// align the dropdown with it's button
+		margin-right: -8px;
 	}
 
-	.googlesitekit-margin-left-1rem {
-		margin-left: 1rem;
+	.mdc-list-item .googlesitekit-cta-link:hover {
+		text-decoration: none;
 	}
 
-	.googlesitekit-margin-left-auto {
-		margin-left: auto;
-	}
+	&.googlesitekit-dropdown-menu__icon-menu {
 
-	.googlesitekit-margin-right-0 {
-		margin-right: 0;
+		.mdc-button--dropdown {
+			background-image: none;
+			padding-right: $grid-gap-phone / 2;
+		}
 	}
 }
