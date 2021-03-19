@@ -36,9 +36,12 @@
 		box-sizing: border-box;
 	}
 
-	svg:not(:root) {
+	svg {
 		/* stylelint-disable-next-line sh-waqar/declaration-use-variable */
 		color: inherit;
+	}
+
+	svg:not(:root) {
 		overflow: hidden;
 	}
 
