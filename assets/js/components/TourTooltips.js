@@ -20,7 +20,7 @@
  * External dependencies
  */
 import { useMount } from 'react-use';
-import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
+import Joyride, { ACTIONS, EVENTS, LIFECYCLE, STATUS } from 'react-joyride';
 import PropTypes from 'prop-types';
 
 /**
@@ -33,8 +33,9 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
-import TourTooltip from './TourTooltip';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { trackEvent } from '../util/tracking';
+import TourTooltip from './TourTooltip';
 const { useSelect, useDispatch } = Data;
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
@@ -70,7 +71,7 @@ const floaterProps = {
 	},
 };
 
-export default function TourTooltips( { steps, tourID } ) {
+export default function TourTooltips( { steps, tourID, gaEventCategory } ) {
 	const stepKey = `${ tourID }-step`;
 	const runKey = `${ tourID }-run`;
 	const { setValue } = useDispatch( CORE_UI );
@@ -96,6 +97,28 @@ export default function TourTooltips( { steps, tourID } ) {
 		dismissTour( tourID );
 	};
 
+	const trackAllTourEvents = ( { index, action, lifecycle, status, type } ) => {
+		const stepNumber = index + 1;
+
+		if ( type === EVENTS.TOOLTIP && lifecycle === LIFECYCLE.TOOLTIP ) {
+			trackEvent( gaEventCategory, 'feature_tooltip_view', stepNumber );
+		} else if ( status === STATUS.FINISHED && type === EVENTS.TOUR_END ) {
+			trackEvent( gaEventCategory, 'feature_tooltip_complete', stepNumber );
+		}
+
+		if ( lifecycle !== LIFECYCLE.COMPLETE || status === STATUS.FINISHED ) {
+			return;
+		}
+
+		if ( action === ACTIONS.CLOSE ) {
+			trackEvent( gaEventCategory, 'feature_tooltip_dismiss', stepNumber );
+		} else if ( action === ACTIONS.PREV ) {
+			trackEvent( gaEventCategory, 'feature_tooltip_return', stepNumber );
+		} else if ( action === ACTIONS.NEXT ) {
+			trackEvent( gaEventCategory, 'feature_tooltip_advance', stepNumber );
+		}
+	};
+
 	/**
 	 * Handles `react-joyride` state changes using callback function.
 	 *
@@ -112,6 +135,7 @@ export default function TourTooltips( { steps, tourID } ) {
 	 * @param {JoyrideCallbackData} data Data object provided via `react-joyride` callback prop.
 	 */
 	const handleJoyrideCallback = ( data ) => {
+		trackAllTourEvents( data );
 		const { action, index, status, step, type } = data;
 
 		const hasCloseAction = action === ACTIONS.CLOSE;
@@ -168,4 +192,5 @@ export default function TourTooltips( { steps, tourID } ) {
 TourTooltips.propTypes = {
 	steps: PropTypes.arrayOf( PropTypes.object ).isRequired,
 	tourID: PropTypes.string.isRequired,
+	gaEventCategory: PropTypes.string.isRequired,
 };
