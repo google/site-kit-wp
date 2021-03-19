@@ -309,6 +309,7 @@ final class Authentication {
 					return;
 				}
 				$this->set_connected_proxy_url();
+				$this->google_proxy->delete_nonce();
 				$this->require_user_input();
 			}
 		);
@@ -1041,7 +1042,7 @@ final class Authentication {
 	private function verify_proxy_setup_nonce() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
 
-		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_SETUP ) ) {
+		if ( ! $this->google_proxy->verify_nonce( $nonce ) ) {
 			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
 		}
 	}
@@ -1215,7 +1216,7 @@ final class Authentication {
 		return add_query_arg(
 			array(
 				'action' => Google_Proxy::ACTION_SETUP,
-				'nonce'  => wp_create_nonce( Google_Proxy::ACTION_SETUP ),
+				'nonce'  => $this->google_proxy->get_nonce(),
 			),
 			admin_url( 'index.php' )
 		);
