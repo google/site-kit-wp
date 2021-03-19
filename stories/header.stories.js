@@ -35,49 +35,60 @@ import HelpMenu from '../assets/js/components/help/HelpMenu';
 import { createTestRegistry, provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
 import HelpMenuLink from '../assets/js/components/help/HelpMenuLink';
 
-storiesOf( 'Global', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		provideUserAuthentication( registry );
-		provideSiteInfo( registry );
+const withRegistry = ( Story ) => {
+	const registry = createTestRegistry();
+	provideUserAuthentication( registry );
+	provideSiteInfo( registry );
 
-		return storyFn( registry );
+	return (
+		<WithTestRegistry registry={ registry }>
+			<Story registry={ registry } />
+		</WithTestRegistry>
+	);
+};
+
+storiesOf( 'Global', module )
+	.add( 'Plugin Header', () => {
+		return <Header />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Plugin Header', ( registry ) => {
+	.add( 'Plugin Header with Date Selector', () => {
 		return (
-			<WithTestRegistry registry={ registry }>
-				<Header />
-			</WithTestRegistry>
+			<Header>
+				<DateRangeSelector />
+			</Header>
 		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Plugin Header with Date Selector', ( registry ) => {
+	.add( 'Plugin Header with Help Menu', () => {
 		return (
-			<WithTestRegistry features={ [ 'storeErrorNotifications' ] } registry={ registry }>
-				<Header>
-					<DateRangeSelector />
-				</Header>
-			</WithTestRegistry>
+			<Header>
+				<HelpMenu />
+			</Header>
 		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Plugin Header with Help Menu', ( registry ) => {
+	.add( 'Plugin Header with custom Help Menu links', () => {
 		return (
-			<WithTestRegistry features={ [ 'helpVisibility', 'storeErrorNotifications' ] } registry={ registry }>
-				<Header>
-					<HelpMenu />
-				</Header>
-			</WithTestRegistry>
+			<Header>
+				<HelpMenu>
+					<HelpMenuLink href="#">
+						{ __( 'Get help with AdSense', 'google-site-kit' ) }
+					</HelpMenuLink>
+				</HelpMenu>
+			</Header>
 		);
-	} )
-	.add( 'Plugin Header with custom Help Menu links', ( registry ) => {
-		return (
-			<WithTestRegistry features={ [ 'helpVisibility', 'storeErrorNotifications' ] } registry={ registry }>
-				<Header>
-					<HelpMenu>
-						<HelpMenuLink href="#">
-							{ __( 'Get help with AdSense', 'google-site-kit' ) }
-						</HelpMenuLink>
-					</HelpMenu>
-				</Header>
-			</WithTestRegistry>
-		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} );
