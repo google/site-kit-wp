@@ -37,6 +37,8 @@
 	}
 
 	svg:not(:root) {
+		/* stylelint-disable-next-line sh-waqar/declaration-use-variable */
+		color: inherit;
 		overflow: hidden;
 	}
 
