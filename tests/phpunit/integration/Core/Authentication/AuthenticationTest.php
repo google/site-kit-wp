@@ -56,7 +56,6 @@ class AuthenticationTest extends TestCase {
 		$auth->register();
 
 		// Authentication::handle_oauth is invoked on init but we cannot test it due to use of filter_input.
-		$this->assertTrue( has_action( 'init' ) );
 		$this->assertTrue( has_action( 'admin_init' ) );
 		$this->assertTrue( has_action( 'admin_action_' . Google_Proxy::ACTION_SETUP ) );
 		$this->assertTrue( has_action( OAuth_Client::CRON_REFRESH_PROFILE_DATA ) );
