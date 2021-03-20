@@ -528,7 +528,7 @@ class AuthenticationTest extends TestCase {
 
 		// Requires 'connect' nonce.
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
 			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
