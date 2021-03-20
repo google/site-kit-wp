@@ -510,13 +510,14 @@ class AuthenticationTest extends TestCase {
 	public function test_googlesitekit_connect() {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
 		remove_all_actions( 'init' );
+		remove_all_actions( 'admin_init' );
 		$this->fake_proxy_site_connection();
 		$auth->register();
 
 		// Does nothing if query parameter is not set, and not is_admin.
 		$this->assertTrue( empty( $_GET['googlesitekit_connect'] ) );
 		$this->assertFalse( is_admin() );
-		do_action( 'init' );
+		do_action( 'admin_init' );
 
 		$_GET['googlesitekit_connect'] = 1;
 		// Does nothing if not is_admin.
