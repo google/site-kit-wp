@@ -540,7 +540,7 @@ class AuthenticationTest extends TestCase {
 		// Requires authenticate permissions.
 		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
 			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
@@ -551,7 +551,7 @@ class AuthenticationTest extends TestCase {
 		$_GET['nonce'] = wp_create_nonce( 'connect' );
 		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
 			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
@@ -563,7 +563,7 @@ class AuthenticationTest extends TestCase {
 		$_GET['nonce'] = wp_create_nonce( 'connect' );
 		$this->assertTrue( current_user_can( Permissions::AUTHENTICATE ) );
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected redirection to connect URL' );
 		} catch ( RedirectException $e ) {
 			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/o/oauth2/auth/', $e->get_location() );
@@ -573,7 +573,7 @@ class AuthenticationTest extends TestCase {
 		$extra_scopes              = array( 'http://example.com/test/scope/a', 'http://example.com/test/scope/b' );
 		$_GET['additional_scopes'] = $extra_scopes;
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected redirection to connect URL' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
