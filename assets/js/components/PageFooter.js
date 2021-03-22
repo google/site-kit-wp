@@ -20,11 +20,16 @@
  * Internal dependencies
  */
 import HelpLink from './HelpLink';
+import { useFeature } from '../hooks/useFeature';
 
 export default function PageFooter() {
+	// The `helpVisibility` feature shows help info in the header of Site Kit.
+	// If it isn't enabled, show help links in the footer instead.
+	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
+
 	return (
 		<div className="googlesitekit-page-footer">
-			<HelpLink />
+			{ ! helpVisibilityEnabled && <HelpLink /> }
 		</div>
 	);
 }

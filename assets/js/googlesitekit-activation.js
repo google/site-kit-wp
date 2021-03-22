@@ -38,7 +38,12 @@ domReady( () => {
 	if ( renderTarget ) {
 		trackEvent( 'plugin_setup', 'plugin_activated' );
 
-		render( <Root dataAPIContext="Activation"><ActivationApp /></Root>, renderTarget );
+		render(
+			<Root dataAPIContext="Activation">
+				<ActivationApp />
+			</Root>,
+			renderTarget
+		);
 
 		renderTarget.classList.remove( 'googlesitekit-activation--loading' );
 	}

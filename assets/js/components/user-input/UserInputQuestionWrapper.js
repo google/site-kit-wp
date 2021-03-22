@@ -58,13 +58,16 @@ export default function UserInputQuestionWrapper( props ) {
 	const author = useSelect( ( select ) => select( CORE_USER ).getUserInputSettingAuthor( slug ) );
 
 	return (
-		<div className={ classnames(
-			'googlesitekit-user-input__question',
-			{
-				'googlesitekit-user-input__question--active': isActive,
-				'googlesitekit-user-input__question--next': ! isActive,
-			}
-		) }>
+		<div
+			className={ classnames(
+				'googlesitekit-user-input__question',
+				{
+					'googlesitekit-user-input__question--active': isActive,
+					'googlesitekit-user-input__question--next': ! isActive,
+				}
+			) }
+			id={ `googlesitekit-user-input-question-${ questionNumber }` }
+		>
 			<Row>
 				<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
 					<Row>

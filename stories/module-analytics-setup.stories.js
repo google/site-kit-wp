@@ -56,26 +56,33 @@ function usingGenerateGTMAnalyticsPropertyStory( args ) {
 	} );
 }
 
-storiesOf( 'Analytics Module/Setup', module )
-	.addDecorator( ( storyFn ) => {
-		global._googlesitekitLegacyData.setup.moduleToSetup = 'analytics';
-		const registry = createTestRegistry();
-		provideModules( registry, [ {
-			slug: 'analytics',
-			active: true,
-			connected: true,
-		} ] );
-		provideModuleRegistrations( registry );
+const withRegistry = ( Story ) => {
+	global._googlesitekitLegacyData.setup.moduleToSetup = 'analytics';
+	const registry = createTestRegistry();
+	provideModules( registry, [ {
+		slug: 'analytics',
+		active: true,
+		connected: true,
+	} ] );
+	provideModuleRegistrations( registry );
 
-		return storyFn( registry );
-	} )
-	.add( 'Loading', ( registry ) => {
+	return (
+		<Story registry={ registry } />
+	);
+};
+
+storiesOf( 'Analytics Module/Setup', module )
+	.add( 'Loading', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Start', ( registry ) => {
+	.add( 'Start', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
@@ -90,8 +97,12 @@ storiesOf( 'Analytics Module/Setup', module )
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Start (with matched property)', ( registry ) => {
+	.add( 'Start (with matched property)', ( args, { registry } ) => {
 		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
@@ -107,8 +118,12 @@ storiesOf( 'Analytics Module/Setup', module )
 		registry.dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Create new view', ( registry ) => {
+	.add( 'Create new view', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		// eslint-disable-next-line sitekit/acronym-case
 		const { accountId, webPropertyId } = profiles[ 0 ];
@@ -139,15 +154,23 @@ storiesOf( 'Analytics Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Create Account Legacy (no accounts)', ( registry ) => {
+	.add( 'Create Account Legacy (no accounts)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Create Account Legacy (new account option)', ( registry ) => {
+	.add( 'Create Account Legacy (new account option)', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
@@ -164,8 +187,12 @@ storiesOf( 'Analytics Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Create Account (scope not granted)', ( registry ) => {
+	.add( 'Create Account (scope not granted)', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			usingProxy: true,
@@ -193,8 +220,12 @@ storiesOf( 'Analytics Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Create Account (scope granted)', ( registry ) => {
+	.add( 'Create Account (scope granted)', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			usingProxy: true,
@@ -222,8 +253,12 @@ storiesOf( 'Analytics Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Existing Tag w/ access', ( registry ) => {
+	.add( 'Existing Tag w/ access', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
 			// eslint-disable-next-line sitekit/acronym-case
@@ -248,8 +283,12 @@ storiesOf( 'Analytics Module/Setup', module )
 		}, { propertyID: existingTag.propertyID } );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Existing Tag w/o access', ( registry ) => {
+	.add( 'Existing Tag w/o access', ( args, { registry } ) => {
 		const existingTag = {
 			accountID: '12345678',
 			propertyID: 'UA-12345678-1',
@@ -272,6 +311,10 @@ storiesOf( 'Analytics Module/Setup', module )
 		}, { propertyID: existingTag.propertyID } );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
 	.add( 'No Tag, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: true } ) )
 	.add( 'No Tag, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: false } ) )
@@ -279,7 +322,7 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add( 'Existing Tag w/ access, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: true } ) )
 	.add( 'Existing Tag w/o access, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: false } ) )
 	.add( 'Existing Tag w/o access, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: false } ) )
-	.add( 'Nothing selected', ( registry ) => {
+	.add( 'Nothing selected', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
@@ -293,5 +336,9 @@ storiesOf( 'Analytics Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
 ;
