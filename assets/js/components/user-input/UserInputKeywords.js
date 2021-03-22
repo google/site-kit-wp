@@ -113,6 +113,12 @@ export default function UserInputKeywords( { slug, max } ) {
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 			<div ref={ keywordsContainer } className="googlesitekit-user-input__text-options">
+				<label
+					htmlFor={ `${ slug }-keyword-0` }
+					className="screen-reader-text"
+				>
+					{ __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' ) }
+				</label>
 				{ values.map( ( value, i ) => (
 					<div
 						key={ i }
@@ -120,12 +126,6 @@ export default function UserInputKeywords( { slug, max } ) {
 							'googlesitekit-user-input__text-option': values.length > i + 1 || value.length > 0,
 						} ) }
 					>
-						<label
-							htmlFor={ `${ slug }-keyword-${ i }` }
-							className="screen-reader-text"
-						>
-							{ __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' ) }
-						</label>
 						<TextField
 							label={ values.length === 1 && values[ 0 ] === ''
 								? __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' )
