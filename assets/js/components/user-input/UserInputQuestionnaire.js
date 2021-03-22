@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment, useEffect, useState } from '@wordpress/element';
+import { useCallback, Fragment, useEffect, useState, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -54,6 +54,8 @@ export default function UserInputQuestionnaire() {
 	const [ shouldScrollToActiveQuestion, setShouldScrollToActiveQuestion ] = useState( false );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
 	const [ single, setSingle ] = useQueryArg( 'single', false );
+
+	const containerRef = useRef();
 
 	const activeSlugIndex = steps.indexOf( activeSlug );
 	if ( activeSlugIndex === -1 ) {
@@ -131,7 +133,7 @@ export default function UserInputQuestionnaire() {
 			return;
 		}
 
-		global.document.querySelector( '#googlesitekit-user-input-container' )?.scrollIntoView( { behavior: 'smooth' } );
+		containerRef.current?.scrollIntoView( { behavior: 'smooth' } );
 	}, [ activeSlug ] );
 
 	// Update the callbacks and labels for the questions if the user is editing a *single question*.
@@ -175,7 +177,7 @@ export default function UserInputQuestionnaire() {
 	}
 
 	return (
-		<div id="googlesitekit-user-input-container">
+		<div ref={ containerRef }>
 			{ settingsProgress }
 
 			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_ROLE ) && (
