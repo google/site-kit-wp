@@ -74,7 +74,7 @@ export default function SetupMain( { finishSetup } ) {
 			</div>
 
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-				{ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) }
+				{ _x( 'Subscribe with Google', 'Service name', 'google-site-kit' ) }
 			</h2>
 
 			{ viewComponent }
