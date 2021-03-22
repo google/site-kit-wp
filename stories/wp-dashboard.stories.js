@@ -103,15 +103,18 @@ const reportOptions = [
 	},
 ];
 
-storiesOf( 'WordPress', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		provideSiteInfo( registry );
-		provideUserAuthentication( registry );
+const withRegistry = ( Story ) => {
+	const registry = createTestRegistry();
+	provideSiteInfo( registry );
+	provideUserAuthentication( registry );
 
-		return storyFn( registry );
-	} )
-	.add( 'WordPress Dashboard', ( registry ) => {
+	return (
+		<Story registry={ registry } />
+	);
+};
+
+storiesOf( 'WordPress', module )
+	.add( 'WordPress Dashboard', ( args, { registry } ) => {
 		registry.dispatch( CORE_MODULES ).receiveGetModules( withConnected( 'analytics' ) );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-23' );
 
@@ -148,12 +151,15 @@ storiesOf( 'WordPress', module )
 			</div>
 		);
 	}, {
+		decorators: [
+			withRegistry,
+		],
 		options: {
 			readySelector: '.googlesitekit-data-block',
 			delay: 2000, // Wait for table overlay to animate.
 		},
 	} )
-	.add( 'WordPress Dashboard (Analytics inactive)', ( registry ) => {
+	.add( 'WordPress Dashboard (Analytics inactive)', ( args, { registry } ) => {
 		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive() );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-23' );
 
@@ -185,12 +191,15 @@ storiesOf( 'WordPress', module )
 			</div>
 		);
 	}, {
+		decorators: [
+			withRegistry,
+		],
 		options: {
 			readySelector: '.googlesitekit-data-block',
 			delay: 2000, // Wait for table overlay to animate.
 		},
 	} )
-	.add( 'WordPress Dashboard (Data Unavailable)', ( registry ) => {
+	.add( 'WordPress Dashboard (Data Unavailable)', ( args, { registry } ) => {
 		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'analytics' ) );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-23' );
 
@@ -227,6 +236,9 @@ storiesOf( 'WordPress', module )
 			</div>
 		);
 	}, {
+		decorators: [
+			withRegistry,
+		],
 		options: {
 			readySelector: '.googlesitekit-data-block',
 			delay: 2000, // Wait for table overlay to animate.
