@@ -124,7 +124,7 @@ export default function SetupForm( { finishSetup } ) {
 
 	return (
 		<form
-			className="googlesitekit-tagmanager-setup__form"
+			className="googlesitekit-subscribe-with-google-setup__form"
 			onSubmit={ onSubmit }
 		>
 			<SetupErrorNotice />

@@ -61,7 +61,7 @@ export default function AMPContainerSelect() {
 
 	return (
 		<ContainerSelect
-			className="googlesitekit-tagmanager__select-container--amp"
+			className="googlesitekit-subscribe-with-google__select-container--amp"
 			label={ label }
 			value={ ampContainerID }
 			containers={ ampContainers }

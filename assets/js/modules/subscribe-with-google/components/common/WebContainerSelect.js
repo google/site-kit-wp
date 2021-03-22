@@ -61,7 +61,7 @@ export default function WebContainerSelect() {
 
 	return (
 		<ContainerSelect
-			className="googlesitekit-tagmanager__select-container--web"
+			className="googlesitekit-subscribe-with-google__select-container--web"
 			label={ label }
 			value={ containerID }
 			containers={ containers }

@@ -42,7 +42,7 @@ const fetchGetTagPermissionStore = createFetchStore( {
 	validateParams: ( { containerID } = {} ) => {
 		invariant( isValidContainerID( containerID ), 'A valid containerID is required to for fetching permission.' );
 	},
-	controlCallback: ( { containerID } ) => API.get( 'modules', 'tagmanager', 'tag-permission', { containerID }, { useCache: false } ),
+	controlCallback: ( { containerID } ) => API.get( 'modules', 'subscribe-with-google', 'tag-permission', { containerID }, { useCache: false } ),
 	reducerCallback: ( state, { accountID, permission }, { containerID } ) => {
 		return {
 			...state,

@@ -54,7 +54,7 @@ export default function AccountSelect() {
 
 	return (
 		<Select
-			className="googlesitekit-tagmanager__select-account"
+			className="googlesitekit-subscribe-with-google__select-account"
 			label={ __( 'Account', 'google-site-kit' ) }
 			value={ accountID }
 			onEnhancedChange={ onChange }

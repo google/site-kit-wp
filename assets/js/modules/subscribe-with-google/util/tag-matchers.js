@@ -18,11 +18,11 @@
 
 export default [
 	// Detect injection script. (Google provided code, duracelltomi-google-tag-manager, metronet-tag-manager (uses user-provided))
-	/<script[^>]*>[^>]+?www.googletagmanager.com\/gtm[^>]+?['|"](GTM-[0-9A-Z]+)['|"]/,
+	/<script[^>]*>[^>]+?www.googlesubscribe-with-google.com\/gtm[^>]+?['|"](GTM-[0-9A-Z]+)['|"]/,
 	// Detect gtm.js script calls.
-	/<script[^>]*src=['|"]https:\/\/www.googletagmanager.com\/gtm\.js\?id=(GTM-[0-9A-Z]+)['|"]/,
+	/<script[^>]*src=['|"]https:\/\/www.googlesubscribe-with-google.com\/gtm\.js\?id=(GTM-[0-9A-Z]+)['|"]/,
 	// Detect iframe version for no-js.
-	/<script[^>]*src=['|"]https:\/\/www.googletagmanager.com\/ns.html\?id=(GTM-[0-9A-Z]+)['|"]/,
+	/<script[^>]*src=['|"]https:\/\/www.googlesubscribe-with-google.com\/ns.html\?id=(GTM-[0-9A-Z]+)['|"]/,
 	// Detect amp tag.
-	/<amp-analytics [^>]*config=['|"]https:\/\/www.googletagmanager.com\/amp.json\?id=(GTM-[0-9A-Z]+)['|"]/,
+	/<amp-analytics [^>]*config=['|"]https:\/\/www.googlesubscribe-with-google.com\/amp.json\?id=(GTM-[0-9A-Z]+)['|"]/,
 ];

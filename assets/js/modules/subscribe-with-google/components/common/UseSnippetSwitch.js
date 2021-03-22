@@ -43,7 +43,7 @@ export default function UseSnippetSwitch() {
 	}
 
 	return (
-		<div className="googlesitekit-tagmanager-usesnippet">
+		<div className="googlesitekit-subscribe-with-google-usesnippet">
 			<Switch
 				label={ __( 'Let Site Kit place code on your site', 'google-site-kit' ) }
 				checked={ useSnippet }

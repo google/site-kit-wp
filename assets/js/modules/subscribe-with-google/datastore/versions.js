@@ -44,7 +44,7 @@ const fetchGetLiveContainerVersionStore = createFetchStore( {
 	},
 	controlCallback: async ( { accountID, internalContainerID } ) => {
 		try {
-			return await API.get( 'modules', 'tagmanager', 'live-container-version', { accountID, internalContainerID }, { useCache: false } );
+			return await API.get( 'modules', 'subscribe-with-google', 'live-container-version', { accountID, internalContainerID }, { useCache: false } );
 		} catch ( err ) {
 			// If the container has no published version, it will error with a 404.
 			if ( 404 === err.code ) {

@@ -54,7 +54,7 @@ export default function ContainerSelect( {
 
 	return (
 		<Select
-			className={ classnames( 'googlesitekit-tagmanager__select-container', className ) }
+			className={ classnames( 'googlesitekit-subscribe-with-google__select-container', className ) }
 			disabled={ hasExistingTag || ! isValidAccountID( accountID ) }
 			value={ value }
 			enhanced

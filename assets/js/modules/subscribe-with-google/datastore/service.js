@@ -47,7 +47,7 @@ export const selectors = {
 			return undefined;
 		}
 
-		const baseURI = `https://tagmanager.google.com/`;
+		const baseURI = `https://subscribe-with-google.google.com/`;
 		const queryParams = query ? { ...query, authuser: userEmail } : { authuser: userEmail };
 		const baseURIWithQuery = addQueryArgs( baseURI, queryParams );
 		if ( path ) {

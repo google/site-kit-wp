@@ -52,7 +52,7 @@ export default function SettingsEdit() {
 	}
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--tagmanager">
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--subscribe-with-google">
 			{ viewComponent }
 		</div>
 	);

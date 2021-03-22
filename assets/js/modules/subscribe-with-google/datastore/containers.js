@@ -47,7 +47,7 @@ const fetchGetContainersStore = createFetchStore( {
 		// TODO: Remove `usageContext` param when legacy component is removed and datapoint
 		// defaults to returning all containers if no context is provided.
 		const usageContext = [ CONTEXT_WEB, CONTEXT_AMP ];
-		return API.get( 'modules', 'tagmanager', 'containers', { accountID, usageContext }, { useCache: false } );
+		return API.get( 'modules', 'subscribe-with-google', 'containers', { accountID, usageContext }, { useCache: false } );
 	},
 	reducerCallback: ( state, containers, { accountID } ) => {
 		return {
@@ -71,7 +71,7 @@ const fetchCreateContainerStore = createFetchStore( {
 		invariant( isValidContainerName( containerName ), 'A valid containerName is required to create a container.' );
 	},
 	controlCallback: ( { accountID, usageContext, containerName: name } ) => {
-		return API.set( 'modules', 'tagmanager', 'create-container', { accountID, usageContext, name } );
+		return API.set( 'modules', 'subscribe-with-google', 'create-container', { accountID, usageContext, name } );
 	},
 	reducerCallback( state, container, { accountID } ) {
 		return {

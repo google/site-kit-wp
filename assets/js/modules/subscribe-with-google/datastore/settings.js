@@ -102,9 +102,9 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 	}
 
-	await API.invalidateCache( 'modules', 'tagmanager' );
+	await API.invalidateCache( 'modules', 'subscribe-with-google' );
 	// TODO: Remove once legacy dataAPI is no longer used.
-	invalidateCacheGroup( TYPE_MODULES, 'tagmanager' );
+	invalidateCacheGroup( TYPE_MODULES, 'subscribe-with-google' );
 
 	return {};
 }

@@ -61,7 +61,7 @@ export default function ContainerNameTextField( { label, name } ) {
 		: undefined;
 
 	return (
-		<div className={ classnames( 'googlesitekit-tagmanager-containername', `googlesitekit-tagmanager-${ name }` ) }>
+		<div className={ classnames( 'googlesitekit-subscribe-with-google-containername', `googlesitekit-subscribe-with-google-${ name }` ) }>
 			<TextField
 				className={ classnames( { 'mdc-text-field--error': ! containerName || ! isUniqueName } ) }
 				label={ label }

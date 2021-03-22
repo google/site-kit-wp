@@ -67,7 +67,7 @@ export default function SetupMain( { finishSetup } ) {
 	}
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--tagmanager">
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--subscribe-with-google">
 
 			<div className="googlesitekit-setup-module__logo">
 				<SubscribeWithGoogleIcon width="33" height="33" />
