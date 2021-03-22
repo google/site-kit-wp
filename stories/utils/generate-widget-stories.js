@@ -66,39 +66,42 @@ export function generateReportBasedWidgetStories( {
 	additionalVariantCallbacks = {},
 	setup = () => {},
 } ) {
-	const stories = storiesOf( group, module )
-		.addDecorator( ( storyFn ) => {
-			const registry = createTestRegistry();
-			// Activate the module.
-			provideModules( registry, moduleSlugs.map( ( module ) => {
-				return {
-					slug: module,
-					active: true,
-					connected: true,
-				};
-			} ) );
+	const stories = storiesOf( group, module );
 
-			let currentEntityURL = null;
-			if ( Array.isArray( options ) && options[ 0 ].url ) {
-				currentEntityURL = options[ 0 ].url;
-			} else if ( options.url ) {
-				currentEntityURL = options.url;
-			}
+	const withRegistry = ( StoryComponent ) => {
+		const registry = createTestRegistry();
+		// Activate the module.
+		provideModules( registry, moduleSlugs.map( ( module ) => {
+			return {
+				slug: module,
+				active: true,
+				connected: true,
+			};
+		} ) );
 
-			// Set some site information.
-			provideSiteInfo( registry, {
-				currentEntityURL,
-			} );
+		let currentEntityURL = null;
+		if ( Array.isArray( options ) && options[ 0 ].url ) {
+			currentEntityURL = options[ 0 ].url;
+		} else if ( options.url ) {
+			currentEntityURL = options.url;
+		}
 
-			if ( referenceDate ) {
-				registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
-			}
-
-			// Call the optional setup function.
-			setup( registry );
-
-			return storyFn( registry );
+		// Set some site information.
+		provideSiteInfo( registry, {
+			currentEntityURL,
 		} );
+
+		if ( referenceDate ) {
+			registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
+		}
+
+		// Call the optional setup function.
+		setup( registry );
+
+		return (
+			<StoryComponent registry={ registry } />
+		);
+	};
 
 	if ( Array.isArray( options ) ) {
 		// 	If options is an array, so must data.
@@ -225,11 +228,15 @@ export function generateReportBasedWidgetStories( {
 	}
 
 	Object.keys( variants ).forEach( ( variant ) => {
-		stories.add( variant, ( registry ) => (
+		stories.add( variant, ( args, { registry } ) => (
 			<WithTestRegistry registry={ registry } callback={ variants[ variant ] }>
 				{ widgetElement }
 			</WithTestRegistry>
-		) );
+		), {
+			decorators: [
+				withRegistry,
+			],
+		} );
 	} );
 
 	return stories;
@@ -238,7 +245,7 @@ export function generateReportBasedWidgetStories( {
 /**
  * Creates and returns a new report data generator using provided factory function.
  *
- * @since n.e.x.t
+ * @since 1.28.0
  *
  * @param {Function} factory The factory function.
  * @return {Function} The report data generator.

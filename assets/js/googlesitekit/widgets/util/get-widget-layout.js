@@ -85,7 +85,7 @@ function getWidgetSizes( counter, widget ) {
  * Gets the first active widget in a list of widgets, after a specified offset,
  * based on a set of widget states specifying which widgets are inactive.
  *
- * @since n.e.x.t
+ * @since 1.28.0
  * @private
  *
  * @param {number}         offset       The current index offset.

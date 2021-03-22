@@ -22,13 +22,13 @@
 import { render, createTestRegistry, fireEvent } from '../../../tests/js/test-utils';
 import TourTooltips from './TourTooltips';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 
 const SECOND_STEP = 1;
 const FINAL_STEP = 2;
 const TOUR_ID = 'mock-feature';
 const STEP_KEY = `${ TOUR_ID }-step`;
 const RUN_KEY = `${ TOUR_ID }-run`;
-const ENCOUNTERED_KEY = `sitekit-${ TOUR_ID }__has-encountered-tour`;
 const MOCK_STEPS = [
 	{
 		target: '.step-1',
@@ -65,6 +65,7 @@ const renderTourTooltipsWithMockUI = ( registry ) => render( (
 describe( 'TourTooltips', () => {
 	let registry;
 	let select;
+	let dismissTourSpy;
 	// store value to return default functionality on test teardown
 	const nativeCreateRange = global.document.createRange;
 
@@ -83,7 +84,15 @@ describe( 'TourTooltips', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		select = registry.select( CORE_UI );
+		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+		dismissTourSpy = jest.spyOn( registry.dispatch( CORE_USER ), 'dismissTour' );
+		dismissTourSpy.mockImplementation( ( tourID ) => {
+			// Bypass fetch requests and receive the dismissed tour directly.
+			registry.dispatch( CORE_USER ).receiveGetDismissedTours( [ tourID ] );
+		} );
 	} );
+
+	afterEach( () => dismissTourSpy.mockReset() );
 
 	afterAll( () => {
 		global.document.createRange = nativeCreateRange;
@@ -136,6 +145,7 @@ describe( 'TourTooltips', () => {
 		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
 
 		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
+		expect( dismissTourSpy ).toHaveBeenCalled();
 	} );
 
 	it( 'should end tour when "Got it" button is clicked', async () => {
@@ -146,6 +156,7 @@ describe( 'TourTooltips', () => {
 		fireEvent.click( getByRole( 'button', { name: /got it/i } ) );
 
 		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
+		expect( dismissTourSpy ).toHaveBeenCalled();
 	} );
 
 	it( 'should persist tour completion after tour closed', async () => {
@@ -153,24 +164,20 @@ describe( 'TourTooltips', () => {
 
 		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
 
-		expect( localStorage.setItem ).toHaveBeenCalledWith( ENCOUNTERED_KEY, 'true' );
+		expect( dismissTourSpy ).toHaveBeenCalledWith( TOUR_ID );
 	} );
 
 	it( 'should start tour if no persisted tour completion exists', async () => {
 		renderTourTooltipsWithMockUI( registry );
 
-		expect( localStorage.getItem ).toHaveBeenCalledWith( ENCOUNTERED_KEY );
-		expect( localStorage.getItem( ENCOUNTERED_KEY ) ).toBeNull();
 		expect( select.getValue( RUN_KEY ) ).toBe( true );
 	} );
 
 	it( 'should not start tour if persisted tour completion is found', async () => {
-		localStorage.setItem( ENCOUNTERED_KEY, 'true' );
+		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [ TOUR_ID ] );
 
-		renderTourTooltipsWithMockUI( registry );
+		const { queryByRole } = renderTourTooltipsWithMockUI( registry );
 
-		expect( localStorage.getItem ).toHaveBeenCalledWith( ENCOUNTERED_KEY );
-		expect( localStorage.getItem( ENCOUNTERED_KEY ) ).toBe( 'true' );
-		expect( select.getValue( RUN_KEY ) ).toBeUndefined();
+		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
 	} );
 } );

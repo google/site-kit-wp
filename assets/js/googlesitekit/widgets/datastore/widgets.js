@@ -320,7 +320,7 @@ export const selectors = {
 	/**
 	 * Returns all widget states.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.28.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
