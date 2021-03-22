@@ -1,5 +1,5 @@
 /**
- * Margin utility styles.
+ * HelpMenuLink component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,21 +16,36 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
 
-	.googlesitekit-margin-bottom-0 {
-		margin-bottom: 0 !important;
-	}
+/**
+ * Internal dependencies
+ */
+import Link from '../Link';
 
-	.googlesitekit-margin-left-1rem {
-		margin-left: 1rem;
-	}
-
-	.googlesitekit-margin-left-auto {
-		margin-left: auto;
-	}
-
-	.googlesitekit-margin-right-0 {
-		margin-right: 0;
-	}
+function HelpMenuLink( { children, href } ) {
+	return (
+		<li className="googlesitekit-help-menu-link mdc-list-item" role="none">
+			<Link
+				className="mdc-list-item__text"
+				href={ href }
+				external
+				hideExternalIndicator
+				inherit
+				role="menuitem"
+			>
+				{ children }
+			</Link>
+		</li>
+	);
 }
+
+HelpMenuLink.propTypes = {
+	children: PropTypes.node.isRequired,
+	href: PropTypes.string.isRequired,
+};
+
+export default HelpMenuLink;

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment, useEffect } from '@wordpress/element';
+import { useCallback, Fragment, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -51,6 +51,7 @@ export default function UserInputQuestionnaire() {
 	const steps = [ ...USER_INPUT_QUESTIONS_LIST, 'preview' ];
 
 	const [ activeSlug, setActiveSlug ] = useQueryArg( 'question', steps[ 0 ] );
+	const [ shouldScrollToActiveQuestion, setShouldScrollToActiveQuestion ] = useState( false );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
 	const [ single, setSingle ] = useQueryArg( 'single', false );
 
@@ -123,6 +124,18 @@ export default function UserInputQuestionnaire() {
 
 	const goToPreview = useCallback( () => {
 		setActiveSlug( steps[ steps.length - 1 ] );
+	}, [ activeSlugIndex ] );
+
+	useEffect( () => {
+		if ( ! shouldScrollToActiveQuestion ) {
+			setShouldScrollToActiveQuestion( true );
+			return;
+		}
+
+		// The `activeSlugIndex` deals with a zero-based index, but the IDs
+		// we need to select use a one-based index, hence the ` + 1` here for
+		// the `activeSlugIndex` selector.
+		global.document.getElementById( `googlesitekit-user-input-question-${ activeSlugIndex + 1 }` )?.scrollIntoView( { behavior: 'smooth' } );
 	}, [ activeSlugIndex ] );
 
 	// Update the callbacks and labels for the questions if the user is editing a *single question*.

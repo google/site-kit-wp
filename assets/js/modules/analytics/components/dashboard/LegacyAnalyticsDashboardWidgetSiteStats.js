@@ -41,12 +41,39 @@ class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 		this.setOptions = this.setOptions.bind( this );
 	}
 
-	setOptions() {
-		const { series, vAxes } = this.props;
+	setOptions( dataMap ) {
+		const {
+			vAxes = null,
+			series,
+			selectedStats,
+		} = this.props;
+		// selectedStats expects an array but only one is ever passed.
+		const [ selectedStat ] = selectedStats;
 
 		const pageTitle = '' === global._googlesitekitLegacyData.pageTitle ? '' : __( 'Users Traffic Summary', 'google-site-kit' );
 
-		const options = {
+		const getTimeColumnVaxisFormat = () => {
+			// Use a format including hours if any of the rows have a non-zero number of hours.
+			for ( let i = 1; i < dataMap.length; i++ ) {
+				// dataMap[ i ] is the row (skipping `0` for headers)
+				// selectedStat is the column index, and `0` for number of hours.
+				if ( dataMap[ i ]?.[ selectedStat ]?.[ 0 ] ) {
+					// Here we use the 24hr time format for hours so that
+					// it starts at zero since we're representing a duration.
+					return 'HH:mm:ss';
+				}
+			}
+			return 'mm:ss';
+		};
+
+		let vAxisFormat;
+		if ( dataMap[ 0 ][ selectedStat ]?.type === 'timeofday' ) {
+			vAxisFormat = getTimeColumnVaxisFormat();
+		}
+
+		return {
+			series,
+			vAxes,
 			chart: {
 				title: pageTitle,
 			},
@@ -76,6 +103,7 @@ class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 				},
 			},
 			vAxis: {
+				format: vAxisFormat,
 				gridlines: {
 					color: '#eee',
 				},
@@ -104,11 +132,6 @@ class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 				trigger: 'both',
 			},
 		};
-
-		options.series = series;
-		options.vAxes = vAxes;
-
-		return options;
 	}
 
 	render() {
@@ -128,7 +151,7 @@ class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 			return null;
 		}
 
-		const options = this.setOptions();
+		const options = this.setOptions( dataMap );
 
 		return (
 			<section className="googlesitekit-analytics-site-stats mdc-layout-grid">
