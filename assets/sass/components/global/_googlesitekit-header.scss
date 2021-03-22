@@ -91,11 +91,6 @@
 	}
 
 	.googlesitekit-date-range-selector {
-		margin-right: $grid-gap-phone / 2;
-
-		@media (max-width: $bp-xsmallOnly) {
-			margin-right: $grid-gap-phone;
-		}
 
 		@media (min-width: $bp-wpAdminBarTablet) {
 			margin-right: $grid-gap-desktop;
