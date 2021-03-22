@@ -1,7 +1,7 @@
 /**
- * Margin utility styles.
+ * Storybook main config.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,12 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
-
-	.googlesitekit-margin-bottom-0 {
-		margin-bottom: 0 !important;
-	}
-
-	.googlesitekit-margin-left-1rem {
-		margin-left: 1rem;
-	}
-
-	.googlesitekit-margin-left-auto {
-		margin-left: auto;
-	}
-
-	.googlesitekit-margin-right-0 {
-		margin-right: 0;
-	}
-}
+module.exports = {
+	stories: [
+		'../stories/**/*.stories.js',
+		'../assets/js/**/*.stories.js',
+	],
+	addons: [
+		'@storybook/addon-viewport',
+	],
+};

@@ -1,5 +1,5 @@
 /**
- * Margin utility styles.
+ * `useBreakpoint` hook.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,21 +16,34 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+/**
+ * External dependencies
+ */
+import { useWindowWidth } from '@react-hook/window-size/throttled';
 
-	.googlesitekit-margin-bottom-0 {
-		margin-bottom: 0 !important;
+/**
+ * Retrieves the current breakpoint.
+ *
+ * @since n.e.x.t
+ *
+ * @return {string} The current breakpoint according to the window size.
+ */
+export const useBreakpoint = () => {
+	const onlyWidth = useWindowWidth();
+
+	if ( onlyWidth > 1280 ) {
+		return 'xlarge';
 	}
 
-	.googlesitekit-margin-left-1rem {
-		margin-left: 1rem;
+	if ( onlyWidth > 960 ) {
+		return 'desktop';
 	}
 
-	.googlesitekit-margin-left-auto {
-		margin-left: auto;
+	if ( onlyWidth > 600 ) {
+		return 'tablet';
 	}
 
-	.googlesitekit-margin-right-0 {
-		margin-right: 0;
-	}
-}
+	return 'small';
+};
+
+export default useBreakpoint;
