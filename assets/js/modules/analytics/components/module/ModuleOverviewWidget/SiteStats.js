@@ -27,14 +27,13 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { extractAnalyticsDashboardData } from '../../../util';
-import { getCurrentDateRangeDayCount } from '../../../../../util/date-range';
 import GoogleChart from '../../../../../components/GoogleChart';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import { Cell, Row, Grid } from '../../../../../material-components';
 const { useSelect } = Data;
 
 export default function SiteStats( { loaded, selectedStat, report } ) {
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
 	if ( ! loaded ) {
 		return (
@@ -42,7 +41,6 @@ export default function SiteStats( { loaded, selectedStat, report } ) {
 		);
 	}
 
-	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 	const dataMap = extractAnalyticsDashboardData( report, {
 		selectedStats: selectedStat,
 		selectedDataIndex: 0,
