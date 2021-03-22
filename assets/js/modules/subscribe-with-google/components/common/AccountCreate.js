@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -29,52 +34,93 @@ import Data from 'googlesitekit-data';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
 import Button from '../../../../components/Button';
-import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME } from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-const { useSelect, useDispatch } = Data;
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { FORM_SETUP, STORE_NAME } from '../../datastore/constants';
+import { TextField, Input } from '../../../../material-components';
+const { useDispatch, useSelect } = Data;
+
+const COUNTRY_LIST_URL = '#';
 
 export default function AccountCreate() {
-	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
-	const hasResolvedGetUser = useSelect( ( select ) => select( CORE_USER ).hasFinishedResolution( 'getUser' ) );
-	const createAccountURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: 'admin/accounts/create' } ) );
-
-	const { resetAccounts } = useDispatch( STORE_NAME );
-	const refetchAccountsHandler = useCallback( () => {
-		resetAccounts();
-	} );
-
-	const createAccountHandler = useCallback( () => {
+	const nextHandler = useCallback( () => {
 		// Need to use window.open for this to allow for stubbing in E2E.
-		global.window.open( createAccountURL, '_blank' );
-	}, [ createAccountURL ] );
+		global.window.open( '#', '_blank' );
+	}, [ '#' ] );
 
-	if ( ! hasResolvedAccounts || ! hasResolvedGetUser ) {
-		return <ProgressBar />;
-	}
+	const publicationID = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'publicationID' ) );
+
+	const { setValues } = useDispatch( CORE_FORMS );
+	const onChange = useCallback( ( { currentTarget } ) => {
+		setValues( FORM_SETUP, { publicationID: currentTarget.value } );
+	}, [ 'publicationID' ] );
 
 	return (
 		<div>
-			<StoreErrorNotices moduleSlug="subscribe-with-google" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } />
 
+			<h4>
+				{ __( '1) Check requirements', 'google-site-kit' ) }
+			</h4>
 			<p>
-				{ __( 'To create a new account, click the button below which will open the Google Tag Manager account creation screen in a new window.', 'google-site-kit' ) }
+				{ __( 'In order to use this service, make sure you meet these requirements:', 'google-site-kit' ) }
 			</p>
-			<p>
-				{ __( 'Once completed, click the link below to re-fetch your accounts to continue.', 'google-site-kit' ) }
-			</p>
+			<ul>
+				<li>
+					{ __( '- Should not have an associated Android app', 'google-site-kit' ) }
+				</li>
+				<li>
+					{ __( '- Be located in a country with verified bank accounts', 'google-site-kit' ) }
+					&nbsp;
+					&nbsp;
+					<Link className="googlesitekit-help-link" href={ COUNTRY_LIST_URL } external>
+						{ __( 'See full country list', 'google-site-kit' ) }
+					</Link>
+				</li>
+				<li>
+					{ __( '- No existing subscription product', 'google-site-kit' ) }
+				</li>
+			</ul>
 
 			<div className="googlesitekit-setup-module__action">
-				<Button onClick={ createAccountHandler }>
-					{ __( 'Create an account', 'google-site-kit' ) }
+				<Button onClick={ nextHandler }>
+					{ __( 'Next', 'google-site-kit' ) }
 				</Button>
-
-				<div className="googlesitekit-setup-module__sub-action">
-					<Link onClick={ refetchAccountsHandler }>
-						{ __( 'Re-fetch My Account', 'google-site-kit' ) }
-					</Link>
-				</div>
 			</div>
+
+			<h4>
+				{ __( '2) Set up Publisher Center account', 'google-site-kit' ) }
+			</h4>
+			<p>
+				{ __( 'You need to create a Google Publisher Center account to continue set up.', 'google-site-kit' ) }
+				&nbsp;
+				&nbsp;
+				<Link className="googlesitekit-help-link" href={ COUNTRY_LIST_URL } external>
+					{ __( 'Learn more', 'google-site-kit' ) }
+				</Link>
+			</p>
+			<p>
+				<Link href={ COUNTRY_LIST_URL } external>
+					{ __( 'Create Publisher Center account', 'google-site-kit' ) }
+				</Link>
+			</p>
+			<TextField
+				className={ classnames( { 'mdc-text-field--error': ! publicationID } ) }
+				label={ 'Publication ID' }
+				outlined
+			>
+				<Input
+					id={ 'publicationID' }
+					name={ 'publicationID' }
+					value={ publicationID }
+					onChange={ onChange }
+				/>
+			</TextField>
+			<div className="googlesitekit-setup-module__action">
+				<Button onClick={ nextHandler } disabled={ ! publicationID }>
+					{ __( 'Done', 'google-site-kit' ) }
+				</Button>
+			</div>
+
 		</div>
 	);
 }

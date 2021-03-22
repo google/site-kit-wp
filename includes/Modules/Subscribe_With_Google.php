@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use WP_Error;
@@ -61,6 +62,25 @@ final class Subscribe_With_Google extends Module
 		);
 
 		return $info;
+	}
+
+	/**
+	 * Checks whether the module is connected.
+	 *
+	 * A module being connected means that all steps required as part of its activation are completed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool True if module is connected, false otherwise.
+	 */
+	public function is_connected() {
+		$settings = $this->get_settings()->get();
+
+		if ( ! $settings['publicationID'] ) {
+			return false;
+		}
+
+		return parent::is_connected();
 	}
 
 	/**
