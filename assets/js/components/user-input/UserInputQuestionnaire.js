@@ -270,6 +270,7 @@ export default function UserInputQuestionnaire() {
 					nextLabel={ nextLabel === undefined ? __( 'Preview', 'google-site-kit' ) : nextLabel }
 					back={ backCallback }
 					error={ error }
+					allowEmptyValues
 				>
 					<UserInputKeywords
 						slug={ USER_INPUT_QUESTION_SEARCH_TERMS }

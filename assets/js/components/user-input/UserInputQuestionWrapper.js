@@ -51,11 +51,16 @@ export default function UserInputQuestionWrapper( props ) {
 		back,
 		backLabel,
 		error,
+		allowEmptyValues,
 	} = props;
 
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
 	const scope = useSelect( ( select ) => select( CORE_USER ).getUserInputSettingScope( slug ) );
 	const author = useSelect( ( select ) => select( CORE_USER ).getUserInputSettingAuthor( slug ) );
+
+	const nextDisabled = allowEmptyValues
+		? values.filter( ( value ) => value.trim().length > 0 ).length === 0
+		: values.length === 0 || values.some( ( value ) => value.trim().length === 0 );
 
 	return (
 		<div
@@ -101,7 +106,7 @@ export default function UserInputQuestionWrapper( props ) {
 								<Button
 									className="googlesitekit-user-input__buttons--next"
 									onClick={ next }
-									disabled={ values.some( ( value ) => value.trim().length === 0 ) || values.length === 0 }
+									disabled={ nextDisabled }
 								>
 									{ nextLabel || __( 'Next', 'google-site-kit' ) }
 								</Button>
@@ -126,4 +131,9 @@ UserInputQuestionWrapper.propTypes = {
 	back: PropTypes.func,
 	backLabel: PropTypes.string,
 	error: PropTypes.object,
+	allowEmptyValues: PropTypes.bool,
+};
+
+UserInputQuestionWrapper.defaultProps = {
+	allowEmptyValues: false,
 };
