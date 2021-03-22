@@ -71,6 +71,15 @@ const floaterProps = {
 	},
 };
 
+// GA Event Tracking actions (do not change!)
+export const GA_ACTIONS = {
+	VIEW: 'feature_tooltip_view',
+	NEXT: 'feature_tooltip_advance',
+	PREV: 'feature_tooltip_return',
+	DISMISS: 'feature_tooltip_dismiss',
+	COMPLETE: 'feature_tooltip_complete',
+};
+
 export default function TourTooltips( { steps, tourID, gaEventCategory } ) {
 	const stepKey = `${ tourID }-step`;
 	const runKey = `${ tourID }-run`;
@@ -102,13 +111,13 @@ export default function TourTooltips( { steps, tourID, gaEventCategory } ) {
 		const stepNumber = index + 1;
 
 		if ( type === EVENTS.TOOLTIP && lifecycle === LIFECYCLE.TOOLTIP ) {
-			trackEvent( gaEventCategory, 'feature_tooltip_view', stepNumber );
+			trackEvent( gaEventCategory, GA_ACTIONS.VIEW, stepNumber );
 		} else if ( status === STATUS.FINISHED && type === EVENTS.TOUR_END && size === stepNumber ) {
 			// Here we need to additionally check the size === stepNumber because
 			// it is the only way to differentiate the status/event combination
 			// from an identical combination that happens immediately after completion
 			// on index `0` to avoid duplicate measurement.
-			trackEvent( gaEventCategory, 'feature_tooltip_complete', stepNumber );
+			trackEvent( gaEventCategory, GA_ACTIONS.COMPLETE, stepNumber );
 		}
 
 		if ( lifecycle !== LIFECYCLE.COMPLETE || status === STATUS.FINISHED ) {
@@ -116,11 +125,11 @@ export default function TourTooltips( { steps, tourID, gaEventCategory } ) {
 		}
 
 		if ( action === ACTIONS.CLOSE ) {
-			trackEvent( gaEventCategory, 'feature_tooltip_dismiss', stepNumber );
+			trackEvent( gaEventCategory, GA_ACTIONS.DISMISS, stepNumber );
 		} else if ( action === ACTIONS.PREV ) {
-			trackEvent( gaEventCategory, 'feature_tooltip_return', stepNumber );
+			trackEvent( gaEventCategory, GA_ACTIONS.PREV, stepNumber );
 		} else if ( action === ACTIONS.NEXT ) {
-			trackEvent( gaEventCategory, 'feature_tooltip_advance', stepNumber );
+			trackEvent( gaEventCategory, GA_ACTIONS.NEXT, stepNumber );
 		}
 	};
 

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { render, createTestRegistry, fireEvent } from '../../../tests/js/test-utils';
-import TourTooltips from './TourTooltips';
+import TourTooltips, { GA_ACTIONS } from './TourTooltips';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import * as tracking from '../util/tracking';
@@ -198,7 +198,7 @@ describe( 'TourTooltips', () => {
 			await getByRole( 'alertdialog' );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			expect( mockTrackEvent ).toHaveBeenLastCalledWith( EVENT_CATEGORY, 'feature_tooltip_view', 1 );
+			expect( mockTrackEvent ).toHaveBeenLastCalledWith( EVENT_CATEGORY, GA_ACTIONS.VIEW, 1 );
 			mockTrackEvent.mockClear();
 
 			// Go to step 2
@@ -207,8 +207,8 @@ describe( 'TourTooltips', () => {
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
 			// Tracks the advance on the 1st step, view on the 2nd step.
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, 'feature_tooltip_advance', 1 );
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, 'feature_tooltip_view', 2 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, GA_ACTIONS.NEXT, 1 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, GA_ACTIONS.VIEW, 2 );
 			mockTrackEvent.mockClear();
 
 			// Go to step 3
@@ -217,14 +217,14 @@ describe( 'TourTooltips', () => {
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
 			// Tracks the advance on the 1st step, view on the 2nd step.
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, 'feature_tooltip_advance', 2 );
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, 'feature_tooltip_view', 3 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, GA_ACTIONS.NEXT, 2 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, GA_ACTIONS.VIEW, 3 );
 			mockTrackEvent.mockClear();
 
 			// Finish the tour.
 			fireEvent.click( getByRole( 'button', { name: /got it/i } ) );
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, 'feature_tooltip_complete', 3 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.COMPLETE, 3 );
 		} );
 
 		it( 'tracks all events for a dismissed tour', async () => {
@@ -232,13 +232,13 @@ describe( 'TourTooltips', () => {
 			await getByRole( 'alertdialog' );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, 'feature_tooltip_view', 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.VIEW, 1 );
 			mockTrackEvent.mockClear();
 
 			// Dismissing a tour is specific to closing the dialog.
 			fireEvent.click( getByRole( 'button', { name: /close/i } ) );
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, 'feature_tooltip_dismiss', 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.DISMISS, 1 );
 		} );
 
 		it( 'tracks events for navigating between steps', async () => {
@@ -250,16 +250,16 @@ describe( 'TourTooltips', () => {
 			fireEvent.click( getByRole( 'button', { name: /next/i } ) );
 			await getByRole( 'alertdialog' );
 			// Tracks the advance on the 1st step, view on the 2nd step.
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, 'feature_tooltip_advance', 1 );
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, 'feature_tooltip_view', 2 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, GA_ACTIONS.NEXT, 1 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, GA_ACTIONS.VIEW, 2 );
 			mockTrackEvent.mockClear();
 
 			// Go back to step 1
 			fireEvent.click( getByRole( 'button', { name: /back/i } ) );
 			await getByRole( 'alertdialog' );
 			// Tracks the return on the 2nd step, view on the 1st step.
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, 'feature_tooltip_return', 2 );
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, 'feature_tooltip_view', 1 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, GA_ACTIONS.PREV, 2 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, GA_ACTIONS.VIEW, 1 );
 		} );
 	} );
 } );
