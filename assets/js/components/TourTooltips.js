@@ -98,6 +98,7 @@ export default function TourTooltips( { steps, tourID, gaEventCategory } ) {
 	};
 
 	const trackAllTourEvents = ( { index, action, lifecycle, size, status, type } ) => {
+		// The index is 0-based, but step numbers are 1-based.
 		const stepNumber = index + 1;
 
 		if ( type === EVENTS.TOOLTIP && lifecycle === LIFECYCLE.TOOLTIP ) {
