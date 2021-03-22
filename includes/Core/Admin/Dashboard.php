@@ -128,7 +128,7 @@ final class Dashboard {
 
 		$this->render_noscript_html();
 		?>
-		<div id="js-googlesitekit-wp-dashboard"></div>
+		<div id="js-googlesitekit-wp-dashboard" class="googlesitekit-plugin"></div>
 		<?php
 	}
 }

@@ -22,33 +22,73 @@
 import { storiesOf } from '@storybook/react';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Header from '../assets/js/components/Header';
 import DateRangeSelector from '../assets/js/components/DateRangeSelector';
+import HelpMenu from '../assets/js/components/help/HelpMenu';
 import { createTestRegistry, provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
+import HelpMenuLink from '../assets/js/components/help/HelpMenuLink';
+
+const withRegistry = ( Story ) => {
+	const registry = createTestRegistry();
+	provideUserAuthentication( registry );
+	provideSiteInfo( registry );
+
+	return (
+		<WithTestRegistry registry={ registry }>
+			<Story registry={ registry } />
+		</WithTestRegistry>
+	);
+};
 
 storiesOf( 'Global', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		provideUserAuthentication( registry );
-		provideSiteInfo( registry );
-
-		return storyFn( registry );
+	.add( 'Plugin Header', () => {
+		return <Header />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Plugin Header', ( registry ) => {
+	.add( 'Plugin Header with Date Selector', () => {
 		return (
-			<WithTestRegistry registry={ registry }>
-				<Header />
-			</WithTestRegistry>
+			<Header>
+				<DateRangeSelector />
+			</Header>
 		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Plugin Header with Date Selector', ( registry ) => {
+	.add( 'Plugin Header with Help Menu', () => {
 		return (
-			<WithTestRegistry features={ [ 'storeErrorNotifications' ] } registry={ registry }>
-				<Header>
-					<DateRangeSelector />
-				</Header>
-			</WithTestRegistry>
+			<Header>
+				<HelpMenu />
+			</Header>
 		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
+	} )
+	.add( 'Plugin Header with custom Help Menu links', () => {
+		return (
+			<Header>
+				<HelpMenu>
+					<HelpMenuLink href="#">
+						{ __( 'Get help with AdSense', 'google-site-kit' ) }
+					</HelpMenuLink>
+				</HelpMenu>
+			</Header>
+		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} );
