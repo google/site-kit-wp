@@ -41,7 +41,7 @@ export default function SettingsView() {
 	return (
 		<Fragment>
 
-			<StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="subscribe-with-google" storeName={ STORE_NAME } />
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">

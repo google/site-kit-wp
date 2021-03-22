@@ -33,7 +33,7 @@ import { STORE_NAME } from '../../datastore/constants';
 export default function SettingsForm() {
 	return (
 		<div className="googlesitekit-tagmanager-settings-fields">
-			<StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="subscribe-with-google" storeName={ STORE_NAME } />
 			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
