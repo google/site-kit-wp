@@ -97,12 +97,16 @@ export default function TourTooltips( { steps, tourID, gaEventCategory } ) {
 		dismissTour( tourID );
 	};
 
-	const trackAllTourEvents = ( { index, action, lifecycle, status, type } ) => {
+	const trackAllTourEvents = ( { index, action, lifecycle, size, status, type } ) => {
 		const stepNumber = index + 1;
 
 		if ( type === EVENTS.TOOLTIP && lifecycle === LIFECYCLE.TOOLTIP ) {
 			trackEvent( gaEventCategory, 'feature_tooltip_view', stepNumber );
-		} else if ( status === STATUS.FINISHED && type === EVENTS.TOUR_END ) {
+		} else if ( status === STATUS.FINISHED && type === EVENTS.TOUR_END && size === stepNumber ) {
+			// Here we need to additionally check the size === stepNumber because
+			// it is the only way to differentiate the status/event combination
+			// from an identical combination that happens immediately after completion
+			// on index `0` to avoid duplicate measurement.
 			trackEvent( gaEventCategory, 'feature_tooltip_complete', stepNumber );
 		}
 
