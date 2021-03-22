@@ -94,7 +94,7 @@
 		margin-right: $grid-gap-phone / 2;
 
 		@media (max-width: $bp-xsmallOnly) {
-			margin-right: 0;
+			margin-right: $grid-gap-phone;
 		}
 
 		@media (min-width: $bp-wpAdminBarTablet) {
@@ -111,15 +111,17 @@
 
 		.mdc-menu-surface {
 			right: 0;
-			width: 100%;
 		}
+	}
+
+	.googlesitekit-user-selector {
 
 		.mdc-button__label {
-			// prevent the default action of hiding button labels on xsmall screens
-			display: inline-block;
-			height: auto;
-			position: relative !important;
-			width: auto;
+
+			@media (max-width: $bp-wpAdminBarTablet) {
+
+				@include screen-reader-only;
+			}
 		}
 	}
 }
