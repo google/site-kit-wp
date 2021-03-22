@@ -22,43 +22,43 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-const Checkbox = ( {
-	onChange,
-	id,
-	name,
-	value,
-	checked,
-	disabled,
-	children,
-} ) =>
-	<div className="mdc-form-field">
-		<div
-			className={ classnames(
-				'mdc-checkbox',
-				{ 'mdc-checkbox--disabled': disabled }
-			) }
-		>
-			<input
-				className="mdc-checkbox__native-control"
-				type="checkbox"
-				id={ id }
-				name={ name }
-				value={ value }
-				checked={ checked }
-				disabled={ disabled }
-				onChange={ onChange }
-			/>
-			<div className="mdc-checkbox__background">
-				<svg className="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-					<path className="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59" />
-				</svg>
-				<div className="mdc-checkbox__mixedmark" />
-			</div>
-		</div>
-		<label htmlFor={ id }>{ children }</label>
-	</div>;
+export default function Checkbox( props ) {
+	const {
+		onChange,
+		id,
+		name,
+		value,
+		checked,
+		disabled,
+		children,
+	} = props;
 
-Checkbox.displayName = 'Checkbox';
+	return (
+		<div className="mdc-form-field">
+			<div className={ classnames( 'mdc-checkbox', { 'mdc-checkbox--disabled': disabled } ) }>
+				<input
+					className="mdc-checkbox__native-control"
+					type="checkbox"
+					id={ id }
+					name={ name }
+					value={ value }
+					checked={ checked }
+					disabled={ disabled }
+					onChange={ onChange }
+				/>
+
+				<div className="mdc-checkbox__background">
+					<svg className="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+						<path className="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59" />
+					</svg>
+					<div className="mdc-checkbox__mixedmark" />
+				</div>
+			</div>
+
+			<label htmlFor={ id }>{ children }</label>
+		</div>
+	);
+}
 
 Checkbox.propTypes = {
 	onChange: PropTypes.func.isRequired,
@@ -74,5 +74,3 @@ Checkbox.defaultProps = {
 	checked: false,
 	disabled: false,
 };
-
-export default Checkbox;
