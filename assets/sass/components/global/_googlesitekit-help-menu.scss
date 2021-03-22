@@ -1,5 +1,5 @@
 /**
- * Dropdown menu styles.
+ * HelpMenu styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,26 +16,24 @@
  * limitations under the License.
  */
 
-.googlesitekit-dropdown-menu {
+.googlesitekit-plugin .googlesitekit-help-menu {
 
-	.googlesitekit-header__dropdown {
-		// align the dropdown with it's button
-		margin-right: -8px;
-	}
+	// overflow-x: hidden;
+	margin-right: $grid-gap-phone / 2;
+	padding: 0;
+	width: 52px;
 
-	.mdc-list-item .googlesitekit-cta-link:hover {
-		text-decoration: none;
-	}
+	// button {
+	// 	width: 52px;
+	// }
 
-	&.googlesitekit-dropdown-menu__icon-menu {
-
-		.mdc-button--dropdown {
-			background-image: none;
-			padding-right: $grid-gap-phone / 2;
-
-			@media (max-width: $bp-mobileOnly ) {
-				padding-right: 0;
-			}
-		}
-	}
+	// .googlesitekit-cta-link {
+	// 	align-items: center;
+	// 	color: $c-nearblack;
+	// 	display: flex;
+	// 	font-size: 16px;
+	// 	height: 100%;
+	// 	padding: 0 16px;
+	// 	width: 100%;
+	// }
 }

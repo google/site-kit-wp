@@ -94,7 +94,7 @@
 		margin-right: $grid-gap-phone / 2;
 
 		@media (max-width: $bp-xsmallOnly) {
-			margin-right: $grid-gap-phone;
+			margin-right: 0;
 		}
 
 		@media (min-width: $bp-wpAdminBarTablet) {
