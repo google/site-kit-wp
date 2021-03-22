@@ -40,6 +40,7 @@ export default function FeatureTours( { viewContext } ) {
 		<TourTooltips
 			tourID={ nextTour.slug }
 			steps={ nextTour.steps }
+			gaEventCategory={ nextTour.gaEventCategory }
 		/>
 	);
 }
