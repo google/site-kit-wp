@@ -1,5 +1,5 @@
 /**
- * Margin utility styles.
+ * HelpMenuLink styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,21 +16,17 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+.googlesitekit-plugin .googlesitekit-help-menu-link {
 
-	.googlesitekit-margin-bottom-0 {
-		margin-bottom: 0 !important;
-	}
+	padding: 0;
 
-	.googlesitekit-margin-left-1rem {
-		margin-left: 1rem;
-	}
-
-	.googlesitekit-margin-left-auto {
-		margin-left: auto;
-	}
-
-	.googlesitekit-margin-right-0 {
-		margin-right: 0;
+	.googlesitekit-cta-link {
+		align-items: center;
+		color: $c-nearblack;
+		display: flex;
+		font-size: 16px;
+		height: 100%;
+		padding: 0 16px;
+		width: 100%;
 	}
 }

@@ -62,26 +62,33 @@ const accountCompleteSettings = {
 	siteSetupComplete: false,
 };
 
-storiesOf( 'AdSense Module/Setup', module )
-	.addDecorator( ( storyFn ) => {
-		global._googlesitekitLegacyData.setup.moduleToSetup = 'adsense';
-		const registry = createTestRegistry();
-		provideModules( registry, [ {
-			slug: 'adsense',
-			active: true,
-			connected: true,
-		} ] );
-		provideModuleRegistrations( registry );
+const withRegistry = ( Story ) => {
+	global._googlesitekitLegacyData.setup.moduleToSetup = 'adsense';
+	const registry = createTestRegistry();
+	provideModules( registry, [ {
+		slug: 'adsense',
+		active: true,
+		connected: true,
+	} ] );
+	provideModuleRegistrations( registry );
 
-		return storyFn( registry );
-	} )
-	.add( 'Loading', ( registry ) => {
+	return (
+		<Story registry={ registry } />
+	);
+};
+
+storiesOf( 'AdSense Module/Setup', module )
+	.add( 'Loading', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'AdBlocker active', ( registry ) => {
+	.add( 'AdBlocker active', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -94,8 +101,12 @@ storiesOf( 'AdSense Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'No account', ( registry ) => {
+	.add( 'No account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -109,8 +120,12 @@ storiesOf( 'AdSense Module/Setup', module )
 		}, 'getAccounts', [] );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'No account (existing tag)', ( registry ) => {
+	.add( 'No account (existing tag)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'ca-pub-123456789' );
@@ -124,8 +139,12 @@ storiesOf( 'AdSense Module/Setup', module )
 		}, 'getAccounts', [] );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Multiple accounts', ( registry ) => {
+	.add( 'Multiple accounts', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -147,8 +166,12 @@ storiesOf( 'AdSense Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Disapproved account', ( registry ) => {
+	.add( 'Disapproved account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -162,8 +185,12 @@ storiesOf( 'AdSense Module/Setup', module )
 		}, 'getAccounts', [] );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Graylisted account', ( registry ) => {
+	.add( 'Graylisted account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -176,8 +203,12 @@ storiesOf( 'AdSense Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Pending account', ( registry ) => {
+	.add( 'Pending account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -197,8 +228,12 @@ storiesOf( 'AdSense Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Account without AFC client (AdMob)', ( registry ) => {
+	.add( 'Account without AFC client (AdMob)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -207,8 +242,12 @@ storiesOf( 'AdSense Module/Setup', module )
 		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Newly approved account', ( registry ) => {
+	.add( 'Newly approved account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
 			// Previous status needs to be something other than
@@ -226,8 +265,12 @@ storiesOf( 'AdSense Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Newly approved account (existing tag with permission)', ( registry ) => {
+	.add( 'Newly approved account (existing tag with permission)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
 			// Previous status needs to be something other than
@@ -249,8 +292,12 @@ storiesOf( 'AdSense Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Newly approved account (existing tag without permission)', ( registry ) => {
+	.add( 'Newly approved account (existing tag without permission)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
 			// Previous status needs to be something other than
@@ -272,8 +319,12 @@ storiesOf( 'AdSense Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Already approved account', ( registry ) => {
+	.add( 'Already approved account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -286,8 +337,12 @@ storiesOf( 'AdSense Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Already approved account (existing tag with permission)', ( registry ) => {
+	.add( 'Already approved account (existing tag with permission)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( fixtures.clients[ 0 ].id );
@@ -304,8 +359,12 @@ storiesOf( 'AdSense Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Already approved account (existing tag without permission)', ( registry ) => {
+	.add( 'Already approved account (existing tag without permission)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'ca-pub-123456789' );
@@ -322,8 +381,12 @@ storiesOf( 'AdSense Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Site not added', ( registry ) => {
+	.add( 'Site not added', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( accountCompleteSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -336,8 +399,12 @@ storiesOf( 'AdSense Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Site added', ( registry ) => {
+	.add( 'Site added', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( accountCompleteSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -353,5 +420,9 @@ storiesOf( 'AdSense Module/Setup', module )
 		);
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
 ;

@@ -1,5 +1,5 @@
 /**
- * Margin utility styles.
+ * Width utility classes.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -18,19 +18,7 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-margin-bottom-0 {
-		margin-bottom: 0 !important;
-	}
-
-	.googlesitekit-margin-left-1rem {
-		margin-left: 1rem;
-	}
-
-	.googlesitekit-margin-left-auto {
-		margin-left: auto;
-	}
-
-	.googlesitekit-margin-right-0 {
-		margin-right: 0;
+	.googlesitekit-width-auto {
+		width: auto;
 	}
 }
