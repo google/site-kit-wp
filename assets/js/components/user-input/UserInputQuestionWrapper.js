@@ -58,9 +58,21 @@ export default function UserInputQuestionWrapper( props ) {
 	const scope = useSelect( ( select ) => select( CORE_USER ).getUserInputSettingScope( slug ) );
 	const author = useSelect( ( select ) => select( CORE_USER ).getUserInputSettingAuthor( slug ) );
 
-	const nextDisabled = allowEmptyValues
+	// We have two different behaviors for user input settings screens:
+	//
+	//   1. When a user is on one of the first four screens - we SHOULD disable the Next button
+	//      if a user checks the "Other" checkbox and enters nothing into the text field. In other
+	//      words we should disable the Next button if the values array contains at least one empty value.
+	//
+	//   2. When a user is on the last 5th screen (search terms) - we SHOULD NOT disable the next
+	//      button if at least one search term is entered. In other words we should disable the next
+	//      button only when all values are empty strings.
+	//
+	const hasInvalidValues = allowEmptyValues
+		// Consider the values array invalid if it contains all values empty.
 		? values.filter( ( value ) => value.trim().length > 0 ).length === 0
-		: values.length === 0 || values.some( ( value ) => value.trim().length === 0 );
+		// Consider the values array invalid if it contains at least one value that is empty.
+		: values.some( ( value ) => value.trim().length === 0 );
 
 	return (
 		<div
@@ -105,7 +117,7 @@ export default function UserInputQuestionWrapper( props ) {
 								<Button
 									className="googlesitekit-user-input__buttons--next"
 									onClick={ next }
-									disabled={ nextDisabled }
+									disabled={ values.length === 0 || hasInvalidValues }
 								>
 									{ nextLabel || __( 'Next', 'google-site-kit' ) }
 								</Button>
