@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment, useEffect, useState } from '@wordpress/element';
+import { useCallback, Fragment, useEffect, useState, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -55,6 +55,8 @@ export default function UserInputQuestionnaire() {
 	const [ shouldScrollToActiveQuestion, setShouldScrollToActiveQuestion ] = useState( false );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
 	const [ single, setSingle ] = useQueryArg( 'single', false );
+
+	const containerRef = useRef();
 
 	const activeSlugIndex = steps.indexOf( activeSlug );
 	if ( activeSlugIndex === -1 ) {
@@ -117,7 +119,6 @@ export default function UserInputQuestionnaire() {
 		setSingle( singleType );
 		if ( steps.length >= num && num > 0 ) {
 			setActiveSlug( steps[ num - 1 ] );
-			global.scrollTo( 0, 0 );
 		}
 	}, [ activeSlugIndex, isSettings ] );
 
@@ -156,11 +157,8 @@ export default function UserInputQuestionnaire() {
 			return;
 		}
 
-		// The `activeSlugIndex` deals with a zero-based index, but the IDs
-		// we need to select use a one-based index, hence the ` + 1` here for
-		// the `activeSlugIndex` selector.
-		global.document.getElementById( `googlesitekit-user-input-question-${ activeSlugIndex + 1 }` )?.scrollIntoView( { behavior: 'smooth' } );
-	}, [ activeSlugIndex ] );
+		containerRef.current?.scrollIntoView( { behavior: 'smooth' } );
+	}, [ activeSlug ] );
 
 	// Update the callbacks and labels for the questions if the user is editing a *single question*.
 	let backCallback = back;
@@ -203,7 +201,7 @@ export default function UserInputQuestionnaire() {
 	}
 
 	return (
-		<Fragment>
+		<div ref={ containerRef }>
 			{ settingsProgress }
 
 			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_ROLE ) && (
@@ -309,6 +307,6 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				/>
 			) }
-		</Fragment>
+		</div>
 	);
 }
