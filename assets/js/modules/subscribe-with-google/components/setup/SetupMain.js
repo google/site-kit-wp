@@ -36,9 +36,7 @@ import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME, FORM_SETUP } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { useExistingTagEffect } from '../../hooks';
 import { AccountCreate } from '../common';
-import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
@@ -46,11 +44,6 @@ export default function SetupMain( { finishSetup } ) {
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const submitInProgress = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' ) );
 	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
-
-	// Set the accountID and containerID if there is an existing tag.
-	useExistingTagEffect();
-	// Synchronize the gaPropertyID setting with the singular GA property ID in selected containers.
-	useGAPropertyIDEffect();
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
