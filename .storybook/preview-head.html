@@ -1,6 +1,14 @@
 <style>
+	:root {
+		--preview-margin: 50px;
+	}
+
 	.googlesitekit-plugin-preview {
-		padding: 50px;
+		padding: var(--preview-margin);
+	}
+
+	.-googlesitekit-plugin-preview {
+		margin: calc(0px - var(--preview-margin));
 	}
 </style>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
