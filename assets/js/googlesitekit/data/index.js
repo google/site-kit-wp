@@ -49,6 +49,9 @@ Data.combineStores = combineStores;
 Data.commonActions = commonActions;
 Data.commonControls = commonControls;
 Data.commonStore = commonStore;
+
+// Attach some WordPress data functions to the registry so third-party
+// developers can use them without importing '@wordpress/data'.
 Data.createRegistryControl = createRegistryControl;
 Data.createRegistrySelector = createRegistrySelector;
 Data.useSelect = useSelect;
