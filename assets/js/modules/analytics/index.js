@@ -42,6 +42,7 @@ import AnalyticsIcon from '../../../svg/analytics.svg';
 import { STORE_NAME } from './datastore/constants';
 import { CONTEXT_MODULE_ANALYTICS, AREA_MODULE_ANALYTICS_MAIN } from './constants';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
+import { ModuleAcquisitionChannelsWidget } from './components/module/ModuleAcquisitionChannelsWidget';
 
 export { registerStore } from './datastore';
 
@@ -124,6 +125,19 @@ export const registerWidgets = ( widgets ) => {
 		},
 		[
 			AREA_DASHBOARD_POPULARITY,
+		],
+	);
+
+	widgets.registerWidget(
+		'analyticsModuleAcquisitionChannels',
+		{
+			Component: ModuleAcquisitionChannelsWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 3,
+			wrapWidget: false,
+		},
+		[
+			AREA_MODULE_ANALYTICS_MAIN,
 		],
 	);
 
