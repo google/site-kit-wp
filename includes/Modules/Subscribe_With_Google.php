@@ -44,7 +44,15 @@ final class Subscribe_With_Google extends Module
 	 * @since 1.0.0
 	 */
 	public function register() {
-		// TODO: Add actions.
+		if ( ! $this->is_connected() ) {
+			return;
+		}
+
+		// TODO: Add real actions.
+		$silly_meta_tag_fn = function () {
+			printf( '<meta name="swg" content="true" />' );
+		};
+		add_action( 'wp_head', $silly_meta_tag_fn );
 	}
 
 	/**
