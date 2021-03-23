@@ -58,7 +58,7 @@ export default function UserInputKeywords( { slug, max } ) {
 		const EOT = String.fromCharCode( 4 );
 		let newKeywords = keywords
 			// Trim keywords to allow no empty spaces at the beginning and at max one space at the end.
-			.map( ( keyword ) => keyword.replace( /(\S)\s+$/, '$1 ' ).replace( /^\s+\S/, '' ) )
+			.map( ( keyword ) => keyword.replace( /(\S)\s+$/, '$1 ' ).replace( /^\s+/, '' ) )
 			// EOT is added to the end to properly combine two sequential empty spaces at the end.
 			.concat( [ '', EOT ] )
 			.join( EOT )
