@@ -71,7 +71,6 @@ export default function UserInputQuestionWrapper( props ) {
 					'googlesitekit-user-input__question--next': ! isActive,
 				}
 			) }
-			id={ `googlesitekit-user-input-question-${ questionNumber }` }
 		>
 			<Row>
 				<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
