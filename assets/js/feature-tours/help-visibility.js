@@ -32,13 +32,7 @@ const helpVisibility = {
 	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_PAGE_DASHBOARD ],
 	version: '1.29.0',
 	checkRequirements: async () => {
-		return new Promise( ( resolve, reject ) => {
-			if ( isFeatureEnabled( 'helpVisibility' ) ) {
-				resolve( true );
-			} else {
-				reject();
-			}
-		} );
+		return isFeatureEnabled( 'helpVisibility' );
 	},
 	steps: [
 		{
