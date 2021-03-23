@@ -35,7 +35,9 @@ storiesOf( 'User Input', module )
 				// Don't mark the user input as completed in this story.
 				registry.dispatch( CORE_USER ).receiveUserInputState( 'missing' );
 			} } features={ [ 'userInput' ] }>
-				<UserInputApp />
+				<div style={ { margin: '-50px' } }>
+					<UserInputApp />
+				</div>
 			</WithTestRegistry>
 		);
 	} );
