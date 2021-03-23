@@ -28,7 +28,7 @@ export const CONTEXT_WEB = 'web';
 // Usage context for AMP containers.
 export const CONTEXT_AMP = 'amp';
 // Form ID for the module setup form.
-export const FORM_SETUP = 'subscribe-with-googleSetup';
+export const FORM_SETUP = 'subscribeWithGoogleSetup';
 // OAuth scope needed for creating containers.
 export const EDIT_SCOPE = 'https://www.googleapis.com/auth/subscribe-with-google.edit.containers';
 // A special setupMode value for when completing setup with Analytics.
