@@ -51,7 +51,7 @@ export default function Header() {
 		<Grid>
 			<Row>
 				<Cell lgSize={ 6 } mdSize={ 4 } smSize={ 4 } alignMiddle>
-					<h3 className="googlesitekit-subheading-1">
+					<h3 className="googlesitekit-subheading-1 googlesitekit-widget__header-title">
 						{ title }
 					</h3>
 				</Cell>

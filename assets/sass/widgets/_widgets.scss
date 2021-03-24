@@ -35,6 +35,11 @@
 		&-title {
 			margin: 0;
 		}
+
+		& > .mdc-layout-grid {
+			margin: 0;
+			padding: 0;
+		}
 	}
 
 	&__footer {
