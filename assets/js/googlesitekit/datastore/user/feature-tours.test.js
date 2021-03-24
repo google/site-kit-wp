@@ -34,6 +34,7 @@ import initialState, {
 describe( 'core/user feature-tours', () => {
 	let registry;
 	let store;
+	let setItemSpy;
 
 	const testTourA = {
 		slug: 'test-tour-a',
@@ -61,24 +62,19 @@ describe( 'core/user feature-tours', () => {
 	};
 
 	beforeEach( () => {
+		setItemSpy = jest.spyOn( CacheModule, 'setItem' );
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
 		registry.dispatch( STORE_NAME ).receiveInitialSiteKitVersion( '1.0.0' );
 	} );
 
+	afterEach( () => {
+		setItemSpy.mockRestore();
+	} );
+
 	describe( 'actions', () => {
 		describe( 'dismissTour', () => {
 			const fetchDismissTourRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/;
-
-			let setItemSpy;
-
-			beforeEach( () => {
-				setItemSpy = jest.spyOn( CacheModule, 'setItem' );
-			} );
-
-			afterEach( () => {
-				setItemSpy.mockRestore();
-			} );
 
 			it( 'requires a slug parameter', () => {
 				expect( () => registry.dispatch( STORE_NAME ).dismissTour() )
@@ -170,16 +166,6 @@ describe( 'core/user feature-tours', () => {
 		} );
 
 		describe( 'setLastDismissedAt', () => {
-			let setItemSpy;
-
-			beforeEach( () => {
-				setItemSpy = jest.spyOn( CacheModule, 'setItem' );
-			} );
-
-			afterEach( () => {
-				setItemSpy.mockRestore();
-			} );
-
 			it( 'requires a timestamp to be provided', () => {
 				expect( () => registry.dispatch( STORE_NAME ).receiveLastDismissedAt() )
 					.toThrow( 'A timestamp is required.' );
