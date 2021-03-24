@@ -370,7 +370,18 @@ describe( 'core/user feature-tours', () => {
 				registry.select( STORE_NAME ).getLastDismissedAt();
 				await untilResolved( registry, STORE_NAME ).getLastDismissedAt();
 
-				expect( store.getState().lastDismissedAt ).toEqual( timestamp );
+				expect( registry.select( STORE_NAME ).getLastDismissedAt() ).toBe( timestamp );
+			} );
+
+			it( 'returns false for an expired lastDismissedAt value in the cache', async () => {
+				const timestamp = Date.now();
+				// Set an item that is guaranteed to be expired when called with `getItem`
+				await setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, { ttl: -1 } );
+
+				registry.select( STORE_NAME ).getLastDismissedAt();
+				await untilResolved( registry, STORE_NAME ).getLastDismissedAt();
+
+				expect( registry.select( STORE_NAME ).getLastDismissedAt() ).toBe( null );
 			} );
 		} );
 
@@ -394,6 +405,12 @@ describe( 'core/user feature-tours', () => {
 				const startOfCoolDownPeriod = Date.now() - coolDownPeriodMilliseconds;
 
 				registry.dispatch( STORE_NAME ).receiveLastDismissedAt( startOfCoolDownPeriod );
+
+				expect( registry.select( STORE_NAME ).areFeatureToursOnCooldown() ).toEqual( false );
+			} );
+
+			it( 'returns false for an expired lastDismissedAt value in the cache', async () => {
+				registry.dispatch( STORE_NAME ).receiveLastDismissedAt( null );
 
 				expect( registry.select( STORE_NAME ).areFeatureToursOnCooldown() ).toEqual( false );
 			} );

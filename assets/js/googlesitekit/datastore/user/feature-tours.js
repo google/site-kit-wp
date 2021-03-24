@@ -135,7 +135,7 @@ const baseActions = {
 	},
 
 	receiveLastDismissedAt( timestamp ) {
-		invariant( timestamp, 'A timestamp is required.' );
+		invariant( timestamp !== undefined, 'A timestamp is required.' );
 		return {
 			type: RECEIVE_LAST_DISMISSED_AT,
 			payload: {
@@ -273,9 +273,8 @@ const baseResolvers = {
 
 	*getLastDismissedAt() {
 		const { value: lastDismissedAt } = yield Data.commonActions.await( getItem( FEATURE_TOUR_LAST_DISMISSED_AT ) );
-		if ( lastDismissedAt ) {
-			return yield actions.setLastDismissedAt( lastDismissedAt );
-		}
+
+		yield actions.receiveLastDismissedAt( lastDismissedAt || null );
 	},
 };
 
@@ -350,7 +349,9 @@ const baseSelectors = {
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {number|undefined} Timestamp of the last dismissal or undefined.
+	 * @return {(number|null|undefined)} Timestamp of the last dismissal
+	 *                                   `null` if no timestamp exists
+	 *                                    or `undefined` if value is unresolved.
 	 */
 	getLastDismissedAt( state ) {
 		return state.lastDismissedAt;
@@ -371,6 +372,10 @@ const baseSelectors = {
 
 		if ( undefined === lastDismissedAt ) {
 			return undefined;
+		}
+		// If null, there is no value in the cache, or it has expired.
+		if ( null === lastDismissedAt ) {
+			return false;
 		}
 
 		const coolDownPeriodMilliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
