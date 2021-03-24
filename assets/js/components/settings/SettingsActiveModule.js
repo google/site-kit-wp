@@ -1,5 +1,5 @@
 /**
- * SettingsModule component.
+ * SettingsActiveModule component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -64,7 +64,7 @@ const { withSelect, withDispatch } = Data;
 /**
  * A single module. Keeps track of its own active state and settings.
  */
-class SettingsModule extends Component {
+class SettingsActiveModule extends Component {
 	constructor( props ) {
 		super( props );
 		this.state = {
@@ -458,7 +458,7 @@ class SettingsModule extends Component {
 	}
 }
 
-SettingsModule.propTypes = {
+SettingsActiveModule.propTypes = {
 	name: PropTypes.string,
 	slug: PropTypes.string,
 	homepage: PropTypes.string,
@@ -474,7 +474,7 @@ SettingsModule.propTypes = {
 	setupComplete: PropTypes.bool,
 };
 
-SettingsModule.defaultProps = {
+SettingsActiveModule.defaultProps = {
 	name: '',
 	slug: '',
 	homepage: '',
@@ -502,4 +502,4 @@ export default compose( [
 			submitChanges,
 		};
 	} ),
-] )( SettingsModule );
+] )( SettingsActiveModule );

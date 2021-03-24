@@ -33,7 +33,7 @@ import { Component, Fragment } from '@wordpress/element';
 import { clearWebStorage, getModulesData } from '../../util';
 import Layout from '../layout/Layout';
 import Notification from '../legacy-notifications/notification';
-import SettingsModule from './settings-module';
+import SettingsActiveModule from './SettingsActiveModule';
 import SettingsOverlay from './SettingsOverlay';
 import { isPermissionScopeError } from '../../util/errors';
 import ThumbsUpSVG from '../../../svg/thumbs-up.svg';
@@ -139,7 +139,7 @@ class SettingsModules extends Component {
 		const { error } = this.state;
 
 		return (
-			<SettingsModule
+			<SettingsActiveModule
 				key={ module.slug + '-module' }
 				slug={ module.slug }
 				name={ module.name }
