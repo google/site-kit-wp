@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Error;
 use Exception;
@@ -37,7 +36,6 @@ class Google_Proxy {
 	const FEATURES_URI            = '/site-management/features/';
 	const ACTION_SETUP            = 'googlesitekit_proxy_setup';
 	const ACTION_PERMISSIONS      = 'googlesitekit_proxy_permissions';
-	const OPTION_PROXY_NONCE      = 'googlesitekit_proxy_nonce';
 
 	/**
 	 * Plugin context.
@@ -48,27 +46,14 @@ class Google_Proxy {
 	private $context;
 
 	/**
-	 * User_Options instance
-	 *
-	 * @since n.e.x.t
-	 * @var User_Options
-	 */
-	private $user_options;
-
-	/**
 	 * Google_Proxy constructor.
 	 *
 	 * @since 1.1.2
 	 *
-	 * @param Context      $context Plugin context.
-	 * @param User_Options $user_options Optional. User Option API instance. Default is a new instance.
+	 * @param Context $context Plugin context.
 	 */
-	public function __construct(
-		Context $context,
-		User_Options $user_options = null
-	) {
-		$this->context      = $context;
-		$this->user_options = $user_options ?: new User_Options( $this->context );
+	public function __construct( Context $context ) {
+		$this->context = $context;
 	}
 
 	/**
@@ -112,42 +97,6 @@ class Google_Proxy {
 	}
 
 	/**
-	 * Gets the nonce for verifying the authentication.
-	 * Since wp_verify_nonce() is tied to a user session, it will always fail
-	 * after a user logs out and logs back in, so we create a nonce and store it as an option.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string nonce
-	 */
-	public function get_nonce() {
-		$nonce = $this->user_options->get( self::OPTION_PROXY_NONCE );
-		if ( false === $nonce ) {
-			$nonce = wp_create_nonce( self::ACTION_SETUP );
-			$this->user_options->set( self::OPTION_PROXY_NONCE, $nonce );
-		}
-
-		return $nonce;
-	}
-
-	/**
-	 * Delete the proxy nonce option if it exists.
-	 */
-	public function delete_nonce() {
-		$this->user_options->delete( self::OPTION_PROXY_NONCE );
-	}
-
-	/**
-	 * Verify a supplied nonce matches the stored one
-	 *
-	 * @param string $nonce Nonce value.
-	 * @return bool whether or not the nonce is valid
-	 */
-	public function verify_nonce( $nonce ) {
-		return strlen( $nonce ) && $nonce === $this->get_nonce();
-	}
-
-	/**
 	 * Returns the setup URL to the authentication proxy.
 	 *
 	 * @since 1.27.0
@@ -161,7 +110,7 @@ class Google_Proxy {
 			$query_params,
 			array(
 				'supports' => rawurlencode( implode( ' ', $this->get_supports() ) ),
-				'nonce'    => rawurlencode( self::get_nonce() ),
+				'nonce'    => rawurlencode( wp_create_nonce( self::ACTION_SETUP ) ),
 			)
 		);
 
