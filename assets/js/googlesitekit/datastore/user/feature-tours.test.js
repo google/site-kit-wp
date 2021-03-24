@@ -30,7 +30,7 @@ import initialState, {
 	FEATURE_TOUR_COOLDOWN_SECONDS,
 	FEATURE_TOUR_LAST_DISMISSED_AT,
 } from './feature-tours';
-const { setItem, deleteItem } = CacheModule;
+const { setItem } = CacheModule;
 
 describe( 'core/user feature-tours', () => {
 	let registry;
@@ -350,9 +350,7 @@ describe( 'core/user feature-tours', () => {
 		} );
 
 		describe( 'getLastDismissedAt', () => {
-			afterEach( async () => {
-				await deleteItem( FEATURE_TOUR_LAST_DISMISSED_AT );
-			} );
+			// Note: storage is cleared before every test in the global config.
 
 			it( 'returns initial state (undefined) if there is no lastDismissedAt timestamp', () => {
 				const lastDismissedAt = registry.select( STORE_NAME ).getLastDismissedAt();
@@ -367,7 +365,7 @@ describe( 'core/user feature-tours', () => {
 
 			it( 'uses a resolver to set lastDismissedAt in the store if there is a value in the cache', async () => {
 				const timestamp = Date.now();
-				setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp );
+				await setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp );
 
 				registry.select( STORE_NAME ).getLastDismissedAt();
 				await untilResolved( registry, STORE_NAME ).getLastDismissedAt();
