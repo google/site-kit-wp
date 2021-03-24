@@ -36,7 +36,8 @@ const { createRegistrySelector, createRegistryControl } = Data;
 const { getRegistry } = Data.commonActions;
 
 // Feature tour cooldown period is 2 hours
-const FEATURE_TOUR_COOLDOWN_PERIOD = 1000 * 60 * 60 * 2;
+export const FEATURE_TOUR_COOLDOWN_PERIOD = 1000 * 60 * 60 * 2;
+export const FEATURE_TOUR_CACHE_KEY = 'feature_tour_last_dismissed_at';
 
 // Actions.
 const DISMISS_TOUR = 'DISMISS_TOUR';
@@ -134,6 +135,7 @@ const baseActions = {
 	},
 
 	receiveLastDismissedAt( timestamp ) {
+		invariant( timestamp, 'A timestamp is required.' );
 		return {
 			type: RECEIVE_LAST_DISMISSED_AT,
 			payload: {
@@ -189,13 +191,13 @@ const baseControls = {
 
 		return true;
 	} ),
-	[ CACHE_LAST_DISMISSED_AT ]: createRegistryControl( ( ) => async ( { payload } ) => {
+	[ CACHE_LAST_DISMISSED_AT ]: async ( { payload } ) => {
 		const { timestamp } = payload;
 
-		setItem( 'feature_tour_last_dismissed_at', timestamp, {
+		await setItem( FEATURE_TOUR_CACHE_KEY, timestamp, {
 			ttl: FEATURE_TOUR_COOLDOWN_PERIOD,
 		} );
-	} ),
+	},
 };
 
 const baseReducer = ( state, { type, payload } ) => {
@@ -270,7 +272,7 @@ const baseResolvers = {
 	},
 
 	*getLastDismissedAt() {
-		const { value: lastDismissedAt } = yield Data.commonActions.await( getItem( 'feature_tour_last_dismissed_at' ) );
+		const { value: lastDismissedAt } = yield Data.commonActions.await( getItem( FEATURE_TOUR_CACHE_KEY ) );
 		if ( lastDismissedAt ) {
 			return yield actions.setLastDismissedAt( lastDismissedAt );
 		}
@@ -348,7 +350,7 @@ const baseSelectors = {
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {number} Timestamp of the last dismissal.
+	 * @return {number|undefined} Timestamp of the last dismissal or undefined.
 	 */
 	getLastDismissedAt( state ) {
 		return state.lastDismissedAt;
@@ -364,7 +366,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {undefined|boolean} Whether feature tours are on cooldown or undefined.
 	 */
-	areFeatureToursOnCooldown: ( createRegistrySelector( ( select ) => () => {
+	areFeatureToursOnCooldown: createRegistrySelector( ( select ) => () => {
 		const lastDismissedAt = select( STORE_NAME ).getLastDismissedAt();
 
 		if ( undefined === lastDismissedAt ) {
@@ -373,7 +375,7 @@ const baseSelectors = {
 
 		const coolDownExpiresAt = lastDismissedAt + FEATURE_TOUR_COOLDOWN_PERIOD;
 		return Date.now() < coolDownExpiresAt;
-	} ) ),
+	} ),
 };
 
 export const {
@@ -404,3 +406,4 @@ export default {
 	resolvers,
 	selectors,
 };
+
