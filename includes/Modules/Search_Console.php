@@ -66,7 +66,8 @@ final class Search_Console extends Module
 		// Detect and store Search Console property when receiving token for the first time.
 		add_action(
 			'googlesitekit_authorize_user',
-			function( array $token_response ) {
+			function( $args ) {
+				$token_response = $args[0];
 				if ( ! current_user_can( Permissions::SETUP ) ) {
 					return;
 				}

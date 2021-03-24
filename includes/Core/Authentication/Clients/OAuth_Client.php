@@ -722,6 +722,8 @@ final class OAuth_Client {
 
 		$this->refresh_profile_data( 2 * MINUTE_IN_SECONDS );
 
+		$previous_scopes = $this->get_granted_scopes();
+
 		/**
 		 * Fires when the current user has just been authorized to access Google APIs.
 		 *
@@ -734,7 +736,7 @@ final class OAuth_Client {
 		 *
 		 * @param array $token_response Token response data.
 		 */
-		do_action( 'googlesitekit_authorize_user', $token_response );
+		do_action( 'googlesitekit_authorize_user', array( $token_response, $scopes, $previous_scopes ) );
 
 		// This must happen after googlesitekit_authorize_user as the permissions checks depend on
 		// values set which affect the meta capability mapping.
