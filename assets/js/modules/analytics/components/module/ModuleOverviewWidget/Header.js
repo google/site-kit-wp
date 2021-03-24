@@ -26,15 +26,14 @@ import { sprintf, _n, _x, __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { getCurrentDateRangeDayCount } from '../../../../../util/date-range';
 import { MODULES_ANALYTICS } from '../../../datastore/constants';
-import LayoutHeader from '../../../../../components/layout/LayoutHeader';
+import Link from '../../../../../components/Link';
+import { Cell, Grid, Row } from '../../../../../material-components';
 const { useSelect } = Data;
 
 export default function Header() {
 	const visitorsOverview = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'visitors-overview' ) );
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
+	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
 	const title = sprintf(
 		/* translators: %s: number of days */
@@ -49,10 +48,20 @@ export default function Header() {
 	);
 
 	return (
-		<LayoutHeader
-			title={ title }
-			ctaLabel={ headerCTALabel }
-			ctaLink={ visitorsOverview }
-		/>
+		<Grid>
+			<Row>
+				<Cell lgSize={ 6 } mdSize={ 4 } smSize={ 4 } alignMiddle>
+					<h3 className="googlesitekit-subheading-1 googlesitekit-widget__header-title">
+						{ title }
+					</h3>
+				</Cell>
+
+				<Cell className="mdc-layout-grid__cell--align-right-tablet" lgSize={ 6 } mdSize={ 4 } smSize={ 4 } alignMiddle>
+					<Link href={ visitorsOverview } external inherit>
+						{ headerCTALabel }
+					</Link>
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }

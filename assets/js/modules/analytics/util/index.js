@@ -40,6 +40,7 @@ export { calculateOverviewData };
 export { default as parsePropertyID } from './parse-property-id';
 export * from './is-zero-report';
 export * from './validation';
+export * from './time-column-format';
 
 /**
  * Extracts data required for a pie chart from the Analytics report information.
@@ -131,16 +132,16 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
  *
  * @since 1.0.0
  *
- * @param {Array}  rows           An array of rows to reduce.
- * @param {number} selectedMetric The currently selected metric index.
- * @param {number} selectedStats  The currently selected stat we need to return data for.
+ * @param {Array}  rows                 An array of rows to reduce.
+ * @param {number} selectedMetricsIndex The index of metrics array in the metrics set.
+ * @param {number} selectedStats        The currently selected stat we need to return data for.
  * @return {Array} Array of selected stats from analytics row data.
  */
-function reduceAnalyticsRowsData( rows, selectedMetric, selectedStats ) {
+function reduceAnalyticsRowsData( rows, selectedMetricsIndex, selectedStats ) {
 	const dataMap = [];
 	each( rows, ( row ) => {
 		if ( row.metrics ) {
-			const { values } = row.metrics[ selectedMetric ];
+			const { values } = row.metrics[ selectedMetricsIndex ];
 			const dateString = row.dimensions[ 0 ];
 			const date = parseDimensionStringToDate( dateString );
 			dataMap.push( [
@@ -157,11 +158,14 @@ function reduceAnalyticsRowsData( rows, selectedMetric, selectedStats ) {
  *
  * @since 1.0.0
  *
- * @param {Object} reports The data returned from the Analytics API call.
- * @param {Object} options Extraction options.
+ * @param {Object} reports                  The data returned from the Analytics API call.
+ * @param {Array}  selectedStats            The currently selected stat we need to return data for.
+ * @param {number} days                     The number of days to extract data for. Pads empty data days.
+ * @param {number} currentMonthMetricIndex  The index of the current month metrics in the metrics set.
+ * @param {number} previousMonthMetricIndex The index of the last month metrics in the metrics set.
  * @return {Array} The dataMap ready for charting.
  */
-export function extractAnalyticsDashboardData( reports, options ) {
+export function extractAnalyticsDashboardData( reports, selectedStats, days, currentMonthMetricIndex = 0, previousMonthMetricIndex = 0 ) {
 	if ( ! reports || ! reports.length ) {
 		return null;
 	}
@@ -173,13 +177,6 @@ export function extractAnalyticsDashboardData( reports, options ) {
 	}
 
 	const rowLength = rows.length;
-	const {
-		selectedStats,
-		selectedDataIndex,
-		currentMonthMetricIndex = 0,
-		previousMonthMetricIndex = 0,
-		days,
-	} = options;
 
 	// Pad rows to 2 x number of days data points to accommodate new accounts.
 	if ( ( days * 2 ) > rowLength ) {
@@ -236,10 +233,10 @@ export function extractAnalyticsDashboardData( reports, options ) {
 	];
 
 	// Split the results in two chunks of days, and process.
-	const lastMonthRows = rows.slice( rows.length - days );
-	const lastMonthData = reduceAnalyticsRowsData( lastMonthRows, currentMonthMetricIndex, selectedDataIndex );
+	const lastMonthRows = rows.slice( rows.length - days, rows.length );
 	const previousMonthRows = rows.slice( 0, rows.length - days );
-	const previousMonthData = reduceAnalyticsRowsData( previousMonthRows, previousMonthMetricIndex, selectedDataIndex );
+	const lastMonthData = reduceAnalyticsRowsData( lastMonthRows, currentMonthMetricIndex, selectedStats );
+	const previousMonthData = reduceAnalyticsRowsData( previousMonthRows, previousMonthMetricIndex, selectedStats );
 
 	const locale = getLocale();
 	const localeDateOptions = {
@@ -630,7 +627,7 @@ export const getTopPagesReportDataDefaults = () => {
  */
 export const parseTotalUsersData = ( data ) => {
 	return {
-		totalUsers: data?.[0]?.data?.totals?.[0]?.values?.[0],
-		previousTotalUsers: data?.[0]?.data?.totals?.[1]?.values?.[0],
+		totalUsers: data?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],
+		previousTotalUsers: data?.[ 0 ]?.data?.totals?.[ 1 ]?.values?.[ 0 ],
 	};
 };

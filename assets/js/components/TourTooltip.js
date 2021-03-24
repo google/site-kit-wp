@@ -97,7 +97,7 @@ export default function TourTooltip( {
 /**
  * All props are provided directly from `react-joyride`, intended for custom components.
  *
- * @since n.e.x.t
+ * @since 1.28.0
  * @see {@link https://docs.react-joyride.com/custom-components#props-1}.
  */
 TourTooltip.propTypes = {

@@ -30,11 +30,12 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import { getDataTableFromData } from '../../../../components/data-table';
-import { numFmt } from '../../../../util';
 import { isZeroReport } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import ReportTable from '../../../../components/ReportTable';
+import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
+import { numFmt } from '../../../../util';
 
 const { useSelect } = Data;
 
@@ -93,37 +94,6 @@ function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
-	const headers = [
-		{
-			title: __( 'Most popular content', 'google-site-kit' ),
-			primary: true,
-		},
-		{
-			title: __( 'Views', 'google-site-kit' ),
-		},
-	];
-
-	const links = [];
-	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-		const [ title, url ] = row.dimensions;
-		links[ i ] = url.startsWith( '/' ) ? url : '/' + url;
-
-		return [
-			title,
-			numFmt( row.metrics[ 0 ].values[ 0 ], { style: 'decimal' } ),
-		];
-	} );
-
-	const options = {
-		hideHeader: false,
-		chartsEnabled: false,
-		links,
-		showURLs: true,
-		useAdminURLs: true,
-	};
-
-	const dataTable = getDataTableFromData( dataMapped, headers, options );
-
 	return (
 		<Widget
 			noPadding
@@ -137,10 +107,29 @@ function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 			) }
 		>
 			<TableOverflowContainer>
-				{ dataTable }
+				<ReportTable
+					rows={ data[ 0 ].data.rows }
+					columns={ tableColumns }
+				/>
 			</TableOverflowContainer>
 		</Widget>
 	);
 }
+
+const tableColumns = [
+	{
+		title: __( 'Most popular content', 'google-site-kit' ),
+		primary: true,
+		Component: ( { row } ) => {
+			const [ title, path ] = row.dimensions;
+			return <DetailsPermaLinks title={ title } path={ path } />;
+		},
+	},
+	{
+		title: __( 'Views', 'google-site-kit' ),
+		field: 'metrics.0.values.0',
+		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+	},
+];
 
 export default whenActive( { moduleName: 'analytics' } )( DashboardPopularPagesWidget );

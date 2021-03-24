@@ -27,17 +27,20 @@
 	top: 0;
 	z-index: 12;
 
-	@media (min-width: $bp-tablet) {
-		top: 46px;
-	}
-
-	@media (min-width: $bp-wpAdminBarTablet) {
-		top: 32px;
-	}
-
 	.wp-responsive-open & {
 		margin-left: -18px;
 		padding-left: 28px;
+	}
+
+	body.admin-bar & {
+
+		@media (min-width: $bp-tablet) {
+			top: 46px;
+		}
+
+		@media (min-width: $bp-wpAdminBarTablet) {
+			top: 32px;
+		}
 	}
 
 	.googlesitekit-header__logo {
@@ -91,11 +94,6 @@
 	}
 
 	.googlesitekit-date-range-selector {
-		margin-right: $grid-gap-phone / 2;
-
-		@media (max-width: $bp-xsmallOnly) {
-			margin-right: $grid-gap-phone;
-		}
 
 		@media (min-width: $bp-wpAdminBarTablet) {
 			margin-right: $grid-gap-desktop;
@@ -111,30 +109,16 @@
 
 		.mdc-menu-surface {
 			right: 0;
-			width: 100%;
-		}
-
-		.mdc-button__label {
-			// prevent the default action of hiding button labels on xsmall screens
-			display: inline-block;
-			height: auto;
-			position: relative !important;
-			width: auto;
 		}
 	}
 
 	.googlesitekit-user-selector {
 
-		.googlesitekit-header__dropdown {
-			// align the dropdown with it's button
-			margin-right: -8px;
-		}
+		.mdc-button__label {
 
-		&.googlesitekit-dropdown-menu {
+			@media (max-width: $bp-wpAdminBarTablet) {
 
-			.mdc-button--dropdown {
-				background-image: none;
-				padding-right: $grid-gap-phone / 2;
+				@include screen-reader-only;
 			}
 		}
 	}

@@ -20,15 +20,17 @@
  * Internal dependencies
  */
 import { render, createTestRegistry, fireEvent } from '../../../tests/js/test-utils';
-import TourTooltips from './TourTooltips';
+import TourTooltips, { GA_ACTIONS } from './TourTooltips';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import * as tracking from '../util/tracking';
 
 const SECOND_STEP = 1;
 const FINAL_STEP = 2;
 const TOUR_ID = 'mock-feature';
+const EVENT_CATEGORY = 'test-event-category';
 const STEP_KEY = `${ TOUR_ID }-step`;
 const RUN_KEY = `${ TOUR_ID }-run`;
-const ENCOUNTERED_KEY = `sitekit-${ TOUR_ID }__has-encountered-tour`;
 const MOCK_STEPS = [
 	{
 		target: '.step-1',
@@ -56,15 +58,23 @@ const MockUIWrapper = ( { children } ) => (
 	</div>
 );
 
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 const renderTourTooltipsWithMockUI = ( registry ) => render( (
 	<MockUIWrapper>
-		<TourTooltips steps={ MOCK_STEPS } tourID={ TOUR_ID } />
+		<TourTooltips
+			steps={ MOCK_STEPS }
+			tourID={ TOUR_ID }
+			gaEventCategory={ EVENT_CATEGORY }
+		/>
 	</MockUIWrapper>
 ), { registry } );
 
 describe( 'TourTooltips', () => {
 	let registry;
 	let select;
+	let dismissTourSpy;
 	// store value to return default functionality on test teardown
 	const nativeCreateRange = global.document.createRange;
 
@@ -83,7 +93,15 @@ describe( 'TourTooltips', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		select = registry.select( CORE_UI );
+		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+		dismissTourSpy = jest.spyOn( registry.dispatch( CORE_USER ), 'dismissTour' );
+		dismissTourSpy.mockImplementation( ( tourID ) => {
+			// Bypass fetch requests and receive the dismissed tour directly.
+			registry.dispatch( CORE_USER ).receiveGetDismissedTours( [ tourID ] );
+		} );
 	} );
+
+	afterEach( () => dismissTourSpy.mockReset() );
 
 	afterAll( () => {
 		global.document.createRange = nativeCreateRange;
@@ -136,6 +154,7 @@ describe( 'TourTooltips', () => {
 		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
 
 		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
+		expect( dismissTourSpy ).toHaveBeenCalled();
 	} );
 
 	it( 'should end tour when "Got it" button is clicked', async () => {
@@ -146,6 +165,7 @@ describe( 'TourTooltips', () => {
 		fireEvent.click( getByRole( 'button', { name: /got it/i } ) );
 
 		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
+		expect( dismissTourSpy ).toHaveBeenCalled();
 	} );
 
 	it( 'should persist tour completion after tour closed', async () => {
@@ -153,24 +173,93 @@ describe( 'TourTooltips', () => {
 
 		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
 
-		expect( localStorage.setItem ).toHaveBeenCalledWith( ENCOUNTERED_KEY, 'true' );
+		expect( dismissTourSpy ).toHaveBeenCalledWith( TOUR_ID );
 	} );
 
 	it( 'should start tour if no persisted tour completion exists', async () => {
 		renderTourTooltipsWithMockUI( registry );
 
-		expect( localStorage.getItem ).toHaveBeenCalledWith( ENCOUNTERED_KEY );
-		expect( localStorage.getItem( ENCOUNTERED_KEY ) ).toBeNull();
 		expect( select.getValue( RUN_KEY ) ).toBe( true );
 	} );
 
 	it( 'should not start tour if persisted tour completion is found', async () => {
-		localStorage.setItem( ENCOUNTERED_KEY, 'true' );
+		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [ TOUR_ID ] );
 
-		renderTourTooltipsWithMockUI( registry );
+		const { queryByRole } = renderTourTooltipsWithMockUI( registry );
 
-		expect( localStorage.getItem ).toHaveBeenCalledWith( ENCOUNTERED_KEY );
-		expect( localStorage.getItem( ENCOUNTERED_KEY ) ).toBe( 'true' );
-		expect( select.getValue( RUN_KEY ) ).toBeUndefined();
+		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
+	} );
+
+	describe( 'event tracking', () => {
+		beforeEach( () => mockTrackEvent.mockClear() );
+
+		it( 'tracks all events for a completed tour', async () => {
+			const { getByRole } = renderTourTooltipsWithMockUI( registry );
+			await getByRole( 'alertdialog' );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenLastCalledWith( EVENT_CATEGORY, GA_ACTIONS.VIEW, 1 );
+			mockTrackEvent.mockClear();
+
+			// Go to step 2
+			fireEvent.click( getByRole( 'button', { name: /next/i } ) );
+			await getByRole( 'alertdialog' );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+			// Tracks the advance on the 1st step, view on the 2nd step.
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, GA_ACTIONS.NEXT, 1 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, GA_ACTIONS.VIEW, 2 );
+			mockTrackEvent.mockClear();
+
+			// Go to step 3
+			fireEvent.click( getByRole( 'button', { name: /next/i } ) );
+			await getByRole( 'alertdialog' );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+			// Tracks the advance on the 1st step, view on the 2nd step.
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, GA_ACTIONS.NEXT, 2 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, GA_ACTIONS.VIEW, 3 );
+			mockTrackEvent.mockClear();
+
+			// Finish the tour.
+			fireEvent.click( getByRole( 'button', { name: /got it/i } ) );
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.COMPLETE, 3 );
+		} );
+
+		it( 'tracks all events for a dismissed tour', async () => {
+			const { getByRole } = renderTourTooltipsWithMockUI( registry );
+			await getByRole( 'alertdialog' );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.VIEW, 1 );
+			mockTrackEvent.mockClear();
+
+			// Dismissing a tour is specific to closing the dialog.
+			fireEvent.click( getByRole( 'button', { name: /close/i } ) );
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.DISMISS, 1 );
+		} );
+
+		it( 'tracks events for navigating between steps', async () => {
+			const { getByRole } = renderTourTooltipsWithMockUI( registry );
+			await getByRole( 'alertdialog' );
+			mockTrackEvent.mockClear();
+
+			// Go to step 2
+			fireEvent.click( getByRole( 'button', { name: /next/i } ) );
+			await getByRole( 'alertdialog' );
+			// Tracks the advance on the 1st step, view on the 2nd step.
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, GA_ACTIONS.NEXT, 1 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, GA_ACTIONS.VIEW, 2 );
+			mockTrackEvent.mockClear();
+
+			// Go back to step 1
+			fireEvent.click( getByRole( 'button', { name: /back/i } ) );
+			await getByRole( 'alertdialog' );
+			// Tracks the return on the 2nd step, view on the 1st step.
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, GA_ACTIONS.PREV, 2 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, GA_ACTIONS.VIEW, 1 );
+		} );
 	} );
 } );

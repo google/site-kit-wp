@@ -31,6 +31,7 @@ import {
 	UI_DIMENSION_VALUE,
 	DATE_RANGE_OFFSET,
 	STORE_NAME,
+	UI_ALL_TRAFFIC_LOADED,
 } from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -46,7 +47,7 @@ import UserDimensionsPieChart from './UserDimensionsPieChart';
 import { isZeroReport } from '../../../util';
 import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
 
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const [ firstLoad, setFirstLoad ] = useState( true );
@@ -156,6 +157,16 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 		dateRange,
 		currentRange,
 	] );
+
+	// Set a flag in the core/ui store when all data is loaded.
+	// Currently only used by the feature tour to delay showing
+	// while the widget is in a loading state.
+	const { setValue } = useDispatch( CORE_UI );
+	useEffect( () => {
+		if ( firstLoad && pieChartLoaded && totalUsersLoaded && userCountGraphLoaded ) {
+			setValue( UI_ALL_TRAFFIC_LOADED, true );
+		}
+	}, [ firstLoad, pieChartLoaded, totalUsersLoaded, userCountGraphLoaded ] );
 
 	if ( pieChartError ) {
 		return <WidgetReportError moduleSlug="analytics" error={ pieChartError } />;

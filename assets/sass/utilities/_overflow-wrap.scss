@@ -1,5 +1,5 @@
 /**
- * Analytics module styles.
+ * Overflow wrap utility styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,15 +17,9 @@
  */
 
 .googlesitekit-plugin {
+	// See https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-wrap
 
-	.googlesitekit-widget--analyticsModuleOverview,
-	.googlesitekit-widget--analyticsModulePopularPages {
-
-		.mdc-layout-grid,
-		.googlesitekit-layout__header-title,
-		.googlesitekit-table--with-list {
-			margin: 0;
-			padding: 0;
-		}
+	.googlesitekit-overflow-wrap-break-word {
+		overflow-wrap: break-word;
 	}
 }

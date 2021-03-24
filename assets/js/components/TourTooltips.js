@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import { useLocalStorage, useMount } from 'react-use';
-import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
+import { useMount } from 'react-use';
+import Joyride, { ACTIONS, EVENTS, LIFECYCLE, STATUS } from 'react-joyride';
 import PropTypes from 'prop-types';
 
 /**
@@ -33,6 +33,8 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { trackEvent } from '../util/tracking';
 import TourTooltip from './TourTooltip';
 const { useSelect, useDispatch } = Data;
 
@@ -69,14 +71,26 @@ const floaterProps = {
 	},
 };
 
-export default function TourTooltips( { steps, tourID } ) {
+// GA Event Tracking actions (do not change!)
+export const GA_ACTIONS = {
+	VIEW: 'feature_tooltip_view',
+	NEXT: 'feature_tooltip_advance',
+	PREV: 'feature_tooltip_return',
+	DISMISS: 'feature_tooltip_dismiss',
+	COMPLETE: 'feature_tooltip_complete',
+};
+
+export default function TourTooltips( { steps, tourID, gaEventCategory } ) {
 	const stepKey = `${ tourID }-step`;
 	const runKey = `${ tourID }-run`;
 	const { setValue } = useDispatch( CORE_UI );
-	const [ shouldSkipTour, setShouldSkipTour ] = useLocalStorage( `sitekit-${ tourID }__has-encountered-tour` );
+	const { dismissTour } = useDispatch( CORE_USER );
 
 	const stepIndex = useSelect( ( select ) => select( CORE_UI ).getValue( stepKey ) );
-	const run = useSelect( ( select ) => select( CORE_UI ).getValue( runKey ) || false );
+	const run = useSelect( ( select ) => {
+		return select( CORE_UI ).getValue( runKey ) &&
+			select( CORE_USER ).isTourDismissed( tourID ) === false;
+	} );
 
 	const changeStep = ( index, action ) => setValue(
 		stepKey,
@@ -84,16 +98,39 @@ export default function TourTooltips( { steps, tourID } ) {
 	);
 
 	const startTour = () => {
-		// Checks if user has completed or skipped tour already, do not re-run tour if so.
-		if ( ! shouldSkipTour ) {
-			setValue( runKey, true );
-		}
+		setValue( runKey, true );
 	};
 
 	const endTour = () => {
-		// Add to localStorage to avoid unwanted repeat viewing.
-		setShouldSkipTour( true );
-		setValue( runKey, false );
+		// Dismiss tour to avoid unwanted repeat viewing.
+		dismissTour( tourID );
+	};
+
+	const trackAllTourEvents = ( { index, action, lifecycle, size, status, type } ) => {
+		// The index is 0-based, but step numbers are 1-based.
+		const stepNumber = index + 1;
+
+		if ( type === EVENTS.TOOLTIP && lifecycle === LIFECYCLE.TOOLTIP ) {
+			trackEvent( gaEventCategory, GA_ACTIONS.VIEW, stepNumber );
+		} else if ( status === STATUS.FINISHED && type === EVENTS.TOUR_END && size === stepNumber ) {
+			// Here we need to additionally check the size === stepNumber because
+			// it is the only way to differentiate the status/event combination
+			// from an identical combination that happens immediately after completion
+			// on index `0` to avoid duplicate measurement.
+			trackEvent( gaEventCategory, GA_ACTIONS.COMPLETE, stepNumber );
+		}
+
+		if ( lifecycle !== LIFECYCLE.COMPLETE || status === STATUS.FINISHED ) {
+			return;
+		}
+
+		if ( action === ACTIONS.CLOSE ) {
+			trackEvent( gaEventCategory, GA_ACTIONS.DISMISS, stepNumber );
+		} else if ( action === ACTIONS.PREV ) {
+			trackEvent( gaEventCategory, GA_ACTIONS.PREV, stepNumber );
+		} else if ( action === ACTIONS.NEXT ) {
+			trackEvent( gaEventCategory, GA_ACTIONS.NEXT, stepNumber );
+		}
 	};
 
 	/**
@@ -105,20 +142,30 @@ export default function TourTooltips( { steps, tourID } ) {
 	 * @property {number} index  Step index.
 	 * @property {string} type   Specific type (tour, step, beacon).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.28.0
 	 * @see {@link https://docs.react-joyride.com/callback} Example data provided by `react-joyride`.
 	 * @see {@link https://docs.react-joyride.com/constants} State & lifecycle constants used by `react-joyride`.
 	 *
 	 * @param {JoyrideCallbackData} data Data object provided via `react-joyride` callback prop.
 	 */
 	const handleJoyrideCallback = ( data ) => {
-		const { action, index, status, type } = data;
+		trackAllTourEvents( data );
+		const { action, index, status, step, type } = data;
 
 		const hasCloseAction = action === ACTIONS.CLOSE;
 		const shouldChangeStep = ! hasCloseAction && [ EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND ].includes( type );
 		const isFinishedOrSkipped = [ STATUS.FINISHED, STATUS.SKIPPED ].includes( status );
 		const shouldCloseFromButtonClick = hasCloseAction && type === EVENTS.STEP_AFTER;
 		const shouldEndTour = isFinishedOrSkipped || shouldCloseFromButtonClick;
+
+		// Center the target in the viewport when transitioning to the step.
+		if ( EVENTS.STEP_BEFORE === type ) {
+			let el = step.target;
+			if ( 'string' === typeof step.target ) {
+				el = global.document.querySelector( step.target );
+			}
+			el?.scrollIntoView?.( { block: 'center' } );
+		}
 
 		if ( shouldChangeStep ) {
 			changeStep( index, action );
@@ -142,6 +189,7 @@ export default function TourTooltips( { steps, tourID } ) {
 			callback={ handleJoyrideCallback }
 			continuous
 			disableOverlayClose
+			disableScrolling
 			floaterProps={ floaterProps }
 			locale={ joyrideLocale }
 			run={ run }
@@ -158,4 +206,5 @@ export default function TourTooltips( { steps, tourID } ) {
 TourTooltips.propTypes = {
 	steps: PropTypes.arrayOf( PropTypes.object ).isRequired,
 	tourID: PropTypes.string.isRequired,
+	gaEventCategory: PropTypes.string.isRequired,
 };

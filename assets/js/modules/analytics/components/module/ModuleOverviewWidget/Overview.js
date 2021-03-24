@@ -31,49 +31,56 @@ import { __ } from '@wordpress/i18n';
  */
 import { Grid, Row, Cell } from '../../../../../material-components';
 import DataBlock from '../../../../../components/DataBlock';
+import PreviewBlock from '../../../../../components/PreviewBlock';
 import { calculateChange } from '../../../../../util';
+
+function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
+	return {
+		datapoint: report?.data?.totals?.[0]?.values?.[selectedStat] / divider,
+		change: calculateChange(
+			report?.data?.totals?.[1]?.values?.[selectedStat],
+			report?.data?.totals?.[0]?.values?.[selectedStat],
+		),
+	};
+}
 
 export default function Overview( props ) {
 	const {
-		users,
-		sessions,
-		bounce,
-		duration,
+		loaded,
+		report,
 		selectedStat,
 		handleStatSelection,
 	} = props;
 
-	const getDatapointAndChange = ( [ report ], divider = 1 ) => ( {
-		datapoint: report?.data?.totals?.[0]?.values?.[0] / divider,
-		change: calculateChange(
-			report?.data?.totals?.[1]?.values?.[0],
-			report?.data?.totals?.[0]?.values?.[0],
-		),
-	} );
+	if ( ! loaded ) {
+		return (
+			<PreviewBlock width="100%" height="190px" />
+		);
+	}
 
 	const dataBlocks = [
 		{
 			title: __( 'Users', 'google-site-kit' ),
 			className: 'googlesitekit-data-block--users googlesitekit-data-block--button-1',
-			...getDatapointAndChange( users ),
+			...getDatapointAndChange( report, 0 ),
 		},
 		{
 			title: __( 'Sessions', 'google-site-kit' ),
 			className: 'googlesitekit-data-block--sessions googlesitekit-data-block--button-2',
-			...getDatapointAndChange( sessions ),
+			...getDatapointAndChange( report, 1 ),
 		},
 		{
 			title: __( 'Bounce Rate', 'google-site-kit' ),
 			className: 'googlesitekit-data-block--bounce googlesitekit-data-block--button-3',
 			datapointUnit: '%',
 			invertChangeColor: true,
-			...getDatapointAndChange( bounce, 100 ),
+			...getDatapointAndChange( report, 2, 100 ),
 		},
 		{
 			title: __( 'Session Duration', 'google-site-kit' ),
 			className: 'googlesitekit-data-block--duration googlesitekit-data-block--button-4',
 			datapointUnit: 's',
-			...getDatapointAndChange( duration ),
+			...getDatapointAndChange( report, 3 ),
 		},
 	];
 
@@ -103,10 +110,15 @@ export default function Overview( props ) {
 }
 
 Overview.propTypes = {
-	users: PropTypes.arrayOf( PropTypes.object ).isRequired,
-	sessions: PropTypes.arrayOf( PropTypes.object ).isRequired,
-	bounce: PropTypes.arrayOf( PropTypes.object ).isRequired,
-	duration: PropTypes.arrayOf( PropTypes.object ).isRequired,
+	loaded: PropTypes.bool.isRequired,
+	report: PropTypes.arrayOf( PropTypes.object ),
 	selectedStat: PropTypes.number.isRequired,
 	handleStatSelection: PropTypes.func.isRequired,
+};
+
+Overview.defaultProps = {
+	users: [],
+	sessions: [],
+	bounce: [],
+	duration: [],
 };

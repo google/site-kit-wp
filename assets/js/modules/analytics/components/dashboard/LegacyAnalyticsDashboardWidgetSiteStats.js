@@ -31,7 +31,7 @@ import {
 import GoogleChart from '../../../../components/GoogleChart';
 import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
-import { extractAnalyticsDashboardData, siteAnalyticsReportDataDefaults } from '../../util';
+import { extractAnalyticsDashboardData, getTimeColumnVaxisFormat, siteAnalyticsReportDataDefaults } from '../../util';
 import PreviewBlock from '../../../../components/PreviewBlock';
 
 class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
@@ -41,12 +41,25 @@ class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 		this.setOptions = this.setOptions.bind( this );
 	}
 
-	setOptions() {
-		const { series, vAxes } = this.props;
+	setOptions( dataMap ) {
+		const {
+			vAxes = null,
+			series,
+			selectedStats,
+		} = this.props;
+		// selectedStats expects an array but only one is ever passed.
+		const [ selectedStat ] = selectedStats;
 
 		const pageTitle = '' === global._googlesitekitLegacyData.pageTitle ? '' : __( 'Users Traffic Summary', 'google-site-kit' );
 
-		const options = {
+		let vAxisFormat;
+		if ( dataMap[ 0 ][ selectedStat ]?.type === 'timeofday' ) {
+			vAxisFormat = getTimeColumnVaxisFormat( dataMap, selectedStat );
+		}
+
+		return {
+			series,
+			vAxes,
 			chart: {
 				title: pageTitle,
 			},
@@ -76,6 +89,7 @@ class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 				},
 			},
 			vAxis: {
+				format: vAxisFormat,
 				gridlines: {
 					color: '#eee',
 				},
@@ -104,11 +118,6 @@ class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 				trigger: 'both',
 			},
 		};
-
-		options.series = series;
-		options.vAxes = vAxes;
-
-		return options;
 	}
 
 	render() {
@@ -118,17 +127,14 @@ class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 			return null;
 		}
 
-		const dataMap = extractAnalyticsDashboardData( data, {
-			selectedStats,
-			selectedDataIndex: selectedStats,
-			days: dateRangeSlug ? dateRangeSlug.match( /\d+/ ).map( Number )[ 0 ] : 28,
-		} );
+		const days = dateRangeSlug ? dateRangeSlug.match( /\d+/ ).map( Number )[ 0 ] : 28;
+		const dataMap = extractAnalyticsDashboardData( data, selectedStats, days );
 
 		if ( ! dataMap ) {
 			return null;
 		}
 
-		const options = this.setOptions();
+		const options = this.setOptions( dataMap );
 
 		return (
 			<section className="googlesitekit-analytics-site-stats mdc-layout-grid">

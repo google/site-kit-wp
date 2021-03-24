@@ -26,26 +26,34 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { extractAnalyticsDashboardData } from '../../../util';
-import { getCurrentDateRangeDayCount } from '../../../../../util/date-range';
+import { extractAnalyticsDashboardData, getTimeColumnVaxisFormat } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
+import PreviewBlock from '../../../../../components/PreviewBlock';
 import { Cell, Row, Grid } from '../../../../../material-components';
 const { useSelect } = Data;
 
-export default function SiteStats( { selectedStat, report } ) {
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
+export default function SiteStats( { loaded, selectedStat, report } ) {
+	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
-	const dataMap = extractAnalyticsDashboardData( report, {
-		selectedStats: selectedStat,
-		selectedDataIndex: 0,
-		currentMonthMetricIndex: 0,
-		previousMonthMetricIndex: 1,
-		days: currentDayCount,
-	} );
+	if ( ! loaded ) {
+		return (
+			<PreviewBlock width="100%" height="270px" />
+		);
+	}
+
+	const dataMap = extractAnalyticsDashboardData( report, selectedStat, currentDayCount, 0, 1 );
+
+	let vAxisFormat;
+	if ( dataMap[ 0 ][ selectedStat ]?.type === 'timeofday' ) {
+		vAxisFormat = getTimeColumnVaxisFormat( dataMap, selectedStat );
+	}
 
 	const options = {
 		...SiteStats.options,
+		vAxis: {
+			...SiteStats.options.vAxis,
+			format: vAxisFormat,
+		},
 		series: {
 			0: {
 				color: SiteStats.colorMap[ selectedStat ],
@@ -77,8 +85,13 @@ export default function SiteStats( { selectedStat, report } ) {
 }
 
 SiteStats.propTypes = {
+	loaded: PropTypes.bool.isRequired,
 	selectedStat: PropTypes.number.isRequired,
-	report: PropTypes.arrayOf( PropTypes.object ).isRequired,
+	report: PropTypes.arrayOf( PropTypes.object ),
+};
+
+SiteStats.defaultProps = {
+	report: [],
 };
 
 SiteStats.colorMap = {
