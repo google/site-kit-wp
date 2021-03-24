@@ -36,8 +36,10 @@ import { STORE_NAME, FORM_SETUP } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { useSelect } from 'googlesitekit-data';
+import { AccountCreate } from '../common';
 
 export default function SetupMain( { finishSetup } ) {
+	const publicationID = useSelect( ( select ) => select( STORE_NAME ).getPublicationID() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const submitInProgress = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' ) );
 	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
@@ -47,6 +49,8 @@ export default function SetupMain( { finishSetup } ) {
 	// when the component initially loads and has yet to start fetching accounts.
 	if ( isDoingSubmitChanges || isNavigating || submitInProgress ) {
 		viewComponent = <ProgressBar />;
+	} else if ( ! publicationID ) {
+		viewComponent = <AccountCreate />;
 	} else {
 		viewComponent = <SetupForm finishSetup={ finishSetup } />;
 	}

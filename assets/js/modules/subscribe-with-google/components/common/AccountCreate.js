@@ -42,17 +42,29 @@ const { useDispatch, useSelect } = Data;
 const COUNTRY_LIST_URL = '#';
 
 export default function AccountCreate() {
+	// Get publication ID from either the temporary form state or the saved settings.
+	const formPublicationID = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'publicationID' ) );
+	const settingsPublicationID = useSelect( ( select ) => select( STORE_NAME ).getPublicationID() );
+	const publicationID = formPublicationID || settingsPublicationID;
+
+	// Update input field.
+	const { setValues } = useDispatch( CORE_FORMS );
+	const onChange = useCallback( ( { currentTarget } ) => {
+		setValues( FORM_SETUP, { publicationID: currentTarget.value } );
+	}, [ 'publicationID' ] );
+
+	// Open console.
 	const nextHandler = useCallback( () => {
 		// Need to use window.open for this to allow for stubbing in E2E.
 		global.window.open( '#', '_blank' );
 	}, [ '#' ] );
 
-	const publicationID = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'publicationID' ) );
-
-	const { setValues } = useDispatch( CORE_FORMS );
-	const onChange = useCallback( ( { currentTarget } ) => {
-		setValues( FORM_SETUP, { publicationID: currentTarget.value } );
-	}, [ 'publicationID' ] );
+	// Save changes.
+	const { setPublicationID, submitChanges } = useDispatch( STORE_NAME );
+	const doneHandler = useCallback( () => {
+		setPublicationID( publicationID );
+		submitChanges();
+	}, [ publicationID ] );
 
 	return (
 		<div>
@@ -116,7 +128,7 @@ export default function AccountCreate() {
 				/>
 			</TextField>
 			<div className="googlesitekit-setup-module__action">
-				<Button onClick={ nextHandler } disabled={ ! publicationID }>
+				<Button onClick={ doneHandler } disabled={ ! publicationID }>
 					{ __( 'Done', 'google-site-kit' ) }
 				</Button>
 			</div>
