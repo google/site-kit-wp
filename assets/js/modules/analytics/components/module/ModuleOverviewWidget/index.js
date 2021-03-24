@@ -45,7 +45,17 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
 
-	const args = {
+	const overviewArgs = {
+		...dates,
+		metrics: [
+			'ga:users',
+			'ga:sessions',
+			'ga:bounceRate',
+			'ga:avgSessionDuration',
+		],
+	};
+
+	const statsArgs = {
 		...dates,
 		dimensions: 'ga:date',
 		metrics: [
@@ -56,27 +66,31 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		],
 	};
 
-	const loaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ) );
-	const report = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( args ) );
-	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ) );
+	const overviewLoaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ overviewArgs ] ) );
+	const overviewReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( overviewArgs ) );
+	const overviewError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ overviewArgs ] ) );
 
-	if ( error ) {
-		return <WidgetReportError error={ error } />;
+	const statsLoaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ statsArgs ] ) );
+	const statsReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( statsArgs ) );
+	const statsError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ statsArgs ] ) );
+
+	if ( overviewError || statsError ) {
+		return <WidgetReportError statsError={ overviewError || statsError } />;
 	}
 
 	return (
 		<Widget Header={ Header }>
 			<Overview
-				loaded={ loaded }
-				report={ report }
+				loaded={ overviewLoaded }
+				report={ overviewReport }
 				selectedStat={ selectedStat }
 				handleStatSelection={ setSelectedState }
 			/>
 
 			<SiteStats
-				loaded={ loaded }
+				loaded={ statsLoaded }
 				selectedStat={ selectedStat }
-				report={ report }
+				report={ statsReport }
 			/>
 		</Widget>
 	);
