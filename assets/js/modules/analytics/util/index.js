@@ -161,8 +161,8 @@ function reduceAnalyticsRowsData( rows, selectedMetricIndex, selectedStats ) {
  * @param {Object} reports                  The data returned from the Analytics API call.
  * @param {Array}  selectedStats            The currently selected stat we need to return data for.
  * @param {number} days                     The number of days to extract data for. Pads empty data days.
- * @param {number} currentMonthMetricIndex  Extraction options.
- * @param {number} previousMonthMetricIndex Extraction options.
+ * @param {number} currentMonthMetricIndex  The index of the current month metrics in the metrics set.
+ * @param {number} previousMonthMetricIndex The index of the last month metrics in the metrics set.
  * @return {Array} The dataMap ready for charting.
  */
 export function extractAnalyticsDashboardData( reports, selectedStats, days, currentMonthMetricIndex = 0, previousMonthMetricIndex = 0 ) {
