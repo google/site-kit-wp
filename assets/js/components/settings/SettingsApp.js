@@ -140,7 +140,7 @@ export default function SettingsApp() {
 							<SettingsAdmin />
 						) }
 						<Cell size={ 12 } alignRight>
-							<HelpLink />
+							{ ! helpVisibilityEnabled && <HelpLink /> }
 						</Cell>
 					</Row>
 				</Grid>

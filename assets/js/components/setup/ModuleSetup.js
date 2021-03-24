@@ -142,7 +142,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 													mdc-layout-grid__cell--span-6-desktop
 													mdc-layout-grid__cell--align-right
 											">
-												<HelpLink />
+												{ ! helpVisibilityEnabled && <HelpLink /> }
 											</div>
 										</div>
 									</div>

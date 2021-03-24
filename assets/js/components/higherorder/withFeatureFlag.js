@@ -1,5 +1,5 @@
 /**
- * ModuleFooter component.
+ * `withFeatureFlag` higher-order component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,30 +17,24 @@
  */
 
 /**
- * External dependencies
- */
-import classNames from 'classnames';
-
-/**
  * Internal dependencies
  */
-import HelpLink from '../HelpLink';
 import { useFeature } from '../../hooks/useFeature';
 
-const ModuleFooter = () => {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
+const withFeatureFlag = ( featureFlagName ) => ( WrappedComponent ) => {
+	return ( props ) => {
+		const featureFlagEnabled = useFeature( featureFlagName );
+		const newProps = {
+			...props,
+			[ `${ featureFlagName }Enabled` ]: featureFlagEnabled,
+		};
 
-	return (
-		<div className="mdc-layout-grid__inner">
-			<div className={ classNames( [
-				'mdc-layout-grid__cell',
-				'mdc-layout-grid__cell--span-12',
-				'mdc-layout-grid__cell--align-right',
-			] ) }>
-				{ ! helpVisibilityEnabled && <HelpLink /> }
-			</div>
-		</div>
-	);
+		WrappedComponent.displayName = `withFeatureFlag(${ WrappedComponent.displayName || WrappedComponent.name || 'Anonymous' })`;
+
+		return (
+			<WrappedComponent { ...newProps } />
+		);
+	};
 };
 
-export default ModuleFooter;
+export default withFeatureFlag;

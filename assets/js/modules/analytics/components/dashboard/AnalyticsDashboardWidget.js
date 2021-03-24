@@ -46,10 +46,13 @@ import HelpLink from '../../../../components/HelpLink';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../datastore/constants';
+import { useFeature } from '../../../../hooks/useFeature';
 
 const { useSelect } = Data;
 
 export default function AnalyticsDashboardWidget() {
+	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
+
 	const [ selectedStats, setSelectedStats ] = useState( [ 0 ] );
 	const [ receivingData, setReceivingData ] = useState( true );
 	const [ error, setError ] = useState( false );
@@ -262,7 +265,7 @@ export default function AnalyticsDashboardWidget() {
 								mdc-layout-grid__cell--span-12
 								mdc-layout-grid__cell--align-right
 							">
-							<HelpLink />
+							{ ! helpVisibilityEnabled && <HelpLink /> }
 						</div>
 					</div>
 				</div>
