@@ -120,7 +120,7 @@ describe( 'core/user feature-tours', () => {
 				// cache should have been set as well
 				expect( setItemSpy ).toHaveBeenCalledWith(
 					FEATURE_TOUR_LAST_DISMISSED_AT,
-					expect.any( Number ),
+					expect.any( Number ), // timestamp
 					expect.objectContaining( { ttl: FEATURE_TOUR_COOLDOWN_SECONDS } ),
 				);
 			} );
