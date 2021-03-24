@@ -34,6 +34,16 @@ import DataBlock from '../../../../../components/DataBlock';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import { calculateChange } from '../../../../../util';
 
+function getDatapointAndChange( [ report ], divider = 1 ) {
+	return {
+		datapoint: report?.data?.totals?.[0]?.values?.[0] / divider,
+		change: calculateChange(
+			report?.data?.totals?.[1]?.values?.[0],
+			report?.data?.totals?.[0]?.values?.[0],
+		),
+	};
+}
+
 export default function Overview( props ) {
 	const {
 		loaded,
@@ -50,14 +60,6 @@ export default function Overview( props ) {
 			<PreviewBlock width="100%" height="190px" />
 		);
 	}
-
-	const getDatapointAndChange = ( [ report ], divider = 1 ) => ( {
-		datapoint: report?.data?.totals?.[0]?.values?.[0] / divider,
-		change: calculateChange(
-			report?.data?.totals?.[1]?.values?.[0],
-			report?.data?.totals?.[0]?.values?.[0],
-		),
-	} );
 
 	const dataBlocks = [
 		{
