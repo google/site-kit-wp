@@ -79,7 +79,7 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	}
 
 	return (
-		<Widget Header={ Header }>
+		<Widget Header={ Header } noPadding>
 			<Overview
 				loaded={ overviewLoaded }
 				report={ overviewReport }
