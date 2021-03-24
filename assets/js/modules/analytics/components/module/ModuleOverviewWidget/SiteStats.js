@@ -41,12 +41,7 @@ export default function SiteStats( { loaded, selectedStat, report } ) {
 		);
 	}
 
-	const dataMap = extractAnalyticsDashboardData( report, {
-		selectedStats: selectedStat,
-		currentMonthMetricIndex: 0,
-		previousMonthMetricIndex: 1,
-		days: currentDayCount,
-	} );
+	const dataMap = extractAnalyticsDashboardData( report, selectedStat, currentDayCount, 0, 1 );
 
 	let vAxisFormat;
 	if ( dataMap[ 0 ][ selectedStat ]?.type === 'timeofday' ) {

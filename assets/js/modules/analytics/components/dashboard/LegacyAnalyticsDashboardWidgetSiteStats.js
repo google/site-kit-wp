@@ -128,10 +128,7 @@ class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 		}
 
 		const days = dateRangeSlug ? dateRangeSlug.match( /\d+/ ).map( Number )[ 0 ] : 28;
-		const dataMap = extractAnalyticsDashboardData( data, {
-			selectedStats,
-			days,
-		} );
+		const dataMap = extractAnalyticsDashboardData( data, selectedStats, days );
 
 		if ( ! dataMap ) {
 			return null;

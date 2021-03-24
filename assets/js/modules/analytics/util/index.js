@@ -158,11 +158,14 @@ function reduceAnalyticsRowsData( rows, selectedMetricIndex, selectedStats ) {
  *
  * @since 1.0.0
  *
- * @param {Object} reports The data returned from the Analytics API call.
- * @param {Object} options Extraction options.
+ * @param {Object} reports                  The data returned from the Analytics API call.
+ * @param {Array}  selectedStats            The currently selected stat we need to return data for.
+ * @param {number} days                     The number of days to extract data for. Pads empty data days.
+ * @param {number} currentMonthMetricIndex  Extraction options.
+ * @param {number} previousMonthMetricIndex Extraction options.
  * @return {Array} The dataMap ready for charting.
  */
-export function extractAnalyticsDashboardData( reports, options ) {
+export function extractAnalyticsDashboardData( reports, selectedStats, days, currentMonthMetricIndex = 0, previousMonthMetricIndex = 0 ) {
 	if ( ! reports || ! reports.length ) {
 		return null;
 	}
@@ -174,12 +177,6 @@ export function extractAnalyticsDashboardData( reports, options ) {
 	}
 
 	const rowLength = rows.length;
-	const {
-		selectedStats,
-		currentMonthMetricIndex = 0,
-		previousMonthMetricIndex = 0,
-		days,
-	} = options;
 
 	// Pad rows to 2 x number of days data points to accommodate new accounts.
 	if ( ( days * 2 ) > rowLength ) {
