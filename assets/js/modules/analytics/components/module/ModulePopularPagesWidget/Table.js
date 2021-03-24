@@ -28,80 +28,70 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
-import { getDataTableFromData } from '../../../../../components/data-table';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import Link from '../../../../../components/Link';
 import { numFmt } from '../../../../../util';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
-const { useSelect, withSelect } = Data;
+import ReportTable from '../../../../../components/ReportTable';
+const { useSelect } = Data;
 
 export default function Table( { report } ) {
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
-
-	const headers = [
+	const tableColumns = [
 		{
 			title: __( 'Title', 'google-site-kit' ),
-			tooltip: __( 'Page Title', 'google-site-kit' ),
+			description: __( 'Page Title', 'google-site-kit' ),
 			primary: true,
+			Component: ( { row } ) => {
+				const [ title, url ] = row.dimensions;
+				const serviceURL = useSelect( ( select ) => {
+					const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+						offsetDays: DATE_RANGE_OFFSET,
+					} );
+					return select( MODULES_ANALYTICS ).getServiceReportURL( 'content-drilldown', {
+						'explorer-table.plotKeys': '[]',
+						'_r.drilldown': `analytics.pagePath:${ url }`,
+						...generateDateRangeArgs( dateRangeDates ),
+					} );
+				} );
+				return (
+					<Link
+						href={ serviceURL }
+						external
+						inherit
+					>
+						{ title }
+					</Link>
+				);
+			},
 		},
 		{
 			title: __( 'Pageviews', 'google-site-kit' ),
-			tooltip: __( 'Pageviews', 'google-site-kit' ),
+			description: __( 'Pageviews', 'google-site-kit' ),
+			field: 'metrics.0.values.0',
+			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
 		},
 		{
 			title: __( 'Unique Pageviews', 'google-site-kit' ),
-			tooltip: __( 'Unique Pageviews', 'google-site-kit' ),
+			description: __( 'Unique Pageviews', 'google-site-kit' ),
+			hideOnMobile: true,
+			field: 'metrics.0.values.1',
+			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
 		},
 		{
 			title: __( 'Bounce Rate', 'google-site-kit' ),
-			tooltip: __( 'Bounce Rate', 'google-site-kit' ),
+			description: __( 'Bounce Rate', 'google-site-kit' ),
+			hideOnMobile: true,
+			field: 'metrics.0.values.2',
+			Component: ( { fieldValue } ) => numFmt( Number( fieldValue ) / 100, '%' ),
 		},
 	];
 
-	const links = [];
-	const dataMapped = report[ 0 ].data.rows.map( ( row, i ) => {
-		const percent = Number( row.metrics[ 0 ].values[ 2 ] ) / 100;
-		const [ title, url ] = row.dimensions;
-		links[ i ] = url;
-
-		return [
-			title,
-			numFmt( row.metrics[ 0 ].values[ 0 ], { style: 'decimal' } ),
-			numFmt( row.metrics[ 0 ].values[ 1 ], { style: 'decimal' } ),
-			(
-				<div className="googlesitekit-table__body-item-chart-wrap" key={ 'minichart-' + i }>
-					{ numFmt( percent, '%' ) }
-				</div>
-			),
-		];
-	} );
-
-	const options = {
-		hideHeader: false,
-		chartsEnabled: false,
-		links,
-		hideColumns: {
-			mobile: [ 2, 3 ],
-		},
-		PrimaryLink: withSelect( ( select, { href = '/' } ) => {
-			const serviceURL = select( MODULES_ANALYTICS ).getServiceReportURL( 'content-drilldown', {
-				'explorer-table.plotKeys': '[]',
-				'_r.drilldown': `analytics.pagePath:${ href }`,
-				...generateDateRangeArgs( dateRangeDates ),
-			} );
-
-			return {
-				href: serviceURL,
-				external: true,
-			};
-		} )( Link ),
-	};
-
 	return (
 		<TableOverflowContainer>
-			{ getDataTableFromData( dataMapped, headers, options ) }
+			<ReportTable
+				rows={ report[ 0 ].data.rows }
+				columns={ tableColumns }
+			/>
 		</TableOverflowContainer>
 	);
 }
