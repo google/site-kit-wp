@@ -132,16 +132,16 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
  *
  * @since 1.0.0
  *
- * @param {Array}  rows                An array of rows to reduce.
- * @param {number} selectedMetricIndex The currently selected metric index.
- * @param {number} selectedStats       The currently selected stat we need to return data for.
+ * @param {Array}  rows                 An array of rows to reduce.
+ * @param {number} selectedMetricsIndex The index of metrics array in the metrics set.
+ * @param {number} selectedStats        The currently selected stat we need to return data for.
  * @return {Array} Array of selected stats from analytics row data.
  */
-function reduceAnalyticsRowsData( rows, selectedMetricIndex, selectedStats ) {
+function reduceAnalyticsRowsData( rows, selectedMetricsIndex, selectedStats ) {
 	const dataMap = [];
 	each( rows, ( row ) => {
 		if ( row.metrics ) {
-			const { values } = row.metrics[ selectedMetricIndex ];
+			const { values } = row.metrics[ selectedMetricsIndex ];
 			const dateString = row.dimensions[ 0 ];
 			const date = parseDimensionStringToDate( dateString );
 			dataMap.push( [
