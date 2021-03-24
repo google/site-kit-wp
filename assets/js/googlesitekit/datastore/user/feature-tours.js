@@ -373,8 +373,8 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		const coolDownPeriodMiliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
-		const coolDownExpiresAt = lastDismissedAt + coolDownPeriodMiliseconds;
+		const coolDownPeriodMilliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
+		const coolDownExpiresAt = lastDismissedAt + coolDownPeriodMilliseconds;
 
 		return Date.now() < coolDownExpiresAt;
 	} ),
