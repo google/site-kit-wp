@@ -347,60 +347,60 @@ describe( 'core/user feature-tours', () => {
 				expect( registry.select( STORE_NAME ).isTourDismissed( 'feature-x' ) ).toBeUndefined();
 			} );
 		} );
-	} );
 
-	describe( 'getLastDismissedAt', () => {
-		afterEach( async () => {
-			const { deleteItem } = CacheModule;
-			await deleteItem( FEATURE_TOUR_LAST_DISMISSED_AT );
+		describe( 'getLastDismissedAt', () => {
+			afterEach( async () => {
+				const { deleteItem } = CacheModule;
+				await deleteItem( FEATURE_TOUR_LAST_DISMISSED_AT );
+			} );
+
+			it( 'returns initial state (undefined) if there is no lastDismissedAt timestamp', () => {
+				const lastDismissedAt = registry.select( STORE_NAME ).getLastDismissedAt();
+				expect( lastDismissedAt ).toEqual( undefined );
+			} );
+
+			it( 'returns the lastDismissedAt timestamp if there is one', () => {
+				const timestamp = Date.now();
+				registry.dispatch( STORE_NAME ).receiveLastDismissedAt( timestamp );
+				expect( registry.select( STORE_NAME ).getLastDismissedAt() ).toEqual( timestamp );
+			} );
+
+			it( 'uses a resolver to set lastDismissedAt in the store if there is a value in the cache', async () => {
+				const timestamp = Date.now();
+				const { setItem } = CacheModule;
+
+				setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, { ttl: FEATURE_TOUR_COOLDOWN_SECONDS } );
+
+				registry.select( STORE_NAME ).getLastDismissedAt();
+				await untilResolved( registry, STORE_NAME ).getLastDismissedAt();
+
+				expect( store.getState().lastDismissedAt ).toEqual( timestamp );
+			} );
 		} );
 
-		it( 'returns initial state (undefined) if there is no lastDismissedAt timestamp', () => {
-			const lastDismissedAt = registry.select( STORE_NAME ).getLastDismissedAt();
-			expect( lastDismissedAt ).toEqual( undefined );
-		} );
+		describe( 'areFeatureToursOnCooldown', () => {
+			it( 'returns undefined if there is no lastDismissedAt timestamp', () => {
+				expect( registry.select( STORE_NAME ).areFeatureToursOnCooldown() ).toBeUndefined();
+			} );
 
-		it( 'returns the lastDismissedAt timestamp if there is one', () => {
-			const timestamp = Date.now();
-			registry.dispatch( STORE_NAME ).receiveLastDismissedAt( timestamp );
-			expect( registry.select( STORE_NAME ).getLastDismissedAt() ).toEqual( timestamp );
-		} );
+			it( 'returns true if the lastDismissedAt timestamp is within the feature tour cooldown period', () => {
+				const timestamp = Date.now();
+				const coolDownPeriodMiliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
+				const justInsideCoolDownPeriod = timestamp + coolDownPeriodMiliseconds - 1000;
 
-		it( 'uses a resolver to set lastDismissedAt in the store if there is a value in the cache', async () => {
-			const timestamp = Date.now();
-			const { setItem } = CacheModule;
+				registry.dispatch( STORE_NAME ).receiveLastDismissedAt( justInsideCoolDownPeriod );
 
-			setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, { ttl: FEATURE_TOUR_COOLDOWN_SECONDS } );
+				expect( registry.select( STORE_NAME ).areFeatureToursOnCooldown() ).toEqual( true );
+			} );
 
-			registry.select( STORE_NAME ).getLastDismissedAt();
-			await untilResolved( registry, STORE_NAME ).getLastDismissedAt();
+			it( 'returns false if the feature tour cooldown period has expired', () => {
+				const coolDownPeriodMiliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
+				const startOfCoolDownPeriod = Date.now() - coolDownPeriodMiliseconds;
 
-			expect( store.getState().lastDismissedAt ).toEqual( timestamp );
-		} );
-	} );
+				registry.dispatch( STORE_NAME ).receiveLastDismissedAt( startOfCoolDownPeriod );
 
-	describe( 'areFeatureToursOnCooldown', () => {
-		it( 'returns undefined if there is no lastDismissedAt timestamp', () => {
-			expect( registry.select( STORE_NAME ).areFeatureToursOnCooldown() ).toBeUndefined();
-		} );
-
-		it( 'returns true if the lastDismissedAt timestamp is within the feature tour cooldown period', () => {
-			const timestamp = Date.now();
-			const coolDownPeriodMiliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
-			const justInsideCoolDownPeriod = timestamp + coolDownPeriodMiliseconds - 1000;
-
-			registry.dispatch( STORE_NAME ).receiveLastDismissedAt( justInsideCoolDownPeriod );
-
-			expect( registry.select( STORE_NAME ).areFeatureToursOnCooldown() ).toEqual( true );
-		} );
-
-		it( 'returns false if the feature tour cooldown period has expired', () => {
-			const coolDownPeriodMiliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
-			const startOfCoolDownPeriod = Date.now() - coolDownPeriodMiliseconds;
-
-			registry.dispatch( STORE_NAME ).receiveLastDismissedAt( startOfCoolDownPeriod );
-
-			expect( registry.select( STORE_NAME ).areFeatureToursOnCooldown() ).toEqual( false );
+				expect( registry.select( STORE_NAME ).areFeatureToursOnCooldown() ).toEqual( false );
+			} );
 		} );
 	} );
 } );
