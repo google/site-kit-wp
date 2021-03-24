@@ -35,11 +35,6 @@
 		&-title {
 			margin: 0;
 		}
-
-		& > .mdc-layout-grid {
-			margin: 0;
-			padding: 0;
-		}
 	}
 
 	&__footer {
@@ -49,6 +44,12 @@
 	&__header,
 	&__body,
 	&__footer {
+
+		& .googlesitekit-table,
+		& > .mdc-layout-grid {
+			margin: 0;
+			padding: 0;
+		}
 
 		@each $size in map-keys($mdc-layout-grid-columns) {
 
