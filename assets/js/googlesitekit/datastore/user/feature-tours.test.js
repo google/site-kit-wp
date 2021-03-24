@@ -367,8 +367,7 @@ describe( 'core/user feature-tours', () => {
 
 			it( 'uses a resolver to set lastDismissedAt in the store if there is a value in the cache', async () => {
 				const timestamp = Date.now();
-
-				setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, { ttl: FEATURE_TOUR_COOLDOWN_SECONDS } );
+				setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp );
 
 				registry.select( STORE_NAME ).getLastDismissedAt();
 				await untilResolved( registry, STORE_NAME ).getLastDismissedAt();
