@@ -17,33 +17,13 @@
  */
 
 /**
- * External dependencies
- */
-import classNames from 'classnames';
-
-/**
  * Internal dependencies
  */
-import HelpLink from '../HelpLink';
-import { useFeature } from '../../hooks/useFeature';
+import PageFooter from '../PageFooter';
 
 const ModuleFooter = () => {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
-
-	if ( helpVisibilityEnabled ) {
-		return null;
-	}
-
 	return (
-		<div className="mdc-layout-grid__inner">
-			<div className={ classNames( [
-				'mdc-layout-grid__cell',
-				'mdc-layout-grid__cell--span-12',
-				'mdc-layout-grid__cell--align-right',
-			] ) }>
-				<HelpLink />
-			</div>
-		</div>
+		<PageFooter />
 	);
 };
 
