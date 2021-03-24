@@ -22,7 +22,9 @@
 import PropTypes from 'prop-types';
 
 const WidgetHeaderTitle = ( { title } ) => (
-	<h3 className="googlesitekit-subheading-1 googlesitekit-widget__header-title">{ title }</h3>
+	<h3 className="googlesitekit-subheading-1 googlesitekit-widget__header-title">
+		{ title }
+	</h3>
 );
 
 WidgetHeaderTitle.propTypes = {
