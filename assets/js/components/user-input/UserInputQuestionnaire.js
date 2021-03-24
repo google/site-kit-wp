@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment, useEffect, useState, useRef } from '@wordpress/element';
+import { useCallback, Fragment, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -55,8 +55,6 @@ export default function UserInputQuestionnaire() {
 	const [ shouldScrollToActiveQuestion, setShouldScrollToActiveQuestion ] = useState( false );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
 	const [ single, setSingle ] = useQueryArg( 'single', false );
-
-	const containerRef = useRef();
 
 	const activeSlugIndex = steps.indexOf( activeSlug );
 	if ( activeSlugIndex === -1 ) {
@@ -201,7 +199,7 @@ export default function UserInputQuestionnaire() {
 	}
 
 	return (
-		<div ref={ containerRef }>
+		<div>
 			{ settingsProgress }
 
 			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_ROLE ) && (
