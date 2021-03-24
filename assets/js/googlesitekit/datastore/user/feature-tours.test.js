@@ -103,6 +103,20 @@ describe( 'core/user feature-tours', () => {
 					expect.arrayContaining( [ 'tour-a', 'tour-b' ] )
 				);
 			} );
+
+			it( 'sets the lastDismissedAt timestamp to mark the start of the cooldown period', async () => {
+				const setItemSpy = jest.spyOn( CacheModule, 'setItem' );
+
+				fetchMock.postOnce( fetchDismissTourRegExp, { body: [ 'tour-a', 'tour-b' ] } );
+
+				await registry.dispatch( STORE_NAME ).dismissTour( 'tour-b' );
+
+				expect( store.getState().lastDismissedAt ).toBeDefined();
+				// cache should have been set as well
+				expect( setItemSpy ).toHaveBeenCalled();
+
+				setItemSpy.mockRestore();
+			} );
 		} );
 
 		describe( 'receiveAllFeatureTours', () => {
@@ -111,7 +125,7 @@ describe( 'core/user feature-tours', () => {
 					.toThrow( 'tours must be an array' );
 			} );
 
-			it( 'receives a the given tours into the state', () => {
+			it( 'receives the given tours into the state', () => {
 				const tours = [ testTourA, testTourB ];
 				registry.dispatch( STORE_NAME ).receiveAllFeatureTours( tours );
 				expect( store.getState().tours ).toEqual( tours );
@@ -129,7 +143,7 @@ describe( 'core/user feature-tours', () => {
 					.toThrow( 'viewContext is required' );
 			} );
 
-			it( 'receives a given viewTours into the state for the viewContext', () => {
+			it( 'receives the given viewTours into the state for the viewContext', () => {
 				const tours = [ testTourA, testTourB ];
 				registry.dispatch( STORE_NAME ).receiveFeatureToursForView( tours, { viewContext: 'foo' } );
 				expect( store.getState().viewTours.foo ).toEqual( tours );
@@ -150,16 +164,13 @@ describe( 'core/user feature-tours', () => {
 		} );
 
 		describe( 'setLastDismissedAt', () => {
-			let getItemSpy;
 			let setItemSpy;
 
 			beforeEach( () => {
-				getItemSpy = jest.spyOn( CacheModule, 'getItem' );
 				setItemSpy = jest.spyOn( CacheModule, 'setItem' );
 			} );
 
 			afterEach( () => {
-				getItemSpy.mockRestore();
 				setItemSpy.mockRestore();
 			} );
 
@@ -350,6 +361,19 @@ describe( 'core/user feature-tours', () => {
 			const timestamp = Date.now();
 			registry.dispatch( STORE_NAME ).receiveLastDismissedAt( timestamp );
 			expect( registry.select( STORE_NAME ).getLastDismissedAt() ).toEqual( timestamp );
+		} );
+
+		it( 'sets lastDismissedAt in the store if there is a value in the cache', async () => {
+			const timestamp = Date.now();
+			const { setItem, deleteItem } = CacheModule;
+
+			setItem( FEATURE_TOUR_CACHE_KEY, timestamp, { ttl: FEATURE_TOUR_COOLDOWN_PERIOD } );
+
+			registry.select( STORE_NAME ).getLastDismissedAt();
+			await untilResolved( registry, STORE_NAME ).getLastDismissedAt();
+
+			expect( store.getState().lastDismissedAt ).toEqual( timestamp );
+			await	deleteItem( FEATURE_TOUR_CACHE_KEY );
 		} );
 	} );
 
