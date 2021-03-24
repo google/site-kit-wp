@@ -117,7 +117,11 @@ describe( 'core/user feature-tours', () => {
 
 				expect( store.getState().lastDismissedAt ).toBeDefined();
 				// cache should have been set as well
-				expect( setItemSpy ).toHaveBeenCalled();
+				expect( setItemSpy ).toHaveBeenCalledWith(
+					FEATURE_TOUR_LAST_DISMISSED_AT,
+					expect.any( Number ),
+					expect.objectContaining( { ttl: FEATURE_TOUR_COOLDOWN_SECONDS } ),
+				);
 			} );
 		} );
 
@@ -185,7 +189,7 @@ describe( 'core/user feature-tours', () => {
 				expect( setItemSpy ).toHaveBeenCalledWith(
 					FEATURE_TOUR_LAST_DISMISSED_AT,
 					timestamp,
-					{ ttl: FEATURE_TOUR_COOLDOWN_SECONDS }
+					expect.objectContaining( { ttl: FEATURE_TOUR_COOLDOWN_SECONDS } )
 				);
 			} );
 		} );
