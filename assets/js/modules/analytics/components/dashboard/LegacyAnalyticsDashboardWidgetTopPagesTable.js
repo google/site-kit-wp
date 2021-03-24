@@ -56,6 +56,56 @@ const LegacyAnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 		return null;
 	}
 
+	const tableColumns = [
+		{
+			title: __( 'Title', 'google-site-kit' ),
+			description: __( 'Page Title', 'google-site-kit' ),
+			primary: true,
+			Component: ( { row } ) => {
+				const [ title, url ] = row.dimensions;
+				const serviceURL = useSelect( ( select ) => {
+					const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+						offsetDays: DATE_RANGE_OFFSET,
+					} );
+					return select( STORE_NAME ).getServiceReportURL( 'content-drilldown', {
+						'explorer-table.plotKeys': '[]',
+						'_r.drilldown': `analytics.pagePath:${ url }`,
+						...generateDateRangeArgs( dateRangeDates ),
+					} );
+				} );
+				return (
+					<Link
+						href={ serviceURL }
+						external
+						inherit
+					>
+						{ title }
+					</Link>
+				);
+			},
+		},
+		{
+			title: __( 'Pageviews', 'google-site-kit' ),
+			description: __( 'Pageviews', 'google-site-kit' ),
+			field: 'metrics.0.values.0',
+			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+		},
+		{
+			title: __( 'Unique Pageviews', 'google-site-kit' ),
+			description: __( 'Unique Pageviews', 'google-site-kit' ),
+			hideOnMobile: true,
+			field: 'metrics.0.values.1',
+			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+		},
+		{
+			title: __( 'Bounce Rate', 'google-site-kit' ),
+			description: __( 'Bounce Rate', 'google-site-kit' ),
+			hideOnMobile: true,
+			field: 'metrics.0.values.2',
+			Component: ( { fieldValue } ) => numFmt( Number( fieldValue ) / 100, '%' ),
+		},
+	];
+
 	return (
 		<div className={ classnames(
 			'mdc-layout-grid__cell',
@@ -71,56 +121,6 @@ const LegacyAnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 
 	);
 };
-
-const tableColumns = [
-	{
-		title: __( 'Title', 'google-site-kit' ),
-		description: __( 'Page Title', 'google-site-kit' ),
-		primary: true,
-		Component: ( { row } ) => {
-			const [ title, url ] = row.dimensions;
-			const serviceURL = useSelect( ( select ) => {
-				const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
-					offsetDays: DATE_RANGE_OFFSET,
-				} );
-				return select( STORE_NAME ).getServiceReportURL( 'content-drilldown', {
-					'explorer-table.plotKeys': '[]',
-					'_r.drilldown': `analytics.pagePath:${ url }`,
-					...generateDateRangeArgs( dateRangeDates ),
-				} );
-			} );
-			return (
-				<Link
-					href={ serviceURL }
-					external
-					inherit
-				>
-					{ title }
-				</Link>
-			);
-		},
-	},
-	{
-		title: __( 'Pageviews', 'google-site-kit' ),
-		description: __( 'Pageviews', 'google-site-kit' ),
-		field: 'metrics.0.values.0',
-		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
-	},
-	{
-		title: __( 'Unique Pageviews', 'google-site-kit' ),
-		description: __( 'Unique Pageviews', 'google-site-kit' ),
-		hideOnMobile: true,
-		field: 'metrics.0.values.1',
-		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
-	},
-	{
-		title: __( 'Bounce Rate', 'google-site-kit' ),
-		description: __( 'Bounce Rate', 'google-site-kit' ),
-		hideOnMobile: true,
-		field: 'metrics.0.values.2',
-		Component: ( { fieldValue } ) => numFmt( Number( fieldValue ) / 100, '%' ),
-	},
-];
 
 LegacyAnalyticsDashboardWidgetTopPagesTable.propTypes = {
 	data: PropTypes.array,
