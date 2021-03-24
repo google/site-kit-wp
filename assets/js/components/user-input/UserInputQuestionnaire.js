@@ -157,7 +157,7 @@ export default function UserInputQuestionnaire() {
 			return;
 		}
 
-		containerRef.current?.scrollIntoView( { behavior: 'smooth' } );
+		global.document?.querySelector( '.googlesitekit-user-input__header' )?.scrollIntoView( { behavior: 'smooth' } );
 	}, [ activeSlug ] );
 
 	// Update the callbacks and labels for the questions if the user is editing a *single question*.
