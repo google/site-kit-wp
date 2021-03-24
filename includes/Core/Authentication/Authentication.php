@@ -306,12 +306,15 @@ final class Authentication {
 			'googlesitekit_authorize_user',
 			function ( $args ) {
 				$previous_scopes = $args[2];
-				if ( ! $this->credentials->using_proxy() || empty( $previous_scopes ) ) {
+				if ( ! $this->credentials->using_proxy() ) {
 					return;
 				}
 
 				$this->set_connected_proxy_url();
-				$this->require_user_input();
+
+				if ( empty( $previous_scopes ) ) {
+					$this->require_user_input();
+				}
 			}
 		);
 
