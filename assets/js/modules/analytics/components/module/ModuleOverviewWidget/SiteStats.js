@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { extractAnalyticsDashboardData } from '../../../util';
+import { extractAnalyticsDashboardData, getTimeColumnVaxisFormat } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import { Cell, Row, Grid } from '../../../../../material-components';
@@ -49,8 +49,17 @@ export default function SiteStats( { loaded, selectedStat, report } ) {
 		days: currentDayCount,
 	} );
 
+	let vAxisFormat;
+	if ( dataMap[ 0 ][ selectedStat ]?.type === 'timeofday' ) {
+		vAxisFormat = getTimeColumnVaxisFormat( dataMap, selectedStat );
+	}
+
 	const options = {
 		...SiteStats.options,
+		vAxis: {
+			...SiteStats.options.vAxis,
+			format: vAxisFormat,
+		},
 		series: {
 			0: {
 				color: SiteStats.colorMap[ selectedStat ],

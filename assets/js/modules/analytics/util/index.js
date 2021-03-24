@@ -40,6 +40,7 @@ export { calculateOverviewData };
 export { default as parsePropertyID } from './parse-property-id';
 export * from './is-zero-report';
 export * from './validation';
+export * from './time-column-format';
 
 /**
  * Extracts data required for a pie chart from the Analytics report information.
