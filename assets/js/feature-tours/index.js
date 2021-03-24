@@ -33,6 +33,7 @@ const allTrafficWidget = {
 	slug: 'allTrafficWidget',
 	contexts: [ VIEW_CONTEXT_DASHBOARD ],
 	version: '1.25.0',
+	gaEventCategory: 'all_traffic_widget',
 	checkRequirements: async ( registry ) => {
 		// Here we need to wait for the underlying selector to be resolved before selecting `isModuleConnected`.
 		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
