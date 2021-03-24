@@ -40,45 +40,25 @@ const { useSelect } = Data;
 export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	const [ selectedStat, setSelectedState ] = useState( 0 );
 
-	const {
-		users,
-		sessions,
-		bounceRate,
-		avgSessionDuration,
-		loaded,
-		error,
-	} = useSelect( ( select ) => {
-		const {
-			startDate,
-			endDate,
-			compareStartDate,
-			compareEndDate,
-		} = select( CORE_USER ).getDateRangeDates( {
-			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+	const dates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		compare: true,
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
 
-		return [ 'users', 'sessions', 'bounceRate', 'avgSessionDuration' ].reduce(
-			( acc, metric ) => {
-				const args = {
-					startDate,
-					endDate,
-					compareStartDate,
-					compareEndDate,
-					dimensions: 'ga:date',
-					metrics: [ `ga:${ metric }` ],
-				};
+	const args = {
+		...dates,
+		dimensions: 'ga:date',
+		metrics: [
+			'ga:users',
+			'ga:sessions',
+			'ga:bounceRate',
+			'ga:avgSessionDuration',
+		],
+	};
 
-				return {
-					...acc,
-					[ metric ]: select( MODULES_ANALYTICS ).getReport( args ),
-					loaded: acc.loaded && select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ),
-					error: acc.error || select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ),
-				};
-			},
-			{ loaded: true },
-		);
-	} );
+	const loaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const report = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( args ) );
+	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ) );
 
 	if ( error ) {
 		return <WidgetReportError error={ error } />;
@@ -88,10 +68,7 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		<Widget Header={ Header }>
 			<Overview
 				loaded={ loaded }
-				users={ users }
-				sessions={ sessions }
-				bounce={ bounceRate }
-				duration={ avgSessionDuration }
+				report={ report }
 				selectedStat={ selectedStat }
 				handleStatSelection={ setSelectedState }
 			/>
@@ -99,7 +76,7 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 			<SiteStats
 				loaded={ loaded }
 				selectedStat={ selectedStat }
-				report={ [ users, sessions, bounceRate, avgSessionDuration ][ selectedStat ] }
+				report={ report }
 			/>
 		</Widget>
 	);

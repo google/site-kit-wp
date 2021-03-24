@@ -43,7 +43,7 @@ export default function SiteStats( { loaded, selectedStat, report } ) {
 
 	const dataMap = extractAnalyticsDashboardData( report, {
 		selectedStats: selectedStat,
-		selectedDataIndex: 0,
+		selectedDataIndex: selectedStat,
 		currentMonthMetricIndex: 0,
 		previousMonthMetricIndex: 1,
 		days: currentDayCount,

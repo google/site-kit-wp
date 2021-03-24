@@ -34,12 +34,12 @@ import DataBlock from '../../../../../components/DataBlock';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import { calculateChange } from '../../../../../util';
 
-function getDatapointAndChange( [ report ], divider = 1 ) {
+function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
 	return {
-		datapoint: report?.data?.totals?.[0]?.values?.[0] / divider,
+		datapoint: report?.data?.totals?.[0]?.values?.[selectedStat] / divider,
 		change: calculateChange(
-			report?.data?.totals?.[1]?.values?.[0],
-			report?.data?.totals?.[0]?.values?.[0],
+			report?.data?.totals?.[1]?.values?.[selectedStat],
+			report?.data?.totals?.[0]?.values?.[selectedStat],
 		),
 	};
 }
@@ -47,10 +47,7 @@ function getDatapointAndChange( [ report ], divider = 1 ) {
 export default function Overview( props ) {
 	const {
 		loaded,
-		users,
-		sessions,
-		bounce,
-		duration,
+		report,
 		selectedStat,
 		handleStatSelection,
 	} = props;
@@ -65,25 +62,25 @@ export default function Overview( props ) {
 		{
 			title: __( 'Users', 'google-site-kit' ),
 			className: 'googlesitekit-data-block--users googlesitekit-data-block--button-1',
-			...getDatapointAndChange( users ),
+			...getDatapointAndChange( report, 0 ),
 		},
 		{
 			title: __( 'Sessions', 'google-site-kit' ),
 			className: 'googlesitekit-data-block--sessions googlesitekit-data-block--button-2',
-			...getDatapointAndChange( sessions ),
+			...getDatapointAndChange( report, 1 ),
 		},
 		{
 			title: __( 'Bounce Rate', 'google-site-kit' ),
 			className: 'googlesitekit-data-block--bounce googlesitekit-data-block--button-3',
 			datapointUnit: '%',
 			invertChangeColor: true,
-			...getDatapointAndChange( bounce, 100 ),
+			...getDatapointAndChange( report, 2, 100 ),
 		},
 		{
 			title: __( 'Session Duration', 'google-site-kit' ),
 			className: 'googlesitekit-data-block--duration googlesitekit-data-block--button-4',
 			datapointUnit: 's',
-			...getDatapointAndChange( duration ),
+			...getDatapointAndChange( report, 3 ),
 		},
 	];
 
@@ -114,10 +111,7 @@ export default function Overview( props ) {
 
 Overview.propTypes = {
 	loaded: PropTypes.bool.isRequired,
-	users: PropTypes.arrayOf( PropTypes.object ),
-	sessions: PropTypes.arrayOf( PropTypes.object ),
-	bounce: PropTypes.arrayOf( PropTypes.object ),
-	duration: PropTypes.arrayOf( PropTypes.object ),
+	report: PropTypes.arrayOf( PropTypes.object ),
 	selectedStat: PropTypes.number.isRequired,
 	handleStatSelection: PropTypes.func.isRequired,
 };
