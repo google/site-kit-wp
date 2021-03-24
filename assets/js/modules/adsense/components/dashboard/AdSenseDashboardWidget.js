@@ -195,9 +195,11 @@ export default function AdSenseDashboardWidget() {
 							<DashboardAdSenseTopPages />
 						</Cell>
 
-						<Cell alignRight size={ 12 }>
-							{ ! helpVisibilityEnabled && <HelpLink /> }
-						</Cell>
+						{ ! helpVisibilityEnabled && (
+							<Cell alignRight size={ 12 }>
+								<HelpLink />
+							</Cell>
+						) }
 					</Row>
 				</Grid>
 			</div>

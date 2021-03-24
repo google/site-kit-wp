@@ -139,9 +139,11 @@ export default function SettingsApp() {
 						{ 'admin' === activeTabID && (
 							<SettingsAdmin />
 						) }
-						<Cell size={ 12 } alignRight>
-							{ ! helpVisibilityEnabled && <HelpLink /> }
-						</Cell>
+						{ ! helpVisibilityEnabled && (
+							<Cell size={ 12 } alignRight>
+								<HelpLink />
+							</Cell>
+						) }
 					</Row>
 				</Grid>
 			</div>

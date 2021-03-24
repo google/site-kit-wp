@@ -250,13 +250,15 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 								<LegacySearchConsoleDashboardWidgetKeywordTable />
 							</Layout>
 						</div>
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-12
-							mdc-layout-grid__cell--align-right
-						">
-							{ ! helpVisibilityEnabled && <HelpLink /> }
-						</div>
+						{ ! helpVisibilityEnabled && (
+							<div className="
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-12
+								mdc-layout-grid__cell--align-right
+							">
+								<HelpLink />
+							</div>
+						) }
 					</div>
 				</div>
 			</div>

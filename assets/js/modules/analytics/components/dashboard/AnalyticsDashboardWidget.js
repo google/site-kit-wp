@@ -260,13 +260,15 @@ export default function AnalyticsDashboardWidget() {
 								</div>
 							</Layout>
 						</div>
-						<div className="
+						{ ! helpVisibilityEnabled && (
+							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 								mdc-layout-grid__cell--align-right
 							">
-							{ ! helpVisibilityEnabled && <HelpLink /> }
-						</div>
+								<HelpLink />
+							</div>
+						) }
 					</div>
 				</div>
 			</div>

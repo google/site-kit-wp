@@ -30,6 +30,10 @@ import { useFeature } from '../../hooks/useFeature';
 const ModuleFooter = () => {
 	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 
+	if ( helpVisibilityEnabled ) {
+		return null;
+	}
+
 	return (
 		<div className="mdc-layout-grid__inner">
 			<div className={ classNames( [
@@ -37,7 +41,7 @@ const ModuleFooter = () => {
 				'mdc-layout-grid__cell--span-12',
 				'mdc-layout-grid__cell--align-right',
 			] ) }>
-				{ ! helpVisibilityEnabled && <HelpLink /> }
+				<HelpLink />
 			</div>
 		</div>
 	);
