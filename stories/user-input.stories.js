@@ -25,12 +25,16 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import UserInputApp from '../assets/js/components/user-input/UserInputApp';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'User Input', module )
 	.add( 'UserInputApp', () => {
 		return (
-			<WithTestRegistry features={ [ 'userInput' ] }>
+			<WithTestRegistry callback={ ( registry ) => {
+				// Don't mark the user input as completed in this story.
+				registry.dispatch( CORE_USER ).receiveUserInputState( 'missing' );
+			} } features={ [ 'userInput' ] }>
 				<UserInputApp />
 			</WithTestRegistry>
 		);

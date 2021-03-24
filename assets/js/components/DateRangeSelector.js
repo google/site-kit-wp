@@ -99,6 +99,7 @@ function DateRangeSelector() {
 				menuItems={ menuItems }
 				onSelected={ handleMenuItemSelect }
 				id="date-range-selector-menu"
+				className="googlesitekit-width-auto"
 			/>
 		</div>
 	);
