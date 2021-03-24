@@ -30,6 +30,7 @@ import initialState, {
 	FEATURE_TOUR_COOLDOWN_SECONDS,
 	FEATURE_TOUR_LAST_DISMISSED_AT,
 } from './feature-tours';
+const { setItem, deleteItem } = CacheModule;
 
 describe( 'core/user feature-tours', () => {
 	let registry;
@@ -350,7 +351,6 @@ describe( 'core/user feature-tours', () => {
 
 		describe( 'getLastDismissedAt', () => {
 			afterEach( async () => {
-				const { deleteItem } = CacheModule;
 				await deleteItem( FEATURE_TOUR_LAST_DISMISSED_AT );
 			} );
 
@@ -367,7 +367,6 @@ describe( 'core/user feature-tours', () => {
 
 			it( 'uses a resolver to set lastDismissedAt in the store if there is a value in the cache', async () => {
 				const timestamp = Date.now();
-				const { setItem } = CacheModule;
 
 				setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, { ttl: FEATURE_TOUR_COOLDOWN_SECONDS } );
 
