@@ -132,16 +132,16 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
  *
  * @since 1.0.0
  *
- * @param {Array}  rows           An array of rows to reduce.
- * @param {number} selectedMetric The currently selected metric index.
- * @param {number} selectedStats  The currently selected stat we need to return data for.
+ * @param {Array}  rows                An array of rows to reduce.
+ * @param {number} selectedMetricIndex The currently selected metric index.
+ * @param {number} selectedStats       The currently selected stat we need to return data for.
  * @return {Array} Array of selected stats from analytics row data.
  */
-function reduceAnalyticsRowsData( rows, selectedMetric, selectedStats ) {
+function reduceAnalyticsRowsData( rows, selectedMetricIndex, selectedStats ) {
 	const dataMap = [];
 	each( rows, ( row ) => {
 		if ( row.metrics ) {
-			const { values } = row.metrics[ selectedMetric ];
+			const { values } = row.metrics[ selectedMetricIndex ];
 			const dateString = row.dimensions[ 0 ];
 			const date = parseDimensionStringToDate( dateString );
 			dataMap.push( [
@@ -176,7 +176,6 @@ export function extractAnalyticsDashboardData( reports, options ) {
 	const rowLength = rows.length;
 	const {
 		selectedStats,
-		selectedDataIndex,
 		currentMonthMetricIndex = 0,
 		previousMonthMetricIndex = 0,
 		days,
@@ -237,10 +236,10 @@ export function extractAnalyticsDashboardData( reports, options ) {
 	];
 
 	// Split the results in two chunks of days, and process.
-	const lastMonthRows = rows.slice( rows.length - days );
-	const lastMonthData = reduceAnalyticsRowsData( lastMonthRows, currentMonthMetricIndex, selectedDataIndex );
+	const lastMonthRows = rows.slice( rows.length - days, rows.length );
 	const previousMonthRows = rows.slice( 0, rows.length - days );
-	const previousMonthData = reduceAnalyticsRowsData( previousMonthRows, previousMonthMetricIndex, selectedDataIndex );
+	const lastMonthData = reduceAnalyticsRowsData( lastMonthRows, currentMonthMetricIndex, selectedStats );
+	const previousMonthData = reduceAnalyticsRowsData( previousMonthRows, previousMonthMetricIndex, selectedStats );
 
 	const locale = getLocale();
 	const localeDateOptions = {
