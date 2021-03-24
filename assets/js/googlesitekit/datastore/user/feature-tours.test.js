@@ -27,8 +27,8 @@ import {
 import * as CacheModule from '../../../googlesitekit/api/cache';
 import { STORE_NAME } from './constants';
 import initialState, {
-	FEATURE_TOUR_COOLDOWN_PERIOD,
-	FEATURE_TOUR_CACHE_KEY,
+	FEATURE_TOUR_COOLDOWN_SECONDS,
+	FEATURE_TOUR_LAST_DISMISSED_AT,
 } from './feature-tours';
 
 describe( 'core/user feature-tours', () => {
@@ -70,6 +70,16 @@ describe( 'core/user feature-tours', () => {
 		describe( 'dismissTour', () => {
 			const fetchDismissTourRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/;
 
+			let setItemSpy;
+
+			beforeEach( () => {
+				setItemSpy = jest.spyOn( CacheModule, 'setItem' );
+			} );
+
+			afterEach( () => {
+				setItemSpy.mockRestore();
+			} );
+
 			it( 'requires a slug parameter', () => {
 				expect( () => registry.dispatch( STORE_NAME ).dismissTour() )
 					.toThrow( /a tour slug is required/i );
@@ -105,17 +115,13 @@ describe( 'core/user feature-tours', () => {
 			} );
 
 			it( 'sets the lastDismissedAt timestamp to mark the start of the cooldown period', async () => {
-				const setItemSpy = jest.spyOn( CacheModule, 'setItem' );
+				muteFetch( fetchDismissTourRegExp, [] );
 
-				fetchMock.postOnce( fetchDismissTourRegExp, { body: [ 'tour-a', 'tour-b' ] } );
-
-				await registry.dispatch( STORE_NAME ).dismissTour( 'tour-b' );
+				await registry.dispatch( STORE_NAME ).dismissTour( 'test-tour' );
 
 				expect( store.getState().lastDismissedAt ).toBeDefined();
 				// cache should have been set as well
 				expect( setItemSpy ).toHaveBeenCalled();
-
-				setItemSpy.mockRestore();
 			} );
 		} );
 
@@ -187,11 +193,13 @@ describe( 'core/user feature-tours', () => {
 
 			it( 'sets the lastDismissedAt timestamp in the cache', async () => {
 				const timestamp = Date.now();
+
 				await registry.dispatch( STORE_NAME ).setLastDismissedAt( timestamp );
+
 				expect( setItemSpy ).toHaveBeenCalledWith(
-					FEATURE_TOUR_CACHE_KEY,
+					FEATURE_TOUR_LAST_DISMISSED_AT,
 					timestamp,
-					{ ttl: FEATURE_TOUR_COOLDOWN_PERIOD }
+					{ ttl: FEATURE_TOUR_COOLDOWN_SECONDS }
 				);
 			} );
 		} );
@@ -352,6 +360,11 @@ describe( 'core/user feature-tours', () => {
 	} );
 
 	describe( 'getLastDismissedAt', () => {
+		afterEach( async () => {
+			const { deleteItem } = CacheModule;
+			await deleteItem( FEATURE_TOUR_LAST_DISMISSED_AT );
+		} );
+
 		it( 'returns initial state (undefined) if there is no lastDismissedAt timestamp', () => {
 			const lastDismissedAt = registry.select( STORE_NAME ).getLastDismissedAt();
 			expect( lastDismissedAt ).toEqual( undefined );
@@ -363,17 +376,16 @@ describe( 'core/user feature-tours', () => {
 			expect( registry.select( STORE_NAME ).getLastDismissedAt() ).toEqual( timestamp );
 		} );
 
-		it( 'sets lastDismissedAt in the store if there is a value in the cache', async () => {
+		it( 'uses a resolver to set lastDismissedAt in the store if there is a value in the cache', async () => {
 			const timestamp = Date.now();
-			const { setItem, deleteItem } = CacheModule;
+			const { setItem } = CacheModule;
 
-			setItem( FEATURE_TOUR_CACHE_KEY, timestamp, { ttl: FEATURE_TOUR_COOLDOWN_PERIOD } );
+			setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, { ttl: FEATURE_TOUR_COOLDOWN_SECONDS } );
 
 			registry.select( STORE_NAME ).getLastDismissedAt();
 			await untilResolved( registry, STORE_NAME ).getLastDismissedAt();
 
 			expect( store.getState().lastDismissedAt ).toEqual( timestamp );
-			await	deleteItem( FEATURE_TOUR_CACHE_KEY );
 		} );
 	} );
 
@@ -390,7 +402,8 @@ describe( 'core/user feature-tours', () => {
 		} );
 
 		it( 'returns false if the feature tour cooldown period has expired', () => {
-			const startOfCoolDownPeriod = Date.now() - FEATURE_TOUR_COOLDOWN_PERIOD;
+			const coolDownPeriodMiliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
+			const startOfCoolDownPeriod = Date.now() - coolDownPeriodMiliseconds;
 
 			registry.dispatch( STORE_NAME ).receiveLastDismissedAt( startOfCoolDownPeriod );
 

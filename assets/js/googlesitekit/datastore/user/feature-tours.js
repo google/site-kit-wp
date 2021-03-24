@@ -36,8 +36,8 @@ const { createRegistrySelector, createRegistryControl } = Data;
 const { getRegistry } = Data.commonActions;
 
 // Feature tour cooldown period is 2 hours
-export const FEATURE_TOUR_COOLDOWN_PERIOD = 1000 * 60 * 60 * 2;
-export const FEATURE_TOUR_CACHE_KEY = 'feature_tour_last_dismissed_at';
+export const FEATURE_TOUR_COOLDOWN_SECONDS = 60 * 60 * 2;
+export const FEATURE_TOUR_LAST_DISMISSED_AT = 'feature_tour_last_dismissed_at';
 
 // Actions.
 const DISMISS_TOUR = 'DISMISS_TOUR';
@@ -194,8 +194,8 @@ const baseControls = {
 	[ CACHE_LAST_DISMISSED_AT ]: async ( { payload } ) => {
 		const { timestamp } = payload;
 
-		await setItem( FEATURE_TOUR_CACHE_KEY, timestamp, {
-			ttl: FEATURE_TOUR_COOLDOWN_PERIOD,
+		await setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, {
+			ttl: FEATURE_TOUR_COOLDOWN_SECONDS,
 		} );
 	},
 };
@@ -272,7 +272,7 @@ const baseResolvers = {
 	},
 
 	*getLastDismissedAt() {
-		const { value: lastDismissedAt } = yield Data.commonActions.await( getItem( FEATURE_TOUR_CACHE_KEY ) );
+		const { value: lastDismissedAt } = yield Data.commonActions.await( getItem( FEATURE_TOUR_LAST_DISMISSED_AT ) );
 		if ( lastDismissedAt ) {
 			return yield actions.setLastDismissedAt( lastDismissedAt );
 		}
@@ -373,7 +373,9 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		const coolDownExpiresAt = lastDismissedAt + FEATURE_TOUR_COOLDOWN_PERIOD;
+		const coolDownPeriodMiliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
+		const coolDownExpiresAt = lastDismissedAt + coolDownPeriodMiliseconds;
+
 		return Date.now() < coolDownExpiresAt;
 	} ),
 };
