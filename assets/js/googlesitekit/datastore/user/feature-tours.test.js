@@ -396,7 +396,10 @@ describe( 'core/user feature-tours', () => {
 
 		it( 'returns true if the lastDismissedAt timestamp is within the feature tour cooldown period', () => {
 			const timestamp = Date.now();
-			registry.dispatch( STORE_NAME ).receiveLastDismissedAt( timestamp );
+			const coolDownPeriodMiliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
+			const justInsideCoolDownPeriod = timestamp + coolDownPeriodMiliseconds - 1000;
+
+			registry.dispatch( STORE_NAME ).receiveLastDismissedAt( justInsideCoolDownPeriod );
 
 			expect( registry.select( STORE_NAME ).areFeatureToursOnCooldown() ).toEqual( true );
 		} );
