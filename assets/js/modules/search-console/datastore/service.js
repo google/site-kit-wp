@@ -61,7 +61,7 @@ export const selectors = {
 	/**
 	 * Gets a URL to the report on the service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.29.0
 	 *
 	 * @param {Object} state             Data store's state.
 	 * @param {Object} [reportArgs]      URL parameters to be passed to the query.

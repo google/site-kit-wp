@@ -283,7 +283,7 @@ const baseSelectors = {
 	 * Gets the list of dismissed tour slugs.
 	 *
 	 * @since 1.27.0
-	 * @since n.e.x.t Renamed from getDismissedTours.
+	 * @since 1.29.0 Renamed from getDismissedTours.
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
@@ -297,7 +297,7 @@ const baseSelectors = {
 	/**
 	 * Gets a list of tour objects that qualify for the given view context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.29.0
 	 *
 	 * @param {Object} state       Data store's state.
 	 * @param {string} viewContext View context.
@@ -311,7 +311,7 @@ const baseSelectors = {
 	/**
 	 * Gets a list of all tour objects.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.29.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
@@ -345,7 +345,7 @@ const baseSelectors = {
 	/**
 	 * Gets the timestamp for the last dismissed feature tour.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.29.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
@@ -361,7 +361,7 @@ const baseSelectors = {
 	 * Determines whether feature tours are on cooldown (i.e. the last
 	 * dismissal was within the cooldown time span).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.29.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.

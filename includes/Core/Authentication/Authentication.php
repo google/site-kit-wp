@@ -161,7 +161,7 @@ final class Authentication {
 	/**
 	 * Has_Multiple_Admins instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.29.0
 	 * @var Has_Multiple_Admins
 	 */
 	protected $has_multiple_admins;
