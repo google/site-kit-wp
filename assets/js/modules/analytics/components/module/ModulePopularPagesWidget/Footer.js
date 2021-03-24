@@ -26,16 +26,24 @@ import { _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../../datastore/constants';
-import LayoutFooter from '../../../../../components/layout/LayoutFooter';
+import { Cell, Grid, Row } from '../../../../../material-components';
+import SourceLink from '../../../../../components/SourceLink';
 const { useSelect } = Data;
 
 export default function Footer() {
 	const visitorsOverview = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'visitors-overview' ) );
 
 	return (
-		<LayoutFooter
-			ctaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-			ctaLink={ visitorsOverview }
-		/>
+		<Grid>
+			<Row>
+				<Cell size={ 12 } alignMiddle>
+					<SourceLink
+						href={ visitorsOverview }
+						name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+						external
+					/>
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }

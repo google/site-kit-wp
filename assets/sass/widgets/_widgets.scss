@@ -35,15 +35,19 @@
 		&-title {
 			margin: 0;
 		}
+	}
+
+	&__footer {
+		border-top: 1px solid $c-border-light;
+	}
+
+	&__header,
+	&__footer {
 
 		& > .mdc-layout-grid {
 			margin: 0;
 			padding: 0;
 		}
-	}
-
-	&__footer {
-		border-top: 1px solid $c-border-light;
 	}
 
 	&__header,
