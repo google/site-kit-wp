@@ -42,6 +42,11 @@ final class User_Input_State extends User_Setting {
 	const VALUE_MISSING = 'missing';
 
 	/**
+	 * Value empty key.
+	 */
+	const VALUE_EMPTY = '';
+
+	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since 1.23.0

@@ -352,6 +352,37 @@ class AuthenticationTest extends TestCase {
 		$this->assertEquals( User_Input_State::VALUE_REQUIRED, $user_input_state->get() );
 	}
 
+	public function test_user_input_not_triggered() {
+		$this->enable_feature( 'userInput' );
+		remove_all_actions( 'googlesitekit_authorize_user' );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$auth->register();
+
+		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
+		// Mocking User_Input_Settings here to avoid adding a ton of complexity
+		// from intercepting a request to the proxy, returning, settings etc.
+		$mock_user_input_settings = $this->getMockBuilder( User_Input_Settings::class )
+			->disableOriginalConstructor()
+			->disableProxyingToOriginalMethods()
+			->setMethods( array( 'set_settings' ) )
+			->getMock();
+		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
+
+		$this->assertEmpty( $user_input_state->get() );
+
+		$mock_previous_scopes = array(
+			'openid',
+			'https://www.googleapis.com/auth/userinfo.profile',
+			'https://www.googleapis.com/auth/userinfo.email',
+			'https://www.googleapis.com/auth/siteverification',
+			'https://www.googleapis.com/auth/webmasters',
+		);
+		do_action( 'googlesitekit_authorize_user', array( '', '', $mock_previous_scopes ) );
+		$this->assertEquals( User_Input_State::VALUE_EMPTY, $user_input_state->get() );
+	}
+
 	public function test_require_user_input__without_feature() {
 		remove_all_actions( 'googlesitekit_authorize_user' );
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );

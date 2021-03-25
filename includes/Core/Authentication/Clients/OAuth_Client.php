@@ -735,6 +735,8 @@ final class OAuth_Client {
 		 * @since 1.6.0 The $token_response parameter was added.
 		 *
 		 * @param array $token_response Token response data.
+		 * @param array $scopes list of scopes
+		 * @param array $previous_scopes list of previous scopes
 		 */
 		do_action( 'googlesitekit_authorize_user', array( $token_response, $scopes, $previous_scopes ) );
 
