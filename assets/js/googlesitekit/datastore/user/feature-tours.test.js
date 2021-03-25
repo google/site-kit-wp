@@ -24,12 +24,18 @@ import {
 	muteFetch,
 	untilResolved,
 } from '../../../../../tests/js/utils';
+import * as CacheModule from '../../../googlesitekit/api/cache';
 import { STORE_NAME } from './constants';
-import initialState from './feature-tours';
+import initialState, {
+	FEATURE_TOUR_COOLDOWN_SECONDS,
+	FEATURE_TOUR_LAST_DISMISSED_AT,
+} from './feature-tours';
+const { setItem } = CacheModule;
 
 describe( 'core/user feature-tours', () => {
 	let registry;
 	let store;
+	let setItemSpy;
 
 	const testTourA = {
 		slug: 'test-tour-a',
@@ -57,9 +63,14 @@ describe( 'core/user feature-tours', () => {
 	};
 
 	beforeEach( () => {
+		setItemSpy = jest.spyOn( CacheModule, 'setItem' );
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
 		registry.dispatch( STORE_NAME ).receiveInitialSiteKitVersion( '1.0.0' );
+	} );
+
+	afterEach( () => {
+		setItemSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
@@ -99,6 +110,20 @@ describe( 'core/user feature-tours', () => {
 					expect.arrayContaining( [ 'tour-a', 'tour-b' ] )
 				);
 			} );
+
+			it( 'sets the lastDismissedAt timestamp to mark the start of the cooldown period', async () => {
+				muteFetch( fetchDismissTourRegExp, [] );
+
+				await registry.dispatch( STORE_NAME ).dismissTour( 'test-tour' );
+
+				expect( store.getState().lastDismissedAt ).toBeDefined();
+				// cache should have been set as well
+				expect( setItemSpy ).toHaveBeenCalledWith(
+					FEATURE_TOUR_LAST_DISMISSED_AT,
+					expect.any( Number ), // timestamp
+					expect.objectContaining( { ttl: FEATURE_TOUR_COOLDOWN_SECONDS } ),
+				);
+			} );
 		} );
 
 		describe( 'receiveAllFeatureTours', () => {
@@ -107,7 +132,7 @@ describe( 'core/user feature-tours', () => {
 					.toThrow( 'tours must be an array' );
 			} );
 
-			it( 'receives a the given tours into the state', () => {
+			it( 'receives the given tours into the state', () => {
 				const tours = [ testTourA, testTourB ];
 				registry.dispatch( STORE_NAME ).receiveAllFeatureTours( tours );
 				expect( store.getState().tours ).toEqual( tours );
@@ -125,10 +150,48 @@ describe( 'core/user feature-tours', () => {
 					.toThrow( 'viewContext is required' );
 			} );
 
-			it( 'receives a the given viewTours into the state for the viewContext', () => {
+			it( 'receives the given viewTours into the state for the viewContext', () => {
 				const tours = [ testTourA, testTourB ];
 				registry.dispatch( STORE_NAME ).receiveFeatureToursForView( tours, { viewContext: 'foo' } );
 				expect( store.getState().viewTours.foo ).toEqual( tours );
+			} );
+		} );
+
+		describe( 'receiveLastDismissedAt', () => {
+			it( 'requires a timestamp to be provided', () => {
+				expect( () => registry.dispatch( STORE_NAME ).receiveLastDismissedAt() )
+					.toThrow( 'A timestamp is required.' );
+			} );
+
+			it( 'sets the lastDismissedAt timestamp in the store', () => {
+				const timestamp = Date.now();
+				registry.dispatch( STORE_NAME ).receiveLastDismissedAt( timestamp );
+				expect( store.getState().lastDismissedAt ).toEqual( timestamp );
+			} );
+		} );
+
+		describe( 'setLastDismissedAt', () => {
+			it( 'requires a timestamp to be provided', () => {
+				expect( () => registry.dispatch( STORE_NAME ).receiveLastDismissedAt() )
+					.toThrow( 'A timestamp is required.' );
+			} );
+
+			it( 'sets the lastDismissedAt timestamp in the store', async () => {
+				const timestamp = Date.now();
+				await registry.dispatch( STORE_NAME ).setLastDismissedAt( timestamp );
+				expect( store.getState().lastDismissedAt ).toEqual( timestamp );
+			} );
+
+			it( 'sets the lastDismissedAt timestamp in the cache', async () => {
+				const timestamp = Date.now();
+
+				await registry.dispatch( STORE_NAME ).setLastDismissedAt( timestamp );
+
+				expect( setItemSpy ).toHaveBeenCalledWith(
+					FEATURE_TOUR_LAST_DISMISSED_AT,
+					timestamp,
+					expect.objectContaining( { ttl: FEATURE_TOUR_COOLDOWN_SECONDS } )
+				);
 			} );
 		} );
 	} );
@@ -283,6 +346,73 @@ describe( 'core/user feature-tours', () => {
 				// but the selector will return `false` until the response is received.
 				fetchMock.getOnce( fetchGetDismissedToursRegExp, { body: [ 'feature-x' ] } );
 				expect( registry.select( STORE_NAME ).isTourDismissed( 'feature-x' ) ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'getLastDismissedAt', () => {
+			// Note: storage is cleared before every test in the global config.
+
+			it( 'returns initial state (undefined) if there is no lastDismissedAt timestamp', () => {
+				const lastDismissedAt = registry.select( STORE_NAME ).getLastDismissedAt();
+				expect( lastDismissedAt ).toEqual( undefined );
+			} );
+
+			it( 'returns the lastDismissedAt timestamp if there is one', () => {
+				const timestamp = Date.now();
+				registry.dispatch( STORE_NAME ).receiveLastDismissedAt( timestamp );
+				expect( registry.select( STORE_NAME ).getLastDismissedAt() ).toEqual( timestamp );
+			} );
+
+			it( 'uses a resolver to set lastDismissedAt in the store if there is a value in the cache', async () => {
+				const timestamp = Date.now();
+				await setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp );
+
+				registry.select( STORE_NAME ).getLastDismissedAt();
+				await untilResolved( registry, STORE_NAME ).getLastDismissedAt();
+
+				expect( registry.select( STORE_NAME ).getLastDismissedAt() ).toBe( timestamp );
+			} );
+
+			it( 'returns false for an expired lastDismissedAt value in the cache', async () => {
+				const timestamp = Date.now();
+				// Set an item that is guaranteed to be expired when called with `getItem`
+				await setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, { ttl: -1 } );
+
+				registry.select( STORE_NAME ).getLastDismissedAt();
+				await untilResolved( registry, STORE_NAME ).getLastDismissedAt();
+
+				expect( registry.select( STORE_NAME ).getLastDismissedAt() ).toBe( null );
+			} );
+		} );
+
+		describe( 'areFeatureToursOnCooldown', () => {
+			it( 'returns undefined if there is no lastDismissedAt timestamp', () => {
+				expect( registry.select( STORE_NAME ).areFeatureToursOnCooldown() ).toBeUndefined();
+			} );
+
+			it( 'returns true if the lastDismissedAt timestamp is within the feature tour cooldown period', () => {
+				const timestamp = Date.now();
+				const coolDownPeriodMilliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
+				const justInsideCoolDownPeriod = timestamp + coolDownPeriodMilliseconds - 1000;
+
+				registry.dispatch( STORE_NAME ).receiveLastDismissedAt( justInsideCoolDownPeriod );
+
+				expect( registry.select( STORE_NAME ).areFeatureToursOnCooldown() ).toEqual( true );
+			} );
+
+			it( 'returns false if the feature tour cooldown period has expired', () => {
+				const coolDownPeriodMilliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
+				const startOfCoolDownPeriod = Date.now() - coolDownPeriodMilliseconds;
+
+				registry.dispatch( STORE_NAME ).receiveLastDismissedAt( startOfCoolDownPeriod );
+
+				expect( registry.select( STORE_NAME ).areFeatureToursOnCooldown() ).toEqual( false );
+			} );
+
+			it( 'returns false for an expired lastDismissedAt value in the cache', async () => {
+				registry.dispatch( STORE_NAME ).receiveLastDismissedAt( null );
+
+				expect( registry.select( STORE_NAME ).areFeatureToursOnCooldown() ).toEqual( false );
 			} );
 		} );
 	} );
