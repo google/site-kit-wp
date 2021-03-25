@@ -38,6 +38,7 @@ import { Cell, Input, TextField } from '../../material-components';
 import Button from '../Button';
 import CloseIcon from '../../../svg/close.svg';
 import { COMMA } from '../../util/key-codes';
+import VisuallyHiden from '../VisuallyHidden';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputKeywords( { slug, max } ) {
@@ -113,12 +114,6 @@ export default function UserInputKeywords( { slug, max } ) {
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 			<div ref={ keywordsContainer } className="googlesitekit-user-input__text-options">
-				<label
-					htmlFor={ `${ slug }-keyword-0` }
-					className="screen-reader-text"
-				>
-					{ __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' ) }
-				</label>
 				{ values.map( ( value, i ) => (
 					<div
 						key={ i }
@@ -126,6 +121,13 @@ export default function UserInputKeywords( { slug, max } ) {
 							'googlesitekit-user-input__text-option': values.length > i + 1 || value.length > 0,
 						} ) }
 					>
+						<VisuallyHiden>
+							<label
+								htmlFor={ `${ slug }-keyword-${ i }` }
+							>
+								{ __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' ) }
+							</label>
+						</VisuallyHiden>
 						<TextField
 							label={ values.length === 1 && values[ 0 ] === ''
 								? __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' )
