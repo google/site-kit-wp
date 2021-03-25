@@ -30,7 +30,6 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import SubscribeWithGoogleIcon from '../../../../../svg/subscribe-with-google.svg';
-import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME, FORM_SETUP } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
@@ -39,6 +38,7 @@ import { useSelect } from 'googlesitekit-data';
 import { AccountCreate } from '../common';
 
 export default function SetupMain( { finishSetup } ) {
+	const products = useSelect( ( select ) => select( STORE_NAME ).getProducts() );
 	const publicationID = useSelect( ( select ) => select( STORE_NAME ).getPublicationID() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const submitInProgress = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' ) );
@@ -49,10 +49,8 @@ export default function SetupMain( { finishSetup } ) {
 	// when the component initially loads and has yet to start fetching accounts.
 	if ( isDoingSubmitChanges || isNavigating || submitInProgress ) {
 		viewComponent = <ProgressBar />;
-	} else if ( ! publicationID ) {
-		viewComponent = <AccountCreate />;
-	} else {
-		viewComponent = <SetupForm finishSetup={ finishSetup } />;
+	} else if ( ! products || ! publicationID ) {
+		viewComponent = <AccountCreate finishSetup={ finishSetup } />;
 	}
 
 	return (

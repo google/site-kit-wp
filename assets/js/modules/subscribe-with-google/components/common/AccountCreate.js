@@ -38,7 +38,7 @@ import { FORM_SETUP, STORE_NAME } from '../../datastore/constants';
 import { TextField, Input } from '../../../../material-components';
 const { useDispatch, useSelect } = Data;
 
-export default function AccountCreate() {
+export default function AccountCreate( { finishSetup } ) {
 	// Get products from either the temporary form state or the saved settings.
 	const formProducts = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'products' ) );
 	const settingsProducts = useSelect( ( select ) => select( STORE_NAME ).getProducts() );
@@ -64,6 +64,7 @@ export default function AccountCreate() {
 		setProducts( products.trim() );
 		setPublicationID( publicationID.trim() );
 		submitChanges();
+		finishSetup();
 	}, [ products, publicationID ] );
 
 	return (
