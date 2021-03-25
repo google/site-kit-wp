@@ -77,9 +77,11 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Product(s)', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ products } />
-					</p>
+					{ products?.split( '\n' ).map( ( product ) => product.trim() ).map( ( product ) => (
+						<p className="googlesitekit-settings-module__meta-item-data" key={ product }>
+							<DisplaySetting value={ product } />
+						</p>
+					) ) }
 				</div>
 
 				<div className="googlesitekit-settings-module__meta-item">
