@@ -26,7 +26,6 @@ import { _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../../datastore/constants';
-import { Cell, Grid, Row } from '../../../../../material-components';
 import SourceLink from '../../../../../components/SourceLink';
 const { useSelect } = Data;
 
@@ -34,16 +33,10 @@ export default function Footer() {
 	const visitorsOverview = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'visitors-overview' ) );
 
 	return (
-		<Grid>
-			<Row>
-				<Cell size={ 12 } alignMiddle>
-					<SourceLink
-						href={ visitorsOverview }
-						name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-						external
-					/>
-				</Cell>
-			</Row>
-		</Grid>
+		<SourceLink
+			href={ visitorsOverview }
+			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+			external
+		/>
 	);
 }
