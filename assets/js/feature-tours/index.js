@@ -28,6 +28,7 @@ import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { UI_ALL_TRAFFIC_LOADED } from '../modules/analytics/datastore/constants';
+import helpVisibility from './help-visibility';
 
 const allTrafficWidget = {
 	slug: 'allTrafficWidget',
@@ -79,4 +80,5 @@ const allTrafficWidget = {
 // Ordered tours.
 export default [
 	allTrafficWidget,
+	helpVisibility,
 ];

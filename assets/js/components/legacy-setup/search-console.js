@@ -36,6 +36,7 @@ import ProgressBar from '../ProgressBar';
 import HelpLink from '../HelpLink';
 import { Select, TextField, Input } from '../../material-components';
 import Button from '../Button';
+import withFeatureFlag from '../higherorder/withFeatureFlag';
 
 class SearchConsole extends Component {
 	constructor( props ) {
@@ -170,6 +171,7 @@ class SearchConsole extends Component {
 	}
 
 	matchedForm() {
+		const { helpVisibilityEnabled } = this.props;
 		const { sites, selectedURL } = this.state;
 
 		if ( ! sites ) {
@@ -204,7 +206,7 @@ class SearchConsole extends Component {
 				</div>
 				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
 					<Button onClick={ this.submitPropertyEventHandler }>{ __( 'Continue', 'google-site-kit' ) }</Button>
-					<HelpLink />
+					{ ! helpVisibilityEnabled && <HelpLink /> }
 				</div>
 			</Fragment>
 		);
@@ -226,6 +228,7 @@ class SearchConsole extends Component {
 	}
 
 	noSiteForm() {
+		const { helpVisibilityEnabled } = this.props;
 		const { siteURL } = this.state;
 
 		return (
@@ -245,7 +248,7 @@ class SearchConsole extends Component {
 				</div>
 				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
 					<Button onClick={ this.submitPropertyEventHandler }>{ __( 'Continue', 'google-site-kit' ) }</Button>
-					<HelpLink />
+					{ ! helpVisibilityEnabled && <HelpLink /> }
 				</div>
 			</Fragment>
 		);
@@ -308,10 +311,11 @@ class SearchConsole extends Component {
 }
 
 SearchConsole.propTypes = {
+	helpVisibilityEnabled: PropTypes.bool,
 	isAuthenticated: PropTypes.bool.isRequired,
 	shouldSetup: PropTypes.bool.isRequired,
 	searchConsoleSetup: PropTypes.func.isRequired,
 	setErrorMessage: PropTypes.func.isRequired,
 };
 
-export default SearchConsole;
+export default withFeatureFlag( 'helpVisibility' )( SearchConsole );
