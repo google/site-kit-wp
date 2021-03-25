@@ -49,6 +49,7 @@ export * from './helpers';
 export * from './markdown';
 export * from './convert-time';
 export * from './date-range';
+export * from './svg';
 
 /**
  * Removes a parameter from a URL string.

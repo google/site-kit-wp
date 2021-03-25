@@ -29,7 +29,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getLocale, numFmt, calculateChange } from '../../../util';
+import { getLocale, numFmt, calculateChange, getChartDifferenceArrow } from '../../../util';
 
 /**
  * Gets data for a Google Chart from an search console report.
@@ -75,18 +75,13 @@ export const getSiteStatsDataForGoogleChart = ( current, previous, label, select
 		const difference = prevMonth !== 0
 			? ( currentMonth / prevMonth ) - 1
 			: 1; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 1
-
+		const svgArrow = getChartDifferenceArrow( difference );
 		const statInfo = sprintf(
 			/* translators: 1: selected stat label, 2: numeric value of selected stat, 3: up or down arrow , 4: different change in percentage, %%: percent symbol */
 			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>', 'Stat information for chart tooltip', 'google-site-kit' ),
 			label,
 			Math.abs( currentMonth ).toFixed( 2 ).replace( /(.00|0)$/, '' ),
-			`<svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="${ classnames( 'googlesitekit-change-arrow', {
-				'googlesitekit-change-arrow--up': difference > 0,
-				'googlesitekit-change-arrow--down': difference < 0,
-			} ) }">
-				<path d="M5.625 10L5.625 2.375L9.125 5.875L10 5L5 -1.76555e-07L-2.7055e-07 5L0.875 5.875L4.375 2.375L4.375 10L5.625 10Z" fill="currentColor" />
-			</svg>`,
+			svgArrow,
 			numFmt( change ),
 		);
 
