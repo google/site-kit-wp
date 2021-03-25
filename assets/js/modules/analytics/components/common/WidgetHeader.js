@@ -1,5 +1,5 @@
 /**
- * Header component the ModuleOverviewWidget widget.
+ * WidgetHeader component for widget headers.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,28 +19,20 @@
 /**
  * WordPress dependencies
  */
-import { sprintf, _n, _x, __ } from '@wordpress/i18n';
+import { sprintf, _x, __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS } from '../../../datastore/constants';
-import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
-import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
+import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
+import WidgetHeaderCTA from '../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
 const { useSelect } = Data;
 
-export default function Header() {
+export default function WidgetHeader( { title } ) {
 	const visitorsOverview = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'visitors-overview' ) );
-	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
-
-	const title = sprintf(
-		/* translators: %s: number of days */
-		_n( 'Audience overview for the last %s day', 'Audience overview for the last %s days', currentDayCount, 'google-site-kit', ),
-		currentDayCount
-	);
 
 	const headerCTALabel = sprintf(
 		/* translators: %s: module name. */

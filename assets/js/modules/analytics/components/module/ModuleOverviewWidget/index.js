@@ -32,9 +32,10 @@ import { useState } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
-import Header from './Header';
+import WidgetHeader from '../../common/WidgetHeader';
 import Overview from './Overview';
 import SiteStats from './SiteStats';
+import { _n, sprintf } from '@wordpress/i18n';
 const { useSelect } = Data;
 
 export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
@@ -44,6 +45,14 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
+
+	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
+
+	const title = sprintf(
+		/* translators: %s: number of days */
+		_n( 'Audience overview for the last %s day', 'Audience overview for the last %s days', currentDayCount, 'google-site-kit', ),
+		currentDayCount
+	);
 
 	const overviewArgs = {
 		...dates,
@@ -79,7 +88,11 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	}
 
 	return (
-		<Widget Header={ Header } noPadding>
+		<Widget noPadding
+			Header={ () => (
+				<WidgetHeader title={ title } />
+			) }
+		>
 			<Overview
 				loaded={ overviewLoaded }
 				report={ overviewReport }
