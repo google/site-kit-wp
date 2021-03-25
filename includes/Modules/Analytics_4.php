@@ -76,7 +76,7 @@ final class Analytics_4 extends Module
 	 */
 	public function is_connected() {
 		$option = $this->get_settings()->get();
-		if ( ! $option['accountID'] || ! $option['propertyID'] || ! $option['webDatastreamID'] || ! $option['measurementID'] ) {
+		if ( ! $option['accountID'] || ! $option['propertyID'] || ! $option['webDataStreamID'] || ! $option['measurementID'] ) {
 			return;
 		}
 		return parent::is_connected();
@@ -102,27 +102,27 @@ final class Analytics_4 extends Module
 		$settings = $this->get_settings()->get();
 
 		return array(
-			'analytics_4_account_id'        => array(
+			'analytics_4_account_id'         => array(
 				'label' => __( 'Analytics 4 account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
-			'analytics_4_property_id'       => array(
+			'analytics_4_property_id'        => array(
 				'label' => __( 'Analytics 4 property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
-			'analytics_4_web_datastream_id' => array(
-				'label' => __( 'Analytics 4 web datastream ID', 'google-site-kit' ),
-				'value' => $settings['webDatastreamID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['webDatastreamID'] ),
+			'analytics_4_web_data_stream_id' => array(
+				'label' => __( 'Analytics 4 web data stream ID', 'google-site-kit' ),
+				'value' => $settings['webDataStreamID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['webDataStreamID'] ),
 			),
-			'analytics_4_measurement_id'    => array(
+			'analytics_4_measurement_id'     => array(
 				'label' => __( 'Analytics 4 measurement ID', 'google-site-kit' ),
 				'value' => $settings['measurementID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['measurementID'] ),
 			),
-			'analytics_4_use_snippet'       => array(
+			'analytics_4_use_snippet'        => array(
 				'label' => __( 'Analytics 4 snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
@@ -150,7 +150,7 @@ final class Analytics_4 extends Module
 			'POST:create-webdatastream' => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 web datastream on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 web data stream on your behalf.', 'google-site-kit' ),
 			),
 		);
 	}

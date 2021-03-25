@@ -48,7 +48,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		return array(
 			'accountID',
 			'propertyID',
-			'webDatastreamID',
+			'webDataStreamID',
 			'measurementID',
 		);
 	}
@@ -65,7 +65,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'ownerID'         => 0,
 			'accountID'       => '',
 			'propertyID'      => '',
-			'webDatastreamID' => '',
+			'webDataStreamID' => '',
 			'measurementID'   => '',
 			'useSnippet'      => true,
 		);
