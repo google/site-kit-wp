@@ -27,6 +27,7 @@ import round from 'lodash/round';
  */
 import { calculateChange } from '../../../util';
 export * from './is-zero-report';
+export * from './validation';
 
 function reduceSearchConsoleData( rows ) {
 	const dataMap = [

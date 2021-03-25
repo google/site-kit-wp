@@ -24,6 +24,8 @@ import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
 import report from './report';
 import service from './service';
+import properties from './properties';
+import { submitChanges, validateCanSubmitChanges } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'search-console', {
 	storeName: STORE_NAME,
@@ -32,12 +34,15 @@ const baseModuleStore = Modules.createModuleStore( 'search-console', {
 	],
 	adminPage: 'googlesitekit-module-search-console',
 	requiresSetup: false,
+	submitChanges,
+	validateCanSubmitChanges,
 } );
 
 const store = Data.combineStores(
 	baseModuleStore,
 	report,
-	service
+	service,
+	properties,
 );
 
 export const initialState = store.initialState;
