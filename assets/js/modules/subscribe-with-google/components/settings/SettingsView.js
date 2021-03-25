@@ -32,11 +32,8 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const publicationName = useSelect( ( select ) => select( STORE_NAME ).getPublicationName() );
-	const publicationID = useSelect( ( select ) => select( STORE_NAME ).getPublicationID() );
-	const revenueModel = useSelect( ( select ) => select( STORE_NAME ).getRevenueModel() );
 	const products = useSelect( ( select ) => select( STORE_NAME ).getProducts() );
-	const defaultProductPerPostType = useSelect( ( select ) => select( STORE_NAME ).getDefaultProductPerPostType() );
+	const publicationID = useSelect( ( select ) => select( STORE_NAME ).getPublicationID() );
 
 	return (
 		<Fragment>
@@ -46,28 +43,10 @@ export default function SettingsView() {
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Publication name', 'google-site-kit' ) }
-					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ publicationName } />
-					</p>
-				</div>
-
-				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Publication ID', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ publicationID } />
-					</p>
-				</div>
-
-				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Revenue model', 'google-site-kit' ) }
-					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ revenueModel } />
 					</p>
 				</div>
 			</div>
@@ -82,15 +61,6 @@ export default function SettingsView() {
 							<DisplaySetting value={ product } />
 						</p>
 					) ) }
-				</div>
-
-				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Post Types default to', 'google-site-kit' ) } (?)
-					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ defaultProductPerPostType } />
-					</p>
 				</div>
 			</div>
 		</Fragment>
