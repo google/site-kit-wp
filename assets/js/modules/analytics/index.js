@@ -42,7 +42,7 @@ import DashboardPopularPagesWidget from './components/dashboard/DashboardPopular
 import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
-import { ModuleAcquisitionChannelsWidget } from './components/module/ModuleAcquisitionChannelsWidget';
+import ModuleAcquisitionChannelsWidget from './components/module/ModuleAcquisitionChannelsWidget';
 import ModuleOverviewWidget from './components/module/ModuleOverviewWidget';
 
 export { registerStore } from './datastore';

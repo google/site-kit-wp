@@ -25,24 +25,25 @@ import { __, _n, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME } from '../../../datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 // import whenActive from '../../../../util/when-active';
-import PreviewTable from '../../../../components/PreviewTable';
-import SourceLink from '../../../../components/SourceLink';
-import { isZeroReport, trafficSourcesReportDataDefaults } from '../../util';
-import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import PreviewTable from '../../../../../components/PreviewTable';
+import SourceLink from '../../../../../components/SourceLink';
+import { isZeroReport, trafficSourcesReportDataDefaults } from '../../../util';
+import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 // import { generateDateRangeArgs } from '../../util/report-date-range-args';
-import ReportTable from '../../../../components/ReportTable';
+import ReportTable from '../../../../../components/ReportTable';
 // import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
 // import { numFmt } from '../../../../util';
-import ModuleHeader from '../../../../components/module/ModuleHeader';
-import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
+import ModuleHeader from '../../../../../components/module/ModuleHeader';
+import { getCurrentDateRangeDayCount } from '../../../../../util/date-range';
+// import Link from '../../../../components/Link';
 // import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
 const { useSelect } = Data;
 
-export function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
+export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const url = global._googlesitekitLegacyData.permaLink;
 	const {
 		hasFinishedResolution,
@@ -82,14 +83,26 @@ export function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZero, Wid
 
 	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 
-	const headers = [
+	const tableColumns = [
 		{
 			title: __( 'Channel', 'google-site-kit' ),
 			tooltip: __( 'Channel refers to where your traffic originated from', 'google-site-kit' ),
+			Component: ( { row } ) => {
+				const foo = JSON.stringify( row );
+				return (
+					<p>{ foo }</p>
+				);
+			},
 		},
 		{
 			title: __( 'Users', 'google-site-kit' ),
 			tooltip: __( 'Number of users that originated from that traffic', 'google-site-kit' ),
+			Component: ( { row } ) => {
+				const foo = JSON.stringify( row );
+				return (
+					<p>{ foo }</p>
+				);
+			},
 		},
 		{
 			title: __( 'New Users', 'google-site-kit' ),
@@ -98,6 +111,12 @@ export function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZero, Wid
 				_n( 'Number of new users to visit your page over last %s day', 'Number of new users to visit your page over last %s days', currentDayCount, 'google-site-kit', ),
 				currentDayCount,
 			),
+			Component: ( { row } ) => {
+				const foo = JSON.stringify( row );
+				return (
+					<p>{ foo }</p>
+				);
+			},
 		},
 		{
 			title: __( 'Sessions', 'google-site-kit' ),
@@ -106,10 +125,22 @@ export function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZero, Wid
 				_n( 'Number of sessions users had on your website over last %s day', 'Number of sessions users had on your website over last %s days', currentDayCount, 'google-site-kit', ),
 				currentDayCount,
 			),
+			Component: ( { row } ) => {
+				const foo = JSON.stringify( row );
+				return (
+					<p>{ foo }</p>
+				);
+			},
 		},
 		{
 			title: __( 'Percentage', 'google-site-kit' ),
 			tooltip: __( 'Percentage of sessions', 'google-site-kit' ),
+			Component: ( { row } ) => {
+				const foo = JSON.stringify( row );
+				return (
+					<p>{ foo }</p>
+				);
+			},
 		},
 	];
 
@@ -137,7 +168,7 @@ export function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZero, Wid
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data[ 0 ].data.totals[ 0 ].values }
-					columns={ headers }
+					columns={ tableColumns }
 				/>
 			</TableOverflowContainer>
 		</Widget>
