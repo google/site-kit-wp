@@ -64,7 +64,7 @@ export default function AccountCreate( { finishSetup } ) {
 		setProducts( products.trim() );
 		setPublicationID( publicationID.trim() );
 		submitChanges();
-		finishSetup();
+		finishSetup?.();
 	}, [ products, publicationID ] );
 
 	return (
