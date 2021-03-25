@@ -75,10 +75,20 @@ final class Analytics_4 extends Module
 	 * @return bool True if module is connected, false otherwise.
 	 */
 	public function is_connected() {
-		$option = $this->get_settings()->get();
-		if ( ! $option['accountID'] || ! $option['propertyID'] || ! $option['webDataStreamID'] || ! $option['measurementID'] ) {
-			return;
+		$required_keys = array(
+			'accountID',
+			'propertyID',
+			'webDataStreamID',
+			'measurementID',
+		);
+
+		$options = $this->get_settings()->get();
+		foreach ( $required_keys as $required_key ) {
+			if ( empty( $options[ $required_key ] ) ) {
+				return false;
+			}
 		}
+
 		return parent::is_connected();
 	}
 

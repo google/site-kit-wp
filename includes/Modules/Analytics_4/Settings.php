@@ -24,7 +24,7 @@ use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interface {
 	use Setting_With_Owned_Keys_Trait;
 
-	const OPTION = 'googlesitekit_analytics_4_settings';
+	const OPTION = 'googlesitekit_analytics-4_settings';
 
 	/**
 	 * Registers the setting in WordPress.
