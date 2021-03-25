@@ -42,23 +42,32 @@ const { useDispatch, useSelect } = Data;
 const COUNTRY_LIST_URL = '#';
 
 export default function AccountCreate() {
+	// Get products from either the temporary form state or the saved settings.
+	const formProducts = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'products' ) );
+	const settingsProducts = useSelect( ( select ) => select( STORE_NAME ).getProducts() );
+	const products = formProducts ?? settingsProducts;
+
 	// Get publication ID from either the temporary form state or the saved settings.
 	const formPublicationID = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'publicationID' ) );
 	const settingsPublicationID = useSelect( ( select ) => select( STORE_NAME ).getPublicationID() );
 	const publicationID = formPublicationID ?? settingsPublicationID;
 
-	// Update input field.
+	// Update input fields.
 	const { setValues } = useDispatch( CORE_FORMS );
-	const onChange = useCallback( ( { currentTarget } ) => {
-		setValues( FORM_SETUP, { publicationID: currentTarget.value.trim() } );
-	}, [ 'publicationID' ] );
+	const onChangeProducts = useCallback( ( { currentTarget } ) => {
+		setValues( FORM_SETUP, { products: currentTarget.value } );
+	}, [] );
+	const onChangePublicationID = useCallback( ( { currentTarget } ) => {
+		setValues( FORM_SETUP, { publicationID: currentTarget.value } );
+	}, [] );
 
 	// Save changes.
-	const { setPublicationID, submitChanges } = useDispatch( STORE_NAME );
+	const { setProducts, setPublicationID, submitChanges } = useDispatch( STORE_NAME );
 	const doneHandler = useCallback( () => {
-		setPublicationID( publicationID );
+		setProducts( products.trim() );
+		setPublicationID( publicationID.trim() );
 		submitChanges();
-	}, [ publicationID ] );
+	}, [ products, publicationID ] );
 
 	return (
 		<div>
@@ -103,6 +112,7 @@ export default function AccountCreate() {
 					{ __( 'Create Publisher Center account', 'google-site-kit' ) }
 				</Link>
 			</p>
+
 			<TextField
 				className={ classnames( { 'mdc-text-field--error': ! publicationID } ) }
 				label={ 'Publication ID' }
@@ -112,7 +122,24 @@ export default function AccountCreate() {
 					id={ 'publicationID' }
 					name={ 'publicationID' }
 					value={ publicationID }
-					onChange={ onChange }
+					onChange={ onChangePublicationID }
+				/>
+			</TextField>
+
+			<br />
+			<br />
+
+			<TextField
+				className={ classnames( { 'mdc-text-field--error': ! products } ) }
+				label={ 'Products' }
+				textarea
+				outlined
+			>
+				<Input
+					id={ 'products' }
+					name={ 'products' }
+					value={ products }
+					onChange={ onChangeProducts }
 				/>
 			</TextField>
 
