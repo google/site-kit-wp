@@ -32,7 +32,9 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const products = useSelect( ( select ) => select( STORE_NAME ).getProducts() );
+	const products = useSelect( ( select ) => select( STORE_NAME ).getProducts() )
+		?.split( '\n' )
+		.map( ( product ) => product.trim() );
 	const publicationID = useSelect( ( select ) => select( STORE_NAME ).getPublicationID() );
 
 	return (
@@ -56,7 +58,7 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Product(s)', 'google-site-kit' ) }
 					</h5>
-					{ products?.split( '\n' ).map( ( product ) => product.trim() ).map( ( product ) => (
+					{ products?.map( ( product ) => (
 						<p className="googlesitekit-settings-module__meta-item-data" key={ product }>
 							<DisplaySetting value={ product } />
 						</p>
