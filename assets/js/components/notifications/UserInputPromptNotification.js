@@ -1,5 +1,5 @@
 /**
- * UserInputSuccessNotification component.
+ * UserInputPromptNotification component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,34 +19,34 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Notification from '../legacy-notifications/notification';
-import UserInputSuccessImage from '../../../svg/congrats.svg';
 import { trackEvent } from '../../util';
+import UserInputSettings from './UserInputSettings';
 
-export default function UserInputSuccessNotification() {
+const UserInputPromptNotification = () => {
 	useEffect( () => {
-		trackEvent( 'user_input', 'success_notification_view' );
+		trackEvent( 'user_input', 'prompt_notification_view' );
 	}, [] );
 
+	const handleOnCTAClick = () => {
+		trackEvent( 'user_input', 'prompt_notification_start' );
+	};
+
 	const handleOnDismiss = () => {
-		trackEvent( 'user_input', 'success_notification_dismiss' );
+		trackEvent( 'user_input', 'prompt_notification_dismiss' );
 	};
 
 	return (
-		<Notification
-			id="user-input-success"
-			title={ __( 'Congrats! You set your site goals.', 'google-site-kit' ) }
-			description={ __( 'Now Site Kit will begin suggesting metrics to add to your dashboard that are relevant specifically to you, based on the goals you shared.', 'google-site-kit' ) }
-			SmallImageSVG={ UserInputSuccessImage }
-			dismiss={ __( 'OK, got it!', 'google-site-kit' ) }
-			format="small"
+		<UserInputSettings
+			isDismissable={ true }
+			onCTAClick={ handleOnCTAClick }
 			onDismiss={ handleOnDismiss }
 		/>
 	);
-}
+};
+
+export default UserInputPromptNotification;

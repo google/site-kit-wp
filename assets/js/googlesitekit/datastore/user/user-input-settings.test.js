@@ -66,6 +66,7 @@ describe( 'core/user user-input-settings', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
+		registry.dispatch( STORE_NAME ).receiveUserInputState( 'completed' );
 	} );
 
 	afterAll( () => {
@@ -79,15 +80,6 @@ describe( 'core/user user-input-settings', () => {
 	describe( 'actions', () => {
 		beforeEach( () => {
 			registry.dispatch( STORE_NAME ).receiveGetUserInputSettings( coreUserInputSettingsExpectedResponse );
-		} );
-
-		describe( 'setUserInputSettings', () => {
-			it( 'should correctly set new settings', () => {
-				const newValues = { postFrequency: [ 'weekly' ] };
-
-				registry.dispatch( STORE_NAME ).setUserInputSettings( newValues );
-				expect( store.getState() ).toMatchObject( { inputSettings: newValues } );
-			} );
 		} );
 
 		describe( 'setUserInputSetting', () => {
