@@ -36,8 +36,8 @@ import TableOverflowContainer from '../../../../../components/TableOverflowConta
 import ReportTable from '../../../../../components/ReportTable';
 // import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
 // import { numFmt } from '../../../../util';
-import ModuleHeader from '../../../../../components/module/ModuleHeader';
 import { getCurrentDateRangeDayCount } from '../../../../../util/date-range';
+import WidgetHeader from '../../common/WidgetHeader';
 // import Link from '../../../../components/Link';
 // import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
@@ -144,17 +144,17 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		},
 	];
 
+	const title = sprintf(
+		/* translators: %s: number of days */
+		_n( 'Top acquisition channels over the last %s day', 'Top acquisition channels over the last %s days', currentDayCount, 'google-site-kit', ),
+		currentDayCount,
+	);
+
 	return (
 		<Widget
 			noPadding
 			Header={ () => (
-				<ModuleHeader
-					title={
-						'foobar123'
-					}
-					ctaLink={ url }
-					ctaLabel="See full stats in Analytics"
-				/>
+				<WidgetHeader title={ title } />
 			) }
 			Footer={ () => (
 				<SourceLink
