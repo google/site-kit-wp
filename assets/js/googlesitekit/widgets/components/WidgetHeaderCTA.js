@@ -38,12 +38,13 @@ const WidgetHeaderCTA = ( { href, label, external } ) => (
 );
 
 WidgetHeaderCTA.propTypes = {
-	href: PropTypes.string.isRequired,
+	href: PropTypes.string,
 	label: PropTypes.string.isRequired,
 	external: PropTypes.bool,
 };
 
 WidgetHeaderCTA.defaultProps = {
+	href: '#',
 	external: true,
 };
 

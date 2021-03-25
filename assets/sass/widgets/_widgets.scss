@@ -50,12 +50,6 @@
 	&__body,
 	&__footer {
 
-		& .googlesitekit-table,
-		& > .mdc-layout-grid {
-			margin: 0;
-			padding: 0;
-		}
-
 		@each $size in map-keys($mdc-layout-grid-columns) {
 
 			@include mdc-layout-grid-media-query_($size) {
