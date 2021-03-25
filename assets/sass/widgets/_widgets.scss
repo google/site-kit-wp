@@ -32,6 +32,11 @@
 	&__header {
 		border-bottom: 1px solid $c-border-light;
 
+		@media (min-width: $bp-tablet) {
+			display: flex;
+			justify-content: space-between;
+		}
+
 		&-title {
 			margin: 0;
 		}
@@ -85,5 +90,22 @@
 		border-top: 0;
 		display: flex;
 		justify-content: flex-end;
+	}
+
+	.googlesitekit-widget__header--cta {
+		margin: $grid-gap-phone 0 0;
+
+		@media (min-width: $bp-tablet) {
+			margin: 0;
+		}
+
+		.googlesitekit-cta-link {
+			font-size: 15px;
+			font-weight: $fw-primary-normal;
+
+			@media (min-width: $bp-tablet) {
+				font-size: 16px;
+			}
+		}
 	}
 }
