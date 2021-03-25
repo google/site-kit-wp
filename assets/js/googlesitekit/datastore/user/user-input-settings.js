@@ -72,7 +72,7 @@ const baseActions = {
 	/**
 	 * Gets cached user input settings and save them to the data store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.29.0
 	 * @private
 	 *
 	 * @return {Object} Cached user input answer values.
@@ -96,7 +96,7 @@ const baseActions = {
 	 * Sets user input setting.
 	 *
 	 * @since 1.19.0 Function introduced.
-	 * @since n.e.x.t Action is now an async action that caches answers.
+	 * @since 1.29.0 Action is now an async action that caches answers.
 	 *
 	 * @param {string}         settingID Setting key.
 	 * @param {Array.<string>} values    User input settings.

@@ -1,5 +1,5 @@
 /**
- * PageFooter component.
+ * Feature Tours for desktop viewports.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,23 +17,25 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useWindowWidth } from '@react-hook/window-size/throttled';
+
+/**
  * Internal dependencies
  */
-import HelpLink from './HelpLink';
-import { useFeature } from '../hooks/useFeature';
+import FeatureTours from './FeatureTours';
 
-export default function PageFooter() {
-	// The `helpVisibility` feature shows help info in the header of Site Kit.
-	// If it isn't enabled, show help links in the footer instead.
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
-
-	if ( helpVisibilityEnabled ) {
+// TODO: Remove this once tour conflicts in smaller viewports are resolved.
+// @see https://github.com/google/site-kit-wp/issues/3003
+export function FeatureToursDesktop( props ) {
+	const windowWidth = useWindowWidth();
+	if ( windowWidth < 783 ) {
 		return null;
 	}
-
-	return (
-		<div className="googlesitekit-page-footer">
-			<HelpLink />
-		</div>
-	);
+	return <FeatureTours { ...props } />;
 }
+
+FeatureToursDesktop.propTypes = {
+	...FeatureTours.propTypes,
+};

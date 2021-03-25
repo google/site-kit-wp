@@ -31,8 +31,9 @@ const { useSelect } = Data;
 
 export default function FeatureTours( { viewContext } ) {
 	const nextTour = useSelect( ( select ) => select( CORE_USER ).getFeatureToursForView( viewContext )?.[ 0 ] );
+	const toursAreOnCooldown = useSelect( ( select ) => select( CORE_USER ).areFeatureToursOnCooldown() );
 
-	if ( ! nextTour ) {
+	if ( ! nextTour || toursAreOnCooldown ) {
 		return null;
 	}
 
