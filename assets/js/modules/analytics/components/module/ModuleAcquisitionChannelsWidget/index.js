@@ -38,6 +38,8 @@ import ReportTable from '../../../../../components/ReportTable';
 // import { numFmt } from '../../../../util';
 import { getCurrentDateRangeDayCount } from '../../../../../util/date-range';
 import WidgetHeader from '../../common/WidgetHeader';
+import PieChart from './PieChart';
+// import Layout from '../../../../../components/layout/Layout';
 // import Link from '../../../../components/Link';
 // import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
@@ -165,12 +167,31 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 				/>
 			) }
 		>
-			<TableOverflowContainer>
-				<ReportTable
-					rows={ data[ 0 ].data.totals[ 0 ].values }
-					columns={ tableColumns }
-				/>
-			</TableOverflowContainer>
+			<div className="mdc-layout-grid">
+				<div className="mdc-layout-grid__inner">
+					<div className="
+												mdc-layout-grid__cell
+												mdc-layout-grid__cell--span-4-desktop
+												mdc-layout-grid__cell--span-8-tablet
+												mdc-layout-grid__cell--span-4-phone
+											">
+						<PieChart />
+					</div>
+					<div className="
+												mdc-layout-grid__cell
+												mdc-layout-grid__cell--span-8-desktop
+												mdc-layout-grid__cell--span-8-tablet
+												mdc-layout-grid__cell--span-4-phone
+											">
+						<TableOverflowContainer>
+							<ReportTable
+								rows={ data[ 0 ].data.totals[ 0 ].values }
+								columns={ tableColumns }
+							/>
+						</TableOverflowContainer>
+					</div>
+				</div>
+			</div>
 		</Widget>
 	);
 	/*
