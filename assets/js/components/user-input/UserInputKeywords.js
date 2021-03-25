@@ -136,7 +136,7 @@ export default function UserInputKeywords( { slug, max } ) {
 						{ ( value.length > 0 || i + 1 < values.length ) && (
 							<Button
 								text
-								icon={ <CloseIcon width="14" height="14" /> }
+								icon={ <CloseIcon width="11" height="11" /> }
 								onClick={ onKeywordDelete.bind( null, i ) }
 							/>
 						) }
