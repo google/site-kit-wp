@@ -28,11 +28,13 @@ import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { UI_ALL_TRAFFIC_LOADED } from '../modules/analytics/datastore/constants';
+import helpVisibility from './help-visibility';
 
 const allTrafficWidget = {
 	slug: 'allTrafficWidget',
 	contexts: [ VIEW_CONTEXT_DASHBOARD ],
 	version: '1.25.0',
+	gaEventCategory: 'all_traffic_widget',
 	checkRequirements: async ( registry ) => {
 		// Here we need to wait for the underlying selector to be resolved before selecting `isModuleConnected`.
 		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
@@ -78,4 +80,5 @@ const allTrafficWidget = {
 // Ordered tours.
 export default [
 	allTrafficWidget,
+	helpVisibility,
 ];

@@ -43,6 +43,7 @@ import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../adsense/datastore/consta
 import { Cell, Grid, Row } from '../../../../material-components';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { generateDateRangeArgs } from '../../../adsense/util/report-date-range-args';
+import { useFeature } from '../../../../hooks/useFeature';
 
 const { useSelect } = Data;
 
@@ -50,6 +51,8 @@ const { useSelect } = Data;
 const AdSenseDashboardZeroData = withFilters( 'googlesitekit.AdSenseDashboardZeroData' )( () => null );
 
 export default function AdSenseDashboardWidget() {
+	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
+
 	const [ receivingData, setReceivingData ] = useState( true );
 	const [ error, setError ] = useState( false );
 	const [ errorObj, setErrorObj ] = useState();
@@ -192,9 +195,11 @@ export default function AdSenseDashboardWidget() {
 							<DashboardAdSenseTopPages />
 						</Cell>
 
-						<Cell alignRight size={ 12 }>
-							<HelpLink />
-						</Cell>
+						{ ! helpVisibilityEnabled && (
+							<Cell alignRight size={ 12 }>
+								<HelpLink />
+							</Cell>
+						) }
 					</Row>
 				</Grid>
 			</div>

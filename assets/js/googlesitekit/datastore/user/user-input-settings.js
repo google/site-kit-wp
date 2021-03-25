@@ -27,11 +27,14 @@ import isPlainObject from 'lodash/isPlainObject';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { deleteItem, getItem, setItem } from '../../../googlesitekit/api/cache';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
-const { commonActions, createRegistrySelector } = Data;
+const { commonActions, createRegistryControl, createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
+
+const CACHE_KEY_NAME = 'userInputSettings';
 
 function fetchStoreReducerCallback( state, inputSettings ) {
 	return { ...state, inputSettings };
@@ -39,7 +42,7 @@ function fetchStoreReducerCallback( state, inputSettings ) {
 
 const fetchGetUserInputSettingsStore = createFetchStore( {
 	baseName: 'getUserInputSettings',
-	controlCallback: () => API.get( 'core', 'user', 'user-input-settings', undefined, { useCache: false } ),
+	controlCallback: async () => API.get( 'core', 'user', 'user-input-settings', undefined, { useCache: false } ),
 	reducerCallback: fetchStoreReducerCallback,
 } );
 
@@ -54,7 +57,9 @@ const fetchSaveUserInputSettingsStore = createFetchStore( {
 } );
 
 // Actions
-const SET_USER_INPUT_SETTINGS = 'SET_USER_INPUT_SETTINGS';
+const DELETE_CACHED_USER_INPUT_SETTINGS = 'DELETE_CACHED_USER_INPUT_SETTINGS';
+const GET_CACHED_USER_INPUT_SETTINGS = 'GET_CACHED_USER_INPUT_SETTINGS';
+const SET_CACHED_USER_INPUT_SETTING = 'SET_CACHED_USER_INPUT_SETTING';
 const SET_USER_INPUT_SETTING = 'SET_USER_INPUT_SETTING';
 const SET_USER_INPUT_SETTINGS_SAVING_FLAG = 'SET_USER_INPUT_SETTINGS_SAVING_FLAG';
 
@@ -65,35 +70,58 @@ const baseInitialState = {
 
 const baseActions = {
 	/**
-	 * Sets user input settings.
+	 * Gets cached user input settings and save them to the data store.
 	 *
-	 * @since 1.19.0
+	 * @since 1.29.0
+	 * @private
 	 *
-	 * @param {Object} values User input settings.
-	 * @return {Object} Redux-style action.
+	 * @return {Object} Cached user input answer values.
 	 */
-	setUserInputSettings( values ) {
-		return {
-			type: SET_USER_INPUT_SETTINGS,
-			payload: { values },
+	*setUserInputSettingsFromCache() {
+		const cachedValues = yield {
+			type: GET_CACHED_USER_INPUT_SETTINGS,
+			payload: {},
 		};
+
+		if ( cachedValues.cacheHit ) {
+			for ( const key of Object.keys( cachedValues.value ) ) {
+				yield baseActions.setUserInputSetting( key, cachedValues.value[ key ].values );
+			}
+		}
+
+		return cachedValues.cacheHit ? cachedValues.value : {};
 	},
 
 	/**
 	 * Sets user input setting.
 	 *
-	 * @since 1.19.0
+	 * @since 1.19.0 Function introduced.
+	 * @since 1.29.0 Action is now an async action that caches answers.
 	 *
 	 * @param {string}         settingID Setting key.
 	 * @param {Array.<string>} values    User input settings.
 	 * @return {Object} Redux-style action.
 	 */
-	setUserInputSetting( settingID, values ) {
+	*setUserInputSetting( settingID, values ) {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const trimmedValues = values.map( ( value ) => value.trim() );
+		if ( registry.select( STORE_NAME ).getUserInputState() !== 'completed' ) {
+			// Save this setting in the cache.
+			yield {
+				type: SET_CACHED_USER_INPUT_SETTING,
+				payload: {
+					settingID,
+					values: trimmedValues,
+				},
+			};
+		}
+
 		return {
 			type: SET_USER_INPUT_SETTING,
 			payload: {
 				settingID,
-				values: values.map( ( value ) => value.trim() ),
+				values: trimmedValues,
 			},
 		};
 	},
@@ -130,6 +158,11 @@ const baseActions = {
 		}
 
 		yield {
+			type: DELETE_CACHED_USER_INPUT_SETTINGS,
+			payload: {},
+		};
+
+		yield {
 			type: SET_USER_INPUT_SETTINGS_SAVING_FLAG,
 			payload: { isSaving: false },
 		};
@@ -138,21 +171,31 @@ const baseActions = {
 	},
 };
 
+export const baseControls = {
+	[ DELETE_CACHED_USER_INPUT_SETTINGS ]: () => {
+		return deleteItem( CACHE_KEY_NAME );
+	},
+	[ GET_CACHED_USER_INPUT_SETTINGS ]: () => {
+		return getItem( CACHE_KEY_NAME );
+	},
+	[ SET_CACHED_USER_INPUT_SETTING ]: createRegistryControl( ( registry ) => async ( { payload: { settingID, values } } ) => {
+		const settings = registry.select( STORE_NAME ).getUserInputSettings() || {};
+
+		settings[ settingID ] = { values };
+
+		return setItem( CACHE_KEY_NAME, settings );
+	} ),
+};
+
 export const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_USER_INPUT_SETTINGS: {
-			return {
-				...state,
-				inputSettings: payload.values,
-			};
-		}
 		case SET_USER_INPUT_SETTING: {
 			return {
 				...state,
 				inputSettings: {
 					...state.inputSettings,
 					[ payload.settingID ]: {
-						...( state.inputSettings[ payload.settingID ] || {} ),
+						...( ( state.inputSettings || {} )[ payload.settingID ] || {} ),
 						values: payload.values,
 					},
 				},
@@ -173,8 +216,13 @@ export const baseReducer = ( state, { type, payload } ) => {
 const baseResolvers = {
 	*getUserInputSettings() {
 		const { select } = yield commonActions.getRegistry();
+
 		if ( ! select( STORE_NAME ).getUserInputSettings() ) {
 			yield fetchGetUserInputSettingsStore.actions.fetchGetUserInputSettings();
+		}
+
+		if ( select( STORE_NAME ).getUserInputState() !== 'completed' ) {
+			yield baseActions.setUserInputSettingsFromCache();
 		}
 	},
 };
@@ -252,6 +300,7 @@ const store = Data.combineStores(
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
+		controls: baseControls,
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,

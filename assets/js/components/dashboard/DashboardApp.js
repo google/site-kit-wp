@@ -32,14 +32,17 @@ import DashboardNotifications from './dashboard-notifications';
 import Header from '../Header';
 import DateRangeSelector from '../DateRangeSelector';
 import { Grid, Row, Cell } from '../../material-components/layout';
+import HelpMenu from '../help/HelpMenu';
 import { useFeature } from '../../hooks/useFeature';
 
 export default function DashboardApp() {
 	const dashboardWidgetsEnabled = useFeature( 'widgets.dashboard' );
+	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 
 	return (
 		<Fragment>
 			<Header>
+				{ helpVisibilityEnabled && <HelpMenu /> }
 				<DateRangeSelector />
 			</Header>
 
