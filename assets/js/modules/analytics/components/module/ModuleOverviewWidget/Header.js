@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { sprintf, _n, _x, __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -27,8 +28,8 @@ import { sprintf, _n, _x, __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS } from '../../../datastore/constants';
-import Link from '../../../../../components/Link';
-import { Cell, Grid, Row } from '../../../../../material-components';
+import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
+import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
 const { useSelect } = Data;
 
 export default function Header() {
@@ -48,20 +49,9 @@ export default function Header() {
 	);
 
 	return (
-		<Grid>
-			<Row>
-				<Cell lgSize={ 6 } mdSize={ 4 } smSize={ 4 } alignMiddle>
-					<h3 className="googlesitekit-subheading-1 googlesitekit-widget__header-title">
-						{ title }
-					</h3>
-				</Cell>
-
-				<Cell className="mdc-layout-grid__cell--align-right-tablet" lgSize={ 6 } mdSize={ 4 } smSize={ 4 } alignMiddle>
-					<Link href={ visitorsOverview } external inherit>
-						{ headerCTALabel }
-					</Link>
-				</Cell>
-			</Row>
-		</Grid>
+		<Fragment>
+			<WidgetHeaderTitle title={ title } />
+			<WidgetHeaderCTA href={ visitorsOverview } label={ headerCTALabel } external />
+		</Fragment>
 	);
 }

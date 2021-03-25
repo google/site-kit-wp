@@ -1,5 +1,5 @@
 /**
- * PageFooter component.
+ * WidgetHeaderCTA component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,23 +17,34 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
-import HelpLink from './HelpLink';
-import { useFeature } from '../hooks/useFeature';
+import Link from '../../../components/Link';
 
-export default function PageFooter() {
-	// The `helpVisibility` feature shows help info in the header of Site Kit.
-	// If it isn't enabled, show help links in the footer instead.
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
+const WidgetHeaderCTA = ( { href, label, external } ) => (
+	<div className="googlesitekit-widget__header--cta">
+		<Link
+			href={ href }
+			external={ external }
+		>
+			{ label }
+		</Link>
+	</div>
+);
 
-	if ( helpVisibilityEnabled ) {
-		return null;
-	}
+WidgetHeaderCTA.propTypes = {
+	href: PropTypes.string.isRequired,
+	label: PropTypes.string.isRequired,
+	external: PropTypes.bool,
+};
 
-	return (
-		<div className="googlesitekit-page-footer">
-			<HelpLink />
-		</div>
-	);
-}
+WidgetHeaderCTA.defaultProps = {
+	external: true,
+};
+
+export default WidgetHeaderCTA;

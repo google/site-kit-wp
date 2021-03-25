@@ -1,5 +1,5 @@
 /**
- * PageFooter component.
+ * `withFeatureFlag` higher-order component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,21 +19,22 @@
 /**
  * Internal dependencies
  */
-import HelpLink from './HelpLink';
-import { useFeature } from '../hooks/useFeature';
+import { useFeature } from '../../hooks/useFeature';
 
-export default function PageFooter() {
-	// The `helpVisibility` feature shows help info in the header of Site Kit.
-	// If it isn't enabled, show help links in the footer instead.
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
+const withFeatureFlag = ( featureFlagName ) => ( WrappedComponent ) => {
+	return ( props ) => {
+		const featureFlagEnabled = useFeature( featureFlagName );
+		const newProps = {
+			...props,
+			[ `${ featureFlagName }Enabled` ]: featureFlagEnabled,
+		};
 
-	if ( helpVisibilityEnabled ) {
-		return null;
-	}
+		WrappedComponent.displayName = `withFeatureFlag(${ WrappedComponent.displayName || WrappedComponent.name || 'Anonymous' })`;
 
-	return (
-		<div className="googlesitekit-page-footer">
-			<HelpLink />
-		</div>
-	);
-}
+		return (
+			<WrappedComponent { ...newProps } />
+		);
+	};
+};
+
+export default withFeatureFlag;

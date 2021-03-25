@@ -1,5 +1,5 @@
 /**
- * PageFooter component.
+ * WidgetHeaderTitle component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,23 +17,18 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
-import HelpLink from './HelpLink';
-import { useFeature } from '../hooks/useFeature';
+import PropTypes from 'prop-types';
 
-export default function PageFooter() {
-	// The `helpVisibility` feature shows help info in the header of Site Kit.
-	// If it isn't enabled, show help links in the footer instead.
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
+const WidgetHeaderTitle = ( { title } ) => (
+	<h3 className="googlesitekit-subheading-1 googlesitekit-widget__header-title">
+		{ title }
+	</h3>
+);
 
-	if ( helpVisibilityEnabled ) {
-		return null;
-	}
+WidgetHeaderTitle.propTypes = {
+	title: PropTypes.string.isRequired,
+};
 
-	return (
-		<div className="googlesitekit-page-footer">
-			<HelpLink />
-		</div>
-	);
-}
+export default WidgetHeaderTitle;
