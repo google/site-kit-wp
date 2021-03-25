@@ -45,19 +45,13 @@ export default function AccountCreate() {
 	// Get publication ID from either the temporary form state or the saved settings.
 	const formPublicationID = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'publicationID' ) );
 	const settingsPublicationID = useSelect( ( select ) => select( STORE_NAME ).getPublicationID() );
-	const publicationID = formPublicationID || settingsPublicationID;
+	const publicationID = formPublicationID ?? settingsPublicationID;
 
 	// Update input field.
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback( ( { currentTarget } ) => {
-		setValues( FORM_SETUP, { publicationID: currentTarget.value } );
+		setValues( FORM_SETUP, { publicationID: currentTarget.value.trim() } );
 	}, [ 'publicationID' ] );
-
-	// Open console.
-	const nextHandler = useCallback( () => {
-		// Need to use window.open for this to allow for stubbing in E2E.
-		global.window.open( '#', '_blank' );
-	}, [ '#' ] );
 
 	// Save changes.
 	const { setPublicationID, submitChanges } = useDispatch( STORE_NAME );
@@ -93,12 +87,6 @@ export default function AccountCreate() {
 				</li>
 			</ul>
 
-			<div className="googlesitekit-setup-module__action">
-				<Button onClick={ nextHandler }>
-					{ __( 'Next', 'google-site-kit' ) }
-				</Button>
-			</div>
-
 			<h4>
 				{ __( '2) Set up Publisher Center account', 'google-site-kit' ) }
 			</h4>
@@ -127,6 +115,7 @@ export default function AccountCreate() {
 					onChange={ onChange }
 				/>
 			</TextField>
+
 			<div className="googlesitekit-setup-module__action">
 				<Button onClick={ doneHandler } disabled={ ! publicationID }>
 					{ __( 'Done', 'google-site-kit' ) }
