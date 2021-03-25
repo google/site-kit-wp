@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS } from '../../../datastore/constants';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Header from './Header';
 import Table from './Table';
@@ -34,7 +34,9 @@ import Footer from './Footer';
 const { useSelect } = Data;
 
 export default function ModulePopularPagesWidget( { Widget, WidgetReportError } ) {
-	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates() );
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
 
 	const args = {
 		startDate,
