@@ -26,7 +26,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { useCallback, useRef } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { ENTER } from '@wordpress/keycodes';
 
 /**
@@ -122,16 +122,16 @@ export default function UserInputKeywords( { slug, max } ) {
 						} ) }
 					>
 						<VisuallyHiden>
-							<label
-								htmlFor={ `${ slug }-keyword-${ i }` }
-							>
-								{ __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' ) }
+							<label htmlFor={ `${ slug }-keyword-${ i }` } >
+								{ sprintf(
+									/* translators: %s is the keyword number; 1, 2, or 3 */
+									__( 'Keyword %s', 'google-site-kit' ),
+									i + 1, // Keys are zero-indexed; this starts keyword at "1".
+								) }
 							</label>
 						</VisuallyHiden>
 						<TextField
-							label={ values.length === 1 && values[ 0 ] === ''
-								? __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' )
-								: '' }
+							label={ __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' ) }
 							noLabel
 						>
 							<Input
