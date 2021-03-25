@@ -28,7 +28,7 @@ import { SettingsView } from './components/settings';
 import DashboardImpressionsWidget from './components/dashboard/DashboardImpressionsWidget';
 import DashboardClicksWidget from './components/dashboard/DashboardClicksWidget';
 import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopularKeywordsWidget';
-import ModulePopularPagesWidget from './components/ModulePopularPagesWidget';
+import ModulePopularPagesWidget from './components/module/ModulePopularPagesWidget';
 import {
 	AREA_DASHBOARD_POPULARITY,
 	AREA_DASHBOARD_SEARCH_FUNNEL,

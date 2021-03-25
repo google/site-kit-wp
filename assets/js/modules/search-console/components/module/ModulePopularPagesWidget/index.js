@@ -24,24 +24,23 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, _x, sprintf, _n } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { numFmt } from '../../../util';
-import { MODULES_SEARCH_CONSOLE, STORE_NAME, DATE_RANGE_OFFSET } from '../datastore/constants';
-import PreviewTable from '../../../components/PreviewTable';
-import Link from '../../../components/Link';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import TableOverflowContainer from '../../../components/TableOverflowContainer';
-import ReportTable from '../../../components/ReportTable';
-import { isZeroReport } from '../util/is-zero-report';
-import { getCurrentDateRangeDayCount } from '../../../util/date-range';
-import { generateDateRangeArgs } from '../util/report-date-range-args';
-import ModuleHeader from './common/ModuleHeader';
+import { numFmt } from '../../../../../util';
+import { MODULES_SEARCH_CONSOLE, STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
+import PreviewTable from '../../../../../components/PreviewTable';
+import Link from '../../../../../components/Link';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
+import ReportTable from '../../../../../components/ReportTable';
+import { isZeroReport } from '../../../util/is-zero-report';
+import { generateDateRangeArgs } from '../../../util/report-date-range-args';
+import Header from './Header';
 
 const { useSelect } = Data;
 
@@ -50,14 +49,11 @@ function ModulePopularPagesWidget( { Widget, WidgetReportZero, WidgetReportError
 		data,
 		isLoading,
 		error,
-		baseServiceURL,
-		currentDayCount,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
 		const dateRangeDates = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
-		const dateRange = select( CORE_USER ).getDateRange();
 		const { startDate, endDate } = dateRangeDates;
 
 		const reportArgs = {
@@ -72,11 +68,6 @@ function ModulePopularPagesWidget( { Widget, WidgetReportZero, WidgetReportError
 			data: store.getReport( reportArgs ),
 			isLoading: ! store.hasFinishedResolution( 'getReport', [ reportArgs ] ),
 			error: store.getErrorForSelector( 'getReport', [ reportArgs ] ),
-			baseServiceURL: store.getServiceReportURL( {
-				...generateDateRangeArgs( dateRangeDates ),
-				page: url ? `!${ url }` : undefined,
-			} ),
-			currentDayCount: getCurrentDateRangeDayCount( dateRange ),
 		};
 	} );
 
@@ -95,21 +86,7 @@ function ModulePopularPagesWidget( { Widget, WidgetReportZero, WidgetReportError
 	return (
 		<Widget
 			noPadding
-			Header={ () => (
-				<ModuleHeader
-					title={ sprintf(
-						/* translators: %s: number of days */
-						_n( 'Top search queries over the last %s day', 'Top search queries over last %s days', currentDayCount, 'google-site-kit', ),
-						currentDayCount,
-					) }
-					ctaLink={ baseServiceURL }
-					ctaLabel={ sprintf(
-						/* translators: %s: module name. */
-						__( 'See full stats in %s', 'google-site-kit' ),
-						_x( 'Search Console', 'Service name', 'google-site-kit' )
-					) }
-				/>
-			) }
+			Header={ Header }
 		>
 			<TableOverflowContainer>
 				<ReportTable rows={ data } columns={ tableColumns } />
