@@ -75,7 +75,11 @@ export default function ModulePopularPagesWidget( { Widget, WidgetReportError } 
 	}
 
 	return (
-		<Widget Header={ Header } Footer={ Footer }>
+		<Widget
+			Header={ Header }
+			Footer={ Footer }
+			noPadding
+		>
 			{ ! loaded && (
 				<PreviewTable padding />
 			) }
