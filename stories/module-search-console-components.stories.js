@@ -23,7 +23,7 @@ import { generateReportBasedWidgetStories } from './utils/generate-widget-storie
 import DashboardClicksWidget from '../assets/js/modules/search-console/components/dashboard/DashboardClicksWidget';
 import DashboardImpressionsWidget from '../assets/js/modules/search-console/components/dashboard/DashboardImpressionsWidget';
 import DashboardPopularKeywordsWidget from '../assets/js/modules/search-console/components/dashboard/DashboardPopularKeywordsWidget';
-import ModulePopularPagesWidget from '../assets/js/modules/search-console/components/ModulePopularPagesWidget';
+import ModulePopularPagesWidget from '../assets/js/modules/search-console/components/module/ModulePopularPagesWidget';
 import { STORE_NAME } from '../assets/js/modules/search-console/datastore/constants';
 
 /**
