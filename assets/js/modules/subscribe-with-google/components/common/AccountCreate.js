@@ -32,14 +32,11 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import Link from '../../../../components/Link';
 import Button from '../../../../components/Button';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { FORM_SETUP, STORE_NAME } from '../../datastore/constants';
 import { TextField, Input } from '../../../../material-components';
 const { useDispatch, useSelect } = Data;
-
-const COUNTRY_LIST_URL = '#';
 
 export default function AccountCreate() {
 	// Get products from either the temporary form state or the saved settings.
@@ -72,46 +69,6 @@ export default function AccountCreate() {
 	return (
 		<div>
 			<StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } />
-
-			<h4>
-				{ __( '1) Check requirements', 'google-site-kit' ) }
-			</h4>
-			<p>
-				{ __( 'In order to use this service, make sure you meet these requirements:', 'google-site-kit' ) }
-			</p>
-			<ul>
-				<li>
-					{ __( '- Should not have an associated Android app', 'google-site-kit' ) }
-				</li>
-				<li>
-					{ __( '- Be located in a country with verified bank accounts', 'google-site-kit' ) }
-					&nbsp;
-					&nbsp;
-					<Link className="googlesitekit-help-link" href={ COUNTRY_LIST_URL } external>
-						{ __( 'See full country list', 'google-site-kit' ) }
-					</Link>
-				</li>
-				<li>
-					{ __( '- No existing subscription product', 'google-site-kit' ) }
-				</li>
-			</ul>
-
-			<h4>
-				{ __( '2) Set up Publisher Center account', 'google-site-kit' ) }
-			</h4>
-			<p>
-				{ __( 'You need to create a Google Publisher Center account to continue set up.', 'google-site-kit' ) }
-				&nbsp;
-				&nbsp;
-				<Link className="googlesitekit-help-link" href={ COUNTRY_LIST_URL } external>
-					{ __( 'Learn more', 'google-site-kit' ) }
-				</Link>
-			</p>
-			<p>
-				<Link href={ COUNTRY_LIST_URL } external>
-					{ __( 'Create Publisher Center account', 'google-site-kit' ) }
-				</Link>
-			</p>
 
 			<TextField
 				className={ classnames( { 'mdc-text-field--error': ! publicationID } ) }
