@@ -34,12 +34,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME, FORM_SETUP } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { isPermissionScopeError } from '../../../../util/errors';
-import {
-	AccountSelect,
-	AMPContainerSelect,
-	ContainerNames,
-	WebContainerSelect,
-} from '../common';
+import { ContainerNames } from '../common';
 import Button from '../../../../components/Button';
 import SetupErrorNotice from './SetupErrorNotice';
 import FormInstructions from '../common/FormInstructions';
@@ -104,13 +99,7 @@ export default function SetupForm( { finishSetup } ) {
 			<SetupErrorNotice />
 			<FormInstructions />
 
-			<div className="googlesitekit-setup-module__inputs">
-				<AccountSelect />
-
-				<WebContainerSelect />
-
-				<AMPContainerSelect />
-			</div>
+			<div className="googlesitekit-setup-module__inputs"></div>
 
 			<ContainerNames />
 
