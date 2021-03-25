@@ -83,6 +83,10 @@ final class Subscribe_With_Google extends Module
 	public function is_connected() {
 		$settings = $this->get_settings()->get();
 
+		if ( ! $settings['products'] ) {
+			return false;
+		}
+
 		if ( ! $settings['publicationID'] ) {
 			return false;
 		}
