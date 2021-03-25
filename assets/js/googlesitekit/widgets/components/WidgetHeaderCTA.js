@@ -44,7 +44,7 @@ WidgetHeaderCTA.propTypes = {
 };
 
 WidgetHeaderCTA.defaultProps = {
-	href: '#',
+	href: '',
 	external: true,
 };
 
