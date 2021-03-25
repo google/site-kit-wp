@@ -1,5 +1,5 @@
 /**
- * User Input Question Notice.
+ * Analytics module page components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,15 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-export default function UserInputQuestionNotice() {
-	return (
-		<p className="googlesitekit-user-input__question-instructions--notice">
-			{ __( 'You can always edit your answers after your submission in Settings.', 'google-site-kit' ) }
-		</p>
-	);
-}
+export { default as ModuleOverviewWidget } from './ModuleOverviewWidget';

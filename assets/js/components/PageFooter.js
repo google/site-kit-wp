@@ -27,9 +27,13 @@ export default function PageFooter() {
 	// If it isn't enabled, show help links in the footer instead.
 	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 
+	if ( helpVisibilityEnabled ) {
+		return null;
+	}
+
 	return (
 		<div className="googlesitekit-page-footer">
-			{ ! helpVisibilityEnabled && <HelpLink /> }
+			<HelpLink />
 		</div>
 	);
 }

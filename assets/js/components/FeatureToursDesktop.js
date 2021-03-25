@@ -1,5 +1,5 @@
 /**
- * User Input Question Notice.
+ * Feature Tours for desktop viewports.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,14 +17,25 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { useWindowWidth } from '@react-hook/window-size/throttled';
 
-export default function UserInputQuestionNotice() {
-	return (
-		<p className="googlesitekit-user-input__question-instructions--notice">
-			{ __( 'You can always edit your answers after your submission in Settings.', 'google-site-kit' ) }
-		</p>
-	);
+/**
+ * Internal dependencies
+ */
+import FeatureTours from './FeatureTours';
+
+// TODO: Remove this once tour conflicts in smaller viewports are resolved.
+// @see https://github.com/google/site-kit-wp/issues/3003
+export function FeatureToursDesktop( props ) {
+	const windowWidth = useWindowWidth();
+	if ( windowWidth < 783 ) {
+		return null;
+	}
+	return <FeatureTours { ...props } />;
 }
+
+FeatureToursDesktop.propTypes = {
+	...FeatureTours.propTypes,
+};

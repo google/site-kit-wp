@@ -1,5 +1,5 @@
 /**
- * User Input Question Notice.
+ * `withFeatureFlag` higher-order component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,14 +17,24 @@
  */
 
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { useFeature } from '../../hooks/useFeature';
 
-export default function UserInputQuestionNotice() {
-	return (
-		<p className="googlesitekit-user-input__question-instructions--notice">
-			{ __( 'You can always edit your answers after your submission in Settings.', 'google-site-kit' ) }
-		</p>
-	);
-}
+const withFeatureFlag = ( featureFlagName ) => ( WrappedComponent ) => {
+	return ( props ) => {
+		const featureFlagEnabled = useFeature( featureFlagName );
+		const newProps = {
+			...props,
+			[ `${ featureFlagName }Enabled` ]: featureFlagEnabled,
+		};
+
+		WrappedComponent.displayName = `withFeatureFlag(${ WrappedComponent.displayName || WrappedComponent.name || 'Anonymous' })`;
+
+		return (
+			<WrappedComponent { ...newProps } />
+		);
+	};
+};
+
+export default withFeatureFlag;

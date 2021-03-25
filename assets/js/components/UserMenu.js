@@ -149,6 +149,7 @@ function UserMenu() {
 					{ userEmail }
 				</Button>
 				<Menu
+					className="googlesitekit-width-auto"
 					ref={ menuRef }
 					menuOpen={ menuOpen }
 					menuItems={

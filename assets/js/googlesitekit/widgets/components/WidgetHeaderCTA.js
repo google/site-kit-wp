@@ -48,4 +48,3 @@ WidgetHeaderCTA.defaultProps = {
 };
 
 export default WidgetHeaderCTA;
-
