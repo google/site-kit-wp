@@ -112,11 +112,18 @@ export default function TourTooltips( { steps, tourID, gaEventCategory } ) {
 
 		if ( type === EVENTS.TOOLTIP && lifecycle === LIFECYCLE.TOOLTIP ) {
 			trackEvent( gaEventCategory, GA_ACTIONS.VIEW, stepNumber );
-		} else if ( status === STATUS.FINISHED && type === EVENTS.TOUR_END && size === stepNumber ) {
+		} else if ( action === ACTIONS.CLOSE && lifecycle === LIFECYCLE.COMPLETE ) {
+			trackEvent( gaEventCategory, GA_ACTIONS.DISMISS, stepNumber );
+		} else if (
+			action === ACTIONS.NEXT &&
+			status === STATUS.FINISHED &&
+			type === EVENTS.TOUR_END &&
 			// Here we need to additionally check the size === stepNumber because
 			// it is the only way to differentiate the status/event combination
 			// from an identical combination that happens immediately after completion
 			// on index `0` to avoid duplicate measurement.
+			size === stepNumber
+		) {
 			trackEvent( gaEventCategory, GA_ACTIONS.COMPLETE, stepNumber );
 		}
 
@@ -124,11 +131,10 @@ export default function TourTooltips( { steps, tourID, gaEventCategory } ) {
 			return;
 		}
 
-		if ( action === ACTIONS.CLOSE ) {
-			trackEvent( gaEventCategory, GA_ACTIONS.DISMISS, stepNumber );
-		} else if ( action === ACTIONS.PREV ) {
+		if ( action === ACTIONS.PREV ) {
 			trackEvent( gaEventCategory, GA_ACTIONS.PREV, stepNumber );
-		} else if ( action === ACTIONS.NEXT ) {
+		}
+		if ( action === ACTIONS.NEXT ) {
 			trackEvent( gaEventCategory, GA_ACTIONS.NEXT, stepNumber );
 		}
 	};

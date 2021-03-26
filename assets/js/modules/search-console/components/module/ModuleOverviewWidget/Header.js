@@ -35,14 +35,14 @@ import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
 const Header = () => {
-	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const searchConsoleDeepArgs = {
 		resource_id: propertyID,
-		...generateDateRangeArgs( { startDate, endDate } ),
+		...generateDateRangeArgs( dateRangeDates ),
 	};
 	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
 		path: '/performance/search-analytics',

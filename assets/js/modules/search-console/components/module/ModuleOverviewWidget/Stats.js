@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
@@ -163,6 +168,12 @@ const Stats = ( { loading, data, selectedStats } ) => {
 			</Row>
 		</Grid>
 	);
+};
+
+Stats.propTypes = {
+	loading: PropTypes.bool.isRequired,
+	data: PropTypes.arrayOf( PropTypes.object ),
+	selectedStats: PropTypes.number.isRequired,
 };
 
 export default Stats;

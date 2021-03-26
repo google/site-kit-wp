@@ -31,7 +31,7 @@ import classnames from 'classnames';
  */
 export const getChartDifferenceArrow = ( difference ) => {
 	if ( Number.isNaN( Number( difference ) ) ) {
-		return false;
+		return '';
 	}
 
 	return (
