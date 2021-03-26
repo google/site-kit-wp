@@ -25,7 +25,7 @@ import DashboardPopularPagesWidget from '../assets/js/modules/analytics/componen
 import DashboardBounceRateWidget from '../assets/js/modules/analytics/components/dashboard/DashboardBounceRateWidget';
 import DashboardGoalsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardUniqueVisitorsWidget';
-import ModuleOverviewWidget from '../assets/js/modules/analytics/components/module/ModuleOverviewWidget';
+import { ModulePopularPagesWidget, ModuleOverviewWidget } from '../assets/js/modules/analytics/components/module';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
 import { accountsPropertiesProfiles, goals } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
@@ -419,5 +419,41 @@ generateAnalyticsWidgetStories( {
 			dispatch( STORE_NAME ).startResolution( 'getReport', [ options[ 0 ] ] );
 		},
 	},
+	wrapWidget: false,
+} );
+
+generateAnalyticsWidgetStories( {
+	group: 'Analytics Module/Components/Module Page/Popular Pages Widget',
+	referenceDate: '2021-01-06',
+	...generateData( {
+		startDate: '2020-12-09',
+		endDate: '2021-01-05',
+		dimensions: [
+			'ga:pageTitle',
+			'ga:pagePath',
+		],
+		metrics: [
+			{
+				expression: 'ga:pageviews',
+				alias: 'Pageviews',
+			},
+			{
+				expression: 'ga:uniquePageviews',
+				alias: 'Unique Pageviews',
+			},
+			{
+				expression: 'ga:bounceRate',
+				alias: 'Bounce rate',
+			},
+		],
+		orderby: [
+			{
+				fieldName: 'ga:pageviews',
+				sortOrder: 'DESCENDING',
+			},
+		],
+		limit: 10,
+	} ),
+	Component: ModulePopularPagesWidget,
 	wrapWidget: false,
 } );

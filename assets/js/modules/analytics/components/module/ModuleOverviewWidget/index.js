@@ -83,15 +83,20 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError, Widge
 		return <ProgressBar />;
 	}
 
+	const reportsAreValid = ! isError && ! isZero;
+
 	return (
-		<Widget Header={ Header } noPadding>
+		<Widget
+			Header={ Header }
+			noPadding={ reportsAreValid }
+		>
 			{ isError && (
 				<WidgetReportError moduleSlug="analytics" error={ overviewError || statsError } />
 			) }
 			{ ! isError && isZero && (
 				<WidgetReportZero moduleSlug="analytics" />
 			) }
-			{ ! isError && ! isZero && (
+			{ reportsAreValid && (
 				<Fragment>
 					<Overview
 						report={ overviewReport }

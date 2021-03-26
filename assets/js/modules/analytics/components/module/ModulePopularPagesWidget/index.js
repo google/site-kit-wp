@@ -27,13 +27,13 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
-import PreviewTable from '../../../../../components/PreviewTable';
+import { isZeroReport } from '../../../util';
 import Header from './Header';
 import Table from './Table';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-export default function ModulePopularPagesWidget( { Widget, WidgetReportError } ) {
+export default function ModulePopularPagesWidget( { Widget, WidgetReportError, WidgetReportZero } ) {
 	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
@@ -72,20 +72,27 @@ export default function ModulePopularPagesWidget( { Widget, WidgetReportError } 
 	const loaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ) );
 	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ) );
 
-	if ( error ) {
-		return <WidgetReportError error={ error } />;
+	if ( ! loaded ) {
+		// Return NULL while loading to replicate the behavior of the legacy components.
+		return null;
 	}
+
+	const isZero = isZeroReport( report );
+	const reportIsValid = ! error && ! isZero;
 
 	return (
 		<Widget
 			Header={ Header }
-			Footer={ Footer }
-			noPadding
+			Footer={ reportIsValid ? Footer : undefined }
+			noPadding={ reportIsValid }
 		>
-			{ ! loaded && (
-				<PreviewTable padding />
+			{ error && (
+				<WidgetReportError moduleSlug="analytics" error={ error } />
 			) }
-			{ loaded && (
+			{ ! error && isZero && (
+				<WidgetReportZero moduleSlug="analytics" />
+			) }
+			{ reportIsValid && (
 				<Table report={ report } />
 			) }
 		</Widget>
@@ -95,4 +102,5 @@ export default function ModulePopularPagesWidget( { Widget, WidgetReportError } 
 ModulePopularPagesWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
+	WidgetReportZero: PropTypes.elementType.isRequired,
 };
