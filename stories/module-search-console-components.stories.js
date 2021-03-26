@@ -23,7 +23,7 @@ import { generateReportBasedWidgetStories } from './utils/generate-widget-storie
 import DashboardClicksWidget from '../assets/js/modules/search-console/components/dashboard/DashboardClicksWidget';
 import DashboardImpressionsWidget from '../assets/js/modules/search-console/components/dashboard/DashboardImpressionsWidget';
 import DashboardPopularKeywordsWidget from '../assets/js/modules/search-console/components/dashboard/DashboardPopularKeywordsWidget';
-import ModulePopularPagesWidget from '../assets/js/modules/search-console/components/module/ModulePopularPagesWidget';
+import ModulePopularKeywordsWidget from '../assets/js/modules/search-console/components/module/ModulePopularKeywordsWidget';
 import { STORE_NAME } from '../assets/js/modules/search-console/datastore/constants';
 
 /**
@@ -2442,7 +2442,7 @@ generateReportBasedWidgetStories( {
 		limit: 10,
 		url: 'https://example.com/example-page/',
 	},
-	Component: ModulePopularPagesWidget,
+	Component: ModulePopularKeywordsWidget,
 	wrapWidget: false,
 	setup,
 } );
