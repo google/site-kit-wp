@@ -240,19 +240,34 @@ generateAnalyticsWidgetStories( {
 generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Dashboard/Goals Widget',
 	referenceDate: '2020-12-30',
-	...generateData( {
-		compareStartDate: '2020-11-04',
-		compareEndDate: '2020-12-01',
-		startDate: '2020-12-02',
-		endDate: '2020-12-29',
-		dimensions: 'ga:date',
-		metrics: [
-			{
-				expression: 'ga:goalCompletionsAll',
-				alias: 'Goal Completions',
-			},
-		],
-	} ),
+	...generateData( [
+		{
+			compareStartDate: '2020-11-04',
+			compareEndDate: '2020-12-01',
+			startDate: '2020-12-02',
+			endDate: '2020-12-29',
+			dimensions: 'ga:date',
+			metrics: [
+				{
+					expression: 'ga:goalCompletionsAll',
+					alias: 'Goal Completions',
+				},
+			],
+		},
+		{
+			compareStartDate: '2020-11-04',
+			compareEndDate: '2020-12-01',
+			startDate: '2020-12-02',
+			endDate: '2020-12-29',
+			url: null,
+			metrics: [
+				{
+					expression: 'ga:users',
+					alias: 'Total Users',
+				},
+			],
+		},
+	] ),
 	Component: DashboardGoalsWidget,
 	additionalVariants: {
 		'No Goals':
