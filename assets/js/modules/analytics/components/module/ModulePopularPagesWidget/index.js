@@ -76,6 +76,10 @@ export default function ModulePopularPagesWidget( { Widget, WidgetReportError } 
 		return <WidgetReportError error={ error } />;
 	}
 
+	if ( ! report ) {
+		return null;
+	}
+
 	return (
 		<Widget
 			Header={ Header }

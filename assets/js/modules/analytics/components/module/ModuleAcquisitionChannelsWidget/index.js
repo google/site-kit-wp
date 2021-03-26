@@ -76,7 +76,8 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	global.console.log( 'here-1' );
+	global.console.log( 'here-2' );
+	global.console.log( report );
 	if ( false && isZeroReport( report ) ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
@@ -149,6 +150,8 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		_n( 'Top acquisition channels over the last %s day', 'Top acquisition channels over the last %s days', currentDayCount, 'google-site-kit', ),
 		currentDayCount,
 	);
+
+	debugger; // eslint-disable-line no-debugger
 
 	return (
 		<Widget

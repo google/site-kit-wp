@@ -86,6 +86,10 @@ export default function Table( { report } ) {
 		},
 	];
 
+	if ( ! Array.isArray( report ) || ! report.length || ! report[ 0 ].data || ! report[ 0 ].data.rows ) {
+		return null;
+	}
+
 	return (
 		<TableOverflowContainer>
 			<ReportTable

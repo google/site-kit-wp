@@ -56,6 +56,11 @@ export default function PieChart() {
 	}
 
 	const processedData = extractAnalyticsDataForPieChart( report, { keyColumnIndex: 1 } );
+
+	global.console.log( 'foo5' );
+	global.console.log( report );
+	global.console.log( processedData );
+
 	const options = {
 		chartArea: {
 			width: '100%',
