@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useState, useCallback } from '@wordpress/element';
@@ -27,6 +32,7 @@ import { useState, useCallback } from '@wordpress/element';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../../util';
+import ProgressBar from '../../../../../components/ProgressBar';
 import Header from './Header';
 import Overview from './Overview';
 import Stats from './Stats';
@@ -51,6 +57,10 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 		setSelectedStats( stat );
 	}, [] );
 
+	if ( loading ) {
+		return <ProgressBar />;
+	}
+
 	if ( error ) {
 		return <WidgetReportError moduleSlug="search-console" error={ error } />;
 	}
@@ -66,18 +76,21 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 		>
 			<Overview
 				data={ data }
-				loading={ loading }
 				handleStatsSelection={ handleStatsSelection }
 				selectedStats={ selectedStats }
 			/>
 
 			<Stats
 				data={ data }
-				loading={ loading }
 				selectedStats={ selectedStats }
 			/>
 		</Widget>
 	);
+};
+
+ModuleOverviewWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+	WidgetReportError: PropTypes.elementType.isRequired,
 };
 
 export default ModuleOverviewWidget;

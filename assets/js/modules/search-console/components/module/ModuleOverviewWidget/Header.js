@@ -27,7 +27,6 @@ import { __, sprintf, _n, _x } from '@wordpress/i18n';
  */
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { getCurrentDateRangeDayCount } from '../../../../../util';
 import { generateDateRangeArgs } from '../../../util';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
@@ -35,11 +34,11 @@ import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
 const Header = () => {
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const searchConsoleDeepArgs = {
 		resource_id: propertyID,
 		...generateDateRangeArgs( dateRangeDates ),
@@ -48,8 +47,7 @@ const Header = () => {
 		path: '/performance/search-analytics',
 		query: searchConsoleDeepArgs,
 	} ) );
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
+	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
 	return (
 		<Fragment>

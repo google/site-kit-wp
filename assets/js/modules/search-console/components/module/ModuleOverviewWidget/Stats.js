@@ -33,19 +33,12 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { decodeHTMLEntity } from '../../../../../util';
 import { getSiteStatsDataForGoogleChart } from '../../../util';
 import { Grid, Row, Cell } from '../../../../../material-components';
-import PreviewBlock from '../../../../../components/PreviewBlock';
 import GoogleChart from '../../../../../components/GoogleChart';
 import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
-const Stats = ( { loading, data, selectedStats } ) => {
+const Stats = ( { data, selectedStats } ) => {
 	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
-
-	if ( loading ) {
-		return (
-			<PreviewBlock width="100%" height="270px" />
-		);
-	}
 
 	const metrics = [
 		{
@@ -171,7 +164,6 @@ const Stats = ( { loading, data, selectedStats } ) => {
 };
 
 Stats.propTypes = {
-	loading: PropTypes.bool.isRequired,
 	data: PropTypes.arrayOf( PropTypes.object ),
 	selectedStats: PropTypes.number.isRequired,
 };

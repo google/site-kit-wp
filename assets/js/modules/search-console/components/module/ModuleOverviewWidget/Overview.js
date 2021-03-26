@@ -33,7 +33,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { calculateChange } from '../../../../../util';
 import { Grid, Row, Cell } from '../../../../../material-components';
-import ProgressBar from '../../../../../components/ProgressBar';
 import DataBlock from '../../../../../components/DataBlock';
 
 const reduceSearchConsoleData = ( rows ) => {
@@ -101,19 +100,7 @@ const extractSearchConsoleDashboardData = ( rows ) => {
 	};
 };
 
-const Overview = ( { loading, data, selectedStats, handleStatsSelection } ) => {
-	if ( loading ) {
-		return (
-			<Grid>
-				<Row>
-					<Cell size={ 12 }>
-						<ProgressBar />
-					</Cell>
-				</Row>
-			</Grid>
-		);
-	}
-
+const Overview = ( { data, selectedStats, handleStatsSelection } ) => {
 	const {
 		totalClicks,
 		totalImpressions,
@@ -199,7 +186,6 @@ const Overview = ( { loading, data, selectedStats, handleStatsSelection } ) => {
 };
 
 Overview.propTypes = {
-	loading: PropTypes.bool.isRequired,
 	data: PropTypes.arrayOf( PropTypes.object ),
 	selectedStats: PropTypes.number.isRequired,
 	handleStatsSelection: PropTypes.func.isRequired,
