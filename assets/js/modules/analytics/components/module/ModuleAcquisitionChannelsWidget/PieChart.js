@@ -1,5 +1,5 @@
 /**
- * LegacyDashboardAcquisitionPieChart component.
+ * PieChart component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -33,34 +33,47 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { getTimeInSeconds } from '../../../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
-import withData from '../../../../../components/higherorder/withData';
-import { TYPE_MODULES } from '../../../../../components/data';
 import Link from '../../../../../components/Link';
-import PreviewBlock from '../../../../../components/PreviewBlock';
-import {
-	extractAnalyticsDataForPieChart,
-	getAnalyticsErrorMessageFromData,
-	trafficSourcesReportDataDefaults,
-	isDataZeroForReporting,
-} from '../../../util';
+import { extractAnalyticsDataForPieChart, trafficSourcesReportDataDefaults } from '../../../util';
 import { getURLPath } from '../../../../../util/getURLPath';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import PreviewBlock from '../../../../../components/PreviewBlock';
 
 const { useSelect } = Data;
 
-const PieChart = ( { data, source } ) => {
+export default function PieChart() {
+	const {
+		hasFinishedResolution,
+		report,
+		error,
+	} = useSelect( ( select ) => {
+		const reportDateRange = select( CORE_USER ).getDateRange();
+		const reportArgs = {
+			...trafficSourcesReportDataDefaults,
+			url,
+			dateRange: reportDateRange,
+		};
+
+		return {
+			report: select( STORE_NAME ).getReport( reportArgs ),
+			hasFinishedResolution: select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ),
+			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ),
+		};
+	} );
+
+	const source = false; //@TODO change me
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
 	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', {
 		'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
 	} ) );
 
-	if ( ! data || data.error || ! data.length ) {
-		return null;
+	if ( ! report || error || ! hasFinishedResolution ) {
+		return <PreviewBlock width="282px" height="282px" shape="circular" />;
 	}
 
-	const processedData = extractAnalyticsDataForPieChart( data, { keyColumnIndex: 1 } );
+	const processedData = extractAnalyticsDataForPieChart( report, { keyColumnIndex: 1 } );
 	const options = {
 		chartArea: {
 			width: '100%',
@@ -117,7 +130,7 @@ const PieChart = ( { data, source } ) => {
 			}
 		</div>
 	);
-};
+}
 
 PieChart.defaultProps = {
 	source: false,
@@ -127,6 +140,7 @@ PieChart.propTypes = {
 	source: PropTypes.bool,
 };
 
+/*
 export default withData(
 	PieChart,
 	[
@@ -148,3 +162,4 @@ export default withData(
 	isDataZeroForReporting,
 	getAnalyticsErrorMessageFromData
 );
+*/
