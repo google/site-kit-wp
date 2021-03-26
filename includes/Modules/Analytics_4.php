@@ -150,8 +150,6 @@ final class Analytics_4 extends Module
 	protected function get_datapoint_definitions() {
 		return array(
 			'GET:accounts'              => array( 'service' => 'analyticsadmin' ),
-			'GET:properties'            => array( 'service' => 'analyticsadmin' ),
-			'GET:webdatastreams'        => array( 'service' => 'analyticsadmin' ),
 			'POST:create-property'      => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
@@ -162,6 +160,8 @@ final class Analytics_4 extends Module
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 web data stream on your behalf.', 'google-site-kit' ),
 			),
+			'GET:properties'            => array( 'service' => 'analyticsadmin' ),
+			'GET:webdatastreams'        => array( 'service' => 'analyticsadmin' ),
 		);
 	}
 
@@ -179,30 +179,6 @@ final class Analytics_4 extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				return $this->get_service( 'analyticsadmin' )->accounts->listAccounts();
-			case 'GET:properties':
-				if ( ! isset( $data['accountID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
-						array( 'status' => 400 )
-					);
-				}
-				return $this->get_service( 'analyticsadmin' )->properties->listProperties(
-					array(
-						'filter' => 'parent:accounts/' . $data['accountID'],
-					)
-				);
-			case 'GET:webdatastreams':
-				if ( ! isset( $data['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
-						array( 'status' => 400 )
-					);
-				}
-				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->listPropertiesWebDataStreams( 'properties/' . $data['propertyID'] );
 			case 'POST:create-property':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -229,6 +205,30 @@ final class Analytics_4 extends Module
 				$datastream->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 				$datastream->setDefaultUri( $this->context->get_reference_site_url() );
 				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->create( 'properties/' . $data['propertyID'], $datastream );
+			case 'GET:properties':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				return $this->get_service( 'analyticsadmin' )->properties->listProperties(
+					array(
+						'filter' => 'parent:accounts/' . $data['accountID'],
+					)
+				);
+			case 'GET:webdatastreams':
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->listPropertiesWebDataStreams( 'properties/' . $data['propertyID'] );
 		}
 
 		return parent::create_data_request( $data );
