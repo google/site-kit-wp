@@ -23,4 +23,3 @@ export { default as SiteSteps } from './SiteSteps';
 export { default as UserProfile } from './UserProfile';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';
 export { default as WebStoriesAdUnitSelect } from './WebStoriesAdUnitSelect';
-export { default as ModuleHeader } from './ModuleHeader';
