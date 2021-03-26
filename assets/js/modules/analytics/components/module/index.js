@@ -17,3 +17,4 @@
  */
 
 export { default as ModuleOverviewWidget } from './ModuleOverviewWidget';
+export { default as ModulePopularPagesWidget } from './ModulePopularPagesWidget';
