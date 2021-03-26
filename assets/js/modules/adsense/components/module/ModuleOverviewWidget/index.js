@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useState, useCallback } from '@wordpress/element';
@@ -127,6 +132,11 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 			/>
 		</Widget>
 	);
+};
+
+ModuleOverviewWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+	WidgetReportError: PropTypes.elementType.isRequired,
 };
 
 export default ModuleOverviewWidget;

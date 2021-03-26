@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import { calculateChange } from '../../../../../util';
@@ -106,6 +111,14 @@ const Overview = ( {
 			</Row>
 		</Grid>
 	);
+};
+
+Overview.propTypes = {
+	metrics: PropTypes.object,
+	currentRangeData: PropTypes.arrayOf( PropTypes.object ),
+	previousRangeData: PropTypes.arrayOf( PropTypes.object ),
+	selectedStats: PropTypes.number.isRequired,
+	handleStatsSelection: PropTypes.func.isRequired,
 };
 
 export default Overview;

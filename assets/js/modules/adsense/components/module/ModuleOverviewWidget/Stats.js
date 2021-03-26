@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import { getSiteStatsDataForGoogleChart } from '../../../util';
@@ -134,6 +139,13 @@ const Stats = ( {
 			</Row>
 		</Grid>
 	);
+};
+
+Stats.propTypes = {
+	metrics: PropTypes.object,
+	currentRangeData: PropTypes.arrayOf( PropTypes.object ),
+	previousRangeData: PropTypes.arrayOf( PropTypes.object ),
+	selectedStats: PropTypes.number.isRequired,
 };
 
 export default Stats;
