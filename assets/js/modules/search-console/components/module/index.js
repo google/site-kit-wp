@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 
-export { default as ModulePopularPagesWidget } from './ModulePopularPagesWidget';
+export { default as ModulePopularKeywordsWidget } from './ModulePopularKeywordsWidget';

@@ -56,7 +56,7 @@ const Header = () => {
 			<WidgetHeaderTitle
 				title={ sprintf(
 					/* translators: %s: number of days */
-					_n( 'Overview for the last %s day', 'Overview for the last %s days', currentDayCount, 'google-site-kit', ),
+					_n( 'Top search queries over last %s days', 'Top search queries over last %s days', currentDayCount, 'google-site-kit', ),
 					currentDayCount,
 				) }
 			/>

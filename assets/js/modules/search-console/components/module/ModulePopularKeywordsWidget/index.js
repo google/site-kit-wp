@@ -1,5 +1,5 @@
 /**
- * ModulePopularPagesWidget component.
+ * ModulePopularKeywordsWidget component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -38,17 +38,19 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../../components/ReportTable';
+import SourceLink from '../../../../../components/SourceLink';
 import { isZeroReport } from '../../../util/is-zero-report';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import Header from './Header';
 
 const { useSelect } = Data;
 
-function ModulePopularPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
+function ModulePopularKeywordsWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		data,
 		isLoading,
 		error,
+		serviceURL,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
@@ -68,12 +70,12 @@ function ModulePopularPagesWidget( { Widget, WidgetReportZero, WidgetReportError
 			data: store.getReport( reportArgs ),
 			isLoading: ! store.hasFinishedResolution( 'getReport', [ reportArgs ] ),
 			error: store.getErrorForSelector( 'getReport', [ reportArgs ] ),
+			serviceURL: store.getServiceReportURL( {
+				...generateDateRangeArgs( dateRangeDates ),
+				page: url ? `!${ url }` : undefined,
+			} ),
 		};
 	} );
-
-	if ( isLoading ) {
-		return <PreviewTable padding />;
-	}
 
 	if ( error ) {
 		return <WidgetReportError moduleSlug="search-console" error={ error } />;
@@ -87,10 +89,24 @@ function ModulePopularPagesWidget( { Widget, WidgetReportZero, WidgetReportError
 		<Widget
 			noPadding
 			Header={ Header }
+			Footer={ () => (
+				<SourceLink
+					className="googlesitekit-data-block__source"
+					name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+					href={ serviceURL }
+					external
+				/>
+			) }
 		>
-			<TableOverflowContainer>
-				<ReportTable rows={ data } columns={ tableColumns } />
-			</TableOverflowContainer>
+			{
+
+				isLoading ? <PreviewTable padding />
+					: (
+						<TableOverflowContainer>
+							<ReportTable rows={ data } columns={ tableColumns } />
+						</TableOverflowContainer>
+					)
+			}
 		</Widget>
 	);
 }
@@ -135,10 +151,10 @@ const tableColumns = [
 	},
 ];
 
-ModulePopularPagesWidget.propTypes = {
+ModulePopularKeywordsWidget.propTypes = {
 	Widget: PropTypes.func.isRequired,
 	WidgetReportZero: PropTypes.func.isRequired,
 	WidgetReportError: PropTypes.func.isRequired,
 };
 
-export default ModulePopularPagesWidget;
+export default ModulePopularKeywordsWidget;
