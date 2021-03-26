@@ -135,15 +135,17 @@ export default function ModuleSetup( { moduleSlug } ) {
 													href={ settingsPageURL }
 												>{ __( 'Cancel', 'google-site-kit' ) }</Link>
 											</div>
-											<div className="
+											{ ! helpVisibilityEnabled && (
+												<div className="
 													mdc-layout-grid__cell
 													mdc-layout-grid__cell--span-2-phone
 													mdc-layout-grid__cell--span-4-tablet
 													mdc-layout-grid__cell--span-6-desktop
 													mdc-layout-grid__cell--align-right
-											">
-												<HelpLink />
-											</div>
+												">
+													<HelpLink />
+												</div>
+											) }
 										</div>
 									</div>
 								</div>

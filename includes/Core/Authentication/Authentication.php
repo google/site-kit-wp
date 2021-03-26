@@ -161,7 +161,7 @@ final class Authentication {
 	/**
 	 * Has_Multiple_Admins instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.29.0
 	 * @var Has_Multiple_Admins
 	 */
 	protected $has_multiple_admins;
@@ -265,7 +265,7 @@ final class Authentication {
 		add_filter( 'googlesitekit_setup_data', $this->get_method_proxy( 'inline_js_setup_data' ) );
 		add_filter( 'googlesitekit_is_feature_enabled', $this->get_method_proxy( 'filter_features_via_proxy' ), 10, 2 );
 
-		add_action( 'init', $this->get_method_proxy( 'handle_oauth' ) );
+		add_action( 'admin_init', $this->get_method_proxy( 'handle_oauth' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'verify_user_input_settings' ) );
 		add_action(
@@ -628,10 +628,6 @@ final class Authentication {
 			}
 
 			$auth_client->authorize_user();
-		}
-
-		if ( ! is_admin() ) {
-			return;
 		}
 
 		if ( $input->filter( INPUT_GET, 'googlesitekit_disconnect' ) ) {
