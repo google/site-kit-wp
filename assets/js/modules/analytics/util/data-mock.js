@@ -94,30 +94,32 @@ function getMetricType( metric ) {
  *
  * @since 1.28.0
  *
- * @param {string} type  Metric type.
- * @param {number} count Maximum number of values to generate.
+ * @param {Array.<Object>} validMetrics Metric list.
+ * @param {number}         count        Maximum number of values to generate.
  * @return {Array.<Object>} Array of metric values.
  */
-function generateMetricValues( type, count ) {
+function generateMetricValues( validMetrics, count ) {
 	const metrics = [];
 
 	for ( let i = 0; i < count; i++ ) {
 		const values = [];
 
-		switch ( type ) {
-			case 'INTEGER':
-				values.push( faker.random.number( { min: 0, max: 100 } ).toString() );
-				break;
-			case 'PERCENT':
-				values.push( faker.random.float( { min: 0, max: 100 } ).toString() );
-				break;
-			case 'TIME':
-				values.push( faker.random.number( { min: 0, max: 3600 } ).toString() ); // 1 hour max.
-				break;
-			case 'CURRENCY':
-				values.push( faker.random.float( { min: 0, max: 10000 } ).toString() ); // $10k max.
-				break;
-		}
+		validMetrics.forEach( ( validMetric ) => {
+			switch ( getMetricType( validMetric ) ) {
+				case 'INTEGER':
+					values.push( faker.random.number( { min: 0, max: 100 } ).toString() );
+					break;
+				case 'PERCENT':
+					values.push( faker.random.float( { min: 0, max: 100 } ).toString() );
+					break;
+				case 'TIME':
+					values.push( faker.random.number( { min: 0, max: 3600 } ).toString() ); // 1 hour max.
+					break;
+				case 'CURRENCY':
+					values.push( faker.random.float( { min: 0, max: 10000 } ).toString() ); // $10k max.
+					break;
+			}
+		} );
 
 		metrics.push( { values } );
 	}
@@ -214,7 +216,7 @@ export function getAnalyticsMockResponse( args ) {
 		if ( dimension === 'ga:date' ) {
 			// Generates a stream (an array) of dates when the dimension is ga:date.
 			streams.push( new Observable( ( observer ) => {
-				const currentDate = new Date( args.startDate );
+				const currentDate = new Date( args.compareStartDate || args.startDate );
 				const end = new Date( args.endDate );
 
 				while ( currentDate.getTime() <= end.getTime() ) {
@@ -252,7 +254,7 @@ export function getAnalyticsMockResponse( args ) {
 		// Convert a dimension value to a row object and generate metric values.
 		map( ( dimensionValue ) => ( {
 			dimensions: Array.isArray( dimensionValue ) ? dimensionValue : [ dimensionValue ],
-			metrics: generateMetricValues( getMetricType( validMetrics[ 0 ] ), metricValuesCount ),
+			metrics: generateMetricValues( validMetrics, metricValuesCount ),
 		} ) ),
 		// Make sure we take the appropriate number of rows.
 		take( args.limit > 0 ? +args.limit : 90 ),
@@ -272,18 +274,8 @@ export function getAnalyticsMockResponse( args ) {
 		data.minimums = [ ...( rows[ 0 ]?.metrics || [] ) ];
 		data.maximums = [ ...( rows[ rows.length - 1 ]?.metrics || [] ) ];
 
-		if ( getMetricType( validMetrics[ 0 ] ) === 'INTEGER' ) {
-			data.totals = [];
-			for ( let i = 0; i < metricValuesCount; i++ ) {
-				const sumValues = ( acc, row ) => acc + parseFloat( row.metrics[ i ].values[ 0 ] );
-				const total = data.rows.reduce( sumValues, 0 ).toString();
-
-				data.totals.push( { values: [ total ] } );
-			}
-		} else {
-			// Same here, we pretend that the last row contains totals because we don't need it to be mathematically valid.
-			data.totals = [ ...( rows[ rows.length - 1 ]?.metrics || [] ) ];
-		}
+		// Same here, we pretend that the last row contains totals because we don't need it to be mathematically valid.
+		data.totals = [ ...( rows[ rows.length - 1 ]?.metrics || [] ) ];
 	} );
 
 	// Set the original seed value for the faker.

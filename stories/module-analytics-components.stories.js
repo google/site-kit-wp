@@ -375,7 +375,7 @@ generateAnalyticsWidgetStories( {
 } );
 
 const moduleOverviewWidgetReferenceDate = '2021-01-06';
-const moduleOverviewWidgetOptions = [
+const moduleOverviewWidgetReports = generateData( [
 	{
 		startDate: '2020-12-09',
 		endDate: '2021-01-05',
@@ -401,17 +401,17 @@ const moduleOverviewWidgetOptions = [
 			'ga:avgSessionDuration',
 		],
 	},
-];
+] );
 
 generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Module Page/Overview Widget',
 	referenceDate: moduleOverviewWidgetReferenceDate,
-	...generateData( moduleOverviewWidgetOptions ),
+	...moduleOverviewWidgetReports,
 	Component: ModuleOverviewWidget,
 	additionalVariants: {
 		Loading: {
 			referenceDate: moduleOverviewWidgetReferenceDate,
-			...generateData( moduleOverviewWidgetOptions ),
+			...moduleOverviewWidgetReports,
 		},
 	},
 	additionalVariantCallbacks: {
