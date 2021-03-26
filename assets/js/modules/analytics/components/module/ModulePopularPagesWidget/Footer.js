@@ -1,5 +1,5 @@
 /**
- * WidgetHeaderCTA component.
+ * Footer component of the ModulePopularPagesWidget widget.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,35 +17,26 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import PropTypes from 'prop-types';
+import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Link from '../../../components/Link';
+import Data from 'googlesitekit-data';
+import { MODULES_ANALYTICS } from '../../../datastore/constants';
+import SourceLink from '../../../../../components/SourceLink';
+const { useSelect } = Data;
 
-const WidgetHeaderCTA = ( { href, label, external } ) => (
-	<div className="googlesitekit-widget__header--cta">
-		<Link
-			href={ href }
-			external={ external }
-		>
-			{ label }
-		</Link>
-	</div>
-);
+export default function Footer() {
+	const visitorsOverview = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'visitors-overview' ) );
 
-WidgetHeaderCTA.propTypes = {
-	href: PropTypes.string,
-	label: PropTypes.string.isRequired,
-	external: PropTypes.bool,
-};
-
-WidgetHeaderCTA.defaultProps = {
-	href: '',
-	external: true,
-};
-
-export default WidgetHeaderCTA;
+	return (
+		<SourceLink
+			href={ visitorsOverview }
+			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+			external
+		/>
+	);
+}
