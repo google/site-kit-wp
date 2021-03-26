@@ -81,8 +81,6 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
-	const data = report;
-
 	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 
 	const tableColumns = [
@@ -185,7 +183,7 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 											">
 						<TableOverflowContainer>
 							<ReportTable
-								rows={ data[ 0 ].data.totals[ 0 ].values }
+								rows={ report[ 0 ].data.totals[ 0 ].values }
 								columns={ tableColumns }
 							/>
 						</TableOverflowContainer>
