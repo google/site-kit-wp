@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useState, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -32,12 +32,14 @@ import { useState } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
+import { isZeroReport } from '../../../util';
+import ProgressBar from '../../../../../components/ProgressBar';
 import Header from './Header';
 import Overview from './Overview';
 import SiteStats from './SiteStats';
 const { useSelect } = Data;
 
-export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
+export default function ModuleOverviewWidget( { Widget, WidgetReportError, WidgetReportZero } ) {
 	const [ selectedStat, setSelectedState ] = useState( 0 );
 
 	const dates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
@@ -74,24 +76,35 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	const statsReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( statsArgs ) );
 	const statsError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ statsArgs ] ) );
 
-	if ( overviewError || statsError ) {
-		return <WidgetReportError statsError={ overviewError || statsError } />;
+	const isZero = isZeroReport( overviewReport );
+	const isError = overviewError || statsError;
+
+	if ( ! overviewLoaded || ! statsLoaded ) {
+		return <ProgressBar />;
 	}
 
 	return (
 		<Widget Header={ Header } noPadding>
-			<Overview
-				loaded={ overviewLoaded }
-				report={ overviewReport }
-				selectedStat={ selectedStat }
-				handleStatSelection={ setSelectedState }
-			/>
+			{ isError && (
+				<WidgetReportError moduleSlug="analytics" error={ overviewError || statsError } />
+			) }
+			{ ! isError && isZero && (
+				<WidgetReportZero moduleSlug="analytics" />
+			) }
+			{ ! isError && ! isZero && (
+				<Fragment>
+					<Overview
+						report={ overviewReport }
+						selectedStat={ selectedStat }
+						handleStatSelection={ setSelectedState }
+					/>
 
-			<SiteStats
-				loaded={ statsLoaded }
-				selectedStat={ selectedStat }
-				report={ statsReport }
-			/>
+					<SiteStats
+						selectedStat={ selectedStat }
+						report={ statsReport }
+					/>
+				</Fragment>
+			) }
 		</Widget>
 	);
 }
@@ -99,4 +112,5 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 ModuleOverviewWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
+	WidgetReportZero: PropTypes.elementType.isRequired,
 };
