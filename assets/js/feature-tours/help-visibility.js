@@ -31,6 +31,7 @@ const helpVisibility = {
 	slug: 'helpVisibility',
 	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_PAGE_DASHBOARD ],
 	version: '1.29.0',
+	gaEventCategory: 'global_help_menu',
 	checkRequirements: async () => {
 		return isFeatureEnabled( 'helpVisibility' );
 	},

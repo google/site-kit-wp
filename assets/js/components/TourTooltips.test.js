@@ -216,15 +216,16 @@ describe( 'TourTooltips', () => {
 			await getByRole( 'alertdialog' );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
-			// Tracks the advance on the 1st step, view on the 2nd step.
+			// Tracks the advance on the 2nd step, view on the 3rd step.
 			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, GA_ACTIONS.NEXT, 2 );
 			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, GA_ACTIONS.VIEW, 3 );
 			mockTrackEvent.mockClear();
 
 			// Finish the tour.
 			fireEvent.click( getByRole( 'button', { name: /got it/i } ) );
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.COMPLETE, 3 );
+			expect( mockTrackEvent ).not.toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.DISMISS, 3 );
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		} );
 
 		it( 'tracks all events for a dismissed tour', async () => {
@@ -239,6 +240,24 @@ describe( 'TourTooltips', () => {
 			fireEvent.click( getByRole( 'button', { name: /close/i } ) );
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.DISMISS, 1 );
+		} );
+
+		it( 'tracks all events for a dismissed tour on the last step', async () => {
+			const { getByRole } = renderTourTooltipsWithMockUI( registry );
+			await getByRole( 'alertdialog' );
+			// Go to step 2/3
+			fireEvent.click( getByRole( 'button', { name: /next/i } ) );
+			await getByRole( 'alertdialog' );
+			// Go to step 3/3
+			fireEvent.click( getByRole( 'button', { name: /next/i } ) );
+			await getByRole( 'alertdialog' );
+			mockTrackEvent.mockClear();
+			// Dismissing a tour is specific to closing the dialog.
+			fireEvent.click( getByRole( 'button', { name: /close/i } ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.DISMISS, 3 );
+			expect( mockTrackEvent ).not.toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.COMPLETE, 3 );
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		} );
 
 		it( 'tracks events for navigating between steps', async () => {

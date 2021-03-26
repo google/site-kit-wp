@@ -1,5 +1,5 @@
 /**
- * WidgetHeaderCTA component.
+ * Analytics module page components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,36 +16,5 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
- * Internal dependencies
- */
-import Link from '../../../components/Link';
-
-const WidgetHeaderCTA = ( { href, label, external } ) => (
-	<div className="googlesitekit-widget__header--cta">
-		<Link
-			href={ href }
-			external={ external }
-		>
-			{ label }
-		</Link>
-	</div>
-);
-
-WidgetHeaderCTA.propTypes = {
-	href: PropTypes.string,
-	label: PropTypes.string.isRequired,
-	external: PropTypes.bool,
-};
-
-WidgetHeaderCTA.defaultProps = {
-	href: '',
-	external: true,
-};
-
-export default WidgetHeaderCTA;
+export { default as ModuleOverviewWidget } from './ModuleOverviewWidget';
+export { default as ModulePopularPagesWidget } from './ModulePopularPagesWidget';
