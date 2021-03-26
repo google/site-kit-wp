@@ -17,26 +17,13 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
- * WordPress dependencies
- */
-import { createInterpolateElement } from '@wordpress/element';
-import { __, _x, sprintf } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import GoogleChart from '../../../../../components/GoogleChart';
-import Link from '../../../../../components/Link';
 import { extractAnalyticsDataForPieChart, trafficSourcesReportDataDefaults } from '../../../util';
-import { getURLPath } from '../../../../../util/getURLPath';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 
@@ -62,12 +49,7 @@ export default function PieChart() {
 		};
 	} );
 
-	const source = false; //@TODO change me
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-
-	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', {
-		'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
-	} ) );
 
 	if ( ! report || error || ! hasFinishedResolution ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;
@@ -109,57 +91,6 @@ export default function PieChart() {
 				id="overview-piechart"
 				loadHeight={ 205 }
 			/>
-			{ source &&
-				<div className="googlesitekit-chart__source">
-					{ createInterpolateElement(
-						sprintf(
-							/* translators: %s: source link */
-							__( 'Source: %s', 'google-site-kit' ),
-							`<a>${ _x( 'Analytics', 'Service name', 'google-site-kit' ) }</a>`
-						),
-						{
-							a: <Link
-								key="link"
-								href={ sourceURI }
-								inherit
-								external
-							/>,
-						}
-					) }
-				</div>
-			}
 		</div>
 	);
 }
-
-PieChart.defaultProps = {
-	source: false,
-};
-
-PieChart.propTypes = {
-	source: PropTypes.bool,
-};
-
-/*
-export default withData(
-	PieChart,
-	[
-		{
-			type: TYPE_MODULES,
-			identifier: 'analytics',
-			datapoint: 'report',
-			data: {
-				...trafficSourcesReportDataDefaults,
-				url: global._googlesitekitLegacyData.permaLink,
-			},
-			priority: 1,
-			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Dashboard', 'Single' ],
-		},
-	],
-	<PreviewBlock width="282px" height="282px" shape="circular" />,
-	{},
-	isDataZeroForReporting,
-	getAnalyticsErrorMessageFromData
-);
-*/
