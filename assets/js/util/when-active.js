@@ -21,7 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { kebabCaseToPascalCase } from '../googlesitekit/data/transform-case';
+import { hyphenCaseToPascalCase } from '../googlesitekit/data/transform-case';
 const { useSelect } = Data;
 
 /**
@@ -78,7 +78,7 @@ export default function whenActive( {
 			return <WrappedComponent { ...props } />;
 		};
 
-		WhenActiveComponent.displayName = `When${ kebabCaseToPascalCase( moduleName ) }Active`;
+		WhenActiveComponent.displayName = `When${ hyphenCaseToPascalCase( moduleName ) }Active`;
 		if ( WrappedComponent.displayName || WrappedComponent.name ) {
 			WhenActiveComponent.displayName += `(${ WrappedComponent.displayName || WrappedComponent.name })`;
 		}

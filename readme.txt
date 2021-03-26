@@ -868,7 +868,7 @@ If you have some ideas to improve the plugin or to solve a bug, feel free to rai
 * Ensure that the Tag Manager snippet rendered is always compatible with the current context (AMP vs non-AMP). See [#1036](https://github.com/google/site-kit-wp/issues/1036).
 * Do not render `amp-auto-ads` element in AMP stories because it is invalid in that context. See [#979](https://github.com/google/site-kit-wp/issues/979).
 * Ensure that Google Charts JS library is loaded as expected even when a `window.google` global already exists because of another library. See [#939](https://github.com/google/site-kit-wp/issues/939).
-* Do not refetch PageSpeed Insights data when the date range selector is changed, as its data its date-agnostic. See [#890](https://github.com/google/site-kit-wp/issues/890).
+* Do not refetch PageSpeed Insights data when the date range selector is changed, as its data its date-unaware. See [#890](https://github.com/google/site-kit-wp/issues/890).
 * Fix incorrect change arrow direction and color on "inverted" properties like bounce rate. Props WebFactoryLtd. See [#481](https://github.com/google/site-kit-wp/issues/481).
 * Add missing support for Search Console domain properties and rely on the correct property when requesting Search Console data. Props IgorCode. See [#325](https://github.com/google/site-kit-wp/issues/325).
 
