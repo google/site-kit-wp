@@ -79,9 +79,11 @@ function SettingsApp( { location: { pathname } } ) {
 						<Cell size={ 12 }>
 							<SettingsModules />
 						</Cell>
-						<Cell size={ 12 } alignRight>
-							<HelpLink />
-						</Cell>
+						{ ! helpVisibilityEnabled && (
+							<Cell size={ 12 } alignRight>
+								<HelpLink />
+							</Cell>
+						) }
 					</Row>
 				</Grid>
 			</div>
