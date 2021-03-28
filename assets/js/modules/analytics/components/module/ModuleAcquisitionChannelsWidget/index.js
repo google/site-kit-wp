@@ -56,7 +56,6 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		const reportDateRange = select( CORE_USER ).getDateRange();
 		const reportArgs = {
 			...trafficSourcesReportDataDefaults,
-			url,
 			dateRange: reportDateRange,
 		};
 
