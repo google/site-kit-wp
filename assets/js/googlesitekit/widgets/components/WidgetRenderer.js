@@ -34,7 +34,6 @@ import { STORE_NAME } from '../datastore/constants';
 import BaseWidget from './Widget';
 import { getWidgetComponentProps } from '../util';
 import { HIDDEN_CLASS } from '../util/constants';
-// import { Cell } from '../../../material-components';
 
 const { useSelect } = Data;
 

@@ -28,34 +28,37 @@ import { HIDDEN_CLASS } from '../util/constants';
 import { Cell } from '../../../material-components';
 
 const WidgetWrapper = ( { gridColumnWidth, children } ) => {
-	switch ( true ) {
-		case 0 === gridColumnWidth:
-			// Widget with columnWidth of 0 should be hidden
-			return (
-				<div className={ HIDDEN_CLASS }>
-					{ children }
-				</div>
-			);
-		case [ 3, 4 ].includes( gridColumnWidth ):
-			return (
-				<Cell lgSize={ gridColumnWidth } mdSize={ 4 } smSize={ 2 }>
-					{ children }
-				</Cell>
-			);
-		case [ 6, 8 ].includes( gridColumnWidth ):
-			return (
-				<Cell lgSize={ gridColumnWidth } mdSize={ 8 }>
-					{ children }
-				</Cell>
-			);
-		case 12 === gridColumnWidth:
-			// Full width
-			return (
-				<Cell size={ gridColumnWidth }>
-					{ children }
-				</Cell>
-			);
+	if ( 0 === gridColumnWidth ) {
+		// Widget with columnWidth of 0 should be hidden
+		return (
+			<div className={ HIDDEN_CLASS }>
+				{ children }
+			</div>
+		);
 	}
+
+	if ( gridColumnWidth === 3 || gridColumnWidth === 4 ) {
+		return (
+			<Cell lgSize={ gridColumnWidth } mdSize={ 4 } smSize={ 2 }>
+				{ children }
+			</Cell>
+		);
+	}
+
+	if ( gridColumnWidth === 6 || gridColumnWidth === 8 ) {
+		return (
+			<Cell lgSize={ gridColumnWidth } mdSize={ 8 }>
+				{ children }
+			</Cell>
+		);
+	}
+
+	// Full width (12), or something strange like 5 or 7
+	return (
+		<Cell size={ gridColumnWidth }>
+			{ children }
+		</Cell>
+	);
 };
 
 WidgetWrapper.propTypes = {

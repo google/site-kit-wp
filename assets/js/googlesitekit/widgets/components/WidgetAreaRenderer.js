@@ -60,23 +60,21 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	} );
 
 	// Render all widgets.
-	const widgetsOutput = widgets.map( ( widget, i ) => {
-		return (
-			<WidgetWrapper
-				key={ `${ widget.slug }-wrapper` }
-				gridColumnWidth={ gridColumnWidths[ i ] }
-			>
-				<WidgetRenderer
-					OverrideComponent={ overrideComponents[ i ] ? () => {
-						const { Component, metadata } = overrideComponents[ i ];
-						return <Component { ...metadata } />;
-					} : undefined }
-					key={ widget.slug }
-					slug={ widget.slug }
-				/>
-			</WidgetWrapper>
-		);
-	} );
+	const widgetsOutput = widgets.map( ( widget, i ) => (
+		<WidgetWrapper
+			key={ `${ widget.slug }-wrapper` }
+			gridColumnWidth={ gridColumnWidths[ i ] }
+		>
+			<WidgetRenderer
+				OverrideComponent={ overrideComponents[ i ] ? () => {
+					const { Component, metadata } = overrideComponents[ i ];
+					return <Component { ...metadata } />;
+				} : undefined }
+				key={ widget.slug }
+				slug={ widget.slug }
+			/>
+		</WidgetWrapper>
+	) );
 
 	// Here we render the bare output as it is guaranteed to render empty.
 	// This is important compared to returning `null` so that the area
