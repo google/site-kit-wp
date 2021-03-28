@@ -1,5 +1,5 @@
 /**
- * VisuallyHidden stories.
+ * TourTooltip stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,13 +20,19 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+import fetchMock from 'fetch-mock';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Link from '../assets/js/components/Link';
+import Button from '../assets/js/components/Button';
 import TourTooltips from '../assets/js/components/TourTooltips';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
+import { CORE_UI } from '../assets/js/googlesitekit/datastore/ui/constants';
+const { useDispatch } = Data;
 
 // Create Mock WP Dashboard component to decouple tests to prevent future false negative.
 const MockWPDashboard = () => (
@@ -329,6 +335,23 @@ const MockWPDashboard = () => (
 	</div>
 );
 
+const TourControls = () => {
+	const { receiveGetDismissedTours } = useDispatch( CORE_USER );
+	const { setValue } = useDispatch( CORE_UI );
+	const reset = () => {
+		receiveGetDismissedTours( [] );
+		setValue( 'feature-step', 0 );
+	};
+
+	return (
+		<div style={ { textAlign: 'right' } }>
+			<Button onClick={ reset }>
+				Reset Dismissed Tours
+			</Button>
+		</div>
+	);
+};
+
 storiesOf( 'Global', module )
 	.add( 'TourTooltips', () => {
 		const steps = [
@@ -359,11 +382,23 @@ storiesOf( 'Global', module )
 				),
 			},
 		];
+		fetchMock.post(
+			/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/,
+			{ body: JSON.stringify( [ 'feature' ] ), status: 200 }
+		);
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+		};
 
 		return (
-			<WithTestRegistry>
+			<WithTestRegistry callback={ setupRegistry }>
+				<TourControls />
 				<MockWPDashboard />
-				<TourTooltips steps={ steps } tourID="feature" />
+				<TourTooltips
+					steps={ steps }
+					tourID="feature"
+					gaEventCategory="storybook"
+				/>
 			</WithTestRegistry>
 		);
 	} );

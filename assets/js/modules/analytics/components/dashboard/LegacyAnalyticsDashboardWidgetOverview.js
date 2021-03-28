@@ -47,7 +47,7 @@ import {
 } from '../../util';
 import PreviewBlock from '../../../../components/PreviewBlock';
 
-class AnalyticsDashboardWidgetOverview extends Component {
+class LegacyAnalyticsDashboardWidgetOverview extends Component {
 	constructor( props ) {
 		super( props );
 		this.state = {
@@ -183,12 +183,12 @@ class AnalyticsDashboardWidgetOverview extends Component {
 	}
 }
 
-AnalyticsDashboardWidgetOverview.propTypes = {
+LegacyAnalyticsDashboardWidgetOverview.propTypes = {
 	handleDataError: PropTypes.func.isRequired,
 };
 
 export default withData(
-	AnalyticsDashboardWidgetOverview,
+	LegacyAnalyticsDashboardWidgetOverview,
 	[
 		{
 			type: TYPE_MODULES,

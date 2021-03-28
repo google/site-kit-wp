@@ -22,11 +22,18 @@
 import { storiesOf } from '@storybook/react';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Header from '../assets/js/components/Header';
 import DateRangeSelector from '../assets/js/components/DateRangeSelector';
+import HelpMenu from '../assets/js/components/help/HelpMenu';
 import { createTestRegistry, provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
+import HelpMenuLink from '../assets/js/components/help/HelpMenuLink';
 
 const withRegistry = ( Story ) => {
 	const registry = createTestRegistry();
@@ -35,16 +42,14 @@ const withRegistry = ( Story ) => {
 
 	return (
 		<WithTestRegistry registry={ registry }>
-			<Story />
+			<Story registry={ registry } />
 		</WithTestRegistry>
 	);
 };
 
 storiesOf( 'Global', module )
 	.add( 'Plugin Header', () => {
-		return (
-			<Header />
-		);
+		return <Header />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -54,6 +59,32 @@ storiesOf( 'Global', module )
 		return (
 			<Header>
 				<DateRangeSelector />
+			</Header>
+		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
+	} )
+	.add( 'Plugin Header with Help Menu', () => {
+		return (
+			<Header>
+				<HelpMenu />
+			</Header>
+		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
+	} )
+	.add( 'Plugin Header with custom Help Menu links', () => {
+		return (
+			<Header>
+				<HelpMenu>
+					<HelpMenuLink href="#">
+						{ __( 'Get help with AdSense', 'google-site-kit' ) }
+					</HelpMenuLink>
+				</HelpMenu>
 			</Header>
 		);
 	}, {

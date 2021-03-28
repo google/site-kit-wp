@@ -39,8 +39,11 @@ import Layout from '../layout/Layout';
 import HelpLink from '../HelpLink';
 import SettingsModules from './SettingsModules';
 import { Cell, Grid, Row } from '../../material-components';
+import HelpMenu from '../help/HelpMenu';
+import { useFeature } from '../../hooks/useFeature';
 
 function SettingsApp( { location: { pathname } } ) {
+	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	// Prevent pushing to hash history if it would send you to the same URL, prevents a warning.
 	const shouldReplaceHistory = ( path ) => false && basePath === path;
 	const [ , basePath ] = pathname.split( '/' );
@@ -48,7 +51,10 @@ function SettingsApp( { location: { pathname } } ) {
 
 	return (
 		<Fragment>
-			<Header />
+			<Header>
+				{ helpVisibilityEnabled && <HelpMenu /> }
+			</Header>
+
 			<div className="googlesitekit-module-page">
 				<Grid>
 					<Row>

@@ -32,7 +32,7 @@ import { enabledFeatures } from '../../features';
 import PermissionsModal from '../PermissionsModal';
 import RestoreSnapshots from '../RestoreSnapshots';
 import CollectModuleData from '../data/collect-module-data';
-import FeatureTours from '../FeatureTours';
+import { FeatureToursDesktop } from '../FeatureToursDesktop';
 
 export default function Root( {
 	children,
@@ -49,7 +49,12 @@ export default function Root( {
 					<RestoreSnapshots>
 						<HashRouter>
 							{ children }
-							{ viewContext && <FeatureTours viewContext={ viewContext } /> }
+							{ /*
+								TODO: Replace `FeatureToursDesktop` with `FeatureTours`
+								once tour conflicts in smaller viewports are resolved.
+								@see https://github.com/google/site-kit-wp/issues/3003
+							*/ }
+							{ viewContext && <FeatureToursDesktop viewContext={ viewContext } /> }
 							{ dataAPIContext && (
 							// Legacy dataAPI support.
 								<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />

@@ -45,7 +45,7 @@ import ReportTable from '../../../../components/ReportTable';
 
 const { useSelect } = Data;
 
-const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
+const LegacyAnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 	const { data, colspan } = props;
 
 	if ( ! data || ! data.length ) {
@@ -55,6 +55,56 @@ const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 	if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
 		return null;
 	}
+
+	const tableColumns = [
+		{
+			title: __( 'Title', 'google-site-kit' ),
+			description: __( 'Page Title', 'google-site-kit' ),
+			primary: true,
+			Component: ( { row } ) => {
+				const [ title, url ] = row.dimensions;
+				const serviceURL = useSelect( ( select ) => {
+					const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+						offsetDays: DATE_RANGE_OFFSET,
+					} );
+					return select( STORE_NAME ).getServiceReportURL( 'content-drilldown', {
+						'explorer-table.plotKeys': '[]',
+						'_r.drilldown': `analytics.pagePath:${ url }`,
+						...generateDateRangeArgs( dateRangeDates ),
+					} );
+				} );
+				return (
+					<Link
+						href={ serviceURL }
+						external
+						inherit
+					>
+						{ title }
+					</Link>
+				);
+			},
+		},
+		{
+			title: __( 'Pageviews', 'google-site-kit' ),
+			description: __( 'Pageviews', 'google-site-kit' ),
+			field: 'metrics.0.values.0',
+			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+		},
+		{
+			title: __( 'Unique Pageviews', 'google-site-kit' ),
+			description: __( 'Unique Pageviews', 'google-site-kit' ),
+			hideOnMobile: true,
+			field: 'metrics.0.values.1',
+			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+		},
+		{
+			title: __( 'Bounce Rate', 'google-site-kit' ),
+			description: __( 'Bounce Rate', 'google-site-kit' ),
+			hideOnMobile: true,
+			field: 'metrics.0.values.2',
+			Component: ( { fieldValue } ) => numFmt( Number( fieldValue ) / 100, '%' ),
+		},
+	];
 
 	return (
 		<div className={ classnames(
@@ -72,68 +122,18 @@ const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 	);
 };
 
-const tableColumns = [
-	{
-		title: __( 'Title', 'google-site-kit' ),
-		description: __( 'Page Title', 'google-site-kit' ),
-		primary: true,
-		Component: ( { row } ) => {
-			const [ title, url ] = row.dimensions;
-			const serviceURL = useSelect( ( select ) => {
-				const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
-					offsetDays: DATE_RANGE_OFFSET,
-				} );
-				return select( STORE_NAME ).getServiceReportURL( 'content-drilldown', {
-					'explorer-table.plotKeys': '[]',
-					'_r.drilldown': `analytics.pagePath:${ url }`,
-					...generateDateRangeArgs( dateRangeDates ),
-				} );
-			} );
-			return (
-				<Link
-					href={ serviceURL }
-					external
-					inherit
-				>
-					{ title }
-				</Link>
-			);
-		},
-	},
-	{
-		title: __( 'Pageviews', 'google-site-kit' ),
-		description: __( 'Pageviews', 'google-site-kit' ),
-		field: 'metrics.0.values.0',
-		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
-	},
-	{
-		title: __( 'Unique Pageviews', 'google-site-kit' ),
-		description: __( 'Unique Pageviews', 'google-site-kit' ),
-		hideOnMobile: true,
-		field: 'metrics.0.values.1',
-		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
-	},
-	{
-		title: __( 'Bounce Rate', 'google-site-kit' ),
-		description: __( 'Bounce Rate', 'google-site-kit' ),
-		hideOnMobile: true,
-		field: 'metrics.0.values.2',
-		Component: ( { fieldValue } ) => numFmt( Number( fieldValue ) / 100, '%' ),
-	},
-];
-
-AnalyticsDashboardWidgetTopPagesTable.propTypes = {
+LegacyAnalyticsDashboardWidgetTopPagesTable.propTypes = {
 	data: PropTypes.array,
 	colspan: PropTypes.number,
 };
 
-AnalyticsDashboardWidgetTopPagesTable.defaultProps = {
+LegacyAnalyticsDashboardWidgetTopPagesTable.defaultProps = {
 	data: null,
 	colspan: 12,
 };
 
 export default withData(
-	AnalyticsDashboardWidgetTopPagesTable,
+	LegacyAnalyticsDashboardWidgetTopPagesTable,
 	[
 		{
 			type: TYPE_MODULES,
