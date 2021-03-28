@@ -20,14 +20,24 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Notification from '../legacy-notifications/notification';
 import UserInputSuccessImage from '../../../svg/congrats.svg';
+import { trackEvent } from '../../util';
 
 export default function UserInputSuccessNotification() {
+	useEffect( () => {
+		trackEvent( 'user_input', 'success_notification_view' );
+	}, [] );
+
+	const handleOnDismiss = () => {
+		trackEvent( 'user_input', 'success_notification_dismiss' );
+	};
+
 	return (
 		<Notification
 			id="user-input-success"
@@ -36,6 +46,7 @@ export default function UserInputSuccessNotification() {
 			SmallImageSVG={ UserInputSuccessImage }
 			dismiss={ __( 'OK, got it!', 'google-site-kit' ) }
 			format="small"
+			onDismiss={ handleOnDismiss }
 		/>
 	);
 }

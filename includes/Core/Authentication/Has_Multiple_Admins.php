@@ -16,7 +16,7 @@ use WP_User_Query;
 /**
  * Has_Multiple_Admins class.
  *
- * @since n.e.x.t
+ * @since 1.29.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Has_Multiple_Admins {
 	/**
 	 * Transients instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.29.0
 	 * @var Transients
 	 */
 	protected $transients;
@@ -38,7 +38,7 @@ class Has_Multiple_Admins {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.29.0
 	 *
 	 * @param Transients $transients Transients instance.
 	 */
@@ -49,7 +49,7 @@ class Has_Multiple_Admins {
 	/**
 	 * Returns a flag indicating whether the current site has multiple users.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.29.0
 	 *
 	 * @return boolean TRUE if the site kit has multiple admins, otherwise FALSE.
 	 */

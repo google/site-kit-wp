@@ -39,6 +39,7 @@ import data, { TYPE_MODULES } from '../data';
 import Button from '../Button';
 import ProgressBar from '../ProgressBar';
 import HelpLink from '../HelpLink';
+import withFeatureFlag from '../higherorder/withFeatureFlag';
 
 class SiteVerification extends Component {
 	constructor( props ) {
@@ -160,6 +161,7 @@ class SiteVerification extends Component {
 	}
 
 	renderForm() {
+		const { helpVisibilityEnabled } = this.props;
 		const { loading, loadingMsg, siteURL } = this.state;
 
 		const loadingDiv = (
@@ -193,7 +195,7 @@ class SiteVerification extends Component {
 				</div>
 				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
 					<Button onClick={ this.onProceed }>{ __( 'Continue', 'google-site-kit' ) }</Button>
-					<HelpLink />
+					{ ! helpVisibilityEnabled && <HelpLink /> }
 				</div>
 			</Fragment>
 		);
@@ -248,6 +250,7 @@ class SiteVerification extends Component {
 }
 
 SiteVerification.propTypes = {
+	helpVisibilityEnabled: PropTypes.bool,
 	isAuthenticated: PropTypes.bool.isRequired,
 	shouldSetup: PropTypes.bool.isRequired,
 	siteVerificationSetup: PropTypes.func.isRequired,
@@ -255,4 +258,4 @@ SiteVerification.propTypes = {
 	setErrorMessage: PropTypes.func.isRequired,
 };
 
-export default SiteVerification;
+export default withFeatureFlag( 'helpVisibility' )( SiteVerification );

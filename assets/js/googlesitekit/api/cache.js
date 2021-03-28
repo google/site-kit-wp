@@ -24,7 +24,7 @@
  * @since 1.5.0
  * @private
  */
-export const STORAGE_KEY_PREFIX = 'googlesitekit_' + global.GOOGLESITEKIT_VERSION + '_';
+export const STORAGE_KEY_PREFIX = `googlesitekit_${ global.GOOGLESITEKIT_VERSION }_`;
 
 const defaultOrder = [ 'sessionStorage', 'localStorage' ];
 let storageBackend;
@@ -200,6 +200,7 @@ export const getItem = async ( key ) => {
  * Sets cached data using a key.
  *
  * Save data to the relevant local storage mechanism, if available.
+ * By default, data is saved with a one hour (60 minute) TTL.
  *
  * @since 1.5.0
  *

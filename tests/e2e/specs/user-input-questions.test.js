@@ -76,7 +76,9 @@ describe( 'User Input Settings', () => {
 			'enter keywords',
 			async () => {
 				await expect( page ).toClick( '.googlesitekit-user-input__buttons--next' );
-				await expect( page ).toFill( '#searchTerms-keyword-0', 'One,Two,Three,' );
+				await expect( page ).toFill( '#searchTerms-keyword-0', 'One' );
+				await expect( page ).toFill( '#searchTerms-keyword-1', 'Two' );
+				await expect( page ).toFill( '#searchTerms-keyword-2', 'Three' );
 			},
 		);
 

@@ -30,7 +30,7 @@ import { getQueryParameter } from '../../util';
 import DashboardCoreSiteAlerts from './dashboard-core-site-alerts';
 import DashboardSetupAlerts from './dashboard-setup-alerts';
 import DashboardModulesAlerts from './dashboard-modules-alerts';
-import UserInputSettings from '../notifications/UserInputSettings';
+import UserInputPromptNotification from '../notifications/UserInputPromptNotification';
 import UnsatisfiedScopesAlert from '../notifications/UnsatisfiedScopesAlert';
 
 const { setup } = global._googlesitekitLegacyData;
@@ -39,7 +39,7 @@ const notification = getQueryParameter( 'notification' );
 const addCoreSiteNotifications = createAddToFilter( <DashboardCoreSiteAlerts /> );
 const addSetupNotifications = createAddToFilter( <DashboardSetupAlerts /> );
 const addModulesNotifications = createAddToFilter( <DashboardModulesAlerts /> );
-const addUserInputSettings = createAddToFilter( <UserInputSettings /> );
+const addUserInputPrompt = createAddToFilter( <UserInputPromptNotification /> );
 const addAuthNotification = createAddToFilter( <UnsatisfiedScopesAlert /> );
 
 addFilter( 'googlesitekit.DashboardNotifications',
@@ -55,7 +55,7 @@ if ( setup.needReauthenticate ) {
 if ( isFeatureEnabled( 'userInput' ) ) {
 	addFilter( 'googlesitekit.DashboardNotifications',
 		'googlesitekit.UserInputSettings',
-		addUserInputSettings, 1 );
+		addUserInputPrompt, 1 );
 }
 
 if ( 'authentication_success' === notification || 'authentication_failure' === notification || 'user_input_success' === notification ) {

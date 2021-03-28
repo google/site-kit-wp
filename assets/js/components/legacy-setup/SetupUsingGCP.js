@@ -38,7 +38,7 @@ import { trackEvent, clearWebStorage, getSiteKitAdminURL } from '../../util';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
 import HelpMenu from '../help/HelpMenu';
-import { useFeature } from '../../hooks/useFeature';
+import withFeatureFlag from '../higherorder/withFeatureFlag';
 
 class SetupUsingGCP extends Component {
 	constructor( props ) {
@@ -303,17 +303,4 @@ class SetupUsingGCP extends Component {
 	}
 }
 
-const withHelpVisibilityFeatureFlag = ( WrappedComponent ) => {
-	return ( props ) => {
-		const helpVisibilityEnabled = useFeature( 'helpVisibility' );
-
-		return (
-			<WrappedComponent
-				{ ...props }
-				helpVisibilityEnabled={ helpVisibilityEnabled }
-			/>
-		);
-	};
-};
-
-export default withHelpVisibilityFeatureFlag( SetupUsingGCP );
+export default withFeatureFlag( 'helpVisibility' )( SetupUsingGCP );
