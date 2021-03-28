@@ -39,6 +39,9 @@ import ReportTable from '../../../../../components/ReportTable';
 import { getCurrentDateRangeDayCount } from '../../../../../util/date-range';
 import WidgetHeader from '../../common/WidgetHeader';
 import PieChart from './PieChart';
+import { numFmt } from '../../../../../util';
+import { Fragment } from '@wordpress/element';
+import MiniChart from '../../../../../components/MiniChart';
 // import Layout from '../../../../../components/layout/Layout';
 // import Link from '../../../../components/Link';
 // import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
@@ -83,27 +86,21 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 	}
 
 	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
+	const totalUsers = report[ 0 ].data.totals[ 0 ].values[ 1 ];
+	let i = 0;
 
 	const tableColumns = [
 		{
 			title: __( 'Channel', 'google-site-kit' ),
 			tooltip: __( 'Channel refers to where your traffic originated from', 'google-site-kit' ),
-			Component: ( { row } ) => {
-				const foo = JSON.stringify( row );
-				return (
-					<p>{ foo }</p>
-				);
-			},
+			primary: true,
+			Component: ( { row } ) => row.dimensions[ 0 ],
 		},
 		{
 			title: __( 'Users', 'google-site-kit' ),
 			tooltip: __( 'Number of users that originated from that traffic', 'google-site-kit' ),
-			Component: ( { row } ) => {
-				const foo = JSON.stringify( row );
-				return (
-					<p>{ foo }</p>
-				);
-			},
+			field: 'metrics.0.values.0',
+			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
 		},
 		{
 			title: __( 'New Users', 'google-site-kit' ),
@@ -112,12 +109,8 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 				_n( 'Number of new users to visit your page over last %s day', 'Number of new users to visit your page over last %s days', currentDayCount, 'google-site-kit', ),
 				currentDayCount,
 			),
-			Component: ( { row } ) => {
-				const foo = JSON.stringify( row );
-				return (
-					<p>{ foo }</p>
-				);
-			},
+			field: 'metrics.0.values.1',
+			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
 		},
 		{
 			title: __( 'Sessions', 'google-site-kit' ),
@@ -126,20 +119,23 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 				_n( 'Number of sessions users had on your website over last %s day', 'Number of sessions users had on your website over last %s days', currentDayCount, 'google-site-kit', ),
 				currentDayCount,
 			),
-			Component: ( { row } ) => {
-				const foo = JSON.stringify( row );
-				return (
-					<p>{ foo }</p>
-				);
-			},
+			field: 'metrics.0.values.2',
+			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
 		},
 		{
 			title: __( 'Percentage', 'google-site-kit' ),
 			tooltip: __( 'Percentage of sessions', 'google-site-kit' ),
-			Component: ( { row } ) => {
-				const foo = JSON.stringify( row );
+			field: 'metrics.0.values.1',
+			Component: ( { fieldValue } ) => {
+				const change = fieldValue / totalUsers;
+				i++;
 				return (
-					<p>{ foo }</p>
+					<Fragment key={ 'minichart-analytics-top-as-' + i }>
+						<div className="googlesitekit-table__body-item-chart-wrap">
+							{ numFmt( change, '%' ) }
+							<MiniChart change={ change } index={ i } />
+						</div>
+					</Fragment>
 				);
 			},
 		},
@@ -150,8 +146,6 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		_n( 'Top acquisition channels over the last %s day', 'Top acquisition channels over the last %s days', currentDayCount, 'google-site-kit', ),
 		currentDayCount,
 	);
-
-	debugger; // eslint-disable-line no-debugger
 
 	return (
 		<Widget
@@ -171,22 +165,22 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
 					<div className="
-												mdc-layout-grid__cell
-												mdc-layout-grid__cell--span-4-desktop
-												mdc-layout-grid__cell--span-8-tablet
-												mdc-layout-grid__cell--span-4-phone
-											">
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-4-desktop
+									mdc-layout-grid__cell--span-8-tablet
+									mdc-layout-grid__cell--span-4-phone
+									">
 						<PieChart />
 					</div>
 					<div className="
-												mdc-layout-grid__cell
-												mdc-layout-grid__cell--span-8-desktop
-												mdc-layout-grid__cell--span-8-tablet
-												mdc-layout-grid__cell--span-4-phone
-											">
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-8-desktop
+									mdc-layout-grid__cell--span-8-tablet
+									mdc-layout-grid__cell--span-4-phone
+									">
 						<TableOverflowContainer>
 							<ReportTable
-								rows={ report[ 0 ].data.totals[ 0 ].values }
+								rows={ report[ 0 ].data.rows }
 								columns={ tableColumns }
 							/>
 						</TableOverflowContainer>
@@ -195,46 +189,4 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 			</div>
 		</Widget>
 	);
-	/*
-	return (
-		<Widget
-			noPadding
-			Footer={ () => (
-				<SourceLink
-					className="googlesitekit-data-block__source"
-					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					href={ analyticsMainURL }
-					external
-				/>
-			) }
-		>
-			<TableOverflowContainer>
-				<ReportTable
-					rows={ data[ 0 ].data.rows }
-					columns={ tableColumns }
-				/>
-			</TableOverflowContainer>
-		</Widget>
-	);
-	*/
 }
-
-/*
-const tableColumns = [
-	{
-		title: __( 'Most popular content', 'google-site-kit' ),
-		primary: true,
-		Component: ( { row } ) => {
-			const [ title, path ] = row.dimensions;
-			return <DetailsPermaLinks title={ title } path={ path } />;
-		},
-	},
-	{
-		title: __( 'Views', 'google-site-kit' ),
-		field: 'metrics.0.values.0',
-		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
-	},
-];
-*/
-
-// export default whenActive( { moduleName: 'analytics' } )( DashboardPopularPagesWidget );
