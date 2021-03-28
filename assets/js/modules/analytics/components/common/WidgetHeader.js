@@ -31,8 +31,8 @@ import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/Widg
 import WidgetHeaderCTA from '../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
 const { useSelect } = Data;
 
-export default function WidgetHeader( { title } ) {
-	const visitorsOverview = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'visitors-overview' ) );
+export default function WidgetHeader( { title, reportType } ) {
+	const url = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( reportType ) );
 
 	const headerCTALabel = sprintf(
 		/* translators: %s: module name. */
@@ -43,7 +43,7 @@ export default function WidgetHeader( { title } ) {
 	return (
 		<Fragment>
 			<WidgetHeaderTitle title={ title } />
-			<WidgetHeaderCTA href={ visitorsOverview } label={ headerCTALabel } external />
+			<WidgetHeaderCTA href={ url } label={ headerCTALabel } external />
 		</Fragment>
 	);
 }

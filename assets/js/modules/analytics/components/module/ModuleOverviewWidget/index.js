@@ -90,7 +90,7 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	return (
 		<Widget noPadding
 			Header={ () => (
-				<WidgetHeader title={ title } />
+				<WidgetHeader title={ title } reportType={ 'visitors-overview' } />
 			) }
 		>
 			<Overview

@@ -25,7 +25,7 @@ import { __, _n, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../../datastore/constants';
+import { MODULES_ANALYTICS, STORE_NAME } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 // import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../../components/PreviewTable';
@@ -46,12 +46,14 @@ import PieChart from './PieChart';
 const { useSelect } = Data;
 
 export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
-	const url = global._googlesitekitLegacyData.permaLink;
+	const reportType = 'trafficsources-overview';
+
 	const {
 		hasFinishedResolution,
 		dateRange,
 		report,
 		error,
+		url,
 	} = useSelect( ( select ) => {
 		const reportDateRange = select( CORE_USER ).getDateRange();
 		const reportArgs = {
@@ -61,9 +63,10 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 
 		return {
 			dateRange: reportDateRange,
-			report: select( STORE_NAME ).getReport( reportArgs ),
-			hasFinishedResolution: select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ),
 			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ),
+			hasFinishedResolution: select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ),
+			report: select( STORE_NAME ).getReport( reportArgs ),
+			url: select( MODULES_ANALYTICS ).getServiceReportURL( reportType ),
 		};
 	} );
 
@@ -75,9 +78,7 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	global.console.log( 'here-2' );
-	global.console.log( report );
-	if ( false && isZeroReport( report ) ) {
+	if ( isZeroReport( report ) ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
@@ -156,7 +157,7 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		<Widget
 			noPadding
 			Header={ () => (
-				<WidgetHeader title={ title } />
+				<WidgetHeader title={ title } reportType={ reportType } />
 			) }
 			Footer={ () => (
 				<SourceLink
