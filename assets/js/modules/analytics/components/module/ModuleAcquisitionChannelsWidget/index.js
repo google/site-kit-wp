@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __, _n, _x, sprintf } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -27,24 +28,16 @@ import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS, STORE_NAME } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-// import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../../components/PreviewTable';
 import SourceLink from '../../../../../components/SourceLink';
 import { isZeroReport, trafficSourcesReportDataDefaults } from '../../../util';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
-// import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import ReportTable from '../../../../../components/ReportTable';
-// import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
-// import { numFmt } from '../../../../util';
 import { getCurrentDateRangeDayCount } from '../../../../../util/date-range';
 import WidgetHeader from '../../common/WidgetHeader';
 import PieChart from './PieChart';
 import { numFmt } from '../../../../../util';
-import { Fragment } from '@wordpress/element';
 import MiniChart from '../../../../../components/MiniChart';
-// import Layout from '../../../../../components/layout/Layout';
-// import Link from '../../../../components/Link';
-// import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
 const { useSelect } = Data;
 
