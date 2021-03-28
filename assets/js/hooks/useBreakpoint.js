@@ -24,7 +24,7 @@ import { useWindowWidth } from '@react-hook/window-size/throttled';
 /**
  * Retrieves the current breakpoint.
  *
- * @since n.e.x.t
+ * @since 1.29.0
  *
  * @return {string} The current breakpoint according to the window size.
  */

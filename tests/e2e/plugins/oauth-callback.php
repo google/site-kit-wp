@@ -21,7 +21,7 @@ use Google\Site_Kit\Plugin;
  * Intercept test oAuth request before Site Kit, enable auth plugin, and redirect to auth success URL.
  */
 add_action(
-	'init',
+	'admin_init',
 	function () {
 		if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
 			return;
