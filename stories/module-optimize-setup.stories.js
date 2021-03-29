@@ -43,40 +43,51 @@ function Setup( props ) {
 	);
 }
 
-storiesOf( 'Optimize Module/Setup', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		global._googlesitekitLegacyData.setup.moduleToSetup = 'optimize';
-		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-			{
-				slug: 'optimize',
-				active: true,
-				connected: true,
-			},
-		] );
-		provideModuleRegistrations( registry );
+const withRegistry = ( Story ) => {
+	const registry = createTestRegistry();
+	global._googlesitekitLegacyData.setup.moduleToSetup = 'optimize';
+	provideModules( registry, [
+		{
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		},
+		{
+			slug: 'optimize',
+			active: true,
+			connected: true,
+		},
+	] );
+	provideModuleRegistrations( registry );
 
-		return storyFn( registry );
-	} )
-	.add( 'Start', ( registry ) => {
+	return (
+		<Story registry={ registry } />
+	);
+};
+
+storiesOf( 'Optimize Module/Setup', module )
+	.add( 'Start', ( args, { registry } ) => {
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Start with AMP Experiment JSON Field', ( registry ) => {
+	.add( 'Start with AMP Experiment JSON Field', ( args, { registry } ) => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Start with invalid values', ( registry ) => {
+	.add( 'Start with invalid values', ( args, { registry } ) => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -85,5 +96,9 @@ storiesOf( 'Optimize Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
 ;

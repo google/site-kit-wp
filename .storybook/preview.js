@@ -1,5 +1,5 @@
 /**
- * Storybook config.
+ * Storybook preview config.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,7 +20,7 @@
  * External dependencies
  */
 import cloneDeep from 'lodash/cloneDeep';
-import { addDecorator, configure } from '@storybook/react';
+import { addDecorator } from '@storybook/react';
 
 /**
  * Internal dependencies
@@ -98,14 +98,10 @@ addDecorator( ( story ) => (
 	</div>
 ) );
 
-const req = require.context( '../stories', true, /\.stories\.js$/ );
-
-function loadStories() {
-	req.keys().forEach( ( filename ) => req( filename ) );
-}
-
-configure( loadStories, module );
-
 // TODO Would be nice if this wrote to a file. This logs our Storybook data to the browser console. Currently it gets put in .storybook/storybook-data and used in tests/backstop/scenarios.js.
 // eslint-disable-next-line no-console
 console.log( '__STORYBOOK_CLIENT_API__.raw()', global.__STORYBOOK_CLIENT_API__.raw() );
+
+export const parameters = {
+	layout: 'fullscreen',
+};

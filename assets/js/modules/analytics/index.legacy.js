@@ -26,7 +26,7 @@ import { addFilter } from '@wordpress/hooks';
  */
 import { getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
-import AnalyticsDashboardWidget from './components/dashboard/AnalyticsDashboardWidget';
+import LegacyAnalyticsDashboardWidget from './components/dashboard/LegacyAnalyticsDashboardWidget';
 import LegacyAnalyticsDashboardWidgetTopLevel from './components/dashboard/LegacyAnalyticsDashboardWidgetTopLevel';
 import AnalyticsDashboardDetailsWidgetTopAcquisitionSources from './components/dashboard-details/AnalyticsDashboardDetailsWidgetTopAcquisitionSources';
 import AnalyticsAdSenseDashboardWidgetTopPagesTable from './components/dashboard/AnalyticsAdSenseDashboardWidgetTopPagesTable';
@@ -39,7 +39,7 @@ const slug = 'analytics';
 const modulesData = getModulesData();
 
 if ( modulesData.analytics.active ) {
-	const addAnalyticsDashboardWidget = createAddToFilter( <AnalyticsDashboardWidget /> );
+	const addAnalyticsDashboardWidget = createAddToFilter( <LegacyAnalyticsDashboardWidget /> );
 	const legacyDashboardAllTraffic = createAddToFilter( <LegacyDashboardAllTraffic /> );
 	const addLegacyAnalyticsDashboardWidgetTopLevel = createAddToFilter( <LegacyAnalyticsDashboardWidgetTopLevel /> );
 	const addAnalyticsDashboardDetailsWidget = createAddToFilter( <AnalyticsDashboardDetailsWidgetTopAcquisitionSources /> );
