@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Settings;
+use Google\Site_Kit\Modules\Subscribe_With_Google\ManagePosts;
 
 /**
  * Class representing the Subscribe with Google module.
@@ -44,11 +45,7 @@ final class Subscribe_With_Google extends Module
 			return;
 		}
 
-		// TODO: Add real actions.
-		$silly_meta_tag_fn = function () {
-			printf( '<meta name="swg" content="true" />' );
-		};
-		add_action( 'wp_head', $silly_meta_tag_fn );
+		new ManagePosts();
 	}
 
 	/**
