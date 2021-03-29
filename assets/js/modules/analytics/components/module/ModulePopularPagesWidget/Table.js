@@ -33,9 +33,14 @@ import Link from '../../../../../components/Link';
 import { numFmt } from '../../../../../util';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import ReportTable from '../../../../../components/ReportTable';
+import PreviewTable from '../../../../../components/PreviewTable';
 const { useSelect } = Data;
 
-export default function Table( { report } ) {
+export default function Table( { loaded, report } ) {
+	if ( ! loaded ) {
+		return <PreviewTable padding />;
+	}
+
 	const tableColumns = [
 		{
 			title: __( 'Title', 'google-site-kit' ),
@@ -97,5 +102,6 @@ export default function Table( { report } ) {
 }
 
 Table.propTypes = {
+	loaded: PropTypes.bool.isRequired,
 	report: PropTypes.arrayOf( PropTypes.object ).isRequired,
 };

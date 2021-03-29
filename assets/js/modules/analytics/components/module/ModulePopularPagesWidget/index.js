@@ -72,19 +72,13 @@ export default function ModulePopularPagesWidget( { Widget, WidgetReportError, W
 	const loaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ) );
 	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ) );
 
-	if ( ! loaded ) {
-		// Return NULL while loading to replicate the behavior of the legacy components.
-		return null;
-	}
-
 	const isZero = isZeroReport( report );
-	const reportIsValid = ! error && ! isZero;
 
 	return (
 		<Widget
 			Header={ Header }
-			Footer={ reportIsValid ? Footer : undefined }
-			noPadding={ reportIsValid }
+			Footer={ Footer }
+			noPadding={ ! error && ! isZero }
 		>
 			{ error && (
 				<WidgetReportError moduleSlug="analytics" error={ error } />
@@ -92,8 +86,8 @@ export default function ModulePopularPagesWidget( { Widget, WidgetReportError, W
 			{ ( ! error && isZero ) && (
 				<WidgetReportZero moduleSlug="analytics" />
 			) }
-			{ reportIsValid && (
-				<Table report={ report } />
+			{ ( ! error && ! isZero ) && (
+				<Table loaded={ loaded } report={ report } />
 			) }
 		</Widget>
 	);
