@@ -50,7 +50,7 @@ describe( 'SettingsModule', () => {
 	);
 
 	// Create hash history to interact with HashRouter using `history.push`
-	const history = createHashHistory( { initialEntries: [ '/' ] } );
+	const history = createHashHistory();
 	let registry;
 
 	beforeEach( () => {
@@ -71,7 +71,7 @@ describe( 'SettingsModule', () => {
 	it( 'should display SettingsViewComponent when on module view route.', async () => {
 		history.push( '/connected-services/analytics' );
 
-		const { queryByTestID } = render( <SettingsModuleWithWrapper />, { registry, useRouter: true } );
+		const { queryByTestID } = render( <SettingsModuleWithWrapper />, { history, registry } );
 
 		expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
 	} );
@@ -79,7 +79,7 @@ describe( 'SettingsModule', () => {
 	it( 'should display SettingsEditComponent when on module view route.', async () => {
 		history.push( '/connected-services/analytics/edit' );
 
-		const { queryByTestID } = render( <SettingsModuleWithWrapper />, { registry, useRouter: true } );
+		const { queryByTestID } = render( <SettingsModuleWithWrapper />, { history, registry } );
 
 		expect( queryByTestID( 'edit-component' ) ).toBeInTheDocument();
 	} );
@@ -87,7 +87,7 @@ describe( 'SettingsModule', () => {
 	it( 'should change route when "Edit" link is clicked and switch to SettingsEditComponent.', async () => {
 		history.push( '/connected-services/analytics' );
 
-		const { getByRole, queryByTestID } = render( <SettingsModuleWithWrapper />, { registry, useRouter: true } );
+		const { getByRole, queryByTestID } = render( <SettingsModuleWithWrapper />, { history, registry } );
 
 		fireEvent.click( getByRole( 'link', { name: /edit/i } ) );
 
@@ -98,7 +98,7 @@ describe( 'SettingsModule', () => {
 	it( 'should change route when "Cancel" link is clicked and switch to SettingsViewComponent.', async () => {
 		history.push( '/connected-services/analytics/edit' );
 
-		const { getByRole, queryByTestID } = render( <SettingsModuleWithWrapper />, { registry, useRouter: true } );
+		const { getByRole, queryByTestID } = render( <SettingsModuleWithWrapper />, { history, registry } );
 
 		fireEvent.click( getByRole( 'link', { name: /cancel/i } ) );
 
@@ -109,7 +109,7 @@ describe( 'SettingsModule', () => {
 	it( 'should open accordion on click and change route & DOM correctly', async () => {
 		history.push( '/connected-services' );
 
-		const { getByRole, queryByTestID } = render( <SettingsModuleWithWrapper />, { registry, useRouter: true } );
+		const { getByRole, queryByTestID } = render( <SettingsModuleWithWrapper />, { history, registry } );
 
 		fireEvent.click( getByRole( 'tab' ) );
 		expect( global.location.hash ).toEqual( '#/connected-services/analytics' );
@@ -119,7 +119,7 @@ describe( 'SettingsModule', () => {
 	it( 'should close accordion on click and change route & DOM correctly', async () => {
 		history.push( '/connected-services/analytics' );
 
-		const { getByRole, queryByTestID } = render( <SettingsModuleWithWrapper />, { registry, useRouter: true } );
+		const { getByRole, queryByTestID } = render( <SettingsModuleWithWrapper />, { history, registry } );
 
 		fireEvent.click( getByRole( 'tab' ) );
 		expect( global.location.hash ).toEqual( '#/connected-services' );

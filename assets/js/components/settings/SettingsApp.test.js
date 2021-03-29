@@ -28,9 +28,12 @@ import SettingsApp from './SettingsApp';
 import { render, fireEvent, createTestRegistry, provideModules } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
+const coreUserTrackingSettingsEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/tracking/;
+const coreUserTrackingResponse = { status: 200, body: { enabled: false } };
+
 describe( 'SettingsApp', () => {
 	// Create hash history to interact with HashRouter using `history.push`
-	const history = createHashHistory( { initialEntries: [ '/' ] } );
+	const history = createHashHistory();
 	const getTabID = ( path ) => SettingsApp.basePathToTabIndex[ path ];
 	let registry;
 
@@ -58,23 +61,30 @@ describe( 'SettingsApp', () => {
 	} );
 
 	it( 'should switch to "/connected-services" route when corresponding tab is clicked.', async () => {
+		fetchMock.getOnce( coreUserTrackingSettingsEndpointRegExp, coreUserTrackingResponse );
+
 		history.push( '/admin-settings' );
 
-		const { getAllByRole } = render( <SettingsApp />, { registry, useRouter: true } );
+		const { getAllByRole } = render( <SettingsApp />, { history, registry } );
 
 		fireEvent.click( getAllByRole( 'tab' )[ getTabID( 'connected-services' ) ] );
 		expect( global.location.hash ).toEqual( '#/connected-services' );
 	} );
 
 	it( 'should switch to "/connect-more-services" route when corresponding tab is clicked.', async () => {
-		const { getAllByRole } = render( <SettingsApp />, { registry, useRouter: true } );
+		const { getAllByRole } = render( <SettingsApp />, { history, registry } );
 
 		fireEvent.click( getAllByRole( 'tab' )[ getTabID( 'connect-more-services' ) ] );
 		expect( global.location.hash ).toEqual( '#/connect-more-services' );
 	} );
 
 	it( 'should switch to "/admin-settings" route when corresponding tab is clicked.', async () => {
-		const { getAllByRole } = render( <SettingsApp />, { registry, useRouter: true } );
+		fetchMock.getOnce( coreUserTrackingSettingsEndpointRegExp, coreUserTrackingResponse );
+		fetchMock.postOnce( coreUserTrackingSettingsEndpointRegExp, coreUserTrackingResponse );
+
+		await registry.dispatch( CORE_USER ).setTrackingEnabled( false );
+
+		const { getAllByRole } = render( <SettingsApp />, { history, registry } );
 
 		fireEvent.click( getAllByRole( 'tab' )[ getTabID( 'admin-settings' ) ] );
 		expect( global.location.hash ).toEqual( '#/admin-settings' );

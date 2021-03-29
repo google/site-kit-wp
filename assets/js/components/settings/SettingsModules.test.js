@@ -25,11 +25,12 @@ import { createHashHistory } from 'history';
  * Internal dependencies
  */
 import SettingsModules from './SettingsModules';
-import { render } from '../../../../tests/js/test-utils';
+import { render, createTestRegistry } from '../../../../tests/js/test-utils';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 describe( 'SettingsModules', () => {
 	// Create hash history to interact with HashRouter using `history.push`
-	const history = createHashHistory( { initialEntries: [ '/' ] } );
+	const history = createHashHistory();
 	let savedLocationHash;
 
 	beforeAll( () => {
@@ -48,15 +49,23 @@ describe( 'SettingsModules', () => {
 	it( 'should redirect from #connect to #/connect-more-services', async () => {
 		history.push( '/connect' );
 
-		render( <SettingsModules />, { useRouter: true } );
+		render( <SettingsModules />, { history } );
 
 		expect( global.location.hash ).toEqual( '#/connect-more-services' );
 	} );
 
 	it( 'should redirect from #admin to #/admin-settings', async () => {
+		const registry = createTestRegistry();
+		const coreUserTrackingSettingsEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/tracking/;
+		const coreUserTrackingResponse = { status: 200, body: { enabled: false } };
+		fetchMock.getOnce( coreUserTrackingSettingsEndpointRegExp, coreUserTrackingResponse );
+		fetchMock.postOnce( coreUserTrackingSettingsEndpointRegExp, coreUserTrackingResponse );
+
+		await registry.dispatch( CORE_USER ).setTrackingEnabled( false );
+
 		history.push( '/admin' );
 
-		render( <SettingsModules />, { useRouter: true } );
+		render( <SettingsModules />, { history, registry } );
 
 		expect( global.location.hash ).toEqual( '#/admin-settings' );
 	} );
@@ -64,7 +73,7 @@ describe( 'SettingsModules', () => {
 	it( 'should redirect from #settings to #/connected-services', async () => {
 		history.push( '/settings' );
 
-		render( <SettingsModules />, { useRouter: true } );
+		render( <SettingsModules />, { history } );
 
 		expect( global.location.hash ).toEqual( '#/connected-services' );
 	} );
@@ -72,7 +81,7 @@ describe( 'SettingsModules', () => {
 	it( 'should redirect from #settings/analytics/view to #/connected-services/analytics', async () => {
 		history.push( '/settings/analytics/view' );
 
-		render( <SettingsModules />, { useRouter: true } );
+		render( <SettingsModules />, { history } );
 
 		expect( global.location.hash ).toEqual( '#/connected-services/analytics' );
 	} );
@@ -80,7 +89,7 @@ describe( 'SettingsModules', () => {
 	it( 'should redirect from #settings/adsense/edit to #/connected-services/adsense/edit', async () => {
 		history.push( '/settings/adsense/edit' );
 
-		render( <SettingsModules />, { useRouter: true } );
+		render( <SettingsModules />, { history } );
 
 		expect( global.location.hash ).toEqual( '#/connected-services/adsense/edit' );
 	} );
@@ -88,7 +97,7 @@ describe( 'SettingsModules', () => {
 	it( 'should redirect from unknown location (fallback) to #/connected-services', async () => {
 		history.push( '/UNKNOWN_LOCATION' );
 
-		render( <SettingsModules />, { useRouter: true } );
+		render( <SettingsModules />, { history } );
 
 		expect( global.location.hash ).toEqual( '#/connected-services' );
 	} );

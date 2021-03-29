@@ -3,8 +3,9 @@
  */
 import { render } from '@testing-library/react';
 import { renderHook, act as actHook } from '@testing-library/react-hooks';
-import { HashRouter } from 'react-router-dom';
+import { Router } from 'react-router-dom';
 import invariant from 'invariant';
+import { createMemoryHistory } from 'history';
 
 /**
  * WordPress dependencies
@@ -32,7 +33,7 @@ import { createTestRegistry } from './utils';
  * @param {string[]} [options.features]      Feature flags to enable for this hook render.
  * @param {Function} [options.setupRegistry] A function which accepts the registry instance to configure it.
  * @param {Object}   [options.registry]      A specific registry instance to use. Defaults to a fresh test registry with all stores.
- * @param {boolean}  [options.useRouter]     Decides if wrapped with HashRouter component. Defaults to false, no router.
+ * @param {boolean}  [options.history]       History object for React Router. Defaults to MemoryHistory.
  * @return {Object} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result} as well as the `registry`.
  */
 const customRender = ( ui, options = {} ) => {
@@ -40,23 +41,20 @@ const customRender = ( ui, options = {} ) => {
 		features = [],
 		setupRegistry = ( r ) => r,
 		registry = createTestRegistry(),
-		useRouter = false,
+		history = createMemoryHistory(),
 		...renderOptions
 	} = options;
 
 	invariant( typeof setupRegistry === 'function', 'options.setupRegistry must be a function.' );
 	setupRegistry( registry );
 
-	// Conditionally wrap with `HashRouter` component.
-	const MaybeRouter = ( { children } ) => useRouter ? <HashRouter>{ children }</HashRouter> : children;
-
 	function Wrapper( { children } ) {
 		return (
 			<RegistryProvider value={ registry }>
 				<FeaturesProvider value={ features }>
-					<MaybeRouter>
+					<Router history={ history }>
 						{ children }
-					</MaybeRouter>
+					</Router>
 				</FeaturesProvider>
 			</RegistryProvider>
 		);
