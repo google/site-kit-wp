@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { WithTestRegistry, provideModules } from '../../../../../../../tests/js/utils';
-import { adminbarSearchConsoleMockData, adminbarSearchConsoleOptions } from '../../../datastore/__fixtures__';
+import { wpDashboardImpressionsData, wpDashboardImpressionsArgs } from '../../../datastore/__fixtures__';
 import { STORE_NAME } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from '../../../../../googlesitekit/widgets/datastore/constants';
@@ -51,8 +51,8 @@ export const Performance = () => {
 			{ slug: 'analytics', active: true, connected: true },
 		] );
 
-		dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-		dispatch( STORE_NAME ).receiveGetReport( adminbarSearchConsoleMockData, { options: { ...adminbarSearchConsoleOptions, url: undefined } } );
+		dispatch( CORE_USER ).setReferenceDate( '2021-01-23' );
+		dispatch( STORE_NAME ).receiveGetReport( wpDashboardImpressionsData, { options: wpDashboardImpressionsArgs } );
 	};
 
 	return (
