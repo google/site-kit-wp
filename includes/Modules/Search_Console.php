@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
@@ -51,7 +52,7 @@ use WP_Error;
  */
 final class Search_Console extends Module
 	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner {
-	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Google_URL_Matcher_Trait, Module_With_Assets_Trait;
+	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Google_URL_Matcher_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -538,18 +539,6 @@ final class Search_Console extends Module
 				)
 			),
 		);
-	}
-
-	/**
-	 * Gets an owner ID for the module.
-	 *
-	 * @since 1.16.0
-	 *
-	 * @return int Owner ID.
-	 */
-	public function get_owner_id() {
-		$owner = new Owner_ID( $this->options );
-		return $owner->get();
 	}
 
 }
