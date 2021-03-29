@@ -69,20 +69,45 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 		dimensions: [ 'DATE' ],
 	};
 
-	const currentRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeArgs ) );
-	const previousRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( previousRangeArgs ) );
-	const currentRangeChartData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeChartArgs ) );
-	const previousRangeChartData = useSelect( ( select ) => select( STORE_NAME ).getReport( previousRangeChartArgs ) );
+	const {
+		currentRangeData,
+		previousRangeData,
+		currentRangeLoading,
+		previousRangeLoading,
+		currentRangeError,
+		previousRangeError,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
 
-	const currentRangeLoading = useSelect( ( select ) => ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) );
-	const previousRangeLoading = useSelect( ( select ) => ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousRangeArgs ] ) );
-	const currentRangeChartLoading = useSelect( ( select ) => ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeChartArgs ] ) );
-	const previousRangeChartLoading = useSelect( ( select ) => ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousRangeChartArgs ] ) );
+		return {
+			currentRangeData: store.getReport( currentRangeArgs ),
+			previousRangeData: store.getReport( previousRangeArgs ),
+			currentRangeLoading: ! store.hasFinishedResolution( 'getReport', [ currentRangeArgs ] ),
+			previousRangeLoading: ! store.hasFinishedResolution( 'getReport', [ previousRangeArgs ] ),
+			currentRangeError: store.getErrorForSelector( 'getReport', [ currentRangeArgs ] ),
+			previousRangeError: store.getErrorForSelector( 'getReport', [ previousRangeArgs ] ),
+		};
+	} );
 
-	const currentRangeError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) );
-	const previousRangeError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousRangeArgs ] ) );
-	const currentRangeChartError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeChartArgs ] ) );
-	const previousRangeChartError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousRangeChartArgs ] ) );
+	const {
+		currentRangeChartData,
+		previousRangeChartData,
+		currentRangeChartLoading,
+		previousRangeChartLoading,
+		currentRangeChartError,
+		previousRangeChartError,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+
+		return {
+			currentRangeChartData: store.getReport( currentRangeChartArgs ),
+			previousRangeChartData: store.getReport( previousRangeChartArgs ),
+			currentRangeChartLoading: ! store.hasFinishedResolution( 'getReport', [ currentRangeChartArgs ] ),
+			previousRangeChartLoading: ! store.hasFinishedResolution( 'getReport', [ previousRangeChartArgs ] ),
+			currentRangeChartError: store.getErrorForSelector( 'getReport', [ currentRangeChartArgs ] ),
+			previousRangeChartError: store.getErrorForSelector( 'getReport', [ previousRangeChartArgs ] ),
+		};
+	} );
 
 	if ( currentRangeLoading || previousRangeLoading || currentRangeChartLoading || previousRangeChartLoading ) {
 		return <ProgressBar />;
