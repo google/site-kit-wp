@@ -38,11 +38,11 @@ export default function PropertySelect() {
 		hasResolvedProperties: select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getMatchedProperties' ),
 	} ) );
 
-	const { selectAccount } = useDispatch( MODULES_SEARCH_CONSOLE );
+	const { setPropertyID } = useDispatch( MODULES_SEARCH_CONSOLE );
 	const onChange = useCallback( ( index, item ) => {
 		const newPropertyID = item.dataset.value;
 		if ( propertyID !== newPropertyID ) {
-			selectAccount( newPropertyID );
+			setPropertyID( newPropertyID );
 		}
 	}, [ propertyID ] );
 
