@@ -22,25 +22,32 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
+import { numFmt } from '../../../../../util';
+import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import { isZeroReport } from '../../../util';
+import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
+import Link from '../../../../../components/Link';
+import ReportTable from '../../../../../components/ReportTable';
+import PreviewTable from '../../../../../components/PreviewTable';
 import Header from './Header';
-import Table from './Table';
 import Footer from './Footer';
 const { useSelect } = Data;
 
 export default function ModulePopularPagesWidget( { Widget, WidgetReportError, WidgetReportZero } ) {
-	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
+	const dates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 
 	const args = {
-		startDate,
-		endDate,
+		...dates,
 		dimensions: [
 			'ga:pageTitle',
 			'ga:pagePath',
@@ -72,23 +79,80 @@ export default function ModulePopularPagesWidget( { Widget, WidgetReportError, W
 	const loaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ) );
 	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ) );
 
-	const isZero = isZeroReport( report );
+	if ( ! loaded ) {
+		return (
+			<Widget Header={ Header } Footer={ Footer } noPadding>
+				<PreviewTable padding />
+			</Widget>
+		);
+	}
+
+	if ( error ) {
+		return (
+			<Widget Header={ Header } Footer={ Footer }>
+				<WidgetReportError moduleSlug="analytics" error={ error } />
+			</Widget>
+		);
+	}
+
+	if ( isZeroReport( report ) ) {
+		return (
+			<Widget Header={ Header } Footer={ Footer }>
+				<WidgetReportZero moduleSlug="analytics" />
+			</Widget>
+		);
+	}
+
+	const tableColumns = [
+		{
+			title: __( 'Title', 'google-site-kit' ),
+			description: __( 'Page Title', 'google-site-kit' ),
+			primary: true,
+			Component: ( { row } ) => {
+				const [ title, url ] = row.dimensions;
+				const serviceURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'content-drilldown', {
+					'explorer-table.plotKeys': '[]',
+					'_r.drilldown': `analytics.pagePath:${ url }`,
+					...generateDateRangeArgs( dates ),
+				} ) );
+
+				return (
+					<Link href={ serviceURL } external inherit>
+						{ title }
+					</Link>
+				);
+			},
+		},
+		{
+			title: __( 'Pageviews', 'google-site-kit' ),
+			description: __( 'Pageviews', 'google-site-kit' ),
+			field: 'metrics.0.values.0',
+			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+		},
+		{
+			title: __( 'Unique Pageviews', 'google-site-kit' ),
+			description: __( 'Unique Pageviews', 'google-site-kit' ),
+			hideOnMobile: true,
+			field: 'metrics.0.values.1',
+			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+		},
+		{
+			title: __( 'Bounce Rate', 'google-site-kit' ),
+			description: __( 'Bounce Rate', 'google-site-kit' ),
+			hideOnMobile: true,
+			field: 'metrics.0.values.2',
+			Component: ( { fieldValue } ) => numFmt( Number( fieldValue ) / 100, '%' ),
+		},
+	];
 
 	return (
-		<Widget
-			Header={ Header }
-			Footer={ Footer }
-			noPadding={ ! error && ! isZero }
-		>
-			{ error && (
-				<WidgetReportError moduleSlug="analytics" error={ error } />
-			) }
-			{ ( ! error && isZero ) && (
-				<WidgetReportZero moduleSlug="analytics" />
-			) }
-			{ ( ! error && ! isZero ) && (
-				<Table loaded={ loaded } report={ report } />
-			) }
+		<Widget Header={ Header } Footer={ Footer } noPadding>
+			<TableOverflowContainer>
+				<ReportTable
+					rows={ report[ 0 ].data.rows }
+					columns={ tableColumns }
+				/>
+			</TableOverflowContainer>
 		</Widget>
 	);
 }
