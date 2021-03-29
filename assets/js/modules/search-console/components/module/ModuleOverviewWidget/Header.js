@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -33,14 +38,14 @@ import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/Wid
 import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
-const Header = () => {
+const Header = ( { metrics, selectedStats } ) => {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
 	const searchConsoleDeepArgs = {
 		resource_id: propertyID,
+		metrics: metrics[ selectedStats ]?.metric,
 		...generateDateRangeArgs( dateRangeDates ),
 	};
 	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
@@ -68,6 +73,11 @@ const Header = () => {
 			/>
 		</Fragment>
 	);
+};
+
+Header.propTypes = {
+	metrics: PropTypes.arrayOf( PropTypes.object ),
+	selectedStats: PropTypes.number.isRequired,
 };
 
 export default Header;

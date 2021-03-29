@@ -37,31 +37,8 @@ import GoogleChart from '../../../../../components/GoogleChart';
 import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
-const Stats = ( { data, selectedStats } ) => {
+const Stats = ( { data, metrics, selectedStats } ) => {
 	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
-
-	const metrics = [
-		{
-			color: '#4285f4',
-			label: __( 'Clicks', 'google-site-kit' ),
-			metric: 'clicks',
-		},
-		{
-			color: '#27bcd4',
-			label: __( 'Impressions', 'google-site-kit' ),
-			metric: 'impressions',
-		},
-		{
-			color: '#1b9688',
-			label: __( 'CTR', 'google-site-kit' ),
-			metric: 'ctr',
-		},
-		{
-			color: '#673ab7',
-			label: __( 'Position', 'google-site-kit' ),
-			metric: 'position',
-		},
-	];
 
 	let title = __( 'Search Traffic Summary', 'google-site-kit' );
 	if ( currentEntityTitle ) {
@@ -133,6 +110,12 @@ const Stats = ( { data, selectedStats } ) => {
 			trigger: 'both',
 		},
 		focusTarget: 'category',
+		crosshair: {
+			color: 'gray',
+			opacity: 0.1,
+			orientation: 'vertical',
+			trigger: 'both',
+		},
 	};
 
 	// Split the data in two chunks.
@@ -165,6 +148,7 @@ const Stats = ( { data, selectedStats } ) => {
 
 Stats.propTypes = {
 	data: PropTypes.arrayOf( PropTypes.object ),
+	metrics: PropTypes.arrayOf( PropTypes.object ),
 	selectedStats: PropTypes.number.isRequired,
 };
 

@@ -24,7 +24,8 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useState, useCallback } from '@wordpress/element';
+import { useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -53,9 +54,6 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 	const data = useSelect( ( select ) => select( STORE_NAME ).getReport( reportArgs ) );
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
 	const loading = useSelect( ( select ) => ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
-	const handleStatsSelection = useCallback( ( stat ) => {
-		setSelectedStats( stat );
-	}, [] );
 
 	if ( loading ) {
 		return <ProgressBar />;
@@ -72,24 +70,56 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 	return (
 		<Widget
 			noPadding
-			Header={ Header }
+			Header={
+				() => (
+					<Header
+						metrics={ ModuleOverviewWidget.metrics }
+						selectedStats={ selectedStats }
+					/>
+				)
+			}
 		>
 			<Overview
 				data={ data }
-				handleStatsSelection={ handleStatsSelection }
+				handleStatsSelection={ setSelectedStats }
 				selectedStats={ selectedStats }
 			/>
 
 			<Stats
 				data={ data }
 				selectedStats={ selectedStats }
+				metrics={ ModuleOverviewWidget.metrics }
 			/>
 		</Widget>
 	);
 };
 
+ModuleOverviewWidget.metrics = [
+	{
+		color: '#4285f4',
+		label: __( 'Clicks', 'google-site-kit' ),
+		metric: 'clicks',
+	},
+	{
+		color: '#27bcd4',
+		label: __( 'Impressions', 'google-site-kit' ),
+		metric: 'impressions',
+	},
+	{
+		color: '#1b9688',
+		label: __( 'CTR', 'google-site-kit' ),
+		metric: 'ctr',
+	},
+	{
+		color: '#673ab7',
+		label: __( 'Position', 'google-site-kit' ),
+		metric: 'position',
+	},
+];
+
 ModuleOverviewWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
+	WidgetReportZero: PropTypes.elementType.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
 
