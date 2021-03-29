@@ -26,7 +26,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { useCallback, useRef } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { ENTER } from '@wordpress/keycodes';
 
 /**
@@ -38,6 +38,7 @@ import { Cell, Input, TextField } from '../../material-components';
 import Button from '../Button';
 import CloseIcon from '../../../svg/close.svg';
 import { COMMA } from '../../util/key-codes';
+import VisuallyHiden from '../VisuallyHidden';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputKeywords( { slug, max } ) {
@@ -120,8 +121,17 @@ export default function UserInputKeywords( { slug, max } ) {
 							'googlesitekit-user-input__text-option': values.length > i + 1 || value.length > 0,
 						} ) }
 					>
+						<VisuallyHiden>
+							<label htmlFor={ `${ slug }-keyword-${ i }` } >
+								{ sprintf(
+									/* translators: %s is the keyword number; 1, 2, or 3 */
+									__( 'Keyword %s', 'google-site-kit' ),
+									i + 1, // Keys are zero-indexed; this starts keyword at "1".
+								) }
+							</label>
+						</VisuallyHiden>
 						<TextField
-							label={ i + 1 === values.length ? __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' ) : '' }
+							label={ __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' ) }
 							noLabel
 						>
 							<Input
