@@ -22,6 +22,8 @@
 import { storiesOf } from '@storybook/react';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
+import { Router } from 'react-router-dom';
+import { createHashHistory } from 'history';
 
 /**
  * WordPress dependencies
@@ -81,11 +83,13 @@ storiesOf( 'Settings', module )
 			provideModuleRegistrations( registry );
 		};
 
+		const history = createHashHistory();
+
 		return (
 			<WithTestRegistry callback={ setupRegistry } >
-				<div className="mdc-layout-grid__inner">
-					<SettingsModules activeTab={ 0 } />
-				</div>
+				<Router history={ history }>
+					<SettingsModules />
+				</Router>
 			</WithTestRegistry>
 		);
 	}, {
@@ -142,9 +146,15 @@ storiesOf( 'Settings', module )
 			registry.select( CORE_MODULES ).getModule( 'adsense' );
 			await untilResolved( registry, CORE_MODULES ).getModules();
 		};
+
+		const history = createHashHistory();
+		history.push( '/connect-more-services' );
+
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<SettingsModules activeTab={ 1 } />
+				<Router history={ history }>
+					<SettingsModules />
+				</Router>
 			</WithTestRegistry>
 		);
 	} )
