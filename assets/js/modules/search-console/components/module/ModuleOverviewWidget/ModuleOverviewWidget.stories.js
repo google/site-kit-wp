@@ -46,14 +46,13 @@ export const Performance = () => {
 
 		dispatch( CORE_WIDGETS ).assignWidget( widgetSlug, areaName );
 
-		// Set up the search console and analytics modules stores but provide no data.
 		provideModules( registry, [
 			{ slug: 'search-console', active: true, connected: true },
 			{ slug: 'analytics', active: true, connected: true },
 		] );
 
 		dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-		dispatch( STORE_NAME ).receiveGetReport( adminbarSearchConsoleMockData, { options: adminbarSearchConsoleOptions } );
+		dispatch( STORE_NAME ).receiveGetReport( adminbarSearchConsoleMockData, { options: { ...adminbarSearchConsoleOptions, url: undefined } } );
 	};
 
 	return (
