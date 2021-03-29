@@ -185,7 +185,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertFalse( has_action( 'googlesitekit_reauthorize_user' ) );
 
 		// Response is not used here, so just pass an array.
-		do_action( 'googlesitekit_authorize_user', array( '', '', '' ) );
+		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		do_action( 'googlesitekit_reauthorize_user', array() );
 		$this->assertEquals( '1.1.0', $initial_version->get() );
 	}
@@ -348,7 +348,7 @@ class AuthenticationTest extends TestCase {
 		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
 
 		$this->assertEmpty( $user_input_state->get() );
-		do_action( 'googlesitekit_authorize_user', array( '', '', '' ) );
+		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		$this->assertEquals( User_Input_State::VALUE_REQUIRED, $user_input_state->get() );
 	}
 
@@ -372,6 +372,15 @@ class AuthenticationTest extends TestCase {
 
 		$this->assertEmpty( $user_input_state->get() );
 
+		$mock_scopes = array(
+			'openid',
+			'https://www.googleapis.com/auth/userinfo.profile',
+			'https://www.googleapis.com/auth/userinfo.email',
+			'https://www.googleapis.com/auth/siteverification',
+			'https://www.googleapis.com/auth/webmasters',
+			'https://www.googleapis.com/auth/analytics.readonly',
+		);
+
 		$mock_previous_scopes = array(
 			'openid',
 			'https://www.googleapis.com/auth/userinfo.profile',
@@ -379,8 +388,8 @@ class AuthenticationTest extends TestCase {
 			'https://www.googleapis.com/auth/siteverification',
 			'https://www.googleapis.com/auth/webmasters',
 		);
-		do_action( 'googlesitekit_authorize_user', array( '', '', $mock_previous_scopes ) );
-		$this->assertEquals( User_Input_State::VALUE_EMPTY, $user_input_state->get() );
+		do_action( 'googlesitekit_authorize_user', array(), $mock_scopes, $mock_previous_scopes );
+		$this->assertEmpty( $user_input_state->get() );
 	}
 
 	public function test_require_user_input__without_feature() {
@@ -401,7 +410,7 @@ class AuthenticationTest extends TestCase {
 		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
 
 		$this->assertEmpty( $user_input_state->get() );
-		do_action( 'googlesitekit_authorize_user', array( '', '', '' ) );
+		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		$this->assertEmpty( $user_input_state->get() );
 	}
 
@@ -652,7 +661,7 @@ class AuthenticationTest extends TestCase {
 		};
 
 		add_filter( 'home_url', $home_url_hook );
-		do_action( 'googlesitekit_authorize_user', array( '', '', '' ) );
+		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		remove_filter( 'home_url', $home_url_hook );
 
 		$this->assertEquals( 'https://example.com/subsite/', $options->get( Connected_Proxy_URL::OPTION ) );

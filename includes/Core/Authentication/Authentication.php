@@ -304,8 +304,7 @@ final class Authentication {
 
 		add_action(
 			'googlesitekit_authorize_user',
-			function ( $args ) {
-				$previous_scopes = $args[2];
+			function ( $token_response, $scopes, $previous_scopes ) {
 				if ( ! $this->credentials->using_proxy() ) {
 					return;
 				}
@@ -315,7 +314,9 @@ final class Authentication {
 				if ( empty( $previous_scopes ) ) {
 					$this->require_user_input();
 				}
-			}
+			},
+			10,
+			3
 		);
 
 		add_filter(
