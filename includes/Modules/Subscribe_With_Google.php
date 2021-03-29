@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Modules;
 
-use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
@@ -21,8 +20,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Settings;
-use WP_Error;
-use Exception;
 
 /**
  * Class representing the Subscribe with Google module.
