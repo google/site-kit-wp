@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Modules\Subscribe_With_Google\Filters;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Settings;
 use Google\Site_Kit\Modules\Subscribe_With_Google\ManagePosts;
 
@@ -46,6 +47,7 @@ final class Subscribe_With_Google extends Module
 		}
 
 		new ManagePosts();
+		new Filters( $this->context->is_amp() );
 	}
 
 	/**
