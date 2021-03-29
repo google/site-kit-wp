@@ -46,6 +46,7 @@ function Link( {
 	danger,
 	disabled,
 	to,
+	onClick,
 	'aria-label': ariaLabelProp,
 	...extraProps
 } ) {
@@ -63,12 +64,17 @@ function Link( {
 
 	// Do not create `aria-label` value if it would be identical to `children`, redundant label (bad a11y).
 	const getNonIdenticalLabel = () => {
-		const childIsIdenticalValue = hasStringAsChild && children !== ariaLabelProp;
+		const childIsIdenticalValue = hasStringAsChild && children === ariaLabelProp;
 
 		return childIsIdenticalValue ? undefined : ariaLabelProp;
 	};
 
 	const getElementType = () => {
+		// Force button element if `onClick` prop is passed.
+		if ( typeof onClick !== 'undefined' ) {
+			return 'BUTTON';
+		}
+
 		// Disabled attribute does not alter behavior of anchors or links.
 		if ( disabled ) {
 			return 'BUTTON_DISABLED';
@@ -88,6 +94,7 @@ function Link( {
 
 	const getSemanticLink = ( elementType ) => {
 		switch ( elementType ) {
+			case 'BUTTON':
 			case 'BUTTON_DISABLED': return 'button';
 			case 'ROUTER_LINK': return RouterLink;
 			default: return 'a';
@@ -98,6 +105,7 @@ function Link( {
 		switch ( elementType ) {
 			case 'ANCHOR_EXTERNAL': return getLabelWithText( ARIA_TEXT_EXTERNAL );
 			case 'BUTTON_DISABLED': return getLabelWithText( ARIA_TEXT_DISABLED );
+			case 'BUTTON':
 			default: return getNonIdenticalLabel();
 		}
 	};
@@ -130,6 +138,7 @@ function Link( {
 			) }
 			href={ href }
 			to={ to }
+			onClick={ onClick }
 			target={ target }
 			rel={ rel }
 			disabled={ disabled }
@@ -168,7 +177,6 @@ Link.propTypes = {
 
 Link.defaultProps = {
 	dangerouslySetInnerHTML: undefined,
-	onClick: null,
 	href: '',
 	className: '',
 	arrow: false,
