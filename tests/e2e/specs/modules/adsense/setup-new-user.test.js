@@ -54,7 +54,7 @@ async function proceedToAdsenseSetup() {
 	] );
 }
 
-// Return empty array as a sane default, to avoid real requests.
+// Return empty array as a default, to avoid real requests.
 const defaultHandler = ( request ) => {
 	request.respond( {
 		status: 200,
