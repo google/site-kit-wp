@@ -431,7 +431,9 @@ generateAnalyticsWidgetStories( {
 	},
 	additionalVariantCallbacks: {
 		Loading( dispatch, data, options ) {
-			dispatch( STORE_NAME ).startResolution( 'getReport', [ options[ 0 ] ] );
+			for ( const reportOptions of options ) {
+				dispatch( STORE_NAME ).startResolution( 'getReport', [ reportOptions ] );
+			}
 		},
 	},
 	wrapWidget: false,

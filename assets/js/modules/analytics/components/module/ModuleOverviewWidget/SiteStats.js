@@ -28,11 +28,19 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { extractAnalyticsDashboardData, getTimeColumnVaxisFormat } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
+import PreviewBlock from '../../../../../components/PreviewBlock';
 import { Cell, Row, Grid } from '../../../../../material-components';
 const { useSelect } = Data;
 
-export default function SiteStats( { selectedStat, report } ) {
+export default function SiteStats( { loaded, selectedStat, report } ) {
 	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
+
+	if ( ! loaded ) {
+		return (
+			<PreviewBlock width="100%" height="270px" />
+		);
+	}
+
 	const dataMap = extractAnalyticsDashboardData( report, selectedStat, currentDayCount, 0, 1 );
 
 	let vAxisFormat;
@@ -77,6 +85,7 @@ export default function SiteStats( { selectedStat, report } ) {
 }
 
 SiteStats.propTypes = {
+	loaded: PropTypes.bool.isRequired,
 	selectedStat: PropTypes.number.isRequired,
 	report: PropTypes.arrayOf( PropTypes.object ),
 };

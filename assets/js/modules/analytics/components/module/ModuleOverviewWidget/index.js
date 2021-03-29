@@ -33,7 +33,6 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
 import { isZeroReport } from '../../../util';
-import ProgressBar from '../../../../../components/ProgressBar';
 import Header from './Header';
 import Overview from './Overview';
 import SiteStats from './SiteStats';
@@ -79,32 +78,28 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError, Widge
 	const isZero = isZeroReport( overviewReport );
 	const isError = overviewError || statsError;
 
-	if ( ! overviewLoaded || ! statsLoaded ) {
-		return <ProgressBar />;
-	}
-
-	const reportsAreValid = ! isError && ! isZero;
-
 	return (
 		<Widget
 			Header={ Header }
-			noPadding={ reportsAreValid }
+			noPadding={ ! isError && ! isZero }
 		>
 			{ isError && (
 				<WidgetReportError moduleSlug="analytics" error={ overviewError || statsError } />
 			) }
-			{ ! isError && isZero && (
+			{ ( ! isError && isZero ) && (
 				<WidgetReportZero moduleSlug="analytics" />
 			) }
-			{ reportsAreValid && (
+			{ ( ! isError && ! isZero ) && (
 				<Fragment>
 					<Overview
+						loaded={ overviewLoaded }
 						report={ overviewReport }
 						selectedStat={ selectedStat }
 						handleStatSelection={ setSelectedState }
 					/>
 
 					<SiteStats
+						loaded={ statsLoaded }
 						selectedStat={ selectedStat }
 						report={ statsReport }
 					/>
