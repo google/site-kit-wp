@@ -187,7 +187,7 @@ class AnalyticsTest extends TestCase {
 		remove_all_actions( 'wp_enqueue_scripts' );
 		$analytics->register();
 
-		// Hook `wp_print_head_scripts` on dummy action for capturing.
+		// Hook `wp_print_head_scripts` on placeholder action for capturing.
 		add_action( '__test_print_scripts', 'wp_print_head_scripts' );
 
 		if ( $enabled ) {
@@ -498,7 +498,7 @@ class AnalyticsTest extends TestCase {
 		do_action( 'template_redirect' );
 
 		$head_html = $this->capture_action( 'wp_head' );
-		// Sanity check.
+		// Confidence check.
 		$this->assertNotEmpty( $head_html );
 		// Whether or not tracking is disabled does not affect output of snippet.
 		if ( $settings['useSnippet'] ) {
