@@ -31,7 +31,7 @@ const fetchGetMatchedPropertiesStore = createFetchStore( {
 } );
 
 const baseInitialState = {
-	properties: {},
+	properties: undefined,
 };
 
 const baseActions = {

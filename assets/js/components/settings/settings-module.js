@@ -361,7 +361,7 @@ class SettingsModule extends Component {
 													</Link>
 													}
 												</Fragment>
-											) : ( ( hasSettings || ! autoActivate ) &&
+											) : ( hasSettings &&
 											<Link
 												className="googlesitekit-settings-module__edit-button"
 												onClick={ () => {

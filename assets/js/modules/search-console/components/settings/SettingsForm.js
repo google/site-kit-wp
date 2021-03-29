@@ -1,5 +1,5 @@
 /**
- * Search Console Settings View component
+ * SettingsForm component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -26,21 +26,26 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
-import DisplaySetting from '../../../../components/DisplaySetting';
-import { Cell } from '../../../../material-components';
+import { isValidPropertyID } from '../../util';
+import ErrorText from '../../../../components/ErrorText';
+import { PropertySelect } from '../common/';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
-export default function SettingsView() {
+export default function SettingsForm() {
 	const propertyID = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getPropertyID() );
 
 	return (
-		<Cell>
-			<h5 className="googlesitekit-settings-module__meta-item-type">
-				{ __( 'Connected Property', 'google-site-kit' ) }
-			</h5>
-			<p className="googlesitekit-settings-module__meta-item-data">
-				<DisplaySetting value={ propertyID } />
-			</p>
-		</Cell>
+		<div className="googlesitekit-search-console-settings-fields">
+			<StoreErrorNotices moduleSlug="search-console" storeName={ MODULES_SEARCH_CONSOLE } />
+
+			<div className="googlesitekit-setup-module__inputs">
+				<PropertySelect />
+			</div>
+
+			{ ( propertyID && ! isValidPropertyID( propertyID ) ) && (
+				<ErrorText message={ __( 'Not a valid Property ID.', 'google-site-kit' ) } />
+			) }
+		</div>
 	);
 }

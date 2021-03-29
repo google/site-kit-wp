@@ -1,5 +1,5 @@
 /**
- * Validation utilities.
+ * Search Console common components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,14 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Checks whether the given property ID appears to be valid.
- *
- * @since n.e.x.t
- *
- * @param {*} propertyID Property ID to check.
- * @return {boolean} Whether or not the given property ID is valid.
- */
-export function isValidPropertyID( propertyID ) {
-	return typeof propertyID === 'string' && propertyID.length > 0;
-}
+export { default as PropertySelect } from './PropertySelect';
