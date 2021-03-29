@@ -34,7 +34,7 @@ export default function SettingsView() {
 	const propertyID = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getPropertyID() );
 
 	return (
-		<Cell>
+		<Cell size={ 12 }>
 			<h5 className="googlesitekit-settings-module__meta-item-type">
 				{ __( 'Connected Property', 'google-site-kit' ) }
 			</h5>
