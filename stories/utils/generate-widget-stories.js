@@ -115,14 +115,15 @@ export function generateReportBasedWidgetStories( {
 	}
 
 	const {
-		Loaded: additionalLoadingCallback,
-		'Data Unavailable': additionalDataUnavailableCallback,
+		Loaded: additionalLoadedCallback,
+		Loading: additionalLoadingCallback,
+		DataUnavailable: additionalDataUnavailableCallback,
 		Error: additionalErrorCallback,
 	} = additionalVariantCallbacks;
 
 	// Existing default variants.
 	const defaultVariants = {
-		Loaded: ( { dispatch } ) => {
+		Loaded( { dispatch } ) {
 			if ( Array.isArray( options ) ) {
 				options.forEach( ( option, index ) => {
 					dispatch( datastore ).receiveGetReport( data[ index ], { options: option } );
@@ -132,11 +133,27 @@ export function generateReportBasedWidgetStories( {
 			}
 
 			// Run additional callback if it exists.
+			if ( additionalLoadedCallback ) {
+				additionalLoadedCallback( dispatch, data, options );
+			}
+		},
+		Loading( { dispatch } ) {
+			if ( Array.isArray( options ) ) {
+				options.forEach( ( option, index ) => {
+					dispatch( datastore ).receiveGetReport( data[ index ], { options: option } );
+					dispatch( datastore ).startResolution( 'getReport', [ option ] );
+				} );
+			} else {
+				dispatch( datastore ).receiveGetReport( data, { options } );
+				dispatch( datastore ).startResolution( 'getReport', [ options ] );
+			}
+
+			// Run additional callback if it exists.
 			if ( additionalLoadingCallback ) {
 				additionalLoadingCallback( dispatch, data, options );
 			}
 		},
-		'Data Unavailable': ( { dispatch } ) => {
+		DataUnavailable( { dispatch } ) {
 			if ( Array.isArray( options ) ) {
 				options.forEach( ( option, index ) => {
 					const returnType = Array.isArray( data[ index ] ) ? [] : {};
@@ -151,12 +168,13 @@ export function generateReportBasedWidgetStories( {
 				additionalDataUnavailableCallback( dispatch, data, options );
 			}
 		},
-		Error: ( { dispatch } ) => {
+		Error( { dispatch } ) {
 			const error = {
 				code: 'missing_required_param',
 				message: 'Request parameter is empty: metrics.',
 				data: {},
 			};
+
 			if ( Array.isArray( options ) ) {
 				options.forEach( ( option ) => {
 					dispatch( datastore ).receiveError( error, 'getReport', [ option ] );
@@ -228,7 +246,7 @@ export function generateReportBasedWidgetStories( {
 	}
 
 	Object.keys( variants ).forEach( ( variant ) => {
-		stories.add( variant, ( args, { registry } ) => (
+		stories.add( variant.replace( /([a-z])([A-Z])/, '$1 $2' ), ( args, { registry } ) => (
 			<WithTestRegistry registry={ registry } callback={ variants[ variant ] }>
 				{ widgetElement }
 			</WithTestRegistry>
