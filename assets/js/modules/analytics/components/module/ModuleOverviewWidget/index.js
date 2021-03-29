@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useState, Fragment } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -75,36 +75,36 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError, Widge
 	const statsReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( statsArgs ) );
 	const statsError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ statsArgs ] ) );
 
-	const isZero = isZeroReport( overviewReport );
-	const isError = overviewError || statsError;
+	if ( overviewError || statsError ) {
+		return (
+			<Widget Header={ Header }>
+				<WidgetReportError moduleSlug="analytics" error={ overviewError || statsError } />
+			</Widget>
+		);
+	}
+
+	if ( isZeroReport( overviewReport ) ) {
+		return (
+			<Widget Header={ Header }>
+				<WidgetReportZero moduleSlug="analytics" />
+			</Widget>
+		);
+	}
 
 	return (
-		<Widget
-			Header={ Header }
-			noPadding={ ! isError && ! isZero }
-		>
-			{ isError && (
-				<WidgetReportError moduleSlug="analytics" error={ overviewError || statsError } />
-			) }
-			{ ( ! isError && isZero ) && (
-				<WidgetReportZero moduleSlug="analytics" />
-			) }
-			{ ( ! isError && ! isZero ) && (
-				<Fragment>
-					<Overview
-						loaded={ overviewLoaded }
-						report={ overviewReport }
-						selectedStat={ selectedStat }
-						handleStatSelection={ setSelectedState }
-					/>
+		<Widget Header={ Header } noPadding>
+			<Overview
+				loaded={ overviewLoaded }
+				report={ overviewReport }
+				selectedStat={ selectedStat }
+				handleStatSelection={ setSelectedState }
+			/>
 
-					<SiteStats
-						loaded={ statsLoaded }
-						selectedStat={ selectedStat }
-						report={ statsReport }
-					/>
-				</Fragment>
-			) }
+			<SiteStats
+				loaded={ statsLoaded }
+				selectedStat={ selectedStat }
+				report={ statsReport }
+			/>
 		</Widget>
 	);
 }
