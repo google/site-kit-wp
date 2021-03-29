@@ -33,6 +33,7 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
 import { isZeroReport } from '../../../util';
+import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
 import Overview from './Overview';
 import SiteStats from './SiteStats';
@@ -75,6 +76,15 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError, Widge
 	const statsReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( statsArgs ) );
 	const statsError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ statsArgs ] ) );
 
+	if ( ! overviewLoaded || ! statsLoaded ) {
+		return (
+			<Widget Header={ Header } noPadding>
+				<PreviewBlock width="100%" height="190px" padding />
+				<PreviewBlock width="100%" height="270px" padding />
+			</Widget>
+		);
+	}
+
 	if ( overviewError || statsError ) {
 		return (
 			<Widget Header={ Header }>
@@ -94,14 +104,12 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError, Widge
 	return (
 		<Widget Header={ Header } noPadding>
 			<Overview
-				loaded={ overviewLoaded }
 				report={ overviewReport }
 				selectedStat={ selectedStat }
 				handleStatSelection={ setSelectedState }
 			/>
 
 			<SiteStats
-				loaded={ statsLoaded }
 				selectedStat={ selectedStat }
 				report={ statsReport }
 			/>

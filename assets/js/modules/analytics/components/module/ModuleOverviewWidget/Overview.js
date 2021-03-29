@@ -31,7 +31,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { Grid, Row, Cell } from '../../../../../material-components';
 import DataBlock from '../../../../../components/DataBlock';
-import PreviewBlock from '../../../../../components/PreviewBlock';
 import { calculateChange } from '../../../../../util';
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
@@ -44,20 +43,7 @@ function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
 	};
 }
 
-export default function Overview( props ) {
-	const {
-		loaded,
-		report,
-		selectedStat,
-		handleStatSelection,
-	} = props;
-
-	if ( ! loaded ) {
-		return (
-			<PreviewBlock width="100%" height="190px" />
-		);
-	}
-
+export default function Overview( { report, selectedStat, handleStatSelection } ) {
 	const dataBlocks = [
 		{
 			title: __( 'Users', 'google-site-kit' ),
@@ -110,7 +96,6 @@ export default function Overview( props ) {
 }
 
 Overview.propTypes = {
-	loaded: PropTypes.bool.isRequired,
 	report: PropTypes.arrayOf( PropTypes.object ),
 	selectedStat: PropTypes.number.isRequired,
 	handleStatSelection: PropTypes.func.isRequired,
