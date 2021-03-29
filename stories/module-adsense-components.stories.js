@@ -389,7 +389,7 @@ generateReportBasedWidgetStories( {
 			fieldName: 'ga:adsenseRevenue',
 			sortOrder: 'DESCENDING',
 		},
-		limit: 10,
+		limit: 5,
 	},
 	Component: DashboardTopEarningPagesWidget,
 	wrapWidget: false,
@@ -416,7 +416,8 @@ generateReportBasedWidgetStories( {
 	},
 	additionalVariantCallbacks: {
 		Loaded: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
-		'Data Unavailable': ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
+		Loading: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
+		DataUnavailable: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
 		Error: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
 	},
 } );

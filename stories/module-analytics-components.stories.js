@@ -291,7 +291,7 @@ generateAnalyticsWidgetStories( {
 	},
 	additionalVariantCallbacks: {
 		Loaded: ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
-		'Data Unavailable': ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
+		DataUnavailable: ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
 	},
 } );
 
@@ -389,53 +389,37 @@ generateAnalyticsWidgetStories( {
 	wrapWidget: false,
 } );
 
-const moduleOverviewWidgetReferenceDate = '2021-01-06';
-const moduleOverviewWidgetReports = generateData( [
-	{
-		startDate: '2020-12-09',
-		endDate: '2021-01-05',
-		compareStartDate: '2020-11-11',
-		compareEndDate: '2020-12-08',
-		metrics: [
-			'ga:users',
-			'ga:sessions',
-			'ga:bounceRate',
-			'ga:avgSessionDuration',
-		],
-	},
-	{
-		startDate: '2020-12-09',
-		endDate: '2021-01-05',
-		compareStartDate: '2020-11-11',
-		compareEndDate: '2020-12-08',
-		dimensions: 'ga:date',
-		metrics: [
-			'ga:users',
-			'ga:sessions',
-			'ga:bounceRate',
-			'ga:avgSessionDuration',
-		],
-	},
-] );
-
 generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Module Page/Overview Widget',
-	referenceDate: moduleOverviewWidgetReferenceDate,
-	...moduleOverviewWidgetReports,
+	referenceDate: '2021-01-06',
+	...generateData( [
+		{
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			compareStartDate: '2020-11-11',
+			compareEndDate: '2020-12-08',
+			metrics: [
+				'ga:users',
+				'ga:sessions',
+				'ga:bounceRate',
+				'ga:avgSessionDuration',
+			],
+		},
+		{
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			compareStartDate: '2020-11-11',
+			compareEndDate: '2020-12-08',
+			dimensions: 'ga:date',
+			metrics: [
+				'ga:users',
+				'ga:sessions',
+				'ga:bounceRate',
+				'ga:avgSessionDuration',
+			],
+		},
+	] ),
 	Component: ModuleOverviewWidget,
-	additionalVariants: {
-		Loading: {
-			referenceDate: moduleOverviewWidgetReferenceDate,
-			...moduleOverviewWidgetReports,
-		},
-	},
-	additionalVariantCallbacks: {
-		Loading( dispatch, data, options ) {
-			for ( const reportOptions of options ) {
-				dispatch( STORE_NAME ).startResolution( 'getReport', [ reportOptions ] );
-			}
-		},
-	},
 	wrapWidget: false,
 } );
 

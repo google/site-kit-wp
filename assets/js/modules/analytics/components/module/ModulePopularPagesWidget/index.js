@@ -89,7 +89,7 @@ export default function ModulePopularPagesWidget( { Widget, WidgetReportError, W
 			{ error && (
 				<WidgetReportError moduleSlug="analytics" error={ error } />
 			) }
-			{ ! error && isZero && (
+			{ ( ! error && isZero ) && (
 				<WidgetReportZero moduleSlug="analytics" />
 			) }
 			{ reportIsValid && (
