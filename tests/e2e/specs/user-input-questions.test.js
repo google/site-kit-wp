@@ -183,8 +183,8 @@ describe( 'User Input Settings', () => {
 			async () => {
 				await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 				await pageWait();
-				await page.waitForSelector( '.mdc-tab-bar button.mdc-tab' );
-				await expect( page ).toClick( 'button.mdc-tab', { text: /admin settings/i } );
+				await page.waitForSelector( '.mdc-tab-bar a.mdc-tab' );
+				await expect( page ).toClick( 'a.mdc-tab', { text: /admin settings/i } );
 			},
 		);
 
