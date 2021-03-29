@@ -7,7 +7,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Notification from '../legacy-notifications/notification';
-import ThumbsUpSVG from '../../../svg/thumbs-up.png';
+import ThumbsUpSVG from '../../../svg/thumbs-up.svg';
 
 export default function SettingsAllServicesConnected() {
 	return (

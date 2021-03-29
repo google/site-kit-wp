@@ -62,11 +62,6 @@ function SettingsConnectMoreServices( { modules } ) {
 }
 
 SettingsConnectMoreServices.propTypes = {
-	match: PropTypes.shape( {
-		params: PropTypes.shape( {
-			moduleSlug: PropTypes.string,
-		} ),
-	} ).isRequired,
 	modules: PropTypes.arrayOf(
 		PropTypes.shape( {
 			active: PropTypes.bool,

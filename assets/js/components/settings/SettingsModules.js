@@ -77,7 +77,13 @@ function SettingsModules() {
 	return (
 		<Switch>
 			{ /* Settings Module Routes */ }
-			<Route path={ [ '/connected-services/:moduleSlug/:action', '/connected-services/:moduleSlug', '/connected-services' ] }>
+			<Route path="/connected-services/:moduleSlug/:action">
+				<SettingsConnectedServices modules={ activeModules } />
+			</Route>
+			<Route path="/connected-services/:moduleSlug">
+				<SettingsConnectedServices modules={ activeModules } />
+			</Route>
+			<Route path="/connected-services">
 				<SettingsConnectedServices modules={ activeModules } />
 			</Route>
 			<Route path="/connect-more-services">
