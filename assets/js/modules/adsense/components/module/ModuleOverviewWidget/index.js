@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useState, useCallback } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -41,12 +41,6 @@ import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
 const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } ) => {
-	const metrics = {
-		EARNINGS: __( 'Earnings', 'google-site-kit' ),
-		PAGE_VIEWS_RPM: __( 'Page RPM', 'google-site-kit' ),
-		IMPRESSIONS: __( 'Impressions', 'google-site-kit' ),
-		PAGE_VIEWS_CTR: __( 'Page CTR', 'google-site-kit' ),
-	};
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
 	const {
@@ -57,12 +51,12 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 	} = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
 
 	const currentRangeArgs = {
-		metrics: Object.keys( metrics ),
+		metrics: Object.keys( ModuleOverviewWidget.metrics ),
 		startDate,
 		endDate,
 	};
 	const previousRangeArgs = {
-		metrics: Object.keys( metrics ),
+		metrics: Object.keys( ModuleOverviewWidget.metrics ),
 		startDate: compareStartDate,
 		endDate: compareEndDate,
 	};
@@ -90,10 +84,6 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 	const currentRangeChartError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeChartArgs ] ) );
 	const previousRangeChartError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousRangeChartArgs ] ) );
 
-	const handleStatsSelection = useCallback( ( stat ) => {
-		setSelectedStats( stat );
-	}, [] );
-
 	if ( currentRangeLoading || previousRangeLoading || currentRangeChartLoading || previousRangeChartLoading ) {
 		return <ProgressBar />;
 	}
@@ -117,15 +107,15 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 			Header={ Header }
 		>
 			<Overview
-				metrics={ metrics }
+				metrics={ ModuleOverviewWidget.metrics }
 				currentRangeData={ currentRangeData }
 				previousRangeData={ previousRangeData }
 				selectedStats={ selectedStats }
-				handleStatsSelection={ handleStatsSelection }
+				handleStatsSelection={ setSelectedStats }
 			/>
 
 			<Stats
-				metrics={ metrics }
+				metrics={ ModuleOverviewWidget.metrics }
 				currentRangeData={ currentRangeChartData }
 				previousRangeData={ previousRangeChartData }
 				selectedStats={ selectedStats }
@@ -136,7 +126,15 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 
 ModuleOverviewWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
+	WidgetReportZero: PropTypes.elementType.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
+};
+
+ModuleOverviewWidget.metrics = {
+	EARNINGS: __( 'Earnings', 'google-site-kit' ),
+	PAGE_VIEWS_RPM: __( 'Page RPM', 'google-site-kit' ),
+	IMPRESSIONS: __( 'Impressions', 'google-site-kit' ),
+	PAGE_VIEWS_CTR: __( 'Page CTR', 'google-site-kit' ),
 };
 
 export default ModuleOverviewWidget;

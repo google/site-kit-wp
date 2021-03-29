@@ -143,8 +143,8 @@ const Stats = ( {
 
 Stats.propTypes = {
 	metrics: PropTypes.object,
-	currentRangeData: PropTypes.arrayOf( PropTypes.object ),
-	previousRangeData: PropTypes.arrayOf( PropTypes.object ),
+	currentRangeData: PropTypes.object,
+	previousRangeData: PropTypes.object,
 	selectedStats: PropTypes.number.isRequired,
 };
 

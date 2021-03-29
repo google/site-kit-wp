@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { calculateChange } from '../../../../../util';
-import { Grid, Row, Cell } from '../../../../../material-components';
 import DataBlock from '../../../../../components/DataBlock';
 
 const Overview = ( {
@@ -85,38 +84,30 @@ const Overview = ( {
 	];
 
 	return (
-		<Grid>
-			<Row>
-				{ dataBlocks.map( ( block, i ) => (
-					<Cell
-						key={ i }
-						smSize={ 2 }
-						mdSize={ 2 }
-						lgSize={ 3 }
-					>
-						<DataBlock
-							stat={ i }
-							className={ block.className }
-							title={ block.title }
-							datapoint={ block.datapoint }
-							datapointUnit={ block.datapointUnit }
-							change={ block.change }
-							changeDataUnit={ block.changeDataUnit }
-							context={ block.context }
-							selected={ block.selected }
-							handleStatSelection={ block.handleStatsSelection }
-						/>
-					</Cell>
-				) ) }
-			</Row>
-		</Grid>
+		<div className="googlesitekit-adsense-performance-overview">
+			{ dataBlocks.map( ( block, i ) => (
+				<DataBlock
+					key={ i }
+					stat={ i }
+					className={ block.className }
+					title={ block.title }
+					datapoint={ block.datapoint }
+					datapointUnit={ block.datapointUnit }
+					change={ block.change }
+					changeDataUnit={ block.changeDataUnit }
+					context={ block.context }
+					selected={ block.selected }
+					handleStatSelection={ block.handleStatsSelection }
+				/>
+			) ) }
+		</div>
 	);
 };
 
 Overview.propTypes = {
 	metrics: PropTypes.object,
-	currentRangeData: PropTypes.arrayOf( PropTypes.object ),
-	previousRangeData: PropTypes.arrayOf( PropTypes.object ),
+	currentRangeData: PropTypes.object,
+	previousRangeData: PropTypes.object,
 	selectedStats: PropTypes.number.isRequired,
 	handleStatsSelection: PropTypes.func.isRequired,
 };
