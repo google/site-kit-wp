@@ -80,7 +80,7 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 
 	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 	const totalUsers = report[ 0 ].data.totals[ 0 ].values[ 1 ];
-	let i = 0;
+	let i;
 
 	const tableColumns = [
 		{
@@ -121,7 +121,7 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 			field: 'metrics.0.values.1',
 			Component: ( { fieldValue } ) => {
 				const change = fieldValue / totalUsers;
-				i++;
+				i = Number.isInteger( i ) ? i++ : 0;
 				return (
 					<Fragment key={ 'minichart-analytics-top-as-' + i }>
 						<div className="googlesitekit-table__body-item-chart-wrap">
