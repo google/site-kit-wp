@@ -1,5 +1,8 @@
 name: JS Tests
 
+defaults:
+  timeout-minutes: 20
+
 on:
   push:
     branches:
@@ -15,7 +18,6 @@ jobs:
   js-tests:
     name: JS
     runs-on: ubuntu-latest
-    timeout-minutes: 60
     steps:
       - uses: styfle/cancel-workflow-action
       - uses: actions/checkout@v2

@@ -1,5 +1,8 @@
 name: Code Linting
 
+defaults:
+  timeout-minutes: 20
+
 on:
   push:
     branches:
@@ -15,7 +18,6 @@ jobs:
   js-css-lint:
     name: JS + CSS
     runs-on: ubuntu-latest
-    timeout-minutes: 60
     steps:
       - uses: styfle/cancel-workflow-action
       - uses: actions/checkout@v2

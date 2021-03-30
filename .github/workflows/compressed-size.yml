@@ -1,5 +1,8 @@
 name: Compressed Size
 
+defaults:
+  timeout-minutes: 20
+
 on:
   pull_request:
     branches:
@@ -22,7 +25,6 @@ jobs:
   build:
     name: Check
     runs-on: ubuntu-latest
-    timeout-minutes: 60
     if: github.event.pull_request.draft == false
     steps:
       - uses: styfle/cancel-workflow-action

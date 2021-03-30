@@ -1,5 +1,8 @@
 name: Visual Regression Testing
 
+defaults:
+  timeout-minutes: 20
+
 on:
   pull_request:
     branches:
@@ -15,7 +18,6 @@ jobs:
   visual-regression:
     name: Run VR Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 60
     if: github.event.pull_request.draft == false
     steps:
       - uses: styfle/cancel-workflow-action

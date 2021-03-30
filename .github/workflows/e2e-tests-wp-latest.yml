@@ -1,5 +1,8 @@
 name: E2E Tests
 
+defaults:
+  timeout-minutes: 20
+
 on:
   push:
     branches:
@@ -20,8 +23,6 @@ jobs:
       WP_VERSION: latest
 
     runs-on: ubuntu-latest
-
-    timeout-minutes: 60
 
     if: github.event_name == 'push' || github.event.pull_request.draft == false
 
