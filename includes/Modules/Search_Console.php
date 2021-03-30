@@ -309,7 +309,7 @@ final class Search_Console extends Module
 	}
 
 	/**
-	 * Map Site model objects to primitives used for API responses.
+	 * Map Site model objects to associative arrays used for API responses.
 	 *
 	 * @param array $sites Site objects.
 	 *

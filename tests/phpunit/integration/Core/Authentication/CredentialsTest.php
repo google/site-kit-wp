@@ -106,7 +106,7 @@ class CredentialsTest extends TestCase {
 		$this->assertFalse( $encrypted_options->has( Credentials::OPTION ) );
 		$this->assertFalse( $credentials->has() );
 		// Credentials missing all required keys are considered missing
-		// Test dummy credentials
+		// Test placeholder credentials
 		$this->assertTrue( $credentials->set( array( 'test-credentials' ) ) );
 		$this->assertFalse( $credentials->has() );
 		// Test client id only
