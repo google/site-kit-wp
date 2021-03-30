@@ -74,25 +74,25 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 	const currentRangeChartData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeChartArgs ) );
 	const previousRangeChartData = useSelect( ( select ) => select( STORE_NAME ).getReport( previousRangeChartArgs ) );
 
-	const {
-		loading,
-		error,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-
-		return {
+	const { loading } = useSelect( ( select ) => (
+		{
 			loading:
-				! store.hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) ||
-				! store.hasFinishedResolution( 'getReport', [ previousRangeArgs ] ) ||
-				! store.hasFinishedResolution( 'getReport', [ currentRangeChartArgs ] ) ||
-				! store.hasFinishedResolution( 'getReport', [ previousRangeChartArgs ] ),
+				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) ||
+				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousRangeArgs ] ) ||
+				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeChartArgs ] ) ||
+				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousRangeChartArgs ] ),
+		}
+	) );
+
+	const { error } = useSelect( ( select ) => (
+		{
 			error:
-				store.getErrorForSelector( 'getReport', [ currentRangeArgs ] ) ||
-				store.getErrorForSelector( 'getReport', [ previousRangeArgs ] ) ||
-				store.getErrorForSelector( 'getReport', [ currentRangeChartArgs ] ) ||
-				store.getErrorForSelector( 'getReport', [ previousRangeChartArgs ] ),
-		};
-	} );
+				select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) ||
+				select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousRangeArgs ] ) ||
+				select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeChartArgs ] ) ||
+				select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousRangeChartArgs ] ),
+		}
+	) );
 
 	if ( loading ) {
 		return (
