@@ -34,6 +34,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	public function register() {
 		parent::register();
 
+		$this->register_owned_keys();
+
 		// Backwards compatibility with previous dedicated option.
 		add_filter(
 			'default_option_' . self::OPTION,

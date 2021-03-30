@@ -31,6 +31,7 @@ const baseModuleStore = Modules.createModuleStore( 'search-console', {
 	storeName: STORE_NAME,
 	settingSlugs: [
 		'propertyID',
+		'ownerID',
 	],
 	adminPage: 'googlesitekit-module-search-console',
 	requiresSetup: false,
