@@ -8,7 +8,35 @@ on:
     branches:
       - develop
       - main
+    # Only run if CSS/JS/MD-related files changed.
+    paths:
+      - '**.js'
+      - '**.json'
+      - '**.cjs'
+      - '**.css'
+      - 'packages/**/*.md'
+      - '.eslint*'
+      - '.markdownlint*'
+      - '.nvmrc'
+      - '.prettier*'
+      - '.stylelint*'
+      - '**/package.json'
+      - 'package-lock.json'
   pull_request:
+    # Only run if CSS/JS/MD-related files changed.
+    paths:
+      - '**.js'
+      - '**.json'
+      - '**.cjs'
+      - '**.css'
+      - 'packages/**/*.md'
+      - '.eslint*'
+      - '.markdownlint*'
+      - '.nvmrc'
+      - '.prettier*'
+      - '.stylelint*'
+      - '**/package.json'
+      - 'package-lock.json'
     types:
       - opened
       - reopened
