@@ -17,6 +17,7 @@ $google_services = implode(
 		'Analytics',
 		'AnalyticsReporting',
 		'AdSense',
+		'GoogleAnalyticsAdmin',
 		'Pagespeedonline',
 		'PeopleService',
 		'SearchConsole',
