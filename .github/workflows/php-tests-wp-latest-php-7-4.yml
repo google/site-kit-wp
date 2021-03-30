@@ -15,6 +15,7 @@ jobs:
   php-tests-wp-latest-php-7-4:
     name: PHP (PHP 7.4, WordPress Latest)
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     services:
       mysql:
         image: mysql:5.7
@@ -32,6 +33,7 @@ jobs:
       MYSQL_ROOT_PASSWORD: root
       WP_VERSION: latest
     steps:
+      - uses: styfle/cancel-workflow-action
       - uses: actions/checkout@v2
       - name: Grant database access
         env:
