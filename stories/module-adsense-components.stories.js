@@ -157,6 +157,23 @@ generateReportBasedWidgetStories( {
 	wrapWidget: false,
 } );
 
+const topEarningPagesArgs = {
+	// getDateRangeDates( { offsetDays: 1 }) for 'last-28-days' and '2020-09-12'.
+	startDate: '2020-08-15',
+	endDate: '2020-09-11',
+	dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+	metrics: [
+		{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
+		{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
+		{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
+	],
+	orderby: {
+		fieldName: 'ga:adsenseRevenue',
+		sortOrder: 'DESCENDING',
+	},
+	limit: 5,
+};
+
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense', 'analytics' ],
 	datastore: MODULES_ANALYTICS,
@@ -375,48 +392,19 @@ generateReportBasedWidgetStories( {
 			},
 		},
 	],
-	options: {
-		// getDateRangeDates( { offsetDays: 1 }) for 'last-28-days' and '2020-09-12'.
-		startDate: '2020-08-15',
-		endDate: '2020-09-11',
-		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-		metrics: [
-			{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
-			{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
-			{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
-		],
-		orderby: {
-			fieldName: 'ga:adsenseRevenue',
-			sortOrder: 'DESCENDING',
-		},
-		limit: 10,
-	},
+	options: topEarningPagesArgs,
 	Component: DashboardTopEarningPagesWidget,
 	wrapWidget: false,
 	additionalVariants: {
 		'AdSense Not Linked': {
 			data: [],
-			options: {
-				// getDateRangeDates( { offsetDays: 1 }) for 'last-28-days' and '2020-09-12'.
-				startDate: '2020-08-15',
-				endDate: '2020-09-11',
-				dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-				metrics: [
-					{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
-					{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
-					{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
-				],
-				orderby: {
-					fieldName: 'ga:adsenseRevenue',
-					sortOrder: 'DESCENDING',
-				},
-				limit: 10,
-			},
+			options: topEarningPagesArgs,
 		},
 	},
 	additionalVariantCallbacks: {
 		Loaded: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
-		'Data Unavailable': ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
+		Loading: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
+		DataUnavailable: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
 		Error: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
 	},
 } );
