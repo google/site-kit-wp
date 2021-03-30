@@ -96,8 +96,7 @@ class SettingsModule extends Component {
 
 			await activateOrDeactivateModule(
 				data,
-				this.props.slug,
-				false
+				this.props.slug
 			);
 
 			await refreshAuthentication();
