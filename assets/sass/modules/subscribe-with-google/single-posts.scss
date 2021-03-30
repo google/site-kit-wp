@@ -1,0 +1,28 @@
+/*
+ * Configuration Options
+ */
+@import "../../config/variables";
+
+.swg--paywall-prompt span {
+	opacity: 0.5;
+}
+
+body:not(.swg--is-amp) article:not(.swg--page-is-unlocked) .swg--locked-content {
+	display: none;
+}
+
+body:not(.swg--is-amp) article:not(.swg--page-is-locked) .swg--paywall-prompt {
+	display: none;
+}
+
+html[amp] [href="#swg-contribute"] {
+	display: none;
+}
+
+button.swg-button {
+	background-color: $c-white !important;
+}
+
+button.swg-button:hover {
+	background-color: $c-alabaster !important;
+}

@@ -306,12 +306,13 @@ const webpackConfig = ( env, argv ) => {
 			resolve,
 		},
 
-		// Build the main plugin admin css.
+		// Build the plugin css.
 		{
 			entry: {
 				admin: './assets/sass/admin.scss',
 				adminbar: './assets/sass/adminbar.scss',
 				wpdashboard: './assets/sass/wpdashboard.scss',
+				'subscribe-with-google--single-posts': './assets/sass/modules/subscribe-with-google/single-posts.scss',
 			},
 			module: {
 				rules: [

@@ -86,7 +86,7 @@ final class Header {
 		// Styles for SwgPress.
 		wp_enqueue_style(
 			'subscribe-with-google',
-			plugins_url( '../dist/assets/css/main.css', __FILE__ ),
+			plugins_url( '../../../dist/assets/css/subscribe-with-google--single-posts.css', __FILE__ ),
 			null,
 			1
 		);
