@@ -779,7 +779,8 @@ describe( 'core/modules modules', () => {
 					},
 				);
 
-				// The modules will be undefined whilst loading, so this will return `undefined`.
+				// The modules will be undefined whilst loading, so this will
+				// return `undefined`.
 				const isConnected = registry.select( STORE_NAME ).isModuleConnected( slug );
 				expect( isConnected ).toBeUndefined();
 
@@ -802,49 +803,28 @@ describe( 'core/modules modules', () => {
 
 		describe( 'getModuleFeatures', () => {
 			it( 'returns undefined when no modules are loaded', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-				const slug = 'analytics';
-				const featuresLoaded = registry.select( STORE_NAME ).getModuleFeatures( slug );
+				muteFetch( /^\/google-site-kit\/v1\/core\/modules\/data\/list/, [] );
+				const featuresLoaded = registry.select( STORE_NAME ).getModuleFeatures( 'analytics' );
 
 				// The modules will be undefined whilst loading.
 				expect( featuresLoaded ).toBeUndefined();
 			} );
 
 			it( `returns features when modules are loaded`, async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-				const slug = 'analytics';
-				registry.select( STORE_NAME ).getModuleFeatures( slug );
+				registry.dispatch( STORE_NAME ).receiveGetModules( FIXTURES );
 
-				// Wait for loading to complete.
-				await untilResolved( registry, STORE_NAME ).getModules();
+				const featuresLoaded = registry.select( STORE_NAME ).getModuleFeatures( 'analytics' );
 
-				const featuresLoaded = registry.select( STORE_NAME ).getModuleFeatures( slug );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( featuresLoaded ).toMatchObject( fixturesKeyValue[ slug ].features );
+				// expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( featuresLoaded ).toMatchObject( fixturesKeyValue.analytics.features );
 			} );
 
-			it( `returns an empty array when requesting features for a non-existent module`, async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-				const slug = 'non-existent-slug';
-				registry.select( STORE_NAME ).getModuleFeatures( slug );
+			it( `returns an empty object when requesting features for a non-existent module`, async () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( FIXTURES );
 
-				// Wait for loading to complete.
-				await untilResolved( registry, STORE_NAME ).getModules();
+				const featuresLoaded = registry.select( STORE_NAME ).getModuleFeatures( 'non-existent-slug' );
 
-				const namesLoaded = registry.select( STORE_NAME ).getModuleFeatures( slug );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( namesLoaded ).toMatchObject( {} );
+				expect( featuresLoaded ).toMatchObject( {} );
 			} );
 		} );
 	} );

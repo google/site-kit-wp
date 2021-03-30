@@ -67,7 +67,6 @@ describe( 'SettingsApp', () => {
 				slug: 'pagespeed-insights',
 				active: true,
 				connected: true,
-				setupComplete: true,
 			},
 		] );
 

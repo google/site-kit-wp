@@ -34,17 +34,17 @@ import ThumbsUpSVG from '../../../svg/thumbs-up.svg';
 const { useSelect } = Data;
 
 const SettingsInactiveModules = () => {
-	const modulesData = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
+	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 
-	if ( ! modulesData ) {
+	if ( ! modules ) {
 		return null;
 	}
 
-	const modules = Object.values( modulesData )
+	const inactiveModules = Object.values( modules )
 		.filter( ( module ) => ! module.internal && ! module.active )
 		.sort( ( module1, module2 ) => module1.sort - module2.sort );
 
-	if ( ! modules.length ) {
+	if ( inactiveModules.length === 0 ) {
 		return (
 			<Notification
 				id="no-more-modules"
@@ -65,7 +65,7 @@ const SettingsInactiveModules = () => {
 		>
 			<Grid>
 				<Row>
-					{ modules.map( ( module ) => (
+					{ inactiveModules.map( ( module ) => (
 						<Cell
 							key={ module.slug }
 							size={ 4 }

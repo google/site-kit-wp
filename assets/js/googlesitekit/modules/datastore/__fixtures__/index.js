@@ -32,7 +32,7 @@ import modules from './list.json';
 export function withActive( ...slugs ) {
 	return modules.map( ( module ) => ( {
 		...module,
-		active: module.forceActive || ( slugs.includes( module.slug ) ),
+		active: module.forceActive || slugs.includes( module.slug ),
 	} ) );
 }
 
