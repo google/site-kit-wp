@@ -94,6 +94,37 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
+	const tableColumns = [
+		{
+			title: __( 'Top Earning Pages', 'google-site-kit' ),
+			tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
+			primary: true,
+			Component: ( { row } ) => {
+				const [ title, url ] = row.dimensions;
+				return (
+					<Link
+						href={ url }
+						children={ title }
+						external
+						inherit
+					/>
+				);
+			},
+		},
+		{
+			title: __( 'Revenue', 'google-site-kit' ),
+			tooltip: __( 'Revenue', 'google-site-kit' ),
+			Component: ( { row } ) => numFmt(
+				row.metrics[ 0 ].values[ 0 ],
+				{
+					style: 'decimal',
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2,
+				}
+			),
+		},
+	];
+
 	return (
 		<Widget
 			noPadding
@@ -115,37 +146,6 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 		</Widget>
 	);
 }
-
-const tableColumns = [
-	{
-		title: __( 'Top Earning Pages', 'google-site-kit' ),
-		tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
-		primary: true,
-		Component: ( { row } ) => {
-			const [ title, url ] = row.dimensions;
-			return (
-				<Link
-					href={ url }
-					children={ title }
-					external
-					inherit
-				/>
-			);
-		},
-	},
-	{
-		title: __( 'Revenue', 'google-site-kit' ),
-		tooltip: __( 'Revenue', 'google-site-kit' ),
-		Component: ( { row } ) => numFmt(
-			row.metrics[ 0 ].values[ 0 ],
-			{
-				style: 'decimal',
-				minimumFractionDigits: 2,
-				maximumFractionDigits: 2,
-			}
-		),
-	},
-];
 
 export default compose(
 	whenActive( { moduleName: 'adsense' } ),

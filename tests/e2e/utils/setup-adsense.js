@@ -52,7 +52,7 @@ export async function setupAdSense( settingsOverrides = {} ) {
 			data: { slug: 'adsense', active: true },
 		},
 	} );
-	// Set dummy connection data.
+	// Set placeholder connection data.
 	await wpApiFetch( {
 		method: 'post',
 		path: 'google-site-kit/v1/modules/adsense/data/settings',

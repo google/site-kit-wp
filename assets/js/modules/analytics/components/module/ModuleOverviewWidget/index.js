@@ -32,27 +32,20 @@ import { useState } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
-import WidgetHeader from '../../common/WidgetHeader';
+import { isZeroReport } from '../../../util';
+import PreviewBlock from '../../../../../components/PreviewBlock';
+import Header from './Header';
 import Overview from './Overview';
 import SiteStats from './SiteStats';
-import { _n, sprintf } from '@wordpress/i18n';
 const { useSelect } = Data;
 
-export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
+export default function ModuleOverviewWidget( { Widget, WidgetReportError, WidgetReportZero } ) {
 	const [ selectedStat, setSelectedState ] = useState( 0 );
 
 	const dates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
-
-	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
-
-	const title = sprintf(
-		/* translators: %s: number of days */
-		_n( 'Audience overview for the last %s day', 'Audience overview for the last %s days', currentDayCount, 'google-site-kit', ),
-		currentDayCount
-	);
 
 	const overviewArgs = {
 		...dates,
@@ -83,25 +76,40 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	const statsReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( statsArgs ) );
 	const statsError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ statsArgs ] ) );
 
+	if ( ! overviewLoaded || ! statsLoaded ) {
+		return (
+			<Widget Header={ Header } noPadding>
+				<PreviewBlock width="100%" height="190px" padding />
+				<PreviewBlock width="100%" height="270px" padding />
+			</Widget>
+		);
+	}
+
 	if ( overviewError || statsError ) {
-		return <WidgetReportError statsError={ overviewError || statsError } />;
+		return (
+			<Widget Header={ Header }>
+				<WidgetReportError moduleSlug="analytics" error={ overviewError || statsError } />
+			</Widget>
+		);
+	}
+
+	if ( isZeroReport( overviewReport ) ) {
+		return (
+			<Widget Header={ Header }>
+				<WidgetReportZero moduleSlug="analytics" />
+			</Widget>
+		);
 	}
 
 	return (
-		<Widget noPadding
-			Header={ () => (
-				<WidgetHeader title={ title } reportType={ 'visitors-overview' } />
-			) }
-		>
+		<Widget Header={ Header } noPadding>
 			<Overview
-				loaded={ overviewLoaded }
 				report={ overviewReport }
 				selectedStat={ selectedStat }
 				handleStatSelection={ setSelectedState }
 			/>
 
 			<SiteStats
-				loaded={ statsLoaded }
 				selectedStat={ selectedStat }
 				report={ statsReport }
 			/>
@@ -112,4 +120,5 @@ export default function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 ModuleOverviewWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
+	WidgetReportZero: PropTypes.elementType.isRequired,
 };
