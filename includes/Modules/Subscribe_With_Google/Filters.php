@@ -21,7 +21,7 @@ final class Filters {
 	 * @param bool $is_amp True if an AMP request, false otherwise.
 	 */
 	public function __construct( $is_amp ) {
-		if ( ! $is_amp ) {
+		if ( $is_amp ) {
 			add_filter( 'body_class', array( __CLASS__, 'body_class' ) );
 		}
 
