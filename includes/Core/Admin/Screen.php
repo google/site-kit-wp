@@ -138,7 +138,7 @@ final class Screen {
 					 * An SVG icon file needs to be colored (filled) based on the theme color setting.
 					 *
 					 * This exists in js as wp.svgPainter() per:
-					 * https://github.com/WordPress/WordPress/blob/master/wp-admin/js/svg-painter.js
+					 * https://github.com/WordPress/WordPress/blob/5.7/wp-admin/js/svg-painter.js
 					 *
 					 * The downside of the js approach is that we get a brief flash of an unstyled icon
 					 * until the JS runs.

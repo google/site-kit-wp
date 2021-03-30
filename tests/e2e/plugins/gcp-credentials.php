@@ -13,7 +13,7 @@
  */
 
 /**
- * Provide dummy client configuration, normally provided in step 1 of the set up.
+ * Provide placeholder client configuration, normally provided in step 1 of the set up.
  */
 add_filter(
 	'googlesitekit_oauth_secret',

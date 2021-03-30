@@ -70,7 +70,7 @@ describe( 'Optimize Activation', () => {
 			} else if ( request.url().match( '/wp-json/google-site-kit/v1/modules/analytics/data/report?' ) ) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( { dummy_response: true } ),
+					body: JSON.stringify( { placeholder_response: true } ),
 				} );
 			} else {
 				request.continue();
