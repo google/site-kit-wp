@@ -27,9 +27,13 @@ const { useSelect } = Data;
 
 export default function SettingsEdit() {
 	const isDoingSubmitChanges = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).isDoingSubmitChanges() );
+	const { hasResolvedProperties } = useSelect( ( select ) => ( {
+		matchedProperties: select( MODULES_SEARCH_CONSOLE ).getMatchedProperties(),
+		hasResolvedProperties: select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getMatchedProperties', [] ),
+	} ) );
 
 	let viewComponent;
-	if ( isDoingSubmitChanges ) {
+	if ( isDoingSubmitChanges || ! hasResolvedProperties ) {
 		viewComponent = <ProgressBar />;
 	} else {
 		viewComponent = <SettingsForm />;

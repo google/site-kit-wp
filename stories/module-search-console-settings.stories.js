@@ -24,14 +24,15 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from '../assets/js/modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
+import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 import {
 	createTestRegistry,
 	provideUserAuthentication,
 	provideModules,
 	provideModuleRegistrations,
+	freezeFetch,
 } from '../tests/js/utils';
-import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
 const Settings = createLegacySettingsWrapper( 'search-console' );
 
@@ -39,36 +40,56 @@ const defaultSettings = {
 	propertyID: '',
 };
 
-const withRegistry = ( Story ) => {
-	const registry = createTestRegistry();
-	registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-	provideUserAuthentication( registry );
-	provideModules( registry );
-	provideModuleRegistrations( registry );
+const storyOptions = {
+	decorators: [
+		( Story ) => {
+			const registry = createTestRegistry();
 
-	return (
-		<Story registry={ registry } />
-	);
+			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {} );
+
+			provideUserAuthentication( registry );
+			provideModules( registry );
+			provideModuleRegistrations( registry );
+
+			return <Story registry={ registry } />;
+		},
+	],
 };
 
 storiesOf( 'Search Console Module/Settings', module )
 	.add( 'View, closed', ( args, { registry } ) => {
 		return <Settings isOpen={ false } registry={ registry } />;
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} )
+	}, storyOptions )
 	.add( 'View, open with all settings', ( args, { registry } ) => {
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 			...defaultSettings,
 			propertyID: 'http://example.com/',
 		} );
 
-		return <Settings isOpen={ true } registry={ registry } />;
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} )
+		return <Settings isOpen registry={ registry } />;
+	}, storyOptions )
+	.add( 'Edit, Loading', ( args, { registry } ) => {
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( defaultSettings );
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/search-console\/data\/matched-sites/ );
+
+		return <Settings isOpen isEditing registry={ registry } />;
+	}, storyOptions )
+	.add( 'Edit, with all settings', ( args, { registry } ) => {
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
+			...defaultSettings,
+			propertyID: 'http://example.com/',
+		} );
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetMatchedProperties( [
+			{
+				permissionLevel: 'siteFullUser',
+				siteURL: 'https://www.example.io/',
+			},
+			{
+				permissionLevel: 'siteFullUser',
+				siteURL: 'http://example.com/',
+			},
+		] );
+
+		return <Settings isOpen isEditing registry={ registry } />;
+	}, storyOptions )
 ;
