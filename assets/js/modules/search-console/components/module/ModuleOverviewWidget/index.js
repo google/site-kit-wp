@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../../util';
-import ProgressBar from '../../../../../components/ProgressBar';
+import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
 import Overview from './Overview';
 import Stats from './Stats';
@@ -55,29 +55,42 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
 	const loading = useSelect( ( select ) => ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 
+	const getHeader = () => (
+		<Header
+			metrics={ ModuleOverviewWidget.metrics }
+			selectedStats={ selectedStats }
+		/>
+	);
+
 	if ( loading ) {
-		return <ProgressBar />;
+		return (
+			<Widget Header={ getHeader } noPadding>
+				<PreviewBlock width="100%" height="190px" padding />
+				<PreviewBlock width="100%" height="270px" padding />
+			</Widget>
+		);
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="search-console" error={ error } />;
+		return (
+			<Widget Header={ getHeader }>
+				<WidgetReportError moduleSlug="search-console" error={ error } />
+			</Widget>
+		);
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <WidgetReportZero moduleSlug="search-console" />;
+		return (
+			<Widget Header={ getHeader }>
+				<WidgetReportZero moduleSlug="search-console" />
+			</Widget>
+		);
 	}
 
 	return (
 		<Widget
 			noPadding
-			Header={
-				() => (
-					<Header
-						metrics={ ModuleOverviewWidget.metrics }
-						selectedStats={ selectedStats }
-					/>
-				)
-			}
+			Header={ getHeader }
 		>
 			<Overview
 				data={ data }
