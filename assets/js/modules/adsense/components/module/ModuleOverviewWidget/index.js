@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import { STORE_NAME } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../../util';
-import ProgressBar from '../../../../../components/ProgressBar';
+import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
 import Overview from './Overview';
 import Stats from './Stats';
@@ -69,61 +69,57 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 		dimensions: [ 'DATE' ],
 	};
 
+	const currentRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeArgs ) );
+	const previousRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( previousRangeArgs ) );
+	const currentRangeChartData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeChartArgs ) );
+	const previousRangeChartData = useSelect( ( select ) => select( STORE_NAME ).getReport( previousRangeChartArgs ) );
+
 	const {
-		currentRangeData,
-		previousRangeData,
-		currentRangeLoading,
-		previousRangeLoading,
-		currentRangeError,
-		previousRangeError,
+		loading,
+		error,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
 		return {
-			currentRangeData: store.getReport( currentRangeArgs ),
-			previousRangeData: store.getReport( previousRangeArgs ),
-			currentRangeLoading: ! store.hasFinishedResolution( 'getReport', [ currentRangeArgs ] ),
-			previousRangeLoading: ! store.hasFinishedResolution( 'getReport', [ previousRangeArgs ] ),
-			currentRangeError: store.getErrorForSelector( 'getReport', [ currentRangeArgs ] ),
-			previousRangeError: store.getErrorForSelector( 'getReport', [ previousRangeArgs ] ),
+			loading:
+				! store.hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) ||
+				! store.hasFinishedResolution( 'getReport', [ previousRangeArgs ] ) ||
+				! store.hasFinishedResolution( 'getReport', [ currentRangeChartArgs ] ) ||
+				! store.hasFinishedResolution( 'getReport', [ previousRangeChartArgs ] ),
+			error:
+				store.getErrorForSelector( 'getReport', [ currentRangeArgs ] ) ||
+				store.getErrorForSelector( 'getReport', [ previousRangeArgs ] ) ||
+				store.getErrorForSelector( 'getReport', [ currentRangeChartArgs ] ) ||
+				store.getErrorForSelector( 'getReport', [ previousRangeChartArgs ] ),
 		};
 	} );
 
-	const {
-		currentRangeChartData,
-		previousRangeChartData,
-		currentRangeChartLoading,
-		previousRangeChartLoading,
-		currentRangeChartError,
-		previousRangeChartError,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-
-		return {
-			currentRangeChartData: store.getReport( currentRangeChartArgs ),
-			previousRangeChartData: store.getReport( previousRangeChartArgs ),
-			currentRangeChartLoading: ! store.hasFinishedResolution( 'getReport', [ currentRangeChartArgs ] ),
-			previousRangeChartLoading: ! store.hasFinishedResolution( 'getReport', [ previousRangeChartArgs ] ),
-			currentRangeChartError: store.getErrorForSelector( 'getReport', [ currentRangeChartArgs ] ),
-			previousRangeChartError: store.getErrorForSelector( 'getReport', [ previousRangeChartArgs ] ),
-		};
-	} );
-
-	if ( currentRangeLoading || previousRangeLoading || currentRangeChartLoading || previousRangeChartLoading ) {
-		return <ProgressBar />;
+	if ( loading ) {
+		return (
+			<Widget Header={ Header } noPadding>
+				<PreviewBlock width="100%" height="190px" padding />
+				<PreviewBlock width="100%" height="270px" padding />
+			</Widget>
+		);
 	}
 
-	if ( currentRangeError || previousRangeError || currentRangeChartError || previousRangeChartError ) {
+	if ( error ) {
 		return (
-			<WidgetReportError
-				moduleSlug="adsense"
-				error={ currentRangeError || previousRangeError || currentRangeChartError || previousRangeChartError }
-			/>
+			<Widget Header={ Header }>
+				<WidgetReportError
+					moduleSlug="adsense"
+					error={ error }
+				/>
+			</Widget>
 		);
 	}
 
 	if ( isZeroReport( currentRangeData ) || isZeroReport( currentRangeChartData ) ) {
-		return <WidgetReportZero moduleSlug="adsense" />;
+		return (
+			<Widget Header={ Header }>
+				<WidgetReportZero moduleSlug="adsense" />
+			</Widget>
+		);
 	}
 
 	return (

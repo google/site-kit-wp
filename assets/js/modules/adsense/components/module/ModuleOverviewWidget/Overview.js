@@ -37,69 +37,54 @@ const Overview = ( {
 	const { totals, headers } = currentRangeData;
 	const { totals: previousTotals } = previousRangeData;
 
-	const dataBlocks = [
-		{
-			className: 'googlesitekit-data-block--page-rpm googlesitekit-data-block--button-1',
-			title: metrics[ headers[ 0 ].name ],
-			datapoint: totals[ 0 ],
-			datapointUnit: headers[ 0 ]?.currency,
-			change: calculateChange( previousTotals[ 0 ], totals[ 0 ] ),
-			changeDataUnit: '%',
-			context: 'button',
-			selected: selectedStats === 0,
-			handleStatsSelection,
-		},
-		{
-			className: 'googlesitekit-data-block--page-rpm googlesitekit-data-block--button-2',
-			title: metrics[ headers[ 1 ].name ],
-			datapoint: totals[ 1 ],
-			datapointUnit: headers[ 1 ]?.currency,
-			change: calculateChange( previousTotals[ 1 ], totals[ 1 ] ),
-			changeDataUnit: '%',
-			context: 'button',
-			selected: selectedStats === 1,
-			handleStatsSelection,
-		},
-		{
-			className: 'googlesitekit-data-block--impression googlesitekit-data-block--button-3',
-			title: metrics[ headers[ 2 ].name ],
-			datapoint: totals[ 2 ],
-			change: calculateChange( previousTotals[ 2 ], totals[ 2 ] ),
-			changeDataUnit: '%',
-			context: 'button',
-			selected: selectedStats === 2,
-			handleStatsSelection,
-		},
-		{
-			className: 'googlesitekit-data-block--impression googlesitekit-data-block--button-4',
-			title: metrics[ headers[ 3 ].name ],
-			datapoint: totals[ 3 ],
-			datapointUnit: '%',
-			change: calculateChange( previousTotals[ 3 ], totals[ 3 ] ),
-			changeDataUnit: '%',
-			context: 'button',
-			selected: selectedStats === 3,
-			handleStatsSelection,
-		},
-	];
-
 	return (
 		<div className="googlesitekit-adsense-performance-overview">
-			{ dataBlocks.map( ( block, i ) => (
-				<DataBlock
-					key={ i }
-					stat={ i }
-					className={ block.className }
-					title={ block.title }
-					datapoint={ block.datapoint }
-					datapointUnit={ block.datapointUnit }
-					change={ block.change }
-					changeDataUnit={ block.changeDataUnit }
-					context={ block.context }
-					selected={ block.selected }
-					handleStatSelection={ block.handleStatsSelection }
-				/>
-			) ) }
+			<DataBlock
+				className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-1"
+				title={ metrics[ headers[ 0 ].name ] }
+				datapoint={ totals[ 0 ] }
+				datapointUnit={ headers[ 0 ]?.currency }
+				change={ calculateChange( previousTotals[ 0 ], totals[ 0 ] ) }
+				changeDataUnit="%"
+				context="button"
+				selected={ selectedStats === 0 }
+				handleStatSelection={ () => handleStatsSelection( 0 ) }
+			/>
+
+			<DataBlock
+				className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-2"
+				title={ metrics[ headers[ 1 ].name ] }
+				datapoint={ totals[ 1 ] }
+				datapointUnit={ headers[ 1 ]?.currency }
+				change={ calculateChange( previousTotals[ 1 ], totals[ 1 ] ) }
+				changeDataUnit="%"
+				context="button"
+				selected={ selectedStats === 1 }
+				handleStatSelection={ () => handleStatsSelection( 1 ) }
+			/>
+
+			<DataBlock
+				className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-3"
+				title={ metrics[ headers[ 2 ].name ] }
+				datapoint={ totals[ 2 ] }
+				change={ calculateChange( previousTotals[ 2 ], totals[ 2 ] ) }
+				changeDataUnit="%"
+				context="button"
+				selected={ selectedStats === 2 }
+				handleStatSelection={ () => handleStatsSelection( 2 ) }
+			/>
+
+			<DataBlock
+				className="googlesitekit-data-block--impression googlesitekit-data-block--button-4"
+				title={ metrics[ headers[ 3 ].name ] }
+				datapoint={ totals[ 3 ] }
+				datapointUnit="%"
+				change={ calculateChange( previousTotals[ 3 ], totals[ 3 ] ) }
+				changeDataUnit="%"
+				context="button"
+				selected={ selectedStats === 3 }
+				handleStatSelection={ () => handleStatsSelection( 3 ) }
+			/>
 		</div>
 	);
 };

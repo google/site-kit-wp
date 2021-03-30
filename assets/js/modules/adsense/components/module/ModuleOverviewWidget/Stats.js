@@ -121,7 +121,7 @@ const Stats = ( {
 		currentRangeData,
 		previousRangeData,
 		Object.values( metrics )[ selectedStats ],
-		selectedStats + 1,
+		selectedStats + 1, // Since we have the dimension in first position, then the metrics, we need the +1 offset.
 		currentRangeData.headers[ selectedStats + 1 ],
 	);
 
