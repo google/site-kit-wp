@@ -48,15 +48,6 @@ final class Header {
 			return;
 		}
 
-		// Google's API JavaScript library (https://github.com/google/google-api-javascript-client).
-		wp_enqueue_script(
-			'gapi-js',
-			'https://apis.google.com/js/client:platform.js',
-			null,
-			1,
-			true
-		);
-
 		// SwG's open-source JavaScript library (https://github.com/subscriptions-project/swg-js).
 		wp_enqueue_script(
 			'swg-js',
