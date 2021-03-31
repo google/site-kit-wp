@@ -10,33 +10,27 @@ on:
       - main
     # Only run if CSS/JS/MD-related files changed.
     paths:
-      - '**.js'
-      - '**.json'
-      - '**.cjs'
-      - '**.css'
-      - 'packages/**/*.md'
-      - '.eslint*'
-      - '.markdownlint*'
-      - '.nvmrc'
-      - '.prettier*'
-      - '.stylelint*'
-      - '**/package.json'
-      - 'package-lock.json'
+      - "**.js"
+      - "**.json"
+      - "**.css"
+      - ".eslint*"
+      - ".nvmrc"
+      - ".prettier*"
+      - ".stylelint*"
+      - "**/package.json"
+      - "package-lock.json"
   pull_request:
     # Only run if CSS/JS/MD-related files changed.
     paths:
-      - '**.js'
-      - '**.json'
-      - '**.cjs'
-      - '**.css'
-      - 'packages/**/*.md'
-      - '.eslint*'
-      - '.markdownlint*'
-      - '.nvmrc'
-      - '.prettier*'
-      - '.stylelint*'
-      - '**/package.json'
-      - 'package-lock.json'
+      - "**.js"
+      - "**.json"
+      - "**.css"
+      - ".eslint*"
+      - ".nvmrc"
+      - ".prettier*"
+      - ".stylelint*"
+      - "**/package.json"
+      - "package-lock.json"
     types:
       - opened
       - closed
@@ -50,33 +44,33 @@ jobs:
     runs-on: ubuntu-latest
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true ) ) || github.event.pull_request.head.repo.fork )
     steps:
-    - uses: styfle/cancel-workflow-action
-    - uses: actions/checkout@v2
-    - name: Read .nvmrc
-      run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-      id: nvm
-    - name: Setup Node.js (.nvmrc)
-      uses: actions/setup-node@v1
-      with:
-        node-version: "${{ steps.nvm.outputs.NVMRC }}"
-    - name: Cache Node - npm
-      uses: actions/cache@v2
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-cache-
-    - name: npm install
-      run: |
-        npm ci
-    - name: Build Storybook
-      run: |
-        npm run build:storybook
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v1
-      with:
-        name: storybook-files
-        path: dist
+      - uses: styfle/cancel-workflow-action
+      - uses: actions/checkout@v2
+      - name: Read .nvmrc
+        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
+        id: nvm
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@v1
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+      - name: Cache Node - npm
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-cache-
+      - name: npm install
+        run: |
+          npm ci
+      - name: Build Storybook
+        run: |
+          npm run build:storybook
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: storybook-files
+          path: dist
 
   deploy-storybook:
     name: Deploy Storybook
