@@ -63,7 +63,7 @@ const { withSelect } = Data;
 /**
  * A single module. Keeps track of its own active state and settings.
  */
-class SettingsActiveModule extends Component {
+class LegacySettingsActiveModule extends Component {
 	constructor( props ) {
 		super( props );
 		this.state = {
@@ -474,7 +474,7 @@ class SettingsActiveModule extends Component {
 	}
 }
 
-SettingsActiveModule.propTypes = {
+LegacySettingsActiveModule.propTypes = {
 	name: PropTypes.string,
 	slug: PropTypes.string,
 	homepage: PropTypes.string,
@@ -490,7 +490,7 @@ SettingsActiveModule.propTypes = {
 	onCancel: PropTypes.func,
 };
 
-SettingsActiveModule.defaultProps = {
+LegacySettingsActiveModule.defaultProps = {
 	name: '',
 	slug: '',
 	homepage: '',
@@ -513,4 +513,4 @@ export default compose( [
 			canSubmitChanges,
 		};
 	} ),
-] )( SettingsActiveModule );
+] )( LegacySettingsActiveModule );

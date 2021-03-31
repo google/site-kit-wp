@@ -28,7 +28,7 @@ import { clearWebStorage } from '../../util';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import Data from 'googlesitekit-data';
 import Layout from '../layout/Layout';
-import SettingsModule from './settings-module';
+import SettingsActiveModule from './SettingsActiveModule';
 const { useDispatch, useSelect } = Data;
 
 const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) => {
@@ -84,7 +84,7 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 	return (
 		<Layout>
 			{ sortedModules.map( ( module ) => (
-				<SettingsModule
+				<SettingsActiveModule
 					key={ module.slug }
 					slug={ module.slug }
 					name={ module.name }
