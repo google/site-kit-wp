@@ -17,13 +17,3 @@
  */
 
 export { default as AccountCreate } from './AccountCreate';
-export { default as AccountSelect } from './AccountSelect';
-export { default as AMPContainerNameTextField } from './AMPContainerNameTextField';
-export { default as AMPContainerSelect } from './AMPContainerSelect';
-export { default as ContainerNames } from './ContainerNames';
-export { default as ContainerNameTextField } from './ContainerNameTextField';
-export { default as ContainerSelect } from './ContainerSelect';
-export { default as FormInstructions } from './FormInstructions';
-export { default as UseSnippetSwitch } from './UseSnippetSwitch';
-export { default as WebContainerNameTextField } from './WebContainerNameTextField';
-export { default as WebContainerSelect } from './WebContainerSelect';
