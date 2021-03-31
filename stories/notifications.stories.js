@@ -32,7 +32,7 @@ import { provideModuleRegistrations, provideSiteInfo, WithTestRegistry } from '.
 import UserInputSuccessNotification from '../assets/js/components/notifications/UserInputSuccessNotification';
 import ModulesList from '../assets/js/components/ModulesList';
 import Notification from '../assets/js/components/legacy-notifications/notification';
-import UserInputSettings from '../assets/js/components/notifications/UserInputSettings';
+import UserInputPromptNotification from '../assets/js/components/notifications/UserInputPromptNotification';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
@@ -119,7 +119,7 @@ storiesOf( 'Global/Notifications', module )
 			pageIndex="First detected: 2/13/18"
 		/>
 	) )
-	.add( 'User Input Settings', () => {
+	.add( 'User Input Prompt Notification', () => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( CORE_USER ).receiveUserInputState( 'missing' );
 			provideSiteInfo( registry );
@@ -127,7 +127,7 @@ storiesOf( 'Global/Notifications', module )
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<UserInputSettings onCTAClick={ ( event ) => event.preventDefault() } />
+				<UserInputPromptNotification />
 			</WithTestRegistry>
 		);
 	} )

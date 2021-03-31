@@ -30,14 +30,23 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { STORE_NAME } from './constants';
 import featureTours from '../../../feature-tours';
+import { setItem, getItem } from '../../../googlesitekit/api/cache';
+
 const { createRegistrySelector, createRegistryControl } = Data;
 const { getRegistry } = Data.commonActions;
+
+// Feature tour cooldown period is 2 hours
+export const FEATURE_TOUR_COOLDOWN_SECONDS = 60 * 60 * 2;
+export const FEATURE_TOUR_LAST_DISMISSED_AT = 'feature_tour_last_dismissed_at';
 
 // Actions.
 const DISMISS_TOUR = 'DISMISS_TOUR';
 const RECEIVE_READY_TOURS = 'RECEIVE_READY_TOURS';
 const RECEIVE_TOURS = 'RECEIVE_TOURS';
 const CHECK_TOUR_REQUIREMENTS = 'CHECK_TOUR_REQUIREMENTS';
+const RECEIVE_LAST_DISMISSED_AT = 'RECEIVE_LAST_DISMISSED_AT';
+// Controls.
+const CACHE_LAST_DISMISSED_AT = 'CACHE_LAST_DISMISSED_AT';
 
 const fetchGetDismissedToursStore = createFetchStore( {
 	baseName: 'getDismissedTours',
@@ -69,6 +78,7 @@ const fetchDismissTourStore = createFetchStore( {
 const { fetchDismissTour } = fetchDismissTourStore.actions;
 
 const baseInitialState = {
+	lastDismissedAt: undefined,
 	// Array of dismissed tour slugs.
 	dismissedTourSlugs: undefined,
 	// Array of tour objects.
@@ -100,6 +110,8 @@ const baseActions = {
 				payload: { slug },
 				type: DISMISS_TOUR,
 			};
+			// Save the timestamp to allow the cooldown
+			yield actions.setLastDismissedAt( Date.now() );
 			// Dispatch a request to persist and receive updated dismissed tours.
 			return yield fetchDismissTour( slug );
 		}() );
@@ -121,11 +133,37 @@ const baseActions = {
 			type: RECEIVE_TOURS,
 		};
 	},
+
+	receiveLastDismissedAt( timestamp ) {
+		invariant( timestamp !== undefined, 'A timestamp is required.' );
+		return {
+			type: RECEIVE_LAST_DISMISSED_AT,
+			payload: {
+				timestamp,
+			},
+		};
+	},
+
+	setLastDismissedAt( timestamp ) {
+		invariant( timestamp, 'A timestamp is required.' );
+
+		return ( function* () {
+			yield {
+				type: CACHE_LAST_DISMISSED_AT,
+				payload: { timestamp },
+			};
+			yield {
+				type: RECEIVE_LAST_DISMISSED_AT,
+				payload: { timestamp },
+			};
+		}() );
+	},
 };
 
 const baseControls = {
 	[ CHECK_TOUR_REQUIREMENTS ]: createRegistryControl( ( registry ) => async ( { payload } ) => {
 		const { tour, viewContext } = payload;
+
 		// Check the view context.
 		if ( ! tour.contexts.includes( viewContext ) ) {
 			return false;
@@ -153,6 +191,13 @@ const baseControls = {
 
 		return true;
 	} ),
+	[ CACHE_LAST_DISMISSED_AT ]: async ( { payload } ) => {
+		const { timestamp } = payload;
+
+		await setItem( FEATURE_TOUR_LAST_DISMISSED_AT, timestamp, {
+			ttl: FEATURE_TOUR_COOLDOWN_SECONDS,
+		} );
+	},
 };
 
 const baseReducer = ( state, { type, payload } ) => {
@@ -187,6 +232,13 @@ const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case RECEIVE_LAST_DISMISSED_AT: {
+			return {
+				...state,
+				lastDismissedAt: payload.timestamp,
+			};
+		}
+
 		default: {
 			return state;
 		}
@@ -218,6 +270,12 @@ const baseResolvers = {
 		}
 		yield actions.receiveFeatureToursForView( viewTours, { viewContext } );
 	},
+
+	*getLastDismissedAt() {
+		const { value: lastDismissedAt } = yield Data.commonActions.await( getItem( FEATURE_TOUR_LAST_DISMISSED_AT ) );
+
+		yield actions.receiveLastDismissedAt( lastDismissedAt || null );
+	},
 };
 
 const baseSelectors = {
@@ -225,7 +283,7 @@ const baseSelectors = {
 	 * Gets the list of dismissed tour slugs.
 	 *
 	 * @since 1.27.0
-	 * @since n.e.x.t Renamed from getDismissedTours.
+	 * @since 1.29.0 Renamed from getDismissedTours.
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
@@ -239,7 +297,7 @@ const baseSelectors = {
 	/**
 	 * Gets a list of tour objects that qualify for the given view context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.29.0
 	 *
 	 * @param {Object} state       Data store's state.
 	 * @param {string} viewContext View context.
@@ -253,7 +311,7 @@ const baseSelectors = {
 	/**
 	 * Gets a list of all tour objects.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.29.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
@@ -282,6 +340,48 @@ const baseSelectors = {
 		}
 
 		return dismissedTourSlugs.includes( slug );
+	} ),
+
+	/**
+	 * Gets the timestamp for the last dismissed feature tour.
+	 *
+	 * @since 1.29.0
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(number|null|undefined)} Timestamp of the last dismissal
+	 *                                   `null` if no timestamp exists
+	 *                                    or `undefined` if value is unresolved.
+	 */
+	getLastDismissedAt( state ) {
+		return state.lastDismissedAt;
+	},
+
+	/**
+	 * Determines whether feature tours are on cooldown (i.e. the last
+	 * dismissal was within the cooldown time span).
+	 *
+	 * @since 1.29.0
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {undefined|boolean} Whether feature tours are on cooldown or undefined.
+	 */
+	areFeatureToursOnCooldown: createRegistrySelector( ( select ) => () => {
+		const lastDismissedAt = select( STORE_NAME ).getLastDismissedAt();
+
+		if ( undefined === lastDismissedAt ) {
+			return undefined;
+		}
+		// If null, there is no value in the cache, or it has expired.
+		if ( null === lastDismissedAt ) {
+			return false;
+		}
+
+		const coolDownPeriodMilliseconds = FEATURE_TOUR_COOLDOWN_SECONDS * 1000;
+		const coolDownExpiresAt = lastDismissedAt + coolDownPeriodMilliseconds;
+
+		return Date.now() < coolDownExpiresAt;
 	} ),
 };
 
@@ -313,3 +413,4 @@ export default {
 	resolvers,
 	selectors,
 };
+

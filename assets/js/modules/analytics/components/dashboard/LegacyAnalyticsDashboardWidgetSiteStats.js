@@ -31,22 +31,35 @@ import {
 import GoogleChart from '../../../../components/GoogleChart';
 import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
-import { extractAnalyticsDashboardData, siteAnalyticsReportDataDefaults } from '../../util';
+import { extractAnalyticsDashboardData, getTimeColumnVaxisFormat, siteAnalyticsReportDataDefaults } from '../../util';
 import PreviewBlock from '../../../../components/PreviewBlock';
 
-class AnalyticsDashboardWidgetSiteStats extends Component {
+class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 	constructor( props ) {
 		super( props );
 
 		this.setOptions = this.setOptions.bind( this );
 	}
 
-	setOptions() {
-		const { series, vAxes } = this.props;
+	setOptions( dataMap ) {
+		const {
+			vAxes = null,
+			series,
+			selectedStats,
+		} = this.props;
+		// selectedStats expects an array but only one is ever passed.
+		const [ selectedStat ] = selectedStats;
 
 		const pageTitle = '' === global._googlesitekitLegacyData.pageTitle ? '' : __( 'Users Traffic Summary', 'google-site-kit' );
 
-		const options = {
+		let vAxisFormat;
+		if ( dataMap[ 0 ][ selectedStat ]?.type === 'timeofday' ) {
+			vAxisFormat = getTimeColumnVaxisFormat( dataMap, selectedStat );
+		}
+
+		return {
+			series,
+			vAxes,
 			chart: {
 				title: pageTitle,
 			},
@@ -76,6 +89,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 				},
 			},
 			vAxis: {
+				format: vAxisFormat,
 				gridlines: {
 					color: '#eee',
 				},
@@ -104,11 +118,6 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 				trigger: 'both',
 			},
 		};
-
-		options.series = series;
-		options.vAxes = vAxes;
-
-		return options;
 	}
 
 	render() {
@@ -125,7 +134,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 			return null;
 		}
 
-		const options = this.setOptions();
+		const options = this.setOptions( dataMap );
 
 		return (
 			<section className="googlesitekit-analytics-site-stats mdc-layout-grid">
@@ -145,7 +154,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 }
 
 export default withData(
-	AnalyticsDashboardWidgetSiteStats,
+	LegacyAnalyticsDashboardWidgetSiteStats,
 	[
 		{
 			type: TYPE_MODULES,

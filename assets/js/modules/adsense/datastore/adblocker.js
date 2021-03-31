@@ -58,7 +58,7 @@ export const controls = {
 			return true;
 		}
 		// The above is good about detecting most adblockers.
-		// For the rest, we'll make a dummy request to the favicon with some
+		// For the rest, we'll make a placeholder request to the favicon with some
 		// additional stuff in the query string to (hopefully) trigger a filter.
 		// If this throws, then the fetch request failed completely and we'll assume it was blocked.
 		try {

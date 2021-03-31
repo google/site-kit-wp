@@ -125,7 +125,7 @@ function UserMenu() {
 
 	return (
 		<Fragment>
-			<div className="googlesitekit-user-selector googlesitekit-dropdown-menu mdc-menu-surface--anchor">
+			<div className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor">
 				<Button
 					ref={ menuButtonRef }
 					className="googlesitekit-header__dropdown mdc-button--dropdown"
@@ -149,6 +149,7 @@ function UserMenu() {
 					{ userEmail }
 				</Button>
 				<Menu
+					className="googlesitekit-width-auto"
 					ref={ menuRef }
 					menuOpen={ menuOpen }
 					menuItems={

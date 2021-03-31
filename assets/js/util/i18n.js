@@ -59,7 +59,7 @@ const durationFormat = ( durationInSeconds, options = {} ) => {
  * Not intended to be used directly.
  * Use `numFmt( number, { style: 'duration' } )` instead.
  *
- * @since n.e.x.t
+ * @since 1.29.0
  * @private
  *
  * @param {number} durationInSeconds Duration to format.
@@ -105,7 +105,7 @@ export const createDurationFormat = ( durationInSeconds, options = {} ) => {
 		 * Formats the duration using integers and translatable strings.
 		 * This is only used as a fallback when the above `formatUnit` fails.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.29.0
 		 *
 		 * @return {string} Formatted duration.
 		 */

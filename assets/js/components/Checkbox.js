@@ -22,44 +22,20 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-/**
- * WordPress dependencies
- */
-import { useCallback } from '@wordpress/element';
-
-/**
- * Internal dependencies
- */
-import { MDCFormField, MDCCheckbox } from '../material-components';
-
-const Checkbox = ( {
-	onChange,
-	id,
-	name,
-	value,
-	checked,
-	disabled,
-	children,
-} ) => {
-	const formFieldRef = useCallback( ( el ) => {
-		if ( el !== null ) {
-			const formField = new MDCFormField( el );
-			const checkboxEl = el.querySelector( '.mdc-checkbox' );
-
-			if ( checkboxEl ) {
-				formField.input = new MDCCheckbox( checkboxEl );
-			}
-		}
-	}, [] );
+export default function Checkbox( props ) {
+	const {
+		onChange,
+		id,
+		name,
+		value,
+		checked,
+		disabled,
+		children,
+	} = props;
 
 	return (
-		<div className="mdc-form-field" ref={ formFieldRef }>
-			<div
-				className={ classnames(
-					'mdc-checkbox',
-					{ 'mdc-checkbox--disabled': disabled }
-				) }
-			>
+		<div className="mdc-form-field">
+			<div className={ classnames( 'mdc-checkbox', { 'mdc-checkbox--disabled': disabled } ) }>
 				<input
 					className="mdc-checkbox__native-control"
 					type="checkbox"
@@ -70,6 +46,7 @@ const Checkbox = ( {
 					disabled={ disabled }
 					onChange={ onChange }
 				/>
+
 				<div className="mdc-checkbox__background">
 					<svg className="mdc-checkbox__checkmark" viewBox="0 0 24 24">
 						<path className="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59" />
@@ -77,12 +54,11 @@ const Checkbox = ( {
 					<div className="mdc-checkbox__mixedmark" />
 				</div>
 			</div>
+
 			<label htmlFor={ id }>{ children }</label>
 		</div>
 	);
-};
-
-Checkbox.displayName = 'Checkbox';
+}
 
 Checkbox.propTypes = {
 	onChange: PropTypes.func.isRequired,
@@ -98,5 +74,3 @@ Checkbox.defaultProps = {
 	checked: false,
 	disabled: false,
 };
-
-export default Checkbox;
