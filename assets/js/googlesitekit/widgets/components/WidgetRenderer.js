@@ -53,7 +53,7 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 	if ( OverrideComponent ) {
 		// If OverrideComponent passed, render it instead of the actual widget.
 		// It always needs to be wrapped as it is expected to be a
-		// widget-agnostic component.
+		// widget-unaware component.
 		// The real widget component will still be rendered, but it will be
 		// hidden via CSS.
 		widgetElement = (

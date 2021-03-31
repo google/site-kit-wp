@@ -31,10 +31,10 @@ import {
 import GoogleChart from '../../../../components/GoogleChart';
 import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
-import { extractAnalyticsDashboardData, siteAnalyticsReportDataDefaults } from '../../util';
+import { extractAnalyticsDashboardData, getTimeColumnVaxisFormat, siteAnalyticsReportDataDefaults } from '../../util';
 import PreviewBlock from '../../../../components/PreviewBlock';
 
-class AnalyticsDashboardWidgetSiteStats extends Component {
+class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 	constructor( props ) {
 		super( props );
 
@@ -52,23 +52,9 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 
 		const pageTitle = '' === global._googlesitekitLegacyData.pageTitle ? '' : __( 'Users Traffic Summary', 'google-site-kit' );
 
-		const getTimeColumnVaxisFormat = () => {
-			// Use a format including hours if any of the rows have a non-zero number of hours.
-			for ( let i = 1; i < dataMap.length; i++ ) {
-				// dataMap[ i ] is the row (skipping `0` for headers)
-				// selectedStat is the column index, and `0` for number of hours.
-				if ( dataMap[ i ]?.[ selectedStat ]?.[ 0 ] ) {
-					// Here we use the 24hr time format for hours so that
-					// it starts at zero since we're representing a duration.
-					return 'HH:mm:ss';
-				}
-			}
-			return 'mm:ss';
-		};
-
 		let vAxisFormat;
 		if ( dataMap[ 0 ][ selectedStat ]?.type === 'timeofday' ) {
-			vAxisFormat = getTimeColumnVaxisFormat();
+			vAxisFormat = getTimeColumnVaxisFormat( dataMap, selectedStat );
 		}
 
 		return {
@@ -168,7 +154,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 }
 
 export default withData(
-	AnalyticsDashboardWidgetSiteStats,
+	LegacyAnalyticsDashboardWidgetSiteStats,
 	[
 		{
 			type: TYPE_MODULES,

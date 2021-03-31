@@ -22,7 +22,6 @@ const coreConfig = config || {};
 const coreLaunch = coreConfig.launch || {};
 const coreLaunchArgs = coreLaunch.args || [];
 
-// https://github.com/smooth-code/jest-puppeteer/blob/master/packages/jest-environment-puppeteer/README.md#jest-puppeteerconfigjs
 module.exports = {
 	...coreConfig,
 	launch: {

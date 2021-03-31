@@ -17,12 +17,12 @@ use Google\Site_Kit\Core\Storage\Data_Encryption;
 use Google\Site_Kit\Plugin;
 
 /**
- * Provide dummy client configuration, normally provided in step 1 of the set up.
+ * Provide placeholder client configuration, normally provided in step 1 of the set up.
  */
 require_once __DIR__ . '/gcp-credentials.php';
 
 /**
- * Provide a dummy access token to fake an authenticated state.
+ * Provide a placeholder access token to fake an authenticated state.
  */
 add_filter(
 	'get_user_option_googlesitekit_access_token',

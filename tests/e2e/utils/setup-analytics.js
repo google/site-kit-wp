@@ -31,7 +31,7 @@ export async function setupAnalytics( settingsOverrides = {} ) {
 			data: { slug: 'analytics', active: true },
 		},
 	} );
-	// Set dummy connection data.
+	// Set placeholder connection data.
 	await wpApiFetch( {
 		method: 'post',
 		path: 'google-site-kit/v1/modules/analytics/data/settings',
