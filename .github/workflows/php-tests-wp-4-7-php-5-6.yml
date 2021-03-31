@@ -10,21 +10,21 @@ on:
       - main
     # Only run if PHP-related files changed.
     paths:
-      - '**.php'
-      - 'phpcs.xml.dist'
-      - 'phpmd.xml'
-      - 'phpstan.neon.dist'
-      - 'composer.json'
-      - 'composer.lock'
+      - "**.php"
+      - "phpcs.xml.dist"
+      - "phpmd.xml"
+      - "phpstan.neon.dist"
+      - "composer.json"
+      - "composer.lock"
   pull_request:
     # Only run if PHP-related files changed.
     paths:
-      - '**.php'
-      - 'phpcs.xml.dist'
-      - 'phpmd.xml'
-      - 'phpstan.neon.dist'
-      - 'composer.json'
-      - 'composer.lock'
+      - "**.php"
+      - "phpcs.xml.dist"
+      - "phpmd.xml"
+      - "phpstan.neon.dist"
+      - "composer.json"
+      - "composer.lock"
     types:
       - opened
       - reopened
@@ -49,9 +49,9 @@ jobs:
       MYSQL_PASSWORD: wordpress
       MYSQL_DATABASE: wordpress_test
       MYSQL_ROOT_PASSWORD: root
-      WP_VERSION: '4.7'
+      WP_VERSION: "4.7"
     steps:
-      - uses: styfle/cancel-workflow-action
+      - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
       - name: Grant database access
         env:
@@ -63,7 +63,7 @@ jobs:
         with:
           extensions: mysqli
           tools: composer
-          php-version: '5.6'
+          php-version: "5.6"
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
