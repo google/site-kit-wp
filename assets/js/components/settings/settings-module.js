@@ -92,18 +92,26 @@ class SettingsModule extends Component {
 
 	async activateOrDeactivate() {
 		try {
+			const { active } = this.state;
+			const newActiveState = ! active;
+
 			this.setState( { isSaving: true } );
 
 			await activateOrDeactivateModule(
 				data,
-				this.props.slug
+				this.props.slug,
+				newActiveState
 			);
 
 			await refreshAuthentication();
-			data.invalidateCacheGroup( TYPE_MODULES, this.props.slug );
+
+			if ( false === newActiveState ) {
+				data.invalidateCacheGroup( TYPE_MODULES, this.props.slug );
+			}
 
 			this.setState( {
 				isSaving: false,
+				active: newActiveState,
 			} );
 
 			global.location = getReAuthURL( this.props.slug, false );
