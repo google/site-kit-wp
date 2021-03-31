@@ -70,7 +70,7 @@ final class Filters {
 		if ( count( $content_segments ) > 1 ) {
 			$content_segments[1] = '
 <p class="swg--paywall-prompt" subscriptions-section="content-not-granted">
-	🔒 <span>Subscribe to unlock the rest of this article.</span>
+	🔒 <span>You can read the full article after subscribing.</span>
 	<br />
 	<br />
 	<button
