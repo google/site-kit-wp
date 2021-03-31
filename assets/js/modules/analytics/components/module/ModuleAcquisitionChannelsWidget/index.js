@@ -121,7 +121,7 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 			field: 'metrics.0.values.1',
 			Component: ( { fieldValue } ) => {
 				const change = fieldValue / totalUsers;
-				i = Number.isInteger( i ) ? i++ : 0;
+				i = Number.isInteger( i ) ? ++i : 0;
 				return (
 					<Fragment key={ 'minichart-analytics-top-as-' + i }>
 						<div className="googlesitekit-table__body-item-chart-wrap">
