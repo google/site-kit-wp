@@ -16,6 +16,11 @@ export async function unlockPageMaybe( swg ) {
 		return;
 	}
 
+	// Only continue if there's locked content.
+	if ( ! $article.querySelector( '.swg--locked-content' ) ) {
+		return;
+	}
+
 	const product = getProduct();
 	if ( ! product ) {
 		return;
@@ -26,6 +31,7 @@ export async function unlockPageMaybe( swg ) {
 		$article.classList.add( 'swg--page-is-unlocked' );
 	} else {
 		$article.classList.add( 'swg--page-is-locked' );
+		swg.showOffers();
 	}
 }
 
