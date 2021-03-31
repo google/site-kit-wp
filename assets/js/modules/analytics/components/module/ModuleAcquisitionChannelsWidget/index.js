@@ -33,7 +33,7 @@ import SourceLink from '../../../../../components/SourceLink';
 import { isZeroReport } from '../../../util';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../../components/ReportTable';
-import WidgetHeader from '../../common/WidgetHeader';
+import Header from './Header';
 import PieChart from './PieChart';
 import { numFmt } from '../../../../../util';
 import MiniChart from '../../../../../components/MiniChart';
@@ -153,17 +153,11 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		},
 	];
 
-	const title = sprintf(
-		/* translators: %s: number of days */
-		_n( 'Top acquisition channels over the last %s day', 'Top acquisition channels over the last %s days', dateRangeNumberOfDays, 'google-site-kit', ),
-		dateRangeNumberOfDays,
-	);
-
 	return (
 		<Widget
 			noPadding
 			Header={ () => (
-				<WidgetHeader title={ title } reportType={ reportType } />
+				<Header />
 			) }
 			Footer={ () => (
 				<SourceLink

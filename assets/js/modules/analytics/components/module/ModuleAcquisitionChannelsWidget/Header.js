@@ -19,20 +19,28 @@
 /**
  * WordPress dependencies
  */
-import { sprintf, _x, __ } from '@wordpress/i18n';
+import { sprintf, _x, __, _n } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
-import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
-import WidgetHeaderCTA from '../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
+import { MODULES_ANALYTICS } from '../../../datastore/constants';
+import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
+import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
-export default function WidgetHeader( { title, reportType } ) {
+export default function Header() {
 	const url = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( reportType ) );
+	const dateRangeNumberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
+	const reportType = 'trafficsources-overview';
+	const title = sprintf(
+		/* translators: %s: number of days */
+		_n( 'Top acquisition channels over the last %s day', 'Top acquisition channels over the last %s days', dateRangeNumberOfDays, 'google-site-kit', ),
+		dateRangeNumberOfDays,
+	);
 
 	const headerCTALabel = sprintf(
 		/* translators: %s: module name. */
