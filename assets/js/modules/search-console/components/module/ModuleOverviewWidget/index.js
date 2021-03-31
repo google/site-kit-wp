@@ -55,7 +55,7 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
 	const loading = useSelect( ( select ) => ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 
-	const getHeader = () => (
+	const WidgetHeader = () => (
 		<Header
 			metrics={ ModuleOverviewWidget.metrics }
 			selectedStats={ selectedStats }
@@ -64,7 +64,7 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 
 	if ( loading ) {
 		return (
-			<Widget Header={ getHeader } noPadding>
+			<Widget Header={ WidgetHeader } noPadding>
 				<PreviewBlock width="100%" height="190px" padding />
 				<PreviewBlock width="100%" height="270px" padding />
 			</Widget>
@@ -73,7 +73,7 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 
 	if ( error ) {
 		return (
-			<Widget Header={ getHeader }>
+			<Widget Header={ WidgetHeader }>
 				<WidgetReportError moduleSlug="search-console" error={ error } />
 			</Widget>
 		);
@@ -81,7 +81,7 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 
 	if ( isZeroReport( data ) ) {
 		return (
-			<Widget Header={ getHeader }>
+			<Widget Header={ WidgetHeader }>
 				<WidgetReportZero moduleSlug="search-console" />
 			</Widget>
 		);
@@ -90,7 +90,7 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 	return (
 		<Widget
 			noPadding
-			Header={ getHeader }
+			Header={ WidgetHeader }
 		>
 			<Overview
 				data={ data }

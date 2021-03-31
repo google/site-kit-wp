@@ -39,18 +39,12 @@ import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
 const Header = ( { metrics, selectedStats } ) => {
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
-	const searchConsoleDeepArgs = {
-		resource_id: propertyID,
+	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( {
 		metrics: metrics[ selectedStats ]?.metric,
 		...generateDateRangeArgs( dateRangeDates ),
-	};
-	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
-		path: '/performance/search-analytics',
-		query: searchConsoleDeepArgs,
 	} ) );
 	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 

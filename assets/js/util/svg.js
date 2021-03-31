@@ -17,29 +17,30 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import classnames from 'classnames';
+import { renderToString } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import ChangeArrow from '../components/ChangeArrow';
 
 /**
  * Gets the up/down SVG arrow for Google Chart tooltips.
  *
  * @since n.e.x.t
  *
- * @param {number} difference The difference which can be positive or negative.
+ * @param {number}  difference  The difference which can be positive or negative.
+ * @param {boolean} invertColor Whether we need to reverse the +/- colors.
  * @return {string} SVG for the +/- difference.
  */
-export const getChartDifferenceArrow = ( difference ) => {
+export const getChartDifferenceArrow = ( difference, invertColor = false ) => {
 	if ( Number.isNaN( Number( difference ) ) ) {
 		return '';
 	}
 
-	return (
-		`<svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="${ classnames( 'googlesitekit-change-arrow', {
-			'googlesitekit-change-arrow--up': difference > 0,
-			'googlesitekit-change-arrow--down': difference < 0,
-		} ) }">
-			<path d="M5.625 10L5.625 2.375L9.125 5.875L10 5L5 -1.76555e-07L-2.7055e-07 5L0.875 5.875L4.375 2.375L4.375 10L5.625 10Z" fill="currentColor" />
-		</svg>`
+	return renderToString(
+		<ChangeArrow direction={ difference > 0 ? 'up' : 'down' } invertColor={ invertColor } />
 	);
 };
