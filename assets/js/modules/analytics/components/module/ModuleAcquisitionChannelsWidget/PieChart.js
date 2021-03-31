@@ -74,37 +74,11 @@ export default function PieChart() {
 
 	const processedData = extractAnalyticsDataForPieChart( report, { keyColumnIndex: 1 } );
 
-	const options = {
-		chartArea: {
-			width: '100%',
-			height: '100%',
-		},
-		backgroundColor: 'transparent',
-		height: 250,
-		legend: {
-			alignment: 'center',
-			textStyle: {
-				color: '#5b5b61',
-				fontSize: 12,
-			},
-		},
-		slices: {
-			0: { color: '#178EC5' },
-			1: { color: '#54B23B' },
-			2: { color: '#EB5729' },
-			3: { color: '#ECED33' },
-			4: { color: '#34CBE3' },
-			5: { color: '#82E88E' },
-		},
-		title: null,
-		width: '100%',
-	};
-
 	return (
 		<div className="googlesitekit-chart googlesitekit-chart--pie">
 			<GoogleChart
 				data={ processedData }
-				options={ options }
+				options={ PieChart.options }
 				chartType="pie"
 				id="overview-piechart"
 				loadHeight={ 205 }
@@ -112,3 +86,29 @@ export default function PieChart() {
 		</div>
 	);
 }
+
+PieChart.options = {
+	chartArea: {
+		width: '100%',
+		height: '100%',
+	},
+	backgroundColor: 'transparent',
+	height: 250,
+	legend: {
+		alignment: 'center',
+		textStyle: {
+			color: '#5b5b61',
+			fontSize: 12,
+		},
+	},
+	slices: {
+		0: { color: '#178EC5' },
+		1: { color: '#54B23B' },
+		2: { color: '#EB5729' },
+		3: { color: '#ECED33' },
+		4: { color: '#34CBE3' },
+		5: { color: '#82E88E' },
+	},
+	title: null,
+	width: '100%',
+};
