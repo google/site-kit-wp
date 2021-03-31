@@ -34,13 +34,41 @@ final class Header {
 
 		if ( $is_amp ) {
 			add_action( 'wp_head', array( $this, 'add_amp_scripts' ) );
+		} else {
+			add_action( 'wp_head', array( $this, 'add_web_scripts_and_styles' ) );
 		}
 
-		add_action( 'wp_head', array( $this, 'configure_posts' ) );
+		add_action( 'wp_head', array( $this, 'add_config_json' ) );
 	}
 
-	/** Configures posts for SwG. */
-	public function configure_posts() {
+	/** Adds config JSON to the page. */
+	public function add_config_json() {
+		// SwG only renders on single post pages.
+		if ( ! is_single() ) {
+			return;
+		}
+
+		// Add ld+json for swg-js.
+		$is_free = get_post_meta( get_the_ID(), Key::from( 'free' ), true );
+		$is_free = $is_free ? $is_free : 'false';
+		// TODO: Add this after the AMP WP plugin adds their ld+json.
+		?>
+		<script type=application/ld+json>
+		{
+			"@context": "http:\/\/schema.org",
+			"@type": "NewsArticle",
+			"isAccessibleForFree": <?php echo esc_js( $is_free ); ?>,
+			"isPartOf": {
+				"@type": ["CreativeWork", "Product"],
+				"productID": "<?php echo esc_js( $this->product_id ); ?>"
+			}
+		}
+		</script>
+		<?php
+	}
+
+	/** Adds web scripts and styles to the page. */
+	public function add_web_scripts_and_styles() {
 		// SwG only renders on single post pages.
 		if ( ! is_single() ) {
 			return;
@@ -71,24 +99,6 @@ final class Header {
 			null,
 			1
 		);
-
-		// Add ld+json for swg-js.
-		$is_free = get_post_meta( get_the_ID(), Key::from( 'free' ), true );
-		$is_free = $is_free ? $is_free : 'false';
-		// TODO: Add this after the AMP WP plugin adds their ld+json.
-		?>
-		<script type=application/ld+json>
-		{
-			"@context": "http:\/\/schema.org",
-			"@type": "NewsArticle",
-			"isAccessibleForFree": <?php echo esc_js( $is_free ); ?>,
-			"isPartOf": {
-				"@type": ["CreativeWork", "Product"],
-				"productID": "<?php echo esc_js( $this->product_id ); ?>"
-			}
-		}
-		</script>
-		<?php
 	}
 
 	/** Adds AMP scripts to the page. */
