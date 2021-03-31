@@ -31,16 +31,6 @@ let baseModuleStore = Modules.createModuleStore( 'subscribe-with-google', {
 		'revenueModel',
 		'products',
 		'defaultProductPerPostType',
-
-		// TODO: Delete these Tag Manager slugs.
-		'accountID',
-		'ampContainerID',
-		'containerID',
-		'internalContainerID',
-		'internalAMPContainerID',
-		'useSnippet',
-		'ownerID',
-		'gaPropertyID',
 	],
 	submitChanges,
 	validateCanSubmitChanges,

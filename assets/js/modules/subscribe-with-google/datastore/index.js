@@ -23,20 +23,10 @@ import Data from 'googlesitekit-data';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
 import { STORE_NAME } from './constants';
 import baseModuleStore from './base';
-import accounts from './accounts';
-import containers from './containers';
-import tags from './tags';
-import versions from './versions';
-import service from './service';
 
 const store = Data.combineStores(
 	baseModuleStore,
-	accounts,
-	containers,
-	tags,
-	versions,
 	createSnapshotStore( STORE_NAME ),
-	service
 );
 
 export const {
