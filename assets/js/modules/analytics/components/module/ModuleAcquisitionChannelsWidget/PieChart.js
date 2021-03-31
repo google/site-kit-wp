@@ -21,6 +21,7 @@
  */
 import GoogleChart from '../../../../../components/GoogleChart';
 import { extractAnalyticsDataForPieChart } from '../../../util';
+import PropTypes from 'prop-types';
 
 export default function PieChart( { report } ) {
 	const processedData = extractAnalyticsDataForPieChart( report, { keyColumnIndex: 1 } );
@@ -62,4 +63,8 @@ PieChart.options = {
 	},
 	title: null,
 	width: '100%',
+};
+
+PieChart.propTypes = {
+	report: PropTypes.arrayOf( PropTypes.object ),
 };
