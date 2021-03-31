@@ -11,18 +11,14 @@ on:
     # Only run if PHP-related files changed.
     paths:
       - "**.php"
-      - "phpcs.xml.dist"
-      - "phpmd.xml"
-      - "phpstan.neon.dist"
+      - "phpunit*.xml*"
       - "composer.json"
       - "composer.lock"
   pull_request:
     # Only run if PHP-related files changed.
     paths:
       - "**.php"
-      - "phpcs.xml.dist"
-      - "phpmd.xml"
-      - "phpstan.neon.dist"
+      - "phpunit*.xml*"
       - "composer.json"
       - "composer.lock"
     types:
