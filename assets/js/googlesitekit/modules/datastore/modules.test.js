@@ -810,7 +810,7 @@ describe( 'core/modules modules', () => {
 				expect( featuresLoaded ).toBeUndefined();
 			} );
 
-			it( `returns features when modules are loaded`, async () => {
+			it( 'returns features when modules are loaded', async () => {
 				registry.dispatch( STORE_NAME ).receiveGetModules( FIXTURES );
 
 				const featuresLoaded = registry.select( STORE_NAME ).getModuleFeatures( 'analytics' );
@@ -818,7 +818,7 @@ describe( 'core/modules modules', () => {
 				expect( featuresLoaded ).toMatchObject( fixturesKeyValue.analytics.features );
 			} );
 
-			it( `returns an empty object when requesting features for a non-existent module`, async () => {
+			it( 'returns an empty object when requesting features for a non-existent module', async () => {
 				registry.dispatch( STORE_NAME ).receiveGetModules( FIXTURES );
 
 				const featuresLoaded = registry.select( STORE_NAME ).getModuleFeatures( 'non-existent-slug' );
