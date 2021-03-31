@@ -697,7 +697,7 @@ final class OAuth_Client {
 		$refresh_token = $this->get_client()->getRefreshToken();
 		$this->set_refresh_token( $refresh_token );
 
-		// Get granted scopes.
+		// Store the previously granted scopes for use in the action below before they're updated.
 		$previous_scopes = $this->get_granted_scopes();
 
 		// Update granted scopes.
@@ -734,6 +734,8 @@ final class OAuth_Client {
 		 *
 		 * @since 1.3.0
 		 * @since 1.6.0 The $token_response parameter was added.
+		 * @since n.e.x.t The $scopes parameter was added.
+		 * @since n.e.x.t The $prevous_scopes parameter was added.s
 		 *
 		 * @param array $token_response Token response data.
 		 * @param string[] $scopes List of scopes.
