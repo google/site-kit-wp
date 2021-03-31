@@ -52,14 +52,13 @@ import data, { TYPE_MODULES } from '../../components/data';
 import SettingsOverlay from '../../components/settings/SettingsOverlay';
 import Spinner from '../Spinner';
 import GenericError from '../legacy-notifications/generic-error';
-import SetupModule from './SetupModule';
 import Dialog from '../../components/Dialog';
 import ModuleIcon from '../ModuleIcon';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import SettingsRenderer from '../settings/SettingsRenderer';
 import VisuallyHidden from '../VisuallyHidden';
 import { Grid, Row, Cell } from '../../material-components/layout';
-const { withSelect, withDispatch } = Data;
+const { withSelect } = Data;
 
 /**
  * A single module. Keeps track of its own active state and settings.
@@ -69,7 +68,6 @@ class SettingsModule extends Component {
 		super( props );
 		this.state = {
 			isSaving: false,
-			active: props.active,
 			setupComplete: props.setupComplete,
 			dialogActive: false,
 		};
@@ -79,6 +77,9 @@ class SettingsModule extends Component {
 		this.handleDialog = this.handleDialog.bind( this );
 		this.handleCloseModal = this.handleCloseModal.bind( this );
 		this.handleConfirmRemoveModule = this.handleConfirmRemoveModule.bind( this );
+		this.handleConfirmOrCancel = this.handleConfirmOrCancel.bind( this );
+		this.handleCancel = this.handleCancel.bind( this );
+		this.handleEdit = this.handleEdit.bind( this );
 	}
 
 	componentDidMount() {
@@ -127,9 +128,12 @@ class SettingsModule extends Component {
 	}
 
 	deactivate() {
-		if ( this.props.autoActivate ) {
+		const { autoActivate } = this.props;
+
+		if ( autoActivate ) {
 			return;
 		}
+
 		this.activateOrDeactivate();
 	}
 
@@ -154,6 +158,47 @@ class SettingsModule extends Component {
 		}
 	}
 
+	handleConfirmOrCancel() {
+		const {
+			setupComplete,
+		} = this.state;
+
+		const {
+			hasSettings,
+			slug,
+			onCancel,
+			onConfirm,
+		} = this.props;
+
+		if ( hasSettings && setupComplete && typeof onConfirm === 'function' ) {
+			onConfirm( slug );
+		} else if ( typeof onCancel === 'function' ) {
+			onCancel( slug );
+		}
+	}
+
+	handleCancel() {
+		const {
+			slug,
+			onCancel,
+		} = this.props;
+
+		if ( typeof onCancel === 'function' ) {
+			onCancel( slug );
+		}
+	}
+
+	handleEdit() {
+		const {
+			slug,
+			onEdit,
+		} = this.props;
+
+		if ( typeof onEdit === 'function' ) {
+			onEdit( slug );
+		}
+	}
+
 	// Find modules that depend on a module.
 	getDependentModules() {
 		const { slug } = this.props;
@@ -173,7 +218,6 @@ class SettingsModule extends Component {
 
 	render() {
 		const {
-			active,
 			setupComplete,
 			dialogActive,
 		} = this.state;
@@ -185,17 +229,13 @@ class SettingsModule extends Component {
 			isEditing,
 			isOpen,
 			handleAccordion,
-			handleEdit,
-			description,
 			hasSettings,
 			canSubmitChanges,
-			submitChanges,
-			autoActivate,
 			provides,
 			isSaving,
 			error,
+			autoActivate,
 		} = this.props;
-
 		const moduleKey = `${ slug }-module`;
 		const isConnected = applyFilters( `googlesitekit.Connected-${ slug }`, setupComplete );
 		const connectedClassName = isConnected
@@ -223,237 +263,213 @@ class SettingsModule extends Component {
 			}
 		}
 
-		// Set button action based on state.
-		let buttonActionName = 'cancel';
-		let buttonAction;
-		if ( hasSettings && setupComplete ) {
-			buttonActionName = 'confirm';
-			buttonAction = submitChanges;
-		}
-
 		return (
-			<Fragment>
-				{ active ? (
-					<div
-						className={ classnames(
-							'googlesitekit-settings-module',
-							'googlesitekit-settings-module--active',
-							`googlesitekit-settings-module--${ slug }`,
-							{ 'googlesitekit-settings-module--error': error && editActive && isEditing[ moduleKey ] }
-						) }
-						key={ moduleKey }
-					>
-						{ editActive && ! isEditing[ moduleKey ] && <SettingsOverlay compress={ ! isOpen } /> }
-						<button
-							className={ classnames(
-								'googlesitekit-settings-module__header',
-								{ 'googlesitekit-settings-module__header--open': isOpen }
-							) }
-							id={ `googlesitekit-settings-module__header--${ slug }` }
-							type="button"
-							role="tab"
-							aria-selected={ !! isOpen }
-							aria-expanded={ !! isOpen }
-							aria-controls={ `googlesitekit-settings-module__content--${ slug }` }
-							onClick={ handleAccordion.bind( null, slug ) }
-						>
-							<div className="mdc-layout-grid">
-								<div className="mdc-layout-grid__inner">
-									<div className="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-6-desktop
-										mdc-layout-grid__cell--span-4-tablet
-										mdc-layout-grid__cell--span-4-phone
-									">
-										<h3 className="
-											googlesitekit-heading-4
-											googlesitekit-settings-module__title
-										">
-											<ModuleIcon slug={ slug } size={ 24 } className="googlesitekit-settings-module__title-icon" />
-											{ name }
-										</h3>
-									</div>
-									<div className="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-6-desktop
-										mdc-layout-grid__cell--span-4-tablet
-										mdc-layout-grid__cell--span-4-phone
-										mdc-layout-grid__cell--align-middle
-										mdc-layout-grid__cell--align-right-tablet
-									">
-										<p className="googlesitekit-settings-module__status">
-											{
-												isConnected
-													? sprintf(
-														/* translators: %s: module name. */
-														__( '%s is connected', 'google-site-kit' ),
-														name
-													)
-													: sprintf(
-														/* translators: %s: module name. */
-														__( '%s is not connected', 'google-site-kit' ),
-														name
-													)
-											}
-											<span className={ classnames(
-												'googlesitekit-settings-module__status-icon',
-												connectedClassName
-											) }>
-												<VisuallyHidden>
-													{ isConnected
-														? __( 'Connected', 'google-site-kit' )
-														: __( 'Not Connected', 'google-site-kit' )
-													}
-												</VisuallyHidden>
-											</span>
-										</p>
-									</div>
-								</div>
+			<div
+				className={ classnames(
+					'googlesitekit-settings-module',
+					'googlesitekit-settings-module--active',
+					`googlesitekit-settings-module--${ slug }`,
+					{ 'googlesitekit-settings-module--error': error && editActive && isEditing[ moduleKey ] }
+				) }
+				key={ moduleKey }
+			>
+				{ editActive && ! isEditing[ moduleKey ] && <SettingsOverlay compress={ ! isOpen } /> }
+				<button
+					className={ classnames(
+						'googlesitekit-settings-module__header',
+						{ 'googlesitekit-settings-module__header--open': isOpen }
+					) }
+					id={ `googlesitekit-settings-module__header--${ slug }` }
+					type="button"
+					role="tab"
+					aria-selected={ !! isOpen }
+					aria-expanded={ !! isOpen }
+					aria-controls={ `googlesitekit-settings-module__content--${ slug }` }
+					onClick={ handleAccordion.bind( null, slug ) }
+				>
+					<div className="mdc-layout-grid">
+						<div className="mdc-layout-grid__inner">
+							<div className="
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-6-desktop
+								mdc-layout-grid__cell--span-4-tablet
+								mdc-layout-grid__cell--span-4-phone
+							">
+								<h3 className="
+									googlesitekit-heading-4
+									googlesitekit-settings-module__title
+								">
+									<ModuleIcon slug={ slug } size={ 24 } className="googlesitekit-settings-module__title-icon" />
+									{ name }
+								</h3>
 							</div>
-						</button>
-						<div
-							className={ classnames(
-								'googlesitekit-settings-module__content',
-								{ 'googlesitekit-settings-module__content--open': isOpen }
-							) }
-							id={ `googlesitekit-settings-module__content--${ slug }` }
-							role="tabpanel"
-							aria-hidden={ ! isOpen }
-							aria-labelledby={ `googlesitekit-settings-module__header--${ slug }` }
-						>
-							<Grid>
-								<Row>
-									<Cell size={ 12 }>
-										<SettingsRenderer
-											slug={ slug }
-											isEditing={ isEditing[ moduleKey ] }
-											isOpen={ isOpen }
-										/>
-									</Cell>
-								</Row>
-							</Grid>
-							<footer className="googlesitekit-settings-module__footer">
-								<div className="mdc-layout-grid">
-									<div className="mdc-layout-grid__inner">
-										<div className="
-											mdc-layout-grid__cell
-											mdc-layout-grid__cell--span-6-desktop
-											mdc-layout-grid__cell--span-8-tablet
-											mdc-layout-grid__cell--span-4-phone
-										">
-											{ isEditing[ moduleKey ] || isSavingModule ? (
-												<Fragment>
-													<Button
-														onClick={ () => handleEdit( slug, buttonActionName, buttonAction ) }
-														disabled={ isSavingModule || ! canSubmitChanges }
-														id={ hasSettings && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
-													>
-														{ buttonText }
-													</Button>
-													<Spinner isSaving={ isSavingModule } />
-													{ hasSettings &&
-													<Link
-														className="googlesitekit-settings-module__footer-cancel"
-														onClick={ () => handleEdit( slug, 'cancel' ) }
-														inherit
-													>
-														{ __( 'Cancel', 'google-site-kit' ) }
-													</Link>
-													}
-												</Fragment>
-											) : ( ( hasSettings || ! autoActivate ) &&
+							<div className="
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-6-desktop
+								mdc-layout-grid__cell--span-4-tablet
+								mdc-layout-grid__cell--span-4-phone
+								mdc-layout-grid__cell--align-middle
+								mdc-layout-grid__cell--align-right-tablet
+							">
+								<p className="googlesitekit-settings-module__status">
+									{
+										isConnected
+											? sprintf(
+												/* translators: %s: module name. */
+												__( '%s is connected', 'google-site-kit' ),
+												name
+											)
+											: sprintf(
+												/* translators: %s: module name. */
+												__( '%s is not connected', 'google-site-kit' ),
+												name
+											)
+									}
+									<span className={ classnames(
+										'googlesitekit-settings-module__status-icon',
+										connectedClassName
+									) }>
+										<VisuallyHidden>
+											{ isConnected
+												? __( 'Connected', 'google-site-kit' )
+												: __( 'Not Connected', 'google-site-kit' )
+											}
+										</VisuallyHidden>
+									</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</button>
+				<div
+					className={ classnames(
+						'googlesitekit-settings-module__content',
+						{ 'googlesitekit-settings-module__content--open': isOpen }
+					) }
+					id={ `googlesitekit-settings-module__content--${ slug }` }
+					role="tabpanel"
+					aria-hidden={ ! isOpen }
+					aria-labelledby={ `googlesitekit-settings-module__header--${ slug }` }
+				>
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<SettingsRenderer
+									slug={ slug }
+									isEditing={ isEditing[ moduleKey ] }
+									isOpen={ isOpen }
+								/>
+							</Cell>
+						</Row>
+					</Grid>
+					<footer className="googlesitekit-settings-module__footer">
+						<div className="mdc-layout-grid">
+							<div className="mdc-layout-grid__inner">
+								<div className="
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-6-desktop
+									mdc-layout-grid__cell--span-8-tablet
+									mdc-layout-grid__cell--span-4-phone
+								">
+									{ isEditing[ moduleKey ] || isSavingModule ? (
+										<Fragment>
+											<Button
+												onClick={ this.handleConfirmOrCancel }
+												disabled={ isSavingModule || ! canSubmitChanges }
+												id={ hasSettings && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
+											>
+												{ buttonText }
+											</Button>
+											<Spinner isSaving={ isSavingModule } />
+											{ hasSettings &&
 											<Link
-												className="googlesitekit-settings-module__edit-button"
-												onClick={ () => {
-													handleEdit( slug, 'edit' );
-												} }
+												className="googlesitekit-settings-module__footer-cancel"
+												onClick={ this.handleCancel }
 												inherit
 											>
-												{ __( 'Edit', 'google-site-kit' ) }
-												<PencilIcon
-													className="googlesitekit-settings-module__edit-button-icon"
-													width="10"
-													height="10"
-												/>
+												{ __( 'Cancel', 'google-site-kit' ) }
 											</Link>
-											) }
-										</div>
-										<div className="
-											mdc-layout-grid__cell
-											mdc-layout-grid__cell--span-6-desktop
-											mdc-layout-grid__cell--span-8-tablet
-											mdc-layout-grid__cell--span-4-phone
-											mdc-layout-grid__cell--align-middle
-											mdc-layout-grid__cell--align-right-desktop
-										">
-											{ isEditing[ moduleKey ] && ! autoActivate && (
-												<Link
-													className="googlesitekit-settings-module__remove-button"
-													onClick={ this.handleDialog }
-													inherit
-													danger
-												>
-													{
-														/* translators: %s: module name */
-														sprintf( __( 'Disconnect %s from Site Kit', 'google-site-kit' ), name )
-													}
-													<TrashIcon
-														className="googlesitekit-settings-module__remove-button-icon"
-														width="13"
-														height="13"
-													/>
-												</Link>
-											) }
-											{ ! isEditing[ moduleKey ] && (
-												<Link
-													href={ homepage }
-													className="googlesitekit-settings-module__cta-button"
-													inherit
-													external
-												>
-													{
-														/* translators: %s: module name */
-														sprintf( __( 'See full details in %s', 'google-site-kit' ), name )
-													}
-												</Link>
-											) }
-										</div>
-									</div>
+											}
+										</Fragment>
+									) : ( ( hasSettings || ! autoActivate ) &&
+									<Link
+										className="googlesitekit-settings-module__edit-button"
+										onClick={ this.handleEdit }
+										inherit
+									>
+										{ __( 'Edit', 'google-site-kit' ) }
+										<PencilIcon
+											className="googlesitekit-settings-module__edit-button-icon"
+											width="10"
+											height="10"
+										/>
+									</Link>
+									) }
 								</div>
-							</footer>
+								<div className="
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-6-desktop
+									mdc-layout-grid__cell--span-8-tablet
+									mdc-layout-grid__cell--span-4-phone
+									mdc-layout-grid__cell--align-middle
+									mdc-layout-grid__cell--align-right-desktop
+								">
+									{ isEditing[ moduleKey ] && ! autoActivate && (
+										<Link
+											className="googlesitekit-settings-module__remove-button"
+											onClick={ this.handleDialog }
+											inherit
+											danger
+										>
+											{
+												/* translators: %s: module name */
+												sprintf( __( 'Disconnect %s from Site Kit', 'google-site-kit' ), name )
+											}
+											<TrashIcon
+												className="googlesitekit-settings-module__remove-button-icon"
+												width="13"
+												height="13"
+											/>
+										</Link>
+									) }
+									{ ! isEditing[ moduleKey ] && (
+										<Link
+											href={ homepage }
+											className="googlesitekit-settings-module__cta-button"
+											inherit
+											external
+										>
+											{
+												/* translators: %s: module name */
+												sprintf( __( 'See full details in %s', 'google-site-kit' ), name )
+											}
+										</Link>
+									) }
+								</div>
+							</div>
 						</div>
-						<Dialog
-							dialogActive={ dialogActive }
-							handleDialog={ this.handleDialog }
-							/* translators: %s: module name */
-							title={ sprintf( __( 'Disconnect %s from Site Kit?', 'google-site-kit' ), name ) }
-							subtitle={ subtitle }
-							onKeyPress={ this.handleCloseModal }
-							provides={ provides }
-							handleConfirm={ this.handleConfirmRemoveModule }
-							dependentModules={ dependentModules
-								? sprintf(
-									/* translators: %1$s: module name, %2$s: list of dependent modules */
-									__( 'these active modules depend on %1$s and will also be disconnected: %2$s', 'google-site-kit' ),
-									name,
-									dependentModules
-								) : false
-							}
-							danger
-						/>
-					</div>
-				) : (
-					<Fragment>
-						<SetupModule
-							key={ `${ slug }-module` }
-							slug={ slug }
-							name={ name }
-							description={ description }
-						/>
-					</Fragment>
-				)
-				}
-			</Fragment>
+					</footer>
+				</div>
+				<Dialog
+					dialogActive={ dialogActive }
+					handleDialog={ this.handleDialog }
+					/* translators: %s: module name */
+					title={ sprintf( __( 'Disconnect %s from Site Kit?', 'google-site-kit' ), name ) }
+					subtitle={ subtitle }
+					onKeyPress={ this.handleCloseModal }
+					provides={ provides }
+					handleConfirm={ this.handleConfirmRemoveModule }
+					dependentModules={ dependentModules
+						? sprintf(
+							/* translators: %1$s: module name, %2$s: list of dependent modules */
+							__( 'these active modules depend on %1$s and will also be disconnected: %2$s', 'google-site-kit' ),
+							name,
+							dependentModules
+						) : false
+					}
+					danger
+				/>
+			</div>
 		);
 	}
 }
@@ -463,15 +479,15 @@ SettingsModule.propTypes = {
 	slug: PropTypes.string,
 	homepage: PropTypes.string,
 	isEditing: PropTypes.object,
-	handleEdit: PropTypes.func,
 	handleDialog: PropTypes.func,
-	autoActivate: PropTypes.bool,
 	hasSettings: PropTypes.bool,
 	canSubmitChanges: PropTypes.bool,
-	submitChanges: PropTypes.func,
 	required: PropTypes.array,
 	active: PropTypes.bool,
 	setupComplete: PropTypes.bool,
+	onEdit: PropTypes.func,
+	onConfirm: PropTypes.func,
+	onCancel: PropTypes.func,
 };
 
 SettingsModule.defaultProps = {
@@ -479,10 +495,12 @@ SettingsModule.defaultProps = {
 	slug: '',
 	homepage: '',
 	isEditing: {},
-	handleEdit: null,
 	handleDialog: null,
 	active: false,
 	setupComplete: false,
+	onEdit: null,
+	onConfirm: null,
+	onCancel: null,
 };
 
 export default compose( [
@@ -493,13 +511,6 @@ export default compose( [
 		return {
 			hasSettings: !! module?.SettingsEditComponent,
 			canSubmitChanges,
-		};
-	} ),
-	withDispatch( ( dispatch, { slug } ) => {
-		const submitChanges = () => dispatch( CORE_MODULES ).submitChanges( slug );
-
-		return {
-			submitChanges,
 		};
 	} ),
 ] )( SettingsModule );

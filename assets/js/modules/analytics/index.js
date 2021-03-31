@@ -55,6 +55,11 @@ export const registerModule = ( modules ) => {
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
 			Icon: AnalyticsIcon,
+			features: [
+				__( 'Audience overview', 'google-site-kit' ),
+				__( 'Top pages', 'google-site-kit' ),
+				__( 'Top acquisition channels', 'google-site-kit' ),
+			],
 			screenWidgetContext: CONTEXT_MODULE_ANALYTICS,
 		}
 	);

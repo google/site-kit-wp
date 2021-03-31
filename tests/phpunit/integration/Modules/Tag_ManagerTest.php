@@ -333,35 +333,6 @@ class Tag_ManagerTest extends TestCase {
 		);
 	}
 
-	public function test_prepare_info_for_js() {
-		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$info = $tagmanager->prepare_info_for_js();
-
-		$this->assertEqualSets(
-			array(
-				'slug',
-				'name',
-				'description',
-				'cta',
-				'sort',
-				'homepage',
-				'learnMore',
-				'required',
-				'autoActivate',
-				'internal',
-				'screenID',
-				'settings',
-				'provides',
-			),
-			array_keys( $info )
-		);
-
-		$this->assertEquals( 'tagmanager', $info['slug'] );
-		$this->assertArrayHasKey( 'accountID', $info['settings'] );
-		$this->assertArrayHasKey( 'containerID', $info['settings'] );
-	}
-
 	public function test_get_datapoints() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 

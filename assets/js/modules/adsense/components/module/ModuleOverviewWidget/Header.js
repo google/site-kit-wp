@@ -1,5 +1,5 @@
 /**
- * Header component of the ModulePopularPagesWidget widget.
+ * Header component for ModuleOverviewWidget.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,39 +19,46 @@
 /**
  * WordPress dependencies
  */
-import { sprintf, _n, _x, __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
+import { __, sprintf, _n, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS } from '../../../datastore/constants';
+import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
+import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
-export default function Header() {
-	const contentPagesURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'content-pages' ) );
+const Header = () => {
+	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
+	const accountSiteURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( generateDateRangeArgs( dateRangeDates ) ) );
 	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
-
-	const title = sprintf(
-		/* translators: %s: number of days */
-		_n( 'Top content over the last %s day', 'Top content over the last %s days', currentDayCount, 'google-site-kit', ),
-		currentDayCount
-	);
-
-	const headerCTALabel = sprintf(
-		/* translators: %s: module name. */
-		__( 'See full stats in %s', 'google-site-kit' ),
-		_x( 'Analytics', 'Service name', 'google-site-kit' )
-	);
 
 	return (
 		<Fragment>
-			<WidgetHeaderTitle title={ title } />
-			<WidgetHeaderCTA href={ contentPagesURL } label={ headerCTALabel } external />
+			<WidgetHeaderTitle
+				title={ sprintf(
+					/* translators: %s: number of days */
+					_n( 'Performance over the last %s day', 'Performance over the last %s days', currentDayCount, 'google-site-kit' ),
+					currentDayCount
+				) }
+			/>
+			<WidgetHeaderCTA
+				href={ accountSiteURL }
+				label={ sprintf(
+					/* translators: %s: module name. */
+					__( 'See full stats in %s', 'google-site-kit' ),
+					_x( 'AdSense', 'Service name', 'google-site-kit' )
+				) }
+			/>
 		</Fragment>
 	);
-}
+};
+
+export default Header;
