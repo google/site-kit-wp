@@ -28,8 +28,6 @@ final class Header {
 	 * @param bool $is_amp True if an AMP request, false otherwise.
 	 */
 	public function __construct( $is_amp ) {
-		$this->is_amp = $is_amp;
-
 		$publication_id   = get_option( Key::from( 'publication_id' ) );
 		$product          = get_post_meta( get_the_ID(), Key::from( 'product' ), true );
 		$this->product_id = $publication_id . ':' . $product;
