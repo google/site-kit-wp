@@ -33,9 +33,9 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 const { useSelect } = Data;
 
 export default function Header() {
+	const reportType = 'trafficsources-overview';
 	const url = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( reportType ) );
 	const dateRangeNumberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
-	const reportType = 'trafficsources-overview';
 	const title = sprintf(
 		/* translators: %s: number of days */
 		_n( 'Top acquisition channels over the last %s day', 'Top acquisition channels over the last %s days', dateRangeNumberOfDays, 'google-site-kit', ),
