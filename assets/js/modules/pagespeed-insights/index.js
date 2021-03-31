@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -74,6 +75,9 @@ export const registerModule = ( modules ) => {
 			storeName: STORE_NAME,
 			SettingsViewComponent: SettingsView,
 			Icon: PageSpeedInsightsIcon,
+			features: [
+				__( 'Website performance reports for mobile and desktop', 'google-site-kit' ),
+			],
 		}
 	);
 };

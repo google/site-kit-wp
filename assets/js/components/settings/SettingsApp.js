@@ -38,7 +38,8 @@ import Header from '../Header';
 import PageHeader from '../PageHeader';
 import Layout from '../layout/Layout';
 import HelpLink from '../HelpLink';
-import SettingsModules from './SettingsModules';
+import SettingsActiveModules from './SettingsActiveModules';
+import SettingsInactiveModules from './SettingsInactiveModules';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../material-components';
 import HelpMenu from '../help/HelpMenu';
@@ -128,14 +129,27 @@ export default function SettingsApp() {
 								</TabBar>
 							</Layout>
 						</Cell>
-						{ [ 'settings', 'connect' ].includes( activeTabID ) && ( // TODO Refactor SettingsModules into separate components.
-							<SettingsModules
-								activeTab={ activeTab }
-								activeModule={ moduleSlug }
-								moduleState={ moduleState }
-								setModuleState={ setModuleState }
-							/>
-						) }
+
+						{
+							activeTabID === 'settings' && (
+								<Cell size={ 12 }>
+									<SettingsActiveModules
+										activeModule={ moduleSlug }
+										moduleState={ moduleState }
+										setModuleState={ setModuleState }
+									/>
+								</Cell>
+							)
+						}
+
+						{
+							activeTabID === 'connect' && (
+								<Cell size={ 12 }>
+									<SettingsInactiveModules />
+								</Cell>
+							)
+						}
+
 						{ 'admin' === activeTabID && (
 							<SettingsAdmin />
 						) }
