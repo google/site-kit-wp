@@ -87,15 +87,27 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 	} );
 
 	if ( ! hasFinishedResolution ) {
-		return <PreviewTable rows={ 4 } rowHeight={ 50 } />;
+		return (
+			<Widget Header={ Header } noPadding>
+				<PreviewTable rows={ 4 } rowHeight={ 50 } />
+			</Widget>
+		);
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+		return (
+			<Widget Header={ Header }>
+				<WidgetReportError moduleSlug="analytics" error={ error } />
+			</Widget>
+		);
 	}
 
 	if ( isZeroReport( report ) ) {
-		return <WidgetReportZero moduleSlug="analytics" />;
+		return (
+			<Widget Header={ Header }>
+				<WidgetReportZero moduleSlug="analytics" />
+			</Widget>
+		);
 	}
 
 	const totalUsers = report[ 0 ].data.totals[ 0 ].values[ 1 ];
