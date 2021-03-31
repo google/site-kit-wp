@@ -2855,5 +2855,6 @@ generateReportBasedWidgetStories( {
 		endDate: '2020-08-25',
 	},
 	Component: ModuleOverviewWidget,
+	wrapWidget: false,
 	setup,
 } );
