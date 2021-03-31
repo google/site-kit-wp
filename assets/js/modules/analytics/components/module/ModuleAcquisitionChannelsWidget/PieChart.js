@@ -21,7 +21,6 @@
  */
 import Data from 'googlesitekit-data';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../../datastore/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import GoogleChart from '../../../../../components/GoogleChart';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -60,7 +59,6 @@ export default function PieChart() {
 				},
 			],
 			limit: 10,
-			url,
 		};
 
 		return {
@@ -69,8 +67,6 @@ export default function PieChart() {
 			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ),
 		};
 	} );
-
-	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
 	if ( ! report || error || ! hasFinishedResolution ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;
