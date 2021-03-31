@@ -815,7 +815,6 @@ describe( 'core/modules modules', () => {
 
 				const featuresLoaded = registry.select( STORE_NAME ).getModuleFeatures( 'analytics' );
 
-				// expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( featuresLoaded ).toMatchObject( fixturesKeyValue.analytics.features );
 			} );
 
