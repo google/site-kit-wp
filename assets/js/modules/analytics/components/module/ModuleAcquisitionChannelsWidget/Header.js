@@ -33,8 +33,7 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 const { useSelect } = Data;
 
 export default function Header() {
-	const reportType = 'trafficsources-overview';
-	const url = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( reportType ) );
+	const url = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'trafficsources-overview' ) );
 	const dateRangeNumberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 	const title = sprintf(
 		/* translators: %s: number of days */
