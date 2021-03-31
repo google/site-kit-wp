@@ -26,7 +26,6 @@ final class Filters {
 		}
 
 		add_filter( 'the_content', array( __CLASS__, 'the_content' ) );
-		add_filter( 'wp_nav_menu_items', array( __CLASS__, 'wp_nav_menu_items' ) );
 	}
 
 	/**
@@ -91,20 +90,5 @@ final class Filters {
 		$content = implode( $more_tag, $content_segments );
 
 		return $content;
-	}
-
-	/**
-	 * Filters menu items HTML.
-	 *
-	 * @param string $menu_html HTML of a menu.
-	 */
-	public static function wp_nav_menu_items( $menu_html ) {
-		$swg_signin_link = 'href="#swg-signin"';
-		$menu_html       = str_replace(
-			$swg_signin_link,
-			$swg_signin_link . ' subscriptions-action="login" subscriptions-display="NOT data.isLoggedIn"',
-			$menu_html
-		);
-		return $menu_html;
 	}
 }
