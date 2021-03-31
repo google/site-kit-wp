@@ -66,14 +66,6 @@ final class Header {
 			true
 		);
 
-		// Make WP URLs available to SwgPress' JavaScript.
-		$api_base_url = get_option( 'siteurl' ) . '/wp-json/subscribewithgoogle/v1';
-		wp_localize_script(
-			'subscribe-with-google',
-			'SubscribeWithGoogleWpGlobals',
-			array( 'API_BASE_URL' => $api_base_url )
-		);
-
 		// Styles for SwgPress.
 		wp_enqueue_style(
 			'subscribe-with-google',
