@@ -131,7 +131,7 @@ const GOOGLESITEKIT_VERSION = googleSiteKitVersion ? googleSiteKitVersion[ 0 ] :
 
 function* webpackConfig( env, argv ) {
 	const { mode, flagMode = mode } = argv;
-	const { ANALYZE } = env;
+	const { ANALYZE } = env || {};
 
 	// Build the settings js..
 	yield {
@@ -276,7 +276,7 @@ function* webpackConfig( env, argv ) {
 		resolve,
 	};
 
-	if ( ! ANALYZE ) {
+	if ( ANALYZE ) {
 		return;
 	}
 
