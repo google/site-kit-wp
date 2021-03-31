@@ -109,4 +109,8 @@ Menu.propTypes = {
 	id: PropTypes.string.isRequired,
 };
 
+Menu.defaultProps = {
+	onSelected: () => {},
+};
+
 export default Menu;

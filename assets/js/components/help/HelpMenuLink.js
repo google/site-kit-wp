@@ -37,7 +37,7 @@ function HelpMenuLink( { children, href, gaEventLabel } ) {
 		if ( gaEventLabel ) {
 			await trackEvent( 'global_help_menu', 'click_outgoing_link', gaEventLabel );
 		}
-	}, [] );
+	}, [ gaEventLabel ] );
 
 	return (
 		<li className="googlesitekit-help-menu-link mdc-list-item" role="none">

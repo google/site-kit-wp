@@ -83,7 +83,6 @@ function HelpMenu( { children } ) {
 					ref={ menuRef }
 					menuOpen={ menuOpen }
 					id="googlesitekit-help-menu"
-					onSelected={ () => {} }
 				>
 					{ children }
 					<HelpMenuLink gaEventLabel="fix_common_issues" href="https://sitekit.withgoogle.com/documentation/fix-common-issues/">
