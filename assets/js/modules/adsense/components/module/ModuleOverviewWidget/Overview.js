@@ -40,6 +40,7 @@ const Overview = ( {
 	return (
 		<div className="googlesitekit-adsense-performance-overview">
 			<DataBlock
+				stat={ 0 }
 				className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-1"
 				title={ metrics[ headers[ 0 ].name ] }
 				datapoint={ totals[ 0 ] }
@@ -48,10 +49,11 @@ const Overview = ( {
 				changeDataUnit="%"
 				context="button"
 				selected={ selectedStats === 0 }
-				handleStatSelection={ () => handleStatsSelection( 0 ) }
+				handleStatSelection={ handleStatsSelection }
 			/>
 
 			<DataBlock
+				stat={ 1 }
 				className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-2"
 				title={ metrics[ headers[ 1 ].name ] }
 				datapoint={ totals[ 1 ] }
@@ -60,10 +62,11 @@ const Overview = ( {
 				changeDataUnit="%"
 				context="button"
 				selected={ selectedStats === 1 }
-				handleStatSelection={ () => handleStatsSelection( 1 ) }
+				handleStatSelection={ handleStatsSelection }
 			/>
 
 			<DataBlock
+				stat={ 2 }
 				className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-3"
 				title={ metrics[ headers[ 2 ].name ] }
 				datapoint={ totals[ 2 ] }
@@ -71,10 +74,11 @@ const Overview = ( {
 				changeDataUnit="%"
 				context="button"
 				selected={ selectedStats === 2 }
-				handleStatSelection={ () => handleStatsSelection( 2 ) }
+				handleStatSelection={ handleStatsSelection }
 			/>
 
 			<DataBlock
+				stat={ 3 }
 				className="googlesitekit-data-block--impression googlesitekit-data-block--button-4"
 				title={ metrics[ headers[ 3 ].name ] }
 				datapoint={ totals[ 3 ] }
@@ -83,7 +87,7 @@ const Overview = ( {
 				changeDataUnit="%"
 				context="button"
 				selected={ selectedStats === 3 }
-				handleStatSelection={ () => handleStatsSelection( 3 ) }
+				handleStatSelection={ handleStatsSelection }
 			/>
 		</div>
 	);
