@@ -1,7 +1,7 @@
 /**
  * DashboardDetails component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,15 +30,24 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies.
  */
-import './components/notifications';
-import DashboardDetailsApp from './components/dashboard-details/dashboard-details-app';
-import Root from './components/root';
+import './components/legacy-notifications';
+import DashboardDetailsApp from './components/dashboard-details/DashboardDetailsApp';
+import Root from './components/Root';
+import { VIEW_CONTEXT_PAGE_DASHBOARD } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard-details' );
 
 	if ( renderTarget ) {
-		render( <Root dataAPIContext="Dashboard"><DashboardDetailsApp /></Root>, renderTarget );
+		render(
+			<Root
+				viewContext={ VIEW_CONTEXT_PAGE_DASHBOARD }
+				dataAPIContext="Dashboard"
+			>
+				<DashboardDetailsApp />
+			</Root>,
+			renderTarget
+		);
 	}
 } );

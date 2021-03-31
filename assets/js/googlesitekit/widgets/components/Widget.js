@@ -1,7 +1,7 @@
 /**
  * Widget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,16 +25,16 @@ import PropTypes from 'prop-types';
 const Widget = ( {
 	children,
 	className,
-	slug,
+	widgetSlug,
 	noPadding,
-	header: Header,
-	footer: Footer,
+	Header,
+	Footer,
 } ) => {
 	return (
 		<div
 			className={ classnames(
 				'googlesitekit-widget',
-				`googlesitekit-widget--${ slug }`,
+				`googlesitekit-widget--${ widgetSlug }`,
 				{ 'googlesitekit-widget--no-padding': noPadding },
 				className
 			) }
@@ -63,10 +63,10 @@ Widget.defaultProps = {
 
 Widget.propTypes = {
 	children: PropTypes.node,
-	slug: PropTypes.string.isRequired,
+	widgetSlug: PropTypes.string.isRequired,
 	noPadding: PropTypes.bool,
-	header: PropTypes.elementType,
-	footer: PropTypes.elementType,
+	Header: PropTypes.elementType,
+	Footer: PropTypes.elementType,
 };
 
 export default Widget;

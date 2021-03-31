@@ -3,7 +3,7 @@
  * CredentialsTest
  *
  * @package   Google\Site_Kit\Tests\Core\Authentication
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -106,7 +106,7 @@ class CredentialsTest extends TestCase {
 		$this->assertFalse( $encrypted_options->has( Credentials::OPTION ) );
 		$this->assertFalse( $credentials->has() );
 		// Credentials missing all required keys are considered missing
-		// Test dummy credentials
+		// Test placeholder credentials
 		$this->assertTrue( $credentials->set( array( 'test-credentials' ) ) );
 		$this->assertFalse( $credentials->has() );
 		// Test client id only

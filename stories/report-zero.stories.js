@@ -1,7 +1,7 @@
 /**
  * ReportZero stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
 import {
@@ -32,17 +27,27 @@ import {
 import { createModuleStore } from '../assets/js/googlesitekit/modules/create-module-store';
 import ReportZero from '../assets/js/components/ReportZero';
 
-storiesOf( 'Global', module )
-	.addDecorator( ( storyFn ) => {
+export const ReportZeroStory = () => (
+	<ReportZero moduleSlug="test-module" />
+);
+ReportZeroStory.storyName = 'Report Zero';
+ReportZeroStory.decorators = [
+	( Story ) => {
 		const registry = createTestRegistry();
-		const testModuleDefinition = createModuleStore( 'test-module' );
+		const testModuleDefinition = createModuleStore( 'test-module', {
+			storeName: 'modules/test-module',
+		} );
 		registry.registerStore( testModuleDefinition.STORE_NAME, testModuleDefinition );
 		provideModules( registry, [ { slug: 'test-module', name: 'Test Module' } ] );
 
-		return storyFn( registry );
-	} )
-	.add( 'ReportZero', ( registry ) => (
-		<WithTestRegistry registry={ registry }>
-			<ReportZero moduleSlug="test-module" />
-		</WithTestRegistry>
-	) );
+		return (
+			<WithTestRegistry registry={ registry }>
+				<Story />
+			</WithTestRegistry>
+		);
+	},
+];
+
+export default {
+	title: 'Global',
+};

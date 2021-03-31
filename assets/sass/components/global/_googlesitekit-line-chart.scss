@@ -1,7 +1,7 @@
 /**
  * Line chart styles.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,5 @@
 	// Pie Chart
 	.googlesitekit-chart--pie & > div > div > div > svg {
 		overflow: visible !important; // Accounts for hover border cutoff.
-
-		> g:last-child {
-			pointer-events: none; // Removes label hover flicker from Google Charts.
-		}
 	}
 }

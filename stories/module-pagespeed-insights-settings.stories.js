@@ -1,7 +1,7 @@
 /**
  * PageSpeed Insights Settings stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,28 +24,45 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { SettingsView } from '../assets/js/modules/pagespeed-insights/components/settings';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { createTestRegistry } from '../tests/js/utils';
+import {
+	createTestRegistry,
+	provideModules,
+	provideModuleRegistrations,
+} from '../tests/js/utils';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
 const Settings = createLegacySettingsWrapper( 'pagespeed-insights' );
 
+const withRegistry = ( Story ) => {
+	const registry = createTestRegistry();
+	provideModules( registry );
+	provideModuleRegistrations( registry );
+
+	return (
+		<Story registry={ registry } />
+	);
+};
+
 storiesOf( 'PageSpeed Insights Module/Settings', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		registry.dispatch( CORE_MODULES ).registerModule( 'pagespeed-insights', {
-			settingsViewComponent: SettingsView,
-		} );
-		return storyFn( registry );
-	} )
-	.add( 'View, closed', ( registry ) => {
+	.add( 'View, closed', ( args, { registry } ) => {
 		return <Settings isOpen={ false } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'View, open with all settings', ( registry ) => {
+	.add( 'View, open with all settings', ( args, { registry } ) => {
 		return <Settings isOpen={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, open with all settings', ( registry ) => {
+	.add( 'Edit, open with all settings', ( args, { registry } ) => {
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
 ;

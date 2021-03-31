@@ -1,7 +1,7 @@
 /**
  * Error Utilities.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
  */
 import isPlainObject from 'lodash/isPlainObject';
 
-// Export codes and reasons.
+// Error codes and reasons.
 export const ERROR_CODE_MISSING_REQUIRED_SCOPE = 'missing_required_scopes'; // When scopes are missing.
 export const ERROR_REASON_INSUFFICIENT_PERMISSIONS = 'insufficientPermissions';
 

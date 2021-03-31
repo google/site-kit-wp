@@ -1,7 +1,7 @@
 /**
  * `modules/analytics` data store: properties.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,12 @@ import Data from 'googlesitekit-data';
 import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySelection } from '../util';
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+
+// Get access to error store action creators.
+// If the parent store doesn't include the error store,
+// yielded error actions will be a no-op.
+const { clearError, receiveError } = errorStoreActions;
 const { createRegistrySelector, createRegistryControl } = Data;
 
 const fetchGetPropertiesProfilesStore = createFetchStore( {
@@ -162,7 +168,7 @@ const baseActions = {
 			const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
 
 			if ( ! internalPropertyID ) {
-				internalPropertyID = property.internalWebPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
+				internalPropertyID = property.internalWebPropertyId; // eslint-disable-line sitekit/acronym-case
 			}
 
 			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
@@ -171,8 +177,8 @@ const baseActions = {
 			registry.dispatch( STORE_NAME ).setProfileID( '' );
 
 			const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
-			if ( property.defaultProfileId && profiles?.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/camelcase-acronyms
-				registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // eslint-disable-line sitekit/camelcase-acronyms
+			if ( property.defaultProfileId && profiles?.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/acronym-case
+				registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
 				return;
 			}
 
@@ -180,7 +186,7 @@ const baseActions = {
 				return; // Selection will happen in in getProfiles resolver.
 			}
 
-			const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // eslint-disable-line sitekit/camelcase-acronyms
+			const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // eslint-disable-line sitekit/acronym-case
 			registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
 		}() );
 	},
@@ -279,7 +285,7 @@ const baseResolvers = {
 		}
 
 		const registry = yield Data.commonActions.getRegistry();
-		registry.dispatch( STORE_NAME ).clearError( 'getProperties', [ accountID ] );
+		yield clearError( 'getProperties', [ accountID ] );
 
 		// Only fetch properties if there are none in the store for the given account.
 		let properties = registry.select( STORE_NAME ).getProperties( accountID );
@@ -289,9 +295,9 @@ const baseResolvers = {
 			if ( response ) {
 				dispatch( STORE_NAME ).receiveGetProperties( response.properties, { accountID } );
 
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				if ( response.profiles?.[ 0 ]?.webPropertyId ) {
-					// eslint-disable-next-line sitekit/camelcase-acronyms
+					// eslint-disable-next-line sitekit/acronym-case
 					const propertyID = response.profiles[ 0 ].webPropertyId;
 					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { accountID, propertyID } );
 				}
@@ -306,7 +312,7 @@ const baseResolvers = {
 			dispatch( STORE_NAME ).receivePropertiesProfilesCompletion( accountID );
 			if ( error ) {
 				// Store error manually since getProperties signature differs from fetchGetPropertiesProfiles.
-				yield dispatch( STORE_NAME ).receiveError( error, 'getProperties', [ accountID ] );
+				yield receiveError( error, 'getProperties', [ accountID ] );
 				return;
 			}
 		}
@@ -314,7 +320,7 @@ const baseResolvers = {
 		const propertyID = registry.select( STORE_NAME ).getPropertyID();
 		if ( ! propertyID ) {
 			const property = properties[ 0 ] || { id: PROPERTY_CREATE };
-			yield baseActions.selectProperty( property.id, property.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
+			yield baseActions.selectProperty( property.id, property.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 		}
 	},
 };

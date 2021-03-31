@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Tests\Core\Util\ScopesTest
  *
  * @package   Google\Site_Kit\Tests\Core\Util
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -96,7 +96,7 @@ class ScopesTest extends TestCase {
 				),
 				true,
 			),
-			// webmaster is not satisfied by webmasters.readonly
+			// webmasters is not satisfied by webmasters.readonly
 			array(
 				'https://www.googleapis.com/auth/webmasters',
 				array(

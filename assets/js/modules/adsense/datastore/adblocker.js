@@ -1,7 +1,7 @@
 /**
  * `modules/adsense` data store: adblocker.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { detectAnyAdblocker } from 'just-detect-adblock';
 
 /**
  * Internal dependencies
@@ -28,6 +29,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 
 // Actions
+const CHECK_ADBLOCKER = 'CHECK_ADBLOCKER';
 const RECEIVE_IS_ADBLOCKER_ACTIVE = 'RECEIVE_IS_ADBLOCKER_ACTIVE';
 
 export const initialState = {
@@ -35,6 +37,12 @@ export const initialState = {
 };
 
 export const actions = {
+	*checkAdBlocker() {
+		return yield {
+			payload: {},
+			type: CHECK_ADBLOCKER,
+		};
+	},
 	receiveIsAdBlockerActive( isAdBlockerActive ) {
 		invariant( 'boolean' === typeof isAdBlockerActive, 'isAdBlockerActive must be boolean.' );
 		return {
@@ -44,7 +52,26 @@ export const actions = {
 	},
 };
 
-export const controls = {};
+export const controls = {
+	[ CHECK_ADBLOCKER ]: async () => {
+		if ( await detectAnyAdblocker() ) {
+			return true;
+		}
+		// The above is good about detecting most adblockers.
+		// For the rest, we'll make a placeholder request to the favicon with some
+		// additional stuff in the query string to (hopefully) trigger a filter.
+		// If this throws, then the fetch request failed completely and we'll assume it was blocked.
+		try {
+			await fetch(
+				'/favicon.ico?google-site-kit=/adsense/pagead2.googlesyndication.com/pagead/js/adsbygoogle.js',
+				{ credentials: 'omit' }
+			);
+		} catch {
+			return true;
+		}
+		return false;
+	},
+};
 
 export const reducer = ( state, { payload, type } ) => {
 	switch ( type ) {
@@ -74,10 +101,9 @@ export const resolvers = {
 			return;
 		}
 
-		// Global is set by ads.js entry point script.
-		const canAdsRun = global._googlesitekitLegacyData && global._googlesitekitLegacyData.canAdsRun;
+		const detected = yield actions.checkAdBlocker();
 
-		yield actions.receiveIsAdBlockerActive( ! canAdsRun );
+		yield actions.receiveIsAdBlockerActive( detected );
 	},
 };
 

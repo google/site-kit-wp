@@ -1,7 +1,7 @@
 /**
  * ResetButton tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,15 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { ESCAPE } from '@wordpress/keycodes';
+
+/**
  * Internal dependencies
  */
 import { render, createTestRegistry, fireEvent, act, provideSiteInfo } from '../../../tests/js/test-utils';
-import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import ResetButton from './ResetButton';
 import { subscribeUntil } from '../../../tests/js/utils';
 
@@ -85,11 +90,11 @@ describe( 'ResetButton', () => {
 		} );
 
 		it( 'should close the modal on pressing escape key', async () => {
-			fireEvent.keyUp( global, { keyCode: 27 } );
+			fireEvent.keyUp( global, { keyCode: ESCAPE } );
 			expect( document.querySelector( '.mdc-dialog--open' ) ).not.toBeInTheDocument();
 		} );
 
-		it( 'should close the modal on clicking Reset, reset the plugin and delete local and session storage', async () => {
+		it( 'should reset the plugin, delete local and session storage', async () => {
 			const response = true;
 			fetchMock.postOnce(
 				/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
@@ -102,7 +107,7 @@ describe( 'ResetButton', () => {
 			} );
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
-			expect( document.querySelector( '.mdc-dialog--open' ) ).not.toBeInTheDocument();
+			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeInTheDocument();
 			expect( localStorage.clear ).toHaveBeenCalled();
 			expect( sessionStorage.clear ).toHaveBeenCalled();
 

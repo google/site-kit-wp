@@ -1,7 +1,7 @@
 /**
  * Reporting API validation utilities.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,4 +56,19 @@ export function isValidDimensions( dimensions ) {
 	return isValidStringsOrObjects( dimensions, ( dimension ) => {
 		return dimension.hasOwnProperty( 'name' ) && typeof dimension.name === 'string';
 	} );
+}
+
+/**
+ * Verifies provided dimensionFilters to make sure they match allowed values found in dimensions.
+ *
+ * @since 1.24.0
+ *
+ * @param {Object} dimensionFilters The dimension filters to check.
+ * @return {boolean} TRUE if dimension filters are valid, otherwise FALSE.
+ */
+export function isValidDimensionFilters( dimensionFilters ) {
+	// Ensure every dimensionFilter key corresponds to a valid dimension.
+	return Object.keys( dimensionFilters ).every(
+		( dimension ) => [ 'number', 'string' ].includes( typeof dimensionFilters[ dimension ] ) && typeof dimension === 'string'
+	);
 }

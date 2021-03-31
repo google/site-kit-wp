@@ -1,4 +1,22 @@
 /**
+ * Dashboard Page Stories.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
@@ -11,22 +29,21 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import DashboardModuleHeader from '../assets/js/components/dashboard/dashboard-module-header';
-import CTA from '../assets/js/components/notifications/cta';
+import DashboardModuleHeader from '../assets/js/components/dashboard/DashboardModuleHeader';
+import CTA from '../assets/js/components/legacy-notifications/cta';
 import { createAddToFilter } from '../assets/js/util/helpers';
-import Layout from '../assets/js/components/layout/layout';
-import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
-import LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
+import Layout from '../assets/js/components/layout/Layout';
 import LegacyDashboardSearchFunnelInner from '../assets/js/modules/search-console/components/dashboard/LegacyDashboardSearchFunnelInner';
 import LegacyAnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetTopLevel';
 import LegacySearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/components/dashboard/LegacySearchConsoleDashboardWidgetTopLevel';
 import PostSearcher from '../assets/js/components/PostSearcher';
 import URLSearchWidget from '../assets/js/googlesitekit/widgets/components/URLSearchWidget';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
-import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
 import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
+import { getWidgetComponentProps } from '../assets/js/googlesitekit/widgets/util';
 
 storiesOf( 'Dashboard', module )
 	.add( 'Module Header', () => (
@@ -35,53 +52,6 @@ storiesOf( 'Dashboard', module )
 			description={ __( 'Description of Module', 'google-site-kit' ) }
 		/>
 	) )
-	.add( 'All Traffic', () => {
-		global._googlesitekitLegacyData = analyticsDashboardData;
-
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-				accountID: '123456789',
-				propertyID: '123456789',
-				internalWebPropertyID: '123456789',
-				profileID: '123456789',
-			} );
-		};
-
-		// Load the datacache with data.
-		setTimeout( () => {
-			doAction(
-				'googlesitekit.moduleLoaded',
-				'Dashboard'
-			);
-		}, 250 );
-		return (
-			<WithTestRegistry callback={ setupRegistry } >
-				<Layout className="googlesitekit-dashboard-all-traffic">
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-4-desktop
-							mdc-layout-grid__cell--span-4-tablet
-							mdc-layout-grid__cell--span-4-phone
-						">
-								<LegacyDashboardAcquisitionPieChart source />
-							</div>
-							<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-8-desktop
-							mdc-layout-grid__cell--span-4-tablet
-							mdc-layout-grid__cell--span-4-phone
-						">
-								<LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
-							</div>
-						</div>
-					</div>
-				</Layout>
-			</WithTestRegistry>
-		);
-	},
-	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
 	.add( 'Post Searcher', () => {
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -101,10 +71,11 @@ storiesOf( 'Dashboard', module )
 	} )
 	.add( 'URL Search Widget', () => {
 		const setupRegistry = ( registry ) => provideSiteInfo( registry );
+		const widgetComponentProps = getWidgetComponentProps( 'urlSearch' );
 
 		return (
 			<WithTestRegistry callback={ setupRegistry } >
-				<URLSearchWidget />
+				<URLSearchWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
 	} )
@@ -153,7 +124,7 @@ storiesOf( 'Dashboard', module )
 							">
 								<CTA
 									title={ __( 'Learn more about what visitors do on your site.', 'google-site-kit' ) }
-									description={ __( 'Connecting with Google Analytics to see unique vistors, goal completions, top pages and more.', 'google-site-kit' ) }
+									description={ __( 'Connecting with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' ) }
 									ctaLink="#"
 									ctaLabel={ __( 'Set up analytics', 'google-site-kit' ) }
 								/>
@@ -164,7 +135,7 @@ storiesOf( 'Dashboard', module )
 			</WithTestRegistry>
 		);
 	},
-	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
+	{ options: { readySelector: '.googlesitekit-chart-v2 > div[style="position: relative;"]' } } )
 	.add( 'Search Funnel', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
@@ -221,6 +192,6 @@ storiesOf( 'Dashboard', module )
 		);
 	}, {
 		options: {
-			readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+			readySelector: '.googlesitekit-chart-v2 > div[style="position: relative;"]',
 		},
 	} );

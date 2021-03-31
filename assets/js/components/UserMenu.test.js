@@ -1,7 +1,7 @@
 /**
  * UserMenu tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,16 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { ENTER, ESCAPE, SPACE } from '@wordpress/keycodes';
+
+/**
  * Internal dependencies
  */
 import { render, createTestRegistry, fireEvent, provideUserInfo, provideSiteInfo, act } from '../../../tests/js/test-utils';
 import UserMenu from './UserMenu';
-import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
 describe( 'UserMenu', () => {
 	let registry;
@@ -80,7 +85,7 @@ describe( 'UserMenu', () => {
 		} );
 
 		it( 'should close the menu when escape is pressed', () => {
-			fireEvent.keyUp( document, { keyCode: 27 } );
+			fireEvent.keyUp( document, { keyCode: ESCAPE } );
 			expect( menu ).toHaveAttribute( 'aria-hidden', 'true' );
 		} );
 
@@ -94,7 +99,7 @@ describe( 'UserMenu', () => {
 			} );
 
 			it( 'should close the modal dialog after pressing escape key', () => {
-				fireEvent.keyUp( document, { keyCode: 27 } );
+				fireEvent.keyUp( document, { keyCode: ESCAPE } );
 				expect( document.querySelector( '.mdc-dialog--open' ) ).not.toBeInTheDocument();
 			} );
 
@@ -125,12 +130,12 @@ describe( 'UserMenu', () => {
 		} );
 
 		it( 'should select a menu option on pressing space', () => {
-			fireEvent.keyDown( menu.children[ 0 ], { keyCode: 32 } );
+			fireEvent.keyDown( menu.children[ 0 ], { keyCode: SPACE } );
 			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeInTheDocument();
 		} );
 
 		it( 'should select a menu option on pressing enter', () => {
-			fireEvent.keyDown( menu.children[ 0 ], { keyCode: 13 } );
+			fireEvent.keyDown( menu.children[ 0 ], { keyCode: ENTER } );
 			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeInTheDocument();
 		} );
 	} );

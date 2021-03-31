@@ -3,7 +3,7 @@
  * Notification test case
  *
  * @package   Google\Site_Kit\Tests
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -34,7 +34,6 @@ class NotificationTest extends TestCase {
 			array(
 				'title'            => 'test-title',
 				'content'          => 'test-content',
-				'image'            => 'test-image-url',
 				'cta_url'          => 'test-cta-url',
 				'cta_label'        => 'test-cta-label',
 				'cta_target'       => 'test-cta-target',
@@ -49,7 +48,6 @@ class NotificationTest extends TestCase {
 			array(
 				'title'          => 'test-title',
 				'content'        => 'test-content',
-				'image'          => 'test-image-url',
 				'ctaURL'         => 'test-cta-url',
 				'ctaLabel'       => 'test-cta-label',
 				'ctaTarget'      => 'test-cta-target',

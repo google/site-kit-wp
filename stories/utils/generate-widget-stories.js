@@ -1,7 +1,7 @@
 /**
  * Utility function to generate stories for widgets.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,18 @@
  * External dependencies
  */
 import { storiesOf, Story } from '@storybook/react';
-import { Component } from 'react';
 
 /**
  * Internal dependencies
  */
-import Widgets from 'googlesitekit-widgets';
+import { CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
 	WithTestRegistry,
 	provideModules,
 	provideSiteInfo,
 } from '../../tests/js/utils';
-
-const { components: { Widget } } = Widgets;
+import { getWidgetComponentProps } from '../../assets/js/googlesitekit/widgets/util';
 
 /**
  * Generates stories for a report based widget using provided data.
@@ -41,17 +39,18 @@ const { components: { Widget } } = Widgets;
  * @since 1.16.0
  * @private
  *
- * @param {Object}    args                              Widget arguments.
- * @param {Array}     args.moduleSlugs                  List of modules to activate.
- * @param {string}    args.datastore                    Module datastore name.
- * @param {string}    args.group                        Stories group name.
- * @param {Array}     args.data                         Widget data.
- * @param {Object}    args.options                      Arguments for report requests.
- * @param {Component} args.component                    Widget component.
- * @param {boolean}   [args.wrapWidget]                 Whether to wrap in default <Widget> component. Default true.
- * @param {Array}     [args.additionalVariants]         Optional. Additional story variants.
- * @param {Array}     [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants.
- * @param {Function}  [args.setup]                      Optional. Setup function to be run for all Stories being generated.
+ * @param {Object}      args                              Widget arguments.
+ * @param {Array}       args.moduleSlugs                  List of modules to activate.
+ * @param {string}      args.datastore                    Module datastore name.
+ * @param {string}      args.group                        Stories group name.
+ * @param {Array}       args.data                         Widget data.
+ * @param {Object}      args.options                      Arguments for report requests.
+ * @param {WPComponent} args.Component                    Widget component.
+ * @param {string}      [args.referenceDate]              Reference date string to use, if not today.
+ * @param {boolean}     [args.wrapWidget]                 Whether to wrap in default <Widget> component. Default true.
+ * @param {Array}       [args.additionalVariants]         Optional. Additional story variants.
+ * @param {Array}       [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants.
+ * @param {Function}    [args.setup]                      Optional. Setup function to be run for all Stories being generated.
  * @return {Story} Generated story.
  */
 export function generateReportBasedWidgetStories( {
@@ -60,34 +59,49 @@ export function generateReportBasedWidgetStories( {
 	group,
 	data,
 	options,
-	component: WidgetComponent,
+	Component,
+	referenceDate,
 	wrapWidget = true,
 	additionalVariants = {},
 	additionalVariantCallbacks = {},
 	setup = () => {},
 } ) {
-	const stories = storiesOf( group, module )
-		.addDecorator( ( storyFn ) => {
-			const registry = createTestRegistry();
-			// Activate the module.
-			provideModules( registry, moduleSlugs.map( ( module ) => {
-				return {
-					slug: module,
-					active: true,
-					connected: true,
-				};
-			} ) );
+	const stories = storiesOf( group, module );
 
-			// Set some site information.
-			provideSiteInfo( registry, {
-				currentEntityURL: options.url || null,
-			} );
+	const withRegistry = ( StoryComponent ) => {
+		const registry = createTestRegistry();
+		// Activate the module.
+		provideModules( registry, moduleSlugs.map( ( module ) => {
+			return {
+				slug: module,
+				active: true,
+				connected: true,
+			};
+		} ) );
 
-			// Call the optional setup function.
-			setup( registry );
+		let currentEntityURL = null;
+		if ( Array.isArray( options ) && options[ 0 ].url ) {
+			currentEntityURL = options[ 0 ].url;
+		} else if ( options.url ) {
+			currentEntityURL = options.url;
+		}
 
-			return storyFn( registry );
+		// Set some site information.
+		provideSiteInfo( registry, {
+			currentEntityURL,
 		} );
+
+		if ( referenceDate ) {
+			registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
+		}
+
+		// Call the optional setup function.
+		setup( registry );
+
+		return (
+			<StoryComponent registry={ registry } />
+		);
+	};
 
 	if ( Array.isArray( options ) ) {
 		// 	If options is an array, so must data.
@@ -101,14 +115,15 @@ export function generateReportBasedWidgetStories( {
 	}
 
 	const {
-		Loaded: additionalLoadingCallback,
-		'Data Unavailable': additionalDataUnavailableCallback,
+		Loaded: additionalLoadedCallback,
+		Loading: additionalLoadingCallback,
+		DataUnavailable: additionalDataUnavailableCallback,
 		Error: additionalErrorCallback,
 	} = additionalVariantCallbacks;
 
 	// Existing default variants.
 	const defaultVariants = {
-		Loaded: ( { dispatch } ) => {
+		Loaded( { dispatch } ) {
 			if ( Array.isArray( options ) ) {
 				options.forEach( ( option, index ) => {
 					dispatch( datastore ).receiveGetReport( data[ index ], { options: option } );
@@ -118,11 +133,27 @@ export function generateReportBasedWidgetStories( {
 			}
 
 			// Run additional callback if it exists.
+			if ( additionalLoadedCallback ) {
+				additionalLoadedCallback( dispatch, data, options );
+			}
+		},
+		Loading( { dispatch } ) {
+			if ( Array.isArray( options ) ) {
+				options.forEach( ( option, index ) => {
+					dispatch( datastore ).receiveGetReport( data[ index ], { options: option } );
+					dispatch( datastore ).startResolution( 'getReport', [ option ] );
+				} );
+			} else {
+				dispatch( datastore ).receiveGetReport( data, { options } );
+				dispatch( datastore ).startResolution( 'getReport', [ options ] );
+			}
+
+			// Run additional callback if it exists.
 			if ( additionalLoadingCallback ) {
 				additionalLoadingCallback( dispatch, data, options );
 			}
 		},
-		'Data Unavailable': ( { dispatch } ) => {
+		DataUnavailable( { dispatch } ) {
 			if ( Array.isArray( options ) ) {
 				options.forEach( ( option, index ) => {
 					const returnType = Array.isArray( data[ index ] ) ? [] : {};
@@ -137,12 +168,13 @@ export function generateReportBasedWidgetStories( {
 				additionalDataUnavailableCallback( dispatch, data, options );
 			}
 		},
-		Error: ( { dispatch } ) => {
+		Error( { dispatch } ) {
 			const error = {
 				code: 'missing_required_param',
 				message: 'Request parameter is empty: metrics.',
 				data: {},
 			};
+
 			if ( Array.isArray( options ) ) {
 				options.forEach( ( option ) => {
 					dispatch( datastore ).receiveError( error, 'getReport', [ option ] );
@@ -197,27 +229,58 @@ export function generateReportBasedWidgetStories( {
 		...customVariants,
 	};
 
-	let widget;
+	let widgetElement;
+
+	const slug = moduleSlugs.map( ( mapSlug ) => `${ mapSlug }-widget` ).join( ' ' );
+	const widgetComponentProps = getWidgetComponentProps( slug );
+
 	if ( wrapWidget ) {
-		const slugs = moduleSlugs.map( ( slug ) => {
-			return `${ slug }-widget`;
-		} );
-		widget = (
-			<Widget slug={ slugs.join( ' ' ) }>
-				<WidgetComponent />
+		const { Widget } = widgetComponentProps;
+		widgetElement = (
+			<Widget>
+				<Component { ...widgetComponentProps } />
 			</Widget>
 		);
 	} else {
-		widget = <WidgetComponent />;
+		widgetElement = <Component { ...widgetComponentProps } />;
 	}
 
 	Object.keys( variants ).forEach( ( variant ) => {
-		stories.add( variant, ( registry ) => (
+		stories.add( variant.replace( /([a-z])([A-Z])/, '$1 $2' ), ( args, { registry } ) => (
 			<WithTestRegistry registry={ registry } callback={ variants[ variant ] }>
-				{ widget }
+				{ widgetElement }
 			</WithTestRegistry>
-		) );
+		), {
+			decorators: [
+				withRegistry,
+			],
+		} );
 	} );
 
 	return stories;
+}
+
+/**
+ * Creates and returns a new report data generator using provided factory function.
+ *
+ * @since 1.28.0
+ *
+ * @param {Function} factory The factory function.
+ * @return {Function} The report data generator.
+ */
+export function makeReportDataGenerator( factory ) {
+	return ( options ) => {
+		const results = { options };
+
+		if ( Array.isArray( options ) ) {
+			results.data = [];
+			for ( let i = 0; i < options.length; i++ ) {
+				results.data.push( factory( options[ i ] ) );
+			}
+		} else {
+			results.data = factory( options );
+		}
+
+		return results;
+	};
 }

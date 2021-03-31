@@ -1,7 +1,7 @@
 /**
  * LegacyDashboardAcquisitionPieChart component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,33 +32,35 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { getTimeInSeconds } from '../../../../util';
 import GoogleChart from '../../../../components/GoogleChart';
-import withData from '../../../../components/higherorder/withdata';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import Link from '../../../../components/Link';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../../util';
-import applyEntityToReportPath from '../../util/applyEntityToReportPath';
+import {
+	extractAnalyticsDataForPieChart,
+	getAnalyticsErrorMessageFromData,
+	trafficSourcesReportDataDefaults,
+	isDataZeroForReporting,
+} from '../../util';
+import { getURLPath } from '../../../../util/getURLPath';
 
 const { useSelect } = Data;
 
 const LegacyDashboardAcquisitionPieChart = ( { data, source } ) => {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
-	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
-		{ path: applyEntityToReportPath( url, `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ) }
-	) );
+	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', {
+		'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+	} ) );
 
 	if ( ! data || data.error || ! data.length ) {
 		return null;
 	}
 
-	const processedData = extractAnalyticsDataForTrafficChart( data, 1 );
+	const processedData = extractAnalyticsDataForPieChart( data, { keyColumnIndex: 1 } );
 	const options = {
 		chartArea: {
 			width: '100%',

@@ -1,7 +1,7 @@
 /**
  * Refresh Authentication utility.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ export const refreshAuthentication = async () => {
 			unsatisfiedScopes = [],
 		} = await data.get( TYPE_CORE, 'user', 'authentication', { timestamp: Date.now() } );
 
-		// We should really be using state management. This is terrible.
-		// Hang in there... we're getting to it ;)
+		// This terrible approach is a bad workaround for missing state management.
+		// Once the datastore is used throughout the plugin, this function can be removed.
 		global._googlesitekitLegacyData.setup = {
 			...( global._googlesitekitLegacyData.setup || {} ),
 			isAuthenticated,

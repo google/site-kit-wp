@@ -1,7 +1,7 @@
 /**
  * LegacyDashboardEarnings component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
+import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
 import LegacyDashboardAdSenseTopEarningPagesSmall from './LegacyDashboardAdSenseTopEarningPagesSmall';
 import LegacyAdSenseDashboardMainSummary from './LegacyAdSenseDashboardMainSummary';
-import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
+import ModuleSettingsWarning from '../../../../components/legacy-notifications/module-settings-warning';
 
 class LegacyDashboardEarnings extends Component {
 	render() {
@@ -42,7 +42,7 @@ class LegacyDashboardEarnings extends Component {
 						title={ __( 'Earnings', 'google-site-kit' ) }
 						description={ __( 'How much you’re earning from your content through AdSense.', 'google-site-kit' ) }
 					/>
-					<ModuleSettingsWarning slug="adsense" context="module-sitekit-dashboard" />
+					<ModuleSettingsWarning slug="adsense" />
 				</div>
 				<LegacyAdSenseDashboardMainSummary />
 				<LegacyDashboardAdSenseTopEarningPagesSmall />

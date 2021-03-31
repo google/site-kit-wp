@@ -1,7 +1,7 @@
 /**
  * OptimizeIDFieldInstructions component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,23 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 
+const { useSelect } = Data;
+
 export default function OptimizeIDFieldInstructions() {
+	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/optimize/answer/6211921',
+	} ) );
+
 	return (
 		<p>
 			{ __( 'Please copy and paste your Optimize ID to complete your setup.', 'google-site-kit' ) }
 			{ ' ' }
 			<Link
-				href="https://support.google.com/optimize/answer/6211921"
+				href={ supportURL }
 				external
 				inherit
 			>

@@ -1,7 +1,7 @@
 /**
  * AdSense Main setup component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,8 @@ import AdSenseIcon from '../../../../../svg/adsense.svg';
 import ProgressBar from '../../../../components/ProgressBar';
 import ErrorText from '../../../../components/ErrorText';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as siteStoreName } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import {
 	ACCOUNT_STATUS_NONE,
 	ACCOUNT_STATUS_MULTIPLE,
@@ -67,7 +68,8 @@ const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	// Get settings.
-	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
+	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
 	const previousAccountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const previousClientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
 	const previousAccountStatus = useSelect( ( select ) => select( STORE_NAME ).getAccountStatus() );
@@ -98,6 +100,7 @@ export default function SetupMain( { finishSetup } ) {
 	// Get additional information to determine account and site status.
 	const alerts = useSelect( ( select ) => select( STORE_NAME ).getAlerts( accountID ) );
 	const urlChannels = useSelect( ( select ) => select( STORE_NAME ).getURLChannels( accountID, clientID ) );
+	const urlChannelsError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getURLChannels', [ accountID, clientID ] ) );
 	const accountsError = useSelect( ( select ) => select( STORE_NAME ).getError( 'getAccounts', [] ) );
 	const alertsError = useSelect( ( select ) => select( STORE_NAME ).getError( 'getAlerts', [ accountID ] ) );
 	const hasErrors = useSelect( ( select ) => select( STORE_NAME ).hasErrors() );
@@ -107,8 +110,10 @@ export default function SetupMain( { finishSetup } ) {
 		accounts,
 		clients,
 		alerts,
+		urlChannels,
 		accountsError,
 		alertsError,
+		urlChannelsError,
 		previousAccountID,
 		previousClientID,
 	} );
@@ -265,13 +270,6 @@ export default function SetupMain( { finishSetup } ) {
 		};
 	}, [ accountStatus ] );
 
-	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
-	const [ isNavigating, setIsNavigating ] = useState( false );
-	const finishSetupAndNavigate = ( ...args ) => {
-		finishSetup( ...args );
-		setIsNavigating( true );
-	};
-
 	// Fetch existing tag right here, to ensure the progress bar is still being
 	// shown while this is being loaded. It is technically used only by child
 	// components.
@@ -325,7 +323,7 @@ export default function SetupMain( { finishSetup } ) {
 				viewComponent = <SetupSiteAdd />;
 				break;
 			case SITE_STATUS_ADDED:
-				viewComponent = <SetupSiteAdded finishSetup={ finishSetupAndNavigate } />;
+				viewComponent = <SetupSiteAdded finishSetup={ finishSetup } />;
 				break;
 			default:
 				if ( hasErrors ) {
@@ -342,7 +340,7 @@ export default function SetupMain( { finishSetup } ) {
 		// This should never be reached because the setup is not accessible
 		// under these circumstances due to related PHP+/JS logic. But at
 		// least in theory it should show the last step, just in case.
-		viewComponent = <SetupSiteAdded finishSetup={ finishSetupAndNavigate } />;
+		viewComponent = <SetupSiteAdded finishSetup={ finishSetup } />;
 	}
 
 	return (

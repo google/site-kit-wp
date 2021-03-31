@@ -1,7 +1,7 @@
 /**
  * API function to create submit changes store.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,14 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { actions as errorActions } from '../../googlesitekit/data/create-error-store';
 import { createValidationSelector } from '../data/utils';
+import { actions as errorStoreActions } from '../data/create-error-store';
 const { createRegistryControl } = Data;
-const { clearError, receiveError } = errorActions;
+
+// Get access to error store action creators.
+// If the parent store doesn't include the error store,
+// yielded error actions will be a no-op.
+const { clearError, receiveError } = errorStoreActions;
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
@@ -33,7 +37,7 @@ const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
 /**
  * Creates a store object implementing the necessary infrastructure for submitting module settings.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  *
  * @param {Object}   args                            Arguments for creating the submitChanges store.
  * @param {Function} [args.submitChanges]            Optional. Callback function to issue the submit changes request. Will be used inside the submit changes control.
@@ -52,7 +56,7 @@ export function createSubmitChangesStore( {
 		/**
 		 * Submits all changes currently present in the client, persisting them on the server.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.21.0
 		 *
 		 * @return {Object} Empty object on success, object with `error` property on failure.
 		 */
@@ -122,7 +126,7 @@ export function createSubmitChangesStore( {
 		/**
 		 * Checks whether changes are currently being submitted.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.21.0
 		 *
 		 * @param {Object} state Data store's state.
 		 * @return {boolean} TRUE if submitting, otherwise FALSE.

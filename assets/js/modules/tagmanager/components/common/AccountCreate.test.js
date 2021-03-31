@@ -1,7 +1,7 @@
 /**
  * Account Create component tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@
 import AccountCreate from './AccountCreate';
 import { fireEvent, render, waitFor, createTestRegistry, muteFetch } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import * as factories from '../../datastore/__factories__';
 
 describe( 'AccountCreate', () => {
@@ -54,7 +54,7 @@ describe( 'AccountCreate', () => {
 	it( 'resets accounts when the re-fetch accounts link is clicked', async () => {
 		const accountA = factories.accountBuilder();
 		const accountB = factories.accountBuilder();
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountA.accountId );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ accountA ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
@@ -77,7 +77,7 @@ describe( 'AccountCreate', () => {
 		let openSpy;
 		beforeEach( () => {
 			openSpy = jest.spyOn( global, 'open' );
-			// Need to set a dummy implementation here to prevent JSDOM from raising a "Error: Not implemented" error.
+			// Need to set a placeholder implementation here to prevent JSDOM from raising a "Error: Not implemented" error.
 			openSpy.mockImplementation( () => {} );
 		} );
 		afterEach( () => openSpy.mockRestore() );

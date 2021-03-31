@@ -1,7 +1,7 @@
 /**
  * Data store utilities for transforming names to a certain case tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 import {
 	camelCaseToPascalCase,
 	camelCaseToConstantCase,
-	kebabCaseToPascalCase,
+	hyphenCaseToPascalCase,
 } from './transform-case';
 
 describe( 'camelCaseToPascalCase', () => {
@@ -68,7 +68,7 @@ describe( 'camelCaseToConstantCase', () => {
 	} );
 } );
 
-describe( 'kebab-caseToPascalCase', () => {
+describe( 'hyphen-caseToPascalCase', () => {
 	it.each( [
 		[
 			'test-setting',
@@ -87,6 +87,6 @@ describe( 'kebab-caseToPascalCase', () => {
 			'AmpExperimentJson',
 		],
 	] )( 'transforms "%s" names to "%s"', ( name, expected ) => {
-		expect( kebabCaseToPascalCase( name ) ).toEqual( expected );
+		expect( hyphenCaseToPascalCase( name ) ).toEqual( expected );
 	} );
 } );

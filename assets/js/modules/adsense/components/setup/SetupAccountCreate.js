@@ -1,7 +1,7 @@
 /**
  * AdSense Setup Account Create component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,13 +26,13 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../components/button';
+import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import { trackEvent } from '../../../../util';
 import { parseAccountID } from '../../util/parsing';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as siteStoreName } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as userStoreName } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	ErrorNotices,
 	UserProfile,
@@ -40,10 +40,13 @@ import {
 const { useSelect } = Data;
 
 export default function SetupAccountCreate() {
-	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
-	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
+	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 	const signUpURL = useSelect( ( select ) => select( STORE_NAME ).getServiceCreateAccountURL() );
+	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/adsense/answer/2659101',
+	} ) );
 
 	const createAccountHandler = useCallback( async ( event ) => {
 		event.preventDefault();
@@ -93,7 +96,7 @@ export default function SetupAccountCreate() {
 				) }
 				{ ' ' }
 				<Link
-					href="https://support.google.com/adsense/answer/2659101"
+					href={ supportURL }
 					inherit
 					external
 					aria-label={ __( 'Learn more about adding a user to an existing AdSense account', 'google-site-kit' ) }

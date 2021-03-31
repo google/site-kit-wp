@@ -1,7 +1,7 @@
 /**
  * CountrySelect component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import {
 import { allCountries, countriesByCode } from '../../../util/countries-timezones';
 import Data from 'googlesitekit-data';
 import { FORM_ACCOUNT_CREATE } from '../../../datastore/constants';
-import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function CountrySelect() {
@@ -44,7 +44,7 @@ export default function CountrySelect() {
 		if ( newCountryCode !== value && countriesByCode[ newCountryCode ] ) {
 			setValues( FORM_ACCOUNT_CREATE, {
 				countryCode: newCountryCode,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				timezone: countriesByCode[ newCountryCode ].defaultTimeZoneId,
 			} );
 		}

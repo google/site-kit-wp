@@ -1,7 +1,7 @@
 /**
  * Optimize Setup stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,58 +24,70 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
-import { SetupMain as OptimizeSetup } from '../assets/js/modules/optimize/components/setup/index';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/optimize/datastore/constants';
-import { WithTestRegistry, createTestRegistry, provideModules } from '../tests/js/utils';
+import {
+	WithTestRegistry,
+	createTestRegistry,
+	provideModules,
+	provideModuleRegistrations,
+} from '../tests/js/utils';
 
 function Setup( props ) {
 	return (
 		<WithTestRegistry { ...props }>
-			<SetupWrapper moduleSlug="optimize" />
+			<ModuleSetup moduleSlug="optimize" />
 		</WithTestRegistry>
 	);
 }
 
-storiesOf( 'Optimize Module/Setup', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		global._googlesitekitLegacyData.setup.moduleToSetup = 'optimize';
-		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-			{
-				slug: 'optimize',
-				active: true,
-				connected: true,
-			},
-		] );
-		registry.dispatch( CORE_MODULES ).registerModule( 'optimize', {
-			setupComponent: OptimizeSetup,
-		} );
+const withRegistry = ( Story ) => {
+	const registry = createTestRegistry();
+	global._googlesitekitLegacyData.setup.moduleToSetup = 'optimize';
+	provideModules( registry, [
+		{
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		},
+		{
+			slug: 'optimize',
+			active: true,
+			connected: true,
+		},
+	] );
+	provideModuleRegistrations( registry );
 
-		return storyFn( registry );
-	} )
-	.add( 'Start', ( registry ) => {
+	return (
+		<Story registry={ registry } />
+	);
+};
+
+storiesOf( 'Optimize Module/Setup', module )
+	.add( 'Start', ( args, { registry } ) => {
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Start with AMP Experiment JSON Field', ( registry ) => {
+	.add( 'Start with AMP Experiment JSON Field', ( args, { registry } ) => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Start with invalid values', ( registry ) => {
+	.add( 'Start with invalid values', ( args, { registry } ) => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -84,5 +96,9 @@ storiesOf( 'Optimize Module/Setup', module )
 		} );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
 ;

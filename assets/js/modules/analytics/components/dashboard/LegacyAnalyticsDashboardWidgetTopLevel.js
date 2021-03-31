@@ -1,7 +1,7 @@
 /**
  * AnalyticsDashboardWidgetTopLevel component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,7 @@ import { Fragment, useState, useEffect } from '@wordpress/element';
  */
 import {
 	getTimeInSeconds,
-	readableLargeNumber,
-	changeToPercent,
+	calculateChange,
 } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import {
@@ -46,16 +45,15 @@ import {
 	userReportDataDefaults,
 	parseTotalUsersData,
 } from '../../util';
-
-import applyEntityToReportPath from '../../util/applyEntityToReportPath';
+import { getURLPath } from '../../../../util/getURLPath';
 import Data from 'googlesitekit-data';
-import DataBlock from '../../../../components/data-block';
-import withData from '../../../../components/higherorder/withdata';
+import DataBlock from '../../../../components/DataBlock';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import Sparkline from '../../../../components/Sparkline';
-import CTA from '../../../../components/notifications/cta';
+import CTA from '../../../../components/legacy-notifications/cta';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME } from '../../datastore/constants';
 
 const { useSelect } = Data;
@@ -101,25 +99,18 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 
 	const { permaLink } = global._googlesitekitLegacyData;
 
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
-	const pathIDSegment = `a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
-
-	const uniqueVisitorsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
-		{
-			path: applyEntityToReportPath( url, `/report/visitors-overview/${ pathIDSegment }` ),
-		}
-	) );
-	const goalsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
-		{
-			path: applyEntityToReportPath( url, `/report/conversions-goals-overview/${ pathIDSegment }` ),
-		}
-	) );
-
-	const goalURL = 'https://support.google.com/analytics/answer/1032415?hl=en#create_or_edit_goals';
+	const uniqueVisitorsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( `visitors-overview`, {
+		'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+	} ) );
+	const goalsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( `conversions-goals-overview`, {
+		'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+	} ) );
+	const goalURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/analytics/answer/1032415',
+		hash: 'create_or_edit_goals',
+	} ) );
 
 	let goalCompletions = '',
 		goalCompletionsChange = '',
@@ -129,11 +120,11 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 	if ( overview ) {
 		goalCompletions = overview.goalCompletions;
 		goalCompletionsChange = overview.goalCompletionsChange;
-		averageBounceRate = overview.averageBounceRate;
+		averageBounceRate = overview.averageBounceRate / 100;
 		averageBounceRateChange = overview.averageBounceRateChange;
 	}
 
-	const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
+	const totalUsersChange = calculateChange( previousTotalUsers, totalUsers );
 
 	return (
 		<Fragment>
@@ -147,7 +138,7 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 				<DataBlock
 					className="overview-total-users"
 					title={ __( 'Unique Visitors from Search', 'google-site-kit' ) }
-					datapoint={ readableLargeNumber( totalUsers ) }
+					datapoint={ totalUsers || 0 }
 					change={ totalUsersChange }
 					changeDataUnit="%"
 					source={ {
@@ -181,7 +172,7 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 						<DataBlock
 							className="overview-bounce-rate"
 							title={ __( 'Bounce Rate', 'google-site-kit' ) }
-							datapoint={ Number( averageBounceRate ).toFixed( 2 ) }
+							datapoint={ averageBounceRate }
 							datapointUnit="%"
 							change={ averageBounceRateChange }
 							changeDataUnit="%"
@@ -213,7 +204,7 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 					<DataBlock
 						className="overview-goals-completed"
 						title={ __( 'Goals Completed', 'google-site-kit' ) }
-						datapoint={ readableLargeNumber( goalCompletions ) }
+						datapoint={ goalCompletions }
 						change={ goalCompletionsChange }
 						changeDataUnit="%"
 						source={ {

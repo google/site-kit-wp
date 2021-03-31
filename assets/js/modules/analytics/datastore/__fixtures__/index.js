@@ -1,7 +1,7 @@
 /**
  * Analytics Datastore Fixtures.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,19 +26,8 @@ export { default as getTagPermissionsAccess } from './tag-permissions-access';
 export { default as getTagPermissionsNoAccess } from './tag-permissions-no-access';
 export { default as createAccount } from './create-account';
 export { default as report } from './report';
-export { default as dashboardAllTrafficArgs } from './dashboard-all-traffic-widget-args.json';
-export { default as dashboardAllTrafficData } from './dashboard-all-traffic-widget-data.json';
-export { default as pageDashboardAllTrafficArgs } from './page-dashboard-all-traffic-widget-args.json';
-export { default as pageDashboardAllTrafficData } from './page-dashboard-all-traffic-widget-data.json';
-export { default as dashboardPopularPagesArgs } from './dashboard-popular-pages-widget-args.json';
-export { default as dashboardPopularPagesData } from './dashboard-popular-pages-widget-data.json';
-export { default as pageDashboardBounceRateWidgetArgs } from './page-dashboard-bounce-rate-widget-args.json';
-export { default as pageDashboardBounceRateWidgetData } from './page-dashboard-bounce-rate-widget-data.json';
-export { default as dashboardBounceRateWidgetData } from './dashboard-bounce-rate-widget-data.json';
-export { default as dashboardBounceRateWidgetArgs } from './dashboard-bounce-rate-widget-args.json';
-export { default as dashboardGoalsWidgetData } from './dashboard-goals-widget-data.json';
-export { default as dashboardGoalsWidgetArgs } from './dashboard-goals-widget-args.json';
-export * from './dashboard-unique-visitors-data';
-export * from './dashboard-unique-visitors-args';
-export { pageDashboardUniqueVisitorsSparkData, pageDashboardUniqueVisitorsVisitorData } from './page-dashboard-unique-visitors-data';
-export { pageDashboardUniqueVisitorsSparkArgs, pageDashboardUniqueVisitorsVisitorArgs } from './page-dashboard-unique-visitors-args';
+import defaultSettings from './settings--default.json';
+
+export const settings = {
+	default: defaultSettings,
+};

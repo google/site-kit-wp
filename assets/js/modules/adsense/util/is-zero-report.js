@@ -1,7 +1,7 @@
 /**
  * Report utilities.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 /**
  * Checks whether the report data is empty or not.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  *
  * @param {Object} report Report data.
  * @return {boolean|undefined} TRUE if the report has no data, otherwise FALSE. `undefined` if the `report` passed is undefined.

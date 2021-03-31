@@ -1,7 +1,7 @@
 /**
  * Plugin activation tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@
  * WordPress dependencies
  */
 import { deactivatePlugin, activatePlugin } from '@wordpress/e2e-test-utils';
-import { useRequestInterception } from '../utils';
+import { useRequestInterception, createWaitForFetchRequests } from '../utils';
 
-describe( 'Plugin Activation Notice', () => {
+describe( 'plugin activation notice', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
@@ -33,97 +33,80 @@ describe( 'Plugin Activation Notice', () => {
 			}
 		} );
 	} );
-	describe( 'When Javascript is enabled', () => {
+
+	beforeEach( async () => {
 		// Ensure Site Kit is disabled before running each test as it's enabled by default.
-		beforeEach( async () => {
-			await deactivatePlugin( 'google-site-kit' );
-		} );
-
-		afterEach( async () => {
-			await activatePlugin( 'google-site-kit' );
-		} );
-
-		describe( 'using Proxy auth', () => {
-			beforeEach( async () => {
-				await activatePlugin( 'e2e-tests-proxy-credentials-plugin' );
-			} );
-			afterEach( async () => {
-				await deactivatePlugin( 'e2e-tests-proxy-credentials-plugin' );
-			} );
-			it( 'Should be displayed', async () => {
-				await activatePlugin( 'google-site-kit' );
-				await page.waitForSelector( '.googlesitekit-activation__title' );
-				await expect( page ).toMatchElement( '.googlesitekit-activation__title', { text: /Congratulations, the Site Kit plugin is now activated./i } );
-			} );
-			it( 'Should not display noscript notice', async () => {
-				await activatePlugin( 'google-site-kit' );
-
-				await expect( page ).not.toMatchElement( '.googlesitekit-noscript' );
-
-				await deactivatePlugin( 'google-site-kit' );
-			} );
-		} );
-		describe( 'using GCP auth', () => {
-			beforeEach( async () => {
-				await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
-			} );
-			afterEach( async () => {
-				await deactivatePlugin( 'e2e-tests-gcp-credentials-plugin' );
-			} );
-			it( 'Should lead you to the setup wizard with GCP auth', async () => {
-				await activatePlugin( 'google-site-kit' );
-
-				await page.waitForSelector( '.googlesitekit-activation' );
-
-				await expect( page ).toMatchElement( '.googlesitekit-start-setup', { text: 'Start setup' } );
-
-				await page.click( '.googlesitekit-start-setup' );
-				await page.waitForSelector( '.googlesitekit-wizard-step__title' );
-
-				// Ensure we're on the first step.
-				await expect( page ).toMatchElement( '.googlesitekit-wizard-progress-step__number--inprogress', { text: '1' } );
-
-				await deactivatePlugin( 'google-site-kit' );
-			} );
-		} );
+		await deactivatePlugin( 'google-site-kit' );
 	} );
 
-	describe( 'When Javascript is disabled', () => {
-		beforeEach( async () => {
-			await deactivatePlugin( 'google-site-kit' );
-		} );
+	afterAll( async () => {
+		await activatePlugin( 'google-site-kit' );
+	} );
 
-		afterEach( async () => {
-			await activatePlugin( 'google-site-kit' );
-		} );
-
-		it( 'Should not display plugin html', async () => {
-			// Disabling JavaScript in `beforeEach` breaks utility functions.
-			// Each test without JavaScript must use
-			// `await page.setJavaScriptEnabled( false );` and
-			// `await page.setJavaScriptEnabled( true );` in the test itself.
-			await page.setJavaScriptEnabled( false );
+	const matrix = {
+		shouldBeDisplayed: async () => {
+			const waitForFetchRequests = createWaitForFetchRequests();
 			await activatePlugin( 'google-site-kit' );
 
-			await expect( page ).toMatchElement( '[id^=js-googlesitekit-]', { visible: false } );
-			await expect( page ).not.toMatchElement( '.googlesitekit-activation__title' );
+			await page.waitForSelector( '.googlesitekit-activation__title' );
 
-			await deactivatePlugin( 'google-site-kit' );
-			await page.setJavaScriptEnabled( true );
-		} );
+			await expect( page ).toMatchElement( '.googlesitekit-activation__title', { text: /Congratulations, the Site Kit plugin is now activated./i } );
 
-		it( 'Should display noscript notice', async () => {
-			await page.setJavaScriptEnabled( false );
+			await waitForFetchRequests(); // Wait for compatibility checks to finish.
+		},
+		shouldNotDisplayNoScriptNotice: async () => {
+			const waitForFetchRequests = createWaitForFetchRequests();
 			await activatePlugin( 'google-site-kit' );
 
-			await expect( page ).toMatchElement(
-				'.googlesitekit-noscript__text',
-				{ text: /The Site Kit by Google plugin requires JavaScript to be enabled in your browser./i },
-				{ visible: true }
-			);
+			await expect( page ).not.toMatchElement( '.googlesitekit-noscript' );
 
-			await deactivatePlugin( 'google-site-kit' );
-			await page.setJavaScriptEnabled( true );
+			await waitForFetchRequests(); // Wait for compatibility checks to finish.
+		},
+	};
+
+	describe( 'using proxy auth', () => {
+		beforeAll( async () => {
+			await activatePlugin( 'e2e-tests-proxy-credentials-plugin' );
+		} );
+
+		afterAll( async () => {
+			await deactivatePlugin( 'e2e-tests-proxy-credentials-plugin' );
+		} );
+
+		it( 'should be displayed', matrix.shouldBeDisplayed );
+
+		it( 'should not display noscript notice', matrix.shouldNotDisplayNoScriptNotice );
+	} );
+
+	describe( 'using GCP auth', () => {
+		beforeAll( async () => {
+			await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
+		} );
+
+		afterAll( async () => {
+			await deactivatePlugin( 'e2e-tests-gcp-credentials-plugin' );
+		} );
+
+		it( 'should be displayed', matrix.shouldBeDisplayed );
+
+		it( 'should not display noscript notice', matrix.shouldNotDisplayNoScriptNotice );
+
+		it( 'should lead you to the setup wizard with GCP auth', async () => {
+			const waitForFetchRequests = createWaitForFetchRequests();
+
+			await activatePlugin( 'google-site-kit' );
+
+			await page.waitForSelector( '.googlesitekit-activation__title' );
+
+			await expect( page ).toMatchElement( '.googlesitekit-start-setup', { text: 'Start setup' } );
+
+			await waitForFetchRequests(); // Wait for compatibility checks to finish.
+
+			await page.click( '.googlesitekit-start-setup' );
+			await page.waitForSelector( '.googlesitekit-wizard-step__title' );
+
+			// Ensure we're on the first step.
+			await expect( page ).toMatchElement( '.googlesitekit-wizard-progress-step__number--inprogress', { text: '1' } );
 		} );
 	} );
 } );

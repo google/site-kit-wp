@@ -1,7 +1,7 @@
 /**
  * Property Select component tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,14 @@
  */
 import PropertySelect from './PropertySelect';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
-import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import { fireEvent, muteFetch, render, act } from '../../../../../../tests/js/test-utils';
 
 const setupRegistry = ( { dispatch } ) => {
 	const { properties, profiles } = fixtures.accountsPropertiesProfiles;
 	const propertyID = properties[ 0 ].id;
-	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	dispatch( STORE_NAME ).setAccountID( accountID );
 	dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -44,7 +44,7 @@ const setupRegistry = ( { dispatch } ) => {
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
-	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	dispatch( STORE_NAME ).receiveGetExistingTag( fixtures.getTagPermissionsAccess.propertyID );
 	// Existing tag IDs are set in the resolver so we have to fill those here.
@@ -60,7 +60,7 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 
 const setupEmptyRegistry = ( { dispatch } ) => {
 	const { properties } = fixtures.accountsPropertiesProfiles;
-	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	dispatch( STORE_NAME ).setSettings( {} );
 	dispatch( STORE_NAME ).setAccountID( accountID );
@@ -141,7 +141,7 @@ describe( 'PropertySelect', () => {
 
 	it( 'should update internalWebPropertyID in the store when an item is selected', () => {
 		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
-		const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 		const originalID = registry.select( STORE_NAME ).getInternalWebPropertyID();
 		const properties = registry.select( STORE_NAME ).getProperties( accountID );
 		const targetProperty = properties[ 1 ];
@@ -156,6 +156,6 @@ describe( 'PropertySelect', () => {
 		expect( targetProperty.id ).toEqual( newPropertyID );
 		const newID = registry.select( STORE_NAME ).getInternalWebPropertyID();
 		expect( originalID ).not.toEqual( newID );
-		expect( newID ).toEqual( targetProperty.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
+		expect( newID ).toEqual( targetProperty.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 	} );
 } );

@@ -1,7 +1,7 @@
 /**
  * `core/modules` data store: constants.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,3 +17,5 @@
  */
 
 export const STORE_NAME = 'core/modules';
+export { STORE_NAME as CORE_MODULES };
+export const ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES = 'insufficient_module_dependencies';

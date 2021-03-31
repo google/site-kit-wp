@@ -1,10 +1,10 @@
-=== Site Kit by Google ===
+=== Site Kit by Google - Analytics, Search Console, AdSense, Speed ===
 
 Contributors:      google
 Requires at least: 4.7
-Tested up to:      5.5
+Tested up to:      5.7
 Requires PHP:      5.6
-Stable tag:        1.20.0
+Stable tag:        1.29.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -84,9 +84,281 @@ We plan to expand the plugin’s capabilities and integrations in the future; we
 
 = How can I contribute to the plugin? =
 
-If you have some ideas to improve the plugin or to solve a bug, feel free to raise an issue or submit a pull request in the [GitHub repository for the plugin](https://github.com/google/site-kit-wp). Please stick to the [contributing guidelines](https://github.com/google/site-kit-wp/blob/master/CONTRIBUTING.md). You can also contribute to the plugin by translating it. Simply visit [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/google-site-kit) to get started.
+If you have some ideas to improve the plugin or to solve a bug, feel free to raise an issue or submit a pull request in the [GitHub repository for the plugin](https://github.com/google/site-kit-wp). Please stick to the [contributing guidelines](https://github.com/google/site-kit-wp/blob/main/CONTRIBUTING.md). You can also contribute to the plugin by translating it. Simply visit [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/google-site-kit) to get started.
 
 == Changelog ==
+
+= 1.29.0 =
+
+**Enhanced**
+
+* Only show notice about a user input question affecting other users of the site if there is more than one authorized user on the site overall. See [#2852](https://github.com/google/site-kit-wp/issues/2852).
+* Introduce new contextual help menu in Site Kit header bar and on the authentication service. See [#2846](https://github.com/google/site-kit-wp/issues/2846).
+* Introduce tooltip tour guiding the user through the new version of the All Traffic widget. See [#2739](https://github.com/google/site-kit-wp/issues/2739).
+* Enhance `PreviewBlock` JS component to support breakpoint-specific sizes via props. See [#2727](https://github.com/google/site-kit-wp/issues/2727).
+* Implement persistent dismissal of feature tours, stored in the database. See [#2650](https://github.com/google/site-kit-wp/issues/2650).
+* Introduce `ReportTable` component for displaying reusable data tables. See [#2249](https://github.com/google/site-kit-wp/issues/2249).
+
+**Fixed**
+
+* Fix vertical axis labels for Session Duration graph on Search Console module page to not mix minutes and hours. See [#2967](https://github.com/google/site-kit-wp/issues/2967).
+* Fix problem where OAuth callback login would be triggered before WordPress's login redirect mechanism, immediately failing instead of redirecting as expected. See [#2935](https://github.com/google/site-kit-wp/issues/2935).
+* Ensure entering a text is required when choosing the "Other" option for a question in the user input flow. See [#2907](https://github.com/google/site-kit-wp/issues/2907).
+* Fix refactored Analytics goals widget behavior to match legacy version. See [#2858](https://github.com/google/site-kit-wp/issues/2858).
+* Fix bug where switching between questions in the user input flow did not scroll the question into view. See [#2848](https://github.com/google/site-kit-wp/issues/2848).
+* Cache user input responses temporarily in browser until it is submitted while the user is going through the flow, to prevent accidentally losing entered data. See [#2844](https://github.com/google/site-kit-wp/issues/2844).
+* Clarify wording in last user input question about search terms. See [#2843](https://github.com/google/site-kit-wp/issues/2843).
+* Fix some bugs in the behavior when checking or unchecking an "Other" option for one of the questions in the user input flow. See [#2828](https://github.com/google/site-kit-wp/issues/2828).
+
+= 1.28.0 =
+
+**Added**
+
+* Implement React components for rendering tooltip tours. See [#2626](https://github.com/google/site-kit-wp/issues/2626).
+
+**Enhanced**
+
+* Automatically focus the "Other" text input upon selecting the "Other" option in a list of radio buttons or checkboxes. See [#2897](https://github.com/google/site-kit-wp/issues/2897).
+* Update copy to clarify multiple choice behavior in user input flow. See [#2857](https://github.com/google/site-kit-wp/issues/2857).
+* Update links on new version of AdSense dashboard summary widget to deep link to the respective area in the AdSense frontend. See [#2774](https://github.com/google/site-kit-wp/issues/2774).
+* Include site URL in AdSense report deep links to point to the appropriate report. See [#2773](https://github.com/google/site-kit-wp/issues/2773).
+* Add support for PHP 8 and ensure its maintenance via CI. Props TorbenLundsgaard. See [#2724](https://github.com/google/site-kit-wp/issues/2724).
+* The `googlesitekit_authorize_user` and `googlesitekit_reauthorize_user` actions are now also fired when not using the authentication service flow. See [#2693](https://github.com/google/site-kit-wp/issues/2693).
+* Implement infrastructure for rendering widgets in Site Kit module screens. See [#2653](https://github.com/google/site-kit-wp/issues/2653).
+* Use reliable and React-friendly approach for detecting whether a widget is inactive and should not be rendered. See [#2612](https://github.com/google/site-kit-wp/issues/2612).
+* Enhance localization of duration formatting. See [#2588](https://github.com/google/site-kit-wp/issues/2588).
+* Filter all Analytics API requests to only include results for the current domain. See [#2554](https://github.com/google/site-kit-wp/issues/2554).
+* Rely exclusively on SVGs for graphics and remove other image support. See [#2468](https://github.com/google/site-kit-wp/issues/2468).
+
+**Fixed**
+
+* Improve UX around entering search terms in the user input flow. See [#2842](https://github.com/google/site-kit-wp/issues/2842).
+* Fix various visual glitches in the user input flow summary view and trim free text content entered for any "Other" choice. See [#2837](https://github.com/google/site-kit-wp/issues/2837).
+* Change to preview / next button behaviour in User Input flow. See [#2829](https://github.com/google/site-kit-wp/issues/2829).
+* Fix AdSense bug where `Ad Client not found` error would be displayed in certain cases where an account is still pending. See [#2812](https://github.com/google/site-kit-wp/issues/2812).
+* Fix bug where AdGuard and uBlock ad blockers were no longer being recognized by Site Kit by implementing a more holistic solution for ad blocker detection relying on the `just-detect-adblock` library. See [#2794](https://github.com/google/site-kit-wp/issues/2794).
+* Update link on AdSense module page to point to Analytics which is more accurate due to the source of the data. See [#2772](https://github.com/google/site-kit-wp/issues/2772).
+* Fix Search Console x-axis labels on 90 day charts. See [#2747](https://github.com/google/site-kit-wp/issues/2747).
+* Fix text issue with All Traffic pie chart. See [#2660](https://github.com/google/site-kit-wp/issues/2660).
+* Fix problem where Analytics snippet placement would not be re-instated after disconnecting Tag Manager module when it was previously taking care of the Analytics tag. See [#2579](https://github.com/google/site-kit-wp/issues/2579).
+* Fix bug where tracking opt-in was not working for multisite administrators when not being a member of the site. See [#2103](https://github.com/google/site-kit-wp/issues/2103).
+
+= 1.27.0 =
+
+**Added**
+
+* Add support for AdSense auto ads to Web Stories, allowing to choose an AdSense ad unit to use which will then result in an `amp-story-auto-ads` element being injected. See [#2602](https://github.com/google/site-kit-wp/issues/2602).
+
+**Enhanced**
+
+* Improve wording for the confirmation notification after submitting user input settings. See [#2790](https://github.com/google/site-kit-wp/issues/2790).
+* Allow resetting persistent Site Kit options via WP-CLI. See [#2748](https://github.com/google/site-kit-wp/issues/2748).
+* Display All Traffic widget dimension tabs as a dropdown on narrow viewports. See [#2743](https://github.com/google/site-kit-wp/issues/2743).
+* Include current dates in AdSense deep links so that the service frontend shows the same time period as Site Kit. See [#2689](https://github.com/google/site-kit-wp/issues/2689).
+* Update Google API client library and remove custom configuration to retry failed API requests as it is now covered in the library itself. See [#2688](https://github.com/google/site-kit-wp/issues/2688).
+* Introduce `WidgetReportError` component, which should be used by widgets to display an overall error state. See [#2670](https://github.com/google/site-kit-wp/issues/2670).
+* Implement REST datapoints and JS datastore infrastructure for getting and dismissing tooltip tours. See [#2648](https://github.com/google/site-kit-wp/issues/2648).
+* Prepare Widget API-based version of the dashboard for launch, rendering the entire page content including header and footer. See [#2646](https://github.com/google/site-kit-wp/issues/2646).
+* Add ability to remotely control enabled feature flags. See [#2533](https://github.com/google/site-kit-wp/issues/2533).
+* Introduce `core/ui` datastore for centrally storing UI state in JS. See [#2456](https://github.com/google/site-kit-wp/issues/2456).
+* Include current dates in Analytics deep links so that the service frontend shows the same time period as Site Kit. See [#2287](https://github.com/google/site-kit-wp/issues/2287).
+* Remove legacy version of the WP Dashboard widget and replace it with Site Kit widget-based refactored version. See [#2240](https://github.com/google/site-kit-wp/issues/2240).
+
+**Fixed**
+
+* Fix bug where the old All Traffic widget was still displaying in the dashboard for a single URL. See [#2856](https://github.com/google/site-kit-wp/issues/2856).
+* Fix PHP 8 notice for deprecated `uasort()` usage. Props oguilleux. See [#2797](https://github.com/google/site-kit-wp/issues/2797).
+* Reset link hidden while compatibility checks are in progress. See [#2756](https://github.com/google/site-kit-wp/issues/2756).
+* Show All Traffic pie chart tooltips persistently when a slice is selected to allow interaction with the tooltip, which would not be possible when hovering. See [#2737](https://github.com/google/site-kit-wp/issues/2737).
+* Fix AdSense dashboard summary widget to include data for the current date range in its sparklines rather than only data from the 1st of the current month. See [#2734](https://github.com/google/site-kit-wp/issues/2734).
+* Fix visual bug where in the AdSense flow the toggle element could be overlapped by a checkmark icon. See [#2722](https://github.com/google/site-kit-wp/issues/2722).
+* Fix bug with Search Console module page graph where overlapping legends would be displayed when selecting more than 2 metrics. See [#2721](https://github.com/google/site-kit-wp/issues/2721).
+* Fix various bugs around the All Traffic pie chart (e.g. incorrect slices being selected when changing date range, correct behavior of not allowing "Others" to be selected) by introducing a new React-based charts component. See [#2714](https://github.com/google/site-kit-wp/issues/2714).
+* Fix bug where in some occasions an error would be displayed when updating settings with the same values that were already stored before. See [#2513](https://github.com/google/site-kit-wp/issues/2513).
+* Fix formatting of y-axis values for Bounce Rate and Session Duration on Analytics overview chart. See [#2095](https://github.com/google/site-kit-wp/issues/2095).
+
+= 1.26.0 =
+
+**Enhanced**
+
+* Ensure that any "Others" slice in the All Traffic widget is not indicated as selectable and cannot be active. See [#2716](https://github.com/google/site-kit-wp/issues/2716).
+* When viewing a specific segment of users in the All Traffic widget, make the "All Users" breadcrumb a link to go back to the overall users view. See [#2715](https://github.com/google/site-kit-wp/issues/2715).
+* Enhance All Traffic widget pie chart legend by using a custom implementation so that the labels are never cut off and include a visual hover and active state. See [#2700](https://github.com/google/site-kit-wp/issues/2700).
+* Show more than just two dates on the All Traffic widget's line chart. See [#2699](https://github.com/google/site-kit-wp/issues/2699).
+* Include available and enabled Site Kit features in Site Health information. See [#2662](https://github.com/google/site-kit-wp/issues/2662).
+* Rename the `header` and `footer` props of the `Widget` component to `Header` and `Footer` to indicate that they require a React component instead of an element. See [#2652](https://github.com/google/site-kit-wp/issues/2652).
+* Simplify usage of the `Widget` component so that widget components can use a scoped version of it via props rather than manually importing it and re-specifying the widget slug. See [#2613](https://github.com/google/site-kit-wp/issues/2613).
+* Migrate top content table in WP dashboard widget to functional hook-based component using the datastore. See [#2610](https://github.com/google/site-kit-wp/issues/2610).
+* Decouple JS store, widget, and module registration from imports, introducing dedicated registration functions. See [#2587](https://github.com/google/site-kit-wp/issues/2587).
+* Remove server-side API requests to determine whether a post has Search Console or Analytics data as it could significantly slow down WP admin response time. Props archon810. See [#2528](https://github.com/google/site-kit-wp/issues/2528).
+* Always display the Site Kit admin bar menu even when there is no data for a more consistent experience, informing about the lack of data as applicable. See [#2508](https://github.com/google/site-kit-wp/issues/2508).
+* Improve UX when clicking the Reset dialog button, keeping the dialog open in a loading state while completing the process. See [#2347](https://github.com/google/site-kit-wp/issues/2347).
+* Include current dates in Search Console deep links so that the service frontend shows the same time period as Site Kit. See [#2286](https://github.com/google/site-kit-wp/issues/2286).
+* Enhance admin bar implementation to be powered by the `googlesitekit.data` registry and its stores. See [#2241](https://github.com/google/site-kit-wp/issues/2241).
+
+**Fixed**
+
+* Ensure x-axis labels of the All Traffic line chart are correctly aligned with the pie chart legend. See [#2738](https://github.com/google/site-kit-wp/issues/2738).
+* Avoid layout shift when enabling the Analytics module via the Site Kit dashboard CTA. See [#2719](https://github.com/google/site-kit-wp/issues/2719).
+* Avoid content shifts in All Traffic widget due to incorrect loading UI layout. See [#2710](https://github.com/google/site-kit-wp/issues/2710).
+* Only require going through the user input flow after setup if it has not been completed by the user before. See [#2603](https://github.com/google/site-kit-wp/issues/2603).
+
+= 1.25.0 =
+
+**Added**
+
+* Launch new All Traffic widget in the Site Kit dashboard, which surfaces more detailed information about channels, includes a time-based graph, and surfaces similar metrics for countries and devices the site is accessed from. See [#2429](https://github.com/google/site-kit-wp/issues/2429).
+
+**Enhanced**
+
+* Modify pie chart tooltip behavior for new All Traffic widget so that tooltips are only shown when hovering over a pie slice. See [#2701](https://github.com/google/site-kit-wp/issues/2701).
+* Store initial Site Kit version per user for more targeted messaging in the future and introduce `googlesitekit_reauthorize_user` action. See [#2692](https://github.com/google/site-kit-wp/issues/2692).
+* Improve user experience of new All Traffic widget for when it is loading and for when there is no relevant data available. See [#2675](https://github.com/google/site-kit-wp/issues/2675).
+* Fix layout of new All Traffic widget on mobile viewports to use a single column. See [#2663](https://github.com/google/site-kit-wp/issues/2663).
+* Add contextual documentation links to new All Traffic widget to explain special dimension values "(not set)" and "(other)". See [#2642](https://github.com/google/site-kit-wp/issues/2642).
+* Modify new All Traffic widget so that the line chart always uses the same color indicated by the currently selected pie slice. See [#2625](https://github.com/google/site-kit-wp/issues/2625).
+* Modify font styles in the new All Traffic widget to match font styles used in Search Funnel widget and elsewhere throughout the plugin. See [#2623](https://github.com/google/site-kit-wp/issues/2623).
+* Rely on new Search Console "fresh data" feature to display metrics as recent as 1 day ago, improving on the previous offset of 2 days. See [#2522](https://github.com/google/site-kit-wp/issues/2522).
+* Remove various old REST datapoints in AdSense, Analytics, and Search Console modules that were only present to access specific settings and unused. See [#2507](https://github.com/google/site-kit-wp/issues/2507).
+* Introduce `core/location` JS store, rely on it for redirects, and fix notification about unsatisfied scopes unnecessarily appearing before an OAuth redirect. See [#2497](https://github.com/google/site-kit-wp/issues/2497).
+* Get rid of remaining usage of legacy `dateRange` argument in AdSense widgets. See [#2477](https://github.com/google/site-kit-wp/issues/2477).
+* Improve JS API caching layer to cache certain error responses if they include a `cacheTTL` extra data property, allowing to avoid excessive Analytics API requests when the AdSense account is not linked. See [#2457](https://github.com/google/site-kit-wp/issues/2457).
+* Introduce infrastructure for dynamically controlled feature flags via a `googlesitekit_is_feature_enabled` filter. See [#2452](https://github.com/google/site-kit-wp/issues/2452).
+* Implement logic to automatically combine UI for widgets that are in special states, e.g. widgets without sufficient API response data, or widgets that require a specific module to be set up first. See [#2252](https://github.com/google/site-kit-wp/issues/2252).
+* Add widget contexts and register widget areas for Site Kit module pages. See [#2062](https://github.com/google/site-kit-wp/issues/2062).
+
+**Fixed**
+
+* Fix All Traffic widget UI bug where pie chart tooltips would flicker when hovering over them. See [#2709](https://github.com/google/site-kit-wp/issues/2709).
+* Ensure line chart in All Traffic is correctly aligned with the overall count and the pie chart at the bottom. See [#2708](https://github.com/google/site-kit-wp/issues/2708).
+* Fix performance lag across Site Kit screens due to a problem in the `getModules` selector of the `core/modules` store. See [#2691](https://github.com/google/site-kit-wp/issues/2691).
+* Fix bug where Tag Manager and Analytics snippet could be inserted twice on AMP pages. See [#2668](https://github.com/google/site-kit-wp/issues/2668).
+* Fix bug with All Traffic widget where selected pie slice would no longer remain selected when changing the current date range. See [#2644](https://github.com/google/site-kit-wp/issues/2644).
+* Fix graph in All Traffic widget to not cut off axis labels on viewports smaller than desktop. See [#2624](https://github.com/google/site-kit-wp/issues/2624).
+
+= 1.24.0 =
+
+**Added**
+
+* Implement `UserDimensionsPieChart` component for new Analytics All Traffic widget. See [#2425](https://github.com/google/site-kit-wp/issues/2425).
+* Implement main tabs UI for the new All Traffic widget. See [#2424](https://github.com/google/site-kit-wp/issues/2424).
+* Implement `TotalUserCount` component for new Analytics All Traffic widget. See [#2423](https://github.com/google/site-kit-wp/issues/2423).
+* Implement `UserCountGraph` component for new Analytics All Traffic widget. See [#2422](https://github.com/google/site-kit-wp/issues/2422).
+
+**Enhanced**
+
+* Add review and support links in the plugin's list table entry. See [#2516](https://github.com/google/site-kit-wp/issues/2516).
+* Rename `icon` argument of `registerWidgetArea` to `Icon` and require it to be a `WPComponent` (e.g. an SVG). See [#2505](https://github.com/google/site-kit-wp/issues/2505).
+* Improve UX for modifying user input settings, removing the requirement to click through subsequent questions when only wanting to change a specific response. See [#2499](https://github.com/google/site-kit-wp/issues/2499).
+* Implement dynamic source link in the new All Traffic widget. See [#2428](https://github.com/google/site-kit-wp/issues/2428).
+* Add interactivity to new All Traffic widget so that selecting a pie chart slice contextually updates the count and graph displayed. See [#2426](https://github.com/google/site-kit-wp/issues/2426).
+* Add support for a `dimensionFilters` argument to the Analytics `GET:report` REST datapoint in PHP and the `getReport` selector in JS. See [#2421](https://github.com/google/site-kit-wp/issues/2421).
+* Enhance `whenActive` higher-order component to accept a `FallbackComponent` as well as an `IncompleteComponent` prop. See [#2381](https://github.com/google/site-kit-wp/issues/2381).
+* Remove legacy publisher win notifications. See [#2285](https://github.com/google/site-kit-wp/issues/2285).
+* Add `storeName` argument to `registerModule` action of the `core/modules` store to specify the name of the JS datastore for the module. See [#2271](https://github.com/google/site-kit-wp/issues/2271).
+* Move date awareness for Search Console API requests to the client, allowing for more contextual date information to be available. See [#2237](https://github.com/google/site-kit-wp/issues/2237).
+* Move date awareness for Analytics API requests to the client, allowing for more contextual date information to be available. See [#2236](https://github.com/google/site-kit-wp/issues/2236).
+* Introduce `getGoogleSupportURL` selector to `core/site` store in JS. See [#2221](https://github.com/google/site-kit-wp/issues/2221).
+* Add support for an optional `SettingsSetupIncompleteComponent` argument to the `registerModule` action of the `core/modules` store, allowing developers to register a custom UI component for when the module is not fully connected. See [#2080](https://github.com/google/site-kit-wp/issues/2080).
+* Update the plugin's admin bar menu to rely on functional hook-based components using the datastore. See [#2076](https://github.com/google/site-kit-wp/issues/2076).
+* Update the plugin's WordPress dashboard widget to rely on functional hook-based components using the datastore. See [#2075](https://github.com/google/site-kit-wp/issues/2075).
+* Switch `core/user/data/user-input-settings` REST endpoint to use remote authentication service API endpoint. See [#2048](https://github.com/google/site-kit-wp/issues/2048).
+* Implement user input block to edit responses under `Site Kit > Settings > Admin Settings`. See [#2041](https://github.com/google/site-kit-wp/issues/2041).
+* Introduce reusable infrastructure for rendering tags, relying on new `Tag_Interface` and `Guard_Interface` interfaces as well as `Tag` and `Module_Tag` classes, now being used across all modules. See [#475](https://github.com/google/site-kit-wp/issues/475).
+
+**Fixed**
+
+* Fix AdSense overview graph UI so that the available space for the total numbers expands as necessary. See [#2555](https://github.com/google/site-kit-wp/issues/2555).
+* Prevent a remote notifications API request for development sites where the plugin is not using the authentication service. See [#2495](https://github.com/google/site-kit-wp/issues/2495).
+* Fix JavaScript error triggered upon resetting the plugin's data. See [#2478](https://github.com/google/site-kit-wp/issues/2478).
+* Update all Analytics deep links to use the `getServiceReportURL` selector for correct encoding of parameters and consistent behavior. See [#2405](https://github.com/google/site-kit-wp/issues/2405).
+* Fix bug in legacy API layer dealing with errors in a batch response that could result in infinite loading states on module pages. See [#2403](https://github.com/google/site-kit-wp/issues/2403).
+* Improve Analytics property matching logic so that users with many Analytics accounts do not run into user quota errors. See [#2218](https://github.com/google/site-kit-wp/issues/2218).
+* Introduce `numFmt` function for centralized Site Kit-specific number formatting, localize percentage formatting, and fix various number formatting inconsistencies. See [#2200](https://github.com/google/site-kit-wp/issues/2200).
+
+= 1.23.0 =
+
+**Added**
+
+* Scaffold components for a new version of the Analytics All Traffic widget. See [#2392](https://github.com/google/site-kit-wp/issues/2392).
+* Display graph with historic AdSense data on module page, showing earnings, RPM, impressions and CTR over time. See [#1921](https://github.com/google/site-kit-wp/issues/1921).
+
+**Enhanced**
+
+* Introduce `listFormat` function to format entries in a comma-separated list. See [#2486](https://github.com/google/site-kit-wp/issues/2486).
+* Rename arguments across various datastore actions requiring a `WPComponent` type to use capitalized names to better indicate a `WPComponent` (and not a `WPElement`) is required. See [#2413](https://github.com/google/site-kit-wp/issues/2413).
+* Improve validation of user input submission states. See [#2323](https://github.com/google/site-kit-wp/issues/2323).
+* Introduce `ActivateModuleCTA` and `CompleteModuleActivationCTA` components to centrally manage UI for those scenarios. See [#2299](https://github.com/google/site-kit-wp/issues/2299).
+* Remove legacy `googlesitekit.moduleHasSetupWizard` JS filter. See [#2291](https://github.com/google/site-kit-wp/issues/2291).
+* Remove legacy splash screen and the associated components. See [#2290](https://github.com/google/site-kit-wp/issues/2290).
+* Allow registering module icon SVGs via the `core/modules` action `registerModule`. See [#2143](https://github.com/google/site-kit-wp/issues/2143).
+
+**Fixed**
+
+* Fix various low-level technical bugs due to duplicate module initialization by relying on a single reused Webpack runtime across entrypoints. See [#2444](https://github.com/google/site-kit-wp/issues/2444).
+* Remove duplicate error message UI on top of module settings panel, since error messages are now displayed within the panel's main content already. See [#2396](https://github.com/google/site-kit-wp/issues/2396).
+* Fix component-specific initialization logic of Google charts library to prevent duplicate initialization. See [#2247](https://github.com/google/site-kit-wp/issues/2247).
+
+= 1.22.0 =
+
+**Added**
+
+* Surface WordPress-specific user experience recommendations in the PageSpeed Insights widget. See [#2390](https://github.com/google/site-kit-wp/issues/2390).
+* Add support for `checkRequirements` argument to `registerModule` action of `core/modules` store, which allows to block a module from being activated until certain requirements are met. See [#2130](https://github.com/google/site-kit-wp/issues/2130).
+
+**Enhanced**
+
+* Ensure that all URIs on the authentication service are automatically refreshed as necessary when connecting as a user to an already connected site, fixing issues where sites could get stuck after updating their URLs. See [#2383](https://github.com/google/site-kit-wp/issues/2383).
+* Move the date picker into the Site Kit header bar and make it sticky so that it is always visible when scrolling. See [#2331](https://github.com/google/site-kit-wp/issues/2331).
+* Remove outdated dashboard notification warning vaguely about missing permissions, which is now covered with more specific widget CTAs. See [#2329](https://github.com/google/site-kit-wp/issues/2329).
+* Add support for feature flags in PHP and experimentally require user input completion upon setup. See [#2316](https://github.com/google/site-kit-wp/issues/2316).
+* Implement success notification displayed after completing the user input flow. See [#2283](https://github.com/google/site-kit-wp/issues/2283).
+* Add support for displaying datastore-driven global error notifications in the plugin header. See [#2261](https://github.com/google/site-kit-wp/issues/2261).
+* Improve logic to determine whether a Search Console API report response is "empty", via new `isZeroReport` function for Search Console. See [#2244](https://github.com/google/site-kit-wp/issues/2244).
+* Improve logic to determine whether an Analytics API report response is "empty", via new `isZeroReport` function for Analytics. See [#2243](https://github.com/google/site-kit-wp/issues/2243).
+* Rely on JavaScript date parsing for AdSense widgets. See [#2235](https://github.com/google/site-kit-wp/issues/2235).
+* Add `core/modules` actions and selectors for managing module settings panel state. See [#2181](https://github.com/google/site-kit-wp/issues/2181).
+* Implement Site Kit dashboard notification for when requesting user input to be completed. See [#2043](https://github.com/google/site-kit-wp/issues/2043).
+* Implement exponential backoff to retry Google service API requests a limited amount of time if they fail with temporary errors. See [#1998](https://github.com/google/site-kit-wp/issues/1998).
+
+**Fixed**
+
+* Fix Search Console latest data threshold back to 2 days ago as that is the latest data the API provides. See [#2458](https://github.com/google/site-kit-wp/issues/2458).
+* Make e2e tests pass for WordPress 5.6. See [#2455](https://github.com/google/site-kit-wp/issues/2455).
+* Fix race condition where widgets could run into an error when their necessary datastore selector had not started resolving yet. See [#2436](https://github.com/google/site-kit-wp/issues/2436).
+* Fix various spelling errors throughout the UI of the plugin. See [#2401](https://github.com/google/site-kit-wp/issues/2401).
+* Flush browser session storage on plugin updates to prevent stale data from being served against new logic. See [#2334](https://github.com/google/site-kit-wp/issues/2334).
+* Ensure that REST API preloaded data is not computed and included outside of Site Kit admin screens. See [#2315](https://github.com/google/site-kit-wp/issues/2315).
+* Fix failing PHPUnit tests for compatibility with upcoming WordPress 5.6. See [#2264](https://github.com/google/site-kit-wp/issues/2264).
+* Fix broken Analytics frontend deep links on AdSense module page. See [#2228](https://github.com/google/site-kit-wp/issues/2228).
+
+= 1.21.0 =
+
+**Enhanced**
+
+* Include current user's Site Kit capabilities in Site Health report. See [#2314](https://github.com/google/site-kit-wp/issues/2314).
+* Mark user input state as completed once user has submitted their information. See [#2310](https://github.com/google/site-kit-wp/issues/2310).
+* Finalize copy for new `googlesitekit-user-input` screen. See [#2302](https://github.com/google/site-kit-wp/issues/2302).
+* Display informational warning before setup about limited support for WordPress versions before 5.0. See [#2289](https://github.com/google/site-kit-wp/issues/2289).
+* Modify Search Console API queries so that they include results up until one day ago. See [#2284](https://github.com/google/site-kit-wp/issues/2284).
+* Add support for widgets to have multiple (fallback) widths via `googlesitekit.widgets.registerWidget`, laying out widget grid with as few gaps as possible. See [#2251](https://github.com/google/site-kit-wp/issues/2251).
+* Modify widgets registered with `quarter` width to render for half the screen width on mobile viewports. See [#2250](https://github.com/google/site-kit-wp/issues/2250).
+* Introduce `ReportError` and `ReportZero` components which should be returned by widgets that are in error state or have no data to display. See [#2246](https://github.com/google/site-kit-wp/issues/2246).
+* Add JS utility functions `sumObjectListValue`, `averageObjectListValue`, and enhance capabilities of `extractForSparkline` function. See [#2245](https://github.com/google/site-kit-wp/issues/2245).
+* Improve logic to determine whether an AdSense API report response is "empty", via new `isZeroReport` function for AdSense. See [#2242](https://github.com/google/site-kit-wp/issues/2242).
+* Simplify adding strings only visible to screen reader users by implementing a `VisuallyHidden` component. See [#2165](https://github.com/google/site-kit-wp/issues/2165).
+* Reduce complexity of implementing and registering `settingsEdit` components for a module by centrally handling setting submission. See [#2137](https://github.com/google/site-kit-wp/issues/2137).
+* Modify the `createModuleStore` JavaScript function so that every module store has a `canSubmitChanges` selector and a `submitChanges` action. See [#2136](https://github.com/google/site-kit-wp/issues/2136).
+* Implement UI design for `googlesitekit-user-input` screen. See [#2040](https://github.com/google/site-kit-wp/issues/2040).
+* Simplify module class infrastructure and implement (internal) module registry. See [#1939](https://github.com/google/site-kit-wp/issues/1939).
+
+**Fixed**
+
+* Fix bug where Analytics widgets would fire their API requests even when the module wasn't completely set up, resulting in unnecessary error responses. See [#2358](https://github.com/google/site-kit-wp/issues/2358).
+* Fix JavaScript translations that were not appearing to work correctly, given the site uses WordPress >= 5.0, which is required for support of JavaScript translations. See [#2171](https://github.com/google/site-kit-wp/issues/2171).
+* Fix bug where a previous error from an action would not be cleared when trying the same action again. See [#2156](https://github.com/google/site-kit-wp/issues/2156).
+* Fix a few translation strings that were concatenating date ranges, making them correctly translatable. See [#2146](https://github.com/google/site-kit-wp/issues/2146).
+* Fix compatibility issue where `amp-auto-ads` element would not be present in AMP singular content when also using the Yoast SEO plugin. See [#2111](https://github.com/google/site-kit-wp/issues/2111).
 
 = 1.20.0 =
 
@@ -596,7 +868,7 @@ If you have some ideas to improve the plugin or to solve a bug, feel free to rai
 * Ensure that the Tag Manager snippet rendered is always compatible with the current context (AMP vs non-AMP). See [#1036](https://github.com/google/site-kit-wp/issues/1036).
 * Do not render `amp-auto-ads` element in AMP stories because it is invalid in that context. See [#979](https://github.com/google/site-kit-wp/issues/979).
 * Ensure that Google Charts JS library is loaded as expected even when a `window.google` global already exists because of another library. See [#939](https://github.com/google/site-kit-wp/issues/939).
-* Do not refetch PageSpeed Insights data when the date range selector is changed, as its data its date-agnostic. See [#890](https://github.com/google/site-kit-wp/issues/890).
+* Do not refetch PageSpeed Insights data when the date range selector is changed, as its data its date-unaware. See [#890](https://github.com/google/site-kit-wp/issues/890).
 * Fix incorrect change arrow direction and color on "inverted" properties like bounce rate. Props WebFactoryLtd. See [#481](https://github.com/google/site-kit-wp/issues/481).
 * Add missing support for Search Console domain properties and rely on the correct property when requesting Search Console data. Props IgorCode. See [#325](https://github.com/google/site-kit-wp/issues/325).
 

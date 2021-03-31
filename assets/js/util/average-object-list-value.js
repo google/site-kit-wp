@@ -1,7 +1,7 @@
 /**
  * Utility function averageObjectListValue
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import mean from 'lodash/mean';
 /**
  * Returns the average of a given fieldName in a list.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  *
  * @param {Array}  list      Array of objects or arrays.
  * @param {string} fieldName The path name of the field to be averaged.

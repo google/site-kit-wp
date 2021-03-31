@@ -1,7 +1,7 @@
 /**
  * ErrorHandler component.
  *
- * Google Site Kit, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,9 @@ import { Icon, check, stack } from '@wordpress/icons';
 /**
  * Internal dependencies
  */
-import Notification from '../notifications/notification';
+import Notification from '../legacy-notifications/notification';
 import Link from '../Link';
-import Button from '../button';
+import Button from '../Button';
 
 class ErrorHandler extends Component {
 	constructor( props ) {

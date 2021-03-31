@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Util\BC_Functions
  *
  * @package   Google\Site_Kit\Core\Util
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -116,7 +116,7 @@ class BC_Functions {
 	/**
 	 * A fallback for the load_script_textdomain function introduced in the WordPress version 5.0.0.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 *
 	 * @return boolean Always returns FALSE.
 	 */

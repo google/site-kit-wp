@@ -1,7 +1,7 @@
 /**
  * `calculateOverviewData` helper.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { changeToPercent } from '../../../util';
+import { calculateChange } from '../../../util';
 
 /**
  * Calculates the report data.
@@ -43,11 +43,11 @@ const calculateOverviewData = ( reports ) => {
 	const averageSessionDuration = lastMonth[ 3 ];
 	const goalCompletions = lastMonth[ 4 ];
 	const totalPageViews = lastMonth[ 5 ];
-	const totalSessionsChange = changeToPercent( previousMonth[ 1 ], lastMonth[ 1 ] );
-	const averageBounceRateChange = changeToPercent( previousMonth[ 2 ], lastMonth[ 2 ] );
-	const averageSessionDurationChange = changeToPercent( previousMonth[ 3 ], lastMonth[ 3 ] );
-	const goalCompletionsChange = changeToPercent( previousMonth[ 4 ], lastMonth[ 4 ] );
-	const totalPageViewsChange = changeToPercent( previousMonth[ 5 ], lastMonth[ 5 ] );
+	const totalSessionsChange = calculateChange( previousMonth[ 1 ], lastMonth[ 1 ] );
+	const averageBounceRateChange = calculateChange( previousMonth[ 2 ], lastMonth[ 2 ] );
+	const averageSessionDurationChange = calculateChange( previousMonth[ 3 ], lastMonth[ 3 ] );
+	const goalCompletionsChange = calculateChange( previousMonth[ 4 ], lastMonth[ 4 ] );
+	const totalPageViewsChange = calculateChange( previousMonth[ 5 ], lastMonth[ 5 ] );
 	return {
 		totalSessions,
 		averageBounceRate,

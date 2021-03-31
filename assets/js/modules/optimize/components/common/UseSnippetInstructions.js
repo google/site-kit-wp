@@ -1,7 +1,7 @@
 /**
  * UseSnippetInstructions component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,10 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { sanitizeHTML } from '../../../../util/sanitize';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
-import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
-import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 const { useSelect } = Data;
 
@@ -42,6 +42,12 @@ export default function UseSnippetInstructions() {
 	const gtmActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'tagmanager' ) );
 	const gtmUseSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
 	const settingsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
+	const supportURLAutoInsert = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/optimize/answer/6314801',
+	} ) );
+	const supportURLDisabledAutoInsert = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/optimize/answer/6262084',
+	} ) );
 
 	if ( ! analyticsActive ) {
 		return (
@@ -78,7 +84,7 @@ export default function UseSnippetInstructions() {
 						sprintf(
 							/* translators: %s: external URL with instructions */
 							__( '<a href="%s">Click here</a> for how to implement Optimize tag through your Tag Manager', 'google-site-kit' ),
-							__( 'https://support.google.com/optimize/answer/6314801', 'google-site-kit' )
+							supportURLAutoInsert,
 						),
 						{
 							ALLOWED_TAGS: [ 'a' ],
@@ -94,7 +100,7 @@ export default function UseSnippetInstructions() {
 		return (
 			<Fragment>
 				<p>
-					{ __( 'You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below:', 'google-site-kit' ) }
+					{ __( 'You disabled Analytics auto insert snippet. If you are using Google Analytics code snippet, add the code below:', 'google-site-kit' ) }
 				</p>
 				<pre>
 					ga(&quot;require&quot;, &quot;{ optimizeID ? optimizeID : 'GTM-XXXXXXX' }&quot;);
@@ -104,7 +110,7 @@ export default function UseSnippetInstructions() {
 						sprintf(
 							/* translators: %s: external URL with instructions */
 							__( '<a href="%s">Click here</a> for how to implement Optimize tag in Google Analytics Code Snippet', 'google-site-kit' ),
-							__( 'https://support.google.com/optimize/answer/6262084', 'google-site-kit' )
+							supportURLDisabledAutoInsert,
 						),
 						{
 							ALLOWED_TAGS: [ 'a' ],

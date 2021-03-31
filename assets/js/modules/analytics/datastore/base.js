@@ -1,7 +1,7 @@
 /**
  * `modules/analytics` base data store
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 		'propertyID',
 		'internalWebPropertyID',
 		'useSnippet',
+		'canUseSnippet',
 		'trackingDisabled',
 		'ownerID',
 	],

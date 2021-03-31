@@ -1,7 +1,7 @@
 /**
  * `modules/adsense` data store: report.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ const fetchGetReportStore = createFetchStore( {
 		invariant( isPlainObject( options ), 'options must be an object.' );
 
 		// Account for additional date ranges supported by AdSense module in PHP.
-		invariant( [ 'today', 'this-month' ].includes( options.dateRange ) || isValidDateRange( options ), 'Either date range or start/end dates must be provided for AdSense report.' );
+		invariant( 'today' === options.dateRange || isValidDateRange( options ), 'Either date range or start/end dates must be provided for AdSense report.' );
 
 		const { orderby, metrics, dimensions } = options;
 

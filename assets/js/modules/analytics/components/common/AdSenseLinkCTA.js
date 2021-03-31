@@ -1,7 +1,7 @@
 /**
  * Analytics AdSense Link CTA component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,21 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import CTA from '../../../../components/notifications/cta';
+import Data from 'googlesitekit-data';
+import CTA from '../../../../components/legacy-notifications/cta';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
 export default function AdSenseLinkCTA() {
+	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/adsense/answer/6084409',
+	} ) );
+
 	return (
 		<CTA
 			title={ __( 'Link Analytics and AdSense', 'google-site-kit' ) }
 			description={ __( 'Get reports for your top earning pages by linking your Analytics and AdSense accounts.', 'google-site-kit' ) }
-			ctaLink="https://support.google.com/adsense/answer/6084409"
+			ctaLink={ supportURL }
 			ctaLabel={ __( 'Learn more', 'google-site-kit' ) }
 		/>
 	);

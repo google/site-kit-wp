@@ -1,7 +1,7 @@
 /**
  * Analytics setup using GCP with no account and no tag e2e tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,11 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
 				request.respond( {
 					status: 200,
+				} );
+			} else if ( request.url().match( '/wp-json/google-site-kit/v1/modules/analytics/data/report?' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( { placeholder_response: true } ),
 				} );
 			} else {
 				request.continue();

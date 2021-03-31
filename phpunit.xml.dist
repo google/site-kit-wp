@@ -8,6 +8,11 @@
             <directory suffix=".php">./tests/phpunit/integration</directory>
         </testsuite>
     </testsuites>
+    <groups>
+        <exclude>
+            <group>ms-required</group>
+        </exclude>
+    </groups>
     <php>
         <ini name="error_reporting" value="32767" />
         <ini name="display_errors" value="1" />

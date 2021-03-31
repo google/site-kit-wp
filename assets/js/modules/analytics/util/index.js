@@ -1,7 +1,7 @@
 /**
  * Analytics utility functions.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,43 +33,96 @@ import { __, sprintf, _x } from '@wordpress/i18n';
 import { getLocale } from '../../../util/i18n';
 import calculateOverviewData from './calculateOverviewData';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
-import { prepareSecondsForDisplay } from '../../../util';
+import { convertSecondsToArray, numFmt } from '../../../util';
 
 export { calculateOverviewData };
 
 export { default as parsePropertyID } from './parse-property-id';
+export * from './is-zero-report';
 export * from './validation';
+export * from './time-column-format';
 
 /**
  * Extracts data required for a pie chart from the Analytics report information.
  *
  * @since 1.16.0 Added keyColumnIndex argument.
+ * @since 1.24.0 Updated the function signature to use options argument instead of keyColumnIndex.
  *
- * @param {Array}  reports        The array with reports data.
- * @param {number} keyColumnIndex The number of a column to extract metrics data from.
+ * @param {Array}    reports                   The array with reports data.
+ * @param {Object}   [options]                 Optional. Data extraction options.
+ * @param {number}   [options.keyColumnIndex]  Optional. The number of a column to extract metrics data from.
+ * @param {number}   [options.maxSlices]       Optional. Limit the number of slices to display.
+ * @param {boolean}  [options.withOthers]      Optional. Whether to add "Others" record to the data map. Only relevant
+ *                                             if `maxSlices` is passed. If passed, the final slice will be the
+ *                                             "Others" slice, i.e. the number of actual row slices will be
+ *                                             `maxSlices - 1`.
+ * @param {Function} [options.tooltipCallback] Optional. A callback function for tooltip column values.
  * @return {Array} Extracted data.
  */
-export function extractAnalyticsDataForTrafficChart( reports, keyColumnIndex ) {
+export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 	if ( ! reports || ! reports.length ) {
 		return null;
 	}
 
+	const {
+		keyColumnIndex = 0,
+		maxSlices,
+		withOthers = false,
+		tooltipCallback,
+	} = options;
+
 	const data = reports[ 0 ].data;
 	const rows = data.rows;
 
-	const totalUsers = data.totals[ 0 ].values[ keyColumnIndex ];
-	const dataMap = [
-		[ 'Source', 'Percent' ],
-	];
+	const withTooltips = typeof tooltipCallback === 'function';
+	const columns = [ 'Source', 'Percent' ];
+	if ( withTooltips ) {
+		columns.push( {
+			type: 'string',
+			role: 'tooltip',
+			p: {
+				html: true,
+			},
+		} );
+	}
 
-	each( rows, ( row ) => {
+	const totalUsers = data.totals[ 0 ].values[ keyColumnIndex ];
+	const dataMap = [ columns ];
+
+	let hasOthers = withOthers;
+	let rowsNumber = rows.length;
+	let others = 1;
+	if ( maxSlices > 0 ) {
+		hasOthers = withOthers && rows.length > maxSlices;
+		rowsNumber = Math.min( rows.length, hasOthers ? maxSlices - 1 : maxSlices );
+	} else {
+		hasOthers = false;
+		rowsNumber = rows.length;
+	}
+
+	for ( let i = 0; i < rowsNumber; i++ ) {
+		const row = rows[ i ];
 		const users = row.metrics[ 0 ].values[ keyColumnIndex ];
 		const percent = ( users / totalUsers );
 
-		const source = row.dimensions[ 0 ];
+		others -= percent;
 
-		dataMap.push( [ source, percent ] );
-	} );
+		const rowData = [ row.dimensions[ 0 ], percent ];
+		if ( withTooltips ) {
+			rowData.push( tooltipCallback( row, rowData ) );
+		}
+
+		dataMap.push( rowData );
+	}
+
+	if ( hasOthers && others > 0 ) {
+		const rowData = [ __( 'Others', 'google-site-kit' ), others ];
+		if ( withTooltips ) {
+			rowData.push( tooltipCallback( null, rowData ) );
+		}
+
+		dataMap.push( rowData );
+	}
 
 	return dataMap;
 }
@@ -79,15 +132,16 @@ export function extractAnalyticsDataForTrafficChart( reports, keyColumnIndex ) {
  *
  * @since 1.0.0
  *
- * @param {Array} rows          An array of rows to reduce.
- * @param {Array} selectedStats The currently selected stat we need to return data for.
+ * @param {Array}  rows                 An array of rows to reduce.
+ * @param {number} selectedMetricsIndex The index of metrics array in the metrics set.
+ * @param {number} selectedStats        The currently selected stat we need to return data for.
  * @return {Array} Array of selected stats from analytics row data.
  */
-function reduceAnalyticsRowsData( rows, selectedStats ) {
+function reduceAnalyticsRowsData( rows, selectedMetricsIndex, selectedStats ) {
 	const dataMap = [];
 	each( rows, ( row ) => {
 		if ( row.metrics ) {
-			const { values } = row.metrics[ 0 ];
+			const { values } = row.metrics[ selectedMetricsIndex ];
 			const dateString = row.dimensions[ 0 ];
 			const date = parseDimensionStringToDate( dateString );
 			dataMap.push( [
@@ -104,22 +158,19 @@ function reduceAnalyticsRowsData( rows, selectedStats ) {
  *
  * @since 1.0.0
  *
- * @param {Object} reports       The data returned from the Analytics API call.
- * @param {Array}  selectedStats The currently selected stat we need to return data for.
- * @param {number} days          The number of days to extract data for. Pads empty data days.
+ * @param {Object} reports                  The data returned from the Analytics API call.
+ * @param {Array}  selectedStats            The currently selected stat we need to return data for.
+ * @param {number} days                     The number of days to extract data for. Pads empty data days.
+ * @param {number} currentMonthMetricIndex  The index of the current month metrics in the metrics set.
+ * @param {number} previousMonthMetricIndex The index of the last month metrics in the metrics set.
  * @return {Array} The dataMap ready for charting.
  */
-export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) => {
-	if ( ! reports || ! reports.length ) {
-		return null;
-	}
-	// Data is returned as an object.
-	const rows = reports[ 0 ].data.rows;
-
-	if ( ! rows ) {
+export function extractAnalyticsDashboardData( reports, selectedStats, days, currentMonthMetricIndex = 0, previousMonthMetricIndex = 0 ) {
+	if ( ! Array.isArray( reports[ 0 ]?.data?.rows ) ) {
 		return false;
 	}
 
+	const rows = [ ...reports[ 0 ].data.rows ]; // Copying it to escape side effects by manipulating with rows.
 	const rowLength = rows.length;
 
 	// Pad rows to 2 x number of days data points to accommodate new accounts.
@@ -149,32 +200,38 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	const dataLabels = [
 		__( 'Users', 'google-site-kit' ),
 		__( 'Sessions', 'google-site-kit' ),
-		__( 'Bounce Rate', 'google-site-kit' ),
+		__( 'Bounce Rate %', 'google-site-kit' ),
 		__( 'Session Duration', 'google-site-kit' ),
 	];
 
 	const dataFormats = [
 		( x ) => parseFloat( x ).toLocaleString(),
 		( x ) => parseFloat( x ).toLocaleString(),
-		( x ) => parseFloat( x ).toFixed( 2 ) + '%',
-		prepareSecondsForDisplay,
-
+		( x ) => numFmt( x / 100, {
+			style: 'percent',
+			signDisplay: 'never',
+			maximumFractionDigits: 2,
+		} ),
+		( x ) => numFmt( x, 's' ),
 	];
+
+	const isSessionDuration = dataLabels[ selectedStats ] === __( 'Session Duration', 'google-site-kit' );
+	const dataType = isSessionDuration ? 'timeofday' : 'number';
 
 	const dataMap = [
 		[
 			{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
 			{ type: 'string', role: 'tooltip', p: { html: true } },
-			{ type: 'number', label: dataLabels[ selectedStats ] },
-			{ type: 'number', label: __( 'Previous period', 'google-site-kit' ) },
+			{ type: dataType, label: dataLabels[ selectedStats ] },
+			{ type: dataType, label: __( 'Previous period', 'google-site-kit' ) },
 		],
 	];
 
 	// Split the results in two chunks of days, and process.
 	const lastMonthRows = rows.slice( rows.length - days, rows.length );
 	const previousMonthRows = rows.slice( 0, rows.length - days );
-	const lastMonthData = reduceAnalyticsRowsData( lastMonthRows, selectedStats );
-	const previousMonthData = reduceAnalyticsRowsData( previousMonthRows, selectedStats );
+	const lastMonthData = reduceAnalyticsRowsData( lastMonthRows, currentMonthMetricIndex, selectedStats );
+	const previousMonthData = reduceAnalyticsRowsData( previousMonthRows, previousMonthMetricIndex, selectedStats );
 
 	const locale = getLocale();
 	const localeDateOptions = {
@@ -190,19 +247,19 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 
 		const prevMonth = parseFloat( previousMonthData[ i ][ 1 ] );
 		const difference = prevMonth !== 0
-			? ( row[ 1 ] * 100 / prevMonth ) - 100
-			: 100; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 100
+			? ( row[ 1 ] / prevMonth ) - 1
+			: 1; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 1
 
 		const dateRange = sprintf(
-			/* translators: %1$s: date for user stats, %2$s: previous date for user stats comparison */
-			_x( '%1$s vs %2$s', 'Date range for Analytics dashboard chart tooltip', 'google-site-kit' ),
+			/* translators: 1: date for user stats, 2: previous date for user stats comparison */
+			_x( '%1$s vs %2$s', 'Date range for chart tooltip', 'google-site-kit' ),
 			row[ 0 ].toLocaleDateString( locale, localeDateOptions ),
 			previousMonthData[ i ][ 0 ].toLocaleDateString( locale, localeDateOptions ),
 		);
 
 		const statInfo = sprintf(
-			/* translators: %1$s: selected stat label, %2$s: numberic value of selected stat, %3$s: up or down arrow , %4$s: different change in percentage, %%: percent symbol */
-			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>', 'Stat information for Analytics dashboard chart tooltip', 'google-site-kit' ),
+		/* translators: 1: selected stat label, 2: numeric value of selected stat, 3: up or down arrow , 4: different change in percentage */
+			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s</em>', 'Stat information for chart tooltip', 'google-site-kit' ),
 			dataLabels[ selectedStats ],
 			dataFormats[ selectedStats ]( row[ 1 ] ),
 			`<svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="${ classnames( 'googlesitekit-change-arrow', {
@@ -211,7 +268,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 			} ) }">
 				<path d="M5.625 10L5.625 2.375L9.125 5.875L10 5L5 -1.76555e-07L-2.7055e-07 5L0.875 5.875L4.375 2.375L4.375 10L5.625 10Z" fill="currentColor" />
 			</svg>`,
-			Math.abs( difference ).toFixed( 2 ).replace( /(.00|0)$/, '' ), // .replace( ... ) removes trailing zeros
+			numFmt( Math.abs( difference ), '%' ),
 		);
 
 		dataMap.push( [
@@ -223,13 +280,13 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 				<p>${ dateRange }</p>
 				<p>${ statInfo }</p>
 			</div>`,
-			row[ 1 ],
-			previousMonthData[ i ][ 1 ],
+			isSessionDuration ? convertSecondsToArray( row[ 1 ] ) : row[ 1 ],
+			isSessionDuration ? convertSecondsToArray( previousMonthData[ i ][ 1 ] ) : previousMonthData[ i ][ 1 ],
 		] );
 	} );
 
 	return dataMap;
-};
+}
 
 /**
  * Extracts the data required from an analytics 'site-analytics' request.
@@ -565,7 +622,7 @@ export const getTopPagesReportDataDefaults = () => {
  */
 export const parseTotalUsersData = ( data ) => {
 	return {
-		totalUsers: data?.[0]?.data?.totals?.[0]?.values?.[0],
-		previousTotalUsers: data?.[0]?.data?.totals?.[1]?.values?.[0],
+		totalUsers: data?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],
+		previousTotalUsers: data?.[ 0 ]?.data?.totals?.[ 1 ]?.values?.[ 0 ],
 	};
 };

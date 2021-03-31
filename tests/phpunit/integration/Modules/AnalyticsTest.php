@@ -3,7 +3,7 @@
  * AnalyticsTest
  *
  * @package   Google\Site_Kit\Tests\Modules
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -27,6 +27,7 @@ use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_ReportRequest;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Resource_ManagementWebproperties;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_OrderBy;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperty;
@@ -91,8 +92,12 @@ class AnalyticsTest extends TestCase {
 		$this->assertFalse( has_action( 'web_stories_print_analytics' ) );
 		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
 
-		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
+		$analytics->get_settings()->merge(
+			array(
+				'propertyID' => 'UA-12345678-1',
+				'useSnippet' => true,
+			)
+		);
 
 		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'amp_print_analytics' ) );
@@ -139,8 +144,12 @@ class AnalyticsTest extends TestCase {
 		do_action( 'template_redirect' );
 		$this->assertFalse( has_action( 'wp_enqueue_scripts' ) );
 
-		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
+		$analytics->get_settings()->merge(
+			array(
+				'propertyID' => 'UA-12345678-1',
+				'useSnippet' => true,
+			)
+		);
 
 		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
@@ -164,8 +173,12 @@ class AnalyticsTest extends TestCase {
 	 */
 	public function test_block_on_consent_non_amp( $enabled ) {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
+		$analytics->get_settings()->merge(
+			array(
+				'propertyID' => 'UA-12345678-1',
+				'useSnippet' => true,
+			)
+		);
 
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
@@ -174,7 +187,7 @@ class AnalyticsTest extends TestCase {
 		remove_all_actions( 'wp_enqueue_scripts' );
 		$analytics->register();
 
-		// Hook `wp_print_head_scripts` on dummy action for capturing.
+		// Hook `wp_print_head_scripts` on placeholder action for capturing.
 		add_action( '__test_print_scripts', 'wp_print_head_scripts' );
 
 		if ( $enabled ) {
@@ -201,8 +214,12 @@ class AnalyticsTest extends TestCase {
 	 */
 	public function test_block_on_consent_amp( $enabled ) {
 		$analytics = new Analytics( $this->get_amp_primary_context() );
-		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
+		$analytics->get_settings()->merge(
+			array(
+				'propertyID' => 'UA-12345678-1',
+				'useSnippet' => true,
+			)
+		);
 
 		remove_all_actions( 'template_redirect' );
 		remove_all_actions( 'wp_footer' );
@@ -304,12 +321,6 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'connection',
-				'account-id',
-				'property-id',
-				'profile-id',
-				'internal-web-property-id',
-				'use-snippet',
 				'create-account-ticket',
 				'goals',
 				'accounts-properties-profiles',
@@ -317,8 +328,6 @@ class AnalyticsTest extends TestCase {
 				'profiles',
 				'tag-permission',
 				'report',
-				'tracking-disabled',
-				'anonymize-ip',
 				'create-property',
 				'create-profile',
 			),
@@ -453,6 +462,7 @@ class AnalyticsTest extends TestCase {
 					'profileID'             => $_GET['profileId'],
 					'internalWebPropertyID' => $expected_internal_id,
 					'useSnippet'            => true,
+					'canUseSnippet'         => true,
 					'anonymizeIP'           => true,
 					'adsenseLinked'         => false,
 					'trackingDisabled'      => array( 'loggedinUsers' ),
@@ -488,7 +498,7 @@ class AnalyticsTest extends TestCase {
 		do_action( 'template_redirect' );
 
 		$head_html = $this->capture_action( 'wp_head' );
-		// Sanity check.
+		// Confidence check.
 		$this->assertNotEmpty( $head_html );
 		// Whether or not tracking is disabled does not affect output of snippet.
 		if ( $settings['useSnippet'] ) {
@@ -699,6 +709,33 @@ class AnalyticsTest extends TestCase {
 		$this->assertTrue( $result[1] instanceof Google_Service_AnalyticsReporting_OrderBy );
 		$this->assertEquals( 'sessions', $result[1]->getFieldName() );
 		$this->assertEquals( 'ASCENDING', $result[1]->getSortOrder() );
+	}
+
+	public function test_create_analytics_site_data_request() {
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$analytics = new Analytics( $context );
+
+		$reflected_create_analytics_site_data_request_method = new ReflectionMethod( 'Google\Site_Kit\Modules\Analytics', 'create_analytics_site_data_request' );
+		$reflected_create_analytics_site_data_request_method->setAccessible( true );
+
+		$result = $reflected_create_analytics_site_data_request_method->invoke( $analytics, array() );
+		$this->assertTrue( $result instanceof Google_Service_AnalyticsReporting_ReportRequest );
+
+		$clauses = $result->getDimensionFilterClauses();
+		$this->assertTrue( is_array( $clauses ) );
+		$this->assertTrue( count( $clauses ) > 0 );
+
+		$filters = $clauses[0]->getFilters();
+		$this->assertTrue( is_array( $filters ) );
+		$this->assertEquals( 1, count( $filters ) );
+		$this->assertEquals( 'ga:hostname', $filters[0]->getDimensionName() );
+		$this->assertEquals( 'EXACT', $filters[0]->getOperator() );
+
+		$hostname    = wp_parse_url( $context->get_reference_site_url(), PHP_URL_HOST );
+		$expressions = $filters[0]->getExpressions();
+		$this->assertTrue( is_array( $expressions ) );
+		$this->assertEquals( 1, count( $expressions ) );
+		$this->assertEquals( $hostname, $expressions[0] );
 	}
 
 }

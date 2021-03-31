@@ -3,22 +3,51 @@
  * TestCase class.
  *
  * @package   Google\Site_Kit\Tests
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
 namespace Google\Site_Kit\Tests;
 
+use Closure;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Util\Build_Mode;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Input;
+use Google\Site_Kit\Core\Util\JSON_File;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use PHPUnit_Framework_MockObject_MockObject;
 
 class TestCase extends \WP_UnitTestCase {
-
 	// Do not preserve global state since it doesn't support closures within globals.
 	protected $preserveGlobalState = false;
+
+	protected static $featureFlagsConfig;
+
+	public static function setUpBeforeClass() {
+		parent::setUpBeforeClass();
+
+		if ( ! self::$featureFlagsConfig ) {
+			self::$featureFlagsConfig = new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'feature-flags.json' );
+		}
+
+		self::reset_feature_flags();
+	}
+
+	public static function tearDownAfterClass() {
+		parent::tearDownAfterClass();
+		self::reset_feature_flags();
+		self::reset_build_mode();
+	}
+
+	protected static function reset_feature_flags() {
+		Feature_Flags::set_features( self::$featureFlagsConfig );
+	}
+
+	protected static function reset_build_mode() {
+		Build_Mode::set_mode( Build_Mode::MODE_PRODUCTION );
+	}
 
 	/**
 	 * Runs the routine before each test is executed.
@@ -52,6 +81,27 @@ class TestCase extends \WP_UnitTestCase {
 		parent::tearDown();
 		// Clear screen related globals.
 		unset( $GLOBALS['current_screen'], $GLOBALS['taxnow'], $GLOBALS['typenow'] );
+	}
+
+	/**
+	 * Enables a feature.
+	 *
+	 * @param string $feature Feature to enable.
+	 * @return Closure Function to reset the enabled state.
+	 */
+	protected function enable_feature( $feature ) {
+		$enable_callback = function ( $enabled, $feature_name ) use ( $feature ) {
+			if ( $feature_name === $feature ) {
+				return true;
+			}
+			return $enabled;
+		};
+
+		add_filter( 'googlesitekit_is_feature_enabled', $enable_callback, 10, 2 );
+
+		return function () use ( $enable_callback ) {
+			remove_filter( 'googlesitekit_is_feature_enabled', $enable_callback, 10 );
+		};
 	}
 
 	/**
@@ -94,39 +144,6 @@ class TestCase extends \WP_UnitTestCase {
 	 */
 	protected function get_testcase() {
 		return $this;
-	}
-
-	protected function checkRequirements() {
-		parent::checkRequirements();
-
-		/**
-		 * Proper handling for MS group annotation handling was fixed in 5.1
-		 * @see https://core.trac.wordpress.org/ticket/43863
-		 */
-		if ( version_compare( $GLOBALS['wp_version'], '5.1', '<' ) ) {
-			$annotations = $this->getAnnotations();
-			$groups      = array();
-
-			if ( ! empty( $annotations['class']['group'] ) ) {
-				$groups = array_merge( $groups, $annotations['class']['group'] );
-			}
-			if ( ! empty( $annotations['method']['group'] ) ) {
-				$groups = array_merge( $groups, $annotations['method']['group'] );
-			}
-
-			if ( ! empty( $groups ) ) {
-				if ( in_array( 'ms-required', $groups, true ) ) {
-					if ( ! is_multisite() ) {
-						$this->markTestSkipped( 'Test only runs on Multisite' );
-					}
-				}
-				if ( in_array( 'ms-excluded', $groups, true ) ) {
-					if ( is_multisite() ) {
-						$this->markTestSkipped( 'Test does not run on Multisite' );
-					}
-				}
-			}
-		}
 	}
 
 	/**

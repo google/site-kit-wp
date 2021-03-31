@@ -1,7 +1,7 @@
 /**
  * Public Data store entrypoint.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,7 @@ if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
 }
 
-if ( typeof global.googlesitekit.data === 'undefined' ) {
-	global.googlesitekit.data = Data;
-}
+global.googlesitekit.data = Data;
 
 // This is only exported for Jest and is not used in production.
 export default Data;

@@ -1,7 +1,7 @@
 /**
  * Data API.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,13 +31,11 @@ import { addAction, applyFilters, doAction, addFilter, removeFilter, hasAction }
 /**
  * Internal dependencies
  */
-import { getCurrentDateRangeSlug } from '../../util/date-range';
 import { fillFilterWithComponent } from '../../util/helpers';
 import { getQueryParameter } from '../../util/standalone';
 import { isWPError } from '../../util/errors';
 import AuthError from '../notifications/AuthError';
-import DashboardAuthScopesAlert from '../notifications/DashboardAuthScopesAlert';
-import DashboardPermissionAlert from '../notifications/dashboard-permission-alert';
+import UnsatisfiedScopesAlert from '../notifications/UnsatisfiedScopesAlert';
 import { getCacheKey, getCache, setCache } from './cache';
 import { TYPE_CORE, TYPE_MODULES } from './constants';
 import { invalidateCacheGroup } from './invalidate-cache-group';
@@ -45,75 +43,9 @@ import { trackAPIError } from '../../util/api';
 
 export { TYPE_CORE, TYPE_MODULES };
 
-/**
- * Gets a copy of the given data request object with the data.dateRange populated via filter, if not set.
- * Respects the current dateRange value, if set.
- *
- * @since 1.0.0
- *
- * @param {Object} originalRequest Data request object.
- * @param {string} dateRange       Default date range slug to use if not specified in the request.
- * @return {Object} New data request object.
- */
-const requestWithDateRange = ( originalRequest, dateRange ) => {
-	// Make copies for reference safety, ensuring data exists.
-	const request = { data: {}, ...originalRequest };
-	// Use the dateRange in request.data if passed, fallback to provided default value.
-
-	// Provide the prev-dateRange-days to allow withData to handle the queries for <AdSensePerformanceWidget /> - see #317.
-	if ( request.data.dateRange === 'prev-date-range-placeholder' ) {
-		const prevDateRange = dateRange.replace( 'last', 'prev' );
-		request.data = {
-			...request.data,
-			dateRange: prevDateRange,
-		};
-		return request;
-	}
-
-	request.data = { dateRange, ...request.data };
-
-	return request;
-};
-
 const dataAPI = {
 
 	maxRequests: 10,
-
-	/**
-	 * Gets data for multiple requests from the cache in a single batch process.
-	 *
-	 * This is a replica of combinedGet but only fetching data from cache. No requests are done.
-	 * Solves issue for publisher wins to retrieve data without performing additional requests.
-	 * Likely this will be removed after refactoring.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param {Array.<{maxAge: Date, type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest An array of data requests to resolve.
-	 * @return {Promise} A promise for the cache lookup.
-	 */
-	combinedGetFromCache( combinedRequest ) {
-		return new Promise( ( resolve, reject ) => {
-			try {
-				const responseData = [];
-				const dateRange = getCurrentDateRangeSlug();
-				each( combinedRequest, ( originalRequest ) => {
-					const request = requestWithDateRange( originalRequest, dateRange );
-					request.key = getCacheKey( request.type, request.identifier, request.datapoint, request.data );
-					const cache = getCache( request.key, request.maxAge );
-
-					if ( 'undefined' !== typeof cache ) {
-						responseData[ request.key ] = cache;
-
-						this.resolve( request, cache );
-					}
-				} );
-
-				resolve( responseData );
-			} catch ( err ) {
-				reject();
-			}
-		} );
-	},
 
 	// Disabled because the typing of the `combinedRequest` param causes the JSDoc rules
 	// to format things quite strangely.
@@ -132,9 +64,7 @@ const dataAPI = {
 		// First, resolve any cache matches immediately, queue resolution of the rest.
 		let dataRequest = [];
 		let cacheDelay = 25;
-		const dateRange = getCurrentDateRangeSlug();
-		each( combinedRequest, ( originalRequest ) => {
-			const request = requestWithDateRange( originalRequest, dateRange );
+		each( combinedRequest, ( request ) => {
 			request.key = getCacheKey( request.type, request.identifier, request.datapoint, request.data );
 			const cache = getCache( request.key, request.maxAge );
 
@@ -198,33 +128,37 @@ const dataAPI = {
 			data: { request: currentRequest },
 			method: 'POST',
 		} ).then( ( results ) => {
-			each( results, ( result, key ) => {
-				if ( ! keyIndexesMap[ key ] ) {
-					console.debug( 'data_error', 'unknown response key ' + key ); // eslint-disable-line no-console
+			Object.entries( results ).forEach( ( [ requestKey, response ] ) => {
+				if ( ! keyIndexesMap[ requestKey ] ) {
+					console.debug( 'data_error', 'unknown response key ' + requestKey ); // eslint-disable-line no-console
 					return;
 				}
 
-				const isError = isWPError( result );
-				if ( isError ) {
-					const { datapoint, type, identifier } = dataRequest[ keyIndexesMap[ key ] ];
+				if ( isWPError( response ) ) {
+					// These variables will be the same for each request so use the first
+					// to avoid handling/reporting the same error multiple times.
+					const requestIndex = keyIndexesMap[ requestKey ][ 0 ];
+					const { datapoint, type, identifier } = dataRequest[ requestIndex ];
 
 					this.handleWPError( {
-						method: 'POST',
+						// Report as GET requests as this is the internal method
+						// rather than the method of the batch request itself.
+						method: 'GET',
 						datapoint,
 						type,
 						identifier,
-						error: result,
+						error: response,
 					} );
+				} else {
+					setCache( requestKey, response );
 				}
 
-				each( keyIndexesMap[ key ], ( index ) => {
-					const request = dataRequest[ index ];
+				// Each request is only made once, but may have been requested more than once.
+				// Iterate over each request object for the key to resolve it.
+				keyIndexesMap[ requestKey ].forEach( ( requestIndex ) => {
+					const request = dataRequest[ requestIndex ];
 
-					if ( ! isError ) {
-						setCache( request.key, result );
-					}
-
-					this.resolve( request, result );
+					this.resolve( request, response );
 				} );
 
 				// Trigger an action indicating this data load completed from the API.
@@ -234,15 +168,15 @@ const dataAPI = {
 			} );
 
 			// Resolve any returned data requests, then re-request the remainder after a pause.
-		} ).catch( ( err ) => {
+		} ).catch( ( error ) => {
 			// Handle the error and give up trying.
-			console.warn( 'Error caught during combinedGet', err ); // eslint-disable-line no-console
+			console.warn( 'Error caught during combinedGet', `code:${ error.code }`, `error:"${ error.message }"` ); // eslint-disable-line no-console
 		} );
 	},
 
 	handleWPError( { method, datapoint, type, identifier, error } ) {
 		// eslint-disable-next-line no-console
-		console.warn( 'WP Error in data response', error );
+		console.warn( 'WP Error in data response', `method:${ method }`, `type:${ type }`, `identifier:${ identifier }`, `datapoint:${ datapoint }`, `error:"${ error.message }"` );
 
 		trackAPIError( { method, datapoint, type, identifier, error } );
 
@@ -258,15 +192,7 @@ const dataAPI = {
 		if ( [ 'authError', 'insufficientPermissions' ].includes( data.reason ) ) {
 			addFilter( 'googlesitekit.ErrorNotification',
 				'googlesitekit.AuthNotification',
-				fillFilterWithComponent( DashboardAuthScopesAlert ), 1 );
-			addedNoticeCount++;
-		}
-
-		// Insufficient access permissions.
-		if ( 'forbidden' === data.reason ) {
-			addFilter( 'googlesitekit.ErrorNotification',
-				'googlesitekit.AuthNotification',
-				fillFilterWithComponent( DashboardPermissionAlert ), 1 );
+				fillFilterWithComponent( UnsatisfiedScopesAlert ), 1 );
 			addedNoticeCount++;
 		}
 

@@ -1,7 +1,7 @@
 /**
  * AnalyticsAdSenseDashboardWidgetTopPagesTable component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,104 +25,99 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat } from '../../../../util';
-import withData from '../../../../components/higherorder/withdata';
+import { getTimeInSeconds, numFmt } from '../../../../util';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
-import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
-import ctaWrapper from '../../../../components/notifications/cta-wrapper';
+import ctaWrapper from '../../../../components/legacy-notifications/cta-wrapper';
 import AdSenseLinkCTA from '../common/AdSenseLinkCTA';
 import { analyticsAdsenseReportDataDefaults, isDataZeroForReporting } from '../../util';
 import { STORE_NAME } from '../../datastore/constants';
 import AnalyticsAdSenseDashboardWidgetLayout from './AnalyticsAdSenseDashboardWidgetLayout';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
-
+import Link from '../../../../components/Link';
+import ReportTable from '../../../../components/ReportTable';
 const { useSelect } = Data;
 
 const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
-
-	const adsenseDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
-		{ path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=[]&_r.drilldown=analytics.pagePath:~2F` }
-	) );
 	// Do not return zero data callout here since it will already be
 	// present on the page from other sources.
 	if ( isDataZeroForReporting( data ) ) {
 		return null;
 	}
 
-	if ( ! data || ! data.length ) {
+	const { rows } = data?.[ 0 ]?.data || {};
+	if ( ! Array.isArray( rows ) ) {
 		return null;
 	}
-
-	if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
-		return null;
-	}
-
-	const headers = [
-		{
-			title: __( 'Page Title', 'google-site-kit' ),
-			tooltip: __( 'Page Title', 'google-site-kit' ),
-			primary: true,
-		},
-		{
-			title: __( 'Earnings', 'google-site-kit' ),
-			tooltip: __( 'Earnings', 'google-site-kit' ),
-		},
-		{
-			title: __( 'Page RPM', 'google-site-kit' ),
-			tooltip: __( 'Page RPM', 'google-site-kit' ),
-		},
-		{
-			title: __( 'Impressions', 'google-site-kit' ),
-			tooltip: __( 'Impressions', 'google-site-kit' ),
-		},
-	];
-
-	const dataMapped = data[ 0 ].data.rows.map( ( row ) => {
-		/**
-		 * The shape of the dimensions and metrics objects:
-		 *
-		 * ```
-		 * dimensions[0] = ga:pageTitle
-		 * dimensions[1] = ga:pagePath
-		 *
-		 * metrics[0] = ga:adsenseECPM
-		 * metrics[1] = ga:adsensePageImpressions
-		 * metrics[2] = ga:adsenseRevenue
-		 * ```
-		 */
-		return [
-			row.dimensions[ 0 ],
-			Number( row.metrics[ 0 ].values[ 0 ] ).toFixed( 2 ),
-			Number( row.metrics[ 0 ].values[ 1 ] ).toFixed( 2 ),
-			numberFormat( row.metrics[ 0 ].values[ 2 ] ),
-		];
-	} );
-
-	const linksMapped = data[ 0 ].data.rows.map( ( row ) => {
-		const pagePath = row.dimensions[ 1 ].replace( /\//g, '~2F' );
-		return encodeURI( adsenseDeepLink + pagePath );
-	} );
-
-	const options = {
-		hideHeader: false,
-		chartsEnabled: false,
-		links: linksMapped,
-	};
-
-	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
 	return (
 		<AnalyticsAdSenseDashboardWidgetLayout>
 			<TableOverflowContainer>
-				{ dataTable }
+				<ReportTable
+					rows={ rows }
+					columns={ tableColumns }
+				/>
 			</TableOverflowContainer>
 		</AnalyticsAdSenseDashboardWidgetLayout>
 	);
 };
+
+const tableColumns = [
+	{
+		title: __( 'Page Title', 'google-site-kit' ),
+		description: __( 'Page Title', 'google-site-kit' ),
+		primary: true,
+		Component: ( { row } ) => {
+			const [ title, url ] = row.dimensions;
+			const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages', {
+				'explorer-table.plotKeys': '[]',
+				'_r.drilldown': `analytics.pagePath:${ url }`,
+			} ) );
+			return (
+				<Link
+					href={ serviceURL }
+					external
+					inherit
+				>
+					{ title }
+				</Link>
+			);
+		},
+	},
+	{
+		title: __( 'Earnings', 'google-site-kit' ),
+		description: __( 'Earnings', 'google-site-kit' ),
+		field: 'metrics.0.values.0',
+		Component: ( { fieldValue } ) => numFmt(
+			fieldValue,
+			{
+				style: 'decimal',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+			}
+		),
+	},
+	{
+		title: __( 'Page RPM', 'google-site-kit' ),
+		description: __( 'Page RPM', 'google-site-kit' ),
+		field: 'metrics.0.values.1',
+		Component: ( { fieldValue } ) => numFmt(
+			fieldValue,
+			{
+				style: 'decimal',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+			}
+		),
+	},
+	{
+		title: __( 'Impressions', 'google-site-kit' ),
+		description: __( 'Impressions', 'google-site-kit' ),
+		field: 'metrics.0.values.2',
+		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+	},
+];
 
 /**
  * Checks error data response, and handle the INVALID_ARGUMENT specifically.

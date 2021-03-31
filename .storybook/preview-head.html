@@ -1,7 +1,15 @@
 <style>
-  .googlesitekit-plugin-preview {
-	  padding: 50px;
-  }
+	:root {
+		--preview-margin: 50px;
+	}
+
+	.googlesitekit-plugin-preview {
+		padding: var(--preview-margin);
+	}
+
+	.-googlesitekit-plugin-preview {
+		margin: calc(0px - var(--preview-margin));
+	}
 </style>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script>
@@ -26,18 +34,16 @@
 		s.parentNode.insertBefore( wf, s );
 	} )();
 
-	const allImagesLoaded = new Promise( ( resolve ) => {
-		// Wait for the document to completely finish loading before checking for images.
-		window.addEventListener( 'load', () => {
-			imagesLoaded( '.googlesitekit-plugin-preview', { background: true }, resolve );
-		} );
-	} );
-
 	Promise.all( [
 		webFontsLoaded,
-		allImagesLoaded,
 	] ).then( () => {
 		// Signal Backstop that the environment is ready to go.
-		console.log( 'backstopjs_ready' );
+		document.body.classList.add( 'backstopjs-ready' );
+	} );
+</script>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+	google.charts.load( 'current', {
+		packages: [ 'corechart' ],
 	} );
 </script>

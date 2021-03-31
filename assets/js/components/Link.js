@@ -1,7 +1,7 @@
 /**
  * Link component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ function Link( {
 	className,
 	arrow,
 	external,
+	hideExternalIndicator,
 	inverse,
 	back,
 	small,
@@ -71,7 +72,7 @@ function Link( {
 				className,
 				{
 					'googlesitekit-cta-link--arrow': arrow,
-					'googlesitekit-cta-link--external': external,
+					'googlesitekit-cta-link--external': external && ! hideExternalIndicator,
 					'googlesitekit-cta-link--inverse': inverse,
 					'googlesitekit-cta-link--back': back,
 					'googlesitekit-cta-link--small': small,
@@ -107,6 +108,7 @@ Link.propTypes = {
 	className: PropTypes.string,
 	arrow: PropTypes.bool,
 	external: PropTypes.bool,
+	hideExternalIndicator: PropTypes.bool,
 	inverse: PropTypes.bool,
 	back: PropTypes.bool,
 	small: PropTypes.bool,
@@ -123,6 +125,7 @@ Link.defaultProps = {
 	className: '',
 	arrow: false,
 	external: false,
+	hideExternalIndicator: false,
 	inverse: false,
 	back: false,
 	small: false,

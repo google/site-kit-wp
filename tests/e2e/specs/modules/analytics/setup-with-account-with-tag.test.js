@@ -38,6 +38,11 @@ describe( 'setting up the Analytics module with an existing account and existing
 				request.respond( {
 					status: 200,
 				} );
+			} else if ( request.url().match( '/wp-json/google-site-kit/v1/modules/analytics/data/report?' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( { placeholder_response: true } ),
+				} );
 			}
 
 			if ( ! request._interceptionHandled ) {

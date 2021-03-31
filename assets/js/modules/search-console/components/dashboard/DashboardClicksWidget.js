@@ -1,7 +1,7 @@
 /**
  * DashboardClicksWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,24 +25,23 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
-import { untrailingslashit, changeToPercent, readableLargeNumber } from '../../../../util';
+import { untrailingslashit, calculateChange } from '../../../../util';
 import { trackEvent } from '../../../../util/tracking';
+import { isZeroReport } from '../../util';
 import whenActive from '../../../../util/when-active';
-import DataBlock from '../../../../components/data-block';
+import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
-import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import sumObjectListValue from '../../../../util/sum-object-list-value';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
-function DashboardClicksWidget() {
+function DashboardClicksWidget( { WidgetReportZero, WidgetReportError } ) {
 	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
@@ -51,14 +50,16 @@ function DashboardClicksWidget() {
 		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
 		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 
+		const { compareStartDate, startDate, endDate } = select( CORE_USER ).getDateRangeDates( { compare: true, offsetDays: DATE_RANGE_OFFSET } );
 		const args = {
 			dimensions: 'date',
-			compareDateRanges: true,
-			dateRange: select( CORE_USER ).getDateRange(),
+			// Combine both date ranges into one single date range.
+			startDate: compareStartDate,
+			endDate,
 		};
 		const serviceBaseURLArgs = {
 			resource_id: propertyID,
-			num_of_days: getCurrentDateRangeDayCount( args.dateRange ),
+			...generateDateRangeArgs( { startDate, endDate } ),
 		};
 
 		if ( url ) {
@@ -71,7 +72,7 @@ function DashboardClicksWidget() {
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			serviceURL: store.getServiceURL( { path: '/performance/search-analytics', query: serviceBaseURLArgs } ),
 		};
 	} );
@@ -82,11 +83,11 @@ function DashboardClicksWidget() {
 
 	if ( error ) {
 		trackEvent( 'plugin_setup', 'search_console_error', error.message );
-		return <ReportError moduleSlug="search-console" error={ error } />;
+		return <WidgetReportError moduleSlug="search-console" error={ error } />;
 	}
 
-	if ( ! data || ! data.length ) {
-		return <ReportZero moduleSlug="search-console" />;
+	if ( isZeroReport( data ) ) {
+		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 	// Split the data in two chunks.
 	const half = Math.floor( data.length / 2 );
@@ -95,7 +96,7 @@ function DashboardClicksWidget() {
 
 	const totalClicks = sumObjectListValue( latestData, 'clicks' );
 	const totalOlderClicks = sumObjectListValue( olderData, 'clicks' );
-	const totalClicksChange = changeToPercent( totalOlderClicks, totalClicks );
+	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
 
 	const sparklineData = [
 		[
@@ -114,7 +115,7 @@ function DashboardClicksWidget() {
 			<DataBlock
 				className="overview-total-clicks"
 				title={ __( 'Clicks', 'google-site-kit' ) }
-				datapoint={ readableLargeNumber( totalClicks ) }
+				datapoint={ totalClicks }
 				change={ totalClicksChange }
 				changeDataUnit="%"
 				source={ {

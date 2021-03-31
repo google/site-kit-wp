@@ -1,7 +1,7 @@
 /**
  * Container Select component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,15 +63,15 @@ export default function ContainerSelect( {
 		>
 			{ ( containers || [] )
 				.concat( {
-					// eslint-disable-next-line sitekit/camelcase-acronyms
+					// eslint-disable-next-line sitekit/acronym-case
 					publicId: CONTAINER_CREATE,
 					name: __( 'Set up a new container', 'google-site-kit' ),
 				} )
-				.map( ( { publicId, name, containerId } ) => ( // eslint-disable-line sitekit/camelcase-acronyms
+				.map( ( { publicId, name, containerId } ) => ( // eslint-disable-line sitekit/acronym-case
 					<Option
-						key={ publicId } // eslint-disable-line sitekit/camelcase-acronyms
-						value={ publicId } // eslint-disable-line sitekit/camelcase-acronyms
-						data-internal-id={ containerId } // eslint-disable-line sitekit/camelcase-acronyms
+						key={ publicId } // eslint-disable-line sitekit/acronym-case
+						value={ publicId } // eslint-disable-line sitekit/acronym-case
+						data-internal-id={ containerId } // eslint-disable-line sitekit/acronym-case
 					>
 						{ name }
 					</Option>

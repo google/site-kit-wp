@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Modules\Modules
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -101,7 +101,7 @@ final class Modules {
 	/**
 	 * Module_Registry instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 * @var Module_Registry
 	 */
 	private $registry;
@@ -109,7 +109,7 @@ final class Modules {
 	/**
 	 * Core module class names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 * @var string[] Core module class names.
 	 */
 	private $core_modules = array(
@@ -263,7 +263,10 @@ final class Modules {
 			uasort(
 				$this->modules,
 				function( Module $a, Module $b ) {
-					return $a->order > $b->order;
+					if ( $a->order === $b->order ) {
+						return 0;
+					}
+					return ( $a->order < $b->order ) ? -1 : 1;
 				}
 			);
 
@@ -495,7 +498,7 @@ final class Modules {
 	/**
 	 * Gets the configured module registry instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 *
 	 * @return Module_Registry
 	 */
@@ -510,7 +513,7 @@ final class Modules {
 	/**
 	 * Sets up a fresh module registry instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 *
 	 * @return Module_Registry
 	 */
@@ -667,7 +670,7 @@ final class Modules {
 				)
 			),
 			new REST_Route(
-				'modules/(?P<slug>[a-z\-]+)/data/notifications',
+				'modules/(?P<slug>[a-z0-9\-]+)/data/notifications',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
@@ -704,7 +707,7 @@ final class Modules {
 				)
 			),
 			new REST_Route(
-				'modules/(?P<slug>[a-z\-]+)/data/settings',
+				'modules/(?P<slug>[a-z0-9\-]+)/data/settings',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
@@ -733,11 +736,12 @@ final class Modules {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
 
-							$data   = isset( $request['data'] ) ? (array) $request['data'] : array();
-							$result = $this->update_module_settings( $module, $data );
-							if ( is_wp_error( $result ) ) {
-								return $result;
+							if ( ! $module instanceof Module_With_Settings ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Module does not support settings.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
+
+							$module->get_settings()->merge( (array) $request['data'] );
+
 							return new WP_REST_Response( $module->get_settings()->get() );
 						},
 						'permission_callback' => $can_manage_options,
@@ -763,7 +767,7 @@ final class Modules {
 				)
 			),
 			new REST_Route(
-				'modules/(?P<slug>[a-z\-]+)/data/(?P<datapoint>[a-z\-]+)',
+				'modules/(?P<slug>[a-z0-9\-]+)/data/(?P<datapoint>[a-z\-]+)',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
@@ -826,40 +830,6 @@ final class Modules {
 				)
 			),
 		);
-	}
-
-	/**
-	 * Updates settings for a module.
-	 *
-	 * If the module includes a datapoint 'POST:settings', that datapoint is relied upon, allowing more advanced
-	 * customization. Otherwise this method will ensure every setting is present as a parameter and then update the
-	 * settings.
-	 *
-	 * @since 1.6.0
-	 *
-	 * @param Module $module Module to update settings for. Must implement {@see Module_With_Settings}.
-	 * @param array  $data   Associative array of new settings data to set.
-	 * @return bool|WP_Error True on success, or an error object on failure.
-	 */
-	private function update_module_settings( Module $module, array $data ) {
-		if ( ! $module instanceof Module_With_Settings ) {
-			return new WP_Error( 'invalid_module_slug', __( 'Module does not support settings.', 'google-site-kit' ), array( 'status' => 400 ) );
-		}
-
-		if ( in_array( 'settings', $module->get_datapoints(), true ) ) {
-			$result = $module->set_data( 'settings', $data );
-			if ( is_wp_error( $result ) && $result->get_error_code() !== Invalid_Datapoint_Exception::WP_ERROR_CODE ) {
-				return $result;
-			} elseif ( ! is_wp_error( $result ) ) {
-				return true;
-			}
-		}
-
-		if ( ! $module->get_settings()->merge( $data ) ) {
-			return new WP_Error( 'updating_settings_failed', __( 'Updating settings failed.', 'google-site-kit' ), array( 'status' => 500 ) );
-		}
-
-		return true;
 	}
 
 	/**

@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Notifications\Notification
  *
  * @package   Google\Site_Kit\Core\Notifications
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -45,7 +45,6 @@ class Notification {
 	 *
 	 *     @type string $title            Required notification title.
 	 *     @type string $content          Required notification content. May contain inline HTML tags.
-	 *     @type string $image            Image URL.
 	 *     @type string $cta_url          Call to action URL.
 	 *     @type string $cta_label        Call to action anchor text.
 	 *     @type string $cta_target       Call to action anchor target.
@@ -61,7 +60,6 @@ class Notification {
 			array(
 				'title'            => '',
 				'content'          => '',
-				'image'            => '',
 				'cta_url'          => '',
 				'cta_label'        => '',
 				'cta_target'       => '',
@@ -97,7 +95,6 @@ class Notification {
 			'id'             => $this->get_slug(),
 			'title'          => $this->args['title'],
 			'content'        => $this->args['content'],
-			'image'          => $this->args['image'],
 			'ctaURL'         => $this->args['cta_url'],
 			'ctaLabel'       => $this->args['cta_label'],
 			'ctaTarget'      => $this->args['cta_target'],

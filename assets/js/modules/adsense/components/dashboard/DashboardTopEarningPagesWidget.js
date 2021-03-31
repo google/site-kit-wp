@@ -1,7 +1,7 @@
 /**
  * DashboardTopEarningPagesWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,21 +26,21 @@ import { compose } from '@wordpress/compose';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME as ANALYTICS_STORE } from '../../../analytics/datastore/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
-import { getDataTableFromData } from '../../../../components/data-table';
 import SourceLink from '../../../../components/SourceLink';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
-import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
+import { isZeroReport } from '../../../analytics/util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import ReportTable from '../../../../components/ReportTable';
+import Link from '../../../../components/Link';
+import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
+import { numFmt } from '../../../../util';
 const { useSelect } = Data;
-const { Widget } = Widgets.components;
 
-function DashboardTopEarningPagesWidget() {
+function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		isAdSenseLinked,
 		analyticsMainURL,
@@ -48,9 +48,12 @@ function DashboardTopEarningPagesWidget() {
 		error,
 		loading,
 	} = useSelect( ( select ) => {
-		const store = select( ANALYTICS_STORE );
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
 		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
+			startDate,
+			endDate,
 			dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
 			metrics: [
 				{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
@@ -61,22 +64,20 @@ function DashboardTopEarningPagesWidget() {
 				fieldName: 'ga:adsenseRevenue',
 				sortOrder: 'DESCENDING',
 			},
-			limit: 10,
+			limit: 5,
 		};
 
 		return {
-			isAdSenseLinked: store.getAdsenseLinked(),
-			analyticsMainURL: store.getServiceURL(),
-			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
+			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
+			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL( 'content-publisher-overview', generateDateRangeArgs( { startDate, endDate } ) ),
+			data: select( MODULES_ANALYTICS ).getReport( args ),
+			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ),
+			loading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ),
 		};
 	} );
 
 	if ( loading ) {
-		return (
-			<PreviewTable rows={ 5 } padding />
-		);
+		return <PreviewTable rows={ 5 } padding />;
 	}
 
 	// A restricted metrics error will cause this value to change in the resolver
@@ -86,48 +87,48 @@ function DashboardTopEarningPagesWidget() {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( ! data || ! data.length || ! data[ 0 ]?.data?.rows ) {
-		return <ReportZero moduleSlug="analytics" />;
+	if ( isZeroReport( data ) ) {
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
-	const headers = [
+	const tableColumns = [
 		{
 			title: __( 'Top Earning Pages', 'google-site-kit' ),
 			tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
 			primary: true,
+			Component: ( { row } ) => {
+				const [ title, url ] = row.dimensions;
+				return (
+					<Link
+						href={ url }
+						children={ title }
+						external
+						inherit
+					/>
+				);
+			},
 		},
 		{
 			title: __( 'Revenue', 'google-site-kit' ),
 			tooltip: __( 'Revenue', 'google-site-kit' ),
+			Component: ( { row } ) => numFmt(
+				row.metrics[ 0 ].values[ 0 ],
+				{
+					style: 'decimal',
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2,
+				}
+			),
 		},
 	];
 
-	const links = [];
-	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-		links[ i ] = row.dimensions[ 1 ];
-		return [
-			row.dimensions[ 0 ],
-			Number( row.metrics[ 0 ].values[ 0 ] ).toFixed( 2 ),
-		];
-	} );
-
-	const options = {
-		hideHeader: false,
-		chartsEnabled: false,
-		cap: 5,
-		links,
-	};
-
-	const dataTable = getDataTableFromData( dataMapped, headers, options );
-
 	return (
 		<Widget
-			slug="adsenseTopEarningPages"
 			noPadding
-			footer={ () => (
+			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
 					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
@@ -137,7 +138,10 @@ function DashboardTopEarningPagesWidget() {
 			) }
 		>
 			<TableOverflowContainer>
-				{ dataTable }
+				<ReportTable
+					rows={ data[ 0 ].data.rows }
+					columns={ tableColumns }
+				/>
 			</TableOverflowContainer>
 		</Widget>
 	);

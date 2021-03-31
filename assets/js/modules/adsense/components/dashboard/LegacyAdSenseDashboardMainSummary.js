@@ -1,7 +1,7 @@
 /**
  * LegacyAdSenseDashboardMainSummary component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,17 +29,16 @@ import {
 	reduceAdSenseData,
 	isDataZeroAdSense,
 } from '../../util';
-import Layout from '../../../../components/layout/layout';
-import withData from '../../../../components/higherorder/withdata';
+import Layout from '../../../../components/layout/Layout';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import {
 	getTimeInSeconds,
-	readableLargeNumber,
 	getSiteKitAdminURL,
 } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
-import DataBlock from '../../../../components/data-block';
+import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 
 class LegacyAdSenseDashboardMainSummary extends Component {
@@ -123,7 +122,8 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 									<DataBlock
 										className="overview-adsense-rpm"
 										title={ __( 'RPM', 'google-site-kit' ) }
-										datapoint={ readableLargeNumber( period.totals[ 1 ], currencyCode ) }
+										datapoint={ period.totals[ 1 ] }
+										datapointUnit={ currencyCode }
 										source={ {
 											name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 											link: href,
@@ -132,7 +132,6 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 											<Sparkline
 												data={ extractForSparkline( processedData.dataMap, 2 ) }
 												change={ 1 }
-												loadSmall={ false }
 											/>
 										}
 										context="compact"
@@ -145,7 +144,8 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 									<DataBlock
 										className="overview-adsense-earnings"
 										title={ __( 'Total Earnings', 'google-site-kit' ) }
-										datapoint={ readableLargeNumber( period.totals[ 0 ], currencyCode ) }
+										datapoint={ period.totals[ 0 ] }
+										datapointUnit={ currencyCode }
 										source={ {
 											name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 											link: href,
@@ -156,7 +156,6 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 											<Sparkline
 												data={ extractForSparkline( processedData.dataMap, 1 ) }
 												change={ 1 }
-												loadSmall={ false }
 											/>
 										}
 										context="compact"
@@ -169,7 +168,7 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 									<DataBlock
 										className="overview-adsense-impressions"
 										title={ __( 'Ad Impressions', 'google-site-kit' ) }
-										datapoint={ readableLargeNumber( period.totals[ 2 ] ) }
+										datapoint={ period.totals[ 2 ] }
 										source={ {
 											name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 											link: href,
@@ -178,7 +177,6 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 											<Sparkline
 												data={ extractForSparkline( processedData.dataMap, 3 ) }
 												change={ 1 }
-												loadSmall={ false }
 											/>
 										}
 										context="compact"
@@ -237,7 +235,7 @@ export default withData(
 			identifier: 'adsense',
 			datapoint: 'earnings',
 			data: {
-				dateRange: 'this-month',
+				// dateRange not set here to inherit from googlesitekit.dateRange filter: last-x-days
 				dimensions: [ 'DATE' ],
 			},
 			priority: 1,

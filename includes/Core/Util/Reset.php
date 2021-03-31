@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Util\Reset
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -25,12 +25,17 @@ use WP_REST_Response;
  * @access private
  * @ignore
  */
-final class Reset {
+class Reset {
 
 	/**
 	 * MySQL key pattern for all Site Kit keys.
 	 */
 	const KEY_PATTERN = 'googlesitekit\_%';
+
+	/**
+	 * REST API endpoint.
+	 */
+	const REST_ROUTE = 'core/site/data/reset';
 
 	/**
 	 * Plugin context.
@@ -112,9 +117,9 @@ final class Reset {
 				    OR {$column_name} LIKE %s
 				    OR {$column_name} = %s
 				", /* phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared */
-				self::KEY_PATTERN,
-				$transient_prefix . self::KEY_PATTERN,
-				$transient_prefix . 'timeout_' . self::KEY_PATTERN,
+				static::KEY_PATTERN,
+				$transient_prefix . static::KEY_PATTERN,
+				$transient_prefix . 'timeout_' . static::KEY_PATTERN,
 				'googlesitekit-active-modules'
 			)
 		);
@@ -140,7 +145,7 @@ final class Reset {
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE %s",
-				$meta_prefix . self::KEY_PATTERN
+				$meta_prefix . static::KEY_PATTERN
 			)
 		);
 	}
@@ -159,7 +164,7 @@ final class Reset {
 
 		return array(
 			new REST_Route(
-				'core/site/data/reset',
+				static::REST_ROUTE,
 				array(
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,

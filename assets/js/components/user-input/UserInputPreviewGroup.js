@@ -1,7 +1,7 @@
 /**
  * User Input Preview Group.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,19 +24,24 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Button from '../button';
+import Button from '../Button';
 
-export default function UserInputPreviewGroup( { title, edit, values, options } ) {
+export default function UserInputPreviewGroup( { questionNumber, title, edit, values, options } ) {
+	const trim = ( value ) => value.trim();
+	const notEmpty = ( value ) => value.length > 0;
+	/* translators: %s: other option */
+	const sprintfTemplate = questionNumber < 5 ? __( 'Other: %s', 'google-site-kit' ) : '%s';
+
 	return (
 		<div className="googlesitekit-user-input__preview-group">
 			<div className="googlesitekit-user-input__preview-group-title">
 				<p>
-					{ title }
+					{ questionNumber } - { title }
 				</p>
 				<Button text onClick={ edit }>
 					{ __( 'Edit', 'google-site-kit' ) }
@@ -44,9 +49,9 @@ export default function UserInputPreviewGroup( { title, edit, values, options } 
 			</div>
 
 			<div className="googlesitekit-user-input__preview-answers">
-				{ values.map( ( value ) => (
+				{ values.map( trim ).filter( notEmpty ).map( ( value ) => (
 					<div key={ value } className="googlesitekit-user-input__preview-answer">
-						{ options[ value ] || value }
+						{ options[ value ] || sprintf( sprintfTemplate, value ) }
 					</div>
 				) ) }
 			</div>
@@ -55,6 +60,7 @@ export default function UserInputPreviewGroup( { title, edit, values, options } 
 }
 
 UserInputPreviewGroup.propTypes = {
+	questionNumber: PropTypes.number.isRequired,
 	title: PropTypes.string.isRequired,
 	edit: PropTypes.func.isRequired,
 	values: PropTypes.arrayOf( PropTypes.string ).isRequired,

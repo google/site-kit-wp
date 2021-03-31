@@ -1,7 +1,7 @@
 /**
  * Status utlities.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,22 +46,28 @@ export const SITE_STATUS_ADDED = 'added';
  * @param {(Array|undefined)}  data.accounts          List of account objects retrieved from the API.
  * @param {(Array|undefined)}  data.clients           List of client objects retrieved from the API.
  * @param {(Array|undefined)}  data.alerts            List of alert objects retrieved from the API.
+ * @param {(Array|undefined)}  data.urlChannels       List of URL channel objects retrieved from the API.
  * @param {(Object|undefined)} data.accountsError     Error object if account API request failed.
  * @param {(Object|undefined)} data.alertsError       Error object if alert API request failed.
+ * @param {(Object|undefined)} data.urlChannelsError  Error object if URL Channel API request failed.
  * @param {(string|undefined)} data.previousAccountID Account ID, if already known from before.
  * @param {(string|undefined)} data.previousClientID  Client ID, if already known from before.
  * @return {(string|undefined)} Account status determined, or undefined if one of the required
  *                   parameters is undefined.
  */
-export const determineAccountStatus = ( {
-	accounts,
-	clients,
-	alerts,
-	accountsError,
-	alertsError,
-	previousAccountID,
-	previousClientID,
-} ) => {
+export function determineAccountStatus( data ) {
+	const {
+		accounts,
+		clients,
+		alerts,
+		urlChannels,
+		accountsError,
+		alertsError,
+		urlChannelsError,
+		previousAccountID,
+		previousClientID,
+	} = data;
+
 	if ( undefined === accounts || undefined === previousAccountID ) {
 		return accountsErrorToStatus( accountsError );
 	}
@@ -71,10 +77,7 @@ export const determineAccountStatus = ( {
 		// If there are accounts, but the account ID cannot be determined, it
 		// means that there are multiple accounts and the user needs to select
 		// one.
-		if ( accounts.length ) {
-			return ACCOUNT_STATUS_MULTIPLE;
-		}
-		return ACCOUNT_STATUS_NONE;
+		return accounts.length ? ACCOUNT_STATUS_MULTIPLE : ACCOUNT_STATUS_NONE;
 	}
 
 	// For any of the following statuses, it must be ensured that clients are loaded.
@@ -86,9 +89,7 @@ export const determineAccountStatus = ( {
 		return alertsErrorToStatus( alertsError );
 	}
 
-	const hasGraylistedAlert = alerts.some( ( alert ) => {
-		return 'GRAYLISTED_PUBLISHER' === alert.type;
-	} );
+	const hasGraylistedAlert = alerts.some( ( alert ) => 'GRAYLISTED_PUBLISHER' === alert.type );
 	if ( hasGraylistedAlert ) {
 		return ACCOUNT_STATUS_GRAYLISTED;
 	}
@@ -98,8 +99,12 @@ export const determineAccountStatus = ( {
 		return ACCOUNT_STATUS_NO_CLIENT;
 	}
 
+	if ( undefined === urlChannels ) {
+		return urlChannelsErrorToStatus( urlChannelsError );
+	}
+
 	return ACCOUNT_STATUS_APPROVED;
-};
+}
 
 /**
  * Determines the AdSense site status for given input data.
@@ -246,7 +251,7 @@ export const isPendingAccountStatus = ( accountStatus ) => {
  * @return {(string|undefined)} Status based on error, or undefined if no relevant error.
  */
 export const errorToStatus = ( error ) => {
-	return accountsErrorToStatus( error ) || alertsErrorToStatus( error );
+	return accountsErrorToStatus( error ) || alertsErrorToStatus( error ) || urlChannelsErrorToStatus( error );
 };
 
 const accountsErrorToStatus = ( error ) => {
@@ -271,6 +276,14 @@ const alertsErrorToStatus = ( error ) => {
 
 	return undefined;
 };
+
+function urlChannelsErrorToStatus( error ) {
+	if ( error?.message && error.message.toLowerCase() === 'ad client not found.' ) {
+		return ACCOUNT_STATUS_PENDING;
+	}
+
+	return undefined;
+}
 
 const isError = ( error, errorReason ) => {
 	if ( ! error || ! error.data ) {

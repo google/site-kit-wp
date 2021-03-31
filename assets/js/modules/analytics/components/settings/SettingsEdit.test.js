@@ -1,7 +1,7 @@
 /**
  * Analytics Settings Edit component tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@
  */
 import { render, waitFor, createTestRegistry } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import SettingsEdit from './SettingsEdit';
 import * as fixtures from '../../datastore/__fixtures__';
 
@@ -36,8 +36,8 @@ describe( 'SettingsEdit', () => {
 		const registry = createTestRegistry();
 		const existingTag = {};
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		existingTag.accountID = profiles[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
-		existingTag.propertyID = profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
+		existingTag.accountID = profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+		existingTag.propertyID = profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/acronym-case
 		const { accountID, propertyID } = existingTag;
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );

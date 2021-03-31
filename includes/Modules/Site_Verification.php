@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Modules\Site_Verification
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -85,6 +85,9 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		add_action(
 			'googlesitekit_authorize_user',
 			function() {
+				if ( ! $this->authentication->credentials()->using_proxy() ) {
+					return;
+				}
 				$this->user_options->set( Verification::OPTION, 'verified' );
 			}
 		);

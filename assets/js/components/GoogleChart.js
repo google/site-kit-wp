@@ -1,7 +1,7 @@
 /**
  * GoogleChart component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import debounce from 'lodash/debounce';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -33,35 +33,9 @@ import { useEffect, useState, useRef } from '@wordpress/element';
  */
 import ProgressBar from './ProgressBar';
 
-let chartLoadPromise;
-
-async function loadCharts() {
-	if ( chartLoadPromise ) {
-		return chartLoadPromise;
-	}
-
-	// Inject the script if not already loaded and resolve on load.
-	if ( ! global.google || ! global.google.charts ) {
-		const script = document.createElement( 'script' );
-		script.type = 'text/javascript';
-
-		chartLoadPromise = new Promise( ( resolve ) => {
-			script.onload = resolve;
-			// Add the script to the DOM
-			global.document.head.appendChild( script );
-			// Set the `src` to begin transport
-			script.src = 'https://www.gstatic.com/charts/loader.js';
-		} );
-	} else {
-		// Charts is already available - resolve immediately.
-		chartLoadPromise = Promise.resolve();
-	}
-
-	return chartLoadPromise;
-}
-
 export default function GoogleChart( props ) {
 	const {
+		chartID,
 		chartType,
 		className,
 		data,
@@ -69,6 +43,7 @@ export default function GoogleChart( props ) {
 		loadHeight,
 		loadSmall,
 		loadText,
+		onReady,
 		options,
 		selectedStats,
 		singleStat,
@@ -77,28 +52,43 @@ export default function GoogleChart( props ) {
 	const chartRef = useRef( null );
 	const [ chart, setChart ] = useState( null );
 	const [ loading, setLoading ] = useState( true );
-
-	// Load the google charts library.
-	useEffect( () => {
-		loadCharts().then( () => {
-			global.google.charts.load( 'current', {
-				packages: [ 'corechart' ],
-				callback: () => {
-					setLoading( false );
-				},
-			} );
-		} );
-	}, [] );
+	const [ visualizationLoaded, setVisualizationLoaded ] = useState( false );
 
 	// Create a new chart when the library is loaded.
 	useEffect( () => {
-		if ( ! loading && chartRef.current && global.google ) {
-			const googleChart = 'pie' === chartType
-				? new global.google.visualization.PieChart( chartRef.current )
-				: new global.google.visualization.LineChart( chartRef.current );
+		if ( ! chart && ! loading && chartRef.current && visualizationLoaded ) {
+			let googleChart;
+
+			if ( ! chartID || ! GoogleChart.charts.has( chartID ) ) {
+				switch ( chartType ) {
+					case 'area':
+						googleChart = new global.google.visualization.AreaChart( chartRef.current );
+						break;
+					case 'line':
+						googleChart = new global.google.visualization.LineChart( chartRef.current );
+						break;
+					case 'pie':
+						googleChart = new global.google.visualization.PieChart( chartRef.current );
+						break;
+					default:
+						throw new Error( 'Unknown chart type' );
+				}
+
+				const chartData = { chart: googleChart };
+				if ( onReady ) {
+					chartData.onReady = global.google.visualization.events.addListener( googleChart, 'ready', onReady );
+				}
+
+				if ( chartID ) {
+					GoogleChart.charts.set( chartID, chartData );
+				}
+			} else {
+				googleChart = GoogleChart.charts.get( chartID ).chart;
+			}
+
 			setChart( googleChart );
 		}
-	}, [ loading, !! chartRef.current, chartType ] );
+	}, [ loading, !! chartRef.current, visualizationLoaded, !! chart ] );
 
 	// Draw the chart whenever one of these properties has changed.
 	useEffect( () => {
@@ -120,6 +110,9 @@ export default function GoogleChart( props ) {
 
 			if ( chart ) {
 				chart.draw( dataTable, options );
+				if ( chartID && GoogleChart.charts.has( chartID ) ) {
+					GoogleChart.charts.get( chartID ).dataTable = dataTable;
+				}
 			}
 		};
 
@@ -133,11 +126,50 @@ export default function GoogleChart( props ) {
 		};
 	}, [
 		chart,
-		data,
+		JSON.stringify( data ),
+		JSON.stringify( options ),
 		selectedStats,
-		options,
 		singleStat,
 	] );
+
+	useEffect( () => {
+		const interval = setInterval( () => {
+			if (
+				!! global.google?.visualization?.AreaChart &&
+				!! global.google?.visualization?.PieChart &&
+				!! global.google?.visualization?.LineChart
+			) {
+				clearInterval( interval );
+				setLoading( false );
+				setVisualizationLoaded( true );
+			}
+		}, 50 );
+
+		return () => {
+			if ( chartID && GoogleChart.charts.has( chartID ) ) {
+				const {
+					chart: googleChart,
+					onSelect: selectListener,
+					onReady: readyListener,
+					onMouseOver: mouseOverListener,
+					onMouseOut: mouseOutListener,
+				} = GoogleChart.charts.get( chartID );
+
+				if ( googleChart ) {
+					global.google.visualization.events.removeListener( selectListener );
+					global.google.visualization.events.removeListener( readyListener );
+					global.google.visualization.events.removeListener( mouseOverListener );
+					global.google.visualization.events.removeListener( mouseOutListener );
+
+					googleChart.clearChart();
+				}
+
+				GoogleChart.charts.delete( chartID );
+			}
+
+			clearInterval( interval );
+		};
+	}, [] );
 
 	return (
 		<div className="googlesitekit-graph-wrapper">
@@ -164,20 +196,20 @@ export default function GoogleChart( props ) {
 }
 
 GoogleChart.propTypes = {
-	chartType: PropTypes.string,
+	chartID: PropTypes.string,
+	chartType: PropTypes.oneOf( [ 'area', 'pie', 'line' ] ).isRequired,
 	className: PropTypes.string,
 	data: PropTypes.arrayOf( PropTypes.array ),
 	loadCompressed: PropTypes.bool,
-	loadHeight: PropTypes.number,
 	loadSmall: PropTypes.bool,
+	loadHeight: PropTypes.number,
 	loadText: PropTypes.bool,
-	options: PropTypes.object.isRequired,
-	selectedStats: PropTypes.array,
+	onReady: PropTypes.func,
+	selectedStats: PropTypes.arrayOf( PropTypes.number ),
 	singleStat: PropTypes.bool,
 };
 
 GoogleChart.defaultProps = {
-	chartType: 'line',
 	className: '',
 	data: [],
 	loadCompressed: false,
@@ -187,3 +219,5 @@ GoogleChart.defaultProps = {
 	selectedStats: [],
 	singleStat: true,
 };
+
+GoogleChart.charts = new Map();

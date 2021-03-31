@@ -1,7 +1,7 @@
 /**
  * `modules/tagmanager` data store: accounts.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME, CONTAINER_CREATE } from './constants';
 import { actions as containerActions } from './containers';
 import { isValidAccountSelection } from '../util/validation';
@@ -109,21 +109,21 @@ export const baseActions = {
 		const { isAMP, isSecondaryAMP } = select( CORE_SITE );
 		if ( ! isAMP() || isSecondaryAMP() ) {
 			const webContainers = select( STORE_NAME ).getWebContainers( accountID );
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			const webContainer = webContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
 		}
 
 		if ( isAMP() ) {
 			const ampContainers = select( STORE_NAME ).getAMPContainers( accountID );
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			const ampContainer = ampContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
 		}
 	},
@@ -163,7 +163,7 @@ export const baseResolvers = {
 		}
 
 		if ( accounts?.length && ! select( STORE_NAME ).getAccountID() ) {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).selectAccount( accounts[ 0 ].accountId );
 		}
 	},

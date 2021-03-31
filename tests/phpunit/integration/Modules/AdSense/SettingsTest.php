@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Tests\Modules\AdSense\Settings
  *
  * @package   Google\Site_Kit\Tests\Modules\AdSense
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -63,6 +63,7 @@ class SettingsTest extends SettingsTestCase {
 				'siteSetupComplete'    => false,
 				'useSnippet'           => true,
 				'ownerID'              => 0,
+				'webStoriesAdUnit'     => '',
 			),
 			get_option( Settings::OPTION )
 		);

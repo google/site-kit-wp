@@ -1,7 +1,7 @@
 /**
  * Report normalization utilities.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,11 @@ import memize from 'memize';
  * @return {Object} Normalized options object.
  */
 export const normalizeReportOptions = memize(
-	( { metrics, ...options } = {} ) => {
+	( { metrics, dimensions, ...options } = {} ) => {
 		// TODO: build this out to normalize all options used.
 		return {
 			metrics: normalizeMetrics( metrics ),
+			dimensions: normalizeDimensions( dimensions ),
 			...options,
 		};
 	}
@@ -49,5 +50,16 @@ const normalizeMetrics = ( metrics ) => {
 				: metric
 		)
 		.filter( ( metric ) => isPlainObject( metric ) )
+	;
+};
+
+const normalizeDimensions = ( dimensions ) => {
+	return castArray( dimensions )
+		.map(
+			( dimension ) => typeof dimension === 'string'
+				? { name: dimension }
+				: dimension
+		)
+		.filter( ( dimension ) => isPlainObject( dimension ) )
 	;
 };

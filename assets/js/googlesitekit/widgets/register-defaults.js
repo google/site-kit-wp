@@ -1,7 +1,7 @@
 /**
  * Widgets API defaults
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import URLSearchWidget from '../../googlesitekit/widgets/components/URLSearchWidget';
-import { CONTEXT_DASHBOARD, CONTEXT_PAGE_DASHBOARD } from './default-contexts';
+import {
+	CONTEXT_DASHBOARD,
+	CONTEXT_PAGE_DASHBOARD,
+} from './default-contexts';
 import {
 	AREA_DASHBOARD_ALL_TRAFFIC,
 	AREA_DASHBOARD_SEARCH_FUNNEL,
@@ -51,7 +54,7 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea(
 		AREA_DASHBOARD_ALL_TRAFFIC,
 		{
-			title: __( 'All Traffic', 'google-site-kit' ),
+			title: __( 'Your Traffic at a Glance', 'google-site-kit' ),
 			subtitle: __( 'How people found your site.', 'google-site-kit' ),
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
@@ -117,7 +120,7 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea(
 		AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
 		{
-			title: __( 'All Traffic', 'google-site-kit' ),
+			title: __( 'Your Traffic at a Glance', 'google-site-kit' ),
 			subtitle: __( 'How people found your page.', 'google-site-kit' ),
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 2,
@@ -152,7 +155,7 @@ export function registerDefaults( widgetsAPI ) {
 		{
 			priority: 100,
 			width: [ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.FULL ],
-			component: URLSearchWidget,
+			Component: URLSearchWidget,
 			wrapWidget: false,
 		},
 		[

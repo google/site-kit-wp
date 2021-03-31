@@ -1,7 +1,7 @@
 /**
  * Utility functions with minimal dependencies (only 'wp-i18n').
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,7 +109,7 @@ export const clearWebStorage = () => {
  * @param {string} name Query param to search for.
  * @return {string}	Matching query param from the current URL.
  */
-const fallbackGetQueryParamater = ( name ) => {
+const fallbackGetQueryParameter = ( name ) => {
 	const queries = location.search.substr( 1 ).split( '&' );
 	const queryDict = {};
 
@@ -138,7 +138,7 @@ export const getQueryParameter = ( name, _location = location ) => {
 	const url = new URL( _location.href );
 	if ( name ) {
 		if ( ! url.searchParams || ! url.searchParams.get ) {
-			return fallbackGetQueryParamater( name );
+			return fallbackGetQueryParameter( name );
 		}
 		return url.searchParams.get( name );
 	}

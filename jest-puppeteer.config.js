@@ -1,7 +1,7 @@
 /**
  * Puppeteer config.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ const coreConfig = config || {};
 const coreLaunch = coreConfig.launch || {};
 const coreLaunchArgs = coreLaunch.args || [];
 
-// https://github.com/smooth-code/jest-puppeteer/blob/master/packages/jest-environment-puppeteer/README.md#jest-puppeteerconfigjs
 module.exports = {
 	...coreConfig,
 	launch: {

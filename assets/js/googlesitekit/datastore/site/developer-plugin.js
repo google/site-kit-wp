@@ -1,7 +1,7 @@
 /**
  * `core/site` data store: developer plugin.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ const baseSelectors = {
 	 * }
 	 * ```
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.

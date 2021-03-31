@@ -1,7 +1,7 @@
 /**
  * Analytics Settings View component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import { __, _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { ExistingTagError, ExistingTagNotice } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -40,6 +40,7 @@ export default function SettingsView() {
 	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
+	const canUseSnippet = useSelect( ( select ) => select( STORE_NAME ).getCanUseSnippet() );
 	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
 	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
@@ -103,9 +104,10 @@ export default function SettingsView() {
 						{ __( 'Analytics Code Snippet', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ useSnippet && __( 'Snippet is inserted', 'google-site-kit' ) }
-						{ ( ! useSnippet && ! hasExistingTag ) && __( 'Snippet is not inserted', 'google-site-kit' ) }
-						{ ( ! useSnippet && hasExistingTag ) && __( 'Inserted by another plugin or theme', 'google-site-kit' ) }
+						{ canUseSnippet === false && __( 'The code is controlled by the Tag Manager module.', 'google-site-kit' ) }
+						{ canUseSnippet && useSnippet && __( 'Snippet is inserted', 'google-site-kit' ) }
+						{ canUseSnippet && ! useSnippet && ! hasExistingTag && __( 'Snippet is not inserted', 'google-site-kit' ) }
+						{ canUseSnippet && ! useSnippet && hasExistingTag && __( 'Inserted by another plugin or theme', 'google-site-kit' ) }
 					</p>
 				</div>
 			</div>

@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Proxy_Client
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -51,6 +51,8 @@ class Google_Site_Kit_Proxy_Client extends Google_Site_Kit_Client {
 		unset( $config['proxy_base_path'] );
 
 		parent::__construct( $config );
+
+		$this->setApplicationName( Google_Proxy::get_application_name() );
 	}
 
 	/**

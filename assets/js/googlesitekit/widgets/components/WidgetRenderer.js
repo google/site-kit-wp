@@ -1,7 +1,7 @@
 /**
  * WidgetRenderer component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,44 +22,72 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
-import Widget from './Widget';
+import BaseWidget from './Widget';
+import { getWidgetComponentProps } from '../util';
+import { HIDDEN_CLASS } from '../util/constants';
 
 const { useSelect } = Data;
 
-const WidgetRenderer = ( { slug, gridClassName } ) => {
+const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 	const widget = useSelect( ( select ) => select( STORE_NAME ).getWidget( slug ) );
+	const widgetComponentProps = getWidgetComponentProps( slug );
+	const { Widget, WidgetNull } = widgetComponentProps;
 
 	if ( ! widget ) {
-		return null;
+		return <WidgetNull />;
 	}
 
-	// Capitalize the "component" variable, as it is required by JSX.
-	const { component: Component, wrapWidget } = widget;
+	const { Component, wrapWidget } = widget;
 
-	let widgetComponent = <Component />;
+	let widgetElement = <Component { ...widgetComponentProps } />;
 
-	if ( wrapWidget ) {
-		widgetComponent = <Widget slug={ slug }>{ widgetComponent }</Widget>;
+	if ( OverrideComponent ) {
+		// If OverrideComponent passed, render it instead of the actual widget.
+		// It always needs to be wrapped as it is expected to be a
+		// widget-unaware component.
+		// The real widget component will still be rendered, but it will be
+		// hidden via CSS.
+		widgetElement = (
+			<Fragment>
+				<BaseWidget widgetSlug="overridden">
+					<OverrideComponent />
+				</BaseWidget>
+				<div className={ HIDDEN_CLASS }>
+					{ widgetElement }
+				</div>
+			</Fragment>
+		);
+	} else if ( wrapWidget ) {
+		// Otherwise, wrap the component only if that is requested for this
+		// widget.
+		widgetElement = <Widget>{ widgetElement }</Widget>;
 	}
 
+	// Wrap the widget into a grid class.
 	if ( gridClassName ) {
-		widgetComponent = (
+		return (
 			<div className={ gridClassName }>
-				{ widgetComponent }
+				{ widgetElement }
 			</div>
 		);
 	}
 
-	return widgetComponent;
+	return widgetElement;
 };
 
 WidgetRenderer.propTypes = {
 	slug: PropTypes.string.isRequired,
 	gridClassName: PropTypes.string,
+	OverrideComponent: PropTypes.elementType,
 };
 
 export default WidgetRenderer;

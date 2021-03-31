@@ -1,4 +1,22 @@
 /**
+ * AdSense Stories.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
@@ -6,16 +24,14 @@ import { storiesOf } from '@storybook/react';
 /**
  * WordPress dependencies
  */
-import { doAction } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Layout from '../assets/js/components/layout/layout';
+import Layout from '../assets/js/components/layout/Layout';
 import AdSensePerformanceWidget from '../assets/js/modules/adsense/components/dashboard/AdSensePerformanceWidget';
 import DashboardZeroData from '../assets/js/modules/adsense/components/dashboard/DashboardZeroData';
-import { googlesitekit as adSensePerformanceModuleData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-adsense-googlesitekitPerformanceModule';
 import {
 	AccountSelect,
 	UseSnippetSwitch,
@@ -26,6 +42,7 @@ import {
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 
 function SetupWrap( { children } ) {
 	return (
@@ -161,25 +178,61 @@ storiesOf( 'AdSense Module', module )
 		);
 	} )
 	.add( 'Performance', () => {
-		global._googlesitekitLegacyData = adSensePerformanceModuleData;
+		const setupRegistry = ( { dispatch, select } ) => {
+			const {
+				startDate,
+				endDate,
+				compareStartDate,
+				compareEndDate,
+			} = select( CORE_USER ).getDateRangeDates( { compare: true } );
 
-		// Load the datacache with data.
-		setTimeout( () => {
-			doAction(
-				'googlesitekit.moduleLoaded',
-				'Single'
-			);
-		}, 250 );
+			const currentStatsArgs = {
+				...fixtures.earnings.currentStatsArgs,
+				startDate,
+				endDate,
+			};
+
+			const prevStatsArgs = {
+				...fixtures.earnings.prevStatsArgs,
+				startDate: compareStartDate,
+				endDate: compareEndDate,
+			};
+
+			const currentSummaryArgs = {
+				...fixtures.earnings.currentSummaryArgs,
+				startDate,
+				endDate,
+			};
+
+			const prevSummaryArgs = {
+				...fixtures.earnings.prevSummaryArgs,
+				startDate: compareStartDate,
+				endDate: compareEndDate,
+			};
+
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.currentStatsData, { options: currentStatsArgs } );
+			dispatch( STORE_NAME ).finishResolution( 'getReport', [ currentStatsArgs ] );
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.prevStatsData, { options: prevStatsArgs } );
+			dispatch( STORE_NAME ).finishResolution( 'getReport', [ prevStatsArgs ] );
+
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.currentSummaryData, { options: currentSummaryArgs } );
+			dispatch( STORE_NAME ).finishResolution( 'getReport', [ currentSummaryArgs ] );
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.prevSummaryData, { options: prevSummaryArgs } );
+			dispatch( STORE_NAME ).finishResolution( 'getReport', [ prevSummaryArgs ] );
+		};
 
 		return (
-			<WithTestRegistry>
+			<WithTestRegistry callback={ setupRegistry }>
 				<Layout
 					header
 					title={ __( 'Performance over the last 28 days', 'google-site-kit' ) }
 					headerCTALabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
 					headerCTALink="#"
 				>
-					<AdSensePerformanceWidget />
+					<AdSensePerformanceWidget
+						handleDataError={ () => {} }
+						handleDataSuccess={ () => {} }
+					/>
 				</Layout>
 			</WithTestRegistry>
 		);

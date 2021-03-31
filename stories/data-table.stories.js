@@ -1,4 +1,22 @@
 /**
+ * Data Table Page Stories.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
@@ -12,14 +30,24 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Layout from '../assets/js/components/layout/layout';
-import AnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopPagesTable';
+import Layout from '../assets/js/components/layout/Layout';
+import LegacyAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetTopPagesTable';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Global', module )
 	.add( 'Data Table', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
+
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+				accountID: '123456789',
+				propertyID: 'UA-1234567-1',
+				internalWebPropertyID: '123456789',
+				profileID: '123456789',
+			} );
+		};
 
 		// Load the datacache with data.
 		setTimeout( () => {
@@ -28,8 +56,9 @@ storiesOf( 'Global', module )
 				'Dashboard'
 			);
 		}, 250 );
+
 		return (
-			<WithTestRegistry>
+			<WithTestRegistry callback={ setupRegistry } >
 				<Layout
 					header
 					footer
@@ -39,7 +68,7 @@ storiesOf( 'Global', module )
 					footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 					footerCTALink="https://analytics.google.com"
 				>
-					<AnalyticsDashboardWidgetTopPagesTable />
+					<LegacyAnalyticsDashboardWidgetTopPagesTable />
 				</Layout>
 			</WithTestRegistry>
 		);

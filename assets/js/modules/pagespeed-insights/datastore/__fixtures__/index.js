@@ -1,7 +1,7 @@
 /**
  * PageSpeed Insights Datastore Fixtures.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,18 @@ import { default as pagespeedDesktop } from './pagespeed--desktop';
 import { default as pagespeedMobile } from './pagespeed--mobile';
 const pagespeedDesktopNoFieldData = omit( pagespeedDesktop, 'loadingExperience.metrics' );
 const pagespeedMobileNoFieldData = omit( pagespeedMobile, 'loadingExperience.metrics' );
+const pagespeedDesktopNoStackPacks = omit( pagespeedDesktop, 'lighthouseResult.stackPacks' );
+const pagespeedMobileNoStackPacks = omit( pagespeedMobile, 'lighthouseResult.stackPacks' );
+const pagespeedDesktopNoFieldDataNoStackPacks = omit( pagespeedDesktopNoFieldData, 'lighthouseResult.stackPacks' );
+const pagespeedMobileNoFieldDataNoStackPacks = omit( pagespeedMobileNoFieldData, 'lighthouseResult.stackPacks' );
 
 export {
 	pagespeedDesktop,
 	pagespeedDesktopNoFieldData,
+	pagespeedDesktopNoStackPacks,
+	pagespeedDesktopNoFieldDataNoStackPacks,
 	pagespeedMobile,
 	pagespeedMobileNoFieldData,
+	pagespeedMobileNoStackPacks,
+	pagespeedMobileNoFieldDataNoStackPacks,
 };

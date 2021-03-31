@@ -1,7 +1,7 @@
 /**
  * Adminbar component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,20 +31,21 @@ import { render } from '@wordpress/element';
  * Internal dependencies.
  */
 import { trackEvent } from './util';
-import Root from './components/root';
+import Root from './components/Root';
 import AdminBarApp from './components/adminbar/AdminBarApp';
 import './modules';
-
-export const GoogleSitekitAdminbar = () => {
-	return <AdminBarApp />;
-};
 
 // Initialize the whole adminbar app.
 const init = once( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-adminbar-modules' );
 
 	if ( renderTarget ) {
-		render( <Root dataAPIContext="Adminbar"><GoogleSitekitAdminbar /></Root>, renderTarget );
+		render(
+			<Root dataAPIContext="Adminbar">
+				<AdminBarApp />
+			</Root>,
+			renderTarget
+		);
 
 		trackEvent( 'admin_bar', 'page_stats_view' );
 	}

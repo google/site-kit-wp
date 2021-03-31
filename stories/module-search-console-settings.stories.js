@@ -1,7 +1,7 @@
 /**
  * Search Console Settings stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,13 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { SettingsView } from '../assets/js/modules/search-console/components/settings';
 import { STORE_NAME } from '../assets/js/modules/search-console/datastore/constants';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { createTestRegistry, provideUserAuthentication } from '../tests/js/utils';
+import {
+	createTestRegistry,
+	provideUserAuthentication,
+	provideModules,
+	provideModuleRegistrations,
+} from '../tests/js/utils';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
 const Settings = createLegacySettingsWrapper( 'search-console' );
@@ -36,26 +39,36 @@ const defaultSettings = {
 	propertyID: '',
 };
 
-storiesOf( 'Search Console Module/Settings', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		registry.dispatch( CORE_MODULES ).registerModule( 'search-console', {
-			settingsViewComponent: SettingsView,
-		} );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		provideUserAuthentication( registry );
+const withRegistry = ( Story ) => {
+	const registry = createTestRegistry();
+	registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+	provideUserAuthentication( registry );
+	provideModules( registry );
+	provideModuleRegistrations( registry );
 
-		return storyFn( registry );
-	} )
-	.add( 'View, closed', ( registry ) => {
+	return (
+		<Story registry={ registry } />
+	);
+};
+
+storiesOf( 'Search Console Module/Settings', module )
+	.add( 'View, closed', ( args, { registry } ) => {
 		return <Settings isOpen={ false } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'View, open with all settings', ( registry ) => {
+	.add( 'View, open with all settings', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
 			propertyID: 'http://example.com/',
 		} );
 
 		return <Settings isOpen={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
 ;

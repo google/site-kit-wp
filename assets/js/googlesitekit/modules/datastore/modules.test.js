@@ -1,7 +1,7 @@
 /**
  * `core/modules` data store: modules tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ import {
 } from '../../../../../tests/js/utils';
 import { sortByProperty } from '../../../util/sort-by-property';
 import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
-import { STORE_NAME } from './constants';
-import FIXTURES from './fixtures.json';
+import { STORE_NAME, ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from './constants';
+import FIXTURES, { withActive } from './__fixtures__';
 
 describe( 'core/modules modules', () => {
 	const sortedFixtures = sortByProperty( FIXTURES, 'order' );
@@ -160,29 +160,11 @@ describe( 'core/modules modules', () => {
 
 		describe( 'deactivateModule', () => {
 			it( 'dispatches a request to deactivate this module', async () => {
-				// In our fixtures, analytics is on by default.
+				// In our fixtures, analytics is off by default.
 				const slug = 'analytics';
-				const responseWithAnalyticsDisabled = FIXTURES.reduce( ( acc, module ) => {
-					if ( module.slug === slug ) {
-						return [ ...acc, { ...module, active: false } ];
-					}
-
-					return [ ...acc, module ];
-				}, [] );
-
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-
-				// Call a selector that triggers an HTTP request to get the modules.
-				registry.select( STORE_NAME ).getModules();
-
-				// Wait until the modules have been loaded.
-				await untilResolved( registry, STORE_NAME ).getModules();
+				registry.dispatch( STORE_NAME ).receiveGetModules( withActive( slug ) );
 
 				const isActiveBefore = registry.select( STORE_NAME ).isModuleActive( slug );
-
 				expect( isActiveBefore ).toEqual( true );
 
 				fetchMock.postOnce(
@@ -192,7 +174,7 @@ describe( 'core/modules modules', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: responseWithAnalyticsDisabled, status: 200 }
+					{ body: withActive(), status: 200 }
 				);
 
 				fetchMock.getOnce(
@@ -217,18 +199,16 @@ describe( 'core/modules modules', () => {
 
 				// Analytics should no longer be active.
 				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );
-
 				expect( isActiveAfter ).toEqual( false );
-				expect( fetchMock ).toHaveFetchedTimes( 4 );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 			} );
 
 			it( 'does not update status if the API encountered a failure', async () => {
-				// In our fixtures, analytics is on by default.
+				// In our fixtures, analytics is off by default.
 				const slug = 'analytics';
-				registry.dispatch( STORE_NAME ).receiveGetModules( FIXTURES );
+				registry.dispatch( STORE_NAME ).receiveGetModules( withActive( slug ) );
 
 				const isActiveBefore = registry.select( STORE_NAME ).isModuleActive( slug );
-
 				expect( isActiveBefore ).toEqual( true );
 
 				// Try to deactivate the module—this will fail.
@@ -276,7 +256,6 @@ describe( 'core/modules modules', () => {
 				order: 1,
 				description: 'A module for testing',
 				homepage: 'https://sitekit.withgoogle.com/',
-				icon: 'icon-name',
 			};
 
 			beforeEach( () => {
@@ -297,12 +276,6 @@ describe( 'core/modules modules', () => {
 				expect( modules[ moduleSlug ] ).toMatchObject( { active: false, connected: false } );
 			} );
 
-			it( 'requires the module slug to be provided', () => {
-				expect( () => {
-					registry.dispatch( STORE_NAME ).registerModule();
-				} ).toThrow( 'module slug is required' );
-			} );
-
 			it( 'does not allow the same module to be registered more than once on the client', () => {
 				registry.dispatch( STORE_NAME ).receiveGetModules( [] );
 
@@ -317,16 +290,16 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'accepts settings components for the module', () => {
-				const settingsViewComponent = () => 'view';
-				const settingsEditComponent = () => 'edit';
+				const SettingsViewComponent = () => 'view';
+				const SettingsEditComponent = () => 'edit';
 
 				registry.dispatch( STORE_NAME ).registerModule( moduleSlug, {
-					settingsViewComponent,
-					settingsEditComponent,
+					SettingsViewComponent,
+					SettingsEditComponent,
 				} );
 
-				expect( store.getState().clientDefinitions[ moduleSlug ].settingsViewComponent ).toEqual( settingsViewComponent );
-				expect( store.getState().clientDefinitions[ moduleSlug ].settingsEditComponent ).toEqual( settingsEditComponent );
+				expect( store.getState().clientDefinitions[ moduleSlug ].SettingsViewComponent ).toEqual( SettingsViewComponent );
+				expect( store.getState().clientDefinitions[ moduleSlug ].SettingsEditComponent ).toEqual( SettingsEditComponent );
 			} );
 		} );
 
@@ -355,9 +328,100 @@ describe( 'core/modules modules', () => {
 				expect( state.serverDefinitions ).toMatchObject( fixturesKeyValue );
 			} );
 		} );
+
+		describe( 'receiveCheckRequirementsError', () => {
+			it( 'requires the error and slug params', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).receiveCheckRequirementsError();
+				} ).toThrow( 'slug is required' );
+				expect( () => {
+					registry.dispatch( STORE_NAME ).receiveCheckRequirementsError( 'slug' );
+				} ).toThrow( 'error is required' );
+			} );
+
+			it( 'receives and sets the error', () => {
+				const slug = 'slug1';
+				const error = { code: 'error_code', message: 'Error Message', data: null };
+				const state = { ... store.getState().checkRequirementsResults };
+				registry.dispatch( STORE_NAME ).receiveCheckRequirementsError( slug, error );
+				expect( store.getState().checkRequirementsResults ).toMatchObject( { ...state, [ slug ]: error } );
+			} );
+		} );
+
+		describe( 'receiveCheckRequirementsSuccess', () => {
+			it( 'requires the slug param', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).receiveCheckRequirementsSuccess();
+				} ).toThrow( 'slug is required' );
+			} );
+
+			it( 'receives and sets success', () => {
+				const slug = 'test-module';
+				const state = { ... store.getState().checkRequirementsResults };
+				registry.dispatch( STORE_NAME ).receiveCheckRequirementsSuccess( slug );
+				expect( store.getState().checkRequirementsResults ).toMatchObject( { ...state, [ slug ]: true } );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
+		// We need a module set where one dependency is active, and the other inactive.
+		const bootStrapActivateModulesTests = async () => {
+			const moduleFixtures =
+				[
+					{
+						slug: 'slug1',
+						active: true,
+						dependencies: [ ],
+						dependants: [
+							'slug1dependant',
+						],
+					},
+					{
+						slug: 'slug2',
+						active: false,
+						dependencies: [ ],
+						dependants: [
+							'slug2dependant',
+						],
+					},
+					{
+						slug: 'slug1dependant',
+						active: false,
+						dependencies: [
+							'slug1',
+						],
+						dependants: [ ],
+					},
+					{
+						slug: 'slug2dependant',
+						active: false,
+						dependencies: [
+							'slug2',
+						],
+						dependants: [ ],
+					},
+				];
+
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+				{ body: moduleFixtures, status: 200 }
+			);
+			const slug1 = 'slug1';
+			const slug2 = 'slug2';
+			const slug1Dependant = 'slug1dependant';
+			const slug2Dependant = 'slug2dependant';
+			registry.dispatch( STORE_NAME ).registerModule( slug1 );
+			registry.dispatch( STORE_NAME ).registerModule( slug2 );
+			registry.dispatch( STORE_NAME ).registerModule( slug1Dependant );
+			registry.dispatch( STORE_NAME ).registerModule( slug2Dependant );
+
+			registry.select( STORE_NAME ).getModule( slug1 );
+
+			// Wait for loading to complete.
+			await untilResolved( registry, STORE_NAME ).getModules();
+		};
+
 		describe( 'getModules', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
@@ -463,8 +527,8 @@ describe( 'core/modules modules', () => {
 
 				const module = registry.select( STORE_NAME ).getModule( 'test-module' );
 
-				expect( module.settingsViewComponent ).toEqual( null );
-				expect( module.settingsEditComponent ).toEqual( null );
+				expect( module.SettingsViewComponent ).toEqual( null );
+				expect( module.SettingsEditComponent ).toEqual( null );
 			} );
 		} );
 
@@ -540,6 +604,49 @@ describe( 'core/modules modules', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( moduleLoaded ).toEqual( null );
+			} );
+		} );
+
+		describe( 'canActivateModule', () => {
+			it.each( [
+				[ 'active', 'slug1dependant', true ],
+				[ 'inactive', 'slug2dependant', false ],
+			] )( 'checks that we can activate modules with an %s dependency', async ( _, slug, expected ) => {
+				await bootStrapActivateModulesTests();
+
+				registry.select( STORE_NAME ).canActivateModule( slug );
+				await untilResolved( registry, STORE_NAME ).canActivateModule( slug );
+
+				const canActivate = registry.select( STORE_NAME ).canActivateModule( slug );
+				expect( canActivate ).toEqual( expected );
+			} );
+		} );
+
+		describe( 'getCheckRequirementsError', () => {
+			it( 'has no error message when we can activate a module', async () => {
+				await bootStrapActivateModulesTests();
+				const slug = 'slug1dependant';
+				registry.select( STORE_NAME ).canActivateModule( slug );
+				await untilResolved( registry, STORE_NAME ).canActivateModule( slug );
+
+				const error = registry.select( STORE_NAME ).getCheckRequirementsError( slug );
+				expect( error ).toEqual( null );
+			} );
+
+			it( 'has an error when we can not activate a module', async () => {
+				await bootStrapActivateModulesTests();
+				const slug = 'slug2dependant';
+				registry.select( STORE_NAME ).canActivateModule( slug );
+				await untilResolved( registry, STORE_NAME ).canActivateModule( slug );
+
+				const error = registry.select( STORE_NAME ).getCheckRequirementsError( slug );
+				expect( error ).toEqual( {
+					code: ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
+					data: {
+						inactiveModules: [ 'slug2' ],
+					},
+					message: 'You need to set up slug2 to gain access to slug2dependant.',
+				} );
 			} );
 		} );
 
@@ -658,17 +765,22 @@ describe( 'core/modules modules', () => {
 		} );
 
 		describe( 'isModuleConnected', () => {
-			beforeEach( () => {
+			it.each( [
+				[ 'true if a module is connected', 'analytics', true, { connected: true } ],
+				[ 'false if a module is not active', 'optimize', false, { active: false } ],
+				[ 'false if a module is active but not connected', 'adsense', false ],
+				[ 'null if a module does not exist', 'not-a-real-module', null ],
+			] )( 'should return %s', async ( _, slug, expected, extraData = {} ) => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
+					{
+						status: 200,
+						body: withActive( slug ).map( ( module ) => module.slug === slug ? { ...module, ...extraData } : module ),
+					},
 				);
-			} );
 
-			it( 'returns true if a module is connected', async () => {
-				const slug = 'analytics';
-				const isConnected = registry.select( STORE_NAME ).isModuleConnected( slug );
 				// The modules will be undefined whilst loading, so this will return `undefined`.
+				const isConnected = registry.select( STORE_NAME ).isModuleConnected( slug );
 				expect( isConnected ).toBeUndefined();
 
 				// Wait for loading to complete.
@@ -676,54 +788,7 @@ describe( 'core/modules modules', () => {
 
 				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( isConnectedLoaded ).toEqual( true );
-			} );
-
-			it( 'returns false if a module is not active', async () => {
-				// Optimize in our fixtures is not active.
-				const slug = 'optimize';
-				const isConnected = registry.select( STORE_NAME ).isModuleConnected( slug );
-				// The modules will be undefined whilst loading, so this will return `undefined`.
-				expect( isConnected ).toBeUndefined();
-
-				// Wait for loading to complete.
-				await untilResolved( registry, STORE_NAME ).getModules();
-
-				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( isConnectedLoaded ).toEqual( false );
-			} );
-
-			it( 'returns false if a module is active but not connected', async () => {
-				// AdSense in our fixtures is active but not connected.
-				const slug = 'adsense';
-				const isConnected = registry.select( STORE_NAME ).isModuleConnected( slug );
-				// The modules will be undefined whilst loading, so this will return `undefined`.
-				expect( isConnected ).toBeUndefined();
-
-				// Wait for loading to complete.
-				await untilResolved( registry, STORE_NAME ).getModules();
-
-				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( isConnectedLoaded ).toEqual( false );
-			} );
-
-			it( 'returns null if a module does not exist', async () => {
-				const slug = 'not-a-real-module';
-				const isConnected = registry.select( STORE_NAME ).isModuleConnected( slug );
-				// The modules will be undefined whilst loading, so this will return `undefined`.
-				expect( isConnected ).toBeUndefined();
-
-				// Wait for loading to complete.
-				await untilResolved( registry, STORE_NAME ).getModules();
-
-				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( isConnectedLoaded ).toEqual( null );
+				expect( isConnectedLoaded ).toEqual( expected );
 			} );
 
 			it( 'returns undefined if modules is not yet available', async () => {

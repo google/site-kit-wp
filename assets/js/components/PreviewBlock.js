@@ -1,7 +1,7 @@
 /**
  * PreviewBlock component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,54 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-function PreviewBlock( { width, height, shape, padding } ) {
+/**
+ * Internal dependencies
+ */
+import { useBreakpoint } from '../hooks/useBreakpoint';
+
+function PreviewBlock( {
+	className,
+	width,
+	height,
+	shape,
+	padding,
+	smallWidth,
+	smallHeight,
+	tabletWidth,
+	tabletHeight,
+	desktopWidth,
+	desktopHeight,
+} ) {
+	const breakpoint = useBreakpoint();
+
+	let blockWidth = width;
+	let blockHeight = height;
+
+	if ( 'small' === breakpoint && smallWidth && smallHeight ) {
+		blockWidth = smallWidth;
+		blockHeight = smallHeight;
+	}
+
+	if ( 'tablet' === breakpoint && tabletWidth && tabletHeight ) {
+		blockWidth = tabletWidth;
+		blockHeight = tabletHeight;
+	}
+
+	if ( ( 'xlarge' === breakpoint || 'desktop' === breakpoint ) && desktopWidth && desktopHeight ) {
+		blockWidth = desktopWidth;
+		blockHeight = desktopHeight;
+	}
+
 	return (
 		<div
 			className={ classnames(
 				'googlesitekit-preview-block',
+				className,
 				{ 'googlesitekit-preview-block--padding': padding }
 			) }
 			style={ {
-				width,
-				height,
+				width: blockWidth,
+				height: blockHeight,
 			} }
 		>
 			<div className={ classnames(
@@ -42,18 +80,33 @@ function PreviewBlock( { width, height, shape, padding } ) {
 		</div>
 	);
 }
+
 PreviewBlock.propTypes = {
+	className: PropTypes.string,
 	width: PropTypes.string,
 	height: PropTypes.string,
 	shape: PropTypes.string,
 	padding: PropTypes.bool,
+	smallWidth: PropTypes.string,
+	smallHeight: PropTypes.string,
+	tabletWidth: PropTypes.string,
+	tabletHeight: PropTypes.string,
+	desktopWidth: PropTypes.string,
+	desktopHeight: PropTypes.string,
 };
 
 PreviewBlock.defaultProps = {
+	className: undefined,
 	width: '100px',
 	height: '100px',
 	shape: 'square',
 	padding: false,
+	smallWidth: undefined,
+	smallHeight: undefined,
+	tabletWidth: undefined,
+	tabletHeight: undefined,
+	desktopWidth: undefined,
+	desktopHeight: undefined,
 };
 
 export default PreviewBlock;

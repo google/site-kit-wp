@@ -1,7 +1,7 @@
 /**
  * `core/site` data store: connection info.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -163,6 +163,20 @@ const baseSelectors = {
 		const connection = select( STORE_NAME ).getConnection();
 
 		return typeof connection !== 'undefined' ? connection.setupCompleted : connection;
+	} ),
+
+	/**
+	 * Gets the Site Kit information about admin users.
+	 *
+	 * Returns `true` if the site has multiple admins, `false` if it has just one admin.
+	 *
+	 * @since 1.29.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} Multiple admins status.
+	 */
+	hasMultipleAdmins: createRegistrySelector( ( select ) => () => {
+		return select( STORE_NAME ).getConnection()?.hasMultipleAdmins;
 	} ),
 };
 

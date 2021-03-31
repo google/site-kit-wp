@@ -1,7 +1,7 @@
 /**
  * `modules/search-console` data store: service.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,9 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { untrailingslashit } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
@@ -54,6 +56,35 @@ export const selectors = {
 			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, queryArgs );
 		}
 		return addQueryArgs( baseURI, queryArgs );
+	} ),
+
+	/**
+	 * Gets a URL to the report on the service.
+	 *
+	 * @since 1.29.0
+	 *
+	 * @param {Object} state             Data store's state.
+	 * @param {Object} [reportArgs]      URL parameters to be passed to the query.
+	 * @param {string} [reportArgs.page] Page URL expression for scoping results.
+	 * @return {string} The URL to the service.
+	 */
+	getServiceReportURL: createRegistrySelector( ( select ) => ( state, reportArgs = {} ) => {
+		const propertyID = select( STORE_NAME ).getPropertyID();
+		const isDomainProperty = selectors.isDomainProperty( state );
+		const referenceSiteURL = select( CORE_SITE ).getReferenceSiteURL();
+		const {
+			page = isDomainProperty ? `*${ untrailingslashit( referenceSiteURL ) }` : undefined,
+			...args
+		} = reportArgs;
+
+		const path = '/performance/search-analytics';
+		const query = {
+			page,
+			...args,
+			resource_id: propertyID,
+		};
+
+		return selectors.getServiceURL( state, { path, query } );
 	} ),
 
 	/**

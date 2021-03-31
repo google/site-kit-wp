@@ -1,4 +1,22 @@
 /**
+ * Analytics Stories.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
@@ -12,9 +30,9 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Layout from '../assets/js/components/layout/layout';
-import AnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetOverview';
-import AnalyticsDashboardWidgetSiteStats from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetSiteStats';
+import Layout from '../assets/js/components/layout/Layout';
+import LegacyAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetOverview';
+import LegacyAnalyticsDashboardWidgetSiteStats from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetSiteStats';
 import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
@@ -49,12 +67,12 @@ storiesOf( 'Analytics Module', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				propertyID: profiles[ 0 ].webPropertyId,
 			} );
 		};
@@ -75,20 +93,20 @@ storiesOf( 'Analytics Module', module )
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				propertyID: profiles[ 0 ].webPropertyId,
 			} );
 			dispatch( STORE_NAME ).receiveGetSettings( {
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				accountID: profiles[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				propertyID: profiles[ 0 ].webPropertyId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
+				// eslint-disable-next-line sitekit/acronym-case
 				internalWebPropertyID: profiles[ 0 ].internalWebPropertyId,
 				profileID: profiles[ 0 ].id,
 			} );
@@ -225,22 +243,24 @@ storiesOf( 'Analytics Module', module )
 		}, 250 );
 
 		return (
-			<Layout
-				header
-				title={ __( 'Audience overview for the last 28 days', 'google-site-kit' ) }
-				headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-				headerCTALink="http://analytics.google.com"
-			>
-				<AnalyticsDashboardWidgetOverview
-					selectedStats={ selectedStats }
-					handleDataError={ () => {} }
-				/>
-				<AnalyticsDashboardWidgetSiteStats
-					selectedStats={ selectedStats }
-					series={ series }
-					vAxes={ vAxes }
-				/>
-			</Layout>
+			<WithTestRegistry>
+				<Layout
+					header
+					title={ __( 'Audience overview for the last 28 days', 'google-site-kit' ) }
+					headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+					headerCTALink="http://analytics.google.com"
+				>
+					<LegacyAnalyticsDashboardWidgetOverview
+						selectedStats={ selectedStats }
+						handleDataError={ () => {} }
+					/>
+					<LegacyAnalyticsDashboardWidgetSiteStats
+						selectedStats={ selectedStats }
+						series={ series }
+						vAxes={ vAxes }
+					/>
+				</Layout>
+			</WithTestRegistry>
 		);
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )

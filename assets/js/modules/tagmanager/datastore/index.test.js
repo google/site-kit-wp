@@ -1,7 +1,7 @@
 /**
  * Tag Manager datastore tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ describe( 'modules/tagmanager', () => {
 			const actions = dispatch( STORE_NAME );
 
 			expect( actions.setAMPContainerID ).toBeInstanceOf( Function );
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			expect( actions.setAmpContainerID ).not.toBeInstanceOf( Function );
 		} );
 	} );
@@ -42,7 +42,7 @@ describe( 'modules/tagmanager', () => {
 			const selectors = select( STORE_NAME );
 
 			expect( selectors.getAMPContainerID ).toBeInstanceOf( Function );
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			expect( selectors.getAmpContainerID ).not.toBeInstanceOf( Function );
 		} );
 	} );

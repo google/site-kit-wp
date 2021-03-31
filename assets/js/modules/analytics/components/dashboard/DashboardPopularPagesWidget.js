@@ -1,7 +1,7 @@
 /**
  * DashboardPopularPagesWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,21 +25,21 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import { getDataTableFromData } from '../../../../components/data-table';
-import { numberFormat } from '../../../../util';
-import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
+import { isZeroReport } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
-const { useSelect } = Data;
-const { Widget } = Widgets.components;
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import ReportTable from '../../../../components/ReportTable';
+import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
+import { numFmt } from '../../../../util';
 
-function DashboardPopularPagesWidget() {
+const { useSelect } = Data;
+
+function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		data,
 		error,
@@ -47,9 +47,15 @@ function DashboardPopularPagesWidget() {
 		analyticsMainURL,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
+
+		const { startDate, endDate, compareStartDate, compareEndDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
 		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			dimensions: 'ga:pageTitle,ga:pagePath',
+			startDate,
+			endDate,
+			dimensions: [
+				'ga:pageTitle',
+				'ga:pagePath',
+			],
 			metrics: [
 				{
 					expression: 'ga:pageviews',
@@ -64,15 +70,15 @@ function DashboardPopularPagesWidget() {
 			],
 			limit: 10,
 		};
-		const accountID = select( STORE_NAME ).getAccountID();
-		const profileID = select( STORE_NAME ).getProfileID();
-		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
 
 		return {
+			analyticsMainURL: store.getServiceReportURL(
+				'content-pages',
+				generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
+			),
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
-			analyticsMainURL: store.getServiceURL( { path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }` } ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 		};
 	} );
 
@@ -81,49 +87,17 @@ function DashboardPopularPagesWidget() {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="analytics" error={ error } />;
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( ! Array.isArray( data?.[ 0 ]?.data?.rows ) ) {
-		return <ReportZero moduleSlug="analytics" />;
+	if ( isZeroReport( data ) ) {
+		return <WidgetReportZero moduleSlug="analytics" />;
 	}
-
-	const headers = [
-		{
-			title: __( 'Most popular content', 'google-site-kit' ),
-			primary: true,
-		},
-		{
-			title: __( 'Views', 'google-site-kit' ),
-		},
-	];
-
-	const links = [];
-	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-		const [ title, url ] = row.dimensions;
-		links[ i ] = url.startsWith( '/' ) ? url : '/' + url;
-
-		return [
-			title,
-			numberFormat( row.metrics[ 0 ].values[ 0 ] ),
-		];
-	} );
-
-	const options = {
-		hideHeader: false,
-		chartsEnabled: false,
-		links,
-		showURLs: true,
-		useAdminURLs: true,
-	};
-
-	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
 	return (
 		<Widget
-			slug="analyticsPopularPages"
 			noPadding
-			footer={ () => (
+			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
 					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
@@ -133,10 +107,29 @@ function DashboardPopularPagesWidget() {
 			) }
 		>
 			<TableOverflowContainer>
-				{ dataTable }
+				<ReportTable
+					rows={ data[ 0 ].data.rows }
+					columns={ tableColumns }
+				/>
 			</TableOverflowContainer>
 		</Widget>
 	);
 }
+
+const tableColumns = [
+	{
+		title: __( 'Most popular content', 'google-site-kit' ),
+		primary: true,
+		Component: ( { row } ) => {
+			const [ title, path ] = row.dimensions;
+			return <DetailsPermaLinks title={ title } path={ path } />;
+		},
+	},
+	{
+		title: __( 'Views', 'google-site-kit' ),
+		field: 'metrics.0.values.0',
+		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+	},
+];
 
 export default whenActive( { moduleName: 'analytics' } )( DashboardPopularPagesWidget );

@@ -1,7 +1,7 @@
 /**
  * AdSense utility functions.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import each from 'lodash/each';
 
 export * from './is-zero-report';
 export * from './parsing';
+export * from './site-stats-data';
 export * from './status';
 export * from './validation';
 export * from './url';

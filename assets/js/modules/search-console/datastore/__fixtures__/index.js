@@ -1,7 +1,7 @@
 /**
  * Search Console Datastore Fixtures.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,10 @@
  */
 
 export { default as report } from './report';
-export { default as clicksAndImpressionsWidgetData } from './clicks-and-impressions-widget-data.json';
-export { default as dashboardClicksWidgetArgs } from './dashboard-clicks-widget-args.json';
-export { default as dashboardImpressionsWidgetArgs } from './dashboard-impressions-widget-args.json';
-export { default as pageDashboardClicksWidgetArgs } from './page-dashboard-clicks-widget-args.json';
-export { default as pageDashboardImpressionsArgs } from './page-dashboard-impressions-widget-args.json';
-export { default as pageDashboardPopularKeyWordsWidgetArgs } from './page-dashboard-popular-keywords-widget-args.json';
-export { default as pageDashboardPopularKeyWordsWidgetData } from './page-dashboard-popular-keywords-widget-data.json';
-export { default as dashboardPopularKeyWordsWidgetArgs } from './dashboard-popular-keywords-widget-args.json';
-export { default as dashboardPopularKeyWordsWidgetData } from './dashboard-popular-keywords-widget-data.json';
+export { default as adminbarSearchConsoleMockData } from './adminbar-search-console-mock-data';
+export { default as adminbarSearchConsoleOptions } from './adminbar-search-console-options';
+export { default as wpDashboardClicksArgs } from './wp-dashboard-clicks-args.json';
+export { default as wpDashboardClicksData } from './wp-dashboard-clicks-data.json';
+export { default as wpDashboardImpressionsArgs } from './wp-dashboard-impressions-args.json';
+export { default as wpDashboardImpressionsData } from './wp-dashboard-impressions-data.json';
+

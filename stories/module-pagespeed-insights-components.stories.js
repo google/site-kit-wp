@@ -1,7 +1,7 @@
 /**
  * PageSpeed Insights Module Component Stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,15 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import DashboardPageSpeedWidget from '../assets/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeedWidget';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../assets/js/googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../assets/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import * as fixtures from '../assets/js/modules/pagespeed-insights/datastore/__fixtures__';
 import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../assets/js/modules/pagespeed-insights/datastore/constants';
 import { WithTestRegistry, freezeFetch } from '../tests/js/utils';
+import { getWidgetComponentProps } from '../assets/js/googlesitekit/widgets/util';
+
+const widgetComponentProps = getWidgetComponentProps( 'dashboardPageSpeed' );
 
 storiesOf( 'PageSpeed Insights Module/Components', module )
 	.add( 'Dashboard widget', () => {
@@ -54,9 +57,10 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 				},
 			] );
 		};
+
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeedWidget />
+				<DashboardPageSpeedWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
 	} )
@@ -81,7 +85,7 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeedWidget />
+				<DashboardPageSpeedWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
 	} )
@@ -108,7 +112,7 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeedWidget />
+				<DashboardPageSpeedWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
 	} )
@@ -141,7 +145,7 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeedWidget />
+				<DashboardPageSpeedWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
 	} )
@@ -165,7 +169,7 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeedWidget />
+				<DashboardPageSpeedWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
 	} )

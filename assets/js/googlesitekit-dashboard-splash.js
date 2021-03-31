@@ -1,7 +1,7 @@
 /**
  * DashboardSplash component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,25 +20,16 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { render, Fragment } from '@wordpress/element';
+import { render } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { clearWebStorage } from './util';
-import './components/notifications';
-import Root from './components/root';
-import DashboardSplashApp from './components/dashboard-splash/dashboard-splash-app';
-import NotificationCounter from './components/notifications/notification-counter';
-
-const GoogleSitekitDashboardSplash = () => {
-	return (
-		<Fragment>
-			<NotificationCounter />
-			<DashboardSplashApp />
-		</Fragment>
-	);
-};
+import './components/legacy-notifications';
+import Root from './components/Root';
+import DashboardSplashApp from './components/dashboard-splash/DashboardSplashApp';
+import NotificationCounter from './components/legacy-notifications/notification-counter';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
@@ -49,6 +40,12 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard-splash' );
 
 	if ( renderTarget ) {
-		render( <Root dataAPIContext="Splash"><GoogleSitekitDashboardSplash /></Root>, renderTarget );
+		render(
+			<Root dataAPIContext="Splash">
+				<NotificationCounter />
+				<DashboardSplashApp />
+			</Root>,
+			renderTarget
+		);
 	}
 } );

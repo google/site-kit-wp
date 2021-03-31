@@ -1,7 +1,7 @@
 /**
  * Analytics common components.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@
 export { default as AccountCreate } from './AccountCreate';
 export { default as AccountCreateLegacy } from './AccountCreateLegacy';
 export { default as AccountSelect } from './AccountSelect';
-export { default as AcquisitionPieChart } from './AcquisitionPieChart';
-export { default as AcquisitionSources } from './AcquisitionSources';
 export { default as AdSenseLinkCTA } from './AdSenseLinkCTA';
 export { default as AnonymizeIPSwitch } from './AnonymizeIPSwitch';
 export { default as ExistingGTMPropertyError } from './ExistingGTMPropertyError';

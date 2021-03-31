@@ -1,7 +1,7 @@
 /**
  * DashboardPageSpeed component tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,15 +27,15 @@ import fetchMock from 'fetch-mock';
 import DashboardPageSpeed from './DashboardPageSpeed';
 import { fireEvent, render, waitFor } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import { freezeFetch } from '../../../../../../tests/js/utils';
 
 const activeClass = 'mdc-tab--active';
 const url = fixtures.pagespeedMobile.loadingExperience.id;
 const setupRegistry = ( { dispatch } ) => {
-	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
-	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
+	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobileNoStackPacks, { url, strategy: STRATEGY_MOBILE } );
+	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktopNoStackPacks, { url, strategy: STRATEGY_DESKTOP } );
 	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
 	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
 	dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -50,9 +50,9 @@ const setupRegistryNoReports = ( { dispatch } ) => {
 	} );
 };
 const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
-	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
+	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobileNoStackPacks, { url, strategy: STRATEGY_MOBILE } );
 	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
-	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktopNoFieldData, { url, strategy: STRATEGY_DESKTOP } );
+	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktopNoFieldDataNoStackPacks, { url, strategy: STRATEGY_DESKTOP } );
 	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
 	dispatch( CORE_SITE ).receiveSiteInfo( {
 		referenceSiteURL: url,
@@ -75,8 +75,8 @@ describe( 'DashboardPageSpeed', () => {
 	} );
 
 	it( 'displays field data by default when available in both mobile and desktop reports', () => {
-		expect( fixtures.pagespeedMobile.loadingExperience ).toHaveProperty( 'metrics' );
-		expect( fixtures.pagespeedDesktop.loadingExperience ).toHaveProperty( 'metrics' );
+		expect( fixtures.pagespeedMobileNoStackPacks.loadingExperience ).toHaveProperty( 'metrics' );
+		expect( fixtures.pagespeedDesktopNoStackPacks.loadingExperience ).toHaveProperty( 'metrics' );
 
 		const { getByLabelText } = render( <DashboardPageSpeed />, { setupRegistry } );
 

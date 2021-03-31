@@ -1,7 +1,7 @@
 /**
  * Data API - Cache related
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import { cloneDeep } from 'lodash';
 import { getStorage } from '../../util/storage';
 import { stringifyObject } from '../../util/stringify';
 
-export const STORAGE_KEY_PREFIX = 'googlesitekit_legacy_';
+export const STORAGE_KEY_PREFIX = 'googlesitekit_legacy_' + global.GOOGLESITEKIT_VERSION + '_';
 
 /**
  * Ensures that the local datacache object is properly set up.

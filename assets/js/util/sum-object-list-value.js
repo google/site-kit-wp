@@ -1,7 +1,7 @@
 /**
  * Utility function sumObjectListValue.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import sumBy from 'lodash/sumBy';
 /**
  * Returns the sum of a given fieldName in a list.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  *
  * @param {Array}  list      Array of objects or arrays.
  * @param {string} fieldName The path name to the field to be summed.

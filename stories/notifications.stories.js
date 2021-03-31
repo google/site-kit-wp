@@ -1,4 +1,22 @@
 /**
+ * Notification Component Stories.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
@@ -10,25 +28,43 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Notification from '../assets/js/components/notifications/notification';
-import ModulesList from '../assets/js/components/modules-list';
-
-global._googlesitekitLegacyData.canAdsRun = true;
+import { provideModuleRegistrations, provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
+import UserInputSuccessNotification from '../assets/js/components/notifications/UserInputSuccessNotification';
+import ModulesList from '../assets/js/components/ModulesList';
+import Notification from '../assets/js/components/legacy-notifications/notification';
+import UserInputPromptNotification from '../assets/js/components/notifications/UserInputPromptNotification';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
+import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
+import { withConnected } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
+import RocketImageSVG from '../assets/svg/rocket.svg';
+import ThumbsUpSVG from '../assets/svg/thumbs-up.svg';
 
 storiesOf( 'Global/Notifications', module )
-	.add( 'Module Setup Complete', () => (
-		<Notification
-			id="notification-id"
-			title={ __( 'Congrats on completing the setup for Analytics!', 'google-site-kit' ) }
-			handleDismiss={ () => {} }
-			winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/rocket.png` }
-			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-			format="large"
-			type="win-success"
-		>
-			<ModulesList />
-		</Notification>
-	) )
+	.add( 'Module Setup Complete', () => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_MODULES ).receiveGetModules( withConnected( 'analytics', 'pagespeed-insights' ) );
+			provideModuleRegistrations( registry );
+			registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( false );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<Notification
+					id="notification-id"
+					title={ __( 'Congrats on completing the setup for Analytics!', 'google-site-kit' ) }
+					WinImageSVG={ RocketImageSVG }
+					dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+					format="large"
+					type="win-success"
+				>
+					<ModulesList
+						moduleSlugs={ [ 'search-console', 'adsense', 'analytics', 'pagespeed-insights' ] }
+					/>
+				</Notification>
+			</WithTestRegistry>
+		);
+	} )
 	.add( 'Small with Image', () => (
 		<Notification
 			id="notification-id"
@@ -37,7 +73,7 @@ storiesOf( 'Global/Notifications', module )
 			learnMore={ __( 'Learn more', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="small"
-			smallImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/thumbs-up.png` }
+			SmallImageSVG={ ThumbsUpSVG }
 			type="win-success"
 		/>
 	) )
@@ -83,126 +119,18 @@ storiesOf( 'Global/Notifications', module )
 			pageIndex="First detected: 2/13/18"
 		/>
 	) )
-	.add( 'Traffic Increase Win', () => (
-		<Notification
-			id="notification-id"
-			title={ __( 'Congrats on more website visitors!', 'google-site-kit' ) }
-			description={ __( 'You had a record-high amount of visitors to your website yesterday.', 'google-site-kit' ) }
-			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-			format="large"
-			winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/sun.png` }
-			logo
-			module="analytics"
-			moduleName="Analytics"
-			blockData={
-				[
-					{
-						title: 'Site Visitors',
-						datapoint: '23,780',
-						datapointUnit: '',
-					},
-					{
-						title: 'Increase',
-						datapoint: 25,
-						datapointUnit: '%',
-					},
-				]
-			}
-			type="win-stats"
-		/>
-	) )
-	.add( 'Pageview Increase Win', () => (
-		<Notification
-			id="notification-id"
-			title={ __( 'Increased page views!', 'google-site-kit' ) }
-			description={ __( 'Over the past 4 weeks', 'google-site-kit' ) }
-			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-			format="large"
-			logo={ true }
-			winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/sun-small.png` }
-			blockData={
-				[
-					{
-						title: 'Total Page Views',
-						datapoint: '413',
-						datapointUnit: '',
-					},
-					{
-						title: 'Increase',
-						datapoint: 15,
-						datapointUnit: '%',
-					},
-				]
-			}
-			type="win-stats-increase"
-		/>
-	) )
-	.add( 'Publishing Win', () => (
-		<Notification
-			id="notification-id"
-			title={ __( 'Congrats on five published posts', 'google-site-kit' ) }
-			description={ __( 'That’s out of this world. Here are the combined stats for your posts', 'google-site-kit' ) }
-			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-			format="large"
-			winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/rocket.png` }
-			blockData={
-				[
-					{
-						title: 'Total Views',
-						datapoint: 413,
-						datapointUnit: '',
-					},
-					{
-						title: 'Average Impressions',
-						datapoint: 735,
-						datapointUnit: '',
-					},
-					{
-						title: 'Average CTR',
-						datapoint: 12.9,
-						datapointUnit: '%',
-					},
-				]
-			}
-			type="win-stats"
-		/>
-	) )
-	.add( 'Total Stats', () => (
-		<Notification
-			id="notification-id"
-			title={ __( 'Welcome Back!', 'google-site-kit' ) }
-			description={ __( 'Last month was great! Here are some high level stats', 'google-site-kit' ) }
-			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-			format="large"
-			winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/g-win.png` }
-			blockData={
-				[
-					{
-						title: 'Total Clicks',
-						datapoint: 256,
-						datapointUnit: 'K',
-						change: 20,
-						changeDataUnit: '%',
-						period: '%s for month',
-					},
-					{
-						title: 'Total Impressions',
-						datapoint: 3.5,
-						datapointUnit: 'm',
-						change: 13,
-						changeDataUnit: '%',
-						period: '%s for month',
-					},
-					{
-						title: 'Average CTR',
-						datapoint: 2.9,
-						datapointUnit: '%',
-						change: 5,
-						changeDataUnit: '%',
-						period: '%s for month',
-					},
-				]
-			}
-			type="win-stats"
-		/>
+	.add( 'User Input Prompt Notification', () => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).receiveUserInputState( 'missing' );
+			provideSiteInfo( registry );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<UserInputPromptNotification />
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'User Input Success Notification', () => (
+		<UserInputSuccessNotification />
 	) );

@@ -1,7 +1,7 @@
 /**
  * Admin stylesheet.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@
 @import "@material/menu/mdc-menu";
 @import "@material/menu-surface/mdc-menu-surface";
 @import "@material/radio/mdc-radio";
+@import "@material/react-card/index";
 @import "@material/react-select/index";
 @import "@material/react-tab/index";
 @import "@material/react-tab-bar/index";
@@ -82,8 +83,10 @@
 @import "components/global/googlesitekit-cta-link";
 @import "components/global/googlesitekit-data-block";
 @import "components/global/googlesitekit-DeviceSizeTabBar";
+@import "components/global/googlesitekit-dropdown-menu";
 @import "components/global/googlesitekit-error-text";
 @import "components/global/googlesitekit-header";
+@import "components/global/googlesitekit-help-menu-link";
 @import "components/global/googlesitekit-layout";
 @import "components/global/googlesitekit-line-chart";
 @import "components/global/googlesitekit-logo";
@@ -97,13 +100,13 @@
 @import "components/global/googlesitekit-overlay";
 @import "components/global/googlesitekit-page";
 @import "components/global/googlesitekit-pagespeed-dashboard-widget";
+@import "components/global/googlesitekit-page-footer";
 @import "components/global/googlesitekit-page-header";
 @import "components/global/googlesitekit-percent-circle";
 @import "components/global/googlesitekit-post-searcher";
 @import "components/global/googlesitekit-preview-block";
 @import "components/global/googlesitekit-preview-table";
 @import "components/global/googlesitekit-publisher-wins";
-@import "components/global/googlesitekit-rocket";
 @import "components/global/googlesitekit-source-link";
 @import "components/global/googlesitekit-table";
 @import "components/global/googlesitekit-table-overflow";
@@ -116,13 +119,6 @@
 @import "components/dashboard/googlesitekit-dashboard-single-url";
 @import "components/dashboard/googlesitekit-DashboardPageSpeed";
 @import "components/dashboard/googlesitekit-ReportMetric";
-
-// Dashboard Splash
-@import "components/dashboard/splash/googlesitekit-splash";
-@import "components/dashboard/splash/googlesitekit-splash-intro";
-@import "components/dashboard/splash/googlesitekit-splash-module";
-@import "components/dashboard/splash/googlesitekit-splash-outro";
-@import "components/dashboard/splash/googlesitekit-splash-service";
 
 // Dashboard Wizard
 @import "components/dashboard/wizard/googlesitekit-wizard";
@@ -144,19 +140,31 @@
 @import "components/settings/googlesitekit-settings-module";
 @import "components/settings/googlesitekit-settings-module-warning";
 @import "components/settings/googlesitekit-settings-notice";
+@import "components/settings/googlesitekit-settings-user-input";
 
 // User Input
 @import "components/user-input/googlesitekit-user-input-module";
 @import "components/user-input/googlesitekit-user-input-questions";
 @import "components/user-input/googlesitekit-user-input-preview";
 @import "components/user-input/googlesitekit-user-input-controls";
+@import "components/user-input/googlesitekit-user-input-notification";
+
+// Tour Tooltip
+@import "components/tour-tooltip/googlesitekit-tour-tooltip";
 
 // Widget Styles
 @import "widgets/widget-area";
 @import "widgets/widget-context";
 @import "widgets/widgets";
+@import "widgets/googlesitekit-widget-adsense-performance";
+@import "widgets/googlesitekit-widget-analyticsAllTraffic";
 
 // Utilities
+@import "utilities/alignment";
+@import "utilities/display";
+@import "utilities/font-weight";
 @import "utilities/margin";
 @import "utilities/overflow";
+@import "utilities/overflow-wrap";
 @import "utilities/text-align";
+@import "utilities/width";

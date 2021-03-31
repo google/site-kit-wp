@@ -3,7 +3,7 @@
  * AuthenticationTest
  *
  * @package   Google\Site_Kit\Tests\Core\Authentication
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -20,12 +20,15 @@ use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Disconnected_Reason;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
+use Google\Site_Kit\Core\Authentication\User_Input_State;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\User_Input_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\MutableInput;
@@ -53,7 +56,6 @@ class AuthenticationTest extends TestCase {
 		$auth->register();
 
 		// Authentication::handle_oauth is invoked on init but we cannot test it due to use of filter_input.
-		$this->assertTrue( has_action( 'init' ) );
 		$this->assertTrue( has_action( 'admin_init' ) );
 		$this->assertTrue( has_action( 'admin_action_' . Google_Proxy::ACTION_SETUP ) );
 		$this->assertTrue( has_action( OAuth_Client::CRON_REFRESH_PROFILE_DATA ) );
@@ -80,6 +82,49 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
+	public function test_register__googlesitekit_user_data() {
+		remove_all_filters( 'googlesitekit_user_data' );
+		$user_id      = $this->factory()->user->create();
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context, $user_id );
+		$auth         = new Authentication(
+			$context,
+			null,
+			$user_options
+		);
+		$auth->register();
+		$this->assertTrue( has_filter( 'googlesitekit_user_data' ) );
+
+		$user_data = apply_filters( 'googlesitekit_user_data', array() );
+		$this->assertEqualSets(
+			array(
+				'connectURL',
+				'initialVersion',
+				'userInputState',
+				'verified',
+			),
+			array_keys( $user_data )
+		);
+
+		// When a profile is set, additional data is added.
+		$email = 'wapuu.wordpress@gmail.com';
+		$photo = 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png';
+		$auth->profile()->set( compact( 'email', 'photo' ) );
+		$user_data = apply_filters( 'googlesitekit_user_data', array() );
+		$this->assertEqualSets(
+			array(
+				'connectURL',
+				'initialVersion',
+				'userInputState',
+				'verified',
+				'user',
+			),
+			array_keys( $user_data )
+		);
+		$this->assertEquals( $email, $user_data['user']['email'] );
+		$this->assertEquals( $photo, $user_data['user']['picture'] );
+	}
+
 	/**
 	 * @dataProvider option_action_provider
 	 * @param string $option
@@ -97,6 +142,51 @@ class AuthenticationTest extends TestCase {
 		update_option( $option, $new_value );
 
 		$this->assertTrue( has_action( 'shutdown' ), $option );
+	}
+
+	public function test_register_set_initial_version_if_not_set() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$auth            = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$initial_version = $this->force_get_property( $auth, 'initial_version' );
+
+		// Ensure no version is set yet.
+		$initial_version->delete();
+		remove_all_actions( 'googlesitekit_authorize_user' );
+		remove_all_actions( 'googlesitekit_reauthorize_user' );
+		$auth->register();
+
+		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ) );
+		$this->assertTrue( has_action( 'googlesitekit_reauthorize_user' ) );
+
+		// Response is not used here, so just pass an array.
+		do_action( 'googlesitekit_reauthorize_user', array() );
+		$this->assertEquals( GOOGLESITEKIT_VERSION, $initial_version->get() );
+	}
+
+	public function test_register_do_not_set_initial_version_if_already_set() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$auth            = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$initial_version = $this->force_get_property( $auth, 'initial_version' );
+
+		// Ensure a version is already set.
+		$initial_version->set( '1.1.0' );
+		remove_all_actions( 'googlesitekit_authorize_user' );
+		remove_all_actions( 'googlesitekit_reauthorize_user' );
+		$auth->register();
+
+		// We cannot test that the hook has not been added to 'googlesitekit_authorize_user'
+		// since the `register` method also adds another unrelated callback to it unconditionally.
+		// That should be fine though since we're covering the integration below.
+		$this->assertFalse( has_action( 'googlesitekit_reauthorize_user' ) );
+
+		// Response is not used here, so just pass an array.
+		do_action( 'googlesitekit_authorize_user', array() );
+		do_action( 'googlesitekit_reauthorize_user', array() );
+		$this->assertEquals( '1.1.0', $initial_version->get() );
 	}
 
 	public function option_action_provider() {
@@ -177,11 +267,12 @@ class AuthenticationTest extends TestCase {
 		remove_all_actions( 'admin_action_googlesitekit_proxy_setup' );
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
-		$context     = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$credentials = new Credentials( new Encrypted_Options( new Options( $context ) ) );
-		$auth        = new Authentication( $context );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$credentials  = new Credentials( new Encrypted_Options( new Options( $context ) ) );
+		$auth         = new Authentication( $context );
+		$google_proxy = $auth->get_google_proxy();
+
 		$auth->register();
-		$google_proxy = new Google_Proxy( $context );
 
 		$this->assertTrue( has_action( 'admin_action_googlesitekit_proxy_setup' ) );
 		$this->assertFalse( $credentials->has() );
@@ -235,6 +326,51 @@ class AuthenticationTest extends TestCase {
 		$saved_creds = $credentials->get();
 		$this->assertEquals( 'test-site-id.apps.sitekit.withgoogle.com', $saved_creds['oauth2_client_id'] );
 		$this->assertEquals( 'test-site-secret', $saved_creds['oauth2_client_secret'] );
+	}
+
+	public function test_require_user_input() {
+		$this->enable_feature( 'userInput' );
+		remove_all_actions( 'googlesitekit_authorize_user' );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$auth->register();
+
+		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
+		// Mocking User_Input_Settings here to avoid adding a ton of complexity
+		// from intercepting a request to the proxy, returning, settings etc.
+		$mock_user_input_settings = $this->getMockBuilder( User_Input_Settings::class )
+			->disableOriginalConstructor()
+			->disableProxyingToOriginalMethods()
+			->setMethods( array( 'set_settings' ) )
+			->getMock();
+		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
+
+		$this->assertEmpty( $user_input_state->get() );
+		do_action( 'googlesitekit_authorize_user', array() );
+		$this->assertEquals( User_Input_State::VALUE_REQUIRED, $user_input_state->get() );
+	}
+
+	public function test_require_user_input__without_feature() {
+		remove_all_actions( 'googlesitekit_authorize_user' );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$auth->register();
+
+		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
+		// Mocking User_Input_Settings here to avoid adding a ton of complexity
+		// from intercepting a request to the proxy, returning, settings etc.
+		$mock_user_input_settings = $this->getMockBuilder( User_Input_Settings::class )
+			->setMethods( array( 'set_settings' ) )
+			->disableProxyingToOriginalMethods()
+			->disableOriginalConstructor()
+			->getMock();
+		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
+
+		$this->assertEmpty( $user_input_state->get() );
+		do_action( 'googlesitekit_authorize_user', array() );
+		$this->assertEmpty( $user_input_state->get() );
 	}
 
 	public function test_get_oauth_client() {
@@ -374,13 +510,14 @@ class AuthenticationTest extends TestCase {
 	public function test_googlesitekit_connect() {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
 		remove_all_actions( 'init' );
+		remove_all_actions( 'admin_init' );
 		$this->fake_proxy_site_connection();
 		$auth->register();
 
 		// Does nothing if query parameter is not set, and not is_admin.
 		$this->assertTrue( empty( $_GET['googlesitekit_connect'] ) );
 		$this->assertFalse( is_admin() );
-		do_action( 'init' );
+		do_action( 'admin_init' );
 
 		$_GET['googlesitekit_connect'] = 1;
 		// Does nothing if not is_admin.
@@ -392,7 +529,7 @@ class AuthenticationTest extends TestCase {
 
 		// Requires 'connect' nonce.
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
 			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
@@ -403,7 +540,7 @@ class AuthenticationTest extends TestCase {
 		// Requires authenticate permissions.
 		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
 			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
@@ -414,7 +551,7 @@ class AuthenticationTest extends TestCase {
 		$_GET['nonce'] = wp_create_nonce( 'connect' );
 		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
 			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
@@ -426,7 +563,7 @@ class AuthenticationTest extends TestCase {
 		$_GET['nonce'] = wp_create_nonce( 'connect' );
 		$this->assertTrue( current_user_can( Permissions::AUTHENTICATE ) );
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected redirection to connect URL' );
 		} catch ( RedirectException $e ) {
 			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/o/oauth2/auth/', $e->get_location() );
@@ -436,7 +573,7 @@ class AuthenticationTest extends TestCase {
 		$extra_scopes              = array( 'http://example.com/test/scope/a', 'http://example.com/test/scope/b' );
 		$_GET['additional_scopes'] = $extra_scopes;
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected redirection to connect URL' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
@@ -639,6 +776,47 @@ class AuthenticationTest extends TestCase {
 
 			$this->assertEquals( $fake_proxy_credentials['client_id'], $query_args['site_id'] );
 		}
+	}
+
+	public function test_filter_features_via_proxy() {
+		remove_all_filters( 'googlesitekit_is_feature_enabled' );
+
+		$this->fake_proxy_site_connection();
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$authentication = new Authentication( $context );
+		$google_proxy   = $authentication->get_google_proxy();
+
+		$this->assertFalse( has_filter( 'googlesitekit_is_feature_enabled' ) );
+		$authentication->register();
+		$this->assertTrue( has_filter( 'googlesitekit_is_feature_enabled' ) );
+
+		add_filter(
+			'pre_http_request',
+			function ( $preempt, $args, $url ) use ( $google_proxy ) {
+				if ( $google_proxy->url( Google_Proxy::FEATURES_URI ) !== $url ) {
+					return $preempt;
+				}
+
+				$data = array(
+					'userInput'             => array( 'enabled' => true ),
+					'widgets.dashboard'     => array( 'enabled' => true ),
+					'widgets.pageDashboard' => array( 'enabled' => false ),
+				);
+
+				return array(
+					'headers'  => array(),
+					'body'     => wp_json_encode( $data ),
+					'response' => array( 'code' => 200 ),
+				);
+			},
+			10,
+			3
+		);
+
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'nonExisting' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'widgets.dashboard' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'widgets.pageDashboard' ) );
 	}
 
 	protected function get_user_option_keys() {

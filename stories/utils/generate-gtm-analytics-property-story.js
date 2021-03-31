@@ -1,7 +1,7 @@
 /**
  * Analytics module utility functions.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,11 @@
  */
 import * as fixtures from '../../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME } from '../../assets/js/modules/analytics/datastore/constants';
-import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
-import { withActive } from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_SITE, AMP_MODE_SECONDARY } from '../../assets/js/googlesitekit/datastore/site/constants';
+import {
+	provideModules,
+	provideModuleRegistrations,
+} from '../../tests/js/utils';
 import { createBuildAndReceivers } from '../../assets/js/modules/tagmanager/datastore/__factories__/utils';
 
 /**
@@ -61,10 +63,10 @@ export function generateGTMAnalyticsPropertyStory( {
 			const properties = [
 				...fixtures.accountsPropertiesProfiles.properties,
 				{
-					accountId: existingTagAccountID, // eslint-disable-line sitekit/camelcase-acronyms
-					defaultProfileId: '206512257', // eslint-disable-line sitekit/camelcase-acronyms
+					accountId: existingTagAccountID, // eslint-disable-line sitekit/acronym-case
+					defaultProfileId: '206512257', // eslint-disable-line sitekit/acronym-case
 					id: existingTagPropertyID,
-					internalWebPropertyId: existingTagWebPropertyID, // eslint-disable-line sitekit/camelcase-acronyms
+					internalWebPropertyId: existingTagWebPropertyID, // eslint-disable-line sitekit/acronym-case
 					name: 'qwerty',
 				},
 			];
@@ -72,15 +74,24 @@ export function generateGTMAnalyticsPropertyStory( {
 			const profiles = [
 				...fixtures.accountsPropertiesProfiles.profiles,
 				{
-					accountId: existingTagAccountID, // eslint-disable-line sitekit/camelcase-acronyms
+					accountId: existingTagAccountID, // eslint-disable-line sitekit/acronym-case
 					id: '206512258',
-					internalWebPropertyId: existingTagWebPropertyID, // eslint-disable-line sitekit/camelcase-acronyms
+					internalWebPropertyId: existingTagWebPropertyID, // eslint-disable-line sitekit/acronym-case
 					name: 'All Web Site Data',
-					webPropertyId: existingTagPropertyID, // eslint-disable-line sitekit/camelcase-acronyms
+					webPropertyId: existingTagPropertyID, // eslint-disable-line sitekit/acronym-case
 				},
 			];
 
-			registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'tagmanager' ) );
+			provideModules( registry, [ {
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			}, {
+				slug: 'tagmanager',
+				active: true,
+				connected: true,
+			} ] );
+			provideModuleRegistrations( registry );
 
 			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 				homeURL: 'https://example.com/',
@@ -91,7 +102,7 @@ export function generateGTMAnalyticsPropertyStory( {
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 
 			[ gtmAccountID, existingTagAccountID ].forEach( ( accountID ) => {
-				const accountProperties = properties.filter( ( { accountId } ) => accountId === accountID ); // eslint-disable-line sitekit/camelcase-acronyms
+				const accountProperties = properties.filter( ( { accountId } ) => accountId === accountID ); // eslint-disable-line sitekit/acronym-case
 
 				registry.dispatch( STORE_NAME ).receiveGetProperties(
 					accountProperties,
@@ -100,7 +111,7 @@ export function generateGTMAnalyticsPropertyStory( {
 
 				accountProperties.forEach( ( { id: propertyID } ) => {
 					registry.dispatch( STORE_NAME ).receiveGetProfiles(
-						profiles.filter( ( { webPropertyId } ) => webPropertyId === propertyID ), // eslint-disable-line sitekit/camelcase-acronyms
+						profiles.filter( ( { webPropertyId } ) => webPropertyId === propertyID ), // eslint-disable-line sitekit/acronym-case
 						{ accountID, propertyID }
 					);
 				} );

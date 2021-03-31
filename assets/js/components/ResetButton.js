@@ -1,7 +1,7 @@
 /**
  * ResetButton component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,27 +21,43 @@
  */
 import { __ } from '@wordpress/i18n';
 import { Fragment, useState, useEffect, useCallback, createInterpolateElement } from '@wordpress/element';
+import { ESCAPE } from '@wordpress/keycodes';
+import { useDebounce } from '../hooks/useDebounce';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { clearWebStorage } from '../util';
-import Dialog from './dialog';
+import Dialog from './Dialog';
 import Modal from './Modal';
 import Link from './Link';
-import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
-
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
 function ResetButton( { children } ) {
 	const postResetURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { notification: 'reset_success' } ) );
-
+	const isDoingReset = useSelect( ( select ) => select( CORE_SITE ).isDoingReset() );
+	const isNavigatingToPostResetURL = useSelect( ( select ) => select( CORE_LOCATION ).isNavigatingTo( postResetURL || '' ) );
+	const [ inProgress, setInProgress ] = useState( false );
 	const [ dialogActive, setDialogActive ] = useState( false );
+
+	/*
+	 * Using debounce here because the spinner has to render across two separate calls.
+	 * Rather than risk it flickering on and off in between the reset call completing and
+	 * the navigate call starting, we will just set a debounce to keep the spinner for 3 seconds.
+	 */
+	const debouncedSetInProgress = useDebounce( setInProgress, 3000 );
+	const mediatedSetInProgress = ( bool ) => bool ? setInProgress( true ) : debouncedSetInProgress( false );
+
+	useEffect( () => {
+		mediatedSetInProgress( isDoingReset || isNavigatingToPostResetURL );
+	}, [ isDoingReset, isNavigatingToPostResetURL ] );
 
 	useEffect( () => {
 		const handleCloseModal = ( event ) => {
-			if ( 27 === event.keyCode ) {
+			if ( ESCAPE === event.keyCode ) {
 				// Only close the modal if the "Escape" key is pressed.
 				setDialogActive( false );
 			}
@@ -62,12 +78,12 @@ function ResetButton( { children } ) {
 	}, [ dialogActive ] );
 
 	const { reset } = useDispatch( CORE_SITE );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const handleUnlinkConfirm = useCallback( async () => {
 		await reset();
 		clearWebStorage();
-		setDialogActive( false );
-		global.location.assign( postResetURL );
+		navigateTo( postResetURL );
 	}, [ reset, postResetURL ] );
 
 	const toggleDialogActive = useCallback( () => {
@@ -100,6 +116,7 @@ function ResetButton( { children } ) {
 						} ) }
 					confirmButton={ __( 'Reset', 'google-site-kit' ) }
 					danger
+					inProgress={ inProgress }
 				/>
 			</Modal>
 		</Fragment>

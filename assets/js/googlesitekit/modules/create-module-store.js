@@ -1,7 +1,7 @@
 /**
  * Provides API functions to create a datastore for a module.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,15 +47,15 @@ import { createSubmitChangesStore } from './create-submit-changes-store';
  *
  * @since 1.6.0
  *
- * @param {string}   slug                             Slug of the module that the store is for.
- * @param {Object}   options                          Optional. Options to consider for the store.
- * @param {number}   options.storeName                Store name to use. Default is 'modules/{slug}'.
- * @param {Array}    options.settingSlugs             If the module store should support settings, this needs to be a list of the slugs that are part of the module and handled by the module's 'modules/{slug}/data/settings' API endpoint.
+ * @param {string}   slug                            Slug of the module that the store is for.
+ * @param {Object}   args                            Arguments to consider for the store.
+ * @param {number}   args.storeName                  Store name to use.
+ * @param {Array}    [args.settingSlugs]             Optional. If the module store should support settings, this needs to be a list of the slugs that are part of the module and handled by the module's 'modules/{slug}/data/settings' API endpoint.
  *                                                    Default is undefined.
- * @param {string}   options.adminPage                Store admin page. Default is 'googlesitekit-dashboard'.
- * @param {boolean}  options.requiresSetup            Store flag for requires setup. Default is 'true'.
- * @param {Function} options.submitChanges            Optional. Submit settings changes handler.
- * @param {Function} options.validateCanSubmitChanges Optional. A function to validate whether module settings can be submitted.
+ * @param {string}   [args.adminPage]                Optional. Store admin page. Default is 'googlesitekit-dashboard'.
+ * @param {boolean}  [args.requiresSetup]            Optional. Store flag for requires setup. Default is 'true'.
+ * @param {Function} [args.submitChanges]            Optional. Submit settings changes handler.
+ * @param {Function} [args.validateCanSubmitChanges] Optional. A function to validate whether module settings can be submitted.
  * @return {Object} The base module store object, with additional `STORE_NAME` and
  *                  `initialState` properties.
  */
@@ -68,8 +68,7 @@ export const createModuleStore = ( slug, {
 	validateCanSubmitChanges = undefined,
 } = {} ) => {
 	invariant( slug, 'slug is required.' );
-
-	storeName = storeName || `modules/${ slug }`;
+	invariant( storeName, 'storeName is required.' );
 
 	const notificationsStore = createNotificationsStore( 'modules', slug, 'notifications', {
 		storeName,

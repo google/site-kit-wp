@@ -1,7 +1,7 @@
 /**
  * Analytics Settings stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,13 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { SettingsEdit, SettingsView } from '../assets/js/modules/analytics/components/settings';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME, PROFILE_CREATE } from '../assets/js/modules/analytics/datastore/constants';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { createTestRegistry, provideModules } from '../tests/js/utils';
+import {
+	createTestRegistry,
+	provideModules,
+	provideModuleRegistrations,
+} from '../tests/js/utils';
 import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
@@ -55,27 +57,31 @@ function usingGenerateGTMAnalyticsPropertyStory( args ) {
 	} );
 }
 
-storiesOf( 'Analytics Module/Settings', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		registry.dispatch( CORE_MODULES ).registerModule( 'analytics', {
-			settingsEditComponent: SettingsEdit,
-			settingsViewComponent: SettingsView,
-		} );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		provideModules( registry, [ {
-			slug: 'analytics',
-			active: true,
-			connected: true,
-		} ] );
+const withRegistry = ( Story ) => {
+	const registry = createTestRegistry();
+	registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+	provideModules( registry, [ {
+		slug: 'analytics',
+		active: true,
+		connected: true,
+	} ] );
+	provideModuleRegistrations( registry );
 
-		return storyFn( registry );
-	} )
-	.add( 'View, closed', ( registry ) => {
+	return (
+		<Story registry={ registry } />
+	);
+};
+
+storiesOf( 'Analytics Module/Settings', module )
+	.add( 'View, closed', ( args, { registry } ) => {
 		return <Settings isOpen={ false } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'View, open with all settings', ( registry ) => {
+	.add( 'View, open with all settings', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
 			accountID: '1234567890',
@@ -85,8 +91,12 @@ storiesOf( 'Analytics Module/Settings', module )
 		} );
 
 		return <Settings isOpen={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'View, open with all settings, no snippet with existing tag', ( registry ) => {
+	.add( 'View, open with all settings, no snippet with existing tag', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
 			accountID: '1234567890',
@@ -102,48 +112,56 @@ storiesOf( 'Analytics Module/Settings', module )
 		}, { propertyID: 'UA-1234567890-1' } );
 
 		return <Settings isOpen={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, open with all settings', ( registry ) => {
+	.add( 'Edit, open with all settings', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		const { internalWebPropertyId } = properties.find( ( property ) => webPropertyId === property.id );
 
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } ); // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } ); // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/camelcase-acronyms
-			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/acronym-case
+			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
-			accountID: accountId, // eslint-disable-line sitekit/camelcase-acronyms
-			propertyID: webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
-			internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			accountID: accountId, // eslint-disable-line sitekit/acronym-case
+			propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
+			internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
 			profileID,
 		} );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, open when creating new view', ( registry ) => {
+	.add( 'Edit, open when creating new view', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
-		// eslint-disable-next-line sitekit/camelcase-acronyms
+		// eslint-disable-next-line sitekit/acronym-case
 		const { internalWebPropertyId } = properties.find( ( property ) => webPropertyId === property.id );
 
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: accountId } ); // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: accountId } ); // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			accountID: accountId, // eslint-disable-line sitekit/camelcase-acronyms
-			propertyID: webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			accountID: accountId, // eslint-disable-line sitekit/acronym-case
+			propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
-			accountID: accountId, // eslint-disable-line sitekit/camelcase-acronyms
-			propertyID: webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
-			internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			accountID: accountId, // eslint-disable-line sitekit/acronym-case
+			propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
+			internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
 			profileID,
 		} );
 		// This is chosen by the user, not received from API.
@@ -152,26 +170,34 @@ storiesOf( 'Analytics Module/Settings', module )
 		} );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, open with no accounts', ( registry ) => {
+	.add( 'Edit, open with no accounts', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, with existing tag w/ access', ( registry ) => {
+	.add( 'Edit, with existing tag w/ access', ( args, { registry } ) => {
 		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
+			// eslint-disable-next-line sitekit/acronym-case
 			accountID: matchedProperty.accountId,
 			propertyID: matchedProperty.id,
 		};
 
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } ); // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } ); // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/camelcase-acronyms
-			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/acronym-case
+			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
@@ -181,8 +207,12 @@ storiesOf( 'Analytics Module/Settings', module )
 		}, { propertyID: existingTag.propertyID } );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
-	.add( 'Edit, with existing tag w/o access', ( registry ) => {
+	.add( 'Edit, with existing tag w/o access', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 
 		const existingTag = {
@@ -191,10 +221,10 @@ storiesOf( 'Analytics Module/Settings', module )
 		};
 
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } ); // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } ); // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-			accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/camelcase-acronyms
-			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/acronym-case
+			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
@@ -204,6 +234,10 @@ storiesOf( 'Analytics Module/Settings', module )
 		}, { propertyID: existingTag.propertyID } );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
 	} )
 	.add( 'No Tag, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: true } ) )
 	.add( 'No Tag, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: false } ) )

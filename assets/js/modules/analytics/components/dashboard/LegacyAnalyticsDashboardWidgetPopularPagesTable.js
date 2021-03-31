@@ -1,7 +1,7 @@
 /**
  * LegacyAnalyticsDashboardWidgetPopularPagesTable component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,27 +25,20 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat } from '../../../../util';
+import { getTimeInSeconds, numFmt } from '../../../../util';
 import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../../util';
-import withData from '../../../../components/higherorder/withdata';
+import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
-import Layout from '../../../../components/layout/layout';
+import Layout from '../../../../components/layout/Layout';
 import { STORE_NAME } from '../../datastore/constants';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 
 const { useSelect } = Data;
 
 const RenderLayout = ( { children } ) => {
-	const serviceURL = useSelect( ( select ) => {
-		const accountID = select( STORE_NAME ).getAccountID();
-		const profileID = select( STORE_NAME ).getProfileID();
-		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
-		return select( STORE_NAME ).getServiceURL(
-			{ path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }` }
-		);
-	} );
+	const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages' ) );
 	return (
 		<div className="
 			mdc-layout-grid__cell
@@ -91,7 +84,7 @@ function LegacyAnalyticsDashboardWidgetPopularPagesTable( { data } ) {
 
 		return [
 			title,
-			numberFormat( row.metrics[ 0 ].values[ 0 ] ),
+			numFmt( row.metrics[ 0 ].values[ 0 ], { style: 'decimal' } ),
 		];
 	} );
 

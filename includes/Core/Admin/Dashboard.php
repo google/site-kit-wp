@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Admin\Dashboard
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -128,7 +128,7 @@ final class Dashboard {
 
 		$this->render_noscript_html();
 		?>
-		<div id="js-googlesitekit-wp-dashboard"></div>
+		<div id="js-googlesitekit-wp-dashboard" class="googlesitekit-plugin"></div>
 		<?php
 	}
 }

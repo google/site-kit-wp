@@ -1,7 +1,7 @@
 /**
  * ESLint rules: capitalize sentences.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,11 +45,32 @@ module.exports = iterateJsdoc( ( {
 
 	jsdoc.tags.forEach( ( tag ) => {
 		// Only check these tags for capitalization.
-		if ( ! [ 'param', 'return', 'returns' ].includes( tag.tag ) ) {
+		if ( ! [ 'param', 'return', 'returns', 'deprecated' ].includes( tag.tag ) ) {
 			return;
 		}
 
 		if (
+			// This is required because the deprecated tag returns the first section of
+			// the description text as "name".
+			tag.tag === 'deprecated' &&
+			tag.description &&
+			tag.description.length &&
+			// Ignore if the first character is a backtick; this is often used
+			// when marking return values like `true` or `null`.
+			// Also ignore parens and quotes.
+			! tag.source.replace( '@deprecated ', '' ).trim().match( /^[A-Z`("].*/gm )
+		) {
+			context.report( {
+				data: { name: jsdocNode.name },
+				message: `The description for \`${ tag.source }\` should start with a capital letter.`,
+				node: jsdocNode,
+			} );
+
+			return;
+		}
+
+		if (
+			tag.tag !== 'deprecated' &&
 			tag.description &&
 			tag.description.length &&
 			// Ignore if the first character is a backtick; this is often used

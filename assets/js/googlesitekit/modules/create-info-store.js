@@ -1,7 +1,7 @@
 /**
  * `core/modules` data store: info.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * WordPress dependencies
  */
 import { addQueryArgs } from '@wordpress/url';
@@ -25,8 +30,8 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_SITE } from '../datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../datastore/user/constants';
+import { CORE_SITE } from '../datastore/site/constants';
+import { CORE_USER } from '../datastore/user/constants';
 
 const { createRegistrySelector } = Data;
 
@@ -36,11 +41,11 @@ const { createRegistrySelector } = Data;
  * @since 1.10.0
  * @private
  *
- * @param {string}  slug                  Slug of the module that the store is for.
- * @param {Object}  options               Options to consider for the store.
- * @param {number}  options.storeName     Store name to use.
- * @param {string}  options.adminPage     Store admin page. Default is 'googlesitekit-dashboard'.
- * @param {boolean} options.requiresSetup Store flag, for requires setup. Default is 'true'.
+ * @param {string}  slug                 Slug of the module that the store is for.
+ * @param {Object}  args                 Arguments to configure the store.
+ * @param {number}  args.storeName       Store name to use.
+ * @param {string}  [args.adminPage]     Optional. Store admin page. Default is 'googlesitekit-dashboard'.
+ * @param {boolean} [args.requiresSetup] Optional. Store flag, for requires setup. Default is 'true'.
  * @return {Object} The info store object.
  */
 export const createInfoStore = ( slug, {
@@ -48,7 +53,7 @@ export const createInfoStore = ( slug, {
 	adminPage = 'googlesitekit-dashboard',
 	requiresSetup = true,
 } = {} ) => {
-	const STORE_NAME = storeName || `modules/${ slug }`;
+	invariant( storeName, 'storeName is required.' );
 
 	const initialState = {};
 	const actions = {};
@@ -90,7 +95,7 @@ export const createInfoStore = ( slug, {
 				reAuth: undefined,
 			} : {};
 
-			const redirectURL = select( STORE_NAME ).getAdminScreenURL( { slug, reAuth, ...noSetupQueryArgs } );
+			const redirectURL = select( storeName ).getAdminScreenURL( { slug, reAuth, ...noSetupQueryArgs } );
 			if ( redirectURL === undefined ) {
 				return undefined;
 			}
@@ -106,7 +111,7 @@ export const createInfoStore = ( slug, {
 	};
 
 	return {
-		STORE_NAME,
+		STORE_NAME: storeName,
 		initialState,
 		actions,
 		controls,

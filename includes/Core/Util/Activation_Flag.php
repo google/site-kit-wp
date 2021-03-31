@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Util\Activation_Flag
  *
  * @package   Google\Site_Kit
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -67,22 +67,7 @@ final class Activation_Flag {
 			function( $network_wide ) {
 				// Set activation flag.
 				$this->set_activation_flag( $network_wide );
-
-				// Set initial new posts count.
-				$this->set_new_site_posts_count();
 			}
-		);
-
-		add_action(
-			'admin_enqueue_scripts',
-			function( $hook_suffix ) {
-				// Refresh new posts count when accessing the plugin dashboard page.
-				if ( 'toplevel_page_googlesitekit-dashboard' !== $hook_suffix ) {
-					return;
-				}
-				$this->set_new_site_posts_count();
-			},
-			1
 		);
 
 		add_filter(
@@ -141,49 +126,6 @@ final class Activation_Flag {
 		delete_option( self::OPTION_SHOW_ACTIVATION_NOTICE );
 	}
 
-	/**
-	 * Queries the posts for a given win limit if it's a new site.
-	 *
-	 * If the number of posts is above the limit, the count will no longer be recorded. The count is used for the
-	 * publisher wins.
-	 *
-	 * @since 1.10.0 Migrated from Activation class.
-	 *
-	 * @param int $win_limit Optional. Limit of posts to consider. Default 5.
-	 */
-	private function set_new_site_posts_count( $win_limit = 5 ) {
-		// Bail early if not a new site.
-		if ( '-1' === $this->options->get( self::OPTION_NEW_SITE_POSTS ) ) {
-			return;
-		}
-
-		$args = array(
-			'post_type'              => 'post',
-			'post_status'            => 'publish',
-			'posts_per_page'         => $win_limit + 1,
-			'no_found_rows'          => true,
-			'update_post_meta_cache' => false,
-			'update_post_term_cache' => false,
-			'fields'                 => 'ids',
-		);
-
-		$query = new \WP_Query( $args );
-
-		if ( $query->have_posts() && $win_limit < count( $query->posts ) ) {
-			$this->options->set( self::OPTION_NEW_SITE_POSTS, -1, false );
-			return;
-		}
-
-		$count = count( $query->posts );
-		if ( 1 === $count && 1 === $query->posts[0] ) {
-			$first_post = get_post( $query->posts[0] );
-			if ( __( 'Hello world!', 'default' ) === $first_post->post_title ) {
-				$count = 0;
-			}
-		}
-
-		$this->options->set( self::OPTION_NEW_SITE_POSTS, $count, false );
-	}
 
 	/**
 	 * Modifies the admin data to pass to JS.

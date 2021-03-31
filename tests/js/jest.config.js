@@ -32,6 +32,9 @@ module.exports = {
 		'<rootDir>/assets/**/__tests__/**/*.js',
 		'<rootDir>/assets/**/test/*.js',
 		'<rootDir>/assets/**/?(*.)test.js',
+		'<rootDir>/packages/**/__tests__/**/*.js',
+		'<rootDir>/packages/**/test/*.js',
+		'<rootDir>/packages/**/?(*.)test.js',
 	],
 	testPathIgnorePatterns: [
 		'<rootDir>/.git',
@@ -40,11 +43,10 @@ module.exports = {
 	],
 	// Matches aliases in webpack.config.js.
 	moduleNameMapper: {
-		'react__non-shim': 'react',
-		'@wordpress/element__non-shim': '@wordpress/element',
 		// New (JSR) modules.
 		'^googlesitekit-(.+)$': '<rootDir>assets/js/googlesitekit-$1',
 		// Necessary mock to prevent test failures caused by SVGR
 		'\\.svg$': '<rootDir>/tests/js/svgrMock.js',
+		'\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/tests/js/fileMock.js',
 	},
 };

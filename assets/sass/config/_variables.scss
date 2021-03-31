@@ -1,7 +1,7 @@
 /**
  * Variables.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ $c-gray-cx: #6e7275;
 $c-device-icon-gray: #5f6368;
 $c-scarpa-flow: #5b5b61;
 $c-cape-cod: #3c4043;
+$c-nearblack: #212121;
 $c-black: #000;
 $c-cornflower-blue: #4285f4; // 3.56 contrast
 $c-royal-blue: #1a73e8; // 4.5 contrast
@@ -115,6 +116,7 @@ $c-progress-bg: $c-solitude;
 $c-user-input-options: $c-cape-cod;
 $c-user-input-note: $c-device-icon-gray;
 $c-user-input-placeholder: $c-heather;
+$c-user-input-color: $c-denim;
 
 // Google MDC Theme Overrides
 $mdc-theme-primary: $c-brand;

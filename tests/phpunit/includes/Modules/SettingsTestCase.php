@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Tests\Modules\SettingsTestCase
  *
  * @package   Google\Site_Kit\Tests\Modules
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -20,13 +20,13 @@ abstract class SettingsTestCase extends TestCase {
 	abstract protected function get_option_name();
 
 	public function setUp() {
-		global $new_whitelist_options;
 		parent::setUp();
 
 		$option_name = $this->get_option_name();
 
 		// Unregister setup that occurred during bootstrap.
-		if ( array_key_exists( $option_name, $new_whitelist_options ) ) {
+		$registered_settings = get_registered_settings();
+		if ( isset( $registered_settings[ $option_name ] ) ) {
 			unregister_setting( $option_name, $option_name );
 		}
 

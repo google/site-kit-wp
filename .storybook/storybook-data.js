@@ -43,20 +43,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'dashboard--all-traffic',
-		kind: 'Dashboard',
-		name: 'All Traffic',
-		story: 'All Traffic',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
-			},
-		},
-	},
-	{
 		id: 'dashboard--post-searcher',
 		kind: 'Dashboard',
 		name: 'Post Searcher',
@@ -79,7 +65,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+				readySelector: '.googlesitekit-chart-v2 .googlesitekit-chart-v2__inner',
 			},
 		},
 	},
@@ -93,7 +79,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+				readySelector: '.googlesitekit-chart-v2 .googlesitekit-chart-v2__inner',
 			},
 		},
 	},
@@ -119,6 +105,20 @@ module.exports = [
 		story: 'Plugin Header',
 		parameters: {
 			fileName: './stories/header.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				delay: 3000,
+			},
+		},
+	},
+	{
+		id: 'global--plugin-header-with-date-selector',
+		kind: 'Global',
+		name: 'Plugin Header with Date Selector',
+		story: 'Plugin Header with Date Selector',
+		parameters: {
+			fileName: './stories/header-date-selector.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
@@ -303,49 +303,10 @@ module.exports = [
 		},
 	},
 	{
-		id: 'global-notifications--traffic-increase-win',
+		id: 'global-notifications--user-input-success-notification',
 		kind: 'Global/Notifications',
-		name: 'Traffic Increase Win',
-		story: 'Traffic Increase Win',
-		parameters: {
-			fileName: './stories/notifications.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'global-notifications--pageview-increase-win',
-		kind: 'Global/Notifications',
-		name: 'Pageview Increase Win',
-		story: 'Pageview Increase Win',
-		parameters: {
-			fileName: './stories/notifications.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'global-notifications--publishing-win',
-		kind: 'Global/Notifications',
-		name: 'Publishing Win',
-		story: 'Publishing Win',
-		parameters: {
-			fileName: './stories/notifications.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'global-notifications--total-stats',
-		kind: 'Global/Notifications',
-		name: 'Total Stats',
-		story: 'Total Stats',
+		name: 'User Input Success Notification',
+		story: 'User Input Success Notification',
 		parameters: {
 			fileName: './stories/notifications.stories.js',
 			options: {
@@ -466,25 +427,12 @@ module.exports = [
 		},
 	},
 	{
-		id: 'setup--step-one',
-		kind: 'Setup',
+		id: 'setup-using-gcp--step-one',
+		kind: 'Setup / Using GCP',
 		name: 'Step One',
 		story: 'Step One',
 		parameters: {
 			fileName: './stories/setup.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'splash--splash-page',
-		kind: 'Splash',
-		name: 'Splash Page',
-		story: 'Splash Page',
-		parameters: {
-			fileName: './stories/splash.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},

@@ -1,7 +1,7 @@
 /**
  * AdSense module initialization.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { createAddToFilter } from '../../util/helpers';
-import { getSiteKitAdminURL, getModulesData } from '../../util';
+import { getModulesData } from '../../util';
 import AdSenseDashboardWidget from './components/dashboard/AdSenseDashboardWidget';
 import LegacyDashboardEarnings from './components/dashboard/LegacyDashboardEarnings';
 
@@ -29,14 +29,6 @@ import LegacyDashboardEarnings from './components/dashboard/LegacyDashboardEarni
  */
 import { addFilter } from '@wordpress/hooks';
 const slug = 'adsense';
-
-addFilter( 'googlesitekit.SetupModuleShowLink',
-	'googlesitekit.adsenseSetupModuleShowLink', ( showLink, moduleSlug ) => {
-		if ( 'adsense' === moduleSlug && ! global._googlesitekitLegacyData.canAdsRun ) {
-			return false;
-		}
-		return showLink;
-	} );
 
 const modulesData = getModulesData();
 if ( modulesData.adsense.active ) {
@@ -56,23 +48,6 @@ if ( modulesData.adsense.active ) {
 			'googlesitekit.DashboardEarningModule',
 			addLegacyDashboardEarnings, 50 );
 	} else {
-		const {
-			reAuth,
-			currentScreen,
-		} = global._googlesitekitLegacyData.admin;
-		const id = currentScreen ? currentScreen.id : null;
-
-		if ( ! reAuth && 'site-kit_page_googlesitekit-module-adsense' === id ) {
-			// Setup incomplete: redirect to the setup flow.
-			global.location = getSiteKitAdminURL(
-				`googlesitekit-module-${ slug }`,
-				{
-					reAuth: true,
-					slug,
-				}
-			);
-		}
-
 		// Show module as connected in the settings when status is pending review.
 		addFilter( `googlesitekit.Connected-${ slug }`,
 			'googlesitekit.AdSenseModuleConnected', ( isConnected ) => {

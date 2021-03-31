@@ -1,7 +1,7 @@
 /**
  * Tag Manager Settings Edit component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,13 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useEffect } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { useExistingTagEffect } from '../../hooks';
+import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
 import {
 	AccountCreate,
 	ExistingTagError,
@@ -40,21 +36,14 @@ export default function SettingsEdit() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
-	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
-
-	// Toggle disabled state of legacy confirm changes button.
-	useEffect( () => {
-		const confirm = global.document.getElementById( 'confirm-changes-tagmanager' );
-		if ( confirm ) {
-			confirm.disabled = ! canSubmitChanges;
-		}
-	}, [ canSubmitChanges ] );
+	// Synchronize the gaPropertyID setting with the singular GA property ID in selected containers.
+	useGAPropertyIDEffect();
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below

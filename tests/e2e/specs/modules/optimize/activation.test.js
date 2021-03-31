@@ -1,7 +1,7 @@
 /**
  * Optimize module activation tests.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,6 +67,11 @@ describe( 'Optimize Activation', () => {
 		useRequestInterception( ( request ) => {
 			if ( request.url().match( '/google-site-kit/v1/data/' ) ) {
 				request.respond( { status: 200 } );
+			} else if ( request.url().match( '/wp-json/google-site-kit/v1/modules/analytics/data/report?' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( { placeholder_response: true } ),
+				} );
 			} else {
 				request.continue();
 			}
@@ -92,7 +97,7 @@ describe( 'Optimize Activation', () => {
 		await expect( setupHandle ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Optimize/i } );
 		await expect( setupHandle ).toMatchElement( 'p', { text: /Please copy and paste your Optimize ID to complete your setup/i } );
 		// Not able to use negation here for some reason.
-		// await expect( setupHandle ).not.toMatchElement( 'p', { text: /You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below/i, visible: true } );
+		// await expect( setupHandle ).not.toMatchElement( 'p', { text: /You disabled analytics auto insert snippet. If you are using Google Analytics code snippet, add the code below/i, visible: true } );
 		// await expect( setupHandle ).not.toMatchElement( 'p', { text: /Click here for how to implement Optimize tag in Google Analytics Code Snippet/i } );
 
 		await expect( setupHandle ).toFill( 'input', 'gtm' );
@@ -111,7 +116,7 @@ describe( 'Optimize Activation', () => {
 		const setupHandle = await page.$( '.googlesitekit-setup-module--optimize' );
 		await expect( setupHandle ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Optimize/i } );
 		await expect( setupHandle ).toMatchElement( 'p', { text: /Please copy and paste your Optimize ID to complete your setup/i } );
-		await expect( setupHandle ).toMatchElement( 'p', { text: /You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below/i } );
+		await expect( setupHandle ).toMatchElement( 'p', { text: /You disabled analytics auto insert snippet. If you are using Google Analytics code snippet, add the code below/i } );
 		await expect( setupHandle ).toMatchElement( 'p', { text: /Click here for how to implement Optimize tag in Google Analytics Code Snippet/i } );
 
 		await expect( setupHandle ).toFill( 'input', 'gtm' );

@@ -1,7 +1,7 @@
 /**
  * `core/widgets` data store: widget tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
+import SiteKitLogo from '../../../../svg/logo-sitekit.svg';
 
 describe( 'core/widgets Widget areas', () => {
 	let registry;
@@ -65,7 +66,7 @@ describe( 'core/widgets Widget areas', () => {
 					priority: 10,
 					title: 'Your Site',
 					subtitle: 'Learn about your site!',
-					icon: '/wp-content/plugins/googlesitekit/header.svg',
+					Icon: SiteKitLogo,
 					style: 'boxes',
 				};
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slug, settings );
@@ -88,7 +89,7 @@ describe( 'core/widgets Widget areas', () => {
 					priority: 10,
 					title: 'Your Site',
 					subtitle: 'Learn about your site!',
-					icon: '/wp-content/plugins/googlesitekit/header.svg',
+					Icon: SiteKitLogo,
 					style: 'boxes',
 				};
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slug, settings );
@@ -116,16 +117,10 @@ describe( 'core/widgets Widget areas', () => {
 				} ).toThrow( 'settings.title is required.' );
 			} );
 
-			it( 'requires a title and subtitle in settings', () => {
+			it( 'requires a title in settings', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).registerWidgetArea( 'header', {} );
 				} ).toThrow( 'settings.title is required.' );
-
-				expect( () => {
-					registry.dispatch( STORE_NAME ).registerWidgetArea( 'header', {
-						title: 'Analytics Header',
-					} );
-				} ).toThrow( 'settings.subtitle is required.' );
 
 				expect( () => {
 					registry.dispatch( STORE_NAME ).registerWidgetArea( 'header', {
@@ -151,7 +146,7 @@ describe( 'core/widgets Widget areas', () => {
 					priority: 10,
 					title: 'Header',
 					subtitle: 'Cool stuff only!',
-					icon: '/wp-content/plugins/googlesitekit/header.svg',
+					Icon: SiteKitLogo,
 					style: 'boxes',
 				};
 				const slugTwo = 'dashboard-footer';
@@ -159,7 +154,7 @@ describe( 'core/widgets Widget areas', () => {
 					priority: 12,
 					title: 'Footer',
 					subtitle: 'Less important stuff.',
-					icon: '/wp-content/plugins/googlesitekit/footer.svg',
+					Icon: SiteKitLogo,
 					style: 'boxes',
 				};
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slugOne, settingsOne );
@@ -181,7 +176,7 @@ describe( 'core/widgets Widget areas', () => {
 				const settings = {
 					title: 'Page Views',
 					subtitle: 'See all your views!',
-					icon: '/wp-content/plugins/googlesitekit/pageviews.svg',
+					Icon: SiteKitLogo,
 					style: 'boxes', // 'composite'
 				};
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slug, settings );
@@ -201,7 +196,7 @@ describe( 'core/widgets Widget areas', () => {
 					priority: 10,
 					title: 'Page Views',
 					subtitle: 'See all your views!',
-					icon: '/wp-content/plugins/googlesitekit/pageviews.svg',
+					Icon: SiteKitLogo,
 					style: 'boxes', // 'composite'
 				};
 				// We don't want other widget areas to be able to overwrite existing areas.
@@ -209,7 +204,7 @@ describe( 'core/widgets Widget areas', () => {
 					priority: 10,
 					title: 'Mega Page Views',
 					subtitle: 'Subscribe for more features!',
-					icon: '/wp-content/plugins/googlesitekit/pageviews.svg',
+					Icon: SiteKitLogo,
 					style: 'composite',
 				};
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slug, settings );
@@ -249,7 +244,7 @@ describe( 'core/widgets Widget areas', () => {
 					priority: 10,
 					title: 'Your Site',
 					subtitle: 'Learn about your site!',
-					icon: '/wp-content/plugins/googlesitekit/header.svg',
+					Icon: SiteKitLogo,
 					style: 'boxes',
 				};
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slugOne, settings );
@@ -292,7 +287,7 @@ describe( 'core/widgets Widget areas', () => {
 					priority: 10,
 					title: 'Your Site',
 					subtitle: 'Learn about your site!',
-					icon: '/wp-content/plugins/googlesitekit/header.svg',
+					Icon: SiteKitLogo,
 					style: 'boxes',
 				};
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slugOne, settings );
@@ -316,7 +311,7 @@ describe( 'core/widgets Widget areas', () => {
 				const settings = {
 					title: 'Your title',
 					subtitle: 'Okay!',
-					icon: '/wp-content/plugins/googlesitekit/header.svg',
+					Icon: SiteKitLogo,
 					style: 'boxes',
 				};
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slugLowest, { ...settings, priority: 5 } );
@@ -351,7 +346,7 @@ describe( 'core/widgets Widget areas', () => {
 				} );
 
 				expect( registry.select( STORE_NAME ).getWidgetArea( 'TestArea' ) ).toEqual( {
-					icon: undefined,
+					Icon: undefined,
 					priority: 10,
 					title: 'Test Header',
 					subtitle: 'Cool stuff for yoursite.com',

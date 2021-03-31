@@ -1,7 +1,7 @@
 /**
  * ReportError stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
 
 /**
  * Internal dependencies
@@ -38,17 +33,27 @@ const error = {
 	data: {},
 };
 
-storiesOf( 'Global', module )
-	.addDecorator( ( storyFn ) => {
+export const ReportErrorStory = () => (
+	<ReportError moduleSlug="test-module" error={ error } />
+);
+ReportErrorStory.storyName = 'Report Error';
+ReportErrorStory.decorators = [
+	( Story ) => {
 		const registry = createTestRegistry();
-		const testModuleDefinition = createModuleStore( 'test-module' );
+		const testModuleDefinition = createModuleStore( 'test-module', {
+			storeName: 'modules/test-module',
+		} );
 		registry.registerStore( testModuleDefinition.STORE_NAME, testModuleDefinition );
 		provideModules( registry, [ { slug: 'test-module', name: 'Test Module' } ] );
 
-		return storyFn( registry );
-	} )
-	.add( 'ReportError', ( registry ) => (
-		<WithTestRegistry registry={ registry }>
-			<ReportError moduleSlug="test-module" error={ error } />
-		</WithTestRegistry>
-	) );
+		return (
+			<WithTestRegistry registry={ registry }>
+				<Story />
+			</WithTestRegistry>
+		);
+	},
+];
+
+export default {
+	title: 'Global',
+};

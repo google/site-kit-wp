@@ -1,7 +1,7 @@
 /**
  * `core/user` data store: user info
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,11 @@ const RECEIVE_CONNECT_URL = 'RECEIVE_CONNECT_URL';
 const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';
 const RECEIVE_USER_IS_VERIFIED = 'RECEIVE_USER_IS_VERIFIED';
 const RECEIVE_USER_INPUT_STATE = 'RECEIVE_USER_INPUT_STATE';
+const RECEIVE_USER_INITIAL_SITE_KIT_VERSION = 'RECEIVE_USER_INITIAL_SITE_KIT_VERSION';
 
 const initialState = {
 	connectURL: undefined,
+	initialVersion: undefined,
 	user: undefined,
 	verified: undefined,
 };
@@ -86,6 +88,16 @@ export const actions = {
 				user: userInfo,
 			},
 			type: RECEIVE_USER_INFO,
+		};
+	},
+
+	receiveInitialSiteKitVersion( initialVersion ) {
+		invariant( initialVersion, 'initialVersion is required.' );
+		return {
+			payload: {
+				initialVersion,
+			},
+			type: RECEIVE_USER_INITIAL_SITE_KIT_VERSION,
 		};
 	},
 
@@ -148,6 +160,13 @@ export const reducer = ( state, { type, payload } ) => {
 				user,
 			};
 		}
+		case RECEIVE_USER_INITIAL_SITE_KIT_VERSION: {
+			const { initialVersion } = payload;
+			return {
+				...state,
+				initialVersion,
+			};
+		}
 		case RECEIVE_USER_IS_VERIFIED: {
 			const { verified } = payload;
 			return {
@@ -198,6 +217,24 @@ export const resolvers = {
 		}
 		const { user } = global._googlesitekitUserData;
 		yield actions.receiveUserInfo( user );
+	},
+
+	*getInitialSiteKitVersion() {
+		const { select } = yield Data.commonActions.getRegistry();
+
+		if ( select( STORE_NAME ).getInitialSiteKitVersion() !== undefined ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitUserData ) {
+			global.console.error( 'Could not load core/user info.' );
+			return;
+		}
+
+		const { initialVersion } = global._googlesitekitUserData;
+		if ( initialVersion ) {
+			yield actions.receiveInitialSiteKitVersion( initialVersion );
+		}
 	},
 
 	*isVerified() {
@@ -344,6 +381,19 @@ export const selectors = {
 		const user = select( STORE_NAME ).getUser();
 		return user !== undefined ? user.picture : user;
 	} ),
+
+	/**
+	 * Gets the initial version that the user used Site Kit with.
+	 *
+	 * @since 1.27.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} `string` Site Kit version number,
+	 *                              `undefined` if not resolve yet.
+	 */
+	getInitialSiteKitVersion( state ) {
+		return state.initialVersion;
+	},
 
 	/**
 	 * Gets the verified status for this user.

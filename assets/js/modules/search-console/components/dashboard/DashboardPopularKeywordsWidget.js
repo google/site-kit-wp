@@ -1,7 +1,7 @@
 /**
  * DashboardPopularKeywordsWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,120 +20,103 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { numberFormat, untrailingslashit } from '../../../../util';
-import { getDataTableFromData } from '../../../../components/data-table';
+import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE, STORE_NAME } from '../../datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import ReportError from '../../../../components/ReportError';
-import ReportZero from '../../../../components/ReportZero';
-import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
+import { isZeroReport } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import ReportTable from '../../../../components/ReportTable';
+import Link from '../../../../components/Link';
+import { numFmt } from '../../../../util';
 const { useSelect } = Data;
-const { Widget } = Widgets.components;
 
-function DashboardPopularKeywordsWidget() {
-	const {
-		data,
-		error,
-		loading,
-		baseServiceURL,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		const domain = store.getPropertyID();
-		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			dimensions: 'query',
-			limit: 10,
-		};
+function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
+	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 
-		const baseServiceURLArgs = {
-			resource_id: domain,
-			num_of_days: getCurrentDateRangeDayCount(),
-		};
+	const reportArgs = {
+		...dateRangeDates,
+		dimensions: 'query',
+		limit: 10,
+	};
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
-		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
-		if ( url ) {
-			args.url = url;
-			baseServiceURLArgs.page = `!${ url }`;
-		} else if ( isDomainProperty && referenceSiteURL ) {
-			baseServiceURLArgs.page = `*${ referenceSiteURL }`;
-		}
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	if ( url ) {
+		reportArgs.url = url;
+	}
 
-		return {
-			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
-			baseServiceURL: store.getServiceURL( {
-				path: '/performance/search-analytics',
-				query: baseServiceURLArgs,
-			} ),
-		};
-	} );
+	const data = useSelect( ( select ) => select( STORE_NAME ).getReport( reportArgs ) );
+	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
+	const loading = useSelect( ( select ) => ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
+	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( {
+		...generateDateRangeArgs( dateRangeDates ),
+		page: url ? `!${ url }` : undefined,
+	} ) );
 
 	if ( loading ) {
 		return <PreviewTable padding />;
 	}
+
 	if ( error ) {
-		return <ReportError moduleSlug="search-console" error={ error } />;
+		return <WidgetReportError moduleSlug="search-console" error={ error } />;
 	}
 
-	if ( ! data || ! data.length ) {
-		return <ReportZero moduleSlug="search-console" />;
+	if ( isZeroReport( data ) ) {
+		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
-	const headers = [
+	const tableColumns = [
 		{
 			title: __( 'Keyword', 'google-site-kit' ),
-			tooltip: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
+			description: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
 			primary: true,
+			field: 'keys.0',
+			Component: ( { fieldValue } ) => {
+				const searchAnalyticsURL = useSelect( ( select ) => {
+					const dates = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
+					const entityURL = select( CORE_SITE ).getCurrentEntityURL();
+					return select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
+						...generateDateRangeArgs( dates ),
+						query: `!${ fieldValue }`,
+						page: entityURL ? `!${ entityURL }` : undefined,
+					} );
+				} );
+
+				return (
+					<Link
+						href={ searchAnalyticsURL }
+						external
+						inherit
+					>
+						{ fieldValue }
+					</Link>
+				);
+			},
 		},
 		{
 			title: __( 'Clicks', 'google-site-kit' ),
-			tooltip: __( 'Number of times users clicked on your content in search results', 'google-site-kit' ),
+			description: __( 'Number of times users clicked on your content in search results', 'google-site-kit' ),
+			Component: ( { row } ) => numFmt( row.clicks, { style: 'decimal' } ),
 		},
 		{
 			title: __( 'Impressions', 'google-site-kit' ),
-			tooltip: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
+			description: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
+			Component: ( { row } ) => numFmt( row.impressions, { style: 'decimal' } ),
 		},
 	];
 
-	const links = [];
-	const dataMapped = data.map( ( row, i ) => {
-		const query = row.keys[ 0 ];
-		links[ i ] = addQueryArgs( baseServiceURL, { query: `!${ query }` } );
-		return [
-			query,
-			numberFormat( row.clicks ),
-			numberFormat( row.impressions ),
-		];
-	} );
-
-	const options = {
-		hideHeader: false,
-		chartsEnabled: false,
-		links,
-	};
-
-	const dataTable = getDataTableFromData( dataMapped, headers, options );
-
 	return (
 		<Widget
-			slug="searchConsolePopularKeywords"
 			noPadding
-			footer={ () => (
+			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
 					name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
@@ -143,7 +126,10 @@ function DashboardPopularKeywordsWidget() {
 			) }
 		>
 			<TableOverflowContainer>
-				{ dataTable }
+				<ReportTable
+					rows={ data }
+					columns={ tableColumns }
+				/>
 			</TableOverflowContainer>
 		</Widget>
 	);

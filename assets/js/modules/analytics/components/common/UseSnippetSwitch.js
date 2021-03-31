@@ -1,7 +1,7 @@
 /**
  * Analytics Use Snippet Switch component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,13 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-import Switch from '../../../../components/switch';
+import Switch from '../../../../components/Switch';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch() {
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
+	const canUseSnippet = useSelect( ( select ) => select( STORE_NAME ).getCanUseSnippet() );
 
 	const { setUseSnippet } = useDispatch( STORE_NAME );
 	const onChange = useCallback( () => {
@@ -51,10 +52,12 @@ export default function UseSnippetSwitch() {
 				checked={ useSnippet }
 				onClick={ onChange }
 				hideLabel={ false }
+				disabled={ ! canUseSnippet }
 			/>
 			<p>
-				{ useSnippet && __( 'Site Kit will add the code automatically.', 'google-site-kit' ) }
-				{ ! useSnippet && __( 'Site Kit will not add the code to your site.', 'google-site-kit' ) }
+				{ canUseSnippet === false && __( 'The code is controlled by the Tag Manager module.', 'google-site-kit' ) }
+				{ canUseSnippet && useSnippet && __( 'Site Kit will add the code automatically.', 'google-site-kit' ) }
+				{ canUseSnippet && ! useSnippet && __( 'Site Kit will not add the code to your site.', 'google-site-kit' ) }
 			</p>
 		</div>
 	);

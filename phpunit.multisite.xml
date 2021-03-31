@@ -1,0 +1,24 @@
+<phpunit
+        bootstrap="tests/phpunit/bootstrap.php"
+        backupGlobals="false"
+        processIsolation="false"
+        colors="true">
+    <testsuites>
+        <testsuite name="Site Kit Test Suite">
+            <directory suffix=".php">./tests/phpunit/integration</directory>
+        </testsuite>
+    </testsuites>
+    <groups>
+        <exclude>
+            <group>ms-excluded</group>
+        </exclude>
+    </groups>
+    <php>
+        <ini name="error_reporting" value="32767" />
+        <ini name="display_errors" value="1" />
+        <ini name="display_startup_errors" value="1" />
+        <const name="GOOGLESITEKIT_TESTS" value="1" />
+        <const name="WP_HTTP_BLOCK_EXTERNAL" value="1" />
+        <const name="WP_TESTS_MULTISITE" value="1" />
+    </php>
+</phpunit>

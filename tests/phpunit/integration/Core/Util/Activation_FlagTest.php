@@ -3,7 +3,7 @@
  * Activation_FlagTest
  *
  * @package   Google\Site_Kit\Tests\Core\Util
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -80,6 +80,5 @@ class Activation_FlagTest extends TestCase {
 		do_action( 'googlesitekit_activation', $network_wide );
 
 		$this->assertNotEmpty( $this->options->get( Activation_Flag::OPTION_SHOW_ACTIVATION_NOTICE ) );
-		$this->assertEquals( 1, $this->options->get( Activation_Flag::OPTION_NEW_SITE_POSTS ) );
 	}
 }

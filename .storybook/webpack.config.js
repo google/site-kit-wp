@@ -2,6 +2,7 @@ const path = require( 'path' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const mainConfig = require( '../webpack.config' );
 const mapValues = require( 'lodash/mapValues' );
+const { ProvidePlugin } = require( 'webpack' );
 
 module.exports = async ( { config } ) => {
 	// Site Kit loads its API packages as externals,
@@ -32,6 +33,9 @@ module.exports = async ( { config } ) => {
 	config.plugins = [
 		...config.plugins,
 		new MiniCssExtractPlugin(),
+		new ProvidePlugin( {
+			React: 'react',
+		} ),
 	];
 
 	config.module.rules.push(
@@ -51,6 +55,7 @@ module.exports = async ( { config } ) => {
 				{
 					loader: 'sass-loader',
 					options: {
+						implementation: require( 'sass' ),
 						additionalData: `$wp-version: "${ process.env.npm_package_config_storybook_wordpress_version }";`,
 						sassOptions: {
 							includePaths: [ path.resolve( __dirname, '../node_modules/' ) ],
@@ -67,13 +72,6 @@ module.exports = async ( { config } ) => {
 	fileLoaderRule.exclude = /\.svg$/;
 
 	config.module.rules.push( mainConfig.svgRule );
-
-	config.module.rules.push(
-		{
-			test: /\.(png|woff|woff2|eot|ttf|gif)$/,
-			use: { loader: 'url-loader?limit=100000' },
-		}
-	);
 
 	return config;
 };

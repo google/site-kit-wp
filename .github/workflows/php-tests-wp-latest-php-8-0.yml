@@ -1,0 +1,64 @@
+name: PHP Tests
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  php-tests-wp-latest-php-8-0:
+    name: PHP (PHP 8.0, WordPress Latest)
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+      MYSQL_DATABASE: wordpress_test
+      MYSQL_ROOT_PASSWORD: root
+      WP_VERSION: latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Grant database access
+        env:
+          MYSQL_TCP_PORT: ${{ env.DB_PORT }}
+        run: |
+          mysql -u root -h ${DB_HOST} -e "CREATE USER ${MYSQL_USER} IDENTIFIED BY '${MYSQL_PASSWORD}';"
+          mysql -u root -h ${DB_HOST} -e "GRANT ALL PRIVILEGES ON *.* TO ${MYSQL_USER};"
+      - uses: shivammathur/setup-php@v2
+        with:
+          extensions: mysqli
+          tools: composer
+          php-version: '8.0'
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+      - name: Composer Install
+        run: composer install --no-interaction --no-progress
+      - name: Update PHPUnit
+        run: composer update phpunit/phpunit --with-dependencies --ignore-platform-reqs --no-scripts
+      - name: Set up PHP test data
+        run: tests/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
+      - name: Run Unit Tests
+        run: composer test

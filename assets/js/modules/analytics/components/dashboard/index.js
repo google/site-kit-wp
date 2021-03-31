@@ -1,7 +1,7 @@
 /**
  * Analytics dashboard components.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,16 @@
 
 export { default as AnalyticsAdSenseDashboardWidgetLayout } from './AnalyticsAdSenseDashboardWidgetLayout';
 export { default as AnalyticsAdSenseDashboardWidgetTopPagesTable } from './AnalyticsAdSenseDashboardWidgetTopPagesTable';
-export { default as AnalyticsDashboardWidget } from './AnalyticsDashboardWidget';
-export { default as AnalyticsDashboardWidgetOverview } from './AnalyticsDashboardWidgetOverview';
-export { default as AnalyticsDashboardWidgetSiteStats } from './AnalyticsDashboardWidgetSiteStats';
-export { default as AnalyticsDashboardWidgetTopPagesTable } from './AnalyticsDashboardWidgetTopPagesTable';
+export { default as LegacyAnalyticsDashboardWidget } from './LegacyAnalyticsDashboardWidget';
+export { default as LegacyAnalyticsDashboardWidgetOverview } from './LegacyAnalyticsDashboardWidgetOverview';
+export { default as LegacyAnalyticsDashboardWidgetSiteStats } from './LegacyAnalyticsDashboardWidgetSiteStats';
+export { default as LegacyAnalyticsDashboardWidgetTopPagesTable } from './LegacyAnalyticsDashboardWidgetTopPagesTable';
 export { default as DashboardAllTrafficWidget } from './DashboardAllTrafficWidget';
 export { default as DashboardPopularPagesWidget } from './DashboardPopularPagesWidget';
 export { default as DashboardBounceRateWidget } from './DashboardBounceRateWidget';
 export { default as DashboardGoalsWidget } from './DashboardGoalsWidget';
 export { default as DashboardUniqueVisitorsWidget } from './DashboardUniqueVisitorsWidget';
 export { default as LegacyAdSenseDashboardWidgetTopPagesTableSmall } from './LegacyAdSenseDashboardWidgetTopPagesTableSmall';
-export { default as LegacyAnalyticsAllTraffic } from './LegacyAnalyticsAllTraffic';
-export { default as LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources } from './LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
 export { default as LegacyAnalyticsDashboardWidgetPopularPagesTable } from './LegacyAnalyticsDashboardWidgetPopularPagesTable';
 export { default as LegacyAnalyticsDashboardWidgetTopAcquisitionSources } from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 export { default as LegacyAnalyticsDashboardWidgetTopLevel } from './LegacyAnalyticsDashboardWidgetTopLevel';

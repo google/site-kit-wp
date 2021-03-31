@@ -7,13 +7,13 @@
  * Author URI:  https://opensource.google.com
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
 /**
- * Provide dummy client configuration, normally provided in step 1 of the set up.
+ * Provide placeholder client configuration, normally provided in step 1 of the set up.
  */
 add_filter(
 	'googlesitekit_oauth_secret',

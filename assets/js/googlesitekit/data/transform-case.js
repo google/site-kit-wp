@@ -1,7 +1,7 @@
 /**
  * Data store utilities for transforming names to a certain case.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,14 +43,14 @@ export const camelCaseToConstantCase = ( name ) => {
 };
 
 /**
- * Transforms a kebab-case name into its PascalCase name.
+ * Transforms a hyphen-case name into its PascalCase name.
  *
- * @since 1.16.0
+ * @since n.e.x.t
  * @private
  *
- * @param {string} name "kebab-case" name to transform.
+ * @param {string} name "hyphen-case" name to transform.
  * @return {string} PascalCase name.
  */
-export function kebabCaseToPascalCase( name ) {
+export function hyphenCaseToPascalCase( name ) {
 	return name.split( '-' ).map( ( part ) => part.charAt( 0 ).toUpperCase() + part.slice( 1 ) ).join( '' );
 }

@@ -1,7 +1,7 @@
 /**
  * AdSense Setup Account No Client component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Link from '../../../../components/Link';
 import { ErrorNotices } from '../common';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
 export default function SetupAccountNoClient() {
+	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/adsense/answer/6023158',
+	} ) );
+
 	return (
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
@@ -43,7 +50,7 @@ export default function SetupAccountNoClient() {
 
 			<div className="googlesitekit-setup-module__action">
 				<Link
-					href="https://support.google.com/adsense/answer/6023158"
+					href={ supportURL }
 					external
 					aria-label={ __( 'Learn more about updating your AdSense account', 'google-site-kit' ) }
 				>

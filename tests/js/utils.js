@@ -13,29 +13,51 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import coreSiteStore from '../../assets/js/googlesitekit/datastore/site';
-import { STORE_NAME as CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
-import coreUserStore from '../../assets/js/googlesitekit/datastore/user';
-import { STORE_NAME as CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
-import coreFormsStore from '../../assets/js/googlesitekit/datastore/forms';
-import { STORE_NAME as CORE_FORMS } from '../../assets/js/googlesitekit/datastore/forms/constants';
-import coreModulesStore from '../../assets/js/googlesitekit/modules/datastore';
-import { STORE_NAME as CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
-import coreWidgetsStore from '../../assets/js/googlesitekit/widgets/datastore';
-import { STORE_NAME as CORE_WIDGETS } from '../../assets/js/googlesitekit/widgets/datastore/constants';
-import modulesAdSenseStore from '../../assets/js/modules/adsense/datastore';
-import { STORE_NAME as MODULES_ADSENSE } from '../../assets/js/modules/adsense/datastore/constants';
-import modulesAnalyticsStore from '../../assets/js/modules/analytics/datastore';
-import { STORE_NAME as MODULES_ANALYTICS } from '../../assets/js/modules/analytics/datastore/constants';
-import modulesPageSpeedInsightsStore from '../../assets/js/modules/pagespeed-insights/datastore';
-import { STORE_NAME as MODULES_PAGESPEED_INSIGHTS } from '../../assets/js/modules/pagespeed-insights/datastore/constants';
-import modulesSearchConsoleStore from '../../assets/js/modules/search-console/datastore';
-import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/datastore/constants';
-import modulesTagManagerStore from '../../assets/js/modules/tagmanager/datastore';
-import { STORE_NAME as MODULES_TAGMANAGER } from '../../assets/js/modules/tagmanager/datastore/constants';
-import modulesOptimizeStore from '../../assets/js/modules/optimize/datastore';
-import { STORE_NAME as MODULES_OPTIMIZE } from '../../assets/js/modules/optimize/datastore/constants';
-import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/fixtures.json';
+import * as coreForms from '../../assets/js/googlesitekit/datastore/forms';
+import * as coreLocation from '../../assets/js/googlesitekit/datastore/location';
+import * as coreModules from '../../assets/js/googlesitekit/modules';
+import * as coreSite from '../../assets/js/googlesitekit/datastore/site';
+import * as coreUi from '../../assets/js/googlesitekit/datastore/ui';
+import * as coreUser from '../../assets/js/googlesitekit/datastore/user';
+import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
+import * as modulesAdSense from '../../assets/js/modules/adsense';
+import * as modulesAnalytics from '../../assets/js/modules/analytics';
+import * as modulesOptimize from '../../assets/js/modules/optimize';
+import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
+import * as modulesSearchConsole from '../../assets/js/modules/search-console';
+import * as modulesTagManager from '../../assets/js/modules/tagmanager';
+import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
+import {
+	PERMISSION_AUTHENTICATE,
+	PERMISSION_SETUP,
+	PERMISSION_VIEW_POSTS_INSIGHTS,
+	PERMISSION_VIEW_DASHBOARD,
+	PERMISSION_VIEW_MODULE_DETAILS,
+	PERMISSION_MANAGE_OPTIONS,
+	PERMISSION_PUBLISH_POSTS,
+	CORE_USER,
+} from '../../assets/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
+import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
+import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
+
+const allCoreStores = [
+	coreForms,
+	coreLocation,
+	coreModules,
+	coreSite,
+	coreUser,
+	coreUi,
+	coreWidgets,
+];
+const allCoreModules = [
+	modulesAdSense,
+	modulesAnalytics,
+	modulesOptimize,
+	modulesPageSpeedInsights,
+	modulesSearchConsole,
+	modulesTagManager,
+];
 
 /**
  * Creates a registry with all available stores.
@@ -61,12 +83,19 @@ export const createTestRegistry = () => {
  * @since 1.7.1
  * @private
  *
- * @param {?Object}   props          Component props.
- * @param {?Function} props.callback Function which receives the registry instance.
- * @param {?Object}   props.registry Registry object; uses `createTestRegistry()` by default.
+ * @param {Object}    [props]          Component props.
+ * @param {Function}  [props.callback] Function which receives the registry instance.
+ * @param {WPElement} [props.children] Children components.
+ * @param {string[]}  [props.features] Feature flags to enable for this test registry provider.
+ * @param {Object}    [props.registry] Registry object; uses `createTestRegistry()` by default.
  * @return {WPElement} Wrapped components.
  */
-export function WithTestRegistry( { children, callback, registry = createTestRegistry() } = {} ) {
+export function WithTestRegistry( {
+	children,
+	callback,
+	features = [],
+	registry = createTestRegistry(),
+} = {} ) {
 	// Populate most basic data which should not affect any tests.
 	provideUserInfo( registry );
 
@@ -76,7 +105,9 @@ export function WithTestRegistry( { children, callback, registry = createTestReg
 
 	return (
 		<RegistryProvider value={ registry }>
-			{ children }
+			<FeaturesProvider value={ features }>
+				{ children }
+			</FeaturesProvider>
 		</RegistryProvider>
 	);
 }
@@ -125,7 +156,7 @@ export const provideUserAuthentication = ( registry, extraData = {} ) => {
 		requiredScopes: [],
 		grantedScopes: [],
 		unsatisfiedScopes: [],
-		needsReauthentication: [],
+		needsReauthentication: false,
 	};
 
 	const mergedData = { ...defaults, ...extraData };
@@ -191,6 +222,32 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
 };
 
 /**
+ * Provides user capabilities data to the given registry.
+ *
+ * @since 1.25.0
+ * @private
+ *
+ * @param {Object} registry    Registry object to dispatch to.
+ * @param {Object} [extraData] Custom capability mappings to set, will be merged with defaults. Default empty object.
+ */
+export const provideUserCapabilities = ( registry, extraData = {} ) => {
+	const defaults = {
+		[ PERMISSION_AUTHENTICATE ]: true,
+		[ PERMISSION_SETUP ]: true,
+		[ PERMISSION_VIEW_POSTS_INSIGHTS ]: true,
+		[ PERMISSION_VIEW_DASHBOARD ]: true,
+		[ PERMISSION_VIEW_MODULE_DETAILS ]: true,
+		[ PERMISSION_MANAGE_OPTIONS ]: true,
+		[ PERMISSION_PUBLISH_POSTS ]: true,
+	};
+
+	registry.dispatch( CORE_USER ).receiveCapabilities( {
+		...defaults,
+		...extraData,
+	} );
+};
+
+/**
  * Provides modules data to the given registry.
  *
  * @since 1.17.0
@@ -213,11 +270,39 @@ export const provideModules = ( registry, extraData = [] ) => {
 			return { ...module };
 		} )
 		.concat(
-			extraData.filter( ( { slug } ) => ! moduleSlugs.includes( slug ) )
-		)
-	;
+			extraData.filter( ( { slug } ) => ! moduleSlugs.includes( slug ) ),
+		);
 
 	registry.dispatch( CORE_MODULES ).receiveGetModules( modules );
+};
+
+/**
+ * Provides module registration data to the given registry.
+ *
+ * @since 1.23.0
+ * @private
+ *
+ * @param {Object}   registry    Registry object to dispatch to.
+ * @param {Object[]} [extraData] List of module registration data objects to be merged with defaults. Default empty array.
+ */
+export const provideModuleRegistrations = ( registry, extraData = [] ) => {
+	const extraDataBySlug = extraData.reduce( ( acc, { slug, ...data } ) => {
+		return { ...acc, [ slug ]: { slug, ...data } };
+	}, {} );
+	const { registerModule: realRegisterModule, ...Modules } = coreModules.createModules( registry );
+	// Decorate `Modules.registerModule` with a function to apply extra data.
+	const registeredModules = {};
+	const testRegisterModule = ( ( slug, settings ) => {
+		registeredModules[ slug ] = true;
+		return realRegisterModule( slug, { ...settings, ...extraDataBySlug[ slug ] } );
+	} );
+	Modules.registerModule = testRegisterModule;
+
+	allCoreModules.forEach( ( { registerModule } ) => registerModule?.( Modules ) );
+	// Register any additional modules provided.
+	Object.entries( extraDataBySlug )
+		.filter( ( [ slug ] ) => registeredModules[ slug ] !== true )
+		.forEach( ( [ slug, settings ] ) => realRegisterModule( slug, settings ) );
 };
 
 /**
@@ -251,7 +336,8 @@ export const muteFetch = ( matcher, response = {} ) => {
  *                                                      (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
  */
 export const freezeFetch = ( matcher ) => {
-	fetchMock.once( matcher, new Promise( () => {} ) );
+	fetchMock.once( matcher, new Promise( () => {
+	} ) );
 };
 
 /**
@@ -267,17 +353,10 @@ export const freezeFetch = ( matcher ) => {
  * @param {wp.data.registry} registry Registry to register each store on.
  */
 export const registerAllStoresOn = ( registry ) => {
-	registry.registerStore( CORE_SITE, coreSiteStore );
-	registry.registerStore( CORE_USER, coreUserStore );
-	registry.registerStore( CORE_FORMS, coreFormsStore );
-	registry.registerStore( CORE_MODULES, coreModulesStore );
-	registry.registerStore( CORE_WIDGETS, coreWidgetsStore );
-	registry.registerStore( MODULES_ADSENSE, modulesAdSenseStore );
-	registry.registerStore( MODULES_ANALYTICS, modulesAnalyticsStore );
-	registry.registerStore( MODULES_PAGESPEED_INSIGHTS, modulesPageSpeedInsightsStore );
-	registry.registerStore( MODULES_SEARCH_CONSOLE, modulesSearchConsoleStore );
-	registry.registerStore( MODULES_TAGMANAGER, modulesTagManagerStore );
-	registry.registerStore( MODULES_OPTIMIZE, modulesOptimizeStore );
+	[
+		...allCoreStores,
+		...allCoreModules,
+	].forEach( ( { registerStore } ) => registerStore?.( registry ) );
 };
 
 const unsubscribes = [];
@@ -307,9 +386,9 @@ export const untilResolved = ( registry, storeName ) => {
 		( resolverFn, resolverName ) => ( ...args ) => {
 			return subscribeUntil(
 				registry,
-				() => registry.select( storeName ).hasFinishedResolution( resolverName, args )
+				() => registry.select( storeName ).hasFinishedResolution( resolverName, args ),
 			);
-		}
+		},
 	);
 };
 
@@ -357,6 +436,6 @@ export const unsubscribeFromAll = () => {
  */
 export const unexpectedSuccess = () => {
 	return Promise.reject( new Error(
-		'Some code (likely a Promise) succeeded unexpectedly; check your test.'
+		'Some code (likely a Promise) succeeded unexpectedly; check your test.',
 	) );
 };

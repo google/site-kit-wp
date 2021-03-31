@@ -89,6 +89,12 @@ if [ "$WP_VERSION" == "latest" ]; then
 	wp core update-db --quiet
 fi
 
+# Switch to `twentytwenty` theme for consistent results (particularly for AMP compatibility).
+# For older versions of WP, download and install it if it isn't present.
+# If `twentytwenty` is already the active theme, the script will continue
+# without attempting to install it as the activate command will exit with a `0` status code.
+wp theme activate twentytwenty || wp theme install --activate twentytwenty
+
 if [[ ! -z "$GUTENBERG_VERSION" ]]; then
 	# Potentially install Gutenberg
 	status_message "Installing Gutenberg version $GUTENBERG_VERSION..."
@@ -113,14 +119,16 @@ else
 	wp plugin update amp --minor --quiet
 fi
 
-# Install a dummy favicon to avoid 404 errors.
-status_message "Installing a dummy favicon..."
+# Install a placeholder favicon to avoid 404 errors.
+status_message "Installing a placeholder favicon..."
 container touch /var/www/html/favicon.ico
 container chmod 767 /var/www/html/favicon.ico
 
 # Activate Google Site Kit plugin.
 status_message "Activating Google Site Kit plugin..."
 wp plugin activate google-site-kit --quiet
+# Reset post-activate state.
+wp google-site-kit reset
 
 # Set pretty permalinks.
 status_message "Setting permalink structure..."

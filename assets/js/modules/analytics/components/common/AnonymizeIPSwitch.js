@@ -1,7 +1,7 @@
 /**
  * Analytics Anonymize IP Switch component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Switch from '../../../../components/switch';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import Switch from '../../../../components/Switch';
 import Link from '../../../../components/Link';
 
 const { useSelect, useDispatch } = Data;
@@ -37,7 +37,9 @@ export default function AnonymizeIPSwitch() {
 	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
-
+	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/analytics/answer/2763052',
+	} ) );
 	const { setAnonymizeIP } = useDispatch( STORE_NAME );
 	const onChange = useCallback( () => {
 		setAnonymizeIP( ! anonymizeIP );
@@ -62,7 +64,7 @@ export default function AnonymizeIPSwitch() {
 				}
 				{ ' ' }
 				<Link
-					href="https://support.google.com/analytics/answer/2763052"
+					href={ supportURL }
 					external
 					inherit
 					aria-label={ __( 'Learn more about IP anonymization.', 'google-site-kit' ) }

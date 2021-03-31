@@ -3,7 +3,7 @@
  * REST_RoutesTest
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -39,7 +39,6 @@ class REST_RoutesTest extends TestCase {
 
 		// While most of these routes are added via filter, they should all be in this list.
 		$routes = array(
-			'/',
 			'/' . REST_Routes::REST_ROOT,
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/reset',
 			'/' . REST_Routes::REST_ROOT . '/core/user/data/disconnect',
@@ -48,10 +47,10 @@ class REST_RoutesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
 			'/' . REST_Routes::REST_ROOT . '/core/modules/data/info',
 			'/' . REST_Routes::REST_ROOT . '/core/modules/data/activation',
-			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)/data/(?P<datapoint>[a-z\\-]+)',
+			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z0-9\\-]+)/data/(?P<datapoint>[a-z\\-]+)',
 			'/' . REST_Routes::REST_ROOT . '/data',
-			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)/data/notifications',
-			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)/data/settings',
+			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z0-9\\-]+)/data/notifications',
+			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z0-9\\-]+)/data/settings',
 			'/' . REST_Routes::REST_ROOT . '/core/search/data/post-search',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/developer-plugin',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/health-checks',
@@ -61,6 +60,9 @@ class REST_RoutesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/mark-notification',
 		);
 
-		$this->assertEqualSets( $routes, array_keys( $server->get_routes() ) );
+		// Filter out other endpoints (not registered in the plugin).
+		$get_routes = array_intersect( $routes, array_keys( $server->get_routes() ) );
+
+		$this->assertEqualSets( $routes, $get_routes );
 	}
 }

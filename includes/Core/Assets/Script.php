@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Assets\Script
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -114,7 +114,7 @@ class Script extends Asset {
 	/**
 	 * Sets locale data for the script, if it has translations.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 */
 	private function set_locale_data() {
 		$json_translations = BC_Functions::load_script_textdomain( $this->handle, 'google-site-kit' );

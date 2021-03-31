@@ -1,7 +1,7 @@
 /**
  * ESLint rules: specify JSDoc tag grouping rules.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,20 @@ module.exports = iterateJsdoc( ( {
 
 	// If there's no second group, don't check tag grouping.
 	if ( ! hasSecondGroup ) {
+		if (
+			jsdocNode.value.match(
+				new RegExp( `@${ lastTagInFirstGroup }.*\\n\\s*\\*`, 'gm' )
+			)
+		) {
+			context.report( {
+				data: { name: jsdocNode.name },
+				message: `The @${ lastTagInFirstGroup } tag should not be followed by an empty line when it is the last tag.`,
+				node: jsdocNode,
+			} );
+
+			return;
+		}
+
 		return;
 	}
 

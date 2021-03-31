@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Modules\Analytics
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
-use Google\Site_Kit\Core\Modules\Module_With_Admin_Bar;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
@@ -24,7 +23,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
-use Google\Site_Kit\Core\Modules\Module_With_Blockable_Tags_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Assets\Asset;
@@ -32,14 +30,16 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Analytics\Google_Service_AnalyticsProvisioning;
+use Google\Site_Kit\Modules\Analytics\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics\Settings;
+use Google\Site_Kit\Modules\Analytics\Tag_Guard;
+use Google\Site_Kit\Modules\Analytics\Web_Tag;
 use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRangeValues;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_Report;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_ReportData;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsRequest;
@@ -68,9 +68,9 @@ use Exception;
  * @ignore
  */
 final class Analytics extends Module
-	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Admin_Bar, Module_With_Debug_Fields, Module_With_Owner {
+	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner {
+	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
-	use Module_With_Blockable_Tags_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Screen_Trait;
@@ -79,12 +79,9 @@ final class Analytics extends Module
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
 	/**
-	 * Internal flag set after print_amp_gtag is invoked for the first time.
-	 *
-	 * @since 1.14.0
-	 * @var bool
+	 * Module slug name.
 	 */
-	private $did_amp_gtag = false;
+	const MODULE_SLUG = 'analytics';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -103,104 +100,13 @@ final class Analytics extends Module
 		 */
 		add_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 
-		add_action(
-			'admin_init',
-			function() {
-				$this->handle_provisioning_callback();
-			}
-		);
-
-		$print_tracking_opt_out = function () {
-			if ( $this->is_tracking_disabled() ) {
-				$this->print_tracking_opt_out();
-			}
-		};
+		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 		// For non-AMP and AMP.
-		add_action( 'wp_head', $print_tracking_opt_out, 0 );
+		add_action( 'wp_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
 		// For Web Stories plugin.
-		add_action( 'web_stories_story_head', $print_tracking_opt_out, 0 );
-
+		add_action( 'web_stories_story_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
 		// Analytics tag placement logic.
-		add_action(
-			'template_redirect',
-			function() {
-				// Bail early if we are checking for the tag presence from the back end.
-				if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
-					return;
-				}
-
-				if ( $this->is_tag_blocked() ) {
-					return;
-				}
-
-				$use_snippet = $this->get_data( 'use-snippet' );
-				if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
-					return;
-				}
-
-				$property_id = $this->get_data( 'property-id' );
-				if ( is_wp_error( $property_id ) || ! $property_id ) {
-					return;
-				}
-
-				// At this point, we know the tag should be rendered, so let's take care of it
-				// for AMP and non-AMP.
-				if ( $this->context->is_amp() ) {
-					$print_amp_gtag = function() use ( $property_id ) {
-						$this->print_amp_gtag( $property_id );
-					};
-					// Which actions are run depends on the version of the AMP Plugin
-					// (https://amp-wp.org/) available. Version >=1.3 exposes a
-					// new, `amp_print_analytics` action.
-					// For all AMP modes, AMP plugin version >=1.3.
-					add_action( 'amp_print_analytics', $print_amp_gtag );
-					// For AMP Standard and Transitional, AMP plugin version <1.3.
-					add_action( 'wp_footer', $print_amp_gtag, 20 );
-					// For AMP Reader, AMP plugin version <1.3.
-					add_action( 'amp_post_template_footer', $print_amp_gtag, 20 );
-					// For Web Stories plugin.
-					add_action( 'web_stories_print_analytics', $print_amp_gtag );
-
-					add_filter( // Load amp-analytics component for AMP Reader.
-						'amp_post_template_data',
-						function( $data ) {
-							return $this->amp_data_load_analytics_component( $data );
-						}
-					);
-
-					/**
-					 * Fires when the Analytics tag for AMP has been initialized.
-					 *
-					 * This means that the tag will be rendered in the current request.
-					 * Site Kit uses `gtag.js` for its Analytics snippet.
-					 *
-					 * @since 1.14.0
-					 *
-					 * @param string $property_id Analytics property ID used in the tag.
-					 */
-					do_action( 'googlesitekit_analytics_init_tag_amp', $property_id );
-				} else {
-					add_action( // For non-AMP.
-						'wp_enqueue_scripts',
-						function() use ( $property_id ) {
-							$this->enqueue_gtag_js( $property_id );
-						}
-					);
-
-					/**
-					 * Fires when the Analytics tag has been initialized.
-					 *
-					 * This means that the tag will be rendered in the current request.
-					 * Site Kit uses `gtag.js` for its Analytics snippet.
-					 *
-					 * @since 1.14.0
-					 *
-					 * @param string $property_id Analytics property ID used in the tag.
-					 */
-					do_action( 'googlesitekit_analytics_init_tag', $property_id );
-				}
-			}
-		);
+		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 
 		( new Advanced_Tracking( $this->context ) )->register();
 	}
@@ -213,8 +119,8 @@ final class Analytics extends Module
 	 * @return bool
 	 */
 	protected function is_tracking_disabled() {
-		$exclusions = $this->get_data( 'tracking-disabled' );
-		$disabled   = in_array( 'loggedinUsers', $exclusions, true ) && is_user_logged_in();
+		$option   = $this->get_settings()->get();
+		$disabled = in_array( 'loggedinUsers', $option['trackingDisabled'], true ) && is_user_logged_in();
 
 		/**
 		 * Filters whether or not the Analytics tracking snippet is output for the current request.
@@ -268,13 +174,16 @@ final class Analytics extends Module
 	 * @return bool True if module is connected, false otherwise.
 	 */
 	public function is_connected() {
-		$connection = $this->get_data( 'connection' );
-		if ( is_wp_error( $connection ) ) {
-			return false;
-		}
+		$required_keys = array(
+			'accountID',
+			'propertyID',
+			'profileID',
+			'internalWebPropertyID',
+		);
 
-		foreach ( (array) $connection as $value ) {
-			if ( empty( $value ) ) {
+		$options = $this->get_settings()->get();
+		foreach ( $required_keys as $required_key ) {
+			if ( empty( $options[ $required_key ] ) ) {
 				return false;
 			}
 		}
@@ -290,22 +199,6 @@ final class Analytics extends Module
 	public function on_deactivation() {
 		$this->get_settings()->delete();
 		$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
-	}
-
-	/**
-	 * Checks if the module is active in the admin bar for the given URL.
-	 *
-	 * @since 1.4.0
-	 *
-	 * @param string $url URL to determine active state for.
-	 * @return bool
-	 */
-	public function is_active_in_admin_bar( $url ) {
-		if ( ! $this->is_connected() ) {
-			return false;
-		}
-
-		return $this->has_data_for_url( $url );
 	}
 
 	/**
@@ -340,197 +233,6 @@ final class Analytics extends Module
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
 		);
-	}
-
-	/**
-	 * Outputs gtag snippet.
-	 *
-	 * @since 1.0.0
-	 * @since 1.14.0 The `$property_id` parameter was added.
-	 *
-	 * @param string $property_id Analytics property ID to use in the snippet.
-	 */
-	protected function enqueue_gtag_js( $property_id ) {
-		$gtag_src = "https://www.googletagmanager.com/gtag/js?id=$property_id";
-
-		wp_enqueue_script( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-			'google_gtagjs',
-			$gtag_src,
-			false,
-			null,
-			false
-		);
-		wp_script_add_data( 'google_gtagjs', 'script_execution', 'async' );
-
-		wp_add_inline_script(
-			'google_gtagjs',
-			'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}'
-		);
-
-		$gtag_opt = array();
-
-		if ( $this->context->get_amp_mode() ) {
-			$gtag_opt['linker'] = array(
-				'domains' => array( $this->get_home_domain() ),
-			);
-		}
-
-		$anonymize_ip = $this->get_data( 'anonymize-ip' );
-		if ( ! is_wp_error( $anonymize_ip ) && $anonymize_ip ) {
-			// See https://developers.google.com/analytics/devguides/collection/gtagjs/ip-anonymization.
-			$gtag_opt['anonymize_ip'] = true;
-		}
-
-		/**
-		 * Filters the gtag configuration options for the Analytics snippet.
-		 *
-		 * You can use the {@see 'googlesitekit_amp_gtag_opt'} filter to do the same for gtag in AMP.
-		 *
-		 * @since 1.0.0
-		 *
-		 * @see https://developers.google.com/gtagjs/devguide/configure
-		 *
-		 * @param array $gtag_opt gtag config options.
-		 */
-		$gtag_opt = apply_filters( 'googlesitekit_gtag_opt', $gtag_opt );
-
-		if ( ! empty( $gtag_opt['linker'] ) ) {
-			wp_add_inline_script(
-				'google_gtagjs',
-				'gtag(\'set\', \'linker\', ' . wp_json_encode( $gtag_opt['linker'] ) . ' );'
-			);
-		}
-		unset( $gtag_opt['linker'] );
-
-		wp_add_inline_script(
-			'google_gtagjs',
-			'gtag(\'js\', new Date());'
-		);
-
-		// Site Kit developer ID.
-		wp_add_inline_script(
-			'google_gtagjs',
-			'gtag(\'set\', \'developer_id.dZTNiMT\', true);'
-		);
-
-		if ( empty( $gtag_opt ) ) {
-			wp_add_inline_script(
-				'google_gtagjs',
-				'gtag(\'config\', \'' . esc_attr( $property_id ) . '\');'
-			);
-		} else {
-			wp_add_inline_script(
-				'google_gtagjs',
-				'gtag(\'config\', \'' . esc_attr( $property_id ) . '\', ' . wp_json_encode( $gtag_opt ) . ' );'
-			);
-		}
-
-		$block_on_consent_attrs = $this->get_tag_block_on_consent_attribute();
-
-		if ( $block_on_consent_attrs ) {
-			$apply_block_on_consent_attrs = function ( $tag, $handle ) use ( $block_on_consent_attrs, $gtag_src ) {
-				if ( 'google_gtagjs' !== $handle ) {
-					return $tag;
-				}
-
-				return str_replace(
-					array(
-						"<script src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-						"<script src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-						"<script type='text/javascript' src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-						"<script type=\"text/javascript\" src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-					),
-					array( // `type` attribute intentionally excluded in replacements.
-						"<script{$block_on_consent_attrs} src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-						"<script{$block_on_consent_attrs} src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-						"<script{$block_on_consent_attrs} src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-						"<script{$block_on_consent_attrs} src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-					),
-					$tag
-				);
-			};
-			add_filter( 'script_loader_tag', $apply_block_on_consent_attrs, 10, 2 );
-		}
-	}
-
-	/**
-	 * Outputs gtag <amp-analytics> tag.
-	 *
-	 * @since 1.0.0
-	 * @since 1.14.0 The `$property_id` parameter was added.
-	 *
-	 * @param string $property_id Analytics property ID to use in the snippet.
-	 */
-	protected function print_amp_gtag( $property_id ) {
-		if ( $this->did_amp_gtag ) {
-			return;
-		}
-
-		$this->did_amp_gtag = true;
-
-		$gtag_amp_opt = array(
-			'vars'            => array(
-				'gtag_id' => $property_id,
-				'config'  => array(
-					$property_id => array(
-						'groups' => 'default',
-						'linker' => array(
-							'domains' => array( $this->get_home_domain() ),
-						),
-					),
-				),
-			),
-			'optoutElementId' => '__gaOptOutExtension',
-		);
-
-		/**
-		 * Filters the gtag configuration options for the amp-analytics tag.
-		 *
-		 * You can use the {@see 'googlesitekit_gtag_opt'} filter to do the same for gtag in non-AMP.
-		 *
-		 * @since 1.0.0
-		 *
-		 * @see https://developers.google.com/gtagjs/devguide/amp
-		 *
-		 * @param array $gtag_amp_opt gtag config options for AMP.
-		 */
-		$gtag_amp_opt_filtered = apply_filters( 'googlesitekit_amp_gtag_opt', $gtag_amp_opt );
-
-		// Ensure gtag_id is set to the correct value.
-		if ( ! is_array( $gtag_amp_opt_filtered ) ) {
-			$gtag_amp_opt_filtered = $gtag_amp_opt;
-		}
-
-		if ( ! isset( $gtag_amp_opt_filtered['vars'] ) || ! is_array( $gtag_amp_opt_filtered['vars'] ) ) {
-			$gtag_amp_opt_filtered['vars'] = $gtag_amp_opt['vars'];
-		}
-
-		$gtag_amp_opt_filtered['vars']['gtag_id'] = $property_id;
-
-		printf(
-			'<amp-analytics type="gtag" data-credentials="include"%s><script type="application/json">%s</script></amp-analytics>',
-			$this->get_tag_amp_block_on_consent_attribute(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			wp_json_encode( $gtag_amp_opt_filtered )
-		);
-	}
-
-	/**
-	 * Loads AMP analytics script if opted in.
-	 *
-	 * This only affects AMP Reader mode, the others are automatically covered.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $data AMP template data.
-	 * @return array Filtered $data.
-	 */
-	protected function amp_data_load_analytics_component( $data ) {
-		if ( isset( $data['amp_component_scripts']['amp-analytics'] ) ) {
-			return $data;
-		}
-
-		$data['amp_component_scripts']['amp-analytics'] = 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js';
-		return $data;
 	}
 
 	/**
@@ -625,12 +327,7 @@ final class Analytics extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:account-id'                   => array( 'service' => '' ),
-			'POST:account-id'                  => array( 'service' => '' ),
 			'GET:accounts-properties-profiles' => array( 'service' => 'analytics' ),
-			'GET:anonymize-ip'                 => array( 'service' => '' ),
-			'GET:connection'                   => array( 'service' => '' ),
-			'POST:connection'                  => array( 'service' => '' ),
 			'POST:create-account-ticket'       => array(
 				'service'                => 'analyticsprovisioning',
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.provision' ),
@@ -646,20 +343,11 @@ final class Analytics extends Module
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
 			),
-			'GET:internal-web-property-id'     => array( 'service' => '' ),
-			'POST:internal-web-property-id'    => array( 'service' => '' ),
 			'GET:goals'                        => array( 'service' => 'analytics' ),
-			'GET:profile-id'                   => array( 'service' => '' ),
-			'POST:profile-id'                  => array( 'service' => '' ),
 			'GET:profiles'                     => array( 'service' => 'analytics' ),
 			'GET:properties-profiles'          => array( 'service' => 'analytics' ),
-			'GET:property-id'                  => array( 'service' => '' ),
-			'POST:property-id'                 => array( 'service' => '' ),
 			'GET:report'                       => array( 'service' => 'analyticsreporting' ),
 			'GET:tag-permission'               => array( 'service' => '' ),
-			'GET:tracking-disabled'            => array( 'service' => '' ),
-			'GET:use-snippet'                  => array( 'service' => '' ),
-			'POST:use-snippet'                 => array( 'service' => '' ),
 		);
 	}
 
@@ -675,29 +363,6 @@ final class Analytics extends Module
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:account-id':
-				return function() {
-					$option = $this->get_settings()->get();
-
-					if ( empty( $option['accountID'] ) ) {
-						return new WP_Error( 'account_id_not_set', __( 'Analytics account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-					}
-					return $option['accountID'];
-				};
-			case 'POST:account-id':
-				if ( ! isset( $data['accountID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$this->get_settings()->merge(
-						array(
-							'accountID'     => $data['accountID'],
-							'adsenseLinked' => false,
-						)
-					);
-					return true;
-				};
 			case 'GET:accounts-properties-profiles':
 				return function () use ( $data ) {
 					$restore_defer = $this->with_client_defer( false );
@@ -716,38 +381,6 @@ final class Analytics extends Module
 					} finally {
 						$restore_defer(); // Will be called before returning in all cases.
 					}
-				};
-			case 'GET:anonymize-ip':
-				return function() {
-					$option = $this->get_settings()->get();
-
-					return (bool) $option['anonymizeIP'];
-				};
-			case 'GET:connection':
-				return function() {
-					$connection = array(
-						'accountID'             => '',
-						'propertyID'            => '',
-						'profileID'             => '',
-						'internalWebPropertyID' => '',
-					);
-
-					$option = $this->get_settings()->get();
-
-					return array_intersect_key( $option, $connection );
-				};
-			case 'POST:connection':
-				return function() use ( $data ) {
-					$this->get_settings()->merge(
-						array(
-							'accountID'             => $data['accountID'],
-							'propertyID'            => $data['propertyID'],
-							'profileID'             => $data['profileID'],
-							'internalWebPropertyID' => $data['internalWebPropertyID'],
-							'adsenseLinked'         => false,
-						)
-					);
-					return true;
 				};
 			case 'POST:create-account-ticket':
 				if ( ! isset( $data['accountName'] ) ) {
@@ -796,7 +429,7 @@ final class Analytics extends Module
 				return $this->get_service( 'analyticsprovisioning' )
 					->provisioning->createAccountTicket( $account_ticket );
 			case 'GET:goals':
-				$connection = $this->get_data( 'connection' );
+				$connection = $this->get_settings()->get();
 				if (
 					empty( $connection['accountID'] ) ||
 					empty( $connection['internalWebPropertyID'] ) ||
@@ -815,52 +448,6 @@ final class Analytics extends Module
 				}
 				$service = $this->get_service( 'analytics' );
 				return $service->management_goals->listManagementGoals( $connection['accountID'], $connection['propertyID'], $connection['profileID'] );
-			case 'GET:internal-web-property-id':
-				return function() {
-					$option = $this->get_settings()->get();
-
-					if ( empty( $option['internalWebPropertyID'] ) ) {
-						return new WP_Error( 'internal_web_property_id_not_set', __( 'Analytics internal web property ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-					}
-					return $option['internalWebPropertyID'];
-				};
-			case 'POST:internal-web-property-id':
-				if ( ! isset( $data['internalWebPropertyID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalWebPropertyID' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$this->get_settings()->merge(
-						array(
-							'internalWebPropertyID' => $data['internalWebPropertyID'],
-							'adsenseLinked'         => false,
-						)
-					);
-					return true;
-				};
-			case 'GET:profile-id':
-				return function() {
-					$option = $this->get_settings()->get();
-
-					if ( empty( $option['profileID'] ) ) {
-						return new WP_Error( 'profile_id_not_set', __( 'Analytics view ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-					}
-					return $option['profileID'];
-				};
-			case 'POST:profile-id':
-				if ( ! isset( $data['profileID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileID' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$this->get_settings()->merge(
-						array(
-							'profileID'     => $data['profileID'],
-							'adsenseLinked' => false,
-						)
-					);
-					return true;
-				};
 			case 'GET:profiles':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -891,29 +478,6 @@ final class Analytics extends Module
 				}
 
 				return $this->get_service( 'analytics' )->management_webproperties->listManagementWebproperties( $data['accountID'] );
-			case 'GET:property-id':
-				return function() {
-					$option = $this->get_settings()->get();
-
-					if ( empty( $option['propertyID'] ) ) {
-						return new WP_Error( 'property_id_not_set', __( 'Analytics property ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-					}
-					return $option['propertyID'];
-				};
-			case 'POST:property-id':
-				if ( ! isset( $data['propertyID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$this->get_settings()->merge(
-						array(
-							'propertyID'    => $data['propertyID'],
-							'adsenseLinked' => false,
-						)
-					);
-					return true;
-				};
 			case 'GET:report':
 				$request_args = array();
 
@@ -959,6 +523,22 @@ final class Analytics extends Module
 
 					if ( ! empty( $dimensions ) ) {
 						$request_args['dimensions'] = $dimensions;
+					}
+				}
+
+				$dimension_filters          = $data['dimensionFilters'];
+				$dimension_filter_instances = array();
+				if ( ! empty( $dimension_filters ) && is_array( $dimension_filters ) ) {
+					foreach ( $dimension_filters as $dimension_name => $dimension_value ) {
+						$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
+						$dimension_filter->setDimensionName( $dimension_name );
+						$dimension_filter->setOperator( 'EXACT' );
+						$dimension_filter->setExpressions( array( $dimension_value ) );
+						$dimension_filter_instances[] = $dimension_filter;
+					}
+
+					if ( ! empty( $dimension_filter_instances ) ) {
+						$request_args['dimension_filters'] = $dimension_filter_instances;
 					}
 				}
 
@@ -1106,26 +686,6 @@ final class Analytics extends Module
 						$this->has_access_to_property( $property_id )
 					);
 				};
-			case 'GET:tracking-disabled':
-				return function() {
-					$option = $this->get_settings()->get();
-
-					return $option['trackingDisabled'];
-				};
-			case 'GET:use-snippet':
-				return function() {
-					$option = $this->get_settings()->get();
-					return ! empty( $option['useSnippet'] );
-				};
-			case 'POST:use-snippet':
-				if ( ! isset( $data['useSnippet'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'useSnippet' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$this->get_settings()->merge( array( 'useSnippet' => $data['useSnippet'] ) );
-					return true;
-				};
 		}
 
 		return parent::create_data_request( $data );
@@ -1214,27 +774,42 @@ final class Analytics extends Module
 						)
 					);
 				} else {
-					// Get the account ID from the saved settings - returns WP_Error if not set.
-					$account_id = $this->get_data( 'account-id' );
+					// Get the account ID from the saved settings.
+					$option     = $this->get_settings()->get();
+					$account_id = $option['accountID'];
 					// If the saved account ID is in the list of accounts the user has access to, it's a match.
 					if ( in_array( $account_id, $account_ids, true ) ) {
 						$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
 					} else {
-						// Iterate over each account in reverse so if there is no match,
-						// the last $properties_profiles will be from the first account (selected by default).
-						foreach ( array_reverse( $accounts ) as $account ) {
+						$fallback_properties_profiles = null;
+						// Iterate over the first 25 accounts to avoid making too many requests.
+						foreach ( array_slice( $accounts, 0, 25 ) as $account ) {
 							/* @var Google_Service_Analytics_Account $account Analytics account object. */
 							$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account->getId() ) );
 
-							if ( ! is_wp_error( $properties_profiles ) && isset( $properties_profiles['matchedProperty'] ) ) {
+							if ( is_wp_error( $properties_profiles ) ) {
+								$properties_profiles = $fallback_properties_profiles;
+								// Stop iteration to avoid potential quota errors.
 								break;
+							}
+							// If we found a matchedProperty, we're all done.
+							if ( isset( $properties_profiles['matchedProperty'] ) ) {
+								break;
+							}
+							// If we didn't find a matched property yet,
+							// save the response as a fallback, if none set yet.
+							if ( null === $fallback_properties_profiles ) {
+								$fallback_properties_profiles = $properties_profiles;
 							}
 						}
 					}
 				}
 
-				if ( is_wp_error( $properties_profiles ) ) {
-					return $properties_profiles;
+				if ( is_wp_error( $properties_profiles ) || ! $properties_profiles ) {
+					$properties_profiles = array(
+						'properties' => array(),
+						'profiles'   => array(),
+					);
 				}
 
 				return array_merge( compact( 'accounts' ), $properties_profiles );
@@ -1269,7 +844,8 @@ final class Analytics extends Module
 					$property_id  = $data['existingPropertyID'];
 					$current_urls = array();
 				} else {
-					$property_id  = $this->get_data( 'property-id' );
+					$option       = $this->get_settings()->get();
+					$property_id  = $option['propertyID'];
 					$current_urls = $this->permute_site_url( $current_url );
 				}
 
@@ -1335,15 +911,17 @@ final class Analytics extends Module
 	 * Creates a new Analytics site request for the current site and given arguments.
 	 *
 	 * @since 1.0.0
+	 * @since 1.24.0 Added $dimension_filters
 	 *
 	 * @param array $args {
 	 *     Optional. Additional arguments.
 	 *
-	 *     @type array  $dimensions List of request dimensions. Default empty array.
-	 *     @type string $start_date Start date in 'Y-m-d' format. Default empty string.
-	 *     @type string $end_date   End date in 'Y-m-d' format. Default empty string.
-	 *     @type string $page       Specific page URL to filter by. Default empty string.
-	 *     @type int    $row_limit  Limit of rows to return. Default 100.
+	 *     @type array                                               $dimensions        List of request dimensions. Default empty array.
+	 *     @type Google_Service_AnalyticsReporting_DimensionFilter[] $dimension_filters List of dimension filter instances for the specified request dimensions. Default empty array.
+	 *     @type string                                              $start_date        Start date in 'Y-m-d' format. Default empty string.
+	 *     @type string                                              $end_date          End date in 'Y-m-d' format. Default empty string.
+	 *     @type string                                              $page              Specific page URL to filter by. Default empty string.
+	 *     @type int                                                 $row_limit         Limit of rows to return. Default 100.
 	 * }
 	 * @return Google_Service_AnalyticsReporting_ReportRequest|WP_Error Analytics site request instance.
 	 */
@@ -1351,18 +929,17 @@ final class Analytics extends Module
 		$args = wp_parse_args(
 			$args,
 			array(
-				'dimensions' => array(),
-				'start_date' => '',
-				'end_date'   => '',
-				'page'       => '',
-				'row_limit'  => 100,
+				'dimensions'        => array(),
+				'dimension_filters' => array(),
+				'start_date'        => '',
+				'end_date'          => '',
+				'page'              => '',
+				'row_limit'         => 100,
 			)
 		);
 
-		$profile_id = $this->get_data( 'profile-id' );
-		if ( is_wp_error( $profile_id ) ) {
-			return $profile_id;
-		}
+		$option     = $this->get_settings()->get();
+		$profile_id = $option['profileID'];
 
 		$request = new Google_Service_AnalyticsReporting_ReportRequest();
 		$request->setIncludeEmptyRows( true );
@@ -1379,6 +956,25 @@ final class Analytics extends Module
 			$request->setDateRanges( array( $date_range ) );
 		}
 
+		$dimension_filter_clauses = array();
+
+		$hostname         = wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+		$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
+		$dimension_filter->setDimensionName( 'ga:hostname' );
+		$dimension_filter->setOperator( 'EXACT' );
+		$dimension_filter->setExpressions( array( $hostname ) );
+		$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
+		$dimension_filter_clause->setFilters( array( $dimension_filter ) );
+		$dimension_filter_clauses[] = $dimension_filter_clause;
+
+		if ( ! empty( $args['dimension_filters'] ) ) {
+			$dimension_filters       = $args['dimension_filters'];
+			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
+			$dimension_filter_clause->setFilters( $dimension_filters );
+			$dimension_filter_clause->setOperator( 'AND' );
+			$dimension_filter_clauses[] = $dimension_filter_clause;
+		}
+
 		if ( ! empty( $args['page'] ) ) {
 			$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
 			$dimension_filter->setDimensionName( 'ga:pagePath' );
@@ -1387,8 +983,10 @@ final class Analytics extends Module
 			$dimension_filter->setExpressions( array( rawurldecode( $args['page'] ) ) );
 			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
 			$dimension_filter_clause->setFilters( array( $dimension_filter ) );
-			$request->setDimensionFilterClauses( array( $dimension_filter_clause ) );
+			$dimension_filter_clauses[] = $dimension_filter_clause;
 		}
+
+		$request->setDimensionFilterClauses( $dimension_filter_clauses );
 
 		if ( ! empty( $args['row_limit'] ) ) {
 			$request->setPageSize( $args['row_limit'] );
@@ -1534,15 +1132,39 @@ final class Analytics extends Module
 	 * @return WP_Error WordPress error object.
 	 */
 	protected function exception_to_error( Exception $e, $datapoint ) {
+		$cache_ttl = false;
+
 		if ( 'report' === $datapoint && $e instanceof Google_Service_Exception ) {
 			$errors = $e->getErrors();
 			// If error is because of AdSense metric being requested, set adsenseLinked to false.
-			if ( isset( $errors[0]['message'] ) && $this->is_adsense_metric( substr( $errors[0]['message'], strlen( 'Restricted metric(s): ' ) ) ) ) {
-				$this->get_settings()->merge( array( 'adsenseLinked' => false ) );
+			if ( isset( $errors[0]['message'] ) ) {
+				if ( $this->is_adsense_metric( substr( $errors[0]['message'], strlen( 'Restricted metric(s): ' ) ) ) ) {
+					$this->get_settings()->merge( array( 'adsenseLinked' => false ) );
+				}
+
+				if ( preg_match( '#^Restricted metric\(s\)\:#im', $errors[0]['message'] ) ) {
+					$cache_ttl = ( 10 * MINUTE_IN_SECONDS );
+				}
 			}
 		}
 
-		return parent::exception_to_error( $e, $datapoint );
+		$error = parent::exception_to_error( $e, $datapoint );
+
+		if ( $cache_ttl && is_wp_error( $error ) ) {
+			$error_code = $error->get_error_code();
+			if ( ! empty( $error->error_data[ $error_code ] ) ) {
+				$error->error_data[ $error_code ]['cacheTTL'] = $cache_ttl;
+			} else {
+				$error->add_data(
+					array(
+						'cacheTTL' => $cache_ttl,
+					),
+					$error_code
+				);
+			}
+		}
+
+		return $error;
 	}
 
 	/**
@@ -1576,17 +1198,6 @@ final class Analytics extends Module
 	}
 
 	/**
-	 * Gets the hostname of the home URL.
-	 *
-	 * @since 1.5.0
-	 *
-	 * @return string
-	 */
-	private function get_home_domain() {
-		return wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_HOST );
-	}
-
-	/**
 	 * Outputs the user tracking opt-out script.
 	 *
 	 * This script opts out of all Google Analytics tracking, for all measurement IDs, regardless of implementation.
@@ -1596,6 +1207,10 @@ final class Analytics extends Module
 	 * @link https://developers.google.com/analytics/devguides/collection/analyticsjs/user-opt-out
 	 */
 	private function print_tracking_opt_out() {
+		if ( ! $this->is_tracking_disabled() ) {
+			return;
+		}
+
 		?>
 		<!-- <?php esc_html_e( 'Google Analytics user opt-out added via Site Kit by Google', 'google-site-kit' ); ?> -->
 		<?php if ( $this->context->is_amp() ) : ?>
@@ -1640,66 +1255,11 @@ final class Analytics extends Module
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
 						'googlesitekit-datastore-forms',
+						'googlesitekit-google-charts',
 					),
 				)
 			),
 		);
-	}
-
-	/**
-	 * Checks whether Analytics data exists for the given URL.
-	 *
-	 * @since 1.4.0
-	 *
-	 * @param string $url The url to check data for.
-	 * @return bool
-	 */
-	protected function has_data_for_url( $url ) {
-		if ( ! $url ) {
-			return false;
-		}
-
-		$transient_key = 'googlesitekit_analytics_has_data_' . md5( $url );
-		$has_data      = get_transient( $transient_key );
-
-		if ( false === $has_data ) {
-			/* @var Google_Service_AnalyticsReporting_Report[]|WP_Error $reports Array of reporting report instances. */
-			$reports = $this->get_data(
-				'report',
-				array(
-					'url'     => $url,
-					'metrics' => array(
-						array( 'expression' => 'ga:users' ),
-						array( 'expression' => 'ga:sessions' ),
-					),
-				)
-			);
-
-			if ( is_wp_error( $reports ) ) {
-				$reports = array(); // Bypass data check and cache.
-			}
-
-			foreach ( $reports as $report ) {
-				/* @var Google_Service_AnalyticsReporting_Report $report Report instance. */
-				$report_data = $report->getData();
-				/* @var Google_Service_AnalyticsReporting_ReportData $report_data Report data instance. */
-				foreach ( $report_data->getTotals() as $date_range_values ) {
-					/* @var Google_Service_AnalyticsReporting_DateRangeValues $date_range_values Values instance. */
-					if (
-						isset( $date_range_values[0], $date_range_values[1] )
-						&& ( 0 < $date_range_values[0] || 0 < $date_range_values[1] )
-					) {
-						$has_data = true;
-						break 2;
-					}
-				}
-			}
-
-			// Cache "data found" status for one day, "no data" status for one hour.
-			set_transient( $transient_key, (int) $has_data, $has_data ? DAY_IN_SECONDS : HOUR_IN_SECONDS );
-		}
-
-		return (bool) $has_data;
 	}
 
 	/**
@@ -1716,4 +1276,38 @@ final class Analytics extends Module
 		}
 		return $matches[1];
 	}
+
+	/**
+	 * Registers the Analytics tag.
+	 *
+	 * @since 1.24.0
+	 */
+	private function register_tag() {
+		$tag             = null;
+		$module_settings = $this->get_settings();
+		$settings        = $module_settings->get();
+
+		if ( $this->context->is_amp() ) {
+			$tag = new AMP_Tag( $settings['propertyID'], self::MODULE_SLUG );
+		} else {
+			$tag = new Web_Tag( $settings['propertyID'], self::MODULE_SLUG );
+			$tag->set_anonymize_ip( ! empty( $settings['anonymizeIP'] ) );
+		}
+
+		if ( $tag && ! $tag->is_tag_blocked() ) {
+			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+			$tag->use_guard( new Tag_Guard( $module_settings ) );
+
+			if ( $tag->can_register() ) {
+				if ( $this->context->get_amp_mode() ) {
+					$home = $this->context->get_canonical_home_url();
+					$home = wp_parse_url( $home, PHP_URL_HOST );
+					$tag->set_home_domain( $home );
+				}
+
+				$tag->register();
+			}
+		}
+	}
+
 }

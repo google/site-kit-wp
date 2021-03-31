@@ -7,7 +7,7 @@
  * Author URI:  https://opensource.google.com
  *
  * @package   Google\Site_Kit
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -17,12 +17,12 @@ use Google\Site_Kit\Core\Storage\Data_Encryption;
 use Google\Site_Kit\Plugin;
 
 /**
- * Provide dummy client configuration, normally provided in step 1 of the set up.
+ * Provide placeholder client configuration, normally provided in step 1 of the set up.
  */
 require_once __DIR__ . '/gcp-credentials.php';
 
 /**
- * Provide a dummy access token to fake an authenticated state.
+ * Provide a placeholder access token to fake an authenticated state.
  */
 add_filter(
 	'get_user_option_googlesitekit_access_token',

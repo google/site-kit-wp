@@ -1,7 +1,7 @@
 /**
  * ESLint rules: Require fullstops in JSDoc.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ module.exports = iterateJsdoc( ( {
 
 	jsdoc.tags.forEach( ( tag ) => {
 		// Only check these tags for fullstops.
-		if ( ! [ 'param', 'return', 'returns' ].includes( tag.tag ) ) {
+		if ( ! [ 'param', 'return', 'returns', 'deprecated' ].includes( tag.tag ) ) {
 			return;
 		}
 

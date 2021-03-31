@@ -1,7 +1,7 @@
 /**
  * Activation Main component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,10 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Button from '../button';
+import Button from '../Button';
 import Logo from '../Logo';
-import OptIn from '../optin';
-import CompatibilityChecks from '../setup/compatibility-checks';
+import OptIn from '../OptIn';
+import CompatibilityChecks from '../setup/CompatibilityChecks';
 
 export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 	return (
@@ -50,9 +50,9 @@ export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 					</h3>
 
 					<CompatibilityChecks>
-						{ ( { complete, inProgressFeedback, CTAFeedback } ) => (
+						{ ( { complete, inProgressFeedback, ctaFeedback } ) => (
 							<Fragment>
-								{ CTAFeedback }
+								{ ctaFeedback }
 
 								<OptIn optinAction="analytics_optin_setup_banner" />
 

@@ -3,7 +3,7 @@
  * Tag_ManagerTest
  *
  * @package   Google\Site_Kit\Tests\Modules
- * @copyright 2019 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Modules\Analytics\Settings as AnalyticsSettings;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
@@ -30,6 +31,7 @@ class Tag_ManagerTest extends TestCase {
 	public function test_register() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
+		remove_all_filters( 'googlesitekit_analytics_can_use_snippet' );
 
 		$tagmanager->register();
 
@@ -37,6 +39,32 @@ class Tag_ManagerTest extends TestCase {
 			$tagmanager->get_scopes(),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
+		$this->assertTrue( has_filter( 'googlesitekit_analytics_can_use_snippet' ) );
+	}
+
+	public function test_analytics_can_use_snippet() {
+		remove_all_filters( 'googlesitekit_analytics_can_use_snippet' );
+		$context            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options            = new Options( $context );
+		$analytics_settings = new AnalyticsSettings( $options );
+		$analytics_settings->delete();
+		$tagmanager = new Tag_Manager( $context );
+		$settings   = $tagmanager->get_settings();
+
+		// The value should be `true` by default.
+		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
+		// Delayed to differentiate between initial value and post-registration value.
+		$tagmanager->register();
+		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
+		// Should be `false` if there is a `gaPropertyID` set.
+		$settings->merge( array( 'gaPropertyID' => 'UA-S1T3K1T-1' ) );
+		$this->assertFalse( $analytics_settings->get()['canUseSnippet'] );
+		// Should be `true` even with a `gaPropertyID` if GTM's snippet is disabled.
+		$settings->merge( array( 'useSnippet' => false ) );
+		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
+		// Still `true` if no `gaPropertyID` and no GTM snippet.
+		$settings->merge( array( 'gaPropertyID' => '' ) );
+		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
 	}
 
 	public function test_register_template_redirect_amp() {
@@ -57,12 +85,10 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
 		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
 
-		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+				'useSnippet'     => true,
+				'ampContainerID' => 'GTM-999999',
 			)
 		);
 
@@ -113,12 +139,10 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertFalse( has_action( 'wp_body_open' ) );
 		$this->assertFalse( has_action( 'wp_footer' ) );
 
-		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+				'useSnippet'  => true,
+				'containerID' => 'GTM-999999',
 			)
 		);
 
@@ -155,12 +179,10 @@ class Tag_ManagerTest extends TestCase {
 	 */
 	public function test_block_on_consent_amp( $enabled ) {
 		$tagmanager = new Tag_Manager( $this->get_amp_primary_context() );
-		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+				'useSnippet'     => true,
+				'ampContainerID' => 'GTM-999999',
 			)
 		);
 
@@ -192,14 +214,13 @@ class Tag_ManagerTest extends TestCase {
 	 */
 	public function test_block_on_consent_non_amp( $enabled ) {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+				'useSnippet'  => true,
+				'containerID' => 'GTM-999999',
 			)
 		);
+
 		remove_all_actions( 'template_redirect' );
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'wp_footer' );
@@ -243,11 +264,9 @@ class Tag_ManagerTest extends TestCase {
 
 		$this->assertFalse( $tagmanager->is_connected() );
 
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+				'containerID' => 'GTM-999999',
 			)
 		);
 
@@ -260,11 +279,9 @@ class Tag_ManagerTest extends TestCase {
 
 		$this->assertFalse( $tagmanager->is_connected() );
 
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+				'ampContainerID' => 'GTM-999999',
 			)
 		);
 
@@ -277,22 +294,18 @@ class Tag_ManagerTest extends TestCase {
 
 		$this->assertFalse( $tagmanager->is_connected() );
 
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+				'containerID' => 'GTM-999999',
 			)
 		);
 
 		// Should still fail because both 'web' and 'amp' containers are required.
 		$this->assertFalse( $tagmanager->is_connected() );
 
-		$tagmanager->set_data(
-			'container-id',
+		$tagmanager->get_settings()->merge(
 			array(
-				'containerID'  => 'GTM-999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+				'ampContainerID' => 'GTM-999999',
 			)
 		);
 
@@ -354,9 +367,6 @@ class Tag_ManagerTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'connection',
-				'account-id',
-				'container-id',
 				'accounts-containers',
 				'containers',
 				'tag-permission',

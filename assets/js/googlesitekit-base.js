@@ -3,7 +3,7 @@
  *
  * This JavaScript loads on every admin page. Reserved for later.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,6 @@ import {
 	appendNotificationsCount,
 	clearWebStorage,
 } from './util/standalone';
-
-// Load image for the parent menu item.
-import '../images/logo-g_white_small.png';
 
 if ( 'toplevel_page_googlesitekit-dashboard' !== global.pagenow && 'site-kit_page_googlesitekit-splash' !== global.pagenow && 'admin_page_googlesitekit-splash' !== global.pagenow && global.localStorage ) {
 	// The total notifications count should always rely on local storage

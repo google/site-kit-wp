@@ -1,7 +1,7 @@
 /**
  * `core/site` data store: site info.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
+import { getLocale } from '../../../util/i18n';
 
 const { createRegistrySelector } = Data;
 
@@ -103,6 +104,7 @@ export const reducer = ( state, { payload, type } ) => {
 				siteName,
 				timezone,
 				usingProxy,
+				webStoriesActive,
 			} = payload.siteInfo;
 
 			return {
@@ -121,6 +123,7 @@ export const reducer = ( state, { payload, type } ) => {
 					siteName,
 					timezone,
 					usingProxy,
+					webStoriesActive,
 				},
 			};
 		}
@@ -161,6 +164,7 @@ export const resolvers = {
 			siteName,
 			timezone,
 			usingProxy,
+			webStoriesActive,
 		} = global._googlesitekitBaseData;
 		const {
 			currentEntityID,
@@ -183,6 +187,7 @@ export const resolvers = {
 			siteName,
 			timezone,
 			usingProxy: !! usingProxy,
+			webStoriesActive,
 		} );
 	},
 };
@@ -469,6 +474,40 @@ export const selectors = {
 		return queryArg ? queryArg : false;
 	},
 
+	/**
+	 * Gets external help links which includes the user's locale.
+	 *
+	 * @since 1.24.0
+	 *
+	 * @param {Object} state        Data store's state.
+	 * @param {Object} [args]       Optional arguments for the resulting URL.
+	 * @param {string} [args.path]  Base URL to build complete URL with starting slash.
+	 * @param {Object} [args.query] Object to append query to the URL.
+	 * @param {string} [args.hash]  Optional hash.
+	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
+	 */
+	getGoogleSupportURL: ( state, args ) => {
+		const { path, query, hash } = args || {};
+
+		if ( ! path ) {
+			return null;
+		}
+
+		const url = new URL( addQueryArgs( `https://support.google.com${ path }`, { ...query, hl: getLocale() } ) );
+		url.hash = hash || '';
+
+		return url.toString();
+	},
+
+	/**
+	 * Returns true if this site has the Web Stories plugin enabled.
+	 *
+	 * @since 1.27.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if the Web Stories plugin is enabled, `false` if not. Returns `undefined` if not loaded.
+	 */
+	isWebStoriesActive: getSiteInfoProperty( 'webStoriesActive' ),
 };
 
 export default {

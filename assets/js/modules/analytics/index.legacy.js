@@ -1,7 +1,7 @@
 /**
  * Analytics module initialization.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,56 +24,23 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import { getSiteKitAdminURL, getModulesData } from '../../util';
+import { getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
-import AnalyticsDashboardWidget from './components/dashboard/AnalyticsDashboardWidget';
-import AnalyticsAdminbarWidget from './components/adminbar/AnalyticsAdminbarWidget';
-import LegacyAnalyticsAllTraffic from './components/dashboard/LegacyAnalyticsAllTraffic';
+import LegacyAnalyticsDashboardWidget from './components/dashboard/LegacyAnalyticsDashboardWidget';
 import LegacyAnalyticsDashboardWidgetTopLevel from './components/dashboard/LegacyAnalyticsDashboardWidgetTopLevel';
-import WPAnalyticsDashboardWidgetOverview from './components/wp-dashboard/WPAnalyticsDashboardWidgetOverview';
 import AnalyticsDashboardDetailsWidgetTopAcquisitionSources from './components/dashboard-details/AnalyticsDashboardDetailsWidgetTopAcquisitionSources';
-import WPAnalyticsDashboardWidgetTopPagesTable from './components/wp-dashboard/WPAnalyticsDashboardWidgetTopPagesTable';
 import AnalyticsAdSenseDashboardWidgetTopPagesTable from './components/dashboard/AnalyticsAdSenseDashboardWidgetTopPagesTable';
 import LegacyAnalyticsDashboardWidgetPopularPagesTable from './components/dashboard/LegacyAnalyticsDashboardWidgetPopularPagesTable';
 import LegacyAdSenseDashboardWidgetTopPagesTableSmall from './components/dashboard/LegacyAdSenseDashboardWidgetTopPagesTableSmall';
+import LegacyDashboardAllTraffic from './components/dashboard/DashboardAllTrafficWidget/LegacyDashboardAllTraffic';
 
 const slug = 'analytics';
 
-const addAnalyticsAdminbarWidget = createAddToFilter( <AnalyticsAdminbarWidget /> );
-
-/**
- * Add components to the adminbar.
- */
-addFilter( 'googlesitekit.AdminbarModules',
-	'googlesitekit.Analytics',
-	addAnalyticsAdminbarWidget, 11 );
-
 const modulesData = getModulesData();
 
-// If setup is not complete, show the signup flow.
-if ( ! modulesData[ slug ].setupComplete ) {
-	const {
-		reAuth,
-		currentScreen,
-	} = global._googlesitekitLegacyData.admin;
-	const id = currentScreen ? currentScreen.id : null;
-	if ( ! reAuth && 'site-kit_page_googlesitekit-module-analytics' === id ) {
-		// Setup incomplete: redirect to the setup flow.
-		global.location = getSiteKitAdminURL(
-			`googlesitekit-module-${ slug }`,
-			{
-				reAuth: true,
-				slug,
-			}
-		);
-	}
-}
-
 if ( modulesData.analytics.active ) {
-	const addAnalyticsDashboardWidget = createAddToFilter( <AnalyticsDashboardWidget /> );
-	const addAnalyticsAllTraffic = createAddToFilter( <LegacyAnalyticsAllTraffic /> );
-	const addWPAnalyticsDashboardWidgetOverview = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
-	const addWPAnalyticsDashboardWidgetTopPagesTable = createAddToFilter( <WPAnalyticsDashboardWidgetTopPagesTable /> );
+	const addAnalyticsDashboardWidget = createAddToFilter( <LegacyAnalyticsDashboardWidget /> );
+	const legacyDashboardAllTraffic = createAddToFilter( <LegacyDashboardAllTraffic /> );
 	const addLegacyAnalyticsDashboardWidgetTopLevel = createAddToFilter( <LegacyAnalyticsDashboardWidgetTopLevel /> );
 	const addAnalyticsDashboardDetailsWidget = createAddToFilter( <AnalyticsDashboardDetailsWidgetTopAcquisitionSources /> );
 	const addAnalyticsAdSenseTopPagesWidget = createAddToFilter( <AnalyticsAdSenseDashboardWidgetTopPagesTable /> );
@@ -85,7 +52,7 @@ if ( modulesData.analytics.active ) {
 	 */
 	addFilter( 'googlesitekit.DashboardModule',
 		'googlesitekit.Analytics',
-		addAnalyticsAllTraffic, 9 );
+		legacyDashboardAllTraffic, 9 );
 	addFilter( 'googlesitekit.DashboardSearchFunnel',
 		'googlesitekit.Analytics',
 		addLegacyAnalyticsDashboardWidgetTopLevel, 11 );
@@ -102,16 +69,6 @@ if ( modulesData.analytics.active ) {
 	addFilter( 'googlesitekit.DashboardDetailsModule',
 		'googlesitekit.Analytics',
 		addAnalyticsDashboardDetailsWidget, 20 );
-
-	/**
-	 * Add components to the WordPress Dashboard widget.
-	 */
-	addFilter( 'googlesitekit.WPDashboardHeader',
-		'googlesitekit.Analytics',
-		addWPAnalyticsDashboardWidgetOverview );
-	addFilter( 'googlesitekit.WPDashboardModule',
-		'googlesitekit.Analytics',
-		addWPAnalyticsDashboardWidgetTopPagesTable );
 
 	if ( modulesData[ slug ].setupComplete ) {
 		/**

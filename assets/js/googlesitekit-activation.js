@@ -3,7 +3,7 @@
  *
  * This JavaScript loads on every admin page. Reserved for later.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,9 @@ import { render } from '@wordpress/element';
  * Internal dependencies
  */
 import { trackEvent } from './util';
-import './components/notifications';
+import './components/legacy-notifications';
 import { ActivationApp } from './components/activation/activation-app';
-import Root from './components/root';
+import Root from './components/Root';
 
 domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-activation' );
@@ -38,7 +38,12 @@ domReady( () => {
 	if ( renderTarget ) {
 		trackEvent( 'plugin_setup', 'plugin_activated' );
 
-		render( <Root dataAPIContext="Activation"><ActivationApp /></Root>, renderTarget );
+		render(
+			<Root dataAPIContext="Activation">
+				<ActivationApp />
+			</Root>,
+			renderTarget
+		);
 
 		renderTarget.classList.remove( 'googlesitekit-activation--loading' );
 	}

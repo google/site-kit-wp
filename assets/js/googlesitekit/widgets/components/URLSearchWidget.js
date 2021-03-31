@@ -1,7 +1,7 @@
 /**
  * URLSearchWidget component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,30 +26,29 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Widget from './Widget';
-import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
-import Button from '../../../components/button';
+import { CORE_SITE } from '../../datastore/site/constants';
+import { CORE_LOCATION } from '../../datastore/location/constants';
+import Button from '../../../components/Button';
 import PostSearcherAutoSuggest from '../../../components/PostSearcherAutoSuggest';
+const { useSelect, useDispatch } = Data;
 
-const { useSelect } = Data;
-
-function URLSearchWidget() {
+function URLSearchWidget( { Widget } ) {
 	const [ canSubmit, setCanSubmit ] = useState( false );
 	const [ match, setMatch ] = useState( {} );
 
 	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: match?.permalink } ) );
 
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const onClick = useCallback( () => {
 		if ( match?.permalink ) {
-			global.location.assign( detailsURL );
+			navigateTo( detailsURL );
 		}
 	}, [ detailsURL, match ] );
 
 	return (
 		<div className="mdc-layout-grid__cell">
 			<Widget
-				slug="urlSearchWidget"
-				header={ () => (
+				Header={ () => (
 					<h3 className="googlesitekit-subheading-1 googlesitekit-widget__header-title">
 						{ __( 'Search for individual page or post information', 'google-site-kit' ) }
 					</h3>
@@ -60,10 +59,11 @@ function URLSearchWidget() {
 					<div className="mdc-layout-grid__inner">
 						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 							<div className="googlesitekit-post-searcher">
-								<label className="googlesitekit-post-searcher__label" htmlFor="autocomplete">
+								<label className="googlesitekit-post-searcher__label" htmlFor="urlsearch-autocomplete">
 									{ __( 'Title or URL', 'google-site-kit' ) }
 								</label>
 								<PostSearcherAutoSuggest
+									id="urlsearch-autocomplete"
 									setCanSubmit={ setCanSubmit }
 									setMatch={ setMatch }
 								/>

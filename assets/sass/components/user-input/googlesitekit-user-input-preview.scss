@@ -1,7 +1,7 @@
 /**
  * User Input preview styles.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,13 +54,14 @@
 	.googlesitekit-user-input__preview-answer {
 		align-items: center;
 		background-color: $c-solitude;
-		border-radius: 100px;
+		border-radius: 30px;
 		color: $c-denim;
 		display: flex;
 		font-weight: $fw-secondary-medium;
 		margin-bottom: 12px;
 		margin-right: 12px;
 		padding: 8px 13px;
+		word-break: break-word;
 
 		@include responsive-text("body1", "body3");
 	}

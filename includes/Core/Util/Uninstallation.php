@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Util\Uninstallation
  *
  * @package   Google\Site_Kit\Core\Util
- * @copyright 2020 Google LLC
+ * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -85,16 +85,9 @@ class Uninstallation {
 	 */
 	private function uninstall() {
 		$credentials = new Credentials( new Encrypted_Options( $this->options ) );
-
-		if ( ! $credentials->has() || ! $credentials->using_proxy() ) {
-			return;
-		}
-
-		$google_proxy = new Google_Proxy( $this->context );
-		try {
+		if ( $credentials->has() && $credentials->using_proxy() ) {
+			$google_proxy = new Google_Proxy( $this->context );
 			$google_proxy->unregister_site( $credentials );
-		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-			// Just avoid this from being thrown.
 		}
 	}
 }

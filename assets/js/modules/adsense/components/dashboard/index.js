@@ -1,7 +1,7 @@
 /**
  * AdSense Dashboard components.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,3 +25,5 @@ export { default as DashboardTopEarningPagesWidget } from './DashboardTopEarning
 export { default as LegacyAdSenseDashboardMainSummary } from './LegacyAdSenseDashboardMainSummary';
 export { default as LegacyDashboardAdSenseTopEarningPagesSmall } from './LegacyDashboardAdSenseTopEarningPagesSmall';
 export { default as LegacyDashboardEarnings } from './LegacyDashboardEarnings';
+export { default as LegacyAdSenseDashboardWidgetOverview } from './LegacyAdSenseDashboardWidgetOverview';
+export { default as LegacyAdSenseDashboardWidgetSiteStats } from './LegacyAdSenseDashboardWidgetSiteStats';

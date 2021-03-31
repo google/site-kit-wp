@@ -1,7 +1,7 @@
 /**
  * Container Select component tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ describe( 'ContainerSelect', () => {
 
 	it( 'should be disabled if there is an existing tag', async () => {
 		const account = factories.accountBuilder();
-		const { accountId: accountID } = account; // eslint-disable-line sitekit/camelcase-acronyms
+		const { accountId: accountID } = account; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
@@ -56,7 +56,7 @@ describe( 'ContainerSelect', () => {
 
 	it( 'should be disabled if the selected account is not a valid account', async () => {
 		const account = factories.accountBuilder();
-		const { accountId: accountID } = account; // eslint-disable-line sitekit/camelcase-acronyms
+		const { accountId: accountID } = account; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );

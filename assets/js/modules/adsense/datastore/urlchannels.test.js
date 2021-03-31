@@ -1,7 +1,7 @@
 /**
  * `modules/adsense` data store: URL channels tests.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,6 +110,9 @@ describe( 'modules/adsense URL channels', () => {
 				const urlchannels = registry.select( STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
 				expect( urlchannels ).toEqual( undefined );
 				expect( console ).toHaveErrored();
+
+				const urlChannelsError = registry.select( STORE_NAME ).getErrorForSelector( 'getURLChannels', [ fakeAccountID, fakeClientID ] );
+				expect( urlChannelsError ).toEqual( response );
 			} );
 		} );
 	} );
