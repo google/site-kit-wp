@@ -23,6 +23,11 @@ import invariant from 'invariant';
 import { detectAnyAdblocker } from 'just-detect-adblock';
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -63,7 +68,16 @@ export const controls = {
 		// If this throws, then the fetch request failed completely and we'll assume it was blocked.
 		try {
 			await fetch(
-				'/favicon.ico?google-site-kit=/adsense/pagead2.googlesyndication.com/pagead/js/adsbygoogle.js',
+				addQueryArgs(
+					'/favicon.ico',
+					{
+						// The name of the parameter here doesn't really matter
+						// since adblockers look at the URL as a whole.
+						'google-site-kit': '/adsense/pagead2.googlesyndication.com/pagead/js/adsbygoogle.js',
+						// Add a timestamp for cache-busting.
+						timestamp: Date.now(),
+					}
+				),
 				{
 					credentials: 'omit',
 					// Don't follow any redirects; we only care about this request being blocked or not.
