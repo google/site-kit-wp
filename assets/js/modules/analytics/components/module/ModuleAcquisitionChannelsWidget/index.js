@@ -30,7 +30,7 @@ import { MODULES_ANALYTICS, STORE_NAME } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import PreviewTable from '../../../../../components/PreviewTable';
 import SourceLink from '../../../../../components/SourceLink';
-import { isZeroReport, trafficSourcesReportDataDefaults } from '../../../util';
+import { isZeroReport } from '../../../util';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../../components/ReportTable';
 import { getCurrentDateRangeDayCount } from '../../../../../util/date-range';
@@ -53,7 +53,28 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 	} = useSelect( ( select ) => {
 		const reportDateRange = select( CORE_USER ).getDateRange();
 		const reportArgs = {
-			...trafficSourcesReportDataDefaults,
+			dimensions: 'ga:channelGrouping',
+			metrics: [
+				{
+					expression: 'ga:sessions',
+					alias: 'Sessions',
+				},
+				{
+					expression: 'ga:users',
+					alias: 'Users',
+				},
+				{
+					expression: 'ga:newUsers',
+					alias: 'New Users',
+				},
+			],
+			orderby: [
+				{
+					fieldName: 'ga:users',
+					sortOrder: 'DESCENDING',
+				},
+			],
+			limit: 10,
 			dateRange: reportDateRange,
 		};
 

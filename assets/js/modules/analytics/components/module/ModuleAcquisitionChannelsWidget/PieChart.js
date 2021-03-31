@@ -23,7 +23,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import GoogleChart from '../../../../../components/GoogleChart';
-import { extractAnalyticsDataForPieChart, trafficSourcesReportDataDefaults } from '../../../util';
+import { extractAnalyticsDataForPieChart } from '../../../util';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 
@@ -37,7 +37,28 @@ export default function PieChart() {
 	} = useSelect( ( select ) => {
 		const reportDateRange = select( CORE_USER ).getDateRange();
 		const reportArgs = {
-			...trafficSourcesReportDataDefaults,
+			dimensions: 'ga:channelGrouping',
+			metrics: [
+				{
+					expression: 'ga:sessions',
+					alias: 'Sessions',
+				},
+				{
+					expression: 'ga:users',
+					alias: 'Users',
+				},
+				{
+					expression: 'ga:newUsers',
+					alias: 'New Users',
+				},
+			],
+			orderby: [
+				{
+					fieldName: 'ga:users',
+					sortOrder: 'DESCENDING',
+				},
+			],
+			limit: 10,
 			url,
 			dateRange: reportDateRange,
 		};
