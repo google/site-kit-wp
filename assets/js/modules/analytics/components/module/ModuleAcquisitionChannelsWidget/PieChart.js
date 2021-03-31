@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../../datastore/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import GoogleChart from '../../../../../components/GoogleChart';
 import { extractAnalyticsDataForPieChart } from '../../../util';
@@ -35,8 +35,9 @@ export default function PieChart() {
 		report,
 		error,
 	} = useSelect( ( select ) => {
-		const reportDateRange = select( CORE_USER ).getDateRange();
+		const dates = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
 		const reportArgs = {
+			...dates,
 			dimensions: 'ga:channelGrouping',
 			metrics: [
 				{
@@ -60,7 +61,6 @@ export default function PieChart() {
 			],
 			limit: 10,
 			url,
-			dateRange: reportDateRange,
 		};
 
 		return {

@@ -26,14 +26,13 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS, STORE_NAME } from '../../../datastore/constants';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS, STORE_NAME } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import PreviewTable from '../../../../../components/PreviewTable';
 import SourceLink from '../../../../../components/SourceLink';
 import { isZeroReport } from '../../../util';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../../components/ReportTable';
-import { getCurrentDateRangeDayCount } from '../../../../../util/date-range';
 import WidgetHeader from '../../common/WidgetHeader';
 import PieChart from './PieChart';
 import { numFmt } from '../../../../../util';
@@ -46,13 +45,14 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 
 	const {
 		hasFinishedResolution,
-		dateRange,
+		dateRangeNumberOfDays,
 		report,
 		error,
 		url,
 	} = useSelect( ( select ) => {
-		const reportDateRange = select( CORE_USER ).getDateRange();
+		const dates = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
 		const reportArgs = {
+			...dates,
 			dimensions: 'ga:channelGrouping',
 			metrics: [
 				{
@@ -75,11 +75,10 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 				},
 			],
 			limit: 10,
-			dateRange: reportDateRange,
 		};
 
 		return {
-			dateRange: reportDateRange,
+			dateRangeNumberOfDays: select( CORE_USER ).getDateRangeNumberOfDays(),
 			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ),
 			hasFinishedResolution: select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ),
 			report: select( STORE_NAME ).getReport( reportArgs ),
@@ -99,7 +98,6 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
-	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 	const totalUsers = report[ 0 ].data.totals[ 0 ].values[ 1 ];
 	let iterator = -1; // We pre-increment, hence starting at -1.
 
@@ -120,8 +118,8 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 			title: __( 'New Users', 'google-site-kit' ),
 			tooltip: sprintf(
 				/* translators: %s: number of days */
-				_n( 'Number of new users to visit your page over last %s day', 'Number of new users to visit your page over last %s days', currentDayCount, 'google-site-kit', ),
-				currentDayCount,
+				_n( 'Number of new users to visit your page over last %s day', 'Number of new users to visit your page over last %s days', dateRangeNumberOfDays, 'google-site-kit', ),
+				dateRangeNumberOfDays,
 			),
 			field: 'metrics.0.values.1',
 			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
@@ -130,8 +128,8 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 			title: __( 'Sessions', 'google-site-kit' ),
 			tooltip: sprintf(
 				/* translators: %s: number of days */
-				_n( 'Number of sessions users had on your website over last %s day', 'Number of sessions users had on your website over last %s days', currentDayCount, 'google-site-kit', ),
-				currentDayCount,
+				_n( 'Number of sessions users had on your website over last %s day', 'Number of sessions users had on your website over last %s days', dateRangeNumberOfDays, 'google-site-kit', ),
+				dateRangeNumberOfDays,
 			),
 			field: 'metrics.0.values.2',
 			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
@@ -157,8 +155,8 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 
 	const title = sprintf(
 		/* translators: %s: number of days */
-		_n( 'Top acquisition channels over the last %s day', 'Top acquisition channels over the last %s days', currentDayCount, 'google-site-kit', ),
-		currentDayCount,
+		_n( 'Top acquisition channels over the last %s day', 'Top acquisition channels over the last %s days', dateRangeNumberOfDays, 'google-site-kit', ),
+		dateRangeNumberOfDays,
 	);
 
 	return (

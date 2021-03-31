@@ -485,7 +485,8 @@ generateAnalyticsWidgetStories( {
 				},
 			],
 			limit: 10,
-			dateRange: 'last-28-days',
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
 		}
 	),
 	Component: ModuleAcquisitionChannelsWidget,
