@@ -37,6 +37,7 @@ import Header from './Header';
 import PieChart from './PieChart';
 import { numFmt } from '../../../../../util';
 import MiniChart from '../../../../../components/MiniChart';
+import { Cell, Grid, Row } from '../../../../../material-components';
 
 const { useSelect } = Data;
 
@@ -180,31 +181,21 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 				/>
 			) }
 		>
-			<div className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
-					<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-4-desktop
-									mdc-layout-grid__cell--span-8-tablet
-									mdc-layout-grid__cell--span-4-phone
-									">
+			<Grid>
+				<Row>
+					<Cell>
 						<PieChart />
-					</div>
-					<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-8-desktop
-									mdc-layout-grid__cell--span-8-tablet
-									mdc-layout-grid__cell--span-4-phone
-									">
+					</Cell>
+					<Cell size={ 8 }>
 						<TableOverflowContainer>
 							<ReportTable
 								rows={ report[ 0 ].data.rows }
 								columns={ tableColumns }
 							/>
 						</TableOverflowContainer>
-					</div>
-				</div>
-			</div>
+					</Cell>
+				</Row>
+			</Grid>
 		</Widget>
 	);
 }
