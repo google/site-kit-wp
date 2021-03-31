@@ -38,6 +38,7 @@ import PieChart from './PieChart';
 import { numFmt } from '../../../../../util';
 import MiniChart from '../../../../../components/MiniChart';
 import { Cell, Grid, Row } from '../../../../../material-components';
+import PropTypes from 'prop-types';
 
 const { useSelect } = Data;
 
@@ -199,3 +200,9 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		</Widget>
 	);
 }
+
+ModuleAcquisitionChannelsWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+	WidgetReportError: PropTypes.elementType.isRequired,
+	WidgetReportZero: PropTypes.elementType.isRequired,
+};
