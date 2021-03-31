@@ -28,7 +28,13 @@ final class ManagePosts {
 	 * @return string[]
 	 */
 	public static function manage_posts_columns( $columns ) {
-		$columns['swg_product'] = 'SwG Product';
+		// Only add the column on post-type overview pages.
+		// Without this check, the column appears on the AMP plugin's
+		// Validated URLs page, for example.
+		if ( get_current_screen()->parent_file === 'edit.php' ) {
+			$columns['swg_product'] = 'SwG Product';
+		}
+
 		return $columns;
 	}
 
