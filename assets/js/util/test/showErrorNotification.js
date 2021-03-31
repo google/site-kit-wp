@@ -21,7 +21,7 @@ describe( 'showErrorNotification', () => {
 	it( 'filters the ErrorNotification component', () => {
 		const Error = () => 'Error Message';
 		showErrorNotification( Error, {
-			id: 'dummy-error',
+			id: 'placeholder-error',
 		} );
 
 		const { container } = render( applyFilters( 'googlesitekit.ErrorNotification', [] )() );

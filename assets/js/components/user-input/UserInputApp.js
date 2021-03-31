@@ -30,12 +30,14 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { useFeature } from '../../hooks/useFeature';
 import { Grid, Row, Cell } from '../../material-components';
 import Header from '../Header';
+import HelpMenu from '../help/HelpMenu';
 import PageHeader from '../PageHeader';
 import ProgressBar from '../ProgressBar';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
 const { useSelect } = Data;
 
 export default function UserInputApp() {
+	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const userInputEnabled = useFeature( 'userInput' );
 	const { hasFinishedGettingInputSettings } = useSelect( ( select ) => ( {
 		userInputSettings: select( CORE_USER ).getUserInputSettings(), // This will be used in the children components.
@@ -48,7 +50,9 @@ export default function UserInputApp() {
 
 	return (
 		<Fragment>
-			<Header />
+			<Header>
+				{ helpVisibilityEnabled && <HelpMenu /> }
+			</Header>
 			<div className="googlesitekit-user-input">
 				<div className="googlesitekit-module-page">
 					{ ! hasFinishedGettingInputSettings && (

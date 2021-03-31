@@ -38,9 +38,14 @@ import { getSiteKitAdminURL } from '../../util';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import HelpMenu from '../help/HelpMenu';
+import HelpMenuLink from '../help/HelpMenuLink';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function ModuleSetup( { moduleSlug } ) {
+	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
+
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const settingsPageURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
@@ -78,7 +83,17 @@ export default function ModuleSetup( { moduleSlug } ) {
 
 	return (
 		<Fragment>
-			<Header />
+			<Header>
+				{ helpVisibilityEnabled && (
+					<HelpMenu>
+						{ moduleSlug === 'adsense' && (
+							<HelpMenuLink href="https://support.google.com/adsense/">
+								{ __( 'Get help with AdSense', 'google-site-kit' ) }
+							</HelpMenuLink>
+						) }
+					</HelpMenu>
+				) }
+			</Header>
 			<div className="googlesitekit-setup">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
@@ -120,15 +135,17 @@ export default function ModuleSetup( { moduleSlug } ) {
 													href={ settingsPageURL }
 												>{ __( 'Cancel', 'google-site-kit' ) }</Link>
 											</div>
-											<div className="
+											{ ! helpVisibilityEnabled && (
+												<div className="
 													mdc-layout-grid__cell
 													mdc-layout-grid__cell--span-2-phone
 													mdc-layout-grid__cell--span-4-tablet
 													mdc-layout-grid__cell--span-6-desktop
 													mdc-layout-grid__cell--align-right
-											">
-												<HelpLink />
-											</div>
+												">
+													<HelpLink />
+												</div>
+											) }
 										</div>
 									</div>
 								</div>

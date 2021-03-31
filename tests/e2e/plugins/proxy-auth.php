@@ -22,7 +22,7 @@ use Google\Site_Kit\Plugin;
 require_once __DIR__ . '/proxy-credentials.php';
 
 /**
- * Provide a dummy access token to fake an authenticated state.
+ * Provide a placeholder access token to fake an authenticated state.
  */
 add_filter(
 	'get_user_option_googlesitekit_access_token',

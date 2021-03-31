@@ -31,6 +31,10 @@ import {
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 	AREA_DASHBOARD_POPULARITY,
 } from '../../googlesitekit/widgets/default-areas';
+import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
+import AnalyticsIcon from '../../../svg/analytics.svg';
+import { CONTEXT_MODULE_ANALYTICS, AREA_MODULE_ANALYTICS_MAIN } from './constants';
+import { STORE_NAME } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
@@ -38,10 +42,7 @@ import DashboardPopularPagesWidget from './components/dashboard/DashboardPopular
 import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
-import AnalyticsIcon from '../../../svg/analytics.svg';
-import { STORE_NAME } from './datastore/constants';
-import { CONTEXT_MODULE_ANALYTICS, AREA_MODULE_ANALYTICS_MAIN } from './constants';
-import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
+import { ModuleOverviewWidget, ModulePopularPagesWidget } from './components/module';
 
 export { registerStore } from './datastore';
 
@@ -140,5 +141,31 @@ export const registerWidgets = ( widgets ) => {
 			title: __( 'Overview', 'google-site-kit' ),
 		},
 		CONTEXT_MODULE_ANALYTICS,
+	);
+
+	widgets.registerWidget(
+		'analyticsModuleOverview',
+		{
+			Component: ModuleOverviewWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+		},
+		[
+			AREA_MODULE_ANALYTICS_MAIN,
+		],
+	);
+
+	widgets.registerWidget(
+		'analyticsModulePopularPages',
+		{
+			Component: ModulePopularPagesWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 2,
+			wrapWidget: false,
+		},
+		[
+			AREA_MODULE_ANALYTICS_MAIN,
+		],
 	);
 };
