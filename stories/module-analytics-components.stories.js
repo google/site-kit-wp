@@ -459,7 +459,7 @@ generateAnalyticsWidgetStories( {
 	wrapWidget: false,
 } );
 generateAnalyticsWidgetStories( {
-	group: 'Analytics Module/Components/Module Page/Acquisition Channels Widget2',
+	group: 'Analytics Module/Components/Module Page/Acquisition Channels Widget',
 	referenceDate: '2021-01-06',
 	...generateData(
 		{
