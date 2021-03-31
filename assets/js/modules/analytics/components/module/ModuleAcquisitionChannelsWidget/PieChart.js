@@ -19,59 +19,10 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { DATE_RANGE_OFFSET, STORE_NAME } from '../../../datastore/constants';
 import GoogleChart from '../../../../../components/GoogleChart';
 import { extractAnalyticsDataForPieChart } from '../../../util';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import PreviewBlock from '../../../../../components/PreviewBlock';
 
-const { useSelect } = Data;
-
-export default function PieChart() {
-	const {
-		hasFinishedResolution,
-		report,
-		error,
-	} = useSelect( ( select ) => {
-		const dates = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
-		const reportArgs = {
-			...dates,
-			dimensions: 'ga:channelGrouping',
-			metrics: [
-				{
-					expression: 'ga:sessions',
-					alias: 'Sessions',
-				},
-				{
-					expression: 'ga:users',
-					alias: 'Users',
-				},
-				{
-					expression: 'ga:newUsers',
-					alias: 'New Users',
-				},
-			],
-			orderby: [
-				{
-					fieldName: 'ga:users',
-					sortOrder: 'DESCENDING',
-				},
-			],
-			limit: 10,
-		};
-
-		return {
-			report: select( STORE_NAME ).getReport( reportArgs ),
-			hasFinishedResolution: select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ),
-			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ),
-		};
-	} );
-
-	if ( ! report || error || ! hasFinishedResolution ) {
-		return <PreviewBlock width="282px" height="282px" shape="circular" />;
-	}
-
+export default function PieChart( { report } ) {
 	const processedData = extractAnalyticsDataForPieChart( report, { keyColumnIndex: 1 } );
 
 	return (

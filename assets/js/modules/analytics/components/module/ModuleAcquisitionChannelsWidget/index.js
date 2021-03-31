@@ -184,7 +184,7 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 			<Grid>
 				<Row>
 					<Cell>
-						<PieChart />
+						<PieChart report={ report } />
 					</Cell>
 					<Cell size={ 8 }>
 						<TableOverflowContainer>
