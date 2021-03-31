@@ -38,6 +38,7 @@ import {
 	DashboardSummaryWidget,
 	DashboardTopEarningPagesWidget,
 } from './components/dashboard';
+import { ModuleOverviewWidget } from './components/module';
 import AdSenseIcon from '../../../svg/adsense.svg';
 import { STORE_NAME } from './datastore/constants';
 import { ERROR_CODE_ADBLOCKER_ACTIVE, CONTEXT_MODULE_ADSENSE, AREA_MODULE_ADSENSE_MAIN } from './constants';
@@ -108,6 +109,18 @@ export const registerWidgets = ( widgets ) => {
 		},
 		[
 			AREA_DASHBOARD_EARNINGS,
+		],
+	);
+	widgets.registerWidget(
+		'adsenseModuleOverview',
+		{
+			Component: ModuleOverviewWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+		},
+		[
+			AREA_MODULE_ADSENSE_MAIN,
 		],
 	);
 	widgets.registerWidgetArea(

@@ -22,8 +22,10 @@
 import { generateReportBasedWidgetStories } from './utils/generate-widget-stories';
 import DashboardSummaryWidget from '../assets/js/modules/adsense/components/dashboard/DashboardSummaryWidget';
 import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
+import ModuleOverviewWidget from '../assets/js/modules/adsense/components/module/ModuleOverviewWidget';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense' ],
@@ -407,4 +409,25 @@ generateReportBasedWidgetStories( {
 		DataUnavailable: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
 		Error: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
 	},
+} );
+
+generateReportBasedWidgetStories( {
+	moduleSlugs: [ 'adsense' ],
+	datastore: STORE_NAME,
+	group: 'AdSense Module/Components/Module/Overview Widget',
+	referenceDate: '2020-11-25',
+	data: [
+		fixtures.earnings.currentStatsData,
+		fixtures.earnings.prevStatsData,
+		fixtures.earnings.currentSummaryData,
+		fixtures.earnings.prevSummaryData,
+	],
+	options: [
+		fixtures.earnings.currentStatsArgs,
+		fixtures.earnings.prevStatsArgs,
+		fixtures.earnings.currentSummaryArgs,
+		fixtures.earnings.prevSummaryArgs,
+	],
+	Component: ModuleOverviewWidget,
+	wrapWidget: false,
 } );
