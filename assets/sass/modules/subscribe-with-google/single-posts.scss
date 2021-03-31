@@ -11,6 +11,20 @@ body:not(.swg--is-amp) article:not(.swg--page-is-unlocked) .swg--locked-content 
 	display: none;
 }
 
+@supports (filter: blur(6px)) {
+
+	body:not(.swg--is-amp) article .swg--locked-content {
+		transition: filter 0.6s;
+	}
+
+	body:not(.swg--is-amp) article:not(.swg--page-is-unlocked) .swg--locked-content {
+		animation: fadeIn 0.3s ease-in;
+		display: block;
+		filter: blur(6px);
+		transition: filter 0s;
+	}
+}
+
 body:not(.swg--is-amp) article:not(.swg--page-is-locked) .swg--paywall-prompt {
 	display: none;
 }
@@ -25,4 +39,15 @@ button.swg-button {
 
 button.swg-button:hover {
 	background-color: $c-alabaster !important;
+}
+
+@keyframes fadeIn {
+
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
 }
