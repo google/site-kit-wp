@@ -59,7 +59,7 @@ export default function UserInputSettings( { onCTAClick, onDismiss, isDismissabl
 			ctaLabel={ __( 'Let’s go', 'google-site-kit' ) }
 			onCTAClick={ onCTAClick }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-			WinImageSVG={ ( props ) => <UserInputPromptSVG width="100%" height="100%" { ...props } /> }
+			WinImageSVG={ UserInputPromptSVG }
 			isDismissable={ isDismissable }
 			onDismiss={ onDismiss }
 		/>
