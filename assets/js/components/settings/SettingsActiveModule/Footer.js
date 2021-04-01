@@ -70,14 +70,11 @@ export default function Footer( props ) {
 	let secondaryColumn = null;
 
 	if ( isEditing || isSaving ) {
-		// Set button text based on state.
 		let buttonText = __( 'Close', 'google-site-kit' );
 		if ( hasSettings && setupComplete ) {
-			if ( isSaving ) {
-				buttonText = __( 'Saving…', 'google-site-kit' );
-			} else {
-				buttonText = __( 'Confirm Changes', 'google-site-kit' );
-			}
+			buttonText = isSaving
+				? __( 'Saving…', 'google-site-kit' )
+				: __( 'Confirm Changes', 'google-site-kit' );
 		}
 
 		primaryColumn = (
@@ -170,7 +167,7 @@ export default function Footer( props ) {
 Footer.propTypes = {
 	slug: PropTypes.string.isRequired,
 	isSaving: PropTypes.bool.isRequired,
-	isEditing: PropTypes.bool,
+	isEditing: PropTypes.bool.isRequired,
 	handleConfirmOrCancel: PropTypes.func.isRequired,
 	handleCancel: PropTypes.func.isRequired,
 	handleEdit: PropTypes.func.isRequired,

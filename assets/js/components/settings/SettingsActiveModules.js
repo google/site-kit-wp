@@ -50,25 +50,22 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 		const { error: submissionError } = await submitChanges( slug );
 		setIsSaving( false );
 
-		if ( ! submissionError ) {
+		if ( submissionError ) {
+			setError( submissionError );
+		} else {
 			setModuleState( slug, 'view' );
 			clearWebStorage();
-		} else {
-			setError( submissionError );
 		}
 	};
 
-	const handleAccordion = ( module, e ) => {
+	const handleAccordion = ( slug, e ) => {
 		// Set focus on heading when clicked.
 		e.target.closest( '.googlesitekit-settings-module__header' ).focus();
 
 		// If same as activeModule, toggle closed, otherwise it is open.
-		const isOpen = module !== activeModule || moduleState === 'closed';
+		const isOpen = slug !== activeModule || moduleState === 'closed';
 
-		setModuleState(
-			module,
-			isOpen ? 'view' : 'closed',
-		);
+		setModuleState( slug, isOpen ? 'view' : 'closed' );
 	};
 
 	if ( ! modules ) {
@@ -81,17 +78,18 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 
 	return (
 		<Layout>
-			{ sortedModules.map( ( module ) => (
+			{ sortedModules.map( ( { slug } ) => (
 				<SettingsActiveModule
-					key={ module.slug }
-					slug={ module.slug }
-					onEdit={ onEdit }
+					key={ slug }
+					slug={ slug }
+					onEdit={ onEdit.bind( null, slug ) }
 					onConfirm={ onConfirm }
-					onCancel={ onCancel }
-					isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
-					isOpen={ activeModule === module.slug && moduleState !== 'closed' }
+					onCancel={ onCancel.bind( null, slug ) }
+					isOpen={ activeModule === slug && moduleState !== 'closed' }
+					isEditing={ activeModule === slug && moduleState === 'edit' }
+					isLocked={ activeModule !== slug && moduleState === 'edit' }
 					isSaving={ isSaving }
-					handleAccordion={ handleAccordion }
+					handleAccordion={ handleAccordion.bind( null, slug ) }
 					error={ error }
 				/>
 			) ) }

@@ -42,10 +42,7 @@ export default function Header( { slug, isOpen, handleAccordion } ) {
 		return null;
 	}
 
-	const {
-		name,
-		connected: isConnected,
-	} = module;
+	const { name, connected } = module;
 
 	return (
 		<button
@@ -61,7 +58,7 @@ export default function Header( { slug, isOpen, handleAccordion } ) {
 			aria-selected={ !! isOpen }
 			aria-expanded={ !! isOpen }
 			aria-controls={ `googlesitekit-settings-module__content--${ slug }` }
-			onClick={ handleAccordion.bind( null, slug ) }
+			onClick={ handleAccordion }
 		>
 			<Grid>
 				<Row>
@@ -75,7 +72,7 @@ export default function Header( { slug, isOpen, handleAccordion } ) {
 					<Cell className="mdc-layout-grid__cell--align-right-tablet" lgSize={ 6 } mdSize={ 4 } smSize={ 4 } alignMiddle>
 						<p className="googlesitekit-settings-module__status">
 							{
-								isConnected
+								connected
 									? sprintf(
 										/* translators: %s: module name. */
 										__( '%s is connected', 'google-site-kit' ),
@@ -92,8 +89,8 @@ export default function Header( { slug, isOpen, handleAccordion } ) {
 								className={ classnames(
 									'googlesitekit-settings-module__status-icon',
 									{
-										'googlesitekit-settings-module__status-icon--connected': isConnected,
-										'googlesitekit-settings-module__status-icon--not-connected': ! isConnected,
+										'googlesitekit-settings-module__status-icon--connected': connected,
+										'googlesitekit-settings-module__status-icon--not-connected': ! connected,
 									},
 								) }
 							/>

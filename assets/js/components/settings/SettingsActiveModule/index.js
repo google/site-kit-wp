@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { filter } from 'lodash';
 import classnames from 'classnames';
 
 /**
@@ -42,24 +41,13 @@ export default function SettingsActiveModule( props ) {
 		isEditing,
 		isOpen,
 		isSaving,
+		isLocked,
 		handleAccordion,
 		error,
 	} = props;
 
-	const moduleKey = `${ slug }-module`;
-
-	// Disable other modules during editing
-	const modulesBeingEdited = filter( isEditing, ( module ) => module );
-	const editActive = 0 < modulesBeingEdited.length;
-
 	const handleConfirmOrCancel = () => {
 		onConfirm( slug );
-	};
-	const handleCancel = () => {
-		onCancel( slug );
-	};
-	const handleEdit = () => {
-		onEdit( slug );
 	};
 	const handleDialog = () => {};
 	const handleConfirmRemoveModule = () => {};
@@ -70,10 +58,12 @@ export default function SettingsActiveModule( props ) {
 				'googlesitekit-settings-module',
 				'googlesitekit-settings-module--active',
 				`googlesitekit-settings-module--${ slug }`,
-				{ 'googlesitekit-settings-module--error': error && editActive && isEditing[ moduleKey ] }
+				{ 'googlesitekit-settings-module--error': error && isEditing }
 			) }
 		>
-			{ editActive && ! isEditing[ moduleKey ] && <SettingsOverlay compress={ ! isOpen } /> }
+			{ isLocked && (
+				<SettingsOverlay compress={ ! isOpen } />
+			) }
 
 			<Header
 				slug={ slug }
@@ -81,41 +71,42 @@ export default function SettingsActiveModule( props ) {
 				handleAccordion={ handleAccordion }
 			/>
 
-			<div
-				id={ `googlesitekit-settings-module__content--${ slug }` }
-				className={ classnames( 'googlesitekit-settings-module__content', { 'googlesitekit-settings-module__content--open': isOpen } ) }
-				role="tabpanel"
-				aria-hidden={ ! isOpen }
-				aria-labelledby={ `googlesitekit-settings-module__header--${ slug }` }
-			>
-				<Grid>
-					<Row>
-						<Cell size={ 12 }>
-							<SettingsRenderer
-								slug={ slug }
-								isEditing={ isEditing[ moduleKey ] }
-								isOpen={ isOpen }
-							/>
-						</Cell>
-					</Row>
-				</Grid>
+			{ isOpen && (
+				<div
+					id={ `googlesitekit-settings-module__content--${ slug }` }
+					className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open"
+					role="tabpanel"
+					aria-labelledby={ `googlesitekit-settings-module__header--${ slug }` }
+				>
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<SettingsRenderer
+									slug={ slug }
+									isEditing={ isEditing }
+									isOpen
+								/>
+							</Cell>
+						</Row>
+					</Grid>
 
-				<Footer
-					slug={ slug }
-					isSaving={ isSaving }
-					isEditing={ isEditing[ moduleKey ] }
-					handleConfirmOrCancel={ handleConfirmOrCancel }
-					handleCancel={ handleCancel }
-					handleEdit={ handleEdit }
-					handleDialog={ handleDialog }
-				/>
-			</div>
+					<Footer
+						slug={ slug }
+						isSaving={ isSaving }
+						isEditing={ isEditing }
+						handleConfirmOrCancel={ handleConfirmOrCancel }
+						handleCancel={ onCancel }
+						handleEdit={ onEdit }
+						handleDialog={ handleDialog }
+					/>
 
-			<ConfirmDisconnect
-				slug={ slug }
-				handleDialog={ handleDialog }
-				handleConfirmRemoveModule={ handleConfirmRemoveModule }
-			/>
+					<ConfirmDisconnect
+						slug={ slug }
+						handleDialog={ handleDialog }
+						handleConfirmRemoveModule={ handleConfirmRemoveModule }
+					/>
+				</div>
+			) }
 		</div>
 	);
 }
@@ -125,9 +116,10 @@ SettingsActiveModule.propTypes = {
 	onEdit: PropTypes.func,
 	onConfirm: PropTypes.func,
 	onCancel: PropTypes.func,
-	isEditing: PropTypes.object,
+	isEditing: PropTypes.bool,
 	isOpen: PropTypes.bool,
 	isSaving: PropTypes.bool,
+	isLocked: PropTypes.bool,
 	handleAccordion: PropTypes.func,
 	error: PropTypes.shape( {} ),
 };
