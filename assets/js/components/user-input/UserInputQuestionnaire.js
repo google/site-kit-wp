@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment, useEffect, useState, useRef } from '@wordpress/element';
+import { useCallback, Fragment, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -55,8 +55,6 @@ export default function UserInputQuestionnaire() {
 	const [ shouldScrollToActiveQuestion, setShouldScrollToActiveQuestion ] = useState( false );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
 	const [ single, setSingle ] = useQueryArg( 'single', false );
-
-	const containerRef = useRef();
 
 	const activeSlugIndex = steps.indexOf( activeSlug );
 	if ( activeSlugIndex === -1 ) {
@@ -157,7 +155,7 @@ export default function UserInputQuestionnaire() {
 			return;
 		}
 
-		containerRef.current?.scrollIntoView( { behavior: 'smooth' } );
+		global.document?.querySelector( '.googlesitekit-user-input__header' )?.scrollIntoView( { behavior: 'smooth' } );
 	}, [ activeSlug ] );
 
 	// Update the callbacks and labels for the questions if the user is editing a *single question*.
@@ -201,7 +199,7 @@ export default function UserInputQuestionnaire() {
 	}
 
 	return (
-		<div ref={ containerRef }>
+		<div>
 			{ settingsProgress }
 
 			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_ROLE ) && (
@@ -247,7 +245,7 @@ export default function UserInputQuestionnaire() {
 					isActive={ activeSlug === USER_INPUT_QUESTION_GOALS }
 					questionNumber={ 3 }
 					title={ __( 'What are the goals of this site?', 'google-site-kit' ) }
-					description={ __( 'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track how close you’re getting to your specific goals.', 'google-site-kit' ) }
+					description={ __( 'The goals you pick will apply to the entire WordPress site: any other admins with access to Site Kit can see them and edit them in Settings.', 'google-site-kit' ) }
 					next={ nextCallback }
 					nextLabel={ nextLabel }
 					back={ backCallback }

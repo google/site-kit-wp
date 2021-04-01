@@ -56,7 +56,6 @@ class AuthenticationTest extends TestCase {
 		$auth->register();
 
 		// Authentication::handle_oauth is invoked on init but we cannot test it due to use of filter_input.
-		$this->assertTrue( has_action( 'init' ) );
 		$this->assertTrue( has_action( 'admin_init' ) );
 		$this->assertTrue( has_action( 'admin_action_' . Google_Proxy::ACTION_SETUP ) );
 		$this->assertTrue( has_action( OAuth_Client::CRON_REFRESH_PROFILE_DATA ) );
@@ -551,13 +550,14 @@ class AuthenticationTest extends TestCase {
 	public function test_googlesitekit_connect() {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
 		remove_all_actions( 'init' );
+		remove_all_actions( 'admin_init' );
 		$this->fake_proxy_site_connection();
 		$auth->register();
 
 		// Does nothing if query parameter is not set, and not is_admin.
 		$this->assertTrue( empty( $_GET['googlesitekit_connect'] ) );
 		$this->assertFalse( is_admin() );
-		do_action( 'init' );
+		do_action( 'admin_init' );
 
 		$_GET['googlesitekit_connect'] = 1;
 		// Does nothing if not is_admin.
@@ -569,7 +569,7 @@ class AuthenticationTest extends TestCase {
 
 		// Requires 'connect' nonce.
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
 			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
@@ -580,7 +580,7 @@ class AuthenticationTest extends TestCase {
 		// Requires authenticate permissions.
 		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
 			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
@@ -591,7 +591,7 @@ class AuthenticationTest extends TestCase {
 		$_GET['nonce'] = wp_create_nonce( 'connect' );
 		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
 			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
@@ -603,7 +603,7 @@ class AuthenticationTest extends TestCase {
 		$_GET['nonce'] = wp_create_nonce( 'connect' );
 		$this->assertTrue( current_user_can( Permissions::AUTHENTICATE ) );
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected redirection to connect URL' );
 		} catch ( RedirectException $e ) {
 			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/o/oauth2/auth/', $e->get_location() );
@@ -613,7 +613,7 @@ class AuthenticationTest extends TestCase {
 		$extra_scopes              = array( 'http://example.com/test/scope/a', 'http://example.com/test/scope/b' );
 		$_GET['additional_scopes'] = $extra_scopes;
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected redirection to connect URL' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();

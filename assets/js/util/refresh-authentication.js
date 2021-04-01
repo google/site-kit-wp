@@ -32,8 +32,8 @@ export const refreshAuthentication = async () => {
 			unsatisfiedScopes = [],
 		} = await data.get( TYPE_CORE, 'user', 'authentication', { timestamp: Date.now() } );
 
-		// We should really be using state management. This is terrible.
-		// Hang in there... we're getting to it ;)
+		// This terrible approach is a bad workaround for missing state management.
+		// Once the datastore is used throughout the plugin, this function can be removed.
 		global._googlesitekitLegacyData.setup = {
 			...( global._googlesitekitLegacyData.setup || {} ),
 			isAuthenticated,

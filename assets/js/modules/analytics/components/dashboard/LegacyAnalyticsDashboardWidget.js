@@ -32,9 +32,9 @@ import { __, _n, _x, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import AnalyticsIcon from '../../../../../svg/analytics.svg';
-import AnalyticsDashboardWidgetSiteStats from './AnalyticsDashboardWidgetSiteStats';
-import AnalyticsDashboardWidgetTopPagesTable from './AnalyticsDashboardWidgetTopPagesTable';
-import AnalyticsDashboardWidgetOverview from './AnalyticsDashboardWidgetOverview';
+import LegacyAnalyticsDashboardWidgetSiteStats from './LegacyAnalyticsDashboardWidgetSiteStats';
+import LegacyAnalyticsDashboardWidgetTopPagesTable from './LegacyAnalyticsDashboardWidgetTopPagesTable';
+import LegacyAnalyticsDashboardWidgetOverview from './LegacyAnalyticsDashboardWidgetOverview';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import Layout from '../../../../components/layout/Layout';
 import PageHeader from '../../../../components/PageHeader';
@@ -46,10 +46,13 @@ import HelpLink from '../../../../components/HelpLink';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../datastore/constants';
+import { useFeature } from '../../../../hooks/useFeature';
 
 const { useSelect } = Data;
 
-export default function AnalyticsDashboardWidget() {
+export default function LegacyAnalyticsDashboardWidget() {
+	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
+
 	const [ selectedStats, setSelectedStats ] = useState( [ 0 ] );
 	const [ receivingData, setReceivingData ] = useState( true );
 	const [ error, setError ] = useState( false );
@@ -174,13 +177,13 @@ export default function AnalyticsDashboardWidget() {
 								) }
 								headerCTALink={ visitorsOverview }
 							>
-								<AnalyticsDashboardWidgetOverview
+								<LegacyAnalyticsDashboardWidgetOverview
 									selectedStats={ selectedStats }
 									handleStatSelection={ handleStatSelection }
 									handleDataError={ handleDataError }
 									handleDataSuccess={ handleDataSuccess }
 								/>
-								<AnalyticsDashboardWidgetSiteStats
+								<LegacyAnalyticsDashboardWidgetSiteStats
 									selectedStats={ selectedStats }
 									series={ series }
 									vAxes={ vAxes }
@@ -210,7 +213,7 @@ export default function AnalyticsDashboardWidget() {
 								footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 								footerCTALink={ topContentServiceURL }
 							>
-								<AnalyticsDashboardWidgetTopPagesTable />
+								<LegacyAnalyticsDashboardWidgetTopPagesTable />
 							</Layout>
 						</div>
 						<div className={ classnames(
@@ -257,13 +260,15 @@ export default function AnalyticsDashboardWidget() {
 								</div>
 							</Layout>
 						</div>
-						<div className="
+						{ ! helpVisibilityEnabled && (
+							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 								mdc-layout-grid__cell--align-right
 							">
-							<HelpLink />
-						</div>
+								<HelpLink />
+							</div>
+						) }
 					</div>
 				</div>
 			</div>

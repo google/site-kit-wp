@@ -3,7 +3,7 @@ name: Visual Regression Testing
 on:
   pull_request:
     branches:
-      - master
+      - main
       - develop
     types:
       - opened

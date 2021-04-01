@@ -272,7 +272,7 @@ final class OAuth_Client {
 		// This is called when the client refreshes the access token on-the-fly.
 		$client->setTokenCallback(
 			function( $cache_key, $access_token ) use ( $client ) {
-				$expires_in = HOUR_IN_SECONDS; // Sane default, Google OAuth tokens are typically valid for an hour.
+				$expires_in = HOUR_IN_SECONDS; // Reasonable default, Google OAuth tokens are typically valid for an hour.
 				$created    = 0; // This will be replaced with the current timestamp when saving.
 
 				// Try looking up the real values if possible.
