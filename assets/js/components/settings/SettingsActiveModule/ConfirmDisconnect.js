@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { useEffect } from '@wordpress/element';
+import { useEffect, useCallback } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
 
 /**
@@ -33,13 +33,16 @@ import { ESCAPE } from '@wordpress/keycodes';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { clearWebStorage } from '../../../util';
 import Dialog from '../../Dialog';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
-export default function ConfirmDisconnect( { slug, handleDialog, handleConfirmRemoveModule } ) {
+export default function ConfirmDisconnect( { slug, handleDialog } ) {
 	const dependentModules = useSelect( ( select ) => select( CORE_MODULES ).getModuleDependantNames( slug ) );
 	const provides = useSelect( ( select ) => select( CORE_MODULES ).getModuleFeatures( slug ) );
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
+	const moduleStoreName = useSelect( ( select ) => select( CORE_MODULES ).getModuleStoreName( slug ) );
+	const adminReauthURL = useSelect( ( select ) => select( moduleStoreName )?.getAdminReauthURL( false ) );
 
 	useEffect( () => {
 		const onKeyPress = ( e ) => {
@@ -53,6 +56,22 @@ export default function ConfirmDisconnect( { slug, handleDialog, handleConfirmRe
 			global.removeEventListener( 'keydown', onKeyPress );
 		};
 	}, [] );
+
+	const { deactivateModule } = useDispatch( CORE_MODULES );
+	const handleDisconnect = useCallback( async () => {
+		if ( module.forceActive ) {
+			return;
+		}
+
+		// setIsSaving( true );
+		const { error } = await deactivateModule( slug );
+		// setIsSaving( false );
+
+		if ( ! error ) {
+			clearWebStorage();
+			global.location.assign( adminReauthURL );
+		}
+	}, [ module?.slug ] );
 
 	if ( ! module ) {
 		return null;
@@ -89,7 +108,7 @@ export default function ConfirmDisconnect( { slug, handleDialog, handleConfirmRe
 			title={ title }
 			subtitle={ subtitle }
 			provides={ provides }
-			handleConfirm={ handleConfirmRemoveModule }
+			handleConfirm={ handleDisconnect }
 			dependentModules={ dependentModulesText }
 			danger
 		/>
@@ -99,5 +118,4 @@ export default function ConfirmDisconnect( { slug, handleDialog, handleConfirmRe
 ConfirmDisconnect.propTypes = {
 	slug: PropTypes.string.isRequired,
 	handleDialog: PropTypes.func.isRequired,
-	handleConfirmRemoveModule: PropTypes.func.isRequired,
 };

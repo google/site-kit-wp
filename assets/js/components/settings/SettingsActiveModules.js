@@ -17,35 +17,41 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useState, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { clearWebStorage } from '../../util';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { clearWebStorage } from '../../util';
 import Layout from '../layout/Layout';
 import SettingsActiveModule from './SettingsActiveModule';
 const { useDispatch, useSelect } = Data;
 
-const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) => {
-	const { submitChanges } = useDispatch( CORE_MODULES );
+export default function SettingsActiveModules( { activeModule, moduleState, setModuleState } ) {
 	const [ error, setError ] = useState( undefined );
 	const [ isSaving, setIsSaving ] = useState( false );
+
+	const { submitChanges } = useDispatch( CORE_MODULES );
 	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 
-	const onEdit = ( slug ) => {
+	const onEdit = useCallback( ( { slug } ) => {
 		setModuleState( slug, 'edit' );
-	};
+	}, [] );
 
-	const onCancel = ( slug ) => {
+	const onCancel = useCallback( ( { slug } ) => {
 		setModuleState( slug, 'view' );
-	};
+	}, [] );
 
-	const onConfirm = async ( slug ) => {
+	const onConfirm = useCallback( async ( { slug } ) => {
 		setIsSaving( true );
 		const { error: submissionError } = await submitChanges( slug );
 		setIsSaving( false );
@@ -56,16 +62,16 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 			setModuleState( slug, 'view' );
 			clearWebStorage();
 		}
-	};
+	}, [] );
 
-	const onToggle = ( slug, e ) => {
+	const onToggle = useCallback( ( { slug }, e ) => {
 		// Set focus on heading when clicked.
 		e.target.closest( '.googlesitekit-settings-module__header' ).focus();
 
 		// If same as activeModule, toggle closed, otherwise it is open.
 		const isOpen = slug !== activeModule || moduleState === 'closed';
 		setModuleState( slug, isOpen ? 'view' : 'closed' );
-	};
+	}, [] );
 
 	if ( ! modules ) {
 		return null;
@@ -77,23 +83,27 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 
 	return (
 		<Layout>
-			{ sortedModules.map( ( { slug } ) => (
+			{ sortedModules.map( ( module ) => (
 				<SettingsActiveModule
-					key={ slug }
-					slug={ slug }
-					onEdit={ onEdit.bind( null, slug ) }
-					onConfirm={ onConfirm.bind( null, slug ) }
-					onCancel={ onCancel.bind( null, slug ) }
-					onToggle={ onToggle.bind( null, slug ) }
-					isOpen={ activeModule === slug && moduleState !== 'closed' }
-					isEditing={ activeModule === slug && moduleState === 'edit' }
-					isLocked={ activeModule !== slug && moduleState === 'edit' }
+					key={ module.slug }
+					slug={ module.slug }
+					onEdit={ onEdit.bind( null, module ) }
+					onConfirm={ onConfirm.bind( null, module ) }
+					onCancel={ onCancel.bind( null, module ) }
+					onToggle={ onToggle.bind( null, module ) }
+					isOpen={ activeModule === module.slug && moduleState !== 'closed' }
+					isEditing={ activeModule === module.slug && moduleState === 'edit' }
+					isLocked={ activeModule !== module.slug && moduleState === 'edit' }
 					isSaving={ isSaving }
 					error={ error }
 				/>
 			) ) }
 		</Layout>
 	);
-};
+}
 
-export default SettingsActiveModules;
+SettingsActiveModules.propTypes = {
+	activeModule: PropTypes.string,
+	moduleState: PropTypes.string,
+	setModuleState: PropTypes.func.isRequired,
+};

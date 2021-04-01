@@ -30,12 +30,15 @@ import { useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import SettingsOverlay from '../SettingsOverlay';
 import SettingsRenderer from '../SettingsRenderer';
 import Header from './Header';
 import Footer from './Footer';
 import ConfirmDisconnect from './ConfirmDisconnect';
+const { useSelect } = Data;
 
 export default function SettingsActiveModule( props ) {
 	const {
@@ -43,21 +46,20 @@ export default function SettingsActiveModule( props ) {
 		onEdit,
 		onConfirm,
 		onCancel,
+		onToggle,
 		isEditing,
 		isOpen,
 		isSaving,
 		isLocked,
-		onToggle,
 		error,
 	} = props;
 
 	const [ dialogActive, setDialogActive ] = useState( false );
+	const deactivationError = useSelect( ( select ) => select( CORE_MODULES ).getErrorForAction( 'deactivateModule', [ slug ] ) );
 
 	const handleDialog = useCallback( () => {
 		setDialogActive( ! dialogActive );
 	}, [ dialogActive ] );
-
-	const handleConfirmRemoveModule = () => {};
 
 	return (
 		<div
@@ -65,7 +67,7 @@ export default function SettingsActiveModule( props ) {
 				'googlesitekit-settings-module',
 				'googlesitekit-settings-module--active',
 				`googlesitekit-settings-module--${ slug }`,
-				{ 'googlesitekit-settings-module--error': error && isEditing }
+				{ 'googlesitekit-settings-module--error': ( error || deactivationError ) && isEditing }
 			) }
 		>
 			{ isLocked && (
@@ -113,7 +115,6 @@ export default function SettingsActiveModule( props ) {
 				<ConfirmDisconnect
 					slug={ slug }
 					handleDialog={ handleDialog }
-					handleConfirmRemoveModule={ handleConfirmRemoveModule }
 				/>
 			) }
 		</div>
@@ -121,14 +122,14 @@ export default function SettingsActiveModule( props ) {
 }
 
 SettingsActiveModule.propTypes = {
-	slug: PropTypes.string,
-	onEdit: PropTypes.func,
-	onConfirm: PropTypes.func,
-	onCancel: PropTypes.func,
-	onToggle: PropTypes.func,
-	isEditing: PropTypes.bool,
-	isOpen: PropTypes.bool,
-	isSaving: PropTypes.bool,
-	isLocked: PropTypes.bool,
+	slug: PropTypes.string.isRequired,
+	onEdit: PropTypes.func.isRequired,
+	onConfirm: PropTypes.func.isRequired,
+	onCancel: PropTypes.func.isRequired,
+	onToggle: PropTypes.func.isRequired,
+	isEditing: PropTypes.bool.isRequired,
+	isOpen: PropTypes.bool.isRequired,
+	isSaving: PropTypes.bool.isRequired,
+	isLocked: PropTypes.bool.isRequired,
 	error: PropTypes.shape( {} ),
 };
