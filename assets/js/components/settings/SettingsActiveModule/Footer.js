@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -45,7 +45,7 @@ export default function Footer( props ) {
 		slug,
 		isSaving,
 		isEditing,
-		handleConfirmOrCancel,
+		handleConfirm,
 		handleCancel,
 		handleEdit,
 		handleDialog,
@@ -53,6 +53,18 @@ export default function Footer( props ) {
 
 	const canSubmitChanges = useSelect( ( select ) => select( CORE_MODULES ).canSubmitChanges( slug ) );
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
+
+	const setupComplete = module?.connected;
+	const hasSettings = !! module?.SettingsEditComponent;
+
+	const handleConfirmOrCancel = useCallback( () => {
+		if ( hasSettings && setupComplete ) {
+			handleConfirm();
+		} else {
+			handleCancel();
+		}
+	}, [ hasSettings, setupComplete ] );
+
 	if ( ! module ) {
 		return null;
 	}
@@ -60,11 +72,8 @@ export default function Footer( props ) {
 	const {
 		name,
 		homepage,
-		connected: setupComplete,
 		forceActive: autoActivate,
 	} = module;
-
-	const hasSettings = !! module.SettingsEditComponent;
 
 	let primaryColumn = null;
 	let secondaryColumn = null;
@@ -168,7 +177,7 @@ Footer.propTypes = {
 	slug: PropTypes.string.isRequired,
 	isSaving: PropTypes.bool.isRequired,
 	isEditing: PropTypes.bool.isRequired,
-	handleConfirmOrCancel: PropTypes.func.isRequired,
+	handleConfirm: PropTypes.func.isRequired,
 	handleCancel: PropTypes.func.isRequired,
 	handleEdit: PropTypes.func.isRequired,
 	handleDialog: PropTypes.func.isRequired,

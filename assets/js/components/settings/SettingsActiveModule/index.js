@@ -23,6 +23,11 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
+ * WordPress dependencies
+ */
+import { useCallback, useState } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { Cell, Grid, Row } from '../../../material-components';
@@ -46,10 +51,12 @@ export default function SettingsActiveModule( props ) {
 		error,
 	} = props;
 
-	const handleConfirmOrCancel = () => {
-		onConfirm( slug );
-	};
-	const handleDialog = () => {};
+	const [ dialogActive, setDialogActive ] = useState( false );
+
+	const handleDialog = useCallback( () => {
+		setDialogActive( ! dialogActive );
+	}, [ dialogActive ] );
+
 	const handleConfirmRemoveModule = () => {};
 
 	return (
@@ -94,18 +101,20 @@ export default function SettingsActiveModule( props ) {
 						slug={ slug }
 						isSaving={ isSaving }
 						isEditing={ isEditing }
-						handleConfirmOrCancel={ handleConfirmOrCancel }
-						handleCancel={ onCancel }
 						handleEdit={ onEdit }
+						handleConfirm={ onConfirm }
+						handleCancel={ onCancel }
 						handleDialog={ handleDialog }
-					/>
-
-					<ConfirmDisconnect
-						slug={ slug }
-						handleDialog={ handleDialog }
-						handleConfirmRemoveModule={ handleConfirmRemoveModule }
 					/>
 				</div>
+			) }
+
+			{ dialogActive && (
+				<ConfirmDisconnect
+					slug={ slug }
+					handleDialog={ handleDialog }
+					handleConfirmRemoveModule={ handleConfirmRemoveModule }
+				/>
 			) }
 		</div>
 	);

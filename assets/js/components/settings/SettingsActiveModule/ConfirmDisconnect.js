@@ -25,7 +25,8 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
+import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -35,18 +36,23 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import Dialog from '../../Dialog';
 const { useSelect } = Data;
 
-export default function ConfirmDisconnect( props ) {
-	const {
-		slug,
-		handleDialog,
-		handleConfirmRemoveModule,
-	} = props;
-
-	const [ dialogActive ] = useState( false );
-
+export default function ConfirmDisconnect( { slug, handleDialog, handleConfirmRemoveModule } ) {
 	const dependentModules = useSelect( ( select ) => select( CORE_MODULES ).getModuleDependantNames( slug ) );
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
 	const provides = useSelect( ( select ) => select( CORE_MODULES ).getModuleFeatures( slug ) );
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
+
+	useEffect( () => {
+		const onKeyPress = ( e ) => {
+			if ( ESCAPE === e.keyCode ) {
+				handleDialog();
+			}
+		};
+
+		global.addEventListener( 'keydown', onKeyPress );
+		return () => {
+			global.removeEventListener( 'keydown', onKeyPress );
+		};
+	}, [] );
 
 	if ( ! module ) {
 		return null;
@@ -54,12 +60,17 @@ export default function ConfirmDisconnect( props ) {
 
 	const { name } = module;
 
-	const handleCloseModal = () => {};
+	const title = sprintf(
+		/* translators: %s: module name */
+		__( 'Disconnect %s from Site Kit?', 'google-site-kit' ),
+		name,
+	);
 
-	/* translators: %s: module name */
-	const title = sprintf( __( 'Disconnect %s from Site Kit?', 'google-site-kit' ), name );
-	/* translators: %s: module name */
-	const subtitle = sprintf( __( 'By disconnecting the %s module from Site Kit, you will no longer have access to:', 'google-site-kit' ), name );
+	const subtitle = sprintf(
+		/* translators: %s: module name */
+		__( 'By disconnecting the %s module from Site Kit, you will no longer have access to:', 'google-site-kit' ),
+		name,
+	);
 
 	let dependentModulesText = null;
 	if ( dependentModules.length > 0 ) {
@@ -67,17 +78,16 @@ export default function ConfirmDisconnect( props ) {
 			/* translators: %1$s: module name, %2$s: list of dependent modules */
 			__( 'these active modules depend on %1$s and will also be disconnected: %2$s', 'google-site-kit' ),
 			name,
-			dependentModules
+			dependentModules,
 		);
 	}
 
 	return (
 		<Dialog
-			dialogActive={ dialogActive }
+			dialogActive
 			handleDialog={ handleDialog }
 			title={ title }
 			subtitle={ subtitle }
-			onKeyPress={ handleCloseModal }
 			provides={ provides }
 			handleConfirm={ handleConfirmRemoveModule }
 			dependentModules={ dependentModulesText }

@@ -64,7 +64,6 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 
 		// If same as activeModule, toggle closed, otherwise it is open.
 		const isOpen = slug !== activeModule || moduleState === 'closed';
-
 		setModuleState( slug, isOpen ? 'view' : 'closed' );
 	};
 
@@ -83,7 +82,7 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 					key={ slug }
 					slug={ slug }
 					onEdit={ onEdit.bind( null, slug ) }
-					onConfirm={ onConfirm }
+					onConfirm={ onConfirm.bind( null, slug ) }
 					onCancel={ onCancel.bind( null, slug ) }
 					isOpen={ activeModule === slug && moduleState !== 'closed' }
 					isEditing={ activeModule === slug && moduleState === 'edit' }
