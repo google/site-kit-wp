@@ -71,7 +71,7 @@ export default function SettingsActiveModules( { activeModule, moduleState, setM
 		// If same as activeModule, toggle closed, otherwise it is open.
 		const isOpen = slug !== activeModule || moduleState === 'closed';
 		setModuleState( slug, isOpen ? 'view' : 'closed' );
-	}, [] );
+	}, [ activeModule, moduleState ] );
 
 	if ( ! modules ) {
 		return null;
