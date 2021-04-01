@@ -88,14 +88,6 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		};
 	} );
 
-	if ( ! hasFinishedResolution ) {
-		return (
-			<Widget Header={ Header } noPadding>
-				<PreviewTable rows={ 4 } rowHeight={ 50 } />
-			</Widget>
-		);
-	}
-
 	if ( error ) {
 		return (
 			<Widget Header={ Header }>
@@ -185,14 +177,20 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 			<Grid>
 				<Row>
 					<Cell>
-						<PieChart report={ report } />
+						<PieChart report={ report } hasFinishedResolution={ hasFinishedResolution } />
 					</Cell>
 					<Cell size={ 8 }>
 						<TableOverflowContainer>
-							<ReportTable
-								rows={ report[ 0 ].data.rows }
-								columns={ tableColumns }
-							/>
+							{
+								hasFinishedResolution ? (
+									<ReportTable
+										rows={ report[ 0 ].data.rows }
+										columns={ tableColumns }
+									/>
+								) : (
+									<PreviewTable rows={ 4 } rowHeight={ 50 } />
+								)
+							}
 						</TableOverflowContainer>
 					</Cell>
 				</Row>
