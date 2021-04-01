@@ -17,11 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import GoogleChart from '../../../../../components/GoogleChart';
 import { extractAnalyticsDataForPieChart } from '../../../util';
-import PropTypes from 'prop-types';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 
 export default function PieChart( { report, hasFinishedResolution } ) {

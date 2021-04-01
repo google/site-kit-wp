@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __, _n, _x, sprintf } from '@wordpress/i18n';
@@ -38,7 +43,6 @@ import PieChart from './PieChart';
 import { numFmt } from '../../../../../util';
 import MiniChart from '../../../../../components/MiniChart';
 import { Cell, Grid, Row } from '../../../../../material-components';
-import PropTypes from 'prop-types';
 
 const { useSelect } = Data;
 
