@@ -30,29 +30,41 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import PencilIcon from '../../../../svg/pencil.svg';
 import TrashIcon from '../../../../svg/trash.svg';
 import Button from '../../Button';
 import Spinner from '../../Spinner';
 import Link from '../../Link';
+const { useSelect } = Data;
 
 export default function Footer( props ) {
 	const {
 		slug,
-		name,
-		homepage,
-		autoActivate,
 		isSaving,
 		isEditing,
-		hasSettings,
-		canSubmitChanges,
-		setupComplete,
 		handleConfirmOrCancel,
 		handleCancel,
 		handleEdit,
 		handleDialog,
 	} = props;
+
+	const canSubmitChanges = useSelect( ( select ) => select( CORE_MODULES ).canSubmitChanges( slug ) );
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
+	if ( ! module ) {
+		return null;
+	}
+
+	const {
+		name,
+		homepage,
+		connected: setupComplete,
+		forceActive: autoActivate,
+	} = module;
+
+	const hasSettings = !! module.SettingsEditComponent;
 
 	let primaryColumn = null;
 	let secondaryColumn = null;
@@ -156,15 +168,9 @@ export default function Footer( props ) {
 }
 
 Footer.propTypes = {
-	name: PropTypes.string.isRequired,
 	slug: PropTypes.string.isRequired,
-	homepage: PropTypes.string.isRequired,
-	autoActivate: PropTypes.bool.isRequired,
 	isSaving: PropTypes.bool.isRequired,
 	isEditing: PropTypes.bool,
-	hasSettings: PropTypes.bool,
-	canSubmitChanges: PropTypes.bool,
-	setupComplete: PropTypes.bool.isRequired,
 	handleConfirmOrCancel: PropTypes.func.isRequired,
 	handleCancel: PropTypes.func.isRequired,
 	handleEdit: PropTypes.func.isRequired,

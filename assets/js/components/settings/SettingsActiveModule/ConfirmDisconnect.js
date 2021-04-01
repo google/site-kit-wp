@@ -38,8 +38,6 @@ const { useSelect } = Data;
 export default function ConfirmDisconnect( props ) {
 	const {
 		slug,
-		name,
-		provides,
 		handleDialog,
 		handleConfirmRemoveModule,
 	} = props;
@@ -47,6 +45,14 @@ export default function ConfirmDisconnect( props ) {
 	const [ dialogActive ] = useState( false );
 
 	const dependentModules = useSelect( ( select ) => select( CORE_MODULES ).getModuleDependantNames( slug ) );
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
+	const provides = useSelect( ( select ) => select( CORE_MODULES ).getModuleFeatures( slug ) );
+
+	if ( ! module ) {
+		return null;
+	}
+
+	const { name } = module;
 
 	const handleCloseModal = () => {};
 
@@ -81,7 +87,6 @@ export default function ConfirmDisconnect( props ) {
 }
 
 ConfirmDisconnect.propTypes = {
-	name: PropTypes.string.isRequired,
 	slug: PropTypes.string.isRequired,
 	handleDialog: PropTypes.func.isRequired,
 	handleConfirmRemoveModule: PropTypes.func.isRequired,

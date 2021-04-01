@@ -24,11 +24,6 @@ import { filter } from 'lodash';
 import classnames from 'classnames';
 
 /**
- * WordPress dependencies
- */
-import { applyFilters } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
 import { Cell, Grid, Row } from '../../../material-components';
@@ -40,31 +35,32 @@ import ConfirmDisconnect from './ConfirmDisconnect';
 
 export default function SettingsActiveModule( props ) {
 	const {
-		name,
 		slug,
-		homepage,
+		onEdit,
+		onConfirm,
+		onCancel,
 		isEditing,
 		isOpen,
-		handleAccordion,
-		hasSettings,
-		canSubmitChanges,
-		provides,
 		isSaving,
+		handleAccordion,
 		error,
-		autoActivate,
-		setupComplete,
 	} = props;
 
 	const moduleKey = `${ slug }-module`;
-	const isConnected = applyFilters( `googlesitekit.Connected-${ slug }`, setupComplete );
 
 	// Disable other modules during editing
 	const modulesBeingEdited = filter( isEditing, ( module ) => module );
 	const editActive = 0 < modulesBeingEdited.length;
 
-	const handleConfirmOrCancel = () => {};
-	const handleCancel = () => {};
-	const handleEdit = () => {};
+	const handleConfirmOrCancel = () => {
+		onConfirm( slug );
+	};
+	const handleCancel = () => {
+		onCancel( slug );
+	};
+	const handleEdit = () => {
+		onEdit( slug );
+	};
 	const handleDialog = () => {};
 	const handleConfirmRemoveModule = () => {};
 
@@ -81,9 +77,7 @@ export default function SettingsActiveModule( props ) {
 
 			<Header
 				slug={ slug }
-				name={ name }
 				isOpen={ isOpen }
-				isConnected={ isConnected }
 				handleAccordion={ handleAccordion }
 			/>
 
@@ -108,14 +102,8 @@ export default function SettingsActiveModule( props ) {
 
 				<Footer
 					slug={ slug }
-					name={ name }
-					homepage={ homepage }
-					autoActivate={ autoActivate }
-					isSaving={ isSaving === `${ slug }-module` }
+					isSaving={ isSaving }
 					isEditing={ isEditing[ moduleKey ] }
-					hasSettings={ hasSettings }
-					canSubmitChanges={ canSubmitChanges }
-					setupComplete={ setupComplete }
 					handleConfirmOrCancel={ handleConfirmOrCancel }
 					handleCancel={ handleCancel }
 					handleEdit={ handleEdit }
@@ -125,8 +113,6 @@ export default function SettingsActiveModule( props ) {
 
 			<ConfirmDisconnect
 				slug={ slug }
-				name={ name }
-				provides={ provides }
 				handleDialog={ handleDialog }
 				handleConfirmRemoveModule={ handleConfirmRemoveModule }
 			/>
@@ -135,30 +121,13 @@ export default function SettingsActiveModule( props ) {
 }
 
 SettingsActiveModule.propTypes = {
-	name: PropTypes.string,
 	slug: PropTypes.string,
-	homepage: PropTypes.string,
-	isEditing: PropTypes.object,
-	handleDialog: PropTypes.func,
-	hasSettings: PropTypes.bool,
-	canSubmitChanges: PropTypes.bool,
-	required: PropTypes.array,
-	active: PropTypes.bool,
-	setupComplete: PropTypes.bool,
 	onEdit: PropTypes.func,
 	onConfirm: PropTypes.func,
 	onCancel: PropTypes.func,
-};
-
-SettingsActiveModule.defaultProps = {
-	name: '',
-	slug: '',
-	homepage: '',
-	isEditing: {},
-	handleDialog: null,
-	active: false,
-	setupComplete: false,
-	onEdit: null,
-	onConfirm: null,
-	onCancel: null,
+	isEditing: PropTypes.object,
+	isOpen: PropTypes.bool,
+	isSaving: PropTypes.bool,
+	handleAccordion: PropTypes.func,
+	error: PropTypes.shape( {} ),
 };

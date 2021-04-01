@@ -30,10 +30,23 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Grid, Row, Cell } from '../../../material-components';
 import ModuleIcon from '../../ModuleIcon';
+const { useSelect } = Data;
 
-export default function Header( { slug, name, isOpen, isConnected, handleAccordion } ) {
+export default function Header( { slug, isOpen, handleAccordion } ) {
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
+	if ( ! module ) {
+		return null;
+	}
+
+	const {
+		name,
+		connected: isConnected,
+	} = module;
+
 	return (
 		<button
 			id={ `googlesitekit-settings-module__header--${ slug }` }
@@ -93,9 +106,7 @@ export default function Header( { slug, name, isOpen, isConnected, handleAccordi
 }
 
 Header.propTypes = {
-	name: PropTypes.string.isRequired,
 	slug: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,
-	isConnected: PropTypes.bool.isRequired,
 	handleAccordion: PropTypes.func.isRequired,
 };

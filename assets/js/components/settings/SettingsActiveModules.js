@@ -33,7 +33,7 @@ const { useDispatch, useSelect } = Data;
 
 const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) => {
 	const { submitChanges } = useDispatch( CORE_MODULES );
-	const [ error, setError ] = useState( false );
+	const [ error, setError ] = useState( undefined );
 	const [ isSaving, setIsSaving ] = useState( false );
 	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 
@@ -47,9 +47,7 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 
 	const onConfirm = async ( slug ) => {
 		setIsSaving( true );
-
 		const { error: submissionError } = await submitChanges( slug );
-
 		setIsSaving( false );
 
 		if ( ! submissionError ) {
@@ -87,21 +85,14 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 				<SettingsActiveModule
 					key={ module.slug }
 					slug={ module.slug }
-					name={ module.name }
-					description={ module.description }
-					homepage={ module.homepage }
-					active={ module.active }
-					setupComplete={ module.active && module.connected }
 					onEdit={ onEdit }
 					onConfirm={ onConfirm }
 					onCancel={ onCancel }
 					isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
 					isOpen={ activeModule === module.slug && moduleState !== 'closed' }
-					handleAccordion={ handleAccordion }
 					isSaving={ isSaving }
-					provides={ module.features }
+					handleAccordion={ handleAccordion }
 					error={ error }
-					autoActivate={ module.forceActive }
 				/>
 			) ) }
 		</Layout>
