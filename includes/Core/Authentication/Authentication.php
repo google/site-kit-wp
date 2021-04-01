@@ -304,13 +304,19 @@ final class Authentication {
 
 		add_action(
 			'googlesitekit_authorize_user',
-			function () {
+			function ( $token_response, $scopes, $previous_scopes ) {
 				if ( ! $this->credentials->using_proxy() ) {
 					return;
 				}
+
 				$this->set_connected_proxy_url();
-				$this->require_user_input();
-			}
+
+				if ( empty( $previous_scopes ) ) {
+					$this->require_user_input();
+				}
+			},
+			10,
+			3
 		);
 
 		add_filter(
