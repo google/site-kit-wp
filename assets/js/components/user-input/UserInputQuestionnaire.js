@@ -180,6 +180,7 @@ export default function UserInputQuestionnaire() {
 			height={ 0 }
 			indeterminate={ false }
 			progress={ ( activeSlugIndex + 1 ) / USER_INPUT_QUESTIONS_LIST.length }
+			className="googlesitekit-user-input__question--progress"
 		/>
 	);
 
