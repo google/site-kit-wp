@@ -85,13 +85,13 @@ function HelpMenu( { children } ) {
 					id="googlesitekit-help-menu"
 				>
 					{ children }
-					<HelpMenuLink href="https://sitekit.withgoogle.com/documentation/fix-common-issues/">
+					<HelpMenuLink gaEventLabel="fix_common_issues" href="https://sitekit.withgoogle.com/documentation/fix-common-issues/">
 						{ __( 'Fix common issues', 'google-site-kit' ) }
 					</HelpMenuLink>
-					<HelpMenuLink href="https://sitekit.withgoogle.com/documentation/">
+					<HelpMenuLink gaEventLabel="documentation" href="https://sitekit.withgoogle.com/documentation/">
 						{ __( 'Read help docs', 'google-site-kit' ) }
 					</HelpMenuLink>
-					<HelpMenuLink href="https://wordpress.org/support/plugin/google-site-kit/">
+					<HelpMenuLink gaEventLabel="support_forum" href="https://wordpress.org/support/plugin/google-site-kit/">
 						{ __( 'Get support', 'google-site-kit' ) }
 					</HelpMenuLink>
 				</Menu>
