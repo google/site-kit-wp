@@ -3,34 +3,23 @@
  */
 @import "../../config/variables";
 
-.swg--paywall-prompt span {
-	opacity: 0.5;
-}
-
 body:not(.swg--is-amp) article:not(.swg--page-is-unlocked) .swg--locked-content {
-	display: none;
+	opacity: 0;
+	user-select: none;
 }
 
-@supports (filter: blur(6px)) {
+@supports (filter: blur(4px)) {
 
 	body:not(.swg--is-amp) article .swg--locked-content {
 		transition: filter 0.6s;
 	}
 
 	body:not(.swg--is-amp) article:not(.swg--page-is-unlocked) .swg--locked-content {
-		animation: fadeIn 0.3s ease-in;
+		animation: fadeIn 0.3s ease-in forwards;
 		display: block;
-		filter: blur(6px);
+		filter: blur(4px);
 		transition: filter 0s;
 	}
-}
-
-body:not(.swg--is-amp) article:not(.swg--page-is-locked) .swg--paywall-prompt {
-	display: none;
-}
-
-html[amp] [href="#swg-contribute"] {
-	display: none;
 }
 
 button.swg-button {
@@ -48,6 +37,6 @@ button.swg-button:hover {
 	}
 
 	to {
-		opacity: 1;
+		opacity: 0.8;
 	}
 }

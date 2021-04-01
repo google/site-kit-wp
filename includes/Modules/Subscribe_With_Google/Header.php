@@ -35,7 +35,7 @@ final class Header {
 		if ( $is_amp ) {
 			add_action( 'wp_head', array( $this, 'add_amp_scripts' ) );
 		} else {
-			add_action( 'wp_head', array( $this, 'add_web_scripts_and_styles' ) );
+			add_action( 'wp_enqueue_scripts', array( $this, 'add_web_scripts_and_styles' ) );
 		}
 
 		add_action( 'wp_head', array( $this, 'add_config_json' ) );
