@@ -35,7 +35,7 @@ import Notification from '../legacy-notifications/notification';
 import { getTimeInSeconds } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import PersonSittingSVG from '../../../svg/person-sitting.svg';
+import UserInputPromptSVG from '../../../svg/user-input-prompt.svg';
 const { useSelect } = Data;
 
 export default function UserInputSettings( { onCTAClick, onDismiss, isDismissable } ) {
@@ -59,7 +59,7 @@ export default function UserInputSettings( { onCTAClick, onDismiss, isDismissabl
 			ctaLabel={ __( 'Let’s go', 'google-site-kit' ) }
 			onCTAClick={ onCTAClick }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-			WinImageSVG={ ( props ) => <PersonSittingSVG width="100%" height="100%" { ...props } /> }
+			WinImageSVG={ ( props ) => <UserInputPromptSVG width="100%" height="100%" { ...props } /> }
 			isDismissable={ isDismissable }
 			onDismiss={ onDismiss }
 		/>
