@@ -20,6 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -33,38 +34,36 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Button from '../../../../components/Button';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { FORM_SETUP, STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME } from '../../datastore/constants';
 import { TextField, Input } from '../../../../material-components';
 const { useDispatch, useSelect } = Data;
 
-export default function PrototypeForm( { finishSetup } ) {
-	// Get products from either the temporary form state or the saved settings.
-	const formProducts = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'products' ) );
-	const settingsProducts = useSelect( ( select ) => select( STORE_NAME ).getProducts() );
-	const products = formProducts ?? settingsProducts;
+export default function PrototypeForm( { doneCallback } ) {
+	// Get mutation functions.
+	const { setSettings, submitChanges } = useDispatch( STORE_NAME );
 
-	// Get publication ID from either the temporary form state or the saved settings.
-	const formPublicationID = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'publicationID' ) );
-	const settingsPublicationID = useSelect( ( select ) => select( STORE_NAME ).getPublicationID() );
-	const publicationID = formPublicationID ?? settingsPublicationID;
+	// Get values.
+	const products = useSelect( ( select ) => select( STORE_NAME ).getProducts() );
+	const publicationID = useSelect( ( select ) => select( STORE_NAME ).getPublicationID() );
 
-	// Update input fields.
-	const { setValues } = useDispatch( CORE_FORMS );
+	// Handle form input.
 	const onChangeProducts = useCallback( ( { currentTarget } ) => {
-		setValues( FORM_SETUP, { products: currentTarget.value } );
+		setSettings( { products: currentTarget.value } );
 	}, [] );
 	const onChangePublicationID = useCallback( ( { currentTarget } ) => {
-		setValues( FORM_SETUP, { publicationID: currentTarget.value } );
+		setSettings( { publicationID: currentTarget.value } );
 	}, [] );
 
-	// Save changes.
-	const { setProducts, setPublicationID, submitChanges } = useDispatch( STORE_NAME );
+	// Handle form completion.
 	const doneHandler = useCallback( () => {
-		setProducts( products.trim() );
-		setPublicationID( publicationID.trim() );
+		// Trim values before submitting.
+		setSettings( {
+			products: products.trim(),
+			publicationID: publicationID.trim(),
+		} );
+
 		submitChanges();
-		finishSetup?.();
+		doneCallback();
 	}, [ products, publicationID ] );
 
 	return (
@@ -101,12 +100,20 @@ export default function PrototypeForm( { finishSetup } ) {
 				/>
 			</TextField>
 
+			{ doneCallback &&
 			<div className="googlesitekit-setup-module__action">
 				<Button onClick={ doneHandler } disabled={ ! publicationID || ! products }>
 					{ __( 'Done', 'google-site-kit' ) }
 				</Button>
 			</div>
+			}
 
 		</div>
 	);
 }
+
+PrototypeForm.propTypes = {
+	doneCallback: PropTypes.func,
+};
+
+PrototypeForm.defaultProps = {};

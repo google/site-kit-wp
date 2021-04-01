@@ -38,19 +38,15 @@ import { useSelect } from 'googlesitekit-data';
 import { PrototypeForm } from '../common';
 
 export default function SetupMain( { finishSetup } ) {
-	const products = useSelect( ( select ) => select( STORE_NAME ).getProducts() );
-	const publicationID = useSelect( ( select ) => select( STORE_NAME ).getPublicationID() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const submitInProgress = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' ) );
 	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
 
 	let viewComponent;
-	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
-	// when the component initially loads and has yet to start fetching accounts.
 	if ( isDoingSubmitChanges || isNavigating || submitInProgress ) {
 		viewComponent = <ProgressBar />;
-	} else if ( ! products || ! publicationID ) {
-		viewComponent = <PrototypeForm finishSetup={ finishSetup } />;
+	} else {
+		viewComponent = <PrototypeForm doneCallback={ finishSetup } />;
 	}
 
 	return (
