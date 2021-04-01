@@ -191,23 +191,6 @@ final class PageSpeed_Insights extends Module
 	}
 
 	/**
-	 * Returns all module information data for passing it to JavaScript.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array Module information data.
-	 */
-	public function prepare_info_for_js() {
-		$info = parent::prepare_info_for_js();
-
-		$info['provides'] = array(
-			__( 'Website performance reports for mobile and desktop', 'google-site-kit' ),
-		);
-
-		return $info;
-	}
-
-	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
 	 * @return array List of Google OAuth scopes.

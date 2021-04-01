@@ -253,39 +253,6 @@ class AnalyticsTest extends TestCase {
 		);
 	}
 
-	public function test_prepare_info_for_js() {
-		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$info = $analytics->prepare_info_for_js();
-
-		$this->assertEqualSets(
-			array(
-				'slug',
-				'name',
-				'description',
-				'cta',
-				'sort',
-				'homepage',
-				'learnMore',
-				'required',
-				'autoActivate',
-				'internal',
-				'screenID',
-				'settings',
-				'provides',
-			),
-			array_keys( $info )
-		);
-
-		$this->assertEquals( 'analytics', $info['slug'] );
-		$this->assertArrayHasKey( 'accountID', $info['settings'] );
-		$this->assertArrayHasKey( 'propertyID', $info['settings'] );
-		$this->assertArrayHasKey( 'profileID', $info['settings'] );
-		$this->assertArrayHasKey( 'internalWebPropertyID', $info['settings'] );
-		$this->assertArrayHasKey( 'useSnippet', $info['settings'] );
-		$this->assertArrayHasKey( 'trackingDisabled', $info['settings'] );
-	}
-
 	public function test_is_connected() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 

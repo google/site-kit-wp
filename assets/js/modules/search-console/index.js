@@ -28,6 +28,7 @@ import { SettingsEdit, SettingsView } from './components/settings';
 import DashboardImpressionsWidget from './components/dashboard/DashboardImpressionsWidget';
 import DashboardClicksWidget from './components/dashboard/DashboardClicksWidget';
 import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopularKeywordsWidget';
+import ModuleOverviewWidget from './components/module/ModuleOverviewWidget';
 import {
 	AREA_DASHBOARD_POPULARITY,
 	AREA_DASHBOARD_SEARCH_FUNNEL,
@@ -92,6 +93,18 @@ export const registerWidgets = ( widgets ) => {
 		[
 			AREA_DASHBOARD_POPULARITY,
 			AREA_PAGE_DASHBOARD_POPULARITY,
+		],
+	);
+	widgets.registerWidget(
+		'searchConsoleModuleOverview',
+		{
+			Component: ModuleOverviewWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+		},
+		[
+			AREA_MODULE_SEARCH_CONSOLE_MAIN,
 		],
 	);
 	widgets.registerWidgetArea(
