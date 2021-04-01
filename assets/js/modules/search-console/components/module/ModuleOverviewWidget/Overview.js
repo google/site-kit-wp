@@ -19,8 +19,6 @@
 /**
  * External dependencies
  */
-import each from 'lodash/each';
-import round from 'lodash/round';
 import PropTypes from 'prop-types';
 
 /**
@@ -31,74 +29,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { calculateChange } from '../../../../../util';
 import { Grid, Row, Cell } from '../../../../../material-components';
+import { extractSearchConsoleDashboardData } from '../../../util';
 import DataBlock from '../../../../../components/DataBlock';
-
-const reduceSearchConsoleData = ( rows ) => {
-	const dataMap = [
-		[
-			{ type: 'string', label: __( 'Day', 'google-site-kit' ) },
-			{ type: 'number', label: __( 'Clicks', 'google-site-kit' ) },
-			{ type: 'number', label: __( 'Impressions', 'google-site-kit' ) },
-			{ type: 'number', label: __( 'CTR', 'google-site-kit' ) },
-			{ type: 'number', label: __( 'Position', 'google-site-kit' ) },
-		],
-	];
-
-	let totalClicks = 0;
-	let totalImpressions = 0;
-	let totalCTR = 0;
-	let totalPosition = 0;
-	const count = rows.length;
-
-	each( rows, ( row ) => {
-		const date = new Date( row.keys[ 0 ] );
-		dataMap.push( [
-			( date.getMonth() + 1 ) + '/' + date.getUTCDate(),
-			row.clicks,
-			row.impressions,
-			round( row.ctr, 3 ),
-			round( row.position, 3 ),
-		] );
-		totalClicks += row.clicks;
-		totalImpressions += row.impressions;
-		totalCTR += row.ctr;
-		totalPosition += row.position;
-	} );
-
-	// Do not divide by zero.
-	const averageCTR = count > 0 ? totalCTR / count : 0.0;
-	const averagePosition = count > 0 ? totalPosition / count : 0.0;
-
-	return {
-		dataMap,
-		totalClicks,
-		totalImpressions,
-		averageCTR,
-		averagePosition,
-	};
-};
-
-const extractSearchConsoleDashboardData = ( rows ) => {
-	// Split the results in two chunks.
-	const half = Math.floor( rows.length / 2 );
-	// Rows are from oldest to newest.
-	const latestData = reduceSearchConsoleData( rows.slice( half ) );
-	const olderData = reduceSearchConsoleData( rows.slice( 0, half ) );
-
-	return {
-		dataMap: latestData.dataMap,
-		totalClicks: latestData.totalClicks,
-		totalImpressions: latestData.totalImpressions,
-		averageCTR: latestData.averageCTR,
-		averagePosition: latestData.averagePosition,
-		totalClicksChange: calculateChange( olderData.totalClicks, latestData.totalClicks ),
-		totalImpressionsChange: calculateChange( olderData.totalImpressions, latestData.totalImpressions ),
-		averageCTRChange: calculateChange( olderData.averageCTR, latestData.averageCTR ),
-		averagePositionChange: calculateChange( olderData.averagePosition, latestData.averagePosition ),
-	};
-};
 
 const Overview = ( { data, selectedStats, handleStatsSelection } ) => {
 	const {
