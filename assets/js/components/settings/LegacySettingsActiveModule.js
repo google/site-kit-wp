@@ -68,6 +68,7 @@ class LegacySettingsActiveModule extends Component {
 		super( props );
 		this.state = {
 			isSaving: false,
+			active: props.active,
 			setupComplete: props.setupComplete,
 			dialogActive: false,
 		};

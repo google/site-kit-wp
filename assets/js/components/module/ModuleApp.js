@@ -59,7 +59,7 @@ function ModuleApp( { moduleSlug } ) {
 				{ helpVisibilityEnabled && (
 					<HelpMenu>
 						{ moduleSlug === 'adsense' && (
-							<HelpMenuLink href="https://support.google.com/adsense/">
+							<HelpMenuLink gaEventLabel="adsense_help" href="https://support.google.com/adsense/">
 								{ __( 'Get help with AdSense', 'google-site-kit' ) }
 							</HelpMenuLink>
 						) }

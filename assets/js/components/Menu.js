@@ -107,6 +107,11 @@ Menu.propTypes = {
 	menuOpen: PropTypes.bool.isRequired,
 	menuItems: PropTypes.array,
 	id: PropTypes.string.isRequired,
+	onSelected: PropTypes.func,
+};
+
+Menu.defaultProps = {
+	onSelected: () => {},
 };
 
 export default Menu;
