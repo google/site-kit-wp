@@ -32,12 +32,12 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import { getLocale, numFmt, calculateChange, getChartDifferenceArrow } from '../../../util';
 
 /**
- * Gets data for a Google Chart from an search console report.
+ * Gets data for a Google chart from a Search Console report.
  *
  * @since n.e.x.t
  *
- * @param {Object} current        A report object for the current period.
- * @param {Object} previous       A report object for the previous period.
+ * @param {Array} current         Report rows for the current period.
+ * @param {Array} previous        Report rows for the previous period.
  * @param {string} label          Metric label.
  * @param {number} selectedColumn Selected column index.
  * @return {Array.<Array.<number|string>>} Data array.
