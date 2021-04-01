@@ -36,8 +36,8 @@ import { getLocale, numFmt, calculateChange, getChartDifferenceArrow } from '../
  *
  * @since n.e.x.t
  *
- * @param {Array} current         Report rows for the current period.
- * @param {Array} previous        Report rows for the previous period.
+ * @param {Array}  current        Report rows for the current period.
+ * @param {Array}  previous       Report rows for the previous period.
  * @param {string} label          Metric label.
  * @param {number} selectedColumn Selected column index.
  * @return {Array.<Array.<number|string>>} Data array.
