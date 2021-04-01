@@ -58,7 +58,7 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 		}
 	};
 
-	const handleAccordion = ( slug, e ) => {
+	const onToggle = ( slug, e ) => {
 		// Set focus on heading when clicked.
 		e.target.closest( '.googlesitekit-settings-module__header' ).focus();
 
@@ -84,11 +84,11 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 					onEdit={ onEdit.bind( null, slug ) }
 					onConfirm={ onConfirm.bind( null, slug ) }
 					onCancel={ onCancel.bind( null, slug ) }
+					onToggle={ onToggle.bind( null, slug ) }
 					isOpen={ activeModule === slug && moduleState !== 'closed' }
 					isEditing={ activeModule === slug && moduleState === 'edit' }
 					isLocked={ activeModule !== slug && moduleState === 'edit' }
 					isSaving={ isSaving }
-					handleAccordion={ handleAccordion.bind( null, slug ) }
 					error={ error }
 				/>
 			) ) }

@@ -36,7 +36,7 @@ import { Grid, Row, Cell } from '../../../material-components';
 import ModuleIcon from '../../ModuleIcon';
 const { useSelect } = Data;
 
-export default function Header( { slug, isOpen, handleAccordion } ) {
+export default function Header( { slug, isOpen, onToggle } ) {
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
 	if ( ! module ) {
 		return null;
@@ -58,7 +58,7 @@ export default function Header( { slug, isOpen, handleAccordion } ) {
 			aria-selected={ !! isOpen }
 			aria-expanded={ !! isOpen }
 			aria-controls={ `googlesitekit-settings-module__content--${ slug }` }
-			onClick={ handleAccordion }
+			onClick={ onToggle }
 		>
 			<Grid>
 				<Row>
@@ -105,5 +105,5 @@ export default function Header( { slug, isOpen, handleAccordion } ) {
 Header.propTypes = {
 	slug: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,
-	handleAccordion: PropTypes.func.isRequired,
+	onToggle: PropTypes.func.isRequired,
 };

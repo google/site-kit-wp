@@ -47,7 +47,7 @@ export default function SettingsActiveModule( props ) {
 		isOpen,
 		isSaving,
 		isLocked,
-		handleAccordion,
+		onToggle,
 		error,
 	} = props;
 
@@ -75,7 +75,7 @@ export default function SettingsActiveModule( props ) {
 			<Header
 				slug={ slug }
 				isOpen={ isOpen }
-				handleAccordion={ handleAccordion }
+				onToggle={ onToggle }
 			/>
 
 			{ isOpen && (
@@ -101,9 +101,9 @@ export default function SettingsActiveModule( props ) {
 						slug={ slug }
 						isSaving={ isSaving }
 						isEditing={ isEditing }
-						handleEdit={ onEdit }
-						handleConfirm={ onConfirm }
-						handleCancel={ onCancel }
+						onEdit={ onEdit }
+						onConfirm={ onConfirm }
+						onCancel={ onCancel }
 						handleDialog={ handleDialog }
 					/>
 				</div>
@@ -125,10 +125,10 @@ SettingsActiveModule.propTypes = {
 	onEdit: PropTypes.func,
 	onConfirm: PropTypes.func,
 	onCancel: PropTypes.func,
+	onToggle: PropTypes.func,
 	isEditing: PropTypes.bool,
 	isOpen: PropTypes.bool,
 	isSaving: PropTypes.bool,
 	isLocked: PropTypes.bool,
-	handleAccordion: PropTypes.func,
 	error: PropTypes.shape( {} ),
 };

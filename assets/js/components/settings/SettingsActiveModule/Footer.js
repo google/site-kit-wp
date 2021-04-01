@@ -45,9 +45,9 @@ export default function Footer( props ) {
 		slug,
 		isSaving,
 		isEditing,
-		handleConfirm,
-		handleCancel,
-		handleEdit,
+		onConfirm,
+		onCancel,
+		onEdit,
 		handleDialog,
 	} = props;
 
@@ -59,9 +59,9 @@ export default function Footer( props ) {
 
 	const handleConfirmOrCancel = useCallback( () => {
 		if ( hasSettings && setupComplete ) {
-			handleConfirm();
+			onConfirm();
 		} else {
-			handleCancel();
+			onCancel();
 		}
 	}, [ hasSettings, setupComplete ] );
 
@@ -99,7 +99,7 @@ export default function Footer( props ) {
 				<Spinner isSaving={ isSaving } />
 
 				{ hasSettings && (
-					<Link className="googlesitekit-settings-module__footer-cancel" onClick={ handleCancel } inherit>
+					<Link className="googlesitekit-settings-module__footer-cancel" onClick={ onCancel } inherit>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Link>
 				) }
@@ -109,7 +109,7 @@ export default function Footer( props ) {
 		primaryColumn = (
 			<Link
 				className="googlesitekit-settings-module__edit-button"
-				onClick={ handleEdit }
+				onClick={ onEdit }
 				inherit
 			>
 				{ __( 'Edit', 'google-site-kit' ) }
@@ -177,8 +177,8 @@ Footer.propTypes = {
 	slug: PropTypes.string.isRequired,
 	isSaving: PropTypes.bool.isRequired,
 	isEditing: PropTypes.bool.isRequired,
-	handleConfirm: PropTypes.func.isRequired,
-	handleCancel: PropTypes.func.isRequired,
-	handleEdit: PropTypes.func.isRequired,
+	onConfirm: PropTypes.func.isRequired,
+	onCancel: PropTypes.func.isRequired,
+	onEdit: PropTypes.func.isRequired,
 	handleDialog: PropTypes.func.isRequired,
 };
