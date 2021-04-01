@@ -102,7 +102,7 @@ export default function AccountCreate( { finishSetup } ) {
 			</TextField>
 
 			<div className="googlesitekit-setup-module__action">
-				<Button onClick={ doneHandler } disabled={ ! publicationID }>
+				<Button onClick={ doneHandler } disabled={ ! publicationID || ! products }>
 					{ __( 'Done', 'google-site-kit' ) }
 				</Button>
 			</div>
