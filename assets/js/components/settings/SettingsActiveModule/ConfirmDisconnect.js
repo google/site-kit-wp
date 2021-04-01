@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { useEffect, useCallback } from '@wordpress/element';
+import { useState, useEffect, useCallback } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
 
 /**
@@ -38,6 +38,8 @@ import Dialog from '../../Dialog';
 const { useSelect, useDispatch } = Data;
 
 export default function ConfirmDisconnect( { slug, handleDialog } ) {
+	const [ isDeactivating, setIsDeactivating ] = useState( false );
+
 	const dependentModules = useSelect( ( select ) => select( CORE_MODULES ).getModuleDependantNames( slug ) );
 	const provides = useSelect( ( select ) => select( CORE_MODULES ).getModuleFeatures( slug ) );
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
@@ -63,9 +65,9 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 			return;
 		}
 
-		// setIsSaving( true );
+		setIsDeactivating( true );
 		const { error } = await deactivateModule( slug );
-		// setIsSaving( false );
+		setIsDeactivating( false );
 
 		if ( ! error ) {
 			clearWebStorage();
@@ -110,6 +112,7 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 			provides={ provides }
 			handleConfirm={ handleDisconnect }
 			dependentModules={ dependentModulesText }
+			inProgress={ isDeactivating }
 			danger
 		/>
 	);
