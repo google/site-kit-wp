@@ -165,7 +165,7 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 
 	return (
 		<Widget
-			noPadding
+			noPadding={ hasFinishedResolution }
 			Header={ () => (
 				<Header />
 			) }
