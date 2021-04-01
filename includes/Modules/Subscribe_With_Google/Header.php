@@ -28,10 +28,6 @@ final class Header {
 	 * @param bool $is_amp True if an AMP request, false otherwise.
 	 */
 	public function __construct( $is_amp ) {
-		$publication_id   = get_option( Key::from( 'publication_id' ) );
-		$product          = get_post_meta( get_the_ID(), Key::from( 'product' ), true );
-		$this->product_id = $publication_id . ':' . $product;
-
 		if ( $is_amp ) {
 			add_action( 'wp_head', array( $this, 'add_amp_scripts' ) );
 		} else {
@@ -48,10 +44,16 @@ final class Header {
 			return;
 		}
 
-		// Add ld+json for swg-js.
+		// Get free status.
 		$is_free = get_post_meta( get_the_ID(), Key::from( 'free' ), true );
 		$is_free = $is_free ? $is_free : 'false';
-		// TODO: Add this after the AMP WP plugin adds their ld+json.
+
+		// Get product ID.
+		$publication_id = get_option( Key::from( 'publication_id' ) );
+		$product        = get_post_meta( get_the_ID(), Key::from( 'product' ), true );
+		$product_id     = $publication_id . ':' . $product;
+
+		// Add ld+json for Swgjs.
 		?>
 		<script type=application/ld+json>
 		{
@@ -60,7 +62,7 @@ final class Header {
 			"isAccessibleForFree": <?php echo esc_js( $is_free ); ?>,
 			"isPartOf": {
 				"@type": ["CreativeWork", "Product"],
-				"productID": "<?php echo esc_js( $this->product_id ); ?>"
+				"productID": "<?php echo esc_js( $product_id ); ?>"
 			}
 		}
 		</script>
