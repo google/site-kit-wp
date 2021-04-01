@@ -22,7 +22,7 @@
 import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME } from '../../datastore/constants';
-import { AccountCreate } from '../common';
+import { PrototypeForm } from '../common';
 const { useSelect } = Data;
 
 export default function SettingsEdit() {
@@ -32,7 +32,7 @@ export default function SettingsEdit() {
 	if ( isDoingSubmitChanges ) {
 		viewComponent = <ProgressBar />;
 	} else {
-		viewComponent = <AccountCreate />;
+		viewComponent = <PrototypeForm />;
 	}
 
 	return (

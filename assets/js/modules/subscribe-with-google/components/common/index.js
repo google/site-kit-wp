@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 
-export { default as AccountCreate } from './AccountCreate';
+export { default as PrototypeForm } from './PrototypeForm';

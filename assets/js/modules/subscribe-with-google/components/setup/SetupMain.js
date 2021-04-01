@@ -35,7 +35,7 @@ import { STORE_NAME, FORM_SETUP } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { useSelect } from 'googlesitekit-data';
-import { AccountCreate } from '../common';
+import { PrototypeForm } from '../common';
 
 export default function SetupMain( { finishSetup } ) {
 	const products = useSelect( ( select ) => select( STORE_NAME ).getProducts() );
@@ -50,7 +50,7 @@ export default function SetupMain( { finishSetup } ) {
 	if ( isDoingSubmitChanges || isNavigating || submitInProgress ) {
 		viewComponent = <ProgressBar />;
 	} else if ( ! products || ! publicationID ) {
-		viewComponent = <AccountCreate finishSetup={ finishSetup } />;
+		viewComponent = <PrototypeForm finishSetup={ finishSetup } />;
 	}
 
 	return (

@@ -38,7 +38,7 @@ import { FORM_SETUP, STORE_NAME } from '../../datastore/constants';
 import { TextField, Input } from '../../../../material-components';
 const { useDispatch, useSelect } = Data;
 
-export default function AccountCreate( { finishSetup } ) {
+export default function PrototypeForm( { finishSetup } ) {
 	// Get products from either the temporary form state or the saved settings.
 	const formProducts = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'products' ) );
 	const settingsProducts = useSelect( ( select ) => select( STORE_NAME ).getProducts() );
