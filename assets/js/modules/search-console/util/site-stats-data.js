@@ -29,21 +29,20 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getLocale, numFmt, getChartDifferenceArrow } from '../../../util';
+import { getLocale, numFmt, calculateChange, getChartDifferenceArrow } from '../../../util';
 
 /**
- * Gets data for a Google Chart from an AdSense report.
+ * Gets data for a Google chart from a Search Console report.
  *
- * @since 1.23.0
+ * @since n.e.x.t
  *
- * @param {Object} current        A report object for the current period.
- * @param {Object} previous       A report object for the previous period.
+ * @param {Array}  current        Report rows for the current period.
+ * @param {Array}  previous       Report rows for the previous period.
  * @param {string} label          Metric label.
  * @param {number} selectedColumn Selected column index.
- * @param {Object} metadata       Data metadata.
  * @return {Array.<Array.<number|string>>} Data array.
  */
-export function getSiteStatsDataForGoogleChart( current, previous, label, selectedColumn, metadata ) {
+export const getSiteStatsDataForGoogleChart = ( current, previous, label, selectedColumn ) => {
 	const dataMap = [
 		[
 			{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
@@ -54,13 +53,6 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 	];
 
 	const stringToDate = ( dateString ) => new Date( `${ dateString } 00:00:00` );
-	const findRowByDate = ( searchDate ) => ( ( [ rowDate ] ) => searchDate.getTime() === stringToDate( rowDate ).getTime() );
-
-	const currentDate = stringToDate( current.startDate );
-	const previousDate = stringToDate( previous.startDate );
-
-	const ends = stringToDate( current.endDate );
-
 	const locale = getLocale();
 	const localeDateOptions = {
 		weekday: 'short',
@@ -68,37 +60,33 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 		day: 'numeric',
 	};
 
-	while ( +currentDate <= +ends ) {
-		const currentMonth = parseFloat( ( current?.rows || [] ).find( findRowByDate( currentDate ) )?.[ selectedColumn ] || 0 );
-		const prevMonth = parseFloat( ( previous?.rows || [] ).find( findRowByDate( previousDate ) )?.[ selectedColumn ] || 0 );
-
+	current.forEach( ( currentDay, index ) => {
+		const currentMonth = currentDay[ selectedColumn ];
+		const prevMonth = previous[ index ][ selectedColumn ];
+		const currentDate = currentDay.keys[ 0 ];
+		const previousDate = previous[ index ].keys[ 0 ];
+		const dateRange = sprintf(
+			/* translators: 1: date for user stats, 2: previous date for user stats comparison */
+			_x( '%1$s vs %2$s', 'Date range for chart tooltip', 'google-site-kit' ),
+			stringToDate( currentDate ).toLocaleDateString( locale, localeDateOptions ),
+			stringToDate( previousDate ).toLocaleDateString( locale, localeDateOptions ),
+		);
+		const change = calculateChange( prevMonth, currentMonth );
 		const difference = prevMonth !== 0
 			? ( currentMonth / prevMonth ) - 1
 			: 1; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 1
 		const svgArrow = getChartDifferenceArrow( difference );
-		const dateRange = sprintf(
-			/* translators: 1: date for user stats, 2: previous date for user stats comparison */
-			_x( '%1$s vs %2$s', 'Date range for chart tooltip', 'google-site-kit' ),
-			currentDate.toLocaleDateString( locale, localeDateOptions ),
-			previousDate.toLocaleDateString( locale, localeDateOptions ),
-		);
-
-		let tooltipData = numFmt( currentMonth, metadata?.currency );
-		if ( metadata?.type === 'METRIC_RATIO' ) {
-			tooltipData = numFmt( currentMonth, '%' );
-		}
-
 		const statInfo = sprintf(
 			/* translators: 1: selected stat label, 2: numeric value of selected stat, 3: up or down arrow , 4: different change in percentage, %%: percent symbol */
 			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>', 'Stat information for chart tooltip', 'google-site-kit' ),
 			label,
-			tooltipData,
+			Math.abs( currentMonth ).toFixed( 2 ).replace( /(.00|0)$/, '' ),
 			svgArrow,
-			Math.abs( difference ).toFixed( 2 ).replace( /(.00|0)$/, '' ), // .replace( ... ) removes trailing zeros
+			numFmt( change ),
 		);
 
 		dataMap.push( [
-			new Date( currentDate ), // Copy the current date.
+			new Date( stringToDate( currentDate ) ),
 			`<div class="${ classnames( 'googlesitekit-visualization-tooltip', {
 				'googlesitekit-visualization-tooltip--up': difference > 0,
 				'googlesitekit-visualization-tooltip--down': difference < 0,
@@ -109,10 +97,7 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 			currentMonth,
 			prevMonth,
 		] );
-
-		currentDate.setDate( currentDate.getDate() + 1 );
-		previousDate.setDate( previousDate.getDate() + 1 );
-	}
+	} );
 
 	return dataMap;
-}
+};
