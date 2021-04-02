@@ -1032,22 +1032,26 @@ final class Analytics extends Module
 			);
 		}
 
-		$account_id = $this->parse_account_id( $property_id );
+		$account_id        = $this->parse_account_id( $property_id );
+		$account_summaries = $this->get_service( 'analytics' )->management_accountSummaries->listManagementAccountSummaries();
 
 		/**
 		 * Helper method to check check if a given account
 		 * contains the property_id
 		 */
-		$has_property = function ( $account_id ) use ( $property_id ) {
-			$response = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
-			if ( is_wp_error( $response ) ) {
-				return false;
-			}
-			foreach ( $response['properties'] as $property ) {
-				if ( $property->getId() === $property_id ) {
-					return true;
+		$has_property = function ( $account_id ) use ( $property_id, $account_summaries ) {
+			foreach ( $account_summaries as $account_summary ) {
+				if ( $account_summary->getId() !== $account_id ) {
+					continue;
+				}
+
+				foreach ( $account_summary->getWebProperties() as $property ) {
+					if ( $property->getId() === $property_id ) {
+						return true;
+					}
 				}
 			}
+
 			return false;
 		};
 
@@ -1059,17 +1063,10 @@ final class Analytics extends Module
 			);
 		}
 
-		// Check all of the accounts for this user.
-		$user_accounts_properties_profiles = $this->get_data( 'accounts-properties-profiles' );
-		$user_account_ids                  = is_wp_error( $user_accounts_properties_profiles ) ? array() : wp_list_pluck( $user_accounts_properties_profiles['accounts'], 'id' );
-		foreach ( $user_account_ids as $user_account_id ) {
-			// Skip the inferred account id, that ship has sailed.
-			if ( $account_id === $user_account_id ) {
-				continue;
-			}
-			if ( $has_property( $user_account_id ) ) {
+		foreach ( $account_summaries as $account_summary ) {
+			if ( $has_property( $account_summary->getId() ) ) {
 				return array(
-					'accountID'  => $user_account_id,
+					'accountID'  => $account_id,
 					'permission' => true,
 				);
 			}
