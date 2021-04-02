@@ -120,7 +120,7 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		>
 			<Grid>
 				<Row>
-					<Cell>
+					<Cell lgSize={ 4 } mdSize={ 4 } smSize={ 4 }>
 						<PieChart report={ report } hasFinishedResolution={ hasFinishedResolution } />
 					</Cell>
 					<Cell lgSize={ 8 } mdSize={ 4 } smSize={ 4 }>
