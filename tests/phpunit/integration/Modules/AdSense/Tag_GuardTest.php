@@ -22,44 +22,48 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Tag_GuardTest extends TestCase {
 
-	public function test_can_activate() {
-		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$guard    = new Tag_Guard( $settings );
+	protected function get_guard( array $options = array() ) {
+		static $guard = null;
+
+		if ( is_null( $guard ) ) {
+			$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+			$guard    = new Tag_Guard( $settings );
+		}
 
 		update_option(
 			Settings::OPTION,
-			array(
-				'clientID'   => 'test-client-id',
-				'useSnippet' => true,
+			array_merge(
+				array(
+					'clientID'   => 'test-client-id',
+					'useSnippet' => true,
+				),
+				$options
 			)
 		);
 
+		return $guard;
+	}
+
+	public function test_can_activate() {
+		$guard = $this->get_guard();
 		$this->assertTrue( $guard->can_activate() );
 	}
 
 	public function test_cant_activate() {
-		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$guard    = new Tag_Guard( $settings );
-
-		update_option(
-			Settings::OPTION,
-			array(
-				'clientID'   => 'test-client-id',
-				'useSnippet' => false,
-			)
-		);
-
+		$guard = $this->get_guard( array( 'useSnippet' => false ) );
 		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when useSnippet has negative value.' );
 
-		update_option(
-			Settings::OPTION,
-			array(
-				'clientID'   => '',
-				'useSnippet' => true,
-			)
-		);
-
+		$guard = $this->get_guard( array( 'clientID' => '' ) );
 		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when clientID is empty.' );
+	}
+
+	public function test_cant_activate_on_404() {
+		$guard = $this->get_guard();
+
+		$this->go_to( '/?p=123456789' );
+		$this->assertQueryTrue( 'is_404' );
+
+		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when the current page doesnt exist (is_404).' );
 	}
 
 }
