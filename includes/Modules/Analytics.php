@@ -807,8 +807,9 @@ final class Analytics extends Module
 				return $response;
 			case 'GET:properties-profiles':
 				/* @var Google_Service_Analytics_Webproperties $response listManagementWebproperties response. */
-				$properties = (array) $response->getItems();
-				$response   = array(
+				$properties     = (array) $response->getItems();
+				$found_property = null;
+				$response       = array(
 					'properties' => $properties,
 					'profiles'   => array(),
 				);
@@ -817,32 +818,19 @@ final class Analytics extends Module
 					return $response;
 				}
 
-				$found_property = new Google_Service_Analytics_Webproperty();
-				$current_url    = $this->context->get_reference_site_url();
-
 				// If requested for a specific property, only match by property ID.
 				if ( ! empty( $data['existingPropertyID'] ) ) {
-					$property_id  = $data['existingPropertyID'];
-					$current_urls = array();
+					$found_property = $this->find_property( $properties, $data['existingPropertyID'], array() );
 				} else {
-					$option       = $this->get_settings()->get();
-					$property_id  = $option['propertyID'];
-					$current_urls = $this->permute_site_url( $current_url );
+					$current_url    = $this->context->get_reference_site_url();
+					$current_urls   = $this->permute_site_url( $current_url );
+					$found_property = $this->find_property( $properties, '', $current_urls );
 				}
 
-				// If there's no match for the saved account ID, try to find a match using the properties of each account.
-				foreach ( $properties as $property ) {
-					/* @var Google_Service_Analytics_Webproperty $property Property instance. */
-					if (
-						// Attempt to match by property ID.
-						$property->getId() === $property_id ||
-						// Attempt to match by site URL, with and without http/https and 'www' subdomain.
-						in_array( untrailingslashit( $property->getWebsiteUrl() ), $current_urls, true )
-					) {
-						$found_property              = $property;
-						$response['matchedProperty'] = $property;
-						break;
-					}
+				if ( ! is_null( $found_property ) ) {
+					$response['matchedProperty'] = $found_property;
+				} else {
+					$found_property = new Google_Service_Analytics_Webproperty();
 				}
 
 				// If no match is found, fetch profiles for the first property if available.
@@ -1302,7 +1290,7 @@ final class Analytics extends Module
 	 * @return mixed A property instance on success, otherwise NULL.
 	 */
 	protected function find_property( array $properties, $property_id = '', array $urls = array() ) {
-		if ( count( $property_id ) === 0 ) {
+		if ( strlen( $property_id ) === 0 ) {
 			$option      = $this->get_settings()->get();
 			$property_id = $option['propertyID'];
 		}
