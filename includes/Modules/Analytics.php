@@ -1291,4 +1291,34 @@ final class Analytics extends Module
 		}
 	}
 
+	/**
+	 * Finds a property in the properties list.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $properties  An array of Analytics properties to search in.
+	 * @param string $property_id Optional. The Analytics property ID. Default the current property ID from the Analytics settings.
+	 * @param array  $urls        Optional. An array of URLs that searched property can have.
+	 * @return mixed A property instance on success, otherwise NULL.
+	 */
+	protected function find_property( array $properties, $property_id = '', array $urls = array() ) {
+		if ( count( $property_id ) === 0 ) {
+			$option      = $this->get_settings()->get();
+			$property_id = $option['propertyID'];
+		}
+
+		foreach ( $properties as $property ) {
+			/* @var Google_Service_Analytics_Webproperty $property Property instance. */
+			$id          = $property->getId();
+			$website_url = $property->getWebsiteUrl();
+			$website_url = untrailingslashit( $website_url );
+
+			if ( $id === $property_id || ( 0 < count( $urls ) && in_array( $website_url, $urls, true ) ) ) {
+				return $property;
+			}
+		}
+
+		return null;
+	}
+
 }
