@@ -25,6 +25,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	 * Determines whether the guarded tag can be activated or not.
 	 *
 	 * @since 1.24.0
+	 * @since n.e.x.t Update to return FALSE on 404 pages deliberately.
 	 *
 	 * @return bool|WP_Error TRUE if guarded tag can be activated, otherwise FALSE or an error.
 	 */
