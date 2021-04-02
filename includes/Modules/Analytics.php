@@ -762,25 +762,15 @@ final class Analytics extends Module
 					if ( in_array( $account_id, $account_ids, true ) ) {
 						$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
 					} else {
-						$fallback_properties_profiles = null;
-						// Iterate over the first 25 accounts to avoid making too many requests.
-						foreach ( array_slice( $accounts, 0, 25 ) as $account ) {
-							/* @var Google_Service_Analytics_Account $account Analytics account object. */
-							$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account->getId() ) );
+						$account_summaries = $this->get_service( 'analytics' )->management_accountSummaries->listManagementAccountSummaries();
+						$current_url       = $this->context->get_reference_site_url();
+						$current_urls      = $this->permute_site_url( $current_url );
 
-							if ( is_wp_error( $properties_profiles ) ) {
-								$properties_profiles = $fallback_properties_profiles;
-								// Stop iteration to avoid potential quota errors.
+						foreach ( $account_summaries as $account_summary ) {
+							$found_property = $this->find_property( $account_summary->getWebProperties(), '', $current_urls );
+							if ( ! is_null( $found_property ) ) {
+								$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_summary->getId() ) );
 								break;
-							}
-							// If we found a matchedProperty, we're all done.
-							if ( isset( $properties_profiles['matchedProperty'] ) ) {
-								break;
-							}
-							// If we didn't find a matched property yet,
-							// save the response as a fallback, if none set yet.
-							if ( null === $fallback_properties_profiles ) {
-								$fallback_properties_profiles = $properties_profiles;
 							}
 						}
 					}
