@@ -123,7 +123,7 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 					<Cell>
 						<PieChart report={ report } hasFinishedResolution={ hasFinishedResolution } />
 					</Cell>
-					<Cell size={ 8 }>
+					<Cell lgSize={ 8 } mdSize={ 4 } smSize={ 4 }>
 						<TableOverflowContainer>
 							{
 								hasFinishedResolution ? (
