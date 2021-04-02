@@ -84,12 +84,10 @@ export default function AcquisitionChannelsTable( { report } ) {
 				const change = fieldValue / totalUsers;
 				iterator += 1;
 				return (
-					<Fragment key={ 'minichart-analytics-top-as-' + iterator }>
-						<div className="googlesitekit-table__body-item-chart-wrap">
-							{ numFmt( change, '%' ) }
-							<MiniChart change={ change } index={ iterator } />
-						</div>
-					</Fragment>
+					<div key={ 'minichart-analytics-top-as-' + iterator } className="googlesitekit-table__body-item-chart-wrap">
+						{ numFmt( change, '%' ) }
+						<MiniChart change={ change } index={ iterator } />
+					</div>
 				);
 			},
 		},
