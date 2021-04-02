@@ -24,8 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, _n, _x, sprintf } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -37,12 +36,10 @@ import PreviewTable from '../../../../../components/PreviewTable';
 import SourceLink from '../../../../../components/SourceLink';
 import { isZeroReport } from '../../../util';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
-import ReportTable from '../../../../../components/ReportTable';
 import Header from './Header';
 import PieChart from './PieChart';
-import { numFmt } from '../../../../../util';
-import MiniChart from '../../../../../components/MiniChart';
 import { Cell, Grid, Row } from '../../../../../material-components';
+import AcquisitionChannelsTable from './AcquisitionChannelsTable';
 
 const { useSelect } = Data;
 
@@ -51,7 +48,6 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 
 	const {
 		hasFinishedResolution,
-		dateRangeNumberOfDays,
 		report,
 		error,
 		url,
@@ -84,7 +80,6 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		};
 
 		return {
-			dateRangeNumberOfDays: select( CORE_USER ).getDateRangeNumberOfDays(),
 			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ),
 			hasFinishedResolution: select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ),
 			report: select( STORE_NAME ).getReport( reportArgs ),
@@ -107,61 +102,6 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 			</Widget>
 		);
 	}
-
-	const totalUsers = report[ 0 ].data.totals[ 0 ].values[ 1 ];
-	let iterator = -1; // We pre-increment, hence starting at -1.
-
-	const tableColumns = [
-		{
-			title: __( 'Channel', 'google-site-kit' ),
-			tooltip: __( 'Channel refers to where your traffic originated from', 'google-site-kit' ),
-			primary: true,
-			Component: ( { row } ) => row.dimensions[ 0 ],
-		},
-		{
-			title: __( 'Users', 'google-site-kit' ),
-			tooltip: __( 'Number of users that originated from that traffic', 'google-site-kit' ),
-			field: 'metrics.0.values.0',
-			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
-		},
-		{
-			title: __( 'New Users', 'google-site-kit' ),
-			tooltip: sprintf(
-				/* translators: %s: number of days */
-				_n( 'Number of new users to visit your page over last %s day', 'Number of new users to visit your page over last %s days', dateRangeNumberOfDays, 'google-site-kit', ),
-				dateRangeNumberOfDays,
-			),
-			field: 'metrics.0.values.1',
-			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
-		},
-		{
-			title: __( 'Sessions', 'google-site-kit' ),
-			tooltip: sprintf(
-				/* translators: %s: number of days */
-				_n( 'Number of sessions users had on your website over last %s day', 'Number of sessions users had on your website over last %s days', dateRangeNumberOfDays, 'google-site-kit', ),
-				dateRangeNumberOfDays,
-			),
-			field: 'metrics.0.values.2',
-			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
-		},
-		{
-			title: __( 'Percentage', 'google-site-kit' ),
-			tooltip: __( 'Percentage of sessions', 'google-site-kit' ),
-			field: 'metrics.0.values.1',
-			Component: ( { fieldValue } ) => {
-				const change = fieldValue / totalUsers;
-				iterator += 1;
-				return (
-					<Fragment key={ 'minichart-analytics-top-as-' + iterator }>
-						<div className="googlesitekit-table__body-item-chart-wrap">
-							{ numFmt( change, '%' ) }
-							<MiniChart change={ change } index={ iterator } />
-						</div>
-					</Fragment>
-				);
-			},
-		},
-	];
 
 	return (
 		<Widget
@@ -187,10 +127,7 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 						<TableOverflowContainer>
 							{
 								hasFinishedResolution ? (
-									<ReportTable
-										rows={ report[ 0 ].data.rows }
-										columns={ tableColumns }
-									/>
+									<AcquisitionChannelsTable report={ report } />
 								) : (
 									<PreviewTable rows={ 4 } rowHeight={ 50 } />
 								)
