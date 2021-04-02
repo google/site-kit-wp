@@ -29,6 +29,11 @@ class Tag_Guard extends Module_Tag_Guard {
 	 * @return bool|WP_Error TRUE if guarded tag can be activated, otherwise FALSE or an error.
 	 */
 	public function can_activate() {
+		// Do not allow AdSense tags on 404 pages.
+		if ( is_404() ) {
+			return false;
+		}
+
 		$settings = $this->settings->get();
 
 		// For web stories, the tag must only be rendered if a story-specific ad unit is provided.
