@@ -26,12 +26,11 @@ import PropTypes from 'prop-types';
  */
 import GoogleChart from '../../../../../components/GoogleChart';
 import { extractAnalyticsDataForPieChart } from '../../../util';
-import PreviewBlock from '../../../../../components/PreviewBlock';
 
-export default function PieChart( { report, hasFinishedResolution } ) {
+export default function PieChart( { report } ) {
 	const processedData = extractAnalyticsDataForPieChart( report, { keyColumnIndex: 1 } );
 
-	return hasFinishedResolution ? (
+	return (
 		<div className="googlesitekit-chart googlesitekit-chart--pie">
 			<GoogleChart
 				data={ processedData }
@@ -41,8 +40,6 @@ export default function PieChart( { report, hasFinishedResolution } ) {
 				loadHeight={ 205 }
 			/>
 		</div>
-	) : (
-		<PreviewBlock width="282px" height="282px" shape="circular" />
 	);
 }
 
@@ -74,5 +71,4 @@ PieChart.options = {
 
 PieChart.propTypes = {
 	report: PropTypes.arrayOf( PropTypes.object ),
-	hasFinishedResolution: PropTypes.arrayOf( PropTypes.bool ),
 };

@@ -35,10 +35,9 @@ import MiniChart from '../../../../../components/MiniChart';
 import ReportTable from '../../../../../components/ReportTable';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
-import PreviewTable from '../../../../../components/PreviewTable';
 const { useSelect } = Data;
 
-export default function AcquisitionChannelsTable( { report, hasFinishedResolution } ) {
+export default function AcquisitionChannelsTable( { report } ) {
 	const dateRangeNumberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
 	const totalUsers = report[ 0 ].data.totals[ 0 ].values[ 1 ];
@@ -96,16 +95,10 @@ export default function AcquisitionChannelsTable( { report, hasFinishedResolutio
 
 	return (
 		<TableOverflowContainer>
-			{
-				hasFinishedResolution ? (
-					<ReportTable
-						rows={ report[ 0 ].data.rows }
-						columns={ tableColumns }
-					/>
-				) : (
-					<PreviewTable rows={ 4 } rowHeight={ 50 } />
-				)
-			}
+			<ReportTable
+				rows={ report[ 0 ].data.rows }
+				columns={ tableColumns }
+			/>
 		</TableOverflowContainer>
 	);
 }
