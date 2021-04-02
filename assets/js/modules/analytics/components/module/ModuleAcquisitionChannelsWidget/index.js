@@ -32,10 +32,8 @@ import { _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS, STORE_NAME } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import PreviewTable from '../../../../../components/PreviewTable';
 import SourceLink from '../../../../../components/SourceLink';
 import { isZeroReport } from '../../../util';
-import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import Header from './Header';
 import PieChart from './PieChart';
 import { Cell, Grid, Row } from '../../../../../material-components';
@@ -124,15 +122,7 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 						<PieChart report={ report } hasFinishedResolution={ hasFinishedResolution } />
 					</Cell>
 					<Cell lgSize={ 8 } mdSize={ 4 } smSize={ 4 }>
-						<TableOverflowContainer>
-							{
-								hasFinishedResolution ? (
-									<AcquisitionChannelsTable report={ report } />
-								) : (
-									<PreviewTable rows={ 4 } rowHeight={ 50 } />
-								)
-							}
-						</TableOverflowContainer>
+						<AcquisitionChannelsTable report={ report } hasFinishedResolution={ hasFinishedResolution } />
 					</Cell>
 				</Row>
 			</Grid>
