@@ -184,6 +184,13 @@ describe( 'single posts', () => {
 		expect( articleEl.classList.contains( 'swg--page-is-unlocked' ) ).toBeFalsy();
 	} );
 
+	it( 'handles absence of locked content', async () => {
+		lockedContentEl.remove();
+
+		await SUBSCRIBERS( subscriptions );
+		expect( articleEl.classList.contains( 'swg--page-is-unlocked' ) ).toBeFalsy();
+	} );
+
 	it( 'handles subscribe button clicks', async () => {
 		await SUBSCRIBERS( subscriptions );
 
