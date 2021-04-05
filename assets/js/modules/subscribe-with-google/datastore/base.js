@@ -23,7 +23,7 @@ import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
 import { submitChanges, validateCanSubmitChanges } from './settings';
 
-let baseModuleStore = Modules.createModuleStore( 'subscribe-with-google', {
+export default Modules.createModuleStore( 'subscribe-with-google', {
 	storeName: STORE_NAME,
 	settingSlugs: [
 		'publicationName',
@@ -35,21 +35,3 @@ let baseModuleStore = Modules.createModuleStore( 'subscribe-with-google', {
 	submitChanges,
 	validateCanSubmitChanges,
 } );
-
-// Rename generated pieces to adhere to our convention.
-baseModuleStore = ( ( { actions, selectors, ...store } ) => {
-	const { ...restActions } = actions;
-	const { ...restSelectors } = selectors;
-
-	return {
-		...store,
-		actions: {
-			...restActions,
-		},
-		selectors: {
-			...restSelectors,
-		},
-	};
-} )( baseModuleStore );
-
-export default baseModuleStore;
