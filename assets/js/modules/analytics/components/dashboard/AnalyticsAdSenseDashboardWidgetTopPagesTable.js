@@ -145,7 +145,7 @@ const getDataError = ( data ) => {
 		return data.message;
 	}
 
-	// Legacy errors? Maybe this is never hit but better be safe than sorry.
+	// Legacy errors? Maybe this is never reached but better be safe than sorry.
 	if ( data.error ) {
 		if ( data.error.message ) {
 			return data.error.message;
