@@ -47,7 +47,6 @@ export default function AcquisitionChannelsTable( { report } ) {
 		{
 			title: __( 'Channel', 'google-site-kit' ),
 			tooltip: __( 'Channel refers to where your traffic originated from', 'google-site-kit' ),
-			primary: true,
 			Component: ( { row } ) => row.dimensions[ 0 ],
 		},
 		{
@@ -94,12 +93,14 @@ export default function AcquisitionChannelsTable( { report } ) {
 	];
 
 	return (
-		<TableOverflowContainer>
-			<ReportTable
-				rows={ report[ 0 ].data.rows }
-				columns={ tableColumns }
-			/>
-		</TableOverflowContainer>
+		<div className="googlesitekit-details-widget">
+			<TableOverflowContainer>
+				<ReportTable
+					rows={ report[ 0 ].data.rows }
+					columns={ tableColumns }
+				/>
+			</TableOverflowContainer>
+		</div>
 	);
 }
 
