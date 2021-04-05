@@ -3,7 +3,6 @@ import { CACHE_KEY } from '../unlock';
 
 const SUBSCRIBERS = self.SWG[ 0 ];
 
-// TODO: Refactor this into multiple files, or at least describe blocks.
 describe( 'single posts', () => {
 	let articleEl;
 	let contributeButtonEl;
