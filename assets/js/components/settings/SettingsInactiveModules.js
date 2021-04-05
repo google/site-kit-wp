@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,15 +35,32 @@ import ThumbsUpSVG from '../../../svg/thumbs-up.svg';
 const { useSelect } = Data;
 
 const SettingsInactiveModules = () => {
+	// We store `initialInactiveSlugs` separately to avoid
+	// layout shifts when activating a module as it would otherwise
+	// cause the activated module to be removed upon activation.
+	const [ initialInactiveSlugs, setInitialInactiveSlugs ] = useState();
 	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
+	useEffect( () => {
+		// Only set initialInactiveSlugs once, as soon as modules are available.
+		if ( ! modules || initialInactiveSlugs !== undefined ) {
+			return;
+		}
 
-	if ( ! modules ) {
+		const inactiveSlugs = Object.keys( modules )
+			.filter( ( slug ) => ! modules[ slug ].active );
+
+		setInitialInactiveSlugs( inactiveSlugs );
+	}, [ modules ] );
+
+	if ( ! initialInactiveSlugs ) {
 		return null;
 	}
 
-	const inactiveModules = Object.values( modules )
-		.filter( ( module ) => ! module.internal && ! module.active )
-		.sort( ( module1, module2 ) => module1.sort - module2.sort );
+	const inactiveModules = initialInactiveSlugs
+		.map( ( slug ) => modules[ slug ] )
+		.filter( ( module ) => ! module.internal )
+		.sort( ( a, b ) => a.sort - b.sort )
+	;
 
 	if ( inactiveModules.length === 0 ) {
 		return (
