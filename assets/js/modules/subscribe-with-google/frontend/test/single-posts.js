@@ -1,14 +1,15 @@
-import '../main';
+import '../single-posts';
 import { CACHE_KEY } from '../unlock';
 
 const SUBSCRIBERS = self.SWG[ 0 ];
 
 // TODO: Refactor this into multiple files, or at least describe blocks.
-describe( 'main', () => {
+describe( 'single posts', () => {
 	let articleEl;
 	let contributeButtonEl;
 	let contributeLinkEl;
 	let configEl;
+	let lockedContentEl;
 	let subscribeButtonEl;
 	let subscribeLinkEl;
 	let subscribeButtonElWithoutPlayOffersDefined;
@@ -37,13 +38,13 @@ describe( 'main', () => {
 				};
 				callback( Promise.resolve( response ) );
 			},
-			getEntitlements: () => Promise.resolve( {
+			getEntitlements: jest.fn( () => Promise.resolve( {
 				entitlements: [
 					{
 						products: [ 'basic', 'premium' ],
 					},
 				],
-			} ),
+			} ) ),
 			showContributionOptions: jest.fn(),
 			showOffers: jest.fn(),
 		};
@@ -65,6 +66,10 @@ describe( 'main', () => {
 
 		articleEl = document.createElement( 'article' );
 		document.body.appendChild( articleEl );
+
+		lockedContentEl = document.createElement( 'p' );
+		lockedContentEl.classList.add( 'swg--locked-content' );
+		articleEl.appendChild( lockedContentEl );
 
 		contributeButtonEl = document.createElement( 'div' );
 		contributeButtonEl.classList.add( 'swg-contribute-button' );
@@ -98,7 +103,7 @@ describe( 'main', () => {
 
 	it( 'fetches entitlements', async () => {
 		await SUBSCRIBERS( subscriptions );
-		expect( fetch ).toHaveBeenCalledWith( '/api/entitlements' );
+		expect( subscriptions.getEntitlements ).toHaveBeenCalled();
 	} );
 
 	it( 'fetches entitlements if cache does not have the right product', async () => {
@@ -107,7 +112,7 @@ describe( 'main', () => {
 			products: [],
 		} );
 		await SUBSCRIBERS( subscriptions );
-		expect( fetch ).toHaveBeenCalledWith( '/api/entitlements' );
+		expect( subscriptions.getEntitlements ).toHaveBeenCalled();
 	} );
 
 	it( 'fetches entitlements if cache is expired', async () => {
@@ -116,7 +121,7 @@ describe( 'main', () => {
 			products: [ 'premium' ],
 		} );
 		await SUBSCRIBERS( subscriptions );
-		expect( fetch ).toHaveBeenCalledWith( '/api/entitlements' );
+		expect( subscriptions.getEntitlements ).toHaveBeenCalled();
 	} );
 
 	it( 'does not fetch entitlements if cache entitles user', async () => {
@@ -126,23 +131,6 @@ describe( 'main', () => {
 		} );
 		await SUBSCRIBERS( subscriptions );
 		expect( fetch ).not.toHaveBeenCalled();
-	} );
-
-	it( 'fetches entitlements if cache is disabled', async () => {
-		global.localStorage[ CACHE_KEY ] = JSON.stringify( {
-			expiration: Date.now() * 2,
-			products: [ 'premium' ],
-		} );
-		location.hash = '#swg.wp.experiments=disablecache';
-		await SUBSCRIBERS( subscriptions );
-		expect( fetch ).toHaveBeenCalledWith( '/api/entitlements' );
-	} );
-
-	it( 'conditionally disables 3p entitlements', async () => {
-		subscriptions.getEntitlements = jest.fn();
-		location.hash = '#swg.wp.experiments=disable3p';
-		await SUBSCRIBERS( subscriptions );
-		expect( subscriptions.getEntitlements ).not.toHaveBeenCalled();
 	} );
 
 	it( 'marks article as unlocked when a product matches', async () => {
