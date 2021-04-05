@@ -29,7 +29,7 @@ describe( 'core/modules settings', () => {
 	const slug = 'test-module';
 	const nonExistentModuleSlug = 'not-module';
 	const moduleStoreName = `test/${ slug }`;
-	const testReturnValue = 'dummy_return_value';
+	const testReturnValue = 'placeholder_return_value';
 	let validateCanSubmitChangesError = false;
 
 	beforeEach( () => {

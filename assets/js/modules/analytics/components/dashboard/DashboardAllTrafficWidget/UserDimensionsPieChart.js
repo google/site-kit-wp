@@ -39,7 +39,7 @@ import {
 	UI_DIMENSION_VALUE,
 	UI_ACTIVE_ROW_INDEX,
 } from '../../../datastore/constants';
-import { numberFormat, sanitizeHTML, trackEvent } from '../../../../../util';
+import { numberFormat, sanitizeHTML, trackEvent, getChartDifferenceArrow } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChartV2 from '../../../../../components/GoogleChartV2';
 import Link from '../../../../../components/Link';
@@ -128,18 +128,13 @@ export default function UserDimensionsPieChart( {
 			if ( row === null && absOthers.previous > 0 ) {
 				difference = ( absOthers.current * 100 / absOthers.previous ) - 100;
 			}
-
+			const svgArrow = getChartDifferenceArrow( difference );
 			const absValue = row ? row.metrics[ 0 ].values[ 0 ] : absOthers.current;
 			const statInfo = sprintf(
 				/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, %%: percent symbol */
 				_x( 'Users: <strong>%1$s</strong> <em>%2$s %3$s%%</em>', 'Stat information for the user dimensions chart tooltip', 'google-site-kit' ),
 				numberFormat( absValue ),
-				`<svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="${ classnames( 'googlesitekit-change-arrow', {
-					'googlesitekit-change-arrow--up': difference > 0,
-					'googlesitekit-change-arrow--down': difference < 0,
-				} ) }">
-					<path d="M5.625 10L5.625 2.375L9.125 5.875L10 5L5 -1.76555e-07L-2.7055e-07 5L0.875 5.875L4.375 2.375L4.375 10L5.625 10Z" fill="currentColor" />
-				</svg>`,
+				svgArrow,
 				numberFormat( Math.abs( difference ), { maximumFractionDigits: 2 } ),
 			);
 

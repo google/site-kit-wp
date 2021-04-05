@@ -77,7 +77,7 @@ describe( 'AccountCreate', () => {
 		let openSpy;
 		beforeEach( () => {
 			openSpy = jest.spyOn( global, 'open' );
-			// Need to set a dummy implementation here to prevent JSDOM from raising a "Error: Not implemented" error.
+			// Need to set a placeholder implementation here to prevent JSDOM from raising a "Error: Not implemented" error.
 			openSpy.mockImplementation( () => {} );
 		} );
 		afterEach( () => openSpy.mockRestore() );

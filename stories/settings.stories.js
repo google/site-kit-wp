@@ -31,13 +31,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SettingsModules from '../assets/js/components/settings/SettingsModules';
+import SettingsActiveModules from '../assets/js/components/settings/SettingsActiveModules';
+import SettingsInactiveModules from '../assets/js/components/settings/SettingsInactiveModules';
 import Layout from '../assets/js/components/layout/Layout';
 import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
 import SettingsAdmin from '../assets/js/components/settings/SettingsAdmin';
-import { provideModuleRegistrations, provideModules, provideSiteInfo, WithTestRegistry, untilResolved } from '../tests/js/utils';
+import { provideModuleRegistrations, provideSiteInfo, WithTestRegistry, untilResolved } from '../tests/js/utils';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { withConnected } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
 
 /**
  * Add components to the settings page.
@@ -68,23 +70,24 @@ storiesOf( 'Settings', module )
 		},
 	} )
 	.add( 'Connected Services', () => {
-		global._googlesitekitLegacyData = settingsData;
-		global._googlesitekitLegacyData.setupComplete = true;
-		global._googlesitekitLegacyData.modules.analytics.setupComplete = true;
-		global._googlesitekitLegacyData.modules[ 'search-console' ].setupComplete = true;
-		global._googlesitekitLegacyData.modules.adsense.setupComplete = true;
-		global._googlesitekitLegacyData.modules.adsense.active = true;
-		global._googlesitekitLegacyData.modules.adsense.settings.accountID = 'pub-XXXXXXXXXXXXXXXX';
-
 		const setupRegistry = ( registry ) => {
-			provideModules( registry );
+			registry.dispatch( CORE_MODULES ).receiveGetModules(
+				withConnected(
+					'adsense',
+					'analytics',
+					'pagespeed-insights',
+					'search-console'
+				)
+			);
 			provideModuleRegistrations( registry );
 		};
 
 		return (
 			<WithTestRegistry callback={ setupRegistry } >
 				<div className="mdc-layout-grid__inner">
-					<SettingsModules activeTab={ 0 } />
+					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+						<SettingsActiveModules />
+					</div>
 				</div>
 			</WithTestRegistry>
 		);
@@ -94,57 +97,25 @@ storiesOf( 'Settings', module )
 		},
 	} )
 	.add( 'Connect More Services', () => {
-		global._googlesitekitLegacyData = settingsData;
-		global._googlesitekitLegacyData.modules.analytics.active = false;
-		global._googlesitekitLegacyData.modules.analytics.setupComplete = false;
-		global._googlesitekitLegacyData.modules.adsense.active = true;
-		global._googlesitekitLegacyData.modules.adsense.setupComplete = false;
-
 		const setupRegistry = async ( registry ) => {
-			provideModules( registry, [
-				{
-					slug: 'adsense',
-					active: true,
-					connected: false,
-				},
-				{
-					slug: 'analytics',
-					active: false,
-					connected: false,
-				},
-				{
-					slug: 'optimize',
-					active: false,
-					connected: false,
-				},
-				{
-					slug: 'pagespeed-insights',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'search-console',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'site-verification',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'tagmanager',
-					active: false,
-					connected: false,
-				},
-			] );
+			registry.dispatch( CORE_MODULES ).receiveGetModules(
+				withConnected(
+					'adsense',
+					'pagespeed-insights',
+					'search-console',
+				)
+			);
 			provideModuleRegistrations( registry );
 			registry.select( CORE_MODULES ).getModule( 'adsense' );
 			await untilResolved( registry, CORE_MODULES ).getModules();
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<SettingsModules activeTab={ 1 } />
+				<div className="mdc-layout-grid__inner">
+					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+						<SettingsInactiveModules />
+					</div>
+				</div>
 			</WithTestRegistry>
 		);
 	} )

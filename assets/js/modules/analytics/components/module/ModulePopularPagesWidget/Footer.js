@@ -30,11 +30,11 @@ import SourceLink from '../../../../../components/SourceLink';
 const { useSelect } = Data;
 
 export default function Footer() {
-	const visitorsOverview = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'visitors-overview' ) );
+	const contentPagesURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'content-pages' ) );
 
 	return (
 		<SourceLink
-			href={ visitorsOverview }
+			href={ contentPagesURL }
 			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 			external
 		/>
