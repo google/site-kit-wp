@@ -970,7 +970,7 @@ final class Modules {
 
 		if ( is_array( $option ) ) {
 			if ( in_array( 'analytics', $option, true ) ) {
-				$option[] = 'analytics_4';
+				$option[] = 'analytics-4';
 			}
 
 			return $option;
