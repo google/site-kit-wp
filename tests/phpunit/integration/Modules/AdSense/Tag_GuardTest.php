@@ -49,10 +49,12 @@ class Tag_GuardTest extends TestCase {
 		$this->assertTrue( $guard->can_activate() );
 	}
 
-	public function test_cant_activate() {
+	public function test_cant_activate_when_usesnippet_is_falsy() {
 		$guard = $this->get_guard( array( 'useSnippet' => false ) );
 		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when useSnippet has negative value.' );
+	}
 
+	public function test_cant_activate_when_clientid_is_invalid() {
 		$guard = $this->get_guard( array( 'clientID' => '' ) );
 		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when clientID is empty.' );
 	}
