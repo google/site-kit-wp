@@ -39,7 +39,7 @@ import {
 	UI_DIMENSION_VALUE,
 	UI_ACTIVE_ROW_INDEX,
 } from '../../../datastore/constants';
-import { numberFormat, sanitizeHTML, trackEvent, getChartDifferenceArrow } from '../../../../../util';
+import { numberFormat, sanitizeHTML, trackEvent, getChartDifferenceArrow, isSingleSlice } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChartV2 from '../../../../../components/GoogleChartV2';
 import Link from '../../../../../components/Link';
@@ -359,7 +359,8 @@ export default function UserDimensionsPieChart( {
 
 	const options = { ...UserDimensionsPieChart.chartOptions };
 
-	if ( report?.[ 0 ]?.data?.rows?.length === 1 ) {
+	const isSingleSliceReport = isSingleSlice( report );
+	if ( isSingleSliceReport ) {
 		// When there is only one row, the chart will add a label which we need to hide - see issue #2660
 		options.pieSliceText = 'none';
 	}
@@ -403,7 +404,12 @@ export default function UserDimensionsPieChart( {
 					/>
 				</GoogleChartV2>
 
-				<div className="googlesitekit-widget--analyticsAllTraffic__legend">
+				<div className={ classnames(
+					'googlesitekit-widget--analyticsAllTraffic__legend',
+					{
+						'googlesitekit-widget--analyticsAllTraffic__legend--single': isSingleSliceReport,
+					}
+				) }>
 					{ loaded && dataMap?.slice( 1 ).map( ( [ label ], i ) => {
 						const isActive = label === dimensionValue;
 						const sliceColor = slices[ i ]?.color;
