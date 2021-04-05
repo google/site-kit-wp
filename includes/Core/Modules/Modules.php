@@ -18,8 +18,10 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
+use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
@@ -142,6 +144,10 @@ final class Modules {
 		$this->options        = $options ?: new Options( $this->context );
 		$this->user_options   = $user_options ?: new User_Options( $this->context );
 		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
+
+		if ( Feature_Flags::enabled( 'ga4setup' ) ) {
+			$this->core_modules[] = Analytics_4::class;
+		}
 	}
 
 	/**
