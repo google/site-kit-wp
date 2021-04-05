@@ -969,6 +969,10 @@ final class Modules {
 		$option = $this->options->get( self::OPTION_ACTIVE_MODULES );
 
 		if ( is_array( $option ) ) {
+			if ( in_array( 'analytics', $option, true ) ) {
+				$option[] = 'analytics_4';
+			}
+
 			return $option;
 		}
 
