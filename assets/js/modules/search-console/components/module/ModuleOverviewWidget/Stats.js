@@ -55,8 +55,7 @@ const Stats = ( { data, metrics, selectedStats } ) => {
 		width: '100%',
 		chartArea: {
 			height: '77%',
-			left: 60,
-			width: '100%',
+			width: '87%',
 		},
 		legend: {
 			position: 'top',
