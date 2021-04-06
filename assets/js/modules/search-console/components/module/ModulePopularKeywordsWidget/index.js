@@ -34,7 +34,6 @@ import { numFmt } from '../../../../../util';
 import { MODULES_SEARCH_CONSOLE, STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Link from '../../../../../components/Link';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../../components/ReportTable';
@@ -53,13 +52,11 @@ function ModulePopularKeywordsWidget( { Widget, WidgetReportZero, WidgetReportEr
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
 
 		const reportArgs = {
 			startDate,
 			endDate,
-			url: url || undefined,
 			dimensions: 'query',
 			limit: 10,
 		};
@@ -104,11 +101,9 @@ function ModulePopularKeywordsWidget( { Widget, WidgetReportZero, WidgetReportEr
 			Component: ( { fieldValue } ) => {
 				const searchAnalyticsURL = useSelect( ( select ) => {
 					const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
-					const url = select( CORE_SITE ).getCurrentEntityURL();
 					return select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
 						...generateDateRangeArgs( { startDate, endDate } ),
 						query: `!${ fieldValue }`,
-						page: url ? `!${ url }` : undefined,
 					} );
 				} );
 

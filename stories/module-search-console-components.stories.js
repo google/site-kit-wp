@@ -2962,7 +2962,6 @@ generateReportBasedWidgetStories( {
 		endDate: '2020-08-25',
 		dimensions: 'query',
 		limit: 10,
-		url: 'https://example.com/example-page/',
 	},
 	Component: ModulePopularKeywordsWidget,
 	wrapWidget: false,

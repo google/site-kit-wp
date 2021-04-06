@@ -39,14 +39,8 @@ const Header = () => {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const searchConsoleDeepArgs = {
-		resource_id: propertyID,
+	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( {
 		...generateDateRangeArgs( dates ),
-	};
-	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
-		path: '/performance/search-analytics',
-		query: searchConsoleDeepArgs,
 	} ) );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
