@@ -32,7 +32,7 @@ import GoogleChart from '../../../../components/GoogleChart';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import { extractSearchConsoleDashboardData } from '../../util';
 
-class SearchConsoleDashboardWidgetSiteStats extends Component {
+class LegacySearchConsoleDashboardWidgetSiteStats extends Component {
 	constructor( props ) {
 		super( props );
 
@@ -140,7 +140,7 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 }
 
 export default withData(
-	SearchConsoleDashboardWidgetSiteStats,
+	LegacySearchConsoleDashboardWidgetSiteStats,
 	[
 		{
 			type: TYPE_MODULES,

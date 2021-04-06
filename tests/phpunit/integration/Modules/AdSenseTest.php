@@ -301,33 +301,6 @@ class AdSenseTest extends TestCase {
 		);
 	}
 
-	public function test_prepare_info_for_js() {
-		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$info = $adsense->prepare_info_for_js();
-
-		$this->assertEqualSets(
-			array(
-				'slug',
-				'name',
-				'description',
-				'cta',
-				'sort',
-				'homepage',
-				'learnMore',
-				'required',
-				'autoActivate',
-				'internal',
-				'screenID',
-				'settings',
-				'provides',
-			),
-			array_keys( $info )
-		);
-
-		$this->assertEquals( 'adsense', $info['slug'] );
-	}
-
 	public function test_is_connected() {
 		$adsense  = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );

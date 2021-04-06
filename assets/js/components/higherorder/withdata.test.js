@@ -38,7 +38,7 @@ const collectModuleData = dataAPI.collectModuleData.bind( dataAPI );
 describe( 'withData', () => {
 	let TestComponent;
 	const context = 'TestContext';
-	// A dummy dateRange is used to allow for getting a stable cache key for the dataset.
+	// A placeholder dateRange is used to allow for getting a stable cache key for the dataset.
 	const dateRange = 'last-99-days';
 	// The `loadingComponent` argument to withData is actually an element/node, not a component type.
 	const loadingComponent = <div data-testid="loading-component">loading</div>;

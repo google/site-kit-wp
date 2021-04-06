@@ -119,8 +119,8 @@ else
 	wp plugin update amp --minor --quiet
 fi
 
-# Install a dummy favicon to avoid 404 errors.
-status_message "Installing a dummy favicon..."
+# Install a placeholder favicon to avoid 404 errors.
+status_message "Installing a placeholder favicon..."
 container touch /var/www/html/favicon.ico
 container chmod 767 /var/www/html/favicon.ico
 
