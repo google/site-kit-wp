@@ -22,13 +22,17 @@
 import { __ } from '@wordpress/i18n';
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import ReportTable from '../../../../../components/ReportTable';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import Link from '../../../../../components/Link';
-import { STORE_NAME } from '../../../datastore/constants';
+import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { numFmt } from '../../../../../util';
 const { useSelect } = Data;
 
@@ -40,7 +44,7 @@ export default function Table( { report } ) {
 			primary: true,
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
-				const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages', {
+				const serviceURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceReportURL( 'content-pages', {
 					'explorer-table.plotKeys': '[]',
 					'_r.drilldown': `analytics.pagePath:${ url }`,
 				} ) );
@@ -98,3 +102,7 @@ export default function Table( { report } ) {
 		</TableOverflowContainer>
 	);
 }
+
+Table.propTypes = {
+	report: PropTypes.object.isRequired,
+};

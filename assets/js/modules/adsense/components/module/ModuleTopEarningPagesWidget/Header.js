@@ -29,7 +29,6 @@ import Data from 'googlesitekit-data';
 import { DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
-import { getCurrentDateRangeDayCount } from '../../../../../util/date-range';
 import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
@@ -41,17 +40,13 @@ export default function Header() {
 		currentDayCount,
 		analyticsMainURL,
 	} = useSelect( ( select ) => {
-		const analyticsStore = select( MODULES_ANALYTICS );
-		const userStore = select( CORE_USER );
-
-		const { startDate, endDate } = userStore.getDateRangeDates( {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
-		const dateRange = userStore.getDateRange();
 
 		return {
-			currentDayCount: getCurrentDateRangeDayCount( dateRange ),
-			analyticsMainURL: analyticsStore.getServiceReportURL(
+			currentDayCount: select( CORE_USER ).getDateRangeNumberOfDays(),
+			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL(
 				'content-publisher-overview',
 				generateDateRangeArgs( { startDate, endDate } )
 			),

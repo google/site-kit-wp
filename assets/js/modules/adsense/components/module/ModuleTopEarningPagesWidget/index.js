@@ -44,10 +44,7 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 		isLoading,
 		error,
 	} = useSelect( ( select ) => {
-		const analyticsStore = select( MODULES_ANALYTICS );
-		const userStore = select( CORE_USER );
-
-		const { startDate, endDate } = userStore.getDateRangeDates( {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
 
@@ -68,10 +65,10 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 		};
 
 		return {
-			isAdSenseLinked: analyticsStore.getAdsenseLinked(),
-			data: analyticsStore.getReport( reportArgs ),
-			error: analyticsStore.getErrorForSelector( 'getReport', [ reportArgs ] ),
-			isLoading: ! analyticsStore.hasFinishedResolution( 'getReport', [ reportArgs ] ),
+			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
+			data: select( MODULES_ANALYTICS ).getReport( reportArgs ),
+			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ),
+			isLoading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ),
 		};
 	} );
 
@@ -81,25 +78,32 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 		return <AdSenseLinkCTA />;
 	}
 
+	if ( isLoading ) {
+		return (
+			<Widget noPadding Header={ Header } >
+				<PreviewTable padding />
+			</Widget>
+		);
+	}
+
 	if ( error && ! isRestrictedMetricsError( error ) ) {
-		return <WidgetReportError error={ error } moduleSlug="adsense" />;
+		return (
+			<Widget Header={ Header } >
+				<WidgetReportError error={ error } moduleSlug="adsense" />;
+			</Widget> );
 	}
 
 	if ( isZeroReport( data ) || isRestrictedMetricsError( error ) ) {
-		return <WidgetReportZero moduleSlug="adsense" />;
+		return (
+			<Widget Header={ Header } >
+				<WidgetReportZero moduleSlug="adsense" />
+			</Widget>
+		);
 	}
 
 	return (
-		<Widget
-			noPadding
-			Header={ Header }
-		>
-			{ isLoading && (
-				<PreviewTable padding />
-			) }
-			{ ! isLoading && (
-				<Table report={ data } />
-			) }
+		<Widget noPadding Header={ Header } >
+			<Table report={ data } />
 		</Widget>
 	);
 }
