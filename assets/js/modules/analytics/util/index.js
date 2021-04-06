@@ -33,7 +33,7 @@ import { __, sprintf, _x } from '@wordpress/i18n';
 import { getLocale } from '../../../util/i18n';
 import calculateOverviewData from './calculateOverviewData';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
-import { convertSecondsToArray, numFmt } from '../../../util';
+import { convertSecondsToArray, numFmt, getChartDifferenceArrow } from '../../../util';
 
 export { calculateOverviewData };
 
@@ -166,16 +166,11 @@ function reduceAnalyticsRowsData( rows, selectedMetricsIndex, selectedStats ) {
  * @return {Array} The dataMap ready for charting.
  */
 export function extractAnalyticsDashboardData( reports, selectedStats, days, currentMonthMetricIndex = 0, previousMonthMetricIndex = 0 ) {
-	if ( ! reports || ! reports.length ) {
-		return null;
-	}
-
-	// Data is returned as an object.
-	const rows = reports[ 0 ].data.rows;
-	if ( ! rows ) {
+	if ( ! Array.isArray( reports[ 0 ]?.data?.rows ) ) {
 		return false;
 	}
 
+	const rows = [ ...reports[ 0 ].data.rows ]; // Copying it to escape side effects by manipulating with rows.
 	const rowLength = rows.length;
 
 	// Pad rows to 2 x number of days data points to accommodate new accounts.
@@ -254,7 +249,7 @@ export function extractAnalyticsDashboardData( reports, selectedStats, days, cur
 		const difference = prevMonth !== 0
 			? ( row[ 1 ] / prevMonth ) - 1
 			: 1; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 1
-
+		const svgArrow = getChartDifferenceArrow( difference );
 		const dateRange = sprintf(
 			/* translators: 1: date for user stats, 2: previous date for user stats comparison */
 			_x( '%1$s vs %2$s', 'Date range for chart tooltip', 'google-site-kit' ),
@@ -267,12 +262,7 @@ export function extractAnalyticsDashboardData( reports, selectedStats, days, cur
 			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s</em>', 'Stat information for chart tooltip', 'google-site-kit' ),
 			dataLabels[ selectedStats ],
 			dataFormats[ selectedStats ]( row[ 1 ] ),
-			`<svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="${ classnames( 'googlesitekit-change-arrow', {
-				'googlesitekit-change-arrow--up': difference > 0,
-				'googlesitekit-change-arrow--down': difference < 0,
-			} ) }">
-				<path d="M5.625 10L5.625 2.375L9.125 5.875L10 5L5 -1.76555e-07L-2.7055e-07 5L0.875 5.875L4.375 2.375L4.375 10L5.625 10Z" fill="currentColor" />
-			</svg>`,
+			svgArrow,
 			numFmt( Math.abs( difference ), '%' ),
 		);
 

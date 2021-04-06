@@ -20,13 +20,13 @@ abstract class SettingsTestCase extends TestCase {
 	abstract protected function get_option_name();
 
 	public function setUp() {
-		global $new_whitelist_options;
 		parent::setUp();
 
 		$option_name = $this->get_option_name();
 
 		// Unregister setup that occurred during bootstrap.
-		if ( array_key_exists( $option_name, $new_whitelist_options ) ) {
+		$registered_settings = get_registered_settings();
+		if ( isset( $registered_settings[ $option_name ] ) ) {
 			unregister_setting( $option_name, $option_name );
 		}
 
