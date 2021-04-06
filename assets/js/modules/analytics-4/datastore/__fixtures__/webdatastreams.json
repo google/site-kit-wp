@@ -1,0 +1,14 @@
+{
+  "webDataStreams": [
+    {
+      "name": "properties/1000/webDataStreams/2000",
+      "measurementId": "1A2BCD345E",
+      "firebaseAppId": "",
+      "createTime": "2014-10-02T15:01:23Z",
+      "updateTime": "2014-10-02T15:01:23Z",
+      "defaultUri": "http://example.com",
+      "displayName": "Test GA4 WebDataStream"
+    }
+  ],
+  "nextPageToken": ""
+}
