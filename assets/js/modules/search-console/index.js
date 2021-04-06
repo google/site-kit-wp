@@ -121,7 +121,7 @@ export const registerWidgets = ( widgets ) => {
 		{
 			Component: ModulePopularKeywordsWidget,
 			width: [ widgets.WIDGET_WIDTHS.FULL ],
-			priority: 1,
+			priority: 2,
 			wrapWidget: false,
 		},
 		[

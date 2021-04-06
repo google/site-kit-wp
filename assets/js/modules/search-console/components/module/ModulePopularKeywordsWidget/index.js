@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -38,10 +38,10 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../../components/ReportTable';
-import SourceLink from '../../../../../components/SourceLink';
 import { isZeroReport } from '../../../util/is-zero-report';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import Header from './Header';
+import Footer from './Footer';
 
 const { useSelect } = Data;
 
@@ -50,13 +50,11 @@ function ModulePopularKeywordsWidget( { Widget, WidgetReportZero, WidgetReportEr
 		data,
 		isLoading,
 		error,
-		serviceURL,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const dateRangeDates = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
-		const { startDate, endDate } = dateRangeDates;
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
 
 		const reportArgs = {
 			startDate,
@@ -70,86 +68,81 @@ function ModulePopularKeywordsWidget( { Widget, WidgetReportZero, WidgetReportEr
 			data: store.getReport( reportArgs ),
 			isLoading: ! store.hasFinishedResolution( 'getReport', [ reportArgs ] ),
 			error: store.getErrorForSelector( 'getReport', [ reportArgs ] ),
-			serviceURL: store.getServiceReportURL( {
-				...generateDateRangeArgs( dateRangeDates ),
-				page: url ? `!${ url }` : undefined,
-			} ),
 		};
 	} );
 
+	if ( isLoading ) {
+		return (
+			<Widget noPadding Header={ Header } Footer={ Footer }>
+				<PreviewTable padding />
+			</Widget>
+		);
+	}
+
 	if ( error ) {
-		return <WidgetReportError moduleSlug="search-console" error={ error } />;
+		return (
+			<Widget Header={ Header } Footer={ Footer }>
+				<WidgetReportError moduleSlug="search-console" error={ error } />
+			</Widget>
+		);
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <WidgetReportZero moduleSlug="search-console" />;
+		return (
+			<Widget Header={ Header } Footer={ Footer }>
+				<WidgetReportZero moduleSlug="search-console" />;
+			</Widget>
+		);
 	}
 
-	return (
-		<Widget
-			noPadding
-			Header={ Header }
-			Footer={ () => (
-				<SourceLink
-					className="googlesitekit-data-block__source"
-					name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-					href={ serviceURL }
-					external
-				/>
-			) }
-		>
-			{
+	const tableColumns = [
+		{
+			title: __( 'Keyword', 'google-site-kit' ),
+			description: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
+			primary: true,
+			field: 'keys.0',
+			Component: ( { fieldValue } ) => {
+				const searchAnalyticsURL = useSelect( ( select ) => {
+					const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
+					const url = select( CORE_SITE ).getCurrentEntityURL();
+					return select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
+						...generateDateRangeArgs( { startDate, endDate } ),
+						query: `!${ fieldValue }`,
+						page: url ? `!${ url }` : undefined,
+					} );
+				} );
 
-				isLoading ? <PreviewTable padding />
-					: (
-						<TableOverflowContainer>
-							<ReportTable rows={ data } columns={ tableColumns } />
-						</TableOverflowContainer>
-					)
-			}
+				return (
+					<Link
+						href={ searchAnalyticsURL }
+						external
+						inherit
+					>
+						{ fieldValue }
+					</Link>
+				);
+			},
+		},
+		{
+			title: __( 'Clicks', 'google-site-kit' ),
+			description: __( 'Number of times users clicked on your content in search results', 'google-site-kit' ),
+			Component: ( { row } ) => numFmt( row.clicks, { style: 'decimal' } ),
+		},
+		{
+			title: __( 'Impressions', 'google-site-kit' ),
+			description: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
+			Component: ( { row } ) => numFmt( row.impressions, { style: 'decimal' } ),
+		},
+	];
+
+	return (
+		<Widget noPadding Header={ Header } Footer={ Footer }>
+			<TableOverflowContainer>
+				<ReportTable rows={ data } columns={ tableColumns } />
+			</TableOverflowContainer>
 		</Widget>
 	);
 }
-
-const tableColumns = [
-	{
-		title: __( 'Keyword', 'google-site-kit' ),
-		description: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
-		primary: true,
-		field: 'keys.0',
-		Component: ( { fieldValue } ) => {
-			const searchAnalyticsURL = useSelect( ( select ) => {
-				const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
-				const url = select( CORE_SITE ).getCurrentEntityURL();
-				return select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
-					...generateDateRangeArgs( { startDate, endDate } ),
-					query: `!${ fieldValue }`,
-					page: url ? `!${ url }` : undefined,
-				} );
-			} );
-
-			return (
-				<Link
-					href={ searchAnalyticsURL }
-					external
-					inherit
-				>
-					{ fieldValue }
-				</Link>
-			);
-		},
-	},
-	{
-		title: __( 'Clicks', 'google-site-kit' ),
-		description: __( 'Number of times users clicked on your content in search results', 'google-site-kit' ),
-		Component: ( { row } ) => numFmt( row.clicks, { style: 'decimal' } ),
-	},
-	{
-		title: __( 'Impressions', 'google-site-kit' ),
-		description: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
-		Component: ( { row } ) => numFmt( row.impressions, { style: 'decimal' } ),
-	},
-];
 
 ModulePopularKeywordsWidget.propTypes = {
 	Widget: PropTypes.func.isRequired,
