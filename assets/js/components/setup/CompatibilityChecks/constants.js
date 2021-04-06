@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+export const ERROR_API_UNAVAILABLE = 'check_api_unavailable';
 export const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
 export const ERROR_FETCH_FAIL = 'check_fetch_failed';
 export const ERROR_GOOGLE_API_CONNECTION_FAIL = 'google_api_connection_fail';
