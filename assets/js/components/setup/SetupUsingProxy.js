@@ -33,7 +33,7 @@ import { getQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import PersonWalking from '../../../svg/person-walking.svg';
+import WelcomeSVG from '../../../svg/welcome.svg';
 import { trackEvent } from '../../util';
 import Header from '../Header';
 import Button from '../Button';
@@ -146,7 +146,7 @@ function SetupUsingProxy() {
 															mdc-layout-grid__cell--span-6-desktop
 														"
 												>
-													<PersonWalking width="570" height="337" />
+													<WelcomeSVG width="570" height="336" />
 												</div>
 											) }
 
