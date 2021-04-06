@@ -10,25 +10,29 @@ on:
       - main
     # Only run if CSS/JS/MD-related files changed.
     paths:
-      - '**.js'
-      - '**.json'
-      - '**.css'
+      - 'assets/**'
+      - 'packages/**'
+      - 'tests/backstop/**'
+      - '.storybook/**'
+      - '!.storybook/storybook-data.js'
+      - '**.scss'
       - '.eslint*'
       - '.nvmrc'
       - '.prettier*'
-      - '.stylelint*'
       - '**/package.json'
       - 'package-lock.json'
   pull_request:
     # Only run if CSS/JS/MD-related files changed.
     paths:
-      - '**.js'
-      - '**.json'
-      - '**.css'
+      - 'assets/**'
+      - 'packages/**'
+      - 'tests/backstop/**'
+      - '.storybook/**'
+      - '!.storybook/storybook-data.js'
+      - '**.scss'
       - '.eslint*'
       - '.nvmrc'
       - '.prettier*'
-      - '.stylelint*'
       - '**/package.json'
       - 'package-lock.json'
     types:

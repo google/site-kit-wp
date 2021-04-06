@@ -13,7 +13,6 @@ on:
       - '**.php'
       - 'phpcs.xml.dist'
       - 'phpmd.xml'
-      - 'phpstan.neon.dist'
       - 'composer.json'
       - 'composer.lock'
   pull_request:
@@ -22,7 +21,6 @@ on:
       - '**.php'
       - 'phpcs.xml.dist'
       - 'phpmd.xml'
-      - 'phpstan.neon.dist'
       - 'composer.json'
       - 'composer.lock'
     types:

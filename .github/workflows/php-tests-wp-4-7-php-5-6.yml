@@ -10,14 +10,18 @@ on:
       - main
     # Only run if PHP-related files changed.
     paths:
-      - '**.php'
+      - includes/**
+      - tests/phpunit/**
+      - /*.php
       - 'phpunit*.xml*'
       - 'composer.json'
       - 'composer.lock'
   pull_request:
     # Only run if PHP-related files changed.
     paths:
-      - '**.php'
+      - includes/**
+      - tests/phpunit/**
+      - /*.php
       - 'phpunit*.xml*'
       - 'composer.json'
       - 'composer.lock'

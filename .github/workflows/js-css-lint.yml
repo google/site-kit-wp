@@ -12,7 +12,7 @@ on:
     paths:
       - '**.js'
       - '**.json'
-      - '**.css'
+      - '**.scss'
       - '.eslint*'
       - '.nvmrc'
       - '.prettier*'
@@ -24,7 +24,7 @@ on:
     paths:
       - '**.js'
       - '**.json'
-      - '**.css'
+      - '**.scss'
       - '.eslint*'
       - '.nvmrc'
       - '.prettier*'

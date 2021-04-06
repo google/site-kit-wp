@@ -10,13 +10,14 @@ on:
       - develop
     # Only run if CSS/JS/MD-related files changed.
     paths:
-      - '**.js'
-      - '**.json'
-      - '**.css'
+      - 'assets/**'
+      - 'packages/**'
+      - 'tests/backstop/**'
+      - '.storybook/**'
+      - '**.scss'
       - '.eslint*'
       - '.nvmrc'
       - '.prettier*'
-      - '.stylelint*'
       - '**/package.json'
       - 'package-lock.json'
     types:
