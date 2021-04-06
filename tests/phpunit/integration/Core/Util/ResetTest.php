@@ -27,6 +27,23 @@ use WPDieException;
 class ResetTest extends TestCase {
 	use OptionsTestTrait, UserOptionsTestTrait, TransientsTestTrait;
 
+	const TEST_OPTION = 'googlesitekit_test_option';
+
+	/**
+	 * @var Context
+	 */
+	protected $context_with_mutable_input;
+
+	public function setUp() {
+		parent::setUp();
+
+		// Set up a test option as a way to check if reset ran or not.
+		// When the reset runs, this option will no longer exist.
+		update_option( self::TEST_OPTION, 'test-value' );
+
+		$this->context_with_mutable_input = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+	}
+
 	public function test_all() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->assertFalse( $context->is_network_mode() );
@@ -51,17 +68,11 @@ class ResetTest extends TestCase {
 		$this->run_reset( $context );
 	}
 
-	public function test_handle_reset_action() {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+	public function test_handle_reset_action__with_bad_nonce() {
 		remove_all_actions( 'admin_action_' . Reset::ACTION );
-		$reset = new Reset( $context );
+		$reset = new Reset( $this->context_with_mutable_input );
 		$reset->register();
-		$user_id = $this->factory()->user->create();
-		wp_set_current_user( $user_id );
-		// Set up a test option as a way to check if reset ran or not.
-		// When the reset runs, this option will no longer exist.
-		$test_option = 'googlesitekit_test_option';
-		update_option( $test_option, 'test-value' );
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
 
 		$_GET['nonce'] = 'bad-nonce';
 		try {
@@ -71,7 +82,14 @@ class ResetTest extends TestCase {
 			$this->assertContains( 'Invalid nonce', $die_exception->getMessage() );
 		}
 
-		$this->assertOptionExists( $test_option );
+		$this->assertOptionExists( self::TEST_OPTION );
+	}
+
+	public function test_handle_reset_action__with_valid_nonce_and_insufficient_permissions() {
+		remove_all_actions( 'admin_action_' . Reset::ACTION );
+		$reset = new Reset( $this->context_with_mutable_input );
+		$reset->register();
+		wp_set_current_user( $this->factory()->user->create() );
 
 		$_GET['nonce'] = wp_create_nonce( Reset::ACTION );
 		// Requires Site Kit setup permissions.
@@ -81,24 +99,30 @@ class ResetTest extends TestCase {
 		} catch ( WPDieException $die_exception ) {
 			$this->assertContains( 'permissions to set up Site Kit', $die_exception->getMessage() );
 		}
+		$this->assertOptionExists( self::TEST_OPTION );
+	}
 
-		$this->assertOptionExists( $test_option );
-
-		$this->assertFalse( current_user_can( Permissions::SETUP ), 'failed asserting current user cannot Permissions::SETUP' );
-		wp_get_current_user()->set_role( 'administrator' );
+	public function test_handle_reset_action__resets_and_redirects() {
+		remove_all_actions( 'admin_action_' . Reset::ACTION );
+		$reset = new Reset( $this->context_with_mutable_input );
+		$reset->register();
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
 		$this->assertTrue( current_user_can( Permissions::SETUP ), 'failed asserting current user can Permissions::SETUP' );
+
+		$_GET['nonce'] = wp_create_nonce( Reset::ACTION );
 		// Expect redirects on success.
 		try {
 			do_action( 'admin_action_' . Reset::ACTION );
 			$this->fail( 'Expected redirection' );
 		} catch ( RedirectException $redirect ) {
 			$redirect_url = $redirect->get_location();
-			$this->assertContains( $context->admin_url( 'splash' ), $redirect_url );
+			$this->assertStringStartsWith( $this->context_with_mutable_input->admin_url( 'splash' ), $redirect_url );
 			$this->assertContains( '&googlesitekit_reset_session=1', $redirect_url );
 			$this->assertContains( '&notification=reset_success', $redirect_url );
+
 		}
 		// Reset ran and option no longer exists.
-		$this->assertOptionNotExists( $test_option );
+		$this->assertOptionNotExists( self::TEST_OPTION );
 	}
 
 	protected function run_reset( Context $context ) {
