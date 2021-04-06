@@ -68,7 +68,7 @@ export default function UserInputKeywords( { slug, max } ) {
 			...values.slice( 0, index ),
 			...values.slice( index + 1 ),
 		] );
-		// After deleting a keyword, hitting backspace will delete the next keyword
+		// After deleting a keyword, hitting backspace will delete the next keyword.
 		setCanDeleteKeyword( true );
 	}, dependencies, canDeleteKeyword );
 
@@ -118,7 +118,8 @@ export default function UserInputKeywords( { slug, max } ) {
 				...values.slice( index + 1 ),
 			] );
 
-			setCanDeleteKeyword( true ); // A new keyword has been added. Pressing backspace now will remove the entire keyword.
+			// A new keyword has been added. Pressing backspace now will remove the entire keyword.
+			setCanDeleteKeyword( true );
 			setTimeout( () => {
 				focusInput( `#${ slug }-keyword-${ index + 1 }` );
 			}, 50 );
