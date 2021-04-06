@@ -218,7 +218,7 @@ class Reset {
 	 * @param string $nonce WP nonce for action.
 	 */
 	private function handle_reset_action( $nonce ) {
-		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, static::ACTION ) ) {
+		if ( ! wp_verify_nonce( $nonce, static::ACTION ) ) {
 			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
 		}
 		if ( ! current_user_can( Permissions::SETUP ) ) {
