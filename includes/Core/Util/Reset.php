@@ -51,6 +51,23 @@ class Reset {
 	private $context;
 
 	/**
+	 * Gets the URL to handle a reset action.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string
+	 */
+	public static function url() {
+		return add_query_arg(
+			array(
+				'action' => static::ACTION,
+				'nonce'  => wp_create_nonce( static::ACTION ),
+			),
+			admin_url( 'index.php' )
+		);
+	}
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0

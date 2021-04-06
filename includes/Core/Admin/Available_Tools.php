@@ -42,13 +42,6 @@ class Available_Tools {
 		if ( ! current_user_can( Permissions::SETUP ) ) {
 			return;
 		}
-		$reset_url = add_query_arg(
-			array(
-				'action' => Reset::ACTION,
-				'nonce'  => wp_create_nonce( Reset::ACTION ),
-			),
-			admin_url( 'index.php' )
-		);
 		?>
 		<div class="card">
 			<h2 class="title"><?php esc_html_e( 'Reset Site Kit', 'google-site-kit' ); ?></h2>
@@ -63,7 +56,7 @@ class Available_Tools {
 			<p>
 				<a
 					class="button button-primary"
-					href="<?php echo esc_url( $reset_url ); ?>"
+					href="<?php echo esc_url( Reset::url() ); ?>"
 				>
 					<?php esc_html_e( 'Reset Site Kit', 'google-site-kit' ); ?>
 				</a>
