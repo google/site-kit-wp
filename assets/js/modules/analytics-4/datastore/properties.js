@@ -41,7 +41,7 @@ const fetchGetPropertiesStore = createFetchStore( {
 			...state,
 			properties: {
 				...state.properties,
-				[ accountID ]: response,
+				[ accountID ]: response.properties,
 			},
 		};
 	},

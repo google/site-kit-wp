@@ -110,7 +110,7 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
-				const accountID = fixtures.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+				const accountID = '12345';
 				const initialProperties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
 
 				await subscribeUntil( registry, () => registry.select( MODULES_ANALYTICS_4 ).hasStartedResolution( 'getProperties', [ accountID ] ) );
@@ -121,12 +121,12 @@ describe( 'modules/analytics-4 properties', () => {
 
 				const properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( properties ).toEqual( fixtures.properties );
-				expect( properties ).toHaveLength( 17 );
+				expect( properties ).toEqual( fixtures.properties.properties );
+				expect( properties ).toHaveLength( fixtures.properties.properties.length );
 			} );
 
 			it( 'should not make a network request if properties for this account are already present', async () => {
-				const testAccountID = fixtures.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+				const testAccountID = '12345';
 				const accountID = testAccountID;
 
 				// Load data into this store so there are matches for the data we're about to select,
@@ -139,8 +139,8 @@ describe( 'modules/analytics-4 properties', () => {
 				// It _may_ make a request for profiles internally if not loaded,
 				// so we only care that it did not fetch properties here.
 				expect( fetchMock ).not.toHaveFetched( propertiesEndpoint );
-				expect( properties ).toEqual( fixtures.properties );
-				expect( properties ).toHaveLength( 17 );
+				expect( properties ).toEqual( fixtures.properties.properties );
+				expect( properties ).toHaveLength( fixtures.properties.properties.length );
 			} );
 
 			it( 'should dispatch an error if the request fails', async () => {
