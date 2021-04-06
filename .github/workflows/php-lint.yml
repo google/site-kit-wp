@@ -7,6 +7,7 @@ on:
       - main
     # Only run if PHP-related files changed.
     paths:
+      - '.github/workflows/php-lint.yml'
       - '**.php'
       - 'phpcs.xml.dist'
       - 'phpmd.xml'
@@ -15,6 +16,7 @@ on:
   pull_request:
     # Only run if PHP-related files changed.
     paths:
+      - '.github/workflows/php-lint.yml'
       - '**.php'
       - 'phpcs.xml.dist'
       - 'phpmd.xml'

@@ -7,6 +7,7 @@ on:
       - main
     # Only run if CSS/JS/MD-related files changed.
     paths:
+      - '.github/workflows/storybook.yml'
       - 'assets/**'
       - 'packages/**'
       - 'tests/backstop/**'
@@ -21,6 +22,7 @@ on:
   pull_request:
     # Only run if CSS/JS/MD-related files changed.
     paths:
+      - '.github/workflows/storybook.yml'
       - 'assets/**'
       - 'packages/**'
       - 'tests/backstop/**'

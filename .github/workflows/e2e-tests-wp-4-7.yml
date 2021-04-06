@@ -5,12 +5,13 @@ on:
     branches:
       - develop
       - main
+    # Ignore Storybook-only and unit-test-only changes when checking to run
+    # E2E tests. This is useful when adding/modifying/refactoring/removing
+    # test code ONLY in a commit, but saves running the expensive E2E test
+    # suite on GitHub Actions when all that's changing are tests and not code
+    # that would affect E2E behavior.
     paths:
-      # Ignore Storybook-only and unit-test-only changes when checking to run
-      # E2E tests. This is useful when adding/modifying/refactoring/removing
-      # test code ONLY in a commit, but saves running the expensive E2E test
-      # suite on GitHub Actions when all that's changing are tests and not code
-      # that would affect E2E behavior.
+      - '.github/workflows/e2e-tests-wp-4-7.yml'
       - '.babelrc'
       - 'assets/**'
       - 'includes/**'
@@ -32,12 +33,13 @@ on:
       - '!packages/**/test/*.js'
       - '!packages/**/*.test.js'
   pull_request:
+    # Ignore Storybook-only and unit-test-only changes when checking to run
+    # E2E tests. This is useful when adding/modifying/refactoring/removing
+    # test code ONLY in a commit, but saves running the expensive E2E test
+    # suite on GitHub Actions when all that's changing are tests and not code
+    # that would affect E2E behavior.
     paths:
-      # Ignore Storybook-only and unit-test-only changes when checking to run
-      # E2E tests. This is useful when adding/modifying/refactoring/removing
-      # test code ONLY in a commit, but saves running the expensive E2E test
-      # suite on GitHub Actions when all that's changing are tests and not code
-      # that would affect E2E behavior.
+      - '.github/workflows/e2e-tests-wp-4-7.yml'
       - '.babelrc'
       - 'assets/**'
       - 'includes/**'

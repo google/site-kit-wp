@@ -10,6 +10,7 @@ on:
       - reopened
       - synchronize
     paths:
+      - '.github/workflows/compressed-size.yml'
       - 'assets/js/**.js'
       - '!assets/js/**.test.js'
       - '!assets/js/**/test/**'

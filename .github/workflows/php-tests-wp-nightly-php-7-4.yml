@@ -7,6 +7,7 @@ on:
       - main
     # Only run if PHP-related files changed.
     paths:
+      - '.github/workflows/php-tests-wp-nightly-php-7-4.yml'
       - includes/**
       - tests/phpunit/**
       - /*.php
@@ -16,6 +17,7 @@ on:
   pull_request:
     # Only run if PHP-related files changed.
     paths:
+      - '.github/workflows/php-tests-wp-nightly-php-7-4.yml'
       - includes/**
       - tests/phpunit/**
       - /*.php
