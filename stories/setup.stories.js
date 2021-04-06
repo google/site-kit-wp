@@ -65,7 +65,9 @@ storiesOf( 'Setup / Using GCP', module )
 
 storiesOf( 'Setup / Using Proxy', module )
 	.add( 'Start', ( args, { registry } ) => {
-		provideSiteConnection( registry );
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+		} );
 		return (
 			<WithTestRegistry registry={ registry }>
 				<SetupUsingProxy />
@@ -77,7 +79,10 @@ storiesOf( 'Setup / Using Proxy', module )
 		],
 	} )
 	.add( 'Start – with error', ( args, { registry } ) => {
-		provideSiteConnection( registry, { connected: false } );
+		provideSiteConnection( registry, {
+			connected: false,
+			hasConnectedAdmins: false,
+		} );
 		return (
 			<WithTestRegistry registry={ registry }>
 				<SetupUsingProxy />
@@ -89,7 +94,9 @@ storiesOf( 'Setup / Using Proxy', module )
 		],
 	} )
 	.add( 'Start [User Input]', ( args, { registry } ) => {
-		provideSiteConnection( registry );
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+		} );
 		return (
 			<WithTestRegistry
 				registry={ registry }
@@ -104,7 +111,10 @@ storiesOf( 'Setup / Using Proxy', module )
 		],
 	} )
 	.add( 'Start – with error [User Input]', ( args, { registry } ) => {
-		provideSiteConnection( registry, { connected: false } );
+		provideSiteConnection( registry, {
+			connected: false,
+			hasConnectedAdmins: false,
+		} );
 		return (
 			<WithTestRegistry
 				registry={ registry }
@@ -119,7 +129,9 @@ storiesOf( 'Setup / Using Proxy', module )
 		],
 	} )
 	.add( 'Disconnected - URL Mismatch', ( args, { registry } ) => {
-		provideSiteConnection( registry );
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+		} );
 		provideUserAuthentication( registry, {
 			authenticated: false,
 			disconnectedReason: DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
@@ -135,7 +147,9 @@ storiesOf( 'Setup / Using Proxy', module )
 		],
 	} )
 	.add( 'Disconnected - URL Mismatch [User Input]', ( args, { registry } ) => {
-		provideSiteConnection( registry );
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+		} );
 		provideUserAuthentication( registry, {
 			authenticated: false,
 			disconnectedReason: DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
