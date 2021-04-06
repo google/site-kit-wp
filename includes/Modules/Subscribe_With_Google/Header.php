@@ -16,18 +16,21 @@ namespace Google\Site_Kit\Modules\Subscribe_With_Google;
 final class Header {
 
 	/**
-	 * Unique identifier for a SwG product.
+	 * Settings for SwG.
 	 *
-	 * @var string
+	 * @var object
 	 */
-	private $product_id;
+	private $settings;
 
 	/**
 	 * Registers action.
 	 *
-	 * @param bool $is_amp True if an AMP request, false otherwise.
+	 * @param bool   $is_amp True if an AMP request, false otherwise.
+	 * @param object $settings Settings for SwG.
 	 */
-	public function __construct( $is_amp ) {
+	public function __construct( $is_amp, $settings ) {
+		$this->settings = $settings;
+
 		if ( $is_amp ) {
 			add_action( 'wp_head', array( $this, 'add_amp_scripts' ) );
 		} else {
@@ -49,7 +52,7 @@ final class Header {
 		$is_free = $is_free ? $is_free : 'false';
 
 		// Get product ID.
-		$publication_id = get_option( Key::from( 'publication_id' ) );
+		$publication_id = $this->settings['publicationID'];
 		$product        = get_post_meta( get_the_ID(), Key::from( 'product' ), true );
 		$product_id     = $publication_id . ':' . $product;
 

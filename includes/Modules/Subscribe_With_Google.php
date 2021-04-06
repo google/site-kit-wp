@@ -48,11 +48,12 @@ final class Subscribe_With_Google extends Module
 			return;
 		}
 
-		$is_amp = $this->context->is_amp();
+		$is_amp   = $this->context->is_amp();
+		$settings = $this->get_settings()->get();
 
-		new EditPost();
+		new EditPost( $settings );
 		new Filters( $is_amp );
-		new Header( $is_amp );
+		new Header( $is_amp, $settings );
 		new ManagePosts();
 	}
 

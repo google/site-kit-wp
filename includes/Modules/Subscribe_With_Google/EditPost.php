@@ -13,21 +13,34 @@ namespace Google\Site_Kit\Modules\Subscribe_With_Google;
 /** Supports editing of posts. */
 final class EditPost {
 
-	/** Adds ≈action handlers. */
-	public function __construct() {
+	/**
+	 * Settings for SwG.
+	 *
+	 * @var object
+	 */
+	private $settings;
+
+	/**
+	 * Adds action handlers.
+	 *
+	 * @param object $settings Settings for SwG.
+	 */
+	public function __construct( $settings ) {
+		$this->settings = $settings;
+
 		// Render meta box on Post Edit page.
-		add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_boxes' ) );
+		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 
 		// Handle Posts being saved.
-		add_action( 'save_post', array( __CLASS__, 'save_post' ) );
+		add_action( 'save_post', array( $this, 'save_post' ) );
 	}
 
 	/** Adds meta boxes to the Post edit page. */
-	public static function add_meta_boxes() {
+	public function add_meta_boxes() {
 		add_meta_box(
 			Key::from( 'post-edit-metabox' ),
 			'Subscribe with Google',
-			array( __CLASS__, 'render' ),
+			array( $this, 'render' ),
 			'post',
 			'side',
 			'high'
@@ -35,29 +48,21 @@ final class EditPost {
 	}
 
 	/** Renders meta box. */
-	public static function render() {
-		self::render_products_dropdown();
-		self::render_free_checkbox();
+	public function render() {
+		$this->render_products_dropdown();
+		$this->render_free_checkbox();
 
 		wp_nonce_field( Key::from( 'saving_settings' ), Key::from( 'nonce' ) );
 	}
 
 	/** Renders products dropdown. */
-	public static function render_products_dropdown() {
-		$product_key  = Key::from( 'product' );
-		$products_key = Key::from( 'products' );
-		$products_str = trim( get_option( $products_key ) );
+	public function render_products_dropdown() {
+		$products_str = trim( $this->settings['products'] );
+		$products     = explode( "\n", $products_str );
 
-		if ( ! $products_str ) {
-			echo 'Please define products on the SwG setup page 😄. ';
-			echo '<a href="';
-			echo esc_url( admin_url( 'admin.php?page=subscribe_with_google' ) );
-			echo '">Link</a>';
-			return;
-		}
-
-		$products         = explode( "\n", $products_str );
+		$product_key      = Key::from( 'product' );
 		$selected_product = get_post_meta( get_the_ID(), $product_key, true );
+
 		echo 'Product&nbsp; ';
 		echo '<select';
 		echo ' name="' . esc_attr( $product_key ) . '"';
@@ -80,7 +85,7 @@ final class EditPost {
 	}
 
 	/** Renders free checkbox. */
-	public static function render_free_checkbox() {
+	public function render_free_checkbox() {
 		$free_key = Key::from( 'free' );
 		$free     = get_post_meta( get_the_ID(), $free_key, true ) === 'true';
 
@@ -101,7 +106,7 @@ final class EditPost {
 	 *
 	 * @param string $post_id ID of the post being saved.
 	 */
-	public static function save_post( $post_id ) {
+	public function save_post( $post_id ) {
 		$product_key = Key::from( 'product' );
 		$free_key    = Key::from( 'free' );
 		$nonce_key   = Key::from( 'nonce' );
