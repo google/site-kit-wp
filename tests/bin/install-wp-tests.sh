@@ -91,8 +91,6 @@ install_wp() {
 		download https://wordpress.org/${ARCHIVE_NAME}.tar.gz  $TMPDIR/wordpress.tar.gz
 		tar --strip-components=1 -zxmf $TMPDIR/wordpress.tar.gz -C $WP_CORE_DIR
 	fi
-
-	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php $WP_CORE_DIR/wp-content/db.php
 }
 
 install_test_suite() {
@@ -121,6 +119,9 @@ install_test_suite() {
 		sed $ioption "s/yourusernamehere/$DB_USER/" "$WP_TESTS_DIR"/wp-tests-config.php
 		sed $ioption "s/yourpasswordhere/$DB_PASS/" "$WP_TESTS_DIR"/wp-tests-config.php
 		sed $ioption "s|localhost|${DB_HOST}|" "$WP_TESTS_DIR"/wp-tests-config.php
+
+		# Enforce mysqli.
+		echo "define( 'WP_USE_EXT_MYSQL', false );" >> "$WP_TESTS_DIR"/wp-tests-config.php
 	fi
 
 }

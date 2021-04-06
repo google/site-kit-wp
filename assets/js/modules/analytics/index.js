@@ -42,7 +42,7 @@ import DashboardPopularPagesWidget from './components/dashboard/DashboardPopular
 import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
-import { ModuleOverviewWidget, ModulePopularPagesWidget } from './components/module';
+import { ModuleOverviewWidget, ModulePopularPagesWidget, ModuleAcquisitionChannelsWidget } from './components/module';
 
 export { registerStore } from './datastore';
 
@@ -55,6 +55,11 @@ export const registerModule = ( modules ) => {
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
 			Icon: AnalyticsIcon,
+			features: [
+				__( 'Audience overview', 'google-site-kit' ),
+				__( 'Top pages', 'google-site-kit' ),
+				__( 'Top acquisition channels', 'google-site-kit' ),
+			],
 			screenWidgetContext: CONTEXT_MODULE_ANALYTICS,
 		}
 	);
@@ -125,6 +130,19 @@ export const registerWidgets = ( widgets ) => {
 		},
 		[
 			AREA_DASHBOARD_POPULARITY,
+		],
+	);
+
+	widgets.registerWidget(
+		'analyticsModuleAcquisitionChannels',
+		{
+			Component: ModuleAcquisitionChannelsWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 3,
+			wrapWidget: false,
+		},
+		[
+			AREA_MODULE_ANALYTICS_MAIN,
 		],
 	);
 

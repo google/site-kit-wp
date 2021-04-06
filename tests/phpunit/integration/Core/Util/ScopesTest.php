@@ -96,7 +96,7 @@ class ScopesTest extends TestCase {
 				),
 				true,
 			),
-			// webmaster is not satisfied by webmasters.readonly
+			// webmasters is not satisfied by webmasters.readonly
 			array(
 				'https://www.googleapis.com/auth/webmasters',
 				array(

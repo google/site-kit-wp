@@ -48,6 +48,8 @@ export * from './i18n';
 export * from './helpers';
 export * from './markdown';
 export * from './convert-time';
+export * from './date-range';
+export * from './chart';
 
 /**
  * Removes a parameter from a URL string.

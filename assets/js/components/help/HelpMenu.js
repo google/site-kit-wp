@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useState, useRef, useEffect, useCallback } from '@wordpress/element';
+import { useState, useRef, useEffect, useCallback } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
 import { __ } from '@wordpress/i18n';
 
@@ -64,39 +64,42 @@ function HelpMenu( { children } ) {
 		toggleMenu( ! menuOpen );
 	}, [ menuOpen ] );
 
+	const handleMenuSelected = useCallback( () => {
+		toggleMenu( false );
+	} );
+
 	return (
-		<Fragment>
-			<div className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu googlesitekit-help-menu mdc-menu-surface--anchor">
-				<Button
-					aria-controls="googlesitekit-help-menu"
-					aria-expanded={ menuOpen }
-					aria-label={ __( 'Open Help menu', 'google-site-kit' ) }
-					aria-haspopup="menu"
-					className="googlesitekit-header__dropdown googlesitekit-help-menu__button googlesitekit-margin-right-0 mdc-button--dropdown"
-					icon={ <HelpIcon width="20" height="20" /> }
-					onClick={ handleMenu }
-					ref={ menuButtonRef }
-					text
-				/>
-				<Menu
-					className="googlesitekit-width-auto"
-					ref={ menuRef }
-					menuOpen={ menuOpen }
-					id="googlesitekit-help-menu"
-				>
-					{ children }
-					<HelpMenuLink href="https://sitekit.withgoogle.com/documentation/fix-common-issues/">
-						{ __( 'Fix common issues', 'google-site-kit' ) }
-					</HelpMenuLink>
-					<HelpMenuLink href="https://sitekit.withgoogle.com/documentation/">
-						{ __( 'Read help docs', 'google-site-kit' ) }
-					</HelpMenuLink>
-					<HelpMenuLink href="https://wordpress.org/support/plugin/google-site-kit/">
-						{ __( 'Get support', 'google-site-kit' ) }
-					</HelpMenuLink>
-				</Menu>
-			</div>
-		</Fragment>
+		<div className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu googlesitekit-help-menu mdc-menu-surface--anchor">
+			<Button
+				aria-controls="googlesitekit-help-menu"
+				aria-expanded={ menuOpen }
+				aria-label={ __( 'Open Help menu', 'google-site-kit' ) }
+				aria-haspopup="menu"
+				className="googlesitekit-header__dropdown googlesitekit-help-menu__button googlesitekit-margin-right-0 mdc-button--dropdown"
+				icon={ <HelpIcon width="20" height="20" /> }
+				onClick={ handleMenu }
+				ref={ menuButtonRef }
+				text
+			/>
+			<Menu
+				className="googlesitekit-width-auto"
+				ref={ menuRef }
+				menuOpen={ menuOpen }
+				id="googlesitekit-help-menu"
+				onSelected={ handleMenuSelected }
+			>
+				{ children }
+				<HelpMenuLink gaEventLabel="fix_common_issues" href="https://sitekit.withgoogle.com/documentation/fix-common-issues/">
+					{ __( 'Fix common issues', 'google-site-kit' ) }
+				</HelpMenuLink>
+				<HelpMenuLink gaEventLabel="documentation" href="https://sitekit.withgoogle.com/documentation/">
+					{ __( 'Read help docs', 'google-site-kit' ) }
+				</HelpMenuLink>
+				<HelpMenuLink gaEventLabel="support_forum" href="https://wordpress.org/support/plugin/google-site-kit/">
+					{ __( 'Get support', 'google-site-kit' ) }
+				</HelpMenuLink>
+			</Menu>
+		</div>
 	);
 }
 

@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Storage;
 /**
  * Class Base64_Encryption
  *
- * A dummy encryption implementation for use in testing only.
+ * A placeholder encryption implementation for use in testing only.
  *
  * @package Google\Site_Kit\Tests\Core\Storage
  */
