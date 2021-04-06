@@ -1,8 +1,5 @@
 name: Plugin Zip Files
 
-defaults:
-  timeout-minutes: 20
-
 on:
   push:
     branches:
@@ -21,6 +18,7 @@ jobs:
   build-zips:
     name: Build Zips
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true ) ) || github.event.pull_request.head.repo.fork )
     steps:
       - uses: styfle/cancel-workflow-action@0.8.0
@@ -109,6 +107,7 @@ jobs:
   remove-pr:
     name: Remove Zips
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     if: ( github.event_name == 'pull_request' && github.event.action == 'closed' ) && github.event.pull_request.head.repo.fork == false
     steps:
       - uses: styfle/cancel-workflow-action@0.8.0

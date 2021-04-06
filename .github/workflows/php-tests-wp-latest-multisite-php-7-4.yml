@@ -1,8 +1,5 @@
 name: PHP Tests
 
-defaults:
-  timeout-minutes: 20
-
 on:
   push:
     branches:
@@ -34,6 +31,7 @@ jobs:
   php-tests-wp-latest-multisite-php-7-4:
     name: PHP (PHP 7.4, WordPress Latest, Multisite)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     services:
       mysql:
         image: mysql:5.7

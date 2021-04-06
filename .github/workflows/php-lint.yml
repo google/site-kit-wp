@@ -1,8 +1,5 @@
 name: Code Linting
 
-defaults:
-  timeout-minutes: 20
-
 on:
   push:
     branches:
@@ -32,6 +29,7 @@ jobs:
   php-lint:
     name: PHP
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
