@@ -51,7 +51,7 @@ describe( 'modules/analytics-4 properties', () => {
 	describe( 'actions', () => {
 		describe( 'createProperty', () => {
 			it( 'should create a property and add it to the store', async () => {
-				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/acronym-case
+				const accountID = fixtures.createProperty.parent;
 
 				fetchMock.post( createPropertyEndpoint, {
 					body: fixtures.createProperty,
@@ -72,7 +72,7 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should dispatch an error if the request fails', async () => {
-				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/acronym-case
+				const accountID = fixtures.createProperty.parent;
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
