@@ -56,6 +56,26 @@ export default function UserInputKeywords( { slug, max } ) {
 	// Need to make sure that dependencies list always has the same number of elements.
 	const dependencies = values.concat( Array( max ) ).slice( 0, max );
 
+	const focusInput = ( querySelector ) => {
+		const input = keywordsContainer.current.querySelector( querySelector );
+		if ( input ) {
+			input.focus();
+		}
+	};
+
+	const deleteKeyword = useCallback( ( index ) => {
+		updateKeywords( [
+			...values.slice( 0, index ),
+			...values.slice( index + 1 ),
+		] );
+		// After deleting a keyword, hitting backspace will delete the next keyword
+		setCanDeleteKeyword( true );
+	}, dependencies, canDeleteKeyword );
+
+	const onKeywordDelete = useCallback( ( index ) => {
+		deleteKeyword( index );
+	}, dependencies );
+
 	const updateKeywords = useCallback( ( keywords ) => {
 		const EOT = String.fromCharCode( 4 );
 		let newKeywords = keywords
@@ -98,48 +118,25 @@ export default function UserInputKeywords( { slug, max } ) {
 				...values.slice( index + 1 ),
 			] );
 
-			setCanDeleteKeyword( true ); // New keyword has been added, so hitting backspace now will remove it
-			setTimeout( () =>
-				focusInput( `#${ slug }-keyword-${ index + 1 }` )
-			, 50 );
+			setCanDeleteKeyword( true ); // New keyword has been added, so hitting backspace now will remove it.
+			setTimeout( () => {
+				focusInput( `#${ slug }-keyword-${ index + 1 }` );
+			}, 50 );
 		}
 
-		if ( keyCode === BACKSPACE && canDeleteKeyword ) {
+		if ( target.value.length === 0 && keyCode === BACKSPACE ) {
+			// User landed on the input and isn't in the middle of typing, so we can delete the last keyword.
 			deleteKeyword( nonEmptyValuesLength - 1 );
-			setTimeout( () =>
-				focusInput( `#${ slug }-keyword-${ nonEmptyValuesLength - 1 }` )
-			, 50 );
-		}
-
-		if ( target.value.length <= 1 && keyCode === BACKSPACE ) {
-			// user deleted the only character, or just landed in this input after
-			// deleting a keyword so hitting backspace again should delete the previous keyword
+			setTimeout( () => {
+				focusInput( `#${ slug }-keyword-${ nonEmptyValuesLength - 1 }` );
+			}, 50 );
+			// After deleting a keyword, so hitting backspace again should continue to delete keywords.
 			setCanDeleteKeyword( true );
 		} else {
-			// user is typing, so backspace should delete the last character
+			// User is typing, so backspace should delete the last character rather than the keyword.
 			setCanDeleteKeyword( false );
 		}
 	}, [ keywordsContainer.current, ...dependencies, canDeleteKeyword ] );
-
-	const focusInput = ( querySelector ) => {
-		const input = keywordsContainer.current.querySelector( querySelector );
-		if ( input ) {
-			input.focus();
-		}
-	};
-
-	const onKeywordDelete = useCallback( ( index ) => {
-		deleteKeyword( index );
-	}, dependencies );
-
-	const deleteKeyword = useCallback( ( index ) => {
-		updateKeywords( [
-			...values.slice( 0, index ),
-			...values.slice( index + 1 ),
-		] );
-		// After deleting a keyword, hitting backspace will delete the next keyword
-		setCanDeleteKeyword( true );
-	}, dependencies, canDeleteKeyword );
 
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
