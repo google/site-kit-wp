@@ -46,10 +46,8 @@ storiesOf( 'Setup / Using GCP', module )
 		global._googlesitekitLegacyData.setup.hasSearchConsoleProperty = false;
 		global._googlesitekitLegacyData.permissions.canSetup = true;
 
-		registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+		provideUserAuthentication( registry, {
 			authenticated: false,
-			requiredScopes: [],
-			grantedScopes: [],
 		} );
 
 		return (
