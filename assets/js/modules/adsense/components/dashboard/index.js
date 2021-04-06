@@ -26,5 +26,5 @@ export { default as LegacyAdSenseDashboardMainSummary } from './LegacyAdSenseDas
 export { default as LegacyDashboardAdSenseTopEarningPagesSmall } from './LegacyDashboardAdSenseTopEarningPagesSmall';
 export { default as LegacyDashboardAdSenseTopPages } from './LegacyDashboardAdSenseTopPages';
 export { default as LegacyDashboardEarnings } from './LegacyDashboardEarnings';
-export { default as AdSenseDashboardWidgetOverview } from './AdSenseDashboardWidgetOverview';
-export { default as AdSenseDashboardWidgetSiteStats } from './AdSenseDashboardWidgetSiteStats';
+export { default as LegacyAdSenseDashboardWidgetOverview } from './LegacyAdSenseDashboardWidgetOverview';
+export { default as LegacyAdSenseDashboardWidgetSiteStats } from './LegacyAdSenseDashboardWidgetSiteStats';

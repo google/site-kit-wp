@@ -670,7 +670,7 @@ final class Modules {
 				)
 			),
 			new REST_Route(
-				'modules/(?P<slug>[a-z\-]+)/data/notifications',
+				'modules/(?P<slug>[a-z0-9\-]+)/data/notifications',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
@@ -707,7 +707,7 @@ final class Modules {
 				)
 			),
 			new REST_Route(
-				'modules/(?P<slug>[a-z\-]+)/data/settings',
+				'modules/(?P<slug>[a-z0-9\-]+)/data/settings',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
@@ -767,7 +767,7 @@ final class Modules {
 				)
 			),
 			new REST_Route(
-				'modules/(?P<slug>[a-z\-]+)/data/(?P<datapoint>[a-z\-]+)',
+				'modules/(?P<slug>[a-z0-9\-]+)/data/(?P<datapoint>[a-z\-]+)',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
@@ -848,6 +848,7 @@ final class Modules {
 			'homepage'     => $module->homepage,
 			'internal'     => $module->internal,
 			'order'        => $module->order,
+			'forceActive'  => $module->force_active,
 			'active'       => $this->is_module_active( $module->slug ),
 			'connected'    => $this->is_module_connected( $module->slug ),
 			'dependencies' => $this->get_module_dependencies( $module->slug ),

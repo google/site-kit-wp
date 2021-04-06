@@ -27,16 +27,14 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { getCurrentDateRangeDayCount } from '../../../../../util/date-range';
 import { MODULES_ANALYTICS } from '../../../datastore/constants';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
 const { useSelect } = Data;
 
 export default function Header() {
-	const visitorsOverview = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'visitors-overview' ) );
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
+	const contentPagesURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'content-pages' ) );
+	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
 	const title = sprintf(
 		/* translators: %s: number of days */
@@ -53,7 +51,7 @@ export default function Header() {
 	return (
 		<Fragment>
 			<WidgetHeaderTitle title={ title } />
-			<WidgetHeaderCTA href={ visitorsOverview } label={ headerCTALabel } external />
+			<WidgetHeaderCTA href={ contentPagesURL } label={ headerCTALabel } external />
 		</Fragment>
 	);
 }

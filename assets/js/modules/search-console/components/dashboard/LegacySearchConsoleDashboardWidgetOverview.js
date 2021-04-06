@@ -35,7 +35,7 @@ import {
 	isDataZeroSearchConsole,
 } from '../../util';
 import PropTypes from 'prop-types';
-class SearchConsoleDashboardWidgetOverview extends Component {
+class LegacySearchConsoleDashboardWidgetOverview extends Component {
 	render() {
 		const { data, selectedStats, handleStatSelection } = this.props;
 
@@ -137,12 +137,12 @@ class SearchConsoleDashboardWidgetOverview extends Component {
 	}
 }
 
-SearchConsoleDashboardWidgetOverview.propTypes = {
+LegacySearchConsoleDashboardWidgetOverview.propTypes = {
 	handleDataError: PropTypes.func.isRequired,
 };
 
 export default withData(
-	SearchConsoleDashboardWidgetOverview,
+	LegacySearchConsoleDashboardWidgetOverview,
 	[
 		{
 			type: TYPE_MODULES,

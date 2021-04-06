@@ -1,5 +1,5 @@
 /**
- * Adsense module components.
+ * AdSense Module components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,3 +17,4 @@
  */
 
 export { default as ModuleTopEarningPagesWidget } from './ModuleTopEarningPagesWidget';
+export { default as ModuleOverviewWidget } from './ModuleOverviewWidget';

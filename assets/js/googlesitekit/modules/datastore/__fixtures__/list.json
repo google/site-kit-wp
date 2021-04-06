@@ -10,7 +10,8 @@
     "connected": true,
     "dependencies": [],
     "dependants": [],
-    "owner": null
+    "owner": null,
+    "forceActive": true
   },
   {
     "slug": "search-console",
@@ -23,7 +24,8 @@
     "connected": true,
     "dependencies": [],
     "dependants": [],
-    "owner": null
+    "owner": null,
+    "forceActive": true
   },
   {
     "slug": "adsense",
@@ -36,7 +38,12 @@
     "connected": false,
     "dependencies": [],
     "dependants": [],
-    "owner": null
+    "owner": null,
+    "forceActive": false,
+    "features": [
+      "Monetize your website",
+      "Intelligent, automatic ad placement"
+    ]
   },
   {
     "slug": "analytics",
@@ -51,7 +58,13 @@
     "dependants": [
       "optimize"
     ],
-    "owner": null
+    "owner": null,
+    "forceActive": false,
+    "features": [
+      "Audience overview",
+      "Top pages",
+      "Top acquisition channels"
+    ]
   },
   {
     "slug": "pagespeed-insights",
@@ -64,7 +77,11 @@
     "connected": true,
     "dependencies": [],
     "dependants": [],
-    "owner": null
+    "owner": null,
+    "forceActive": false,
+    "features": [
+      "Website performance reports for mobile and desktop"
+    ]
   },
   {
     "slug": "optimize",
@@ -79,7 +96,13 @@
       "analytics"
     ],
     "dependants": [],
-    "owner": null
+    "owner": null,
+    "forceActive": false,
+    "features": [
+      "A/B or multivariate testing",
+      "Improvement tracking",
+      "Probability and confidence calculations"
+    ]
   },
   {
     "slug": "tagmanager",
@@ -92,6 +115,10 @@
     "connected": false,
     "dependencies": [],
     "dependants": [],
-    "owner": null
+    "owner": null,
+    "forceActive": false,
+    "features": [
+      "Create tags without updating code"
+    ]
   }
 ]

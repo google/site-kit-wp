@@ -1,5 +1,5 @@
 /**
- * AdSenseDashboardWidgetSiteStats component.
+ * LegacyAdSenseDashboardWidgetSiteStats component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -34,7 +34,7 @@ import GoogleChart from '../../../../components/GoogleChart';
 import { getSiteStatsDataForGoogleChart, isZeroReport } from '../../util';
 const { useSelect } = Data;
 
-export default function AdSenseDashboardWidgetSiteStats( props ) {
+export default function LegacyAdSenseDashboardWidgetSiteStats( props ) {
 	const {
 		startDate,
 		endDate,
@@ -106,7 +106,7 @@ export default function AdSenseDashboardWidgetSiteStats( props ) {
 			},
 		},
 		vAxis: {
-			format: AdSenseDashboardWidgetSiteStats.formats[ currentRangeData.headers[ selectedStats + 1 ].type ],
+			format: LegacyAdSenseDashboardWidgetSiteStats.formats[ currentRangeData.headers[ selectedStats + 1 ].type ],
 			gridlines: {
 				color: '#eee',
 			},
@@ -136,11 +136,11 @@ export default function AdSenseDashboardWidgetSiteStats( props ) {
 		},
 		series: {
 			0: {
-				color: AdSenseDashboardWidgetSiteStats.colors[ selectedStats ],
+				color: LegacyAdSenseDashboardWidgetSiteStats.colors[ selectedStats ],
 				targetAxisIndex: 0,
 			},
 			1: {
-				color: AdSenseDashboardWidgetSiteStats.colors[ selectedStats ],
+				color: LegacyAdSenseDashboardWidgetSiteStats.colors[ selectedStats ],
 				targetAxisIndex: 0,
 				lineDashStyle: [ 3, 3 ],
 				lineWidth: 1,
@@ -172,14 +172,14 @@ export default function AdSenseDashboardWidgetSiteStats( props ) {
 	);
 }
 
-AdSenseDashboardWidgetSiteStats.colors = [
+LegacyAdSenseDashboardWidgetSiteStats.colors = [
 	'#4285f4',
 	'#27bcd4',
 	'#1b9688',
 	'#673ab7',
 ];
 
-AdSenseDashboardWidgetSiteStats.formats = {
+LegacyAdSenseDashboardWidgetSiteStats.formats = {
 	METRIC_TALLY: undefined,
 	METRIC_CURRENCY: 'currency',
 	METRIC_RATIO: 'percent',
@@ -187,7 +187,7 @@ AdSenseDashboardWidgetSiteStats.formats = {
 	METRIC_MILLISECONDS: undefined,
 };
 
-AdSenseDashboardWidgetSiteStats.propTypes = {
+LegacyAdSenseDashboardWidgetSiteStats.propTypes = {
 	startDate: PropTypes.string.isRequired,
 	endDate: PropTypes.string.isRequired,
 	compareStartDate: PropTypes.string.isRequired,

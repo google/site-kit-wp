@@ -23,8 +23,10 @@ import { generateReportBasedWidgetStories } from './utils/generate-widget-storie
 import DashboardSummaryWidget from '../assets/js/modules/adsense/components/dashboard/DashboardSummaryWidget';
 import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
 import ModuleTopEarningPagesWidget from '../assets/js/modules/adsense/components/module/ModuleTopEarningPagesWidget';
+import ModuleOverviewWidget from '../assets/js/modules/adsense/components/module/ModuleOverviewWidget';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense' ],
@@ -157,6 +159,23 @@ generateReportBasedWidgetStories( {
 	Component: DashboardSummaryWidget,
 	wrapWidget: false,
 } );
+
+const topEarningPagesArgs = {
+	// getDateRangeDates( { offsetDays: 1 }) for 'last-28-days' and '2020-09-12'.
+	startDate: '2020-08-15',
+	endDate: '2020-09-11',
+	dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+	metrics: [
+		{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
+		{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
+		{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
+	],
+	orderby: {
+		fieldName: 'ga:adsenseRevenue',
+		sortOrder: 'DESCENDING',
+	},
+	limit: 5,
+};
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense', 'analytics' ],
@@ -376,48 +395,19 @@ generateReportBasedWidgetStories( {
 			},
 		},
 	],
-	options: {
-		// getDateRangeDates( { offsetDays: 1 }) for 'last-28-days' and '2020-09-12'.
-		startDate: '2020-08-15',
-		endDate: '2020-09-11',
-		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-		metrics: [
-			{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
-			{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
-			{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
-		],
-		orderby: {
-			fieldName: 'ga:adsenseRevenue',
-			sortOrder: 'DESCENDING',
-		},
-		limit: 10,
-	},
+	options: topEarningPagesArgs,
 	Component: DashboardTopEarningPagesWidget,
 	wrapWidget: false,
 	additionalVariants: {
 		'AdSense Not Linked': {
 			data: [],
-			options: {
-				// getDateRangeDates( { offsetDays: 1 }) for 'last-28-days' and '2020-09-12'.
-				startDate: '2020-08-15',
-				endDate: '2020-09-11',
-				dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-				metrics: [
-					{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
-					{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
-					{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
-				],
-				orderby: {
-					fieldName: 'ga:adsenseRevenue',
-					sortOrder: 'DESCENDING',
-				},
-				limit: 10,
-			},
+			options: topEarningPagesArgs,
 		},
 	},
 	additionalVariantCallbacks: {
 		Loaded: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
-		'Data Unavailable': ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
+		Loading: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
+		DataUnavailable: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
 		Error: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
 	},
 } );
@@ -655,7 +645,7 @@ const optionsModuleTopEarningPagesWidget = {
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense', 'analytics' ],
 	datastore: MODULES_ANALYTICS,
-	group: 'AdSense Module/Components/Module page/Top Earning Pages Widget',
+	group: 'AdSense Module/Components/Module/Top Earning Pages Widget',
 	referenceDate: '2020-09-12',
 	data: dataModuleTopEarningPagesWidget,
 	options: optionsModuleTopEarningPagesWidget,
@@ -680,4 +670,25 @@ generateReportBasedWidgetStories( {
 		'Data Unavailable': ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
 		Error: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
 	},
+} );
+
+generateReportBasedWidgetStories( {
+	moduleSlugs: [ 'adsense' ],
+	datastore: STORE_NAME,
+	group: 'AdSense Module/Components/Module/Overview Widget',
+	referenceDate: '2020-11-25',
+	data: [
+		fixtures.earnings.currentStatsData,
+		fixtures.earnings.prevStatsData,
+		fixtures.earnings.currentSummaryData,
+		fixtures.earnings.prevSummaryData,
+	],
+	options: [
+		fixtures.earnings.currentStatsArgs,
+		fixtures.earnings.prevStatsArgs,
+		fixtures.earnings.currentSummaryArgs,
+		fixtures.earnings.prevSummaryArgs,
+	],
+	Component: ModuleOverviewWidget,
+	wrapWidget: false,
 } );

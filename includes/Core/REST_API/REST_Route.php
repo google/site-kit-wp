@@ -149,7 +149,7 @@ final class REST_Route {
 	 *                                       {@see rest_sanitize_rest_arg()}.
 	 *     @type bool     $required          Whether the argument is required. Default false.
 	 *     @type mixed    $default           Default value for the argument, if any. Default none.
-	 *     @type array    $enum              Whitelist of possible values to validate against. Default none.
+	 *     @type array    $enum              Allowlist of possible values to validate against. Default none.
 	 *     @type array    $items             Only if $type is 'array': Similar specification that applies to each item.
 	 *     @type array    $properties        Only if $type is 'object'. Similar specification per property.
 	 * }

@@ -1,5 +1,5 @@
 /**
- * AdSenseDashboardWidgetOverview component.
+ * LegacyAdSenseDashboardWidgetOverview component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -39,7 +39,7 @@ import { calculateChange } from '../../../../util';
 import { isZeroReport } from '../../util';
 const { useSelect } = Data;
 
-export default function AdSenseDashboardWidgetOverview( props ) {
+export default function LegacyAdSenseDashboardWidgetOverview( props ) {
 	const {
 		startDate,
 		endDate,
@@ -162,7 +162,7 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 	);
 }
 
-AdSenseDashboardWidgetOverview.propTypes = {
+LegacyAdSenseDashboardWidgetOverview.propTypes = {
 	startDate: PropTypes.string.isRequired,
 	endDate: PropTypes.string.isRequired,
 	compareStartDate: PropTypes.string.isRequired,
