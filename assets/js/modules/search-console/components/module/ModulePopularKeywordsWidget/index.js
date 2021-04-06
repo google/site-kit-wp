@@ -87,7 +87,7 @@ function ModulePopularKeywordsWidget( { Widget, WidgetReportZero, WidgetReportEr
 	if ( isZeroReport( data ) ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer }>
-				<WidgetReportZero moduleSlug="search-console" />;
+				<WidgetReportZero moduleSlug="search-console" />
 			</Widget>
 		);
 	}
