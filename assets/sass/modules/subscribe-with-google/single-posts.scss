@@ -19,6 +19,10 @@ body:not(.swg--is-amp) article:not(.swg--page-is-unlocked) .swg--locked-content 
 		display: block;
 		filter: blur(4px);
 		transition: filter 0s;
+
+		img {
+			filter: blur(12px);
+		}
 	}
 }
 
