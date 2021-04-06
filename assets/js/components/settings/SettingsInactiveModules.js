@@ -59,7 +59,7 @@ const SettingsInactiveModules = () => {
 	const inactiveModules = initialInactiveSlugs
 		.map( ( slug ) => modules[ slug ] )
 		.filter( ( module ) => ! module.internal )
-		.sort( ( a, b ) => a.sort - b.sort )
+		.sort( ( a, b ) => a.order - b.order )
 	;
 
 	if ( inactiveModules.length === 0 ) {
