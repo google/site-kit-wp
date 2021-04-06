@@ -118,22 +118,22 @@ export default function UserInputKeywords( { slug, max } ) {
 				...values.slice( index + 1 ),
 			] );
 
-			setCanDeleteKeyword( true ); // New keyword has been added, so hitting backspace now will remove it.
+			setCanDeleteKeyword( true ); // A new keyword has been added. Pressing backspace now will remove the entire keyword.
 			setTimeout( () => {
 				focusInput( `#${ slug }-keyword-${ index + 1 }` );
 			}, 50 );
 		}
 
 		if ( target.value.length === 0 && keyCode === BACKSPACE ) {
-			// User landed on the input and isn't in the middle of typing, so we can delete the last keyword.
+			// The input is empty, so pressing backspace should delete the last keyword.
 			deleteKeyword( nonEmptyValuesLength - 1 );
 			setTimeout( () => {
 				focusInput( `#${ slug }-keyword-${ nonEmptyValuesLength - 1 }` );
 			}, 50 );
-			// After deleting a keyword, so hitting backspace again should continue to delete keywords.
+			// After deleting a keyword, pressing backspace again should continue to delete keywords.
 			setCanDeleteKeyword( true );
 		} else {
-			// User is typing, so backspace should delete the last character rather than the keyword.
+			// User is typing, so pressing backspace should delete the last character rather than the keyword.
 			setCanDeleteKeyword( false );
 		}
 	}, [ keywordsContainer.current, ...dependencies, canDeleteKeyword ] );
