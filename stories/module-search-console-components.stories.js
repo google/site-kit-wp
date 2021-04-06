@@ -2863,7 +2863,7 @@ generateReportBasedWidgetStories( {
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'search-console' ],
 	datastore: STORE_NAME,
-	group: 'Search Console Module/Components/Module Page/Popular Pages Widget',
+	group: 'Search Console Module/Components/Module Page/Popular Keywords Widget',
 	data: [
 		{
 			clicks: 109,
