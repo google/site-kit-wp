@@ -10,21 +10,21 @@ on:
       - main
     # Only run if PHP-related files changed.
     paths:
-      - "**.php"
-      - "phpcs.xml.dist"
-      - "phpmd.xml"
-      - "phpstan.neon.dist"
-      - "composer.json"
-      - "composer.lock"
+      - '**.php'
+      - 'phpcs.xml.dist'
+      - 'phpmd.xml'
+      - 'phpstan.neon.dist'
+      - 'composer.json'
+      - 'composer.lock'
   pull_request:
     # Only run if PHP-related files changed.
     paths:
-      - "**.php"
-      - "phpcs.xml.dist"
-      - "phpmd.xml"
-      - "phpstan.neon.dist"
-      - "composer.json"
-      - "composer.lock"
+      - '**.php'
+      - 'phpcs.xml.dist'
+      - 'phpmd.xml'
+      - 'phpstan.neon.dist'
+      - 'composer.json'
+      - 'composer.lock'
     types:
       - opened
       - reopened
@@ -39,7 +39,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "7.4"
+          php-version: '7.4'
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |

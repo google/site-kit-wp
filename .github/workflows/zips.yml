@@ -8,7 +8,7 @@ on:
     branches:
       - develop
       - main
-    tags: ["**"]
+    tags: ['**']
   pull_request:
     types:
       - opened
@@ -46,7 +46,7 @@ jobs:
       - name: Setup Node.js (.nvmrc)
         uses: actions/setup-node@v1
         with:
-          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+          node-version: '${{ steps.nvm.outputs.NVMRC }}'
       - name: Cache Node - npm
         uses: actions/cache@v2
         with:

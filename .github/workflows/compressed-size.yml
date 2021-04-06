@@ -13,13 +13,13 @@ on:
       - reopened
       - synchronize
     paths:
-      - "assets/js/**.js"
-      - "!assets/js/**.test.js"
-      - "!assets/js/**/test/**"
-      - "assets/sass/**/*.scss"
-      - "assets/svg/**/*.svg"
-      - "./*.config.js"
-      - "./package-lock.json"
+      - 'assets/js/**.js'
+      - '!assets/js/**.test.js'
+      - '!assets/js/**/test/**'
+      - 'assets/sass/**/*.scss'
+      - 'assets/svg/**/*.svg'
+      - './*.config.js'
+      - './package-lock.json'
 
 jobs:
   build:

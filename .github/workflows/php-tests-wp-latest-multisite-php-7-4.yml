@@ -10,17 +10,17 @@ on:
       - main
     # Only run if PHP-related files changed.
     paths:
-      - "**.php"
-      - "phpunit*.xml*"
-      - "composer.json"
-      - "composer.lock"
+      - '**.php'
+      - 'phpunit*.xml*'
+      - 'composer.json'
+      - 'composer.lock'
   pull_request:
     # Only run if PHP-related files changed.
     paths:
-      - "**.php"
-      - "phpunit*.xml*"
-      - "composer.json"
-      - "composer.lock"
+      - '**.php'
+      - 'phpunit*.xml*'
+      - 'composer.json'
+      - 'composer.lock'
     types:
       - opened
       - reopened
@@ -46,7 +46,7 @@ jobs:
       MYSQL_DATABASE: wordpress_test
       MYSQL_ROOT_PASSWORD: root
       WP_VERSION: latest
-      WP_MULTISITE: "1"
+      WP_MULTISITE: '1'
     steps:
       - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
@@ -60,7 +60,7 @@ jobs:
         with:
           extensions: mysqli
           tools: composer
-          php-version: "7.4"
+          php-version: '7.4'
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |

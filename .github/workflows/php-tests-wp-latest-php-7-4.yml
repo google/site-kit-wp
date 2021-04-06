@@ -10,17 +10,17 @@ on:
       - main
     # Only run if PHP-related files changed.
     paths:
-      - "**.php"
-      - "phpunit*.xml*"
-      - "composer.json"
-      - "composer.lock"
+      - '**.php'
+      - 'phpunit*.xml*'
+      - 'composer.json'
+      - 'composer.lock'
   pull_request:
     # Only run if PHP-related files changed.
     paths:
-      - "**.php"
-      - "phpunit*.xml*"
-      - "composer.json"
-      - "composer.lock"
+      - '**.php'
+      - 'phpunit*.xml*'
+      - 'composer.json'
+      - 'composer.lock'
     types:
       - opened
       - reopened
@@ -59,7 +59,7 @@ jobs:
         with:
           extensions: mysqli
           tools: composer
-          php-version: "7.4"
+          php-version: '7.4'
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
