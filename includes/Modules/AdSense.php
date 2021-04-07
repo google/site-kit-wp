@@ -537,17 +537,10 @@ final class AdSense extends Module
 			$opt_params['maxResults'] = (int) $args['limit'];
 		}
 
-		$host = wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+		$hostnames = $this->permute_hostname( $this->context->get_reference_site_url() );
 
-		if ( ! empty( $host ) ) {
-			if ( strpos( $host, 'www.' ) !== false ) {
-				$host_with_www    = $host;
-				$host_without_www = str_replace( 'www.', '', $host );
-			} else {
-				$host_with_www    = 'www.' . $host;
-				$host_without_www = $host;
-			}
-			$opt_params['filter'] = 'DOMAIN_NAME==' . $host_with_www . ',DOMAIN_NAME==' . $host_without_www;
+		if ( ! empty( $hostnames['with_www'] ) && ! empty( $hostnames['without_www'] ) ) {
+			$opt_params['filter'] = 'DOMAIN_NAME==' . $hostnames['with_www'] . ',DOMAIN_NAME==' . $hostnames['without_www'];
 		}
 
 		$service = $this->get_service( 'adsense' );

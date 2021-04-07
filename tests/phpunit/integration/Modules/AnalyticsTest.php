@@ -704,6 +704,7 @@ class AnalyticsTest extends TestCase {
 		$this->assertTrue( is_array( $expressions ) );
 		$this->assertEquals( 2, count( $expressions ) );
 		$this->assertContains( $hostname, $expressions );
+		$this->assertContains( 'www.' . $hostname, $expressions );
 	}
 
 }

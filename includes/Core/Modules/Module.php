@@ -663,6 +663,31 @@ abstract class Module {
 	}
 
 	/**
+	 * Permutes hostname to cover all different variants of it (not considering the path).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $site_url Site URL to get hostname permutations for.
+	 * @return array List of permutations.
+	 */
+	final protected function permute_hostname( $site_url ) {
+		$hostnames = array();
+
+		// Get hostname.
+		$host = wp_parse_url( $site_url, PHP_URL_HOST );
+
+		if ( strncmp( $host, 'www.', 4 ) === 0 ) {
+			$hostnames['with_www']    = $host;
+			$hostnames['without_www'] = substr( $host, 4 );
+		} else {
+			$hostnames['with_www']    = 'www.' . $host;
+			$hostnames['without_www'] = $host;
+		}
+
+		return $hostnames;
+	}
+
+	/**
 	 * Gets the Google client the module uses.
 	 *
 	 * This method should be used to access the client.
