@@ -3,6 +3,18 @@
  */
 @import "../../config/variables";
 
+body:not(.swg--is-amp) article .swg--locked-content {
+	opacity: 1;
+
+	$transition-duration: 0.3s;
+
+	transition: opacity $transition-duration, filter $transition-duration;
+
+	img {
+		transition: opacity $transition-duration, filter $transition-duration;
+	}
+}
+
 body:not(.swg--is-amp) article:not(.swg--page-is-unlocked) .swg--locked-content {
 	opacity: 0;
 	user-select: none;
@@ -10,14 +22,10 @@ body:not(.swg--is-amp) article:not(.swg--page-is-unlocked) .swg--locked-content 
 
 @supports (filter: blur(4px)) {
 
-	body:not(.swg--is-amp) article .swg--locked-content {
-		transition: filter 0.6s;
-	}
-
 	body:not(.swg--is-amp) article:not(.swg--page-is-unlocked) .swg--locked-content {
-		animation: fadeIn 0.3s ease-in forwards;
 		display: block;
 		filter: blur(4px);
+		opacity: 0.5;
 		transition: filter 0s;
 
 		img {
@@ -32,15 +40,4 @@ button.swg-button {
 
 button.swg-button:hover {
 	background-color: $c-alabaster !important;
-}
-
-@keyframes fadeIn {
-
-	from {
-		opacity: 0;
-	}
-
-	to {
-		opacity: 0.8;
-	}
 }
