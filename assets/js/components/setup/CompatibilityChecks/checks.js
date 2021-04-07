@@ -49,7 +49,10 @@ export const checkHealthChecks = async () => {
 	const response = await API.get( 'core', 'site', 'health-checks', undefined, {
 		useCache: false,
 	} ).catch( ( error ) => {
-		throw 'fetch_fail' === error.code ? ERROR_FETCH_FAIL : ERROR_API_UNAVAILABLE;
+		if ( error.code === 'fetch_error' ) {
+			throw ERROR_FETCH_FAIL;
+		}
+		throw ERROR_API_UNAVAILABLE;
 	} );
 
 	if ( ! response?.checks?.googleAPI?.pass ) {
