@@ -9,14 +9,10 @@ on:
     paths:
       - '.github/workflows/storybook.yml'
       - 'assets/**'
-      - 'packages/**'
-      - 'tests/backstop/**'
       - '.storybook/**'
       - '!.storybook/storybook-data.js'
       - '**.scss'
-      - '.eslint*'
       - '.nvmrc'
-      - '.prettier*'
       - '**/package.json'
       - 'package-lock.json'
   pull_request:
@@ -24,14 +20,10 @@ on:
     paths:
       - '.github/workflows/storybook.yml'
       - 'assets/**'
-      - 'packages/**'
-      - 'tests/backstop/**'
       - '.storybook/**'
       - '!.storybook/storybook-data.js'
       - '**.scss'
-      - '.eslint*'
       - '.nvmrc'
-      - '.prettier*'
       - '**/package.json'
       - 'package-lock.json'
     types:

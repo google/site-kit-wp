@@ -10,24 +10,24 @@ on:
       - '.github/workflows/js-tests.yml'
       - '**.js'
       - '**.json'
-      - '**.scss'
-      - '.eslint*'
       - '.nvmrc'
-      - '.prettier*'
       - '**/package.json'
       - 'package-lock.json'
+      - '!.eslintrc.json'
+      - '!feature-flags.json'
+      - '!composer.json'
   pull_request:
     # Only run if CSS/JS/MD-related files changed.
     paths:
       - '.github/workflows/js-tests.yml'
       - '**.js'
       - '**.json'
-      - '**.scss'
-      - '.eslint*'
       - '.nvmrc'
-      - '.prettier*'
       - '**/package.json'
       - 'package-lock.json'
+      - '!.eslintrc.json'
+      - '!feature-flags.json'
+      - '!composer.json'
     types:
       - opened
       - reopened

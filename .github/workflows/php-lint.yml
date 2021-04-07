@@ -10,7 +10,6 @@ on:
       - '.github/workflows/php-lint.yml'
       - '**.php'
       - 'phpcs.xml.dist'
-      - 'phpmd.xml'
       - 'composer.json'
       - 'composer.lock'
   pull_request:
@@ -19,7 +18,6 @@ on:
       - '.github/workflows/php-lint.yml'
       - '**.php'
       - 'phpcs.xml.dist'
-      - 'phpmd.xml'
       - 'composer.json'
       - 'composer.lock'
     types:
