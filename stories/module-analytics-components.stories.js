@@ -32,13 +32,6 @@ import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/da
 
 const generateData = makeReportDataGenerator( getAnalyticsMockResponse );
 
-/**
- * Generates storybook stories for Analytics widgets.
- *
- * @since n.e.x.t
- *
- * @param {Object} args Story arguments.
- */
 function generateAnalyticsWidgetStories( args ) {
 	generateReportBasedWidgetStories( {
 		moduleSlugs: [ 'analytics' ],
