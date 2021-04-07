@@ -114,6 +114,8 @@ const baseActions = {
 const baseControls = {
 	[ WAIT_FOR_WEBDATASTREAMS ]: createRegistryControl( ( { select, subscribe } ) => {
 		return ( { payload: { propertyID } } ) => {
+			select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+
 			const isResolved = () => select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getWebDataStreams', [ propertyID ] );
 			if ( isResolved() ) {
 				return true;
