@@ -29,7 +29,7 @@ import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/cons
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 
-const generateData = makeReportDataGenerator( getAnalyticsMockResponse );
+const generateAnalyticsData = makeReportDataGenerator( getAnalyticsMockResponse );
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense' ],
@@ -436,7 +436,7 @@ generateReportBasedWidgetStories( {
 	datastore: MODULES_ANALYTICS,
 	group: 'AdSense Module/Components/Module/Top Earning Pages Widget',
 	referenceDate: '2020-09-12',
-	...generateData( optionsModuleTopEarningPagesWidget ),
+	...generateAnalyticsData( optionsModuleTopEarningPagesWidget ),
 	Component: ModuleTopEarningPagesWidget,
 	wrapWidget: false,
 	additionalVariants: {
