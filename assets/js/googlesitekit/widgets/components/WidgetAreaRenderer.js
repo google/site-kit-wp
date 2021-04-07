@@ -29,7 +29,7 @@ import { STORE_NAME, WIDGET_AREA_STYLES } from '../datastore/constants';
 import WidgetRenderer from './WidgetRenderer';
 import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
-import WidgetWrapper from './WidgetWrapper';
+import WidgetCellWrapper from './WidgetCellWrapper';
 import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
 const { useSelect } = Data;
 
@@ -61,7 +61,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 
 	// Render all widgets.
 	const widgetsOutput = widgets.map( ( widget, i ) => (
-		<WidgetWrapper
+		<WidgetCellWrapper
 			key={ `${ widget.slug }-wrapper` }
 			gridColumnWidth={ gridColumnWidths[ i ] }
 		>
@@ -70,10 +70,9 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 					const { Component, metadata } = overrideComponents[ i ];
 					return <Component { ...metadata } />;
 				} : undefined }
-				key={ widget.slug }
 				slug={ widget.slug }
 			/>
-		</WidgetWrapper>
+		</WidgetCellWrapper>
 	) );
 
 	// Here we render the bare output as it is guaranteed to render empty.

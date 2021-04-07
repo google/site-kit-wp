@@ -104,29 +104,6 @@ function getNextActiveWidget( offset, widgets, widgetStates ) {
 }
 
 /**
- * Gets a map of which columns are in which rows.
- *
- * @since n.e.x.t
- *
- * @param {Array.<number>} rows    The list of rows.
- * @param {Array.<number>} columns The list of columns.
- * @return {Object} Object where the keys are the rows and
- * 					the values are arrays of columns in that
- * 					row.
- */
-function getRowColumnMap( rows, columns ) {
-	const rowColMap = {};
-	rows.forEach( ( row, index ) => {
-		if ( rowColMap[ row ] ) {
-			rowColMap[ row ].push( columns[ index ] );
-		} else {
-			rowColMap[ row ] = [ columns[ index ] ];
-		}
-	} );
-	return rowColMap;
-}
-
-/**
  * Gets widget class names as well as column widths and row indexes for an area.
  *
  * @since 1.25.0
@@ -182,9 +159,7 @@ export function getWidgetLayout( widgets, widgetStates ) {
 		// Grab the width of the first size in the sizes list, it's either the default one or the best suiting to the current row.
 		const width = sizes[ 0 ].width;
 
-		// Populate initial column width and row index for the widget.
-		// These may be corrected below in certain situations.
-		columnWidths.push( WIDTH_GRID_COUNTER_MAP[ width ] );
+		// Populate row index for the widget.
 		rowIndexes.push( rowIndex );
 
 		// Increase column counter based on width.
@@ -202,18 +177,7 @@ export function getWidgetLayout( widgets, widgetStates ) {
 			// If the column count without the overflowing widget is exactly 9, expand
 			// the widths of these widgets slightly to fill the entire 12 columns.
 			if ( counter === 9 ) {
-				// First zip the rows and columns
-				const rowColMap = getRowColumnMap( rowIndexes, columnWidths );
-				// Extract the columns on the current row to be resized (we
-				// don't want to include the overflowing widget or previously
-				// calculated rows)
-				let resizeRow = rowColMap[ rowIndex ];
-				// Resize them
-				[ resizeRow, counter ] = resizeColumns( resizeRow, counter );
-				// Insert the resized row back in
-				rowColMap[ rowIndex ] = resizeRow;
-				// Update the columnWidths with the resized row
-				columnWidths = Object.values( rowColMap ).flat();
+				[ columnWidths, counter ] = resizeColumns( columnWidths, counter );
 			}
 
 			// See above, initial counter for the next row of widgets.

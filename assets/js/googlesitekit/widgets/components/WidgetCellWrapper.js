@@ -1,5 +1,5 @@
 /**
- * WidgetWrapper component.
+ * WidgetCellWrapper component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -27,7 +27,7 @@ import PropTypes from 'prop-types';
 import { HIDDEN_CLASS } from '../util/constants';
 import { Cell } from '../../../material-components';
 
-const WidgetWrapper = ( { gridColumnWidth, children } ) => {
+const WidgetCellWrapper = ( { gridColumnWidth, children } ) => {
 	if ( 0 === gridColumnWidth ) {
 		// Widget with columnWidth of 0 should be hidden
 		return (
@@ -37,7 +37,8 @@ const WidgetWrapper = ( { gridColumnWidth, children } ) => {
 		);
 	}
 
-	if ( gridColumnWidth === 3 || gridColumnWidth === 4 ) {
+	// In practice this will be 3 or 4
+	if ( gridColumnWidth < 6 ) {
 		return (
 			<Cell lgSize={ gridColumnWidth } mdSize={ 4 } smSize={ 2 }>
 				{ children }
@@ -45,7 +46,8 @@ const WidgetWrapper = ( { gridColumnWidth, children } ) => {
 		);
 	}
 
-	if ( gridColumnWidth === 6 || gridColumnWidth === 8 ) {
+	// In practice this will be 6 or 8
+	if ( gridColumnWidth <= 8 ) {
 		return (
 			<Cell lgSize={ gridColumnWidth } mdSize={ 8 }>
 				{ children }
@@ -61,9 +63,9 @@ const WidgetWrapper = ( { gridColumnWidth, children } ) => {
 	);
 };
 
-WidgetWrapper.propTypes = {
+WidgetCellWrapper.propTypes = {
 	gridColumnWidth: PropTypes.number.isRequired,
 	children: PropTypes.element.isRequired,
 };
 
-export default WidgetWrapper;
+export default WidgetCellWrapper;
