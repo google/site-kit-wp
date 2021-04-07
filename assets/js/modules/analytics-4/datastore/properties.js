@@ -123,7 +123,7 @@ const baseActions = {
 				return;
 			}
 
-			yield baseActions.waitForWebDataStreams( propertyID );
+			yield registry.dispatch( MODULES_ANALYTICS_4 ).waitForWebDataStreams( propertyID );
 
 			const webdatastream = registry.select( MODULES_ANALYTICS_4 ).getMatchingWebDataStream( propertyID );
 			if ( webdatastream ) {

@@ -103,6 +103,14 @@ const baseActions = {
 		return { response, error };
 	},
 
+	/**
+	 * Waits for web data streams to be loaded for a property.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} propertyID GA4 property ID.
+	 * @return {Object} Redux action.
+	 */
 	waitForWebDataStreams( propertyID ) {
 		return {
 			payload: { propertyID },
@@ -113,17 +121,17 @@ const baseActions = {
 
 const baseControls = {
 	[ WAIT_FOR_WEBDATASTREAMS ]: createRegistryControl( ( { select, subscribe } ) => {
-		return ( { payload: { propertyID } } ) => {
-			select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+		return ( { payload } ) => {
+			const { propertyID } = payload;
+			const areLoaded = () => select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID ) !== undefined;
 
-			const isResolved = () => select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getWebDataStreams', [ propertyID ] );
-			if ( isResolved() ) {
+			if ( areLoaded() ) {
 				return true;
 			}
 
 			return new Promise( ( resolve ) => {
 				const unsubscribe = subscribe( () => {
-					if ( isResolved() ) {
+					if ( areLoaded() ) {
 						unsubscribe();
 						resolve();
 					}
