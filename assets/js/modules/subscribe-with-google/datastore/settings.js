@@ -30,6 +30,11 @@ import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-
 import { STORE_NAME } from './constants';
 import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
+import { isValidProducts, isValidPublicationID } from '../util/validation';
+
+// Invariant error messages.
+export const INVARIANT_INVALID_PUBLICATION_ID = 'a valid publicationID is required';
+export const INVARIANT_INVALID_PRODUCTS = 'a valid products string is required';
 
 export async function submitChanges( { select, dispatch } ) {
 	// This action shouldn't be called if settings haven't changed,
@@ -57,9 +62,17 @@ export function validateCanSubmitChanges( select ) {
 	const {
 		haveSettingsChanged,
 		isDoingSubmitChanges,
+		getProducts,
+		getPublicationID,
 	} = strictSelect( STORE_NAME );
 
 	// Note: these error messages are referenced in test assertions.
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+
+	const publicationID = getPublicationID();
+	invariant( isValidPublicationID( publicationID ), INVARIANT_INVALID_PUBLICATION_ID );
+
+	const products = getProducts();
+	invariant( isValidProducts( products ), INVARIANT_INVALID_PRODUCTS );
 }

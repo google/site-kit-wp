@@ -20,20 +20,26 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import defaultModules from '../../../googlesitekit/modules/datastore/__fixtures__';
 import { createTestRegistry, muteFetch, provideModules, unsubscribeFromAll } from '../../../../../tests/js/utils';
 import { createCacheKey } from '../../../googlesitekit/api';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME } from './constants';
+import { INVARIANT_INVALID_PRODUCTS, INVARIANT_INVALID_PUBLICATION_ID } from './settings';
 
 describe( 'modules/tagmanager settings', () => {
 	let registry;
 
+	const defaultSettings = {
+		products: '',
+		publicationID: '',
+	};
+
 	const validSettings = {
-		accountID: '100',
-		containerID: 'GTM-WEB1234',
-		internalContainerID: '300',
-		useSnippet: true,
+		products: 'news',
+		publicationID: 'publisher.com',
 	};
 
 	const WPError = {
@@ -122,6 +128,57 @@ describe( 'modules/tagmanager settings', () => {
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( ( await getItem( cacheKey ) ).value ).toBeFalsy();
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'isDoingSubmitChanges', () => {
+			it( 'returns true while submitting changes', async () => {
+				registry.dispatch( STORE_NAME ).receiveGetSettings( validSettings );
+
+				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
+
+				const promise = registry.dispatch( STORE_NAME ).submitChanges();
+
+				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
+
+				await promise;
+
+				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
+			} );
+		} );
+
+		describe( 'canSubmitChanges', () => {
+			beforeEach( () => {
+				// Preload default settings to prevent the resolver from making unexpected requests
+				// as this is covered in settings store tests.
+				registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: false } );
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( CORE_MODULES ).receiveGetModules( defaultModules );
+			} );
+
+			it( 'requires a valid publicationID', () => {
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+
+				registry.dispatch( STORE_NAME ).setPublicationID( '...' );
+
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_PUBLICATION_ID );
+			} );
+
+			it( 'requires a valid products string', () => {
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+
+				registry.dispatch( STORE_NAME ).setProducts( ' ' );
+
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_PRODUCTS );
 			} );
 		} );
 	} );
