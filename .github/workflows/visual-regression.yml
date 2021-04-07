@@ -9,6 +9,8 @@ on:
     paths:
       - '.github/workflows/visual-regression.yml'
       - 'assets/**'
+      - '!assets/**/__tests__/**/*.js'
+      - '!assets/**/test/*.js'
       - '!assets/**/*.test.js'
       - 'tests/backstop/**'
       - '.storybook/**'
