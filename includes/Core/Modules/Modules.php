@@ -976,7 +976,7 @@ final class Modules {
 	}
 
 	/**
-	 * Sets the option containing the active modules.
+	 * Sets the option containing all the active modules.
 	 *
 	 * @since 1.0.0
 	 *
