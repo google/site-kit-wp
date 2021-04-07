@@ -104,5 +104,5 @@ export default function Table( { report } ) {
 }
 
 Table.propTypes = {
-	report: PropTypes.object.isRequired,
+	report: PropTypes.arrayOf( PropTypes.object ).isRequired,
 };

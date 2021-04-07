@@ -75,7 +75,11 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 	// A restricted metrics error will cause this value to change in the resolver
 	// so this check should happen before an error, which is only relevant if they are linked.
 	if ( ! isAdSenseLinked ) {
-		return <AdSenseLinkCTA />;
+		return (
+			<Widget Header={ Header } >
+				<AdSenseLinkCTA />
+			</Widget>
+		);
 	}
 
 	if ( isLoading ) {
@@ -89,7 +93,7 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 	if ( error && ! isRestrictedMetricsError( error ) ) {
 		return (
 			<Widget Header={ Header } >
-				<WidgetReportError error={ error } moduleSlug="adsense" />;
+				<WidgetReportError error={ error } moduleSlug="adsense" />
 			</Widget> );
 	}
 
