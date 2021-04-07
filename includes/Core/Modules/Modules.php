@@ -968,21 +968,19 @@ final class Modules {
 	private function get_active_modules_option() {
 		$option = $this->options->get( self::OPTION_ACTIVE_MODULES );
 
-		if ( is_array( $option ) ) {
-			if ( in_array( 'analytics', $option, true ) ) {
-				$option[] = 'analytics-4';
-			}
-
-			return $option;
+		if ( ! is_array( $option ) ) {
+			$option = $this->options->get( 'googlesitekit-active-modules' );
 		}
 
-		$legacy_option = $this->options->get( 'googlesitekit-active-modules' );
-
-		if ( is_array( $legacy_option ) ) {
-			return $legacy_option;
+		if ( ! is_array( $option ) ) {
+			$option = array();
 		}
 
-		return array();
+		if ( in_array( 'analytics', $option, true ) ) {
+			$option[] = 'analytics-4';
+		}
+
+		return $option;
 	}
 
 	/**
