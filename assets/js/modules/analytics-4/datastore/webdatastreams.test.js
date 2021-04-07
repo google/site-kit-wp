@@ -20,9 +20,9 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { createTestRegistry, muteFetch, subscribeUntil, unsubscribeFromAll } from 'tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import * as fixtures from './__fixtures__';
+import { createTestRegistry, freezeFetch, provideSiteInfo, subscribeUntil, unsubscribeFromAll } from 'tests/js/utils';
 
 describe( 'modules/analytics-4 webdatastreams', () => {
 	let registry;
@@ -92,7 +92,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				// The response isn't important for the test here and we intentionally don't wait for it,
 				// but the fixture is used to prevent an invariant error as the received webdatastreams
 				// taken from `response.webDataStreams` are required to be an array.
-				muteFetch( webDataStreamsEndpoint, fixtures.webDataStreams );
+				freezeFetch( webDataStreamsEndpoint );
 
 				const webdatastreams = registry.select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
 				// No webdatastreams should have been added yet, as the property creation failed.
@@ -163,6 +163,45 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				const webdatastreams = registry.select( MODULES_ANALYTICS_4 ).getWebDataStreams( fakePropertyID );
 				expect( webdatastreams ).toBeUndefined();
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getMatchingWebDataStream', () => {
+			const propertyID = '12345';
+
+			it( 'should return undefined if web data streams arent loaded yet', () => {
+				freezeFetch( webDataStreamsEndpoint );
+
+				const datastream = registry.select( MODULES_ANALYTICS_4 ).getMatchingWebDataStream( propertyID );
+				expect( datastream ).toBeUndefined();
+			} );
+
+			it( 'should return NULL when no datastreams are matched', () => {
+				provideSiteInfo( registry, { referenceSiteURL: 'http://example.net' } );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
+
+				const datastream = registry.select( MODULES_ANALYTICS_4 ).getMatchingWebDataStream( propertyID );
+				expect( datastream ).toBeNull();
+			} );
+
+			it( 'should return the correct datastream when reference site URL matches exactly', () => {
+				provideSiteInfo( registry, { referenceSiteURL: 'http://example.com' } );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
+
+				const datastream = registry.select( MODULES_ANALYTICS_4 ).getMatchingWebDataStream( propertyID );
+				expect( datastream ).toEqual( fixtures.webDataStreams.webDataStreams[ 0 ] );
+			} );
+
+			it.each( [
+				[ 'protocol differences', 'https://example.org' ],
+				[ '"www." prefix', 'http://www.example.org' ],
+				[ 'trailing slash', 'https://www.example.org/' ],
+			] )( 'should return the correct datastream ignoring %s', ( _, referenceSiteURL ) => {
+				provideSiteInfo( registry, { referenceSiteURL } );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
+
+				const datastream = registry.select( MODULES_ANALYTICS_4 ).getMatchingWebDataStream( propertyID );
+				expect( datastream ).toEqual( fixtures.webDataStreams.webDataStreams[ 1 ] );
 			} );
 		} );
 	} );
