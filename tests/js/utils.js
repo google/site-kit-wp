@@ -130,6 +130,7 @@ export const provideSiteConnection = ( registry, extraData = {} ) => {
 		resettable: defaultConnected,
 		setupCompleted: defaultConnected,
 		hasConnectedAdmins: defaultConnected,
+		hasMultipleAdmins: false,
 		ownerID: defaultConnected ? 1 : 0,
 	};
 
@@ -157,6 +158,7 @@ export const provideUserAuthentication = ( registry, extraData = {} ) => {
 		grantedScopes: [],
 		unsatisfiedScopes: [],
 		needsReauthentication: false,
+		disconnectedReason: '',
 	};
 
 	const mergedData = { ...defaults, ...extraData };
