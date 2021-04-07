@@ -28,6 +28,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+const { createRegistryControl } = Data;
 
 const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',
@@ -78,8 +79,12 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 	},
 } );
 
+// Actions
+const WAIT_FOR_WEBDATASTREAMS = 'WAIT_FOR_WEBDATASTREAMS';
+
 const baseInitialState = {
 	webdatastreams: {},
+	isAwaitingWebDataStreamsCompletion: {},
 };
 
 const baseActions = {
@@ -97,9 +102,33 @@ const baseActions = {
 		const { response, error } = yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream( propertyID );
 		return { response, error };
 	},
+
+	waitForWebDatastreams( propertyID ) {
+		return {
+			payload: { propertyID },
+			type: WAIT_FOR_WEBDATASTREAMS,
+		};
+	},
 };
 
 const baseControls = {
+	[ WAIT_FOR_WEBDATASTREAMS ]: createRegistryControl( ( { select, subscribe } ) => {
+		return ( { payload: { propertyID } } ) => {
+			const isResolved = () => select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getWebDataStreams', [ propertyID ] );
+			if ( isResolved() ) {
+				return true;
+			}
+
+			return new Promise( ( resolve ) => {
+				const unsubscribe = subscribe( () => {
+					if ( isResolved() ) {
+						unsubscribe();
+						resolve();
+					}
+				} );
+			} );
+		};
+	} ),
 };
 
 const baseReducer = ( state, { type } ) => {
@@ -157,4 +186,3 @@ export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
 export default store;
-
