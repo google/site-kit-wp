@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
@@ -45,6 +47,11 @@ final class Analytics_4 extends Module
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
+
+	/**
+	 * Module slug name.
+	 */
+	const MODULE_SLUG = 'analytics-4';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -269,7 +276,7 @@ final class Analytics_4 extends Module
 	 */
 	protected function setup_info() {
 		return array(
-			'slug'        => 'analytics-4',
+			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Analytics 4 (Alpha)', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.', 'google-site-kit' ),
 			'cta'         => __( 'Get to know your customers.', 'google-site-kit' ),
