@@ -27,8 +27,9 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-const { createRegistryControl } = Data;
+const { createRegistryControl, createRegistrySelector } = Data;
 
 const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',
@@ -84,7 +85,6 @@ const WAIT_FOR_WEBDATASTREAMS = 'WAIT_FOR_WEBDATASTREAMS';
 
 const baseInitialState = {
 	webdatastreams: {},
-	isAwaitingWebDataStreamsCompletion: {},
 };
 
 const baseActions = {
@@ -103,7 +103,7 @@ const baseActions = {
 		return { response, error };
 	},
 
-	waitForWebDatastreams( propertyID ) {
+	waitForWebDataStreams( propertyID ) {
 		return {
 			payload: { propertyID },
 			type: WAIT_FOR_WEBDATASTREAMS,
@@ -163,6 +163,33 @@ const baseSelectors = {
 	getWebDataStreams( state, propertyID ) {
 		return state.webdatastreams[ propertyID ];
 	},
+
+	/**
+	 * Gets matched web data stream for selected property.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} propertyID The GA4 property ID to find matched web data stream.
+	 * @return {(Object|null|undefined)} A web data stream object if found, otherwise null; `undefined` if web data streams are not loaded.
+	 */
+	getMatchingWebDataStream: createRegistrySelector( ( select ) => ( state, propertyID ) => {
+		const datastreams = select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+		if ( datastreams === undefined ) {
+			return undefined;
+		}
+
+		if ( Array.isArray( datastreams ) ) {
+			const url = select( CORE_SITE ).getReferenceSiteURL();
+			for ( const datastream of datastreams ) {
+				if ( datastream.defaultUri === url ) {
+					return datastream;
+				}
+			}
+		}
+
+		return null;
+	} ),
 };
 
 const store = Data.combineStores(
