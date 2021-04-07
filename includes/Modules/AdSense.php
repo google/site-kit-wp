@@ -546,9 +546,7 @@ final class AdSense extends Module
 			)
 		);
 
-		if ( ! in_array( '', $hostnames, true ) ) {
-			$opt_params['filter'] = join( ',', $hostnames );
-		}
+		$opt_params['filter'] = join( ',', $hostnames );
 
 		$service = $this->get_service( 'adsense' );
 		return $service->accounts_reports->generate( $account_id, $args['start_date'], $args['end_date'], $opt_params );
