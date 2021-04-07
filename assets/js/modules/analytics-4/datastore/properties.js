@@ -26,8 +26,9 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { isValidPropertySelection } from '../utils/validation';
 
 const fetchGetPropertiesStore = createFetchStore( {
 	baseName: 'getProperties',
@@ -96,6 +97,42 @@ const baseActions = {
 
 		const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
 		return { response, error };
+	},
+
+	/**
+	 * Sets the given property and related fields in the store.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} propertyID GA4 property ID.
+	 * @return {Object} A Generator function.
+	 */
+	selectProperty( propertyID ) {
+		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
+
+		return ( function* () {
+			const registry = yield Data.commonActions.getRegistry();
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				propertyID,
+				webDataStreamID: '',
+				measurementID: '',
+			} );
+
+			if ( PROPERTY_CREATE === propertyID ) {
+				return;
+			}
+
+			yield baseActions.waitForWebDataStreams( propertyID );
+
+			const webdatastream = registry.select( MODULES_ANALYTICS_4 ).getMatchingWebDataStream( propertyID );
+			if ( webdatastream ) {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					webDataStreamID: webdatastream.name.split( '/' ).pop(),
+					measurementID: webdatastream.measurementId, // eslint-disable-line sitekit/acronym-case
+				} );
+			}
+		} );
 	},
 };
 
