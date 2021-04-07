@@ -53,6 +53,10 @@ export default function UserInputKeywords( { slug, max } ) {
 		values.push( '' );
 	}
 
+	// Store values in local state to prevent
+	// https://github.com/google/site-kit-wp/issues/2900#issuecomment-814843972.
+	const [ localValues, setLocalValues ] = useState( [ '' ] );
+
 	// Need to make sure that dependencies list always has the same number of elements.
 	const dependencies = values.concat( Array( max ) ).slice( 0, max );
 
@@ -92,6 +96,7 @@ export default function UserInputKeywords( { slug, max } ) {
 			newKeywords = newKeywords.split( EOT ).slice( 0, max );
 		}
 
+		setLocalValues( newKeywords );
 		setUserInputSetting( slug, newKeywords );
 	}, [ slug ] );
 
@@ -142,11 +147,11 @@ export default function UserInputKeywords( { slug, max } ) {
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 			<div ref={ keywordsContainer } className="googlesitekit-user-input__text-options">
-				{ values.map( ( value, i ) => (
+				{ localValues.map( ( value, i ) => (
 					<div
 						key={ i }
 						className={ classnames( {
-							'googlesitekit-user-input__text-option': values.length > i + 1 || value.length > 0,
+							'googlesitekit-user-input__text-option': localValues.length > i + 1 || value.length > 0,
 						} ) }
 					>
 						<VisuallyHiden>
@@ -171,7 +176,7 @@ export default function UserInputKeywords( { slug, max } ) {
 							/>
 						</TextField>
 
-						{ ( value.length > 0 || i + 1 < values.length ) && (
+						{ ( value.length > 0 || i + 1 < localValues.length ) && (
 							<Button
 								text
 								icon={ <CloseIcon width="11" height="11" /> }
