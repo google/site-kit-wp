@@ -538,8 +538,16 @@ final class AdSense extends Module
 		}
 
 		$host = wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+
 		if ( ! empty( $host ) ) {
-			$opt_params['filter'] = 'DOMAIN_NAME==' . $host;
+			if ( strpos( $host, 'www.' ) !== false ) {
+				$host_with_www    = $host;
+				$host_without_www = str_replace( 'www.', '', $host );
+			} else {
+				$host_with_www    = 'www.' . $host;
+				$host_without_www = $host;
+			}
+			$opt_params['filter'] = 'DOMAIN_NAME==' . $host_with_www . ',DOMAIN_NAME==' . $host_without_www;
 		}
 
 		$service = $this->get_service( 'adsense' );

@@ -696,13 +696,14 @@ class AnalyticsTest extends TestCase {
 		$this->assertTrue( is_array( $filters ) );
 		$this->assertEquals( 1, count( $filters ) );
 		$this->assertEquals( 'ga:hostname', $filters[0]->getDimensionName() );
-		$this->assertEquals( 'EXACT', $filters[0]->getOperator() );
+		$this->assertEquals( 'IN_LIST', $filters[0]->getOperator() );
 
 		$hostname    = wp_parse_url( $context->get_reference_site_url(), PHP_URL_HOST );
 		$expressions = $filters[0]->getExpressions();
+
 		$this->assertTrue( is_array( $expressions ) );
-		$this->assertEquals( 1, count( $expressions ) );
-		$this->assertEquals( $hostname, $expressions[0] );
+		$this->assertEquals( 2, count( $expressions ) );
+		$this->assertContains( $hostname, $expressions );
 	}
 
 }
