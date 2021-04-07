@@ -28,6 +28,7 @@ import { SettingsView } from './components/settings';
 import DashboardImpressionsWidget from './components/dashboard/DashboardImpressionsWidget';
 import DashboardClicksWidget from './components/dashboard/DashboardClicksWidget';
 import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopularKeywordsWidget';
+import ModulePopularKeywordsWidget from './components/module/ModulePopularKeywordsWidget';
 import ModuleOverviewWidget from './components/module/ModuleOverviewWidget';
 import {
 	AREA_DASHBOARD_POPULARITY,
@@ -114,5 +115,17 @@ export const registerWidgets = ( widgets ) => {
 			title: __( 'Overview', 'google-site-kit' ),
 		},
 		CONTEXT_MODULE_SEARCH_CONSOLE,
+	);
+	widgets.registerWidget(
+		'searchConsoleModulePopularKeywords',
+		{
+			Component: ModulePopularKeywordsWidget,
+			width: [ widgets.WIDGET_WIDTHS.FULL ],
+			priority: 2,
+			wrapWidget: false,
+		},
+		[
+			AREA_MODULE_SEARCH_CONSOLE_MAIN,
+		],
 	);
 };
