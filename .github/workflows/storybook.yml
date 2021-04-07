@@ -9,6 +9,7 @@ on:
     paths:
       - '.github/workflows/storybook.yml'
       - 'assets/**'
+      - '!assets/**/*.test.js'
       - '.storybook/**'
       - '!.storybook/storybook-data.js'
       - '**.scss'
@@ -20,6 +21,7 @@ on:
     paths:
       - '.github/workflows/storybook.yml'
       - 'assets/**'
+      - '!assets/**/*.test.js'
       - '.storybook/**'
       - '!.storybook/storybook-data.js'
       - '**.scss'
