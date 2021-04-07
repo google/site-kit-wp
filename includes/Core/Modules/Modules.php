@@ -976,8 +976,10 @@ final class Modules {
 			$option = array();
 		}
 
-		if ( in_array( 'analytics', $option, true ) ) {
-			$option[] = 'analytics-4';
+		$includes_analytics   = in_array( Analytics::MODULE_SLUG, $option, true );
+		$includes_analytics_4 = in_array( Analytics_4::MODULE_SLUG, $option, true );
+		if ( $includes_analytics && ! $includes_analytics_4 ) {
+			$option[] = Analytics_4::MODULE_SLUG;
 		}
 
 		return $option;
@@ -991,6 +993,11 @@ final class Modules {
 	 * @param array $option List of active module slugs.
 	 */
 	private function set_active_modules_option( array $option ) {
+		if ( in_array( Analytics_4::MODULE_SLUG, $option, true ) ) {
+			unset( $option[ array_search( Analytics_4::MODULE_SLUG, $option, true ) ] );
+		}
+
 		$this->options->set( self::OPTION_ACTIVE_MODULES, $option );
 	}
+
 }
