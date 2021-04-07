@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from './constants';
 import { createTestRegistry, muteFetch, subscribeUntil, unsubscribeFromAll } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -98,6 +98,28 @@ describe( 'modules/analytics-4 properties', () => {
 				// No properties should have been added yet, as the property creation failed.
 				expect( properties ).toBeUndefined();
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'selectProperty', () => {
+			it( 'should throw if property ID is invalid', () => {
+				const callback = () => registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( '' );
+				expect( callback ).toThrow( 'A valid propertyID selection is required.' );
+			} );
+
+			it( 'should set module settings correctly when PROPERTY_CREATE is passed', async () => {
+				const settings = {
+					propertyID: '12345',
+					webDataStreamID: '1000',
+					measurementID: 'abcd',
+				};
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( settings );
+				await registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( PROPERTY_CREATE );
+
+				expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( PROPERTY_CREATE );
+				expect( registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID() ).toBe( '' );
+				expect( registry.select( MODULES_ANALYTICS_4 ).getMeasurementID() ).toBe( '' );
 			} );
 		} );
 	} );

@@ -132,7 +132,7 @@ const baseActions = {
 					measurementID: webdatastream.measurementId, // eslint-disable-line sitekit/acronym-case
 				} );
 			}
-		} );
+		}() );
 	},
 };
 
