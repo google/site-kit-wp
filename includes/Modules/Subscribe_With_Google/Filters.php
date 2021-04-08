@@ -55,8 +55,7 @@ final class Filters {
 			return $content;
 		}
 
-		// Verify this post is supposed to be locked, even.
-		// If it's free, just bail.
+		// Bail if the post is free.
 		$free_key = Key::from( 'free' );
 		$free     = get_post_meta( get_the_ID(), $free_key, true );
 		if ( 'true' === $free ) {
