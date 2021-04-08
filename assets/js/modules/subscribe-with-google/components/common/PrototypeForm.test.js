@@ -26,43 +26,49 @@ import { STORE_NAME } from '../../datastore/constants';
 
 describe( 'PrototypeForm', () => {
 	let registry;
+
+	const defaultSettings = {
+		publicationID: '',
+		products: '',
+	};
+
+	const validSettings = {
+		publicationID: 'example.com',
+		products: 'basic',
+	};
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// Prevent extra fetches during tests.
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
-		registry.dispatch( STORE_NAME ).setSettings( {} );
+		registry.dispatch( STORE_NAME ).setSettings( defaultSettings );
 	} );
 
 	describe( '"Done" button', () => {
-		it( 'hides when not passed a `doneCallback` prop', () => {
-			const { queryByRole } = render( <PrototypeForm />, { registry } );
-			const doneButton = queryByRole( 'button', { name: /Done/i } );
-			expect( doneButton ).toBeNull();
-		} );
-
-		it( 'shows when passed a `doneCallback` prop', () => {
+		it( 'renders when `doneCallback` prop is present', () => {
 			const doneCallbackMock = jest.fn();
 			const { getByRole } = render( <PrototypeForm doneCallback={ doneCallbackMock } />, { registry } );
 			const doneButton = getByRole( 'button', { name: /Done/i } );
 			expect( doneButton ).toBeInTheDocument();
 		} );
 
-		it( 'disables when required fields are missing', () => {
-			const doneCallbackMock = jest.fn();
-			const { getByRole } = render( <PrototypeForm doneCallback={ doneCallbackMock } />, { registry } );
-			const doneButton = getByRole( 'button', { name: /Done/i } );
-			expect( doneButton ).toBeDisabled();
+		it( 'does not render when `doneCallback` prop is not present', () => {
+			const { queryByRole } = render( <PrototypeForm />, { registry } );
+			const doneButton = queryByRole( 'button', { name: /Done/i } );
+			expect( doneButton ).toBeNull();
 		} );
 
-		it( 'enables when required fields are present', () => {
-			registry.dispatch( STORE_NAME ).setSettings( {
-				publicationID: 'hello',
-				products: 'hello',
-			} );
-			const doneCallbackMock = jest.fn();
-			const { getByRole } = render( <PrototypeForm doneCallback={ doneCallbackMock } />, { registry } );
-			const doneButton = getByRole( 'button', { name: /Done/i } );
+		it( 'is enabled by valid settings', () => {
+			registry.dispatch( STORE_NAME ).setSettings( validSettings );
+			const doneButton = render( <PrototypeForm doneCallback={ jest.fn() } />, { registry } )
+				.getByRole( 'button', { name: /Done/i } );
 			expect( doneButton ).toBeEnabled();
+		} );
+
+		it( 'is disabled by invalid settings', () => {
+			const doneButton = render( <PrototypeForm doneCallback={ jest.fn() } />, { registry } )
+				.getByRole( 'button', { name: /Done/i } );
+			expect( doneButton ).toBeDisabled();
 		} );
 	} );
 } );
