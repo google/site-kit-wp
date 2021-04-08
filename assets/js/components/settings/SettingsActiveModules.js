@@ -79,7 +79,7 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 
 	const sortedModules = Object.values( modules )
 		.filter( ( module ) => ! module.internal && module.active )
-		.sort( ( module1, module2 ) => module1.order - module2.order );
+		.sort( ( a, b ) => a.order - b.order );
 
 	return (
 		<Layout>
