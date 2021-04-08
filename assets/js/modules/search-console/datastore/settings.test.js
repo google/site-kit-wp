@@ -77,7 +77,7 @@ describe( 'modules/search-console settings', () => {
 	} );
 
 	describe( 'validateCanSubmitChanges', () => {
-		it( 'should throw an error if propertID is invalid', () => {
+		it( 'should throw an error if propertyID is invalid', () => {
 			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 				propertyID: '',
 			} );
@@ -85,7 +85,7 @@ describe( 'modules/search-console settings', () => {
 			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
 		} );
 
-		it( 'should throw nothing if all settings are valid', () => {
+		it( 'should not throw if propertyID is valid', () => {
 			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 				propertyID: 'http://example.com/',
 			} );

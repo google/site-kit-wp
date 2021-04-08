@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { createTestRegistry, subscribeUntil, unsubscribeFromAll } from '../../../../../tests/js/utils';
+import { createTestRegistry, untilResolved, unsubscribeFromAll } from '../../../../../tests/js/utils';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 import * as fixtures from './__fixtures__';
 
@@ -56,7 +56,7 @@ describe( 'modules/search-console properties', () => {
 				const initialProperties = registry.select( MODULES_SEARCH_CONSOLE ).getMatchedProperties();
 				expect( initialProperties ).toBeUndefined();
 
-				await subscribeUntil( registry, () => registry.select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getMatchedProperties' ) );
+				await untilResolved( registry, MODULES_SEARCH_CONSOLE ).getMatchedProperties();
 
 				const properties = registry.select( MODULES_SEARCH_CONSOLE ).getMatchedProperties();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -70,7 +70,7 @@ describe( 'modules/search-console properties', () => {
 
 				const properties = registry.select( MODULES_SEARCH_CONSOLE ).getMatchedProperties();
 
-				await subscribeUntil( registry, () => registry.select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getMatchedProperties' ) );
+				await untilResolved( registry, MODULES_SEARCH_CONSOLE ).getMatchedProperties();
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( properties ).toEqual( fixtures.matchedProperties );
@@ -89,7 +89,7 @@ describe( 'modules/search-console properties', () => {
 				} );
 
 				registry.select( MODULES_SEARCH_CONSOLE ).getMatchedProperties();
-				await subscribeUntil( registry, () => registry.select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getMatchedProperties' ) );
+				await untilResolved( registry, MODULES_SEARCH_CONSOLE ).getMatchedProperties();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
