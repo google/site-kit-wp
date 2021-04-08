@@ -1,5 +1,5 @@
 /**
- * AnalyticsAdSenseDashboardWidgetTopPagesTable component.
+ * LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -39,7 +39,7 @@ import Link from '../../../../components/Link';
 import ReportTable from '../../../../components/ReportTable';
 const { useSelect } = Data;
 
-const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
+const LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 	// Do not return zero data callout here since it will already be
 	// present on the page from other sources.
 	if ( isDataZeroForReporting( data ) ) {
@@ -145,7 +145,7 @@ const getDataError = ( data ) => {
 		return data.message;
 	}
 
-	// Legacy errors? Maybe this is never hit but better be safe than sorry.
+	// Legacy errors? Maybe this is never reached but better be safe than sorry.
 	if ( data.error ) {
 		if ( data.error.message ) {
 			return data.error.message;
@@ -162,7 +162,7 @@ const getDataError = ( data ) => {
 };
 
 export default withData(
-	AnalyticsAdSenseDashboardWidgetTopPagesTable,
+	LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable,
 	[
 		{
 			type: TYPE_MODULES,
