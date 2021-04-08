@@ -110,19 +110,15 @@ final class EditPost {
 		$product_key = Key::from( 'product' );
 		$free_key    = Key::from( 'free' );
 		$nonce_key   = Key::from( 'nonce' );
-		// phpcs:disable
-		// There might be a bug in one of the WP linters.
-		// We can't upgrade them while supporting older versions of PHP it seems.
 		if (
 			! isset( $_POST[ $nonce_key ] ) ||
 			! isset( $_POST[ $product_key ] )
 		) {
 			return;
 		}
-		$product   = $_POST[ $product_key ];
-		$free      = isset( $_POST[ $free_key ] ) ? $_POST[ $free_key ] : 'false';
-		$swg_nonce = $_POST[ $nonce_key ];
-		// phpcs:enable
+		$product   = sanitize_key( $_POST[ $product_key ] );
+		$free      = isset( $_POST[ $free_key ] ) ? sanitize_key( $_POST[ $free_key ] ) : 'false';
+		$swg_nonce = sanitize_key( $_POST[ $nonce_key ] );
 
 		// Verify settings nonce.
 		if ( ! wp_verify_nonce( sanitize_key( $swg_nonce ), Key::from( 'saving_settings' ) ) ) {
