@@ -66,7 +66,7 @@ final class Filters {
 		$more_tag         = '<span id="more-' . get_the_ID() . '"></span>';
 		$content_segments = explode( $more_tag, $content );
 
-		// Add Paywall wrapper & prompt.
+		// Wrap locked content.
 		if ( count( $content_segments ) > 1 ) {
 			$content_segments[1] = '
 <div class="swg--locked-content" subscriptions-section="content">
