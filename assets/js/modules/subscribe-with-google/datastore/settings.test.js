@@ -48,6 +48,8 @@ describe( 'modules/tagmanager settings', () => {
 		data: { status: 500 },
 	};
 
+	const fetchPattern = /^\/google-site-kit\/v1\/modules\/subscribe-with-google\/data\/settings/;
+
 	beforeAll( () => {
 		API.setUsingCache( false );
 	} );
@@ -70,14 +72,17 @@ describe( 'modules/tagmanager settings', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/subscribe-with-google\/data\/settings/,
-					{ body: validSettings, status: 200 }
+					fetchPattern,
+					{
+						body: validSettings,
+						status: 200,
+					}
 				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/subscribe-with-google\/data\/settings/,
+					fetchPattern,
 					{
 						body: { data: validSettings },
 					}
@@ -90,14 +95,14 @@ describe( 'modules/tagmanager settings', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/subscribe-with-google\/data\/settings/,
+					fetchPattern,
 					{ body: WPError, status: 500 }
 				);
 
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/subscribe-with-google\/data\/settings/,
+					fetchPattern,
 					{
 						body: { data: validSettings },
 					}
@@ -109,7 +114,7 @@ describe( 'modules/tagmanager settings', () => {
 			it( 'invalidates module cache on success', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				muteFetch( /^\/google-site-kit\/v1\/modules\/subscribe-with-google\/data\/settings/ );
+				muteFetch( fetchPattern );
 				const cacheKey = createCacheKey( 'modules', 'subscribe-with-google', 'arbitrary-datapoint' );
 				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
 				expect( ( await getItem( cacheKey ) ).value ).not.toBeFalsy();
