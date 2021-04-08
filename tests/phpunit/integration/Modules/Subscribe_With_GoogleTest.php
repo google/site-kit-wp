@@ -22,15 +22,14 @@ use Google\Site_Kit\Tests\TestCase;
 class Subscribe_With_GoogleTest extends TestCase {
 
 	public function test_register() {
-		remove_all_actions( 'template_redirect' );
-		$subscribewithgoogle = new Subscribe_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$subscribewithgoogle->register();
-
 		remove_all_actions( 'wp_head' );
 
-		do_action( 'template_redirect' );
+		$subscribewithgoogle = new Subscribe_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$subscribewithgoogle->register();
 		$this->assertFalse( has_action( 'wp_head' ) );
 
+		// Add valid required settings.
 		$subscribewithgoogle->get_settings()->merge(
 			array(
 				'products'      => 'basic',
@@ -38,7 +37,7 @@ class Subscribe_With_GoogleTest extends TestCase {
 			)
 		);
 
-		do_action( 'template_redirect' );
+		$subscribewithgoogle->register();
 		$this->assertTrue( has_action( 'wp_head' ) );
 	}
 
