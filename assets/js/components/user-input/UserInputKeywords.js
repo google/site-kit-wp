@@ -55,7 +55,7 @@ export default function UserInputKeywords( { slug, max } ) {
 
 	// Store values in local state to prevent
 	// https://github.com/google/site-kit-wp/issues/2900#issuecomment-814843972.
-	const [ localValues, setLocalValues ] = useState( [ '' ] );
+	const [ localValues, setLocalValues ] = useState( values );
 
 	// Need to make sure that dependencies list always has the same number of elements.
 	const dependencies = values.concat( Array( max ) ).slice( 0, max );
