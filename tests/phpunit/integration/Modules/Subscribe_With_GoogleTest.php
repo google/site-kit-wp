@@ -23,11 +23,21 @@ class Subscribe_With_GoogleTest extends TestCase {
 
 	public function test_register() {
 		$subscribewithgoogle = new Subscribe_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		remove_all_filters( 'manage_posts_columns' );
-
 		$subscribewithgoogle->register();
+		remove_all_actions( 'wp_head' );
 
-		$this->assertTrue( has_filter( 'manage_posts_columns' ) );
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'wp_head' ) );
+
+		$subscribewithgoogle->get_settings()->merge(
+			array(
+				'products'      => 'basic',
+				'publicationID' => 'example.com',
+			)
+		);
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'wp_head' ) );
 	}
 
 	public function test_is_connected() {
