@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -59,7 +59,14 @@ export default function PropertySelect() {
 		>
 			{ ( matchedProperties || [] ).map( ( { siteURL } ) => (
 				<Option key={ siteURL } value={ siteURL }>
-					{ siteURL }
+					{
+						siteURL.startsWith( 'sc-domain:' )
+							? sprintf(
+								/* translators: %s: domain name */
+								__( '%s (domain property)', 'google-site-kit' ), siteURL.replace( /^sc-domain:/, '' )
+							)
+							: siteURL
+					}
 				</Option>
 			) ) }
 		</Select>

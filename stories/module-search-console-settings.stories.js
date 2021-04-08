@@ -77,7 +77,7 @@ storiesOf( 'Search Console Module/Settings', module )
 	.add( 'Edit, with all settings', ( args, { registry } ) => {
 		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 			...defaultSettings,
-			propertyID: 'http://example.com/',
+			propertyID: 'sc-domain:example.com',
 		} );
 		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetMatchedProperties( [
 			{
@@ -86,7 +86,11 @@ storiesOf( 'Search Console Module/Settings', module )
 			},
 			{
 				permissionLevel: 'siteFullUser',
-				siteURL: 'http://example.com/',
+				siteURL: 'http://example.net/',
+			},
+			{
+				permissionLevel: 'siteFullUser',
+				siteURL: 'sc-domain:example.com',
 			},
 		] );
 
