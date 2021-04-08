@@ -17,7 +17,7 @@
  */
 
 export { default as AnalyticsAdSenseDashboardWidgetLayout } from './AnalyticsAdSenseDashboardWidgetLayout';
-export { default as AnalyticsAdSenseDashboardWidgetTopPagesTable } from './AnalyticsAdSenseDashboardWidgetTopPagesTable';
+export { default as LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable } from './LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable';
 export { default as LegacyAnalyticsDashboardWidget } from './LegacyAnalyticsDashboardWidget';
 export { default as LegacyAnalyticsDashboardWidgetOverview } from './LegacyAnalyticsDashboardWidgetOverview';
 export { default as LegacyAnalyticsDashboardWidgetSiteStats } from './LegacyAnalyticsDashboardWidgetSiteStats';
@@ -32,3 +32,4 @@ export { default as LegacyAnalyticsDashboardWidgetPopularPagesTable } from './Le
 export { default as LegacyAnalyticsDashboardWidgetTopAcquisitionSources } from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 export { default as LegacyAnalyticsDashboardWidgetTopLevel } from './LegacyAnalyticsDashboardWidgetTopLevel';
 export { default as LegacyDashboardAcquisitionPieChart } from './LegacyDashboardAcquisitionPieChart';
+

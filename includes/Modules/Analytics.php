@@ -939,11 +939,21 @@ final class Analytics extends Module
 
 		$dimension_filter_clauses = array();
 
-		$hostname         = wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+		$hostnames = array_values(
+			array_unique(
+				array_map(
+					function ( $site_url ) {
+						return wp_parse_url( $site_url, PHP_URL_HOST );
+					},
+					$this->permute_site_url( $this->context->get_reference_site_url() )
+				)
+			)
+		);
+
 		$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
 		$dimension_filter->setDimensionName( 'ga:hostname' );
-		$dimension_filter->setOperator( 'EXACT' );
-		$dimension_filter->setExpressions( array( $hostname ) );
+		$dimension_filter->setOperator( 'IN_LIST' );
+		$dimension_filter->setExpressions( $hostnames );
 		$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
 		$dimension_filter_clause->setFilters( array( $dimension_filter ) );
 		$dimension_filter_clauses[] = $dimension_filter_clause;

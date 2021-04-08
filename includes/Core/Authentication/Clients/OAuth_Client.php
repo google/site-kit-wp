@@ -734,7 +734,7 @@ final class OAuth_Client {
 		 *
 		 * @since 1.3.0
 		 * @since 1.6.0 The $token_response parameter was added.
-		 * @since n.e.x.t The $scopes and $previous_scopes parameters were added.
+		 * @since 1.30.0 The $scopes and $previous_scopes parameters were added.
 		 *
 		 * @param array $token_response Token response data.
 		 * @param string[] $scopes List of scopes.
