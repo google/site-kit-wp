@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import defaultModules from '../../../googlesitekit/modules/datastore/__fixtures__';
-import { createTestRegistry, muteFetch, provideModules, unsubscribeFromAll } from '../../../../../tests/js/utils';
+import { createTestRegistry, muteFetch, unsubscribeFromAll } from '../../../../../tests/js/utils';
 import { createCacheKey } from '../../../googlesitekit/api';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -54,12 +54,6 @@ describe( 'modules/tagmanager settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		// TODO: the analytics module should not be connected by default in the module fixtures assets/js/googlesitekit/modules/datastore/fixtures.json
-		provideModules( registry, [ {
-			slug: 'analytics',
-			active: false,
-		} ] );
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 	} );
 
 	afterEach( () => {
@@ -71,11 +65,6 @@ describe( 'modules/tagmanager settings', () => {
 	} );
 
 	describe( 'actions', () => {
-		beforeEach( () => {
-			// Receive empty settings to prevent unexpected fetch by resolver.
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		} );
-
 		describe( 'submitChanges', () => {
 			it( 'dispatches saveSettings', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
