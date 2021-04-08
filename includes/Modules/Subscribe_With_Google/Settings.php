@@ -46,11 +46,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	public function get_owned_keys() {
 		return array(
-			'publicationName',
-			'publicationID',
-			'revenueModel',
 			'products',
-			'defaultProductPerPostType',
+			'publicationID',
 		);
 	}
 
@@ -63,11 +60,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	protected function get_default() {
 		return array(
-			'publicationName'           => '',
-			'publicationID'             => '',
-			'revenueModel'              => '',
-			'products'                  => '',
-			'defaultProductPerPostType' => '',
+			'products'      => '',
+			'publicationID' => '',
 		);
 	}
 }
