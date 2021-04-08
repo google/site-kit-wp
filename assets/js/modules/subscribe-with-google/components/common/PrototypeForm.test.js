@@ -21,24 +21,16 @@
  */
 import PrototypeForm from './PrototypeForm';
 import { render, createTestRegistry } from '../../../../../../tests/js/test-utils';
-import { STORE_NAME } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME } from '../../datastore/constants';
 
 describe( 'PrototypeForm', () => {
 	let registry;
 	beforeEach( () => {
 		registry = createTestRegistry();
-		// Set settings to prevent fetch in resolver.
-		registry.dispatch( STORE_NAME ).setSettings( {} );
-		// Set user info.
-		registry.dispatch( CORE_USER ).receiveUserInfo( { email: 'user@example.com' } );
-		registry.dispatch( CORE_USER ).finishResolution( 'getUser', [] );
-		// Prevent error when loading site info.
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
-		// Receive empty modules to prevent unexpected fetch by resolver.
+		// Prevent extra fetches during tests.
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+		registry.dispatch( STORE_NAME ).setSettings( {} );
 	} );
 
 	describe( '"Done" button', () => {
@@ -50,15 +42,15 @@ describe( 'PrototypeForm', () => {
 
 		it( 'shows when passed a `doneCallback` prop', () => {
 			const doneCallbackMock = jest.fn();
-			const { queryByRole } = render( <PrototypeForm doneCallback={ doneCallbackMock } />, { registry } );
-			const doneButton = queryByRole( 'button', { name: /Done/i } );
+			const { getByRole } = render( <PrototypeForm doneCallback={ doneCallbackMock } />, { registry } );
+			const doneButton = getByRole( 'button', { name: /Done/i } );
 			expect( doneButton ).toBeInTheDocument();
 		} );
 
 		it( 'disables when required fields are missing', () => {
 			const doneCallbackMock = jest.fn();
-			const { queryByRole } = render( <PrototypeForm doneCallback={ doneCallbackMock } />, { registry } );
-			const doneButton = queryByRole( 'button', { name: /Done/i } );
+			const { getByRole } = render( <PrototypeForm doneCallback={ doneCallbackMock } />, { registry } );
+			const doneButton = getByRole( 'button', { name: /Done/i } );
 			expect( doneButton ).toBeDisabled();
 		} );
 
@@ -68,8 +60,8 @@ describe( 'PrototypeForm', () => {
 				products: 'hello',
 			} );
 			const doneCallbackMock = jest.fn();
-			const { queryByRole } = render( <PrototypeForm doneCallback={ doneCallbackMock } />, { registry } );
-			const doneButton = queryByRole( 'button', { name: /Done/i } );
+			const { getByRole } = render( <PrototypeForm doneCallback={ doneCallbackMock } />, { registry } );
+			const doneButton = getByRole( 'button', { name: /Done/i } );
 			expect( doneButton ).toBeEnabled();
 		} );
 	} );
