@@ -29,7 +29,7 @@ import ChangeArrow from '../components/ChangeArrow';
 /**
  * Gets the up/down SVG arrow for Google Chart tooltips.
  *
- * @since n.e.x.t
+ * @since 1.30.0
  *
  * @param {number}  difference            The difference which can be positive or negative.
  * @param {string}  [options]             Options to be passed to the ChangeArrow component.

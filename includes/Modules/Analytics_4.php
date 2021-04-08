@@ -37,7 +37,7 @@ use WP_Error;
 /**
  * Class representing the Analytics 4 module.
  *
- * @since n.e.x.t
+ * @since 1.30.0
  * @access private
  * @ignore
  */
@@ -56,7 +56,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -65,7 +65,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return array List of Google OAuth scopes.
 	 */
@@ -80,7 +80,7 @@ final class Analytics_4 extends Module
 	 *
 	 * A module being connected means that all steps required as part of its activation are completed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return bool True if module is connected, false otherwise.
 	 */
@@ -105,7 +105,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Cleans up when the module is deactivated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
@@ -114,7 +114,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return array
 	 */
@@ -153,7 +153,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -178,7 +178,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Creates a request object for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
@@ -247,7 +247,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Parses a response for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @param Data_Request $data     Data request object.
 	 * @param mixed        $response Request response.
@@ -270,7 +270,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Sets up information about the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return array Associative array of module info.
 	 */
@@ -293,7 +293,7 @@ final class Analytics_4 extends Module
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
 	 * for the first time.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
@@ -308,7 +308,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return Module_Settings
 	 */

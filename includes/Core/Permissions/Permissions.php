@@ -56,7 +56,7 @@ final class Permissions {
 	/**
 	 * Mappings for custom base capabilities to WordPress core built-in ones.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 * @var array
 	 */
 	private $base_to_core = array();
@@ -72,7 +72,7 @@ final class Permissions {
 	/**
 	 * Mappings for custom meta capabilities to custom base capabilities.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 * @var array
 	 */
 	private $meta_to_base = array();
@@ -80,7 +80,7 @@ final class Permissions {
 	/**
 	 * List of custom base capabilities that should require network access if the plugin is in network mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 * @var array
 	 */
 	private $network_base = array();

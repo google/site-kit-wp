@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Util\Reset;
 /**
  * Class for extending available tools for Site Kit.
  *
- * @since n.e.x.t
+ * @since 1.30.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Available_Tools {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 */
 	public function register() {
 		add_action( 'tool_box', $this->get_method_proxy( 'render_tool_box' ) );
@@ -36,7 +36,7 @@ class Available_Tools {
 	/**
 	 * Renders tool box output.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 */
 	private function render_tool_box() {
 		if ( ! current_user_can( Permissions::SETUP ) ) {
