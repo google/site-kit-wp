@@ -26,19 +26,17 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import { STORE_NAME } from '../../datastore/constants';
 import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
-	const propertyID = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getPropertyID() );
-	const { matchedProperties, hasResolvedProperties } = useSelect( ( select ) => ( {
-		matchedProperties: select( MODULES_SEARCH_CONSOLE ).getMatchedProperties(),
-		hasResolvedProperties: select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getMatchedProperties' ),
-	} ) );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const matchedProperties = useSelect( ( select ) => select( STORE_NAME ).getMatchedProperties() );
+	const hasResolvedProperties = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getMatchedProperties' ) );
 
-	const { setPropertyID } = useDispatch( MODULES_SEARCH_CONSOLE );
+	const { setPropertyID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
 		const newPropertyID = item.dataset.value;
 		if ( propertyID !== newPropertyID ) {

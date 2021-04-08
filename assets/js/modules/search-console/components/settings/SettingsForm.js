@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import { STORE_NAME } from '../../datastore/constants';
 import { isValidPropertyID } from '../../util';
 import ErrorText from '../../../../components/ErrorText';
 import { PropertySelect } from '../common/';
@@ -33,18 +33,18 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
-	const propertyID = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getPropertyID() );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 
 	return (
 		<div className="googlesitekit-search-console-settings-fields">
-			<StoreErrorNotices moduleSlug="search-console" storeName={ MODULES_SEARCH_CONSOLE } />
+			<StoreErrorNotices moduleSlug="search-console" storeName={ STORE_NAME } />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<PropertySelect />
 			</div>
 
 			{ ( propertyID && ! isValidPropertyID( propertyID ) ) && (
-				<ErrorText message={ __( 'Not a valid Property ID.', 'google-site-kit' ) } />
+				<ErrorText message={ __( 'Not a valid property ID.', 'google-site-kit' ) } />
 			) }
 		</div>
 	);

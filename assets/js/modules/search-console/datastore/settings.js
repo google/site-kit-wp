@@ -29,7 +29,7 @@ import { TYPE_MODULES } from '../../../components/data/constants';
 import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isValidPropertyID } from '../util';
-import { MODULES_SEARCH_CONSOLE } from './constants';
+import { STORE_NAME } from './constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION = 'a valid propertyID is required to submit changes';
@@ -37,8 +37,8 @@ export const INVARIANT_INVALID_PROPERTY_SELECTION = 'a valid propertyID is requi
 export async function submitChanges( { select, dispatch } ) {
 	// This action shouldn't be called if settings haven't changed,
 	// but this prevents errors in tests.
-	if ( select( MODULES_SEARCH_CONSOLE ).haveSettingsChanged() ) {
-		const { error } = await dispatch( MODULES_SEARCH_CONSOLE ).saveSettings();
+	if ( select( STORE_NAME ).haveSettingsChanged() ) {
+		const { error } = await dispatch( STORE_NAME ).saveSettings();
 		if ( error ) {
 			return { error };
 		}
@@ -53,6 +53,6 @@ export async function submitChanges( { select, dispatch } ) {
 
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
-	const { getPropertyID } = strictSelect( MODULES_SEARCH_CONSOLE );
+	const { getPropertyID } = strictSelect( STORE_NAME );
 	invariant( isValidPropertyID( getPropertyID() ), INVARIANT_INVALID_PROPERTY_SELECTION );
 }

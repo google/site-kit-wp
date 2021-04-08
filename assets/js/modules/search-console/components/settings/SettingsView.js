@@ -20,27 +20,27 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import { STORE_NAME } from '../../datastore/constants';
 import DisplaySetting from '../../../../components/DisplaySetting';
-import { Cell } from '../../../../material-components';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const propertyID = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getPropertyID() );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 
 	return (
-		<Cell size={ 12 }>
+		<Fragment>
 			<h5 className="googlesitekit-settings-module__meta-item-type">
 				{ __( 'Connected Property', 'google-site-kit' ) }
 			</h5>
 			<p className="googlesitekit-settings-module__meta-item-data">
 				<DisplaySetting value={ propertyID } />
 			</p>
-		</Cell>
+		</Fragment>
 	);
 }
