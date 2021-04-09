@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetPropertiesStore = createFetchStore( {
@@ -36,12 +36,12 @@ const fetchGetPropertiesStore = createFetchStore( {
 			useCache: true,
 		} );
 	},
-	reducerCallback( state, response, { accountID } ) {
+	reducerCallback( state, properties, { accountID } ) {
 		return {
 			...state,
 			properties: {
 				...state.properties,
-				[ accountID ]: response.properties,
+				[ accountID ]: properties,
 			},
 		};
 	},
@@ -114,7 +114,7 @@ const baseResolvers = {
 	*getProperties( accountID ) {
 		const registry = yield Data.commonActions.getRegistry();
 		// Only fetch properties if there are none in the store for the given account.
-		const properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+		const properties = registry.select( STORE_NAME ).getProperties( accountID );
 		if ( properties === undefined ) {
 			yield fetchGetPropertiesStore.actions.fetchGetProperties( accountID );
 		}
