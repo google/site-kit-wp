@@ -5,7 +5,25 @@ on:
     branches:
       - develop
       - main
+    # Only run if PHP-related files changed.
+    paths:
+      - '.github/workflows/php-tests-wp-4-7-php-5-6.yml'
+      - includes/**
+      - tests/phpunit/**
+      - /*.php
+      - 'phpunit*.xml*'
+      - 'composer.json'
+      - 'composer.lock'
   pull_request:
+    # Only run if PHP-related files changed.
+    paths:
+      - '.github/workflows/php-tests-wp-4-7-php-5-6.yml'
+      - includes/**
+      - tests/phpunit/**
+      - /*.php
+      - 'phpunit*.xml*'
+      - 'composer.json'
+      - 'composer.lock'
     types:
       - opened
       - reopened
@@ -15,6 +33,7 @@ jobs:
   php-tests-wp-4-7-php-5-6:
     name: PHP (PHP 5.6, WordPress 4.7)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     services:
       mysql:
         image: mysql:5.7
@@ -31,6 +50,7 @@ jobs:
       MYSQL_DATABASE: wordpress_test
       WP_VERSION: '4.7'
     steps:
+      - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:

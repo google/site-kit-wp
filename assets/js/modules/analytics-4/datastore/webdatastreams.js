@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { STORE_NAME } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistryControl, createRegistrySelector } = Data;
@@ -38,12 +38,12 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 			useCache: true,
 		} );
 	},
-	reducerCallback( state, response, { propertyID } ) {
+	reducerCallback( state, webDataStreams, { propertyID } ) {
 		return {
 			...state,
 			webdatastreams: {
 				...state.webdatastreams,
-				[ propertyID ]: response.webDataStreams,
+				[ propertyID ]: webDataStreams,
 			},
 		};
 	},
@@ -60,14 +60,14 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 	controlCallback( { propertyID } ) {
 		return API.set( 'modules', 'analytics-4', 'create-webdatastream', { propertyID } );
 	},
-	reducerCallback( state, response, { propertyID } ) {
+	reducerCallback( state, webDataStream, { propertyID } ) {
 		return {
 			...state,
 			webdatastreams: {
 				...state.webdatastreams,
 				[ propertyID ]: [
 					...( state.webdatastreams[ propertyID ] || [] ),
-					response,
+					webDataStream,
 				],
 			},
 		};
@@ -123,7 +123,7 @@ const baseControls = {
 	[ WAIT_FOR_WEBDATASTREAMS ]: createRegistryControl( ( { select, subscribe } ) => {
 		return ( { payload } ) => {
 			const { propertyID } = payload;
-			const areLoaded = () => select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID ) !== undefined;
+			const areLoaded = () => select( STORE_NAME ).getWebDataStreams( propertyID ) !== undefined;
 
 			if ( areLoaded() ) {
 				return true;
@@ -153,7 +153,7 @@ const baseResolvers = {
 	*getWebDataStreams( propertyID ) {
 		const registry = yield Data.commonActions.getRegistry();
 		// Only fetch web data streams if there are none in the store for the given property.
-		const webdatastreams = registry.select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+		const webdatastreams = registry.select( STORE_NAME ).getWebDataStreams( propertyID );
 		if ( webdatastreams === undefined ) {
 			yield fetchGetWebDataStreamsStore.actions.fetchGetWebDataStreams( propertyID );
 		}
@@ -184,7 +184,7 @@ const baseSelectors = {
 	 * @return {(Object|null|undefined)} A web data stream object if found, otherwise null; `undefined` if web data streams are not loaded.
 	 */
 	getMatchingWebDataStream: createRegistrySelector( ( select ) => ( state, propertyID ) => {
-		const datastreams = select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+		const datastreams = select( STORE_NAME ).getWebDataStreams( propertyID );
 		if ( datastreams === undefined ) {
 			return undefined;
 		}

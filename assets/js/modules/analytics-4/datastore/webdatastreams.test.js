@@ -20,9 +20,9 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { createTestRegistry, freezeFetch, provideSiteInfo, unsubscribeFromAll, untilResolved } from 'tests/js/utils';
+import { STORE_NAME } from './constants';
 import * as fixtures from './__fixtures__';
-import { createTestRegistry, freezeFetch, provideSiteInfo, subscribeUntil, unsubscribeFromAll } from 'tests/js/utils';
 
 describe( 'modules/analytics-4 webdatastreams', () => {
 	let registry;
@@ -37,7 +37,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// Receive empty settings to prevent unexpected fetch by resolver.
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 	} );
 
 	afterAll( () => {
@@ -58,7 +58,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					status: 200,
 				} );
 
-				await registry.dispatch( MODULES_ANALYTICS_4 ).createWebDataStream( propertyID );
+				await registry.dispatch( STORE_NAME ).createWebDataStream( propertyID );
 				expect( fetchMock ).toHaveFetched( createWebDataStreamsEndpoint, {
 					body: {
 						data: {
@@ -67,7 +67,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					},
 				} );
 
-				const webdatastreams = registry.select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+				const webdatastreams = registry.select( STORE_NAME ).getWebDataStreams( propertyID );
 				expect( webdatastreams ).toMatchObject( [ fixtures.createWebDataStream ] );
 			} );
 
@@ -84,9 +84,9 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					status: 500,
 				} );
 
-				await registry.dispatch( MODULES_ANALYTICS_4 ).createWebDataStream( propertyID );
+				await registry.dispatch( STORE_NAME ).createWebDataStream( propertyID );
 
-				const error = registry.select( MODULES_ANALYTICS_4 ).getErrorForAction( 'createWebDataStream', [ propertyID ] );
+				const error = registry.select( STORE_NAME ).getErrorForAction( 'createWebDataStream', [ propertyID ] );
 				expect( error ).toMatchObject( response );
 
 				// The response isn't important for the test here and we intentionally don't wait for it,
@@ -94,7 +94,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				// taken from `response.webDataStreams` are required to be an array.
 				freezeFetch( webDataStreamsEndpoint );
 
-				const webdatastreams = registry.select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+				const webdatastreams = registry.select( STORE_NAME ).getWebDataStreams( propertyID );
 				// No webdatastreams should have been added yet, as the property creation failed.
 				expect( webdatastreams ).toBeUndefined();
 				expect( console ).toHaveErrored();
@@ -111,18 +111,16 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				} );
 
 				const propertyID = '12345';
-				const initialProperties = registry.select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+				const initialProperties = registry.select( STORE_NAME ).getWebDataStreams( propertyID );
+				expect( initialProperties ).toBeUndefined();
 
-				await subscribeUntil( registry, () => registry.select( MODULES_ANALYTICS_4 ).hasStartedResolution( 'getWebDataStreams', [ propertyID ] ) );
+				await untilResolved( registry, STORE_NAME ).getWebDataStreams( propertyID );
 				expect( fetchMock ).toHaveFetched( webDataStreamsEndpoint, { query: { propertyID } } );
 
-				expect( initialProperties ).toBeUndefined();
-				await subscribeUntil( registry, () => registry.select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID ) !== undefined );
-
-				const webdatastreams = registry.select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+				const webdatastreams = registry.select( STORE_NAME ).getWebDataStreams( propertyID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( webdatastreams ).toEqual( fixtures.webDataStreams.webDataStreams );
-				expect( webdatastreams ).toHaveLength( fixtures.webDataStreams.webDataStreams.length );
+				expect( webdatastreams ).toEqual( fixtures.webDataStreams );
+				expect( webdatastreams ).toHaveLength( fixtures.webDataStreams.length );
 			} );
 
 			it( 'should not make a network request if webdatastreams for this account are already present', async () => {
@@ -131,16 +129,12 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
 
-				const webdatastreams = registry.select( MODULES_ANALYTICS_4 ).getWebDataStreams( testPropertyID );
-				await subscribeUntil( registry, () => registry.select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getWebDataStreams', [ testPropertyID ] ) );
-
-				// It _may_ make a request for profiles internally if not loaded,
-				// so we only care that it did not fetch webdatastreams here.
+				const webdatastreams = registry.select( STORE_NAME ).getWebDataStreams( testPropertyID );
+				expect( webdatastreams ).toEqual( fixtures.webDataStreams );
+				expect( webdatastreams ).toHaveLength( fixtures.webDataStreams.length );
 				expect( fetchMock ).not.toHaveFetched( webDataStreamsEndpoint );
-				expect( webdatastreams ).toEqual( fixtures.webDataStreams.webDataStreams );
-				expect( webdatastreams ).toHaveLength( fixtures.webDataStreams.webDataStreams.length );
 			} );
 
 			it( 'should dispatch an error if the request fails', async () => {
@@ -156,11 +150,11 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				} );
 
 				const fakePropertyID = '777888999';
-				registry.select( MODULES_ANALYTICS_4 ).getWebDataStreams( fakePropertyID );
-				await subscribeUntil( registry, () => registry.select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getWebDataStreams', [ fakePropertyID ] ) );
+				registry.select( STORE_NAME ).getWebDataStreams( fakePropertyID );
+				await untilResolved( registry, STORE_NAME ).getWebDataStreams( fakePropertyID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const webdatastreams = registry.select( MODULES_ANALYTICS_4 ).getWebDataStreams( fakePropertyID );
+				const webdatastreams = registry.select( STORE_NAME ).getWebDataStreams( fakePropertyID );
 				expect( webdatastreams ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );
@@ -172,23 +166,23 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			it( 'should return undefined if web data streams arent loaded yet', () => {
 				freezeFetch( webDataStreamsEndpoint );
 
-				const datastream = registry.select( MODULES_ANALYTICS_4 ).getMatchingWebDataStream( propertyID );
+				const datastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
 				expect( datastream ).toBeUndefined();
 			} );
 
 			it( 'should return NULL when no datastreams are matched', () => {
 				provideSiteInfo( registry, { referenceSiteURL: 'http://example.net' } );
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
 
-				const datastream = registry.select( MODULES_ANALYTICS_4 ).getMatchingWebDataStream( propertyID );
+				const datastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
 				expect( datastream ).toBeNull();
 			} );
 
 			it( 'should return the correct datastream when reference site URL matches exactly', () => {
 				provideSiteInfo( registry, { referenceSiteURL: 'http://example.com' } );
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
 
-				const datastream = registry.select( MODULES_ANALYTICS_4 ).getMatchingWebDataStream( propertyID );
+				const datastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
 				expect( datastream ).toEqual( fixtures.webDataStreams.webDataStreams[ 0 ] );
 			} );
 
@@ -198,9 +192,9 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				[ 'trailing slash', 'https://www.example.org/' ],
 			] )( 'should return the correct datastream ignoring %s', ( _, referenceSiteURL ) => {
 				provideSiteInfo( registry, { referenceSiteURL } );
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
 
-				const datastream = registry.select( MODULES_ANALYTICS_4 ).getMatchingWebDataStream( propertyID );
+				const datastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
 				expect( datastream ).toEqual( fixtures.webDataStreams.webDataStreams[ 1 ] );
 			} );
 		} );

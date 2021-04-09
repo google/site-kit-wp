@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from './constants';
-import { createTestRegistry, muteFetch, provideSiteInfo, subscribeUntil, unsubscribeFromAll } from 'tests/js/utils';
+import { STORE_NAME, PROPERTY_CREATE } from './constants';
+import { createTestRegistry, muteFetch, provideSiteInfo, unsubscribeFromAll, untilResolved } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 properties', () => {
@@ -37,7 +37,7 @@ describe( 'modules/analytics-4 properties', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// Receive empty settings to prevent unexpected fetch by resolver.
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 	} );
 
 	afterAll( () => {
@@ -58,16 +58,12 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
-				await registry.dispatch( MODULES_ANALYTICS_4 ).createProperty( accountID );
+				await registry.dispatch( STORE_NAME ).createProperty( accountID );
 				expect( fetchMock ).toHaveFetched( createPropertyEndpoint, {
-					body: {
-						data: {
-							accountID,
-						},
-					},
+					body: { data: { accountID } },
 				} );
 
-				const properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+				const properties = registry.select( STORE_NAME ).getProperties( accountID );
 				expect( properties ).toMatchObject( [ fixtures.createProperty ] );
 			} );
 
@@ -84,9 +80,9 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 500,
 				} );
 
-				await registry.dispatch( MODULES_ANALYTICS_4 ).createProperty( accountID );
+				await registry.dispatch( STORE_NAME ).createProperty( accountID );
 
-				const error = registry.select( MODULES_ANALYTICS_4 ).getErrorForAction( 'createProperty', [ accountID ] );
+				const error = registry.select( STORE_NAME ).getErrorForAction( 'createProperty', [ accountID ] );
 				expect( error ).toMatchObject( response );
 
 				// The response isn't important for the test here and we intentionally don't wait for it,
@@ -94,7 +90,7 @@ describe( 'modules/analytics-4 properties', () => {
 				// taken from `response.properties` are required to be an array.
 				muteFetch( propertiesEndpoint, fixtures.properties );
 
-				const properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+				const properties = registry.select( STORE_NAME ).getProperties( accountID );
 				// No properties should have been added yet, as the property creation failed.
 				expect( properties ).toBeUndefined();
 				expect( console ).toHaveErrored();
@@ -103,7 +99,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 		describe( 'selectProperty', () => {
 			it( 'should throw if property ID is invalid', () => {
-				const callback = () => registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( '' );
+				const callback = () => registry.dispatch( STORE_NAME ).selectProperty( '' );
 				expect( callback ).toThrow( 'A valid propertyID selection is required.' );
 			} );
 
@@ -114,12 +110,12 @@ describe( 'modules/analytics-4 properties', () => {
 					measurementID: 'abcd',
 				};
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( settings );
-				registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( PROPERTY_CREATE );
+				registry.dispatch( STORE_NAME ).receiveGetSettings( settings );
+				registry.dispatch( STORE_NAME ).selectProperty( PROPERTY_CREATE );
 
-				expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( PROPERTY_CREATE );
-				expect( registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID() ).toBe( '' );
-				expect( registry.select( MODULES_ANALYTICS_4 ).getMeasurementID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( '' );
 			} );
 
 			it( 'should set property ID only and reset datastream with measurement IDs when web data stream is not found', () => {
@@ -132,13 +128,13 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideSiteInfo( registry, { referenceSiteURL: 'https://www.example.io' } );
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( settings );
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
-				registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( propertyID );
+				registry.dispatch( STORE_NAME ).receiveGetSettings( settings );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
+				registry.dispatch( STORE_NAME ).selectProperty( propertyID );
 
-				expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( propertyID );
-				expect( registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID() ).toBe( '' );
-				expect( registry.select( MODULES_ANALYTICS_4 ).getMeasurementID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( '' );
 			} );
 
 			it( 'should set property, datastream, and measurement IDs when web data stream is found', () => {
@@ -151,14 +147,14 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideSiteInfo( registry, { referenceSiteURL: 'https://www.example.org' } );
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( settings );
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
-				registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( propertyID );
+				registry.dispatch( STORE_NAME ).receiveGetSettings( settings );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
+				registry.dispatch( STORE_NAME ).selectProperty( propertyID );
 
 				const { webDataStreams } = fixtures.webDataStreams;
-				expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( propertyID );
-				expect( registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID() ).toBe( webDataStreams[ 1 ].name.split( '/' ).pop() );
-				expect( registry.select( MODULES_ANALYTICS_4 ).getMeasurementID() ).toBe( webDataStreams[ 1 ].measurementId ); // eslint-disable-line sitekit/acronym-case
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( webDataStreams[ 1 ].name.split( '/' ).pop() );
+				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( webDataStreams[ 1 ].measurementId ); // eslint-disable-line sitekit/acronym-case
 			} );
 		} );
 	} );
@@ -172,18 +168,16 @@ describe( 'modules/analytics-4 properties', () => {
 				} );
 
 				const accountID = '12345';
-				const initialProperties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+				const initialProperties = registry.select( STORE_NAME ).getProperties( accountID );
+				expect( initialProperties ).toBeUndefined();
 
-				await subscribeUntil( registry, () => registry.select( MODULES_ANALYTICS_4 ).hasStartedResolution( 'getProperties', [ accountID ] ) );
+				await untilResolved( registry, STORE_NAME ).getProperties( accountID );
 				expect( fetchMock ).toHaveFetched( propertiesEndpoint, { query: { accountID } } );
 
-				expect( initialProperties ).toBeUndefined();
-				await subscribeUntil( registry, () => registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID ) !== undefined );
-
-				const properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+				const properties = registry.select( STORE_NAME ).getProperties( accountID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( properties ).toEqual( fixtures.properties.properties );
-				expect( properties ).toHaveLength( fixtures.properties.properties.length );
+				expect( properties ).toEqual( fixtures.properties );
+				expect( properties ).toHaveLength( fixtures.properties.length );
 			} );
 
 			it( 'should not make a network request if properties for this account are already present', async () => {
@@ -192,16 +186,16 @@ describe( 'modules/analytics-4 properties', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( fixtures.properties, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.properties, { accountID } );
 
-				const properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( testAccountID );
-				await subscribeUntil( registry, () => registry.select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ testAccountID ] ) );
+				const properties = registry.select( STORE_NAME ).getProperties( testAccountID );
+				await untilResolved( registry, STORE_NAME ).getProperties( testAccountID );
 
 				// It _may_ make a request for profiles internally if not loaded,
 				// so we only care that it did not fetch properties here.
 				expect( fetchMock ).not.toHaveFetched( propertiesEndpoint );
-				expect( properties ).toEqual( fixtures.properties.properties );
-				expect( properties ).toHaveLength( fixtures.properties.properties.length );
+				expect( properties ).toEqual( fixtures.properties );
+				expect( properties ).toHaveLength( fixtures.properties.length );
 			} );
 
 			it( 'should dispatch an error if the request fails', async () => {
@@ -217,11 +211,11 @@ describe( 'modules/analytics-4 properties', () => {
 				} );
 
 				const fakeAccountID = '777888999';
-				registry.select( MODULES_ANALYTICS_4 ).getProperties( fakeAccountID );
-				await subscribeUntil( registry, () => registry.select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ fakeAccountID ] ) );
+				registry.select( STORE_NAME ).getProperties( fakeAccountID );
+				await untilResolved( registry, STORE_NAME ).getProperties( fakeAccountID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( fakeAccountID );
+				const properties = registry.select( STORE_NAME ).getProperties( fakeAccountID );
 				expect( properties ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );

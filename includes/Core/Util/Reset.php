@@ -53,7 +53,7 @@ class Reset {
 	/**
 	 * Gets the URL to handle a reset action.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return string
 	 */
@@ -213,7 +213,7 @@ class Reset {
 	/**
 	 * Handles the reset admin action.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @param string $nonce WP nonce for action.
 	 */
