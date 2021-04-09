@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+.googlesitekit-widget-area {
+	display: grid;
+	grid-gap: 1rem;
+}
+
 .googlesitekit-widget-area--composite .googlesitekit-widget-area-widgets {
 
 	@include shadow;
@@ -23,7 +28,6 @@
 }
 
 .googlesitekit-widget-area-header {
-	margin: 0 0 1rem 0;
 
 	.googlesitekit-widget-area-header__title {
 		color: $c-tertiary;
