@@ -88,11 +88,7 @@ export default function Footer( props ) {
 
 		primaryColumn = (
 			<Fragment>
-				<Button
-					id={ hasSettings && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
-					disabled={ isSaving || ! canSubmitChanges }
-					onClick={ handleConfirmOrCancel }
-				>
+				<Button disabled={ isSaving || ! canSubmitChanges } onClick={ handleConfirmOrCancel }>
 					{ buttonText }
 				</Button>
 

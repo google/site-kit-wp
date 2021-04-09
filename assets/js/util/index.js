@@ -20,7 +20,6 @@
  * External dependencies
  */
 import {
-	isEqual,
 	isFinite,
 	get,
 	unescape,
@@ -281,39 +280,6 @@ export const validateJSON = ( stringToValidate ) => {
  */
 export const validateOptimizeID = ( stringToValidate ) => {
 	return ( stringToValidate.match( /^(GTM|OPT)-[a-zA-Z\d]{7}$/ ) );
-};
-
-/**
- * Toggles confirm changes button disable/enable depending on the module changed settings.
- *
- * @since 1.0.0
- *
- * @param {string} moduleSlug                The module slug being edited.
- * @param {Object} settingsMapping           The mapping between form settings names and saved settings.
- * @param {Object} settingsState             The changed settings component state to compare with.
- * @param {Object} skipDOM                   Skip DOm checks/modifications, used for testing.
- * @param {Object} __googlesitekitLegacyData `_googlesitekitLegacyData` global; can be replaced for testing.
- * @return {(void|boolean)} True if a module has been toggled.
- */
-export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, __googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
-	const { settings, setupComplete } = getModulesData( __googlesitekitLegacyData )[ moduleSlug ];
-	const confirm = skipDOM || document.getElementById( `confirm-changes-${ moduleSlug }` );
-
-	if ( ! setupComplete || ! confirm ) {
-		return;
-	}
-
-	// Check if any of the mapped settings differ from the current/saved settings.
-	const changed = !! Object.keys( settingsMapping ).find( ( stateKey ) => {
-		const settingsKey = settingsMapping[ stateKey ];
-		return ! isEqual( settingsState[ stateKey ], settings[ settingsKey ] );
-	} );
-
-	if ( ! skipDOM ) {
-		confirm.disabled = ! changed;
-	}
-
-	return changed;
 };
 
 /**
