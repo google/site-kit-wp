@@ -236,20 +236,14 @@ class Migration_1_8_1 {
 	 * @return WP_User[] User objects of verified users. Maximum of 20.
 	 */
 	private function get_verified_users() {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$user_ids = $wpdb->get_col(
+			$wpdb->prepare( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key IN (%s, %s) LIMIT 20", Verification_File::OPTION, Verification_Meta::OPTION )
+		);
 		return get_users(
 			array(
-				'number'     => 20,
-				'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery
-					'relation' => 'OR',
-					array(
-						'key'     => $this->user_options->get_meta_key( Verification_File::OPTION ),
-						'compare' => 'EXISTS',
-					),
-					array(
-						'key'     => $this->user_options->get_meta_key( Verification_Meta::OPTION ),
-						'compare' => 'EXISTS',
-					),
-				),
+				'include' => $user_ids,
 			)
 		);
 	}
