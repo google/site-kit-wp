@@ -52,7 +52,7 @@ export const getChartDifferenceArrow = ( difference, options = {} ) => {
  *
  * @since n.e.x.t
  *
- * @param {Object} report Report data object.
+ * @param {Array.<Object>} report An array of report data objects.
  * @return {(boolean|undefined)} Returns undefined if report is undefined, true/false for the above conditions.
  */
 export const isSingleSlice = ( report ) => {
