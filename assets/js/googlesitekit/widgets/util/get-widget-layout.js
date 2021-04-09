@@ -159,7 +159,7 @@ export function getWidgetLayout( widgets, widgetStates ) {
 		// Grab the width of the first size in the sizes list, it's either the default one or the best suiting to the current row.
 		const width = sizes[ 0 ].width;
 
-		// Populate row index for the widget.
+		// Populate row index for the widget. The value may be corrected further below.
 		rowIndexes.push( rowIndex );
 
 		// Increase column counter based on width.
@@ -192,7 +192,7 @@ export function getWidgetLayout( widgets, widgetStates ) {
 		// Actually set the columnWidth for the current widget. This must be set after
 		// potentially resizing, since in that case this will be the overflowing
 		// widget which should NOT be adjusted because it will be in the next row.
-		columnWidths[ i ] = WIDTH_GRID_COUNTER_MAP[ width ];
+		columnWidths.push( WIDTH_GRID_COUNTER_MAP[ width ] );
 	} );
 
 	if ( counter === 9 ) {

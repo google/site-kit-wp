@@ -37,7 +37,7 @@ const WidgetCellWrapper = ( { gridColumnWidth, children } ) => {
 		);
 	}
 
-	// In practice this will be 3 or 4
+	// In practice this will be 3 or 4.
 	if ( gridColumnWidth < 6 ) {
 		return (
 			<Cell lgSize={ gridColumnWidth } mdSize={ 4 } smSize={ 2 }>
@@ -46,8 +46,8 @@ const WidgetCellWrapper = ( { gridColumnWidth, children } ) => {
 		);
 	}
 
-	// In practice this will be 6 or 8
-	if ( gridColumnWidth <= 8 ) {
+	// In practice this will be 6.
+	if ( gridColumnWidth < 8 ) {
 		return (
 			<Cell lgSize={ gridColumnWidth } mdSize={ 8 }>
 				{ children }
@@ -55,7 +55,7 @@ const WidgetCellWrapper = ( { gridColumnWidth, children } ) => {
 		);
 	}
 
-	// Full width (12), or something strange like 5 or 7
+	// In practice this will be 8, 9 or 12.
 	return (
 		<Cell size={ gridColumnWidth }>
 			{ children }

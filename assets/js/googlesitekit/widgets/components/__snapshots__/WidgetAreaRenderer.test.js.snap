@@ -459,7 +459,7 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
       </div>
     </div>
     <div
-      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-8-tablet"
+      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8"
     >
       <div
         class="googlesitekit-widget googlesitekit-widget--four"
@@ -826,7 +826,7 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
       </div>
     </div>
     <div
-      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-8-tablet"
+      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8"
     >
       <div
         class="googlesitekit-widget googlesitekit-widget--three"
