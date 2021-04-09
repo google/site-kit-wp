@@ -24,39 +24,26 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { decodeHTMLEntity } from '../../../../../util';
 import { getSiteStatsDataForGoogleChart } from '../../../util';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import GoogleChart from '../../../../../components/GoogleChart';
-import Data from 'googlesitekit-data';
-const { useSelect } = Data;
 
 const Stats = ( { data, metrics, selectedStats } ) => {
-	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
-
-	let title = __( 'Search Traffic Summary', 'google-site-kit' );
-	if ( currentEntityTitle ) {
-		/* translators: %s: page title */
-		title = sprintf( __( 'Search Traffic Summary for %s', 'google-site-kit' ), decodeHTMLEntity( currentEntityTitle ) );
-	}
-
 	const options = {
 		chart: {
-			title,
+			title: __( 'Search Traffic Summary', 'google-site-kit' ),
 		},
 		curveType: 'line',
 		height: 270,
 		width: '100%',
 		chartArea: {
 			height: '77%',
-			left: 60,
-			width: '100%',
+			width: '87%',
 		},
 		legend: {
 			position: 'top',

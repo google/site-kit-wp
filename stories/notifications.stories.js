@@ -37,8 +37,8 @@ import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { withConnected } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
-import RocketImageSVG from '../assets/svg/rocket.svg';
-import ThumbsUpSVG from '../assets/svg/thumbs-up.svg';
+import SuccessGreenSVG from '../assets/svg/success-green.svg';
+import AwardSVG from '../assets/svg/award.svg';
 
 storiesOf( 'Global/Notifications', module )
 	.add( 'Module Setup Complete', () => {
@@ -53,7 +53,7 @@ storiesOf( 'Global/Notifications', module )
 				<Notification
 					id="notification-id"
 					title={ __( 'Congrats on completing the setup for Analytics!', 'google-site-kit' ) }
-					WinImageSVG={ RocketImageSVG }
+					WinImageSVG={ SuccessGreenSVG }
 					dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 					format="large"
 					type="win-success"
@@ -73,7 +73,7 @@ storiesOf( 'Global/Notifications', module )
 			learnMore={ __( 'Learn more', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="small"
-			SmallImageSVG={ ThumbsUpSVG }
+			SmallImageSVG={ AwardSVG }
 			type="win-success"
 		/>
 	) )

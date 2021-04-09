@@ -25,20 +25,13 @@ import DashboardPopularPagesWidget from '../assets/js/modules/analytics/componen
 import DashboardBounceRateWidget from '../assets/js/modules/analytics/components/dashboard/DashboardBounceRateWidget';
 import DashboardGoalsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardUniqueVisitorsWidget';
-import { ModulePopularPagesWidget, ModuleOverviewWidget } from '../assets/js/modules/analytics/components/module';
+import { ModulePopularPagesWidget, ModuleOverviewWidget, ModuleAcquisitionChannelsWidget } from '../assets/js/modules/analytics/components/module';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
 import { accountsPropertiesProfiles, goals } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 
 const generateData = makeReportDataGenerator( getAnalyticsMockResponse );
 
-/**
- * Generates storybook stories for Analytics widgets.
- *
- * @since n.e.x.t
- *
- * @param {Object} args Story arguments.
- */
 function generateAnalyticsWidgetStories( args ) {
 	generateReportBasedWidgetStories( {
 		moduleSlugs: [ 'analytics' ],
@@ -456,5 +449,39 @@ generateAnalyticsWidgetStories( {
 		limit: 10,
 	} ),
 	Component: ModulePopularPagesWidget,
+	wrapWidget: false,
+} );
+generateAnalyticsWidgetStories( {
+	group: 'Analytics Module/Components/Module Page/Acquisition Channels Widget',
+	referenceDate: '2021-01-06',
+	...generateData(
+		{
+			dimensions: 'ga:channelGrouping',
+			metrics: [
+				{
+					expression: 'ga:sessions',
+					alias: 'Sessions',
+				},
+				{
+					expression: 'ga:users',
+					alias: 'Users',
+				},
+				{
+					expression: 'ga:newUsers',
+					alias: 'New Users',
+				},
+			],
+			orderby: [
+				{
+					fieldName: 'ga:users',
+					sortOrder: 'DESCENDING',
+				},
+			],
+			limit: 10,
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+		}
+	),
+	Component: ModuleAcquisitionChannelsWidget,
 	wrapWidget: false,
 } );

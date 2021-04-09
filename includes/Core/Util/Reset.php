@@ -38,12 +38,34 @@ class Reset {
 	const REST_ROUTE = 'core/site/data/reset';
 
 	/**
+	 * Action for triggering a reset.
+	 */
+	const ACTION = 'googlesitekit_reset';
+
+	/**
 	 * Plugin context.
 	 *
 	 * @since 1.0.0
 	 * @var Context
 	 */
 	private $context;
+
+	/**
+	 * Gets the URL to handle a reset action.
+	 *
+	 * @since 1.30.0
+	 *
+	 * @return string
+	 */
+	public static function url() {
+		return add_query_arg(
+			array(
+				'action' => static::ACTION,
+				'nonce'  => wp_create_nonce( static::ACTION ),
+			),
+			admin_url( 'index.php' )
+		);
+	}
 
 	/**
 	 * Constructor.
@@ -67,6 +89,15 @@ class Reset {
 			'googlesitekit_rest_routes',
 			function( $routes ) {
 				return array_merge( $routes, $this->get_rest_routes() );
+			}
+		);
+
+		add_action(
+			'admin_action_' . static::ACTION,
+			function () {
+				$this->handle_reset_action(
+					$this->context->input()->filter( INPUT_GET, 'nonce' )
+				);
 			}
 		);
 	}
@@ -177,5 +208,36 @@ class Reset {
 				)
 			),
 		);
+	}
+
+	/**
+	 * Handles the reset admin action.
+	 *
+	 * @since 1.30.0
+	 *
+	 * @param string $nonce WP nonce for action.
+	 */
+	private function handle_reset_action( $nonce ) {
+		if ( ! wp_verify_nonce( $nonce, static::ACTION ) ) {
+			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+		}
+		if ( ! current_user_can( Permissions::SETUP ) ) {
+			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
+		}
+
+		$this->all();
+
+		wp_safe_redirect(
+			$this->context->admin_url(
+				'splash',
+				array(
+					// Trigger client-side storage reset.
+					'googlesitekit_reset_session' => 1,
+					// Show reset-success notification.
+					'notification'                => 'reset_success',
+				)
+			)
+		);
+		exit;
 	}
 }
