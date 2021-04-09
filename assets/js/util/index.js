@@ -284,36 +284,6 @@ export const validateOptimizeID = ( stringToValidate ) => {
 };
 
 /**
- * Activates/deactivates a Module.
- *
- * @since 1.0.0
- *
- * @param {Object}   restApiClient   Rest API client from data module, this needed so we don't need to import data module in helper.
- * @param {string}   moduleSlug      Module slug to activate or deactivate.
- * @param {boolean}  status          True if module should be activated, false if it should be deactivated.
- * @param {Function} _trackEvent     Track event function; can be replaced for testing.
- * @param {Function} _getModulesData Get modules function; can be replaced for testing.
- * @return {Promise} A promise for activating/deactivating a module.
- */
-export const activateOrDeactivateModule = async ( restApiClient, moduleSlug, status, _trackEvent = trackEvent, _getModulesData = getModulesData ) => {
-	const responseData = await restApiClient.setModuleActive( moduleSlug, status );
-	const modulesData = _getModulesData();
-
-	// We should really be using state management. This is terrible.
-	if ( modulesData[ moduleSlug ] ) {
-		modulesData[ moduleSlug ].active = status;
-	}
-
-	await _trackEvent(
-		`${ moduleSlug }_setup`,
-		! status ? 'module_deactivate' : 'module_activate',
-		moduleSlug,
-	);
-
-	return responseData;
-};
-
-/**
  * Toggles confirm changes button disable/enable depending on the module changed settings.
  *
  * @since 1.0.0
