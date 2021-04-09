@@ -29,10 +29,8 @@ import {
 /**
  * WordPress dependencies
  */
-import {
-	addFilter,
-} from '@wordpress/hooks';
-import { addQueryArgs, getQueryString } from '@wordpress/url';
+import { addFilter } from '@wordpress/hooks';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -235,61 +233,6 @@ export const getModulesData = ( __googlesitekitLegacyData = global._googlesiteki
 		}
 		return { ...acc, [ slug ]: modulesObj[ slug ] };
 	}, {} );
-};
-
-/**
- * Gets the URL needed to initiate a reAuth flow.
- *
- * @since 1.0.0
- *
- * @param {string}  slug                      The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
- * @param {boolean} status                    The module activation status.
- * @param {Object}  __googlesitekitLegacyData Legacy data global; can be replaced for testing.
- * @return {string} Authentication URL.
- */
-export const getReAuthURL = ( slug, status, __googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
-	const {
-		connectURL,
-		adminRoot,
-	} = __googlesitekitLegacyData.admin;
-
-	const { needReauthenticate } = __googlesitekitLegacyData.setup;
-
-	const { screenID } = getModulesData( __googlesitekitLegacyData )[ slug ];
-
-	// Special case handling for PageSpeed Insights.
-	// TODO: Refactor this out.
-	const pageSpeedQueryArgs = 'pagespeed-insights' === slug ? {
-		notification: 'authentication_success',
-		reAuth: undefined,
-	} : {};
-
-	let redirect = addQueryArgs(
-		adminRoot, {
-			// If the module has a submenu page, and is being activated, redirect back to the module page.
-			page: ( slug && status && screenID ) ? screenID : 'googlesitekit-dashboard',
-			slug,
-			reAuth: status,
-			...pageSpeedQueryArgs,
-		}
-	);
-
-	if ( ! needReauthenticate ) {
-		return redirect;
-	}
-
-	// Encodes the query string to ensure the redirect url is not messing up with the main url.
-	const queryString = encodeURIComponent( getQueryString( redirect ) );
-
-	// Rebuild the redirect url.
-	redirect = adminRoot + '?' + queryString;
-
-	return addQueryArgs(
-		connectURL, {
-			redirect,
-			status,
-		}
-	);
 };
 
 /**
