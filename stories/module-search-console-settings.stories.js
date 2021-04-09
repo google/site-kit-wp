@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
+import { STORE_NAME } from '../assets/js/modules/search-console/datastore/constants';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 import {
 	createTestRegistry,
@@ -45,7 +45,7 @@ const storyOptions = {
 		( Story ) => {
 			const registry = createTestRegistry();
 
-			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {} );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 
 			provideUserAuthentication( registry );
 			provideModules( registry );
@@ -61,7 +61,7 @@ storiesOf( 'Search Console Module/Settings', module )
 		return <Settings isOpen={ false } registry={ registry } />;
 	}, storyOptions )
 	.add( 'View, open with all settings', ( args, { registry } ) => {
-		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
 			propertyID: 'http://example.com/',
 		} );
@@ -69,17 +69,17 @@ storiesOf( 'Search Console Module/Settings', module )
 		return <Settings isOpen registry={ registry } />;
 	}, storyOptions )
 	.add( 'Edit, Loading', ( args, { registry } ) => {
-		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( defaultSettings );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/search-console\/data\/matched-sites/ );
 
 		return <Settings isOpen isEditing registry={ registry } />;
 	}, storyOptions )
 	.add( 'Edit, with all settings', ( args, { registry } ) => {
-		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
 			propertyID: 'sc-domain:example.com',
 		} );
-		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetMatchedProperties( [
+		registry.dispatch( STORE_NAME ).receiveGetMatchedProperties( [
 			{
 				permissionLevel: 'siteFullUser',
 				siteURL: 'https://www.example.io/',

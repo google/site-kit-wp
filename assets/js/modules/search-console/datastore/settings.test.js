@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
-import { MODULES_SEARCH_CONSOLE } from './constants';
+import { STORE_NAME } from './constants';
 import { validateCanSubmitChanges, INVARIANT_INVALID_PROPERTY_SELECTION } from './settings';
 
 describe( 'modules/search-console settings', () => {
@@ -47,13 +47,13 @@ describe( 'modules/search-console settings', () => {
 		const settingsEndpoint = /^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/;
 
 		beforeEach( () => {
-			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {
 				propertyID: 'http://example.com/',
 			} );
 		} );
 
 		it( 'should not trigger saveSettings action if nothing is changed', async () => {
-			await registry.dispatch( MODULES_SEARCH_CONSOLE ).submitChanges();
+			await registry.dispatch( STORE_NAME ).submitChanges();
 			expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
 		} );
 
@@ -63,8 +63,8 @@ describe( 'modules/search-console settings', () => {
 				( url, opts ) => ( { body: JSON.parse( opts.body )?.data, status: 200 } ),
 			);
 
-			registry.dispatch( MODULES_SEARCH_CONSOLE ).setPropertyID( 'https://example.com/' );
-			await registry.dispatch( MODULES_SEARCH_CONSOLE ).submitChanges();
+			registry.dispatch( STORE_NAME ).setPropertyID( 'https://example.com/' );
+			await registry.dispatch( STORE_NAME ).submitChanges();
 
 			expect( fetchMock ).toHaveFetched( settingsEndpoint, {
 				body: {
@@ -78,7 +78,7 @@ describe( 'modules/search-console settings', () => {
 
 	describe( 'validateCanSubmitChanges', () => {
 		it( 'should throw an error if propertyID is invalid', () => {
-			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {
 				propertyID: '',
 			} );
 
@@ -86,7 +86,7 @@ describe( 'modules/search-console settings', () => {
 		} );
 
 		it( 'should not throw if propertyID is valid', () => {
-			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {
 				propertyID: 'http://example.com/',
 			} );
 
