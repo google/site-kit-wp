@@ -29,7 +29,7 @@ import ChangeArrow from '../components/ChangeArrow';
 /**
  * Gets the up/down SVG arrow for Google Chart tooltips.
  *
- * @since n.e.x.t
+ * @since 1.30.0
  *
  * @param {number}  difference            The difference which can be positive or negative.
  * @param {string}  [options]             Options to be passed to the ChangeArrow component.
@@ -45,4 +45,27 @@ export const getChartDifferenceArrow = ( difference, options = {} ) => {
 	return renderToString(
 		<ChangeArrow direction={ difference > 0 ? 'up' : 'down' } invertColor={ invertColor } />
 	);
+};
+
+/**
+ * Checks if there is a single row of data or one row is contributing 100% of the total for a given dimension.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<Object>} report An array of report data objects.
+ * @return {(boolean|undefined)} Returns undefined if report is undefined, true/false for the above conditions.
+ */
+export const isSingleSlice = ( report ) => {
+	if ( report === undefined ) {
+		return undefined;
+	}
+
+	if (
+		report?.[ 0 ]?.data?.rows?.length === 1 ||
+		report?.[ 0 ]?.data?.rows?.[ 0 ]?.metrics?.[ 0 ]?.values?.[ 0 ] === report?.[ 0 ]?.data?.totals?.[0]?.values?.[ 0 ]
+	) {
+		return true;
+	}
+
+	return false;
 };

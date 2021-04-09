@@ -5,7 +5,29 @@ on:
     branches:
       - develop
       - main
+    # Only run if CSS/JS/MD-related files changed.
+    paths:
+      - '.github/workflows/js-tests.yml'
+      - '**.js'
+      - '**.json'
+      - '.nvmrc'
+      - '**/package.json'
+      - 'package-lock.json'
+      - '!.eslintrc.json'
+      - '!feature-flags.json'
+      - '!composer.json'
   pull_request:
+    # Only run if CSS/JS/MD-related files changed.
+    paths:
+      - '.github/workflows/js-tests.yml'
+      - '**.js'
+      - '**.json'
+      - '.nvmrc'
+      - '**/package.json'
+      - 'package-lock.json'
+      - '!.eslintrc.json'
+      - '!feature-flags.json'
+      - '!composer.json'
     types:
       - opened
       - reopened
@@ -15,7 +37,9 @@ jobs:
   js-tests:
     name: JS
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
+      - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
       - name: Read .nvmrc
         run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
@@ -23,7 +47,7 @@ jobs:
       - name: Setup Node.js (.nvmrc)
         uses: actions/setup-node@v1
         with:
-          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+          node-version: '${{ steps.nvm.outputs.NVMRC }}'
       - name: Cache Node - npm
         uses: actions/cache@v1
         with:

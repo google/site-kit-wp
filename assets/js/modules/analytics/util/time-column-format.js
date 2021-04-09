@@ -19,7 +19,7 @@
 /**
  * Gets time format for vAxis of a chart based on the incoming data.
  *
- * @since n.e.x.t
+ * @since 1.30.0
  *
  * @param {Array.<Object>} dataMap      Data array for a chart.
  * @param {number}         selectedStat Selected stat number.
