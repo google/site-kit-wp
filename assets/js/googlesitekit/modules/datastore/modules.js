@@ -831,7 +831,7 @@ const baseSelectors = {
 	 *
 	 * Returns a list of features of this module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.

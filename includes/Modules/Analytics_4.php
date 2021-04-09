@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
@@ -35,7 +37,7 @@ use WP_Error;
 /**
  * Class representing the Analytics 4 module.
  *
- * @since n.e.x.t
+ * @since 1.30.0
  * @access private
  * @ignore
  */
@@ -47,9 +49,14 @@ final class Analytics_4 extends Module
 	use Module_With_Settings_Trait;
 
 	/**
+	 * Module slug name.
+	 */
+	const MODULE_SLUG = 'analytics-4';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -58,7 +65,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return array List of Google OAuth scopes.
 	 */
@@ -73,7 +80,7 @@ final class Analytics_4 extends Module
 	 *
 	 * A module being connected means that all steps required as part of its activation are completed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return bool True if module is connected, false otherwise.
 	 */
@@ -98,7 +105,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Cleans up when the module is deactivated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
@@ -107,7 +114,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return array
 	 */
@@ -146,7 +153,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -171,7 +178,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Creates a request object for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
@@ -240,7 +247,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Parses a response for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @param Data_Request $data     Data request object.
 	 * @param mixed        $response Request response.
@@ -263,13 +270,13 @@ final class Analytics_4 extends Module
 	/**
 	 * Sets up information about the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return array Associative array of module info.
 	 */
 	protected function setup_info() {
 		return array(
-			'slug'        => 'analytics-4',
+			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Analytics 4 (Alpha)', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.', 'google-site-kit' ),
 			'cta'         => __( 'Get to know your customers.', 'google-site-kit' ),
@@ -286,7 +293,7 @@ final class Analytics_4 extends Module
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
 	 * for the first time.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
@@ -301,7 +308,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return Module_Settings
 	 */

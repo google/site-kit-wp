@@ -34,7 +34,7 @@ import { getLocale, numFmt, calculateChange, getChartDifferenceArrow } from '../
 /**
  * Gets data for a Google chart from a Search Console report.
  *
- * @since n.e.x.t
+ * @since 1.30.0
  *
  * @param {Array}  current        Report rows for the current period.
  * @param {Array}  previous       Report rows for the previous period.

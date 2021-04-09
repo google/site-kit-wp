@@ -5,7 +5,21 @@ on:
     branches:
       - develop
       - main
+    # Only run if PHP-related files changed.
+    paths:
+      - '.github/workflows/php-lint.yml'
+      - '**.php'
+      - 'phpcs.xml.dist'
+      - 'composer.json'
+      - 'composer.lock'
   pull_request:
+    # Only run if PHP-related files changed.
+    paths:
+      - '.github/workflows/php-lint.yml'
+      - '**.php'
+      - 'phpcs.xml.dist'
+      - 'composer.json'
+      - 'composer.lock'
     types:
       - opened
       - reopened
@@ -15,7 +29,9 @@ jobs:
   php-lint:
     name: PHP
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
+      - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
