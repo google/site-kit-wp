@@ -77,6 +77,7 @@ final class Analytics extends Module
 	use Module_With_Settings_Trait;
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
+	const GOALS_DATA_ID               = 'googlesitekit_analytics_goals_data';
 
 	/**
 	 * Module slug name.
@@ -427,8 +428,14 @@ final class Analytics extends Module
 						);
 					};
 				}
-				$service = $this->get_service( 'analytics' );
-				return $service->management_goals->listManagementGoals( $connection['accountID'], $connection['propertyID'], $connection['profileID'] );
+				$goals_data = get_transient( self::GOALS_DATA_ID );
+				if ( false !== $goals_data ) {
+					return $goals_data;
+				}
+				$service    = $this->get_service( 'analytics' );
+				$goals_data = $service->management_goals->listManagementGoals( $connection['accountID'], $connection['propertyID'], $connection['profileID'] );
+				set_transient( self::GOALS_DATA_ID, $goals_data, DAY_IN_SECONDS );
+				return $goals_data;
 			case 'GET:profiles':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
