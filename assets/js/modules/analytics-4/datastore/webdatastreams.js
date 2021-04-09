@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetWebDataStreamsStore = createFetchStore( {
@@ -36,12 +36,12 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 			useCache: true,
 		} );
 	},
-	reducerCallback( state, response, { propertyID } ) {
+	reducerCallback( state, webDataStreams, { propertyID } ) {
 		return {
 			...state,
 			webdatastreams: {
 				...state.webdatastreams,
-				[ propertyID ]: response.webDataStreams,
+				[ propertyID ]: webDataStreams,
 			},
 		};
 	},
@@ -58,14 +58,14 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 	controlCallback( { propertyID } ) {
 		return API.set( 'modules', 'analytics-4', 'create-webdatastream', { propertyID } );
 	},
-	reducerCallback( state, response, { propertyID } ) {
+	reducerCallback( state, webDataStream, { propertyID } ) {
 		return {
 			...state,
 			webdatastreams: {
 				...state.webdatastreams,
 				[ propertyID ]: [
 					...( state.webdatastreams[ propertyID ] || [] ),
-					response,
+					webDataStream,
 				],
 			},
 		};
@@ -114,7 +114,7 @@ const baseResolvers = {
 	*getWebDataStreams( propertyID ) {
 		const registry = yield Data.commonActions.getRegistry();
 		// Only fetch web data streams if there are none in the store for the given property.
-		const webdatastreams = registry.select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+		const webdatastreams = registry.select( STORE_NAME ).getWebDataStreams( propertyID );
 		if ( webdatastreams === undefined ) {
 			yield fetchGetWebDataStreamsStore.actions.fetchGetWebDataStreams( propertyID );
 		}
@@ -157,4 +157,3 @@ export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
 export default store;
-
