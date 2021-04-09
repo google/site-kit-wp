@@ -53,17 +53,25 @@ export default function Footer( props ) {
 
 	const canSubmitChanges = useSelect( ( select ) => select( CORE_MODULES ).canSubmitChanges( slug ) );
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
+	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( slug ) );
 
-	const setupComplete = module?.connected;
 	const hasSettings = !! module?.SettingsEditComponent;
 
+	const handleEdit = useCallback( () => {
+		onEdit( slug );
+	}, [ slug, onEdit ] );
+
+	const handleCacnel = useCallback( () => {
+		onCancel( slug );
+	}, [ slug, onCancel ] );
+
 	const handleConfirmOrCancel = useCallback( () => {
-		if ( hasSettings && setupComplete ) {
-			onConfirm();
+		if ( hasSettings && moduleConnected ) {
+			onConfirm( slug );
 		} else {
-			onCancel();
+			onCancel( slug );
 		}
-	}, [ hasSettings, setupComplete ] );
+	}, [ slug, hasSettings, moduleConnected, onConfirm, onCancel ] );
 
 	if ( ! module ) {
 		return null;
@@ -80,7 +88,7 @@ export default function Footer( props ) {
 
 	if ( isEditing || isSaving ) {
 		let buttonText = __( 'Close', 'google-site-kit' );
-		if ( hasSettings && setupComplete ) {
+		if ( hasSettings && moduleConnected ) {
 			buttonText = isSaving
 				? __( 'Saving…', 'google-site-kit' )
 				: __( 'Confirm Changes', 'google-site-kit' );
@@ -95,7 +103,7 @@ export default function Footer( props ) {
 				<Spinner isSaving={ isSaving } />
 
 				{ hasSettings && (
-					<Link className="googlesitekit-settings-module__footer-cancel" onClick={ onCancel } inherit>
+					<Link className="googlesitekit-settings-module__footer-cancel" onClick={ handleCacnel } inherit>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Link>
 				) }
@@ -105,7 +113,7 @@ export default function Footer( props ) {
 		primaryColumn = (
 			<Link
 				className="googlesitekit-settings-module__edit-button"
-				onClick={ onEdit }
+				onClick={ handleEdit }
 				inherit
 			>
 				{ __( 'Edit', 'google-site-kit' ) }

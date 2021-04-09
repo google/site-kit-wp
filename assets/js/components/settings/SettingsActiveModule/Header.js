@@ -26,6 +26,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -38,6 +39,11 @@ const { useSelect } = Data;
 
 export default function Header( { slug, isOpen, onToggle } ) {
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
+
+	const handleToggle = useCallback( ( event ) => {
+		onToggle( slug, event );
+	}, [ slug, onToggle ] );
+
 	if ( ! module ) {
 		return null;
 	}
@@ -58,7 +64,7 @@ export default function Header( { slug, isOpen, onToggle } ) {
 			aria-selected={ !! isOpen }
 			aria-expanded={ !! isOpen }
 			aria-controls={ `googlesitekit-settings-module__content--${ slug }` }
-			onClick={ onToggle }
+			onClick={ handleToggle }
 		>
 			<Grid>
 				<Row>

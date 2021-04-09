@@ -57,7 +57,7 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 		return () => {
 			global.removeEventListener( 'keydown', onKeyPress );
 		};
-	}, [] );
+	}, [ handleDialog ] );
 
 	const { deactivateModule } = useDispatch( CORE_MODULES );
 	const handleDisconnect = useCallback( async () => {

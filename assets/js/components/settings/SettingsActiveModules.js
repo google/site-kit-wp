@@ -43,15 +43,15 @@ export default function SettingsActiveModules( { activeModule, moduleState, setM
 	const { submitChanges } = useDispatch( CORE_MODULES );
 	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 
-	const onEdit = useCallback( ( { slug } ) => {
+	const onEdit = useCallback( ( slug ) => {
 		setModuleState( slug, 'edit' );
-	}, [] );
+	}, [ setModuleState ] );
 
-	const onCancel = useCallback( ( { slug } ) => {
+	const onCancel = useCallback( ( slug ) => {
 		setModuleState( slug, 'view' );
-	}, [] );
+	}, [ setModuleState ] );
 
-	const onConfirm = useCallback( async ( { slug } ) => {
+	const onConfirm = useCallback( async ( slug ) => {
 		setIsSaving( true );
 		const { error: submissionError } = await submitChanges( slug );
 		setIsSaving( false );
@@ -62,16 +62,16 @@ export default function SettingsActiveModules( { activeModule, moduleState, setM
 			setModuleState( slug, 'view' );
 			clearWebStorage();
 		}
-	}, [] );
+	}, [ setModuleState ] );
 
-	const onToggle = useCallback( ( { slug }, e ) => {
+	const onToggle = useCallback( ( slug, e ) => {
 		// Set focus on heading when clicked.
 		e.target.closest( '.googlesitekit-settings-module__header' ).focus();
 
 		// If same as activeModule, toggle closed, otherwise it is open.
 		const isOpen = slug !== activeModule || moduleState === 'closed';
 		setModuleState( slug, isOpen ? 'view' : 'closed' );
-	}, [ activeModule, moduleState ] );
+	}, [ activeModule, moduleState, setModuleState ] );
 
 	if ( ! modules ) {
 		return null;
@@ -83,17 +83,17 @@ export default function SettingsActiveModules( { activeModule, moduleState, setM
 
 	return (
 		<Layout>
-			{ sortedModules.map( ( module ) => (
+			{ sortedModules.map( ( { slug } ) => (
 				<SettingsActiveModule
-					key={ module.slug }
-					slug={ module.slug }
-					onEdit={ onEdit.bind( null, module ) }
-					onConfirm={ onConfirm.bind( null, module ) }
-					onCancel={ onCancel.bind( null, module ) }
-					onToggle={ onToggle.bind( null, module ) }
-					isOpen={ activeModule === module.slug && moduleState !== 'closed' }
-					isEditing={ activeModule === module.slug && moduleState === 'edit' }
-					isLocked={ activeModule !== module.slug && moduleState === 'edit' }
+					key={ slug }
+					slug={ slug }
+					onEdit={ onEdit }
+					onConfirm={ onConfirm }
+					onCancel={ onCancel }
+					onToggle={ onToggle }
+					isOpen={ activeModule === slug && moduleState !== 'closed' }
+					isEditing={ activeModule === slug && moduleState === 'edit' }
+					isLocked={ activeModule !== slug && moduleState === 'edit' }
 					isSaving={ isSaving }
 					error={ error }
 				/>
