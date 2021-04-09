@@ -148,6 +148,23 @@ describe( 'createInfoStore store', () => {
 				} );
 			} );
 
+			it( 'should not add notification query parameter to the adminReauthURL when reAuth is false', () => {
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( { adminURL: 'http://example.com/wp-admin/' } );
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
+				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME, requiresSetup: false } );
+				registry.registerStore( STORE_NAME, store );
+
+				const adminReauthURL = registry.select( STORE_NAME ).getAdminReauthURL( false );
+
+				const { origin, pathname } = new URL( adminReauthURL );
+				expect( origin + pathname ).toEqual( 'http://example.com/wp-admin/admin.php' );
+				expect( adminReauthURL ).toMatchQueryParameters( {
+					page: 'googlesitekit-dashboard',
+					slug: MODULE_SLUG,
+					reAuth: 'false',
+				} );
+			} );
+
 			// Uses connect URL when needsReautentication is true.
 			it( 'adds connectURL to the adminReauthURL when needsReautentication is true', () => {
 				const connectURLBase = 'http://connect.com/wp-admin/admin.php';
