@@ -183,7 +183,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
 
 				const datastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
-				expect( datastream ).toEqual( fixtures.webDataStreams.webDataStreams[ 0 ] );
+				expect( datastream ).toEqual( fixtures.webDataStreams[ 0 ] );
 			} );
 
 			it.each( [
@@ -195,7 +195,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
 
 				const datastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
-				expect( datastream ).toEqual( fixtures.webDataStreams.webDataStreams[ 1 ] );
+				expect( datastream ).toEqual( fixtures.webDataStreams[ 1 ] );
 			} );
 		} );
 	} );

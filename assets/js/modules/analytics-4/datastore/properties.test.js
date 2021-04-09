@@ -151,10 +151,9 @@ describe( 'modules/analytics-4 properties', () => {
 				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
 				registry.dispatch( STORE_NAME ).selectProperty( propertyID );
 
-				const { webDataStreams } = fixtures.webDataStreams;
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
-				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( webDataStreams[ 1 ].name.split( '/' ).pop() );
-				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( webDataStreams[ 1 ].measurementId ); // eslint-disable-line sitekit/acronym-case
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( fixtures.webDataStreams[ 1 ].name.split( '/' ).pop() );
+				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( fixtures.webDataStreams[ 1 ].measurementId ); // eslint-disable-line sitekit/acronym-case
 			} );
 		} );
 	} );
