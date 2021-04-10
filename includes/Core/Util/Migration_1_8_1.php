@@ -239,7 +239,11 @@ class Migration_1_8_1 {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		return $wpdb->get_col(
-			$wpdb->prepare( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key IN (%s, %s) LIMIT 20", Verification_File::OPTION, Verification_Meta::OPTION )
+			$wpdb->prepare(
+				"SELECT user_id FROM $wpdb->usermeta WHERE meta_key IN (%s, %s) LIMIT 20",
+				$this->user_options->get_meta_key( Verification_File::OPTION ),
+				$this->user_options->get_meta_key( Verification_Meta::OPTION )
+			)
 		);
 	}
 
