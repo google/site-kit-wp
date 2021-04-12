@@ -140,7 +140,7 @@ class DataBlock extends Component {
 				<div className="googlesitekit-data-block__change-source-wrapper">
 					<div className={ classnames(
 						'googlesitekit-data-block__change',
-						{ 'googlesitekit-data-block__change--no-change': change === 0 }
+						{ 'googlesitekit-data-block__change--no-change': ! change }
 					) }>
 						<Fragment>
 							{ !! change && (
