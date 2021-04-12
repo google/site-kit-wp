@@ -34,6 +34,7 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import AdBlockerWarning from '../common/AdBlockerWarning';
 
 const { useSelect } = Data;
 
@@ -47,6 +48,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 		rpmReportURL,
 		earningsURL,
 		impressionsURL,
+		isAdblockerActive,
 	} = useSelect( ( select ) => {
 		const referenceDate = select( CORE_USER ).getReferenceDate();
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
@@ -94,8 +96,21 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 				...dateRangeArgs,
 				gm: 'monetizableImpressions',
 			} ),
+			isAdblockerActive: select( STORE_NAME ).isAdBlockerActive(),
 		};
 	} );
+
+	if ( isAdblockerActive ) {
+		return (
+			<Widget className="googlesitekit-dashboard-adsense-stats mdc-layout-grid">
+				<div className="mdc-layout-grid__inner">
+					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+						<AdBlockerWarning />
+					</div>
+				</div>
+			</Widget>
+		);
+	}
 
 	if ( loading ) {
 		return <PreviewBlock width="100%" height="276px" />;
