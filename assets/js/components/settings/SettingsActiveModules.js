@@ -79,7 +79,7 @@ export default function SettingsActiveModules( { activeModule, moduleState, setM
 
 	const sortedModules = Object.values( modules )
 		.filter( ( module ) => ! module.internal && module.active )
-		.sort( ( module1, module2 ) => module1.sort - module2.sort );
+		.sort( ( a, b ) => a.order - b.order );
 
 	return (
 		<Layout>
