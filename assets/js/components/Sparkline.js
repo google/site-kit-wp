@@ -66,6 +66,11 @@ function Sparkline( {
 		],
 	};
 
+	if ( ! data.slice( 1 ).some( ( row ) => row[ 1 ] > 0 ) ) {
+		chartOptions.vAxis.minValue = 0;
+		chartOptions.vAxis.maxValue = 1;
+	}
+
 	return (
 		<div className="googlesitekit-analytics-sparkline-chart-wrap">
 			<GoogleChartV2
