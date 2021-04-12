@@ -19,6 +19,7 @@ use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -28,6 +29,7 @@ class Search_ConsoleTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
 	use Module_With_Screen_ContractTests;
 	use Module_With_Settings_ContractTests;
+	use Module_With_Owner_ContractTests;
 
 	public function test_magic_methods() {
 		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -116,4 +118,12 @@ class Search_ConsoleTest extends TestCase {
 	protected function get_module_with_settings() {
 		return new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
+
+	/**
+	 * @return Module_With_Owner
+	 */
+	protected function get_module_with_owner() {
+		return new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
 }
