@@ -121,7 +121,7 @@ final class EditPost {
 		$swg_nonce = sanitize_key( $_POST[ $nonce_key ] );
 
 		// Verify settings nonce.
-		if ( ! wp_verify_nonce( sanitize_key( $swg_nonce ), Key::from( 'saving_settings' ) ) ) {
+		if ( ! wp_verify_nonce( $swg_nonce, Key::from( 'saving_settings' ) ) ) {
 			return;
 		}
 
