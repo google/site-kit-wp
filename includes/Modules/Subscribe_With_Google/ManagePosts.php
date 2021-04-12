@@ -32,7 +32,7 @@ final class ManagePosts {
 		// Without this check, the column appears on the AMP plugin's
 		// Validated URLs page, for example.
 		if ( get_current_screen()->parent_file === 'edit.php' ) {
-			$columns['swg_product'] = 'SwG Product';
+			$columns['swg_product'] = 'Product';
 		}
 
 		return $columns;
