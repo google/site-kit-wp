@@ -61,7 +61,7 @@ export default function Footer( props ) {
 		onEdit( slug );
 	}, [ slug, onEdit ] );
 
-	const handleCacnel = useCallback( () => {
+	const handleCancel = useCallback( () => {
 		onCancel( slug );
 	}, [ slug, onCancel ] );
 
@@ -77,12 +77,7 @@ export default function Footer( props ) {
 		return null;
 	}
 
-	const {
-		name,
-		homepage,
-		forceActive: autoActivate,
-	} = module;
-
+	const { name, homepage, forceActive } = module;
 	let primaryColumn = null;
 	let secondaryColumn = null;
 
@@ -103,13 +98,13 @@ export default function Footer( props ) {
 				<Spinner isSaving={ isSaving } />
 
 				{ hasSettings && (
-					<Link className="googlesitekit-settings-module__footer-cancel" onClick={ handleCacnel } inherit>
+					<Link className="googlesitekit-settings-module__footer-cancel" onClick={ handleCancel } inherit>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Link>
 				) }
 			</Fragment>
 		);
-	} else if ( hasSettings || ! autoActivate ) {
+	} else if ( hasSettings || ! forceActive ) {
 		primaryColumn = (
 			<Link
 				className="googlesitekit-settings-module__edit-button"
@@ -126,7 +121,7 @@ export default function Footer( props ) {
 		);
 	}
 
-	if ( isEditing && ! autoActivate ) {
+	if ( isEditing && ! forceActive ) {
 		secondaryColumn = (
 			<Link
 				className="googlesitekit-settings-module__remove-button"
