@@ -1,5 +1,5 @@
 /**
- * Search Console Settings components.
+ * Search Console common components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,6 +16,4 @@
  * limitations under the License.
  */
 
-export { default as SettingsView } from './SettingsView';
-export { default as SettingsForm } from './SettingsForm';
-export { default as SettingsEdit } from './SettingsEdit';
+export { default as PropertySelect } from './PropertySelect';

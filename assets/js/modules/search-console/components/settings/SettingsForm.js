@@ -1,5 +1,5 @@
 /**
- * Search Console Settings View component
+ * SettingsForm component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,30 +17,20 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-import DisplaySetting from '../../../../components/DisplaySetting';
-const { useSelect } = Data;
+import { PropertySelect } from '../common/';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
-export default function SettingsView() {
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-
+export default function SettingsForm() {
 	return (
-		<Fragment>
-			<h5 className="googlesitekit-settings-module__meta-item-type">
-				{ __( 'Connected Property', 'google-site-kit' ) }
-			</h5>
-			<p className="googlesitekit-settings-module__meta-item-data">
-				<DisplaySetting value={ propertyID } />
-			</p>
-		</Fragment>
+		<div className="googlesitekit-search-console-settings-fields">
+			<StoreErrorNotices moduleSlug="search-console" storeName={ STORE_NAME } />
+
+			<div className="googlesitekit-setup-module__inputs">
+				<PropertySelect />
+			</div>
+		</div>
 	);
 }

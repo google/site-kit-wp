@@ -1,5 +1,5 @@
 /**
- * Search Console Settings components.
+ * Validation utilities.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,6 +16,14 @@
  * limitations under the License.
  */
 
-export { default as SettingsView } from './SettingsView';
-export { default as SettingsForm } from './SettingsForm';
-export { default as SettingsEdit } from './SettingsEdit';
+/**
+ * Checks whether the given property ID appears to be valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} propertyID Property ID to check.
+ * @return {boolean} Whether or not the given property ID is valid.
+ */
+export function isValidPropertyID( propertyID ) {
+	return typeof propertyID === 'string' && propertyID.length > 0;
+}
