@@ -1,5 +1,5 @@
 /**
- * Widgets layout constants.
+ * Validation utilities.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,14 +17,13 @@
  */
 
 /**
- * Internal dependencies
+ * Checks whether the given property ID appears to be valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} propertyID Property ID to check.
+ * @return {boolean} Whether or not the given property ID is valid.
  */
-import { WIDGET_WIDTHS } from '../datastore/constants';
-
-export const WIDTH_GRID_COUNTER_MAP = {
-	[ WIDGET_WIDTHS.QUARTER ]: 3,
-	[ WIDGET_WIDTHS.HALF ]: 6,
-	[ WIDGET_WIDTHS.FULL ]: 12,
-};
-
-export const HIDDEN_CLASS = 'googlesitekit-hidden';
+export function isValidPropertyID( propertyID ) {
+	return typeof propertyID === 'string' && propertyID.length > 0;
+}

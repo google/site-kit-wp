@@ -28,6 +28,7 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertEqualSetsWithIndex(
 			array(
 				'propertyID' => '',
+				'ownerID'    => '',
 			),
 			get_option( Settings::OPTION )
 		);
