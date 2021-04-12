@@ -17,61 +17,61 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useState, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { clearWebStorage } from '../../util';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { clearWebStorage } from '../../util';
 import Layout from '../layout/Layout';
-import SettingsModule from './settings-module';
+import SettingsActiveModule from './SettingsActiveModule';
 const { useDispatch, useSelect } = Data;
 
-const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) => {
-	const { submitChanges } = useDispatch( CORE_MODULES );
-	const [ error, setError ] = useState( false );
+export default function SettingsActiveModules( { activeModule, moduleState, setModuleState } ) {
+	const [ error, setError ] = useState( undefined );
 	const [ isSaving, setIsSaving ] = useState( false );
+
+	const { submitChanges } = useDispatch( CORE_MODULES );
 	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 
-	const onEdit = ( slug ) => {
+	const onEdit = useCallback( ( slug ) => {
 		setModuleState( slug, 'edit' );
-	};
+	}, [ setModuleState ] );
 
-	const onCancel = ( slug ) => {
+	const onCancel = useCallback( ( slug ) => {
 		setModuleState( slug, 'view' );
-	};
+	}, [ setModuleState ] );
 
-	const onConfirm = async ( slug ) => {
+	const onConfirm = useCallback( async ( slug ) => {
 		setIsSaving( true );
-
 		const { error: submissionError } = await submitChanges( slug );
-
 		setIsSaving( false );
 
-		if ( ! submissionError ) {
+		if ( submissionError ) {
+			setError( submissionError );
+		} else {
 			setModuleState( slug, 'view' );
 			clearWebStorage();
-		} else {
-			setError( submissionError );
 		}
-	};
+	}, [ setModuleState ] );
 
-	const handleAccordion = ( module, e ) => {
+	const onToggle = useCallback( ( slug, e ) => {
 		// Set focus on heading when clicked.
 		e.target.closest( '.googlesitekit-settings-module__header' ).focus();
 
 		// If same as activeModule, toggle closed, otherwise it is open.
-		const isOpen = module !== activeModule || moduleState === 'closed';
-
-		setModuleState(
-			module,
-			isOpen ? 'view' : 'closed',
-		);
-	};
+		const isOpen = slug !== activeModule || moduleState === 'closed';
+		setModuleState( slug, isOpen ? 'view' : 'closed' );
+	}, [ activeModule, moduleState, setModuleState ] );
 
 	if ( ! modules ) {
 		return null;
@@ -83,29 +83,27 @@ const SettingsActiveModules = ( { activeModule, moduleState, setModuleState } ) 
 
 	return (
 		<Layout>
-			{ sortedModules.map( ( module ) => (
-				<SettingsModule
-					key={ module.slug }
-					slug={ module.slug }
-					name={ module.name }
-					description={ module.description }
-					homepage={ module.homepage }
-					active={ module.active }
-					setupComplete={ module.active && module.connected }
+			{ sortedModules.map( ( { slug } ) => (
+				<SettingsActiveModule
+					key={ slug }
+					slug={ slug }
 					onEdit={ onEdit }
 					onConfirm={ onConfirm }
 					onCancel={ onCancel }
-					isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
-					isOpen={ activeModule === module.slug && moduleState !== 'closed' }
-					handleAccordion={ handleAccordion }
+					onToggle={ onToggle }
+					isOpen={ activeModule === slug && moduleState !== 'closed' }
+					isEditing={ activeModule === slug && moduleState === 'edit' }
+					isLocked={ activeModule !== slug && moduleState === 'edit' }
 					isSaving={ isSaving }
-					provides={ module.features }
 					error={ error }
-					autoActivate={ module.forceActive }
 				/>
 			) ) }
 		</Layout>
 	);
-};
+}
 
-export default SettingsActiveModules;
+SettingsActiveModules.propTypes = {
+	activeModule: PropTypes.string,
+	moduleState: PropTypes.string,
+	setModuleState: PropTypes.func.isRequired,
+};
