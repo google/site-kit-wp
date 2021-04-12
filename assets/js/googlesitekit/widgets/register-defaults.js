@@ -32,12 +32,12 @@ import {
 import {
 	AREA_DASHBOARD_ALL_TRAFFIC,
 	AREA_DASHBOARD_SEARCH_FUNNEL,
-	AREA_DASHBOARD_POPULARITY,
+	AREA_DASHBOARD_ACQUISITION,
 	AREA_DASHBOARD_SPEED,
 	AREA_DASHBOARD_EARNINGS,
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
-	AREA_PAGE_DASHBOARD_POPULARITY,
+	AREA_PAGE_DASHBOARD_ACQUISITION,
 	AREA_PAGE_DASHBOARD_SPEED,
 } from './default-areas';
 import { WIDGET_URL_SEARCH } from './default-widgets';
@@ -74,9 +74,9 @@ export function registerDefaults( widgetsAPI ) {
 	);
 
 	widgetsAPI.registerWidgetArea(
-		AREA_DASHBOARD_POPULARITY,
+		AREA_DASHBOARD_ACQUISITION,
 		{
-			title: __( 'Popularity', 'google-site-kit' ),
+			title: __( 'Acquisition', 'google-site-kit' ),
 			subtitle: __( 'Your most popular pages and how people found them from Search.', 'google-site-kit' ),
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 3,
@@ -129,9 +129,9 @@ export function registerDefaults( widgetsAPI ) {
 	);
 
 	widgetsAPI.registerWidgetArea(
-		AREA_PAGE_DASHBOARD_POPULARITY,
+		AREA_PAGE_DASHBOARD_ACQUISITION,
 		{
-			title: __( 'Popularity', 'google-site-kit' ),
+			title: __( 'Acquisition', 'google-site-kit' ),
 			subtitle: __( 'What people searched for to find your page.', 'google-site-kit' ),
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 3,
@@ -159,7 +159,7 @@ export function registerDefaults( widgetsAPI ) {
 			wrapWidget: false,
 		},
 		[
-			AREA_DASHBOARD_POPULARITY,
+			AREA_DASHBOARD_ACQUISITION,
 		],
 	);
 }

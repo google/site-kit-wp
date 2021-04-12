@@ -29,7 +29,7 @@ import {
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
 	AREA_DASHBOARD_SEARCH_FUNNEL,
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
-	AREA_DASHBOARD_POPULARITY,
+	AREA_DASHBOARD_ACQUISITION,
 } from '../../googlesitekit/widgets/default-areas';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 import AnalyticsIcon from '../../../svg/analytics.svg';
@@ -129,7 +129,7 @@ export const registerWidgets = ( widgets ) => {
 			wrapWidget: false,
 		},
 		[
-			AREA_DASHBOARD_POPULARITY,
+			AREA_DASHBOARD_ACQUISITION,
 		],
 	);
 
