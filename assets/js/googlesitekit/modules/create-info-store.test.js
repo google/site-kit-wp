@@ -156,8 +156,9 @@ describe( 'createInfoStore store', () => {
 
 				const adminReauthURL = registry.select( STORE_NAME ).getAdminReauthURL( false );
 
-				const { origin, pathname } = new URL( adminReauthURL );
-				expect( origin + pathname ).toEqual( 'http://example.com/wp-admin/admin.php' );
+				const url = new URL( adminReauthURL );
+				expect( url.origin + url.pathname ).toEqual( 'http://example.com/wp-admin/admin.php' );
+				expect( url.searchParams.has( 'notification' ) ).toBe( false );
 				expect( adminReauthURL ).toMatchQueryParameters( {
 					page: 'googlesitekit-dashboard',
 					slug: MODULE_SLUG,
