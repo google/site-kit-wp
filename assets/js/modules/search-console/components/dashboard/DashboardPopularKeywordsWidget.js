@@ -75,7 +75,7 @@ function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero, WidgetRepor
 
 	const tableColumns = [
 		{
-			title: __( 'Keyword', 'google-site-kit' ),
+			title: url ? __( 'Top search queries for your page', 'google-site-kit' ) : __( 'Top search queries for your site', 'google-site-kit' ),
 			description: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
 			primary: true,
 			field: 'keys.0',

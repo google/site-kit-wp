@@ -31,9 +31,9 @@ import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopu
 import ModulePopularKeywordsWidget from './components/module/ModulePopularKeywordsWidget';
 import ModuleOverviewWidget from './components/module/ModuleOverviewWidget';
 import {
-	AREA_DASHBOARD_POPULARITY,
+	AREA_DASHBOARD_ACQUISITION,
 	AREA_DASHBOARD_SEARCH_FUNNEL,
-	AREA_PAGE_DASHBOARD_POPULARITY,
+	AREA_PAGE_DASHBOARD_ACQUISITION,
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/search-console.svg';
@@ -92,8 +92,8 @@ export const registerWidgets = ( widgets ) => {
 			wrapWidget: false,
 		},
 		[
-			AREA_DASHBOARD_POPULARITY,
-			AREA_PAGE_DASHBOARD_POPULARITY,
+			AREA_DASHBOARD_ACQUISITION,
+			AREA_PAGE_DASHBOARD_ACQUISITION,
 		],
 	);
 	widgets.registerWidget(
