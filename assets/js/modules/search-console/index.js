@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SettingsView } from './components/settings';
+import { SettingsEdit, SettingsView } from './components/settings';
 import DashboardImpressionsWidget from './components/dashboard/DashboardImpressionsWidget';
 import DashboardClicksWidget from './components/dashboard/DashboardClicksWidget';
 import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopularKeywordsWidget';
@@ -48,6 +48,7 @@ export const registerModule = ( modules ) => {
 		'search-console',
 		{
 			storeName: STORE_NAME,
+			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			Icon: SearchConsoleIcon,
 			screenWidgetContext: CONTEXT_MODULE_SEARCH_CONSOLE,
