@@ -52,7 +52,7 @@ final class EditPost {
 		$this->render_products_dropdown();
 		$this->render_free_checkbox();
 
-		wp_nonce_field( Key::from( 'saving_settings' ), Key::from( 'nonce' ) );
+		wp_nonce_field( Key::from( 'saving_post' ), Key::from( 'edit_post_nonce' ) );
 	}
 
 	/** Renders products dropdown. */
@@ -109,19 +109,19 @@ final class EditPost {
 	public function save_post( $post_id ) {
 		$product_key = Key::from( 'product' );
 		$free_key    = Key::from( 'free' );
-		$nonce_key   = Key::from( 'nonce' );
+		$nonce_key   = Key::from( 'edit_post_nonce' );
 		if (
 			! isset( $_POST[ $nonce_key ] ) ||
 			! isset( $_POST[ $product_key ] )
 		) {
 			return;
 		}
-		$product   = sanitize_key( $_POST[ $product_key ] );
-		$free      = isset( $_POST[ $free_key ] ) ? sanitize_key( $_POST[ $free_key ] ) : 'false';
-		$swg_nonce = sanitize_key( $_POST[ $nonce_key ] );
+		$product = sanitize_key( $_POST[ $product_key ] );
+		$free    = isset( $_POST[ $free_key ] ) ? sanitize_key( $_POST[ $free_key ] ) : 'false';
+		$nonce   = sanitize_key( $_POST[ $nonce_key ] );
 
-		// Verify settings nonce.
-		if ( ! wp_verify_nonce( $swg_nonce, Key::from( 'saving_settings' ) ) ) {
+		// Verify nonce.
+		if ( ! wp_verify_nonce( $nonce, Key::from( 'saving_post' ) ) ) {
 			return;
 		}
 
