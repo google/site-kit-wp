@@ -84,13 +84,13 @@ final class EditPost {
 		$products_str = trim( $this->settings['products'] );
 		$products     = explode( "\n", $products_str );
 
-		$product_key      = Key::from( 'product' );
-		$selected_product = get_post_meta( get_the_ID(), $product_key, true );
+		$selected_product = get_post_meta( get_the_ID(), $this->product_field_name, true );
 
+		// TODO: Translate.
 		echo 'Product&nbsp; ';
 		echo '<select';
-		echo ' name="' . esc_attr( $product_key ) . '"';
-		echo ' id="' . esc_attr( $product_key ) . '"';
+		echo ' name="' . esc_attr( $this->product_field_name ) . '"';
+		echo ' id="' . esc_attr( $this->product_field_name ) . '"';
 		echo '>';
 		foreach ( $products as $product ) {
 			$product = trim( $product );
