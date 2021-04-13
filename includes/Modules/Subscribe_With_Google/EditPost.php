@@ -14,6 +14,27 @@ namespace Google\Site_Kit\Modules\Subscribe_With_Google;
 final class EditPost {
 
 	/**
+	 * Name of product field.
+	 *
+	 * @var string
+	 */
+	private $product_field_name;
+
+	/**
+	 * Name of nonce.
+	 *
+	 * @var string
+	 */
+	private $nonce_name;
+
+	/**
+	 * Action of nonce.
+	 *
+	 * @var string
+	 */
+	private $nonce_action;
+
+	/**
 	 * Settings for SwG.
 	 *
 	 * @var object
@@ -26,7 +47,10 @@ final class EditPost {
 	 * @param object $settings Settings for SwG.
 	 */
 	public function __construct( $settings ) {
-		$this->settings = $settings;
+		$this->product_field_name = Key::from( 'product' );
+		$this->nonce_name         = Key::from( 'edit_post_nonce' );
+		$this->nonce_action       = Key::from( 'saving_post' );
+		$this->settings           = $settings;
 
 		// Render meta box on Post Edit page.
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
@@ -52,7 +76,7 @@ final class EditPost {
 		$this->render_products_dropdown();
 		$this->render_free_checkbox();
 
-		wp_nonce_field( Key::from( 'saving_post' ), Key::from( 'edit_post_nonce' ) );
+		wp_nonce_field( $this->nonce_action, $this->nonce_name );
 	}
 
 	/** Renders products dropdown. */
@@ -107,38 +131,22 @@ final class EditPost {
 	 * @param string $post_id ID of the post being saved.
 	 */
 	public function save_post( $post_id ) {
-		$product_key = Key::from( 'product' );
-		$free_key    = Key::from( 'free' );
-		$nonce_key   = Key::from( 'edit_post_nonce' );
-		if (
-			! isset( $_POST[ $nonce_key ] ) ||
-			! isset( $_POST[ $product_key ] )
-		) {
-			return;
-		}
-		$product = sanitize_key( $_POST[ $product_key ] );
-		$free    = isset( $_POST[ $free_key ] ) ? sanitize_key( $_POST[ $free_key ] ) : 'false';
-		$nonce   = sanitize_key( $_POST[ $nonce_key ] );
-
-		// Verify nonce.
-		if ( ! wp_verify_nonce( $nonce, Key::from( 'saving_post' ) ) ) {
-			return;
-		}
-
-		// Product field.
-		$value = sanitize_text_field( wp_unslash( $product ) );
-		update_post_meta(
-			$post_id,
-			$product_key,
-			$value
+		$product = Forms::receive_field(
+			$this->product_field_name,
+			$this->nonce_name,
+			$this->nonce_action
 		);
 
-		// Free field.
-		$value = sanitize_text_field( wp_unslash( $free ) );
+		// Require product.
+		if ( false === $product ) {
+			return;
+		}
+
+		// Save product.
 		update_post_meta(
 			$post_id,
-			$free_key,
-			$value
+			$this->product_field_name,
+			$product
 		);
 	}
 }
