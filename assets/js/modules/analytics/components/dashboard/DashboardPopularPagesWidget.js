@@ -83,15 +83,57 @@ function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 	} );
 
 	if ( loading ) {
-		return <PreviewTable padding />;
+		return (
+			<Widget
+				noPadding
+				Footer={ () => (
+					<SourceLink
+						className="googlesitekit-data-block__source"
+						name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+						href={ analyticsMainURL }
+						external
+					/>
+				) }
+			>
+				<PreviewTable padding />
+			</Widget>
+		);
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+		return (
+			<Widget
+				noPadding
+				Footer={ () => (
+					<SourceLink
+						className="googlesitekit-data-block__source"
+						name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+						href={ analyticsMainURL }
+						external
+					/>
+				) }
+			>
+				<WidgetReportError moduleSlug="analytics" error={ error } />
+			</Widget>
+		);
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <WidgetReportZero moduleSlug="analytics" />;
+		return (
+			<Widget
+				noPadding
+				Footer={ () => (
+					<SourceLink
+						className="googlesitekit-data-block__source"
+						name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+						href={ analyticsMainURL }
+						external
+					/>
+				) }
+			>
+				<WidgetReportZero moduleSlug="analytics" />
+			</Widget>
+		);
 	}
 
 	return (

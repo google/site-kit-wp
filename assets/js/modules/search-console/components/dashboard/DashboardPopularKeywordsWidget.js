@@ -62,15 +62,57 @@ function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero, WidgetRepor
 	} ) );
 
 	if ( loading ) {
-		return <PreviewTable padding />;
+		return (
+			<Widget
+				noPadding
+				Footer={ () => (
+					<SourceLink
+						className="googlesitekit-data-block__source"
+						name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+						href={ baseServiceURL }
+						external
+					/>
+				) }
+			>
+				<PreviewTable padding />
+			</Widget>
+		);
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="search-console" error={ error } />;
+		return (
+			<Widget
+				noPadding
+				Footer={ () => (
+					<SourceLink
+						className="googlesitekit-data-block__source"
+						name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+						href={ baseServiceURL }
+						external
+					/>
+				) }
+			>
+				<WidgetReportError moduleSlug="search-console" error={ error } />
+			</Widget>
+		);
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <WidgetReportZero moduleSlug="search-console" />;
+		return (
+			<Widget
+				noPadding
+				Footer={ () => (
+					<SourceLink
+						className="googlesitekit-data-block__source"
+						name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+						href={ baseServiceURL }
+						external
+					/>
+				) }
+			>
+				<WidgetReportZero moduleSlug="search-console" />
+			</Widget>
+		);
 	}
 
 	const tableColumns = [

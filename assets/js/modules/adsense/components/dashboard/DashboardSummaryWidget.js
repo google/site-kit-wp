@@ -98,15 +98,27 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 	} );
 
 	if ( loading ) {
-		return <PreviewBlock width="100%" height="276px" />;
+		return (
+			<Widget>
+				<PreviewBlock width="100%" height="276px" />
+			</Widget>
+		);
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="adsense" error={ error } />;
+		return (
+			<Widget noPadding>
+				<WidgetReportError moduleSlug="adsense" error={ error } />
+			</Widget>
+		);
 	}
 
 	if ( isZeroReport( today ) && isZeroReport( period ) && isZeroReport( daily ) ) {
-		return <WidgetReportZero moduleSlug="adsense" />;
+		return (
+			<Widget noPadding>
+				<WidgetReportZero moduleSlug="adsense" />
+			</Widget>
+		);
 	}
 
 	const processedData = reduceAdSenseData( daily.rows );
