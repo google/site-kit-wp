@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Subscribe_With_Google\Filters
+ * Class Google\Site_Kit\Modules\Subscribe_With_Google\SinglePost
  *
  * @package   Google\Site_Kit\Modules\Subscribe_With_Google
  * @copyright 2021 Google LLC
@@ -10,10 +10,8 @@
 
 namespace Google\Site_Kit\Modules\Subscribe_With_Google;
 
-/**
- * Adds filters.
- */
-final class Filters {
+/** Modifies single posts. */
+final class SinglePost {
 
 	/**
 	 * Adds WordPress filters.

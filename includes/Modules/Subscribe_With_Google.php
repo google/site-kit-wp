@@ -20,10 +20,10 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Subscribe_With_Google\EditPost;
-use Google\Site_Kit\Modules\Subscribe_With_Google\Filters;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Header;
-use Google\Site_Kit\Modules\Subscribe_With_Google\Settings;
 use Google\Site_Kit\Modules\Subscribe_With_Google\ManagePosts;
+use Google\Site_Kit\Modules\Subscribe_With_Google\Settings;
+use Google\Site_Kit\Modules\Subscribe_With_Google\SinglePost;
 
 /**
  * Class representing the Subscribe with Google module.
@@ -52,9 +52,9 @@ final class Subscribe_With_Google extends Module
 		$settings = $this->get_settings()->get();
 
 		new EditPost( $settings );
-		new Filters( $is_amp );
 		new Header( $is_amp, $settings );
 		new ManagePosts();
+		new SinglePost( $is_amp );
 	}
 
 	/**
