@@ -25,10 +25,19 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useState, useCallback } from '@wordpress/element';
+import { useState, useCallback, useEffect } from '@wordpress/element';
 
-export default function Accordion( { title, children, initialOpen } ) {
+export default function Accordion( { title, children, initialOpen, onOpen, onClose } ) {
 	const [ isActive, setActive ] = useState( !! initialOpen );
+
+	useEffect( () => {
+		if ( isActive && onOpen && typeof onOpen === 'function' ) {
+			onOpen();
+		} else if ( ! isActive && onClose && typeof onClose === 'function' ) {
+			onClose();
+		}
+	}, [ isActive, onClose, onOpen ] );
+
 	const toggleAccordion = useCallback( () => {
 		setActive( ! isActive );
 	}, [ isActive ] );
@@ -55,4 +64,6 @@ Accordion.propTypes = {
 	title: PropTypes.node.isRequired,
 	children: PropTypes.node.isRequired,
 	initialOpen: PropTypes.bool,
+	onOpen: PropTypes.func,
+	onClose: PropTypes.func,
 };
