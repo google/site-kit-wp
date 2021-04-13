@@ -1,5 +1,5 @@
 /**
- * Widgets layout constants.
+ * SettingsForm component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,12 +19,18 @@
 /**
  * Internal dependencies
  */
-import { WIDGET_WIDTHS } from '../datastore/constants';
+import { STORE_NAME } from '../../datastore/constants';
+import { PropertySelect } from '../common/';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
-export const WIDTH_GRID_COUNTER_MAP = {
-	[ WIDGET_WIDTHS.QUARTER ]: 3,
-	[ WIDGET_WIDTHS.HALF ]: 6,
-	[ WIDGET_WIDTHS.FULL ]: 12,
-};
+export default function SettingsForm() {
+	return (
+		<div className="googlesitekit-search-console-settings-fields">
+			<StoreErrorNotices moduleSlug="search-console" storeName={ STORE_NAME } />
 
-export const HIDDEN_CLASS = 'googlesitekit-hidden';
+			<div className="googlesitekit-setup-module__inputs">
+				<PropertySelect />
+			</div>
+		</div>
+	);
+}

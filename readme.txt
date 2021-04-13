@@ -111,6 +111,7 @@ If you have some ideas to improve the plugin or to solve a bug, feel free to rai
 
 **Fixed**
 
+* Fix critical JS error due to a new version of the Google charts library being released, by locking to a specific version. See [#3132](https://github.com/google/site-kit-wp/issues/3132).
 * Fix regression where modules may be sorted incorrectly on the plugin's settings screen. See [#3093](https://github.com/google/site-kit-wp/issues/3093).
 * Fix bug with help visibility icon in header where clicking it wouldn't trigger the menu to open in some scenarios, and also address some visual design problems with it. See [#3026](https://github.com/google/site-kit-wp/issues/3026).
 * Fix Ad Blocker detection issue which occurred on sites with GoDaddy CDN enabled. See [#3018](https://github.com/google/site-kit-wp/issues/3018).

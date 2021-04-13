@@ -285,4 +285,11 @@
 			}
 		}
 	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend--single {
+
+		.googlesitekit-widget--analyticsAllTraffic__legend-slice:not(:first-child) {
+			display: none;
+		}
+	}
 }
