@@ -153,7 +153,9 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 							disabled={ disabled }
 						/>
 					</TextField>
-					<label htmlFor={ `${ slug }-select-options` } className="screen-reader-text">Enter your own answer here</label>
+					<label htmlFor={ `${ slug }-select-options` } className="screen-reader-text">
+						{ __( 'Enter your own answer here', 'google-site-kit' ) }
+					</label>
 				</div>
 			</div>
 
