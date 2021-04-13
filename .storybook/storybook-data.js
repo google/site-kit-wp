@@ -14,12 +14,12 @@ module.exports = [
 		},
 	},
 	{
-		id: 'global--buttons',
-		kind: 'Global',
+		id: 'components-button--hover-button',
+		kind: 'Components',
 		name: 'Buttons',
-		story: 'Buttons',
+		story: 'Default Button Hover',
 		parameters: {
-			fileName: './stories/buttons.stories.js',
+			fileName: './assets/js/components/Button.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
