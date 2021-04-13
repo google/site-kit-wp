@@ -17,42 +17,49 @@
  */
 
 /**
- * External dependencies
- */
-//import { storiesOf } from '@storybook/react';
-import React from 'react';
-
-/**
  * Internal dependencies
  */
 import Button from './Button';
 
-export default {
-	title: 'Components/Button',
-	component: Button,
-	parameters: {
+const Template = ( args ) => <Button { ...args } />;
+
+export const DefaultButton = () => <Button>Default Button</Button>;
+DefaultButton.storyName = 'Default Button';
+
+export const LinkButton = Template.bind( {} );
+LinkButton.storyName = 'Default Button Link';
+LinkButton.args = {
+	children: 'Default Button Link',
+	href: 'http://google.com',
+};
+
+export const DangerButton = Template.bind( {} );
+DangerButton.storyName = 'Danger Button';
+DangerButton.args = {
+	children: 'Danger Button',
+	danger: true,
+};
+
+export const DisabledButton = Template.bind( {} );
+DisabledButton.storyName = 'Disabled Button';
+DisabledButton.args = {
+	children: 'Disabled Button',
+	disabled: true,
+};
+
+export const HoverButton = Template.bind( {} );
+HoverButton.storyName = 'Default Button Hover';
+HoverButton.args = {
+	children: 'VRT: Default Button Hover',
+	className: 'googlesitekit-button--hover',
+	options: {
 		hoverSelector: '.googlesitekit-button--hover',
 		postInteractionWait: 3000, // Wait for shadows to animate.
 		onReadyScript: 'mouse.js',
 	},
 };
 
-export const DefaultButton = () => <Button>Default Button</Button>;
-
-DefaultButton.storyName = 'Default Button';
-
-export const HoverButton = () => <Button className="googlesitekit-button--hover">VRT: Default Button Hover</Button>;
-
-HoverButton.storyName = 'Default Button Hover';
-
-export const LinkButton = () => <Button href="http://google.com">Default Button Link</Button>;
-
-LinkButton.storyName = 'Default Button Link';
-
-export const DangerButton = () => <Button href="http://google.com" danger>Danger Button</Button>;
-
-DangerButton.storyName = 'Danger Button';
-
-export const DisabledButton = () => <Button disabled>Disabled Button</Button>;
-
-DisabledButton.storyName = 'Diasbled Button';
+export default {
+	title: 'Components/Button',
+	component: Button,
+};
