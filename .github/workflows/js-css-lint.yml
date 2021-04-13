@@ -30,7 +30,6 @@ on:
       - '.stylelint*'
       - '**/package.json'
       - 'package-lock.json'
-      - '!.eslintrc.json'
       - '!feature-flags.json'
       - '!composer.json'
     types:
