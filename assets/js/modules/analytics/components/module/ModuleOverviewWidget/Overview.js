@@ -35,10 +35,10 @@ import { calculateChange } from '../../../../../util';
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
 	return {
-		datapoint: report?.data?.totals?.[0]?.values?.[selectedStat] / divider,
+		datapoint: report?.data?.totals?.[ 0 ]?.values?.[ selectedStat ] / divider,
 		change: calculateChange(
-			report?.data?.totals?.[1]?.values?.[selectedStat],
-			report?.data?.totals?.[0]?.values?.[selectedStat],
+			report?.data?.totals?.[ 1 ]?.values?.[ selectedStat ],
+			report?.data?.totals?.[ 0 ]?.values?.[ selectedStat ],
 		),
 	};
 }

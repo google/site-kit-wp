@@ -49,7 +49,7 @@ const fetchGetPropertiesStore = createFetchStore( {
 		return { accountID };
 	},
 	validateParams( { accountID } = {} ) {
-		invariant( accountID, 'GA4 accountID is required.' );
+		invariant( accountID, 'accountID is required.' );
 	},
 } );
 
@@ -74,7 +74,7 @@ const fetchCreatePropertyStore = createFetchStore( {
 		return { accountID };
 	},
 	validateParams( { accountID } = {} ) {
-		invariant( accountID, 'GA4 accountID is required.' );
+		invariant( accountID, 'accountID is required.' );
 	},
 } );
 
@@ -88,14 +88,16 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {string} accountID GA4 account ID.
+	 * @param {string} accountID Analytics account ID.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createProperty( accountID ) {
-		invariant( accountID, 'GA4 accountID is required.' );
+	createProperty( accountID ) {
+		invariant( accountID, 'accountID is required.' );
 
-		const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
-		return { response, error };
+		return ( function*() {
+			const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
+			return { response, error };
+		}() );
 	},
 };
 

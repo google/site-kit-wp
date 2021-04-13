@@ -21,7 +21,6 @@
  */
 import { combineWidgets } from './combine-widgets';
 import { getWidgetLayout } from './get-widget-layout';
-import { WIDTH_GRID_CLASS_MAP, HIDDEN_CLASS } from './constants';
 import { WIDGET_WIDTHS } from '../datastore/constants';
 import ReportZero from '../../../components/ReportZero';
 import ActivateModuleCTA from '../../../components/ActivateModuleCTA';
@@ -55,11 +54,11 @@ describe( 'combineWidgets', () => {
 			test4: getActivateModuleCTAState( 'adsense' ),
 		};
 		const expected = {
-			gridClassNames: [
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
+			gridColumnWidths: [
+				3,
+				3,
+				3,
+				3,
 			],
 			overrideComponents: [
 				null,
@@ -89,11 +88,11 @@ describe( 'combineWidgets', () => {
 			test4: getReportZeroState( 'analytics' ),
 		};
 		const expected = {
-			gridClassNames: [
-				[ HIDDEN_CLASS ],
-				[ 'mdc-layout-grid__cell', 'mdc-layout-grid__cell--span-6' ],
-				[ HIDDEN_CLASS ],
-				[ 'mdc-layout-grid__cell', 'mdc-layout-grid__cell--span-6' ],
+			gridColumnWidths: [
+				0,
+				6,
+				0,
+				6,
 			],
 			overrideComponents: [
 				null,
@@ -123,11 +122,11 @@ describe( 'combineWidgets', () => {
 			test4: getActivateModuleCTAState( 'analytics' ),
 		};
 		const expected = {
-			gridClassNames: [
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.HALF ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.HALF ],
-				[ HIDDEN_CLASS ],
-				[ 'mdc-layout-grid__cell', 'mdc-layout-grid__cell--span-12' ],
+			gridColumnWidths: [
+				6,
+				6,
+				0,
+				12,
 			],
 			overrideComponents: [
 				null,
@@ -163,14 +162,14 @@ describe( 'combineWidgets', () => {
 			test7: getNullState( 'analytics' ),
 		};
 		const expected = {
-			gridClassNames: [
-				[ HIDDEN_CLASS ],
-				[ 'mdc-layout-grid__cell', 'mdc-layout-grid__cell--span-12' ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
-				WIDTH_GRID_CLASS_MAP[ WIDGET_WIDTHS.QUARTER ],
-				[ HIDDEN_CLASS ],
+			gridColumnWidths: [
+				0,
+				12,
+				3,
+				3,
+				3,
+				3,
+				0,
 			],
 			overrideComponents: [
 				null,

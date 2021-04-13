@@ -130,8 +130,6 @@ describe( 'modules/analytics-4 properties', () => {
 				const properties = registry.select( STORE_NAME ).getProperties( testAccountID );
 				await untilResolved( registry, STORE_NAME ).getProperties( testAccountID );
 
-				// It _may_ make a request for profiles internally if not loaded,
-				// so we only care that it did not fetch properties here.
 				expect( fetchMock ).not.toHaveFetched( propertiesEndpoint );
 				expect( properties ).toEqual( fixtures.properties );
 				expect( properties ).toHaveLength( fixtures.properties.length );
