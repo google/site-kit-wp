@@ -52,7 +52,8 @@
       {
         "allowedTextDomain": "google-site-kit"
       }
-    ]
+    ],
+    "quotes": ["error", "single", { "allowTemplateLiterals": true, "avoidEscape": true }]
   },
   "overrides": [
     {
