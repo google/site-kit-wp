@@ -86,7 +86,7 @@ class Web_Tag extends Module_Web_Tag {
 	 *
 	 * @since 1.24.0
 	 */
-	private function enqueue_gtag_script() {
+	protected function enqueue_gtag_script() {
 		$gtag_opt = array();
 		$gtag_src = 'https://www.googletagmanager.com/gtag/js?id=' . rawurldecode( $this->tag_id );
 
