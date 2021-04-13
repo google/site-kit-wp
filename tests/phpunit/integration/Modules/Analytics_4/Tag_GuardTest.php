@@ -59,7 +59,7 @@ class Tag_GuardTest extends TestCase {
 			)
 		);
 
-		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when propertyID is empty.' );
+		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when measurementID is empty.' );
 	}
 
 }
