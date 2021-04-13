@@ -34,8 +34,8 @@ final class Filters {
 	 * @param string[] $classes already assigned to body.
 	 */
 	public static function body_class( $classes ) {
-		// Check if we're inside the main loop in a single post page.
-		if ( ! is_single() || ! is_main_query() ) {
+		// Only modify single posts.
+		if ( ! self::is_single_post() ) {
 			return $classes;
 		}
 
@@ -50,8 +50,8 @@ final class Filters {
 	 * @return string Filtered content of Post.
 	 */
 	public static function the_content( $content ) {
-		// Check if we're inside the main loop in a single post page.
-		if ( ! is_single() || ! is_main_query() ) {
+		// Only modify single posts.
+		if ( ! self::is_single_post() ) {
 			return $content;
 		}
 
@@ -77,5 +77,15 @@ final class Filters {
 		$content = implode( $more_tag, $content_segments );
 
 		return $content;
+	}
+
+	/**
+	 * Returns true if a single post is rendering.
+	 *
+	 * @return bool True if a single post is rendering.
+	 */
+	private static function is_single_post() {
+		// Check if we're inside the main loop in a single post page.
+		return is_single() && is_main_query();
 	}
 }
