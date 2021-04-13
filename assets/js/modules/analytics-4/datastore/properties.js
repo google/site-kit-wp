@@ -29,6 +29,30 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
+const fetchGetPropertyStore = createFetchStore( {
+	baseName: 'getProperty',
+	controlCallback( { propertyID } ) {
+		return API.get( 'modules', 'analytics-4', 'property', { propertyID }, {
+			useCache: true,
+		} );
+	},
+	reducerCallback( state, property, { propertyID } ) {
+		return {
+			...state,
+			propertiesByID: {
+				...state.propertiesByID,
+				[ propertyID ]: property,
+			},
+		};
+	},
+	argsToParams( propertyID ) {
+		return { propertyID };
+	},
+	validateParams( { propertyID } = {} ) {
+		invariant( propertyID, 'propertyID is required.' );
+	},
+} );
+
 const fetchGetPropertiesStore = createFetchStore( {
 	baseName: 'getProperties',
 	controlCallback( { accountID } ) {
@@ -43,6 +67,10 @@ const fetchGetPropertiesStore = createFetchStore( {
 				...state.properties,
 				[ accountID ]: properties,
 			},
+			propertiesByID: properties.reduce(
+				( accum, property ) => ( { ...accum, [ property._ID ]: property } ),
+				state.propertiesByID || {},
+			),
 		};
 	},
 	argsToParams( accountID ) {
@@ -80,6 +108,7 @@ const fetchCreatePropertyStore = createFetchStore( {
 
 const baseInitialState = {
 	properties: {},
+	propertiesByID: {},
 };
 
 const baseActions = {
@@ -121,6 +150,13 @@ const baseResolvers = {
 			yield fetchGetPropertiesStore.actions.fetchGetProperties( accountID );
 		}
 	},
+	*getProperty( propertyID ) {
+		const registry = yield Data.commonActions.getRegistry();
+		const property = registry.select( STORE_NAME ).getProperty( propertyID );
+		if ( property === undefined ) {
+			yield fetchGetPropertyStore.actions.fetchGetProperty( propertyID );
+		}
+	},
 };
 
 const baseSelectors = {
@@ -135,6 +171,19 @@ const baseSelectors = {
 	 */
 	getProperties( state, accountID ) {
 		return state.properties[ accountID ];
+	},
+
+	/**
+	 * Gets a property with specific ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} propertyID The GA4 property ID to fetch property object for.
+	 * @return {(Object|undefined)} A property object; `undefined` if not loaded.
+	 */
+	getProperty( state, propertyID ) {
+		return state.propertiesByID[ propertyID ];
 	},
 };
 
