@@ -24,7 +24,7 @@ import DashboardAllTrafficWidget from '../assets/js/modules/analytics/components
 import DashboardPopularPagesWidget from '../assets/js/modules/analytics/components/dashboard/DashboardPopularPagesWidget';
 import DashboardBounceRateWidget from '../assets/js/modules/analytics/components/dashboard/DashboardBounceRateWidget';
 import DashboardGoalsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardGoalsWidget';
-import DashboardUniqueVisitorsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardUniqueVisitorsWidget';
+import DashboardSearchVisitorsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardSearchVisitorsWidget';
 import { ModulePopularPagesWidget, ModuleOverviewWidget, ModuleAcquisitionChannelsWidget } from '../assets/js/modules/analytics/components/module';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
 import { accountsPropertiesProfiles, goals } from '../assets/js/modules/analytics/datastore/__fixtures__';
@@ -317,7 +317,7 @@ generateAnalyticsWidgetStories( {
 
 		},
 	] ),
-	Component: DashboardUniqueVisitorsWidget,
+	Component: DashboardSearchVisitorsWidget,
 } );
 
 generateAnalyticsWidgetStories( {
@@ -351,7 +351,7 @@ generateAnalyticsWidgetStories( {
 
 		},
 	] ),
-	Component: DashboardUniqueVisitorsWidget,
+	Component: DashboardSearchVisitorsWidget,
 } );
 
 generateAnalyticsWidgetStories( {
