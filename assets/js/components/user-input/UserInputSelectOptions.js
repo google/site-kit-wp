@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback, useState, useRef } from '@wordpress/element';
+import { ENTER } from '@wordpress/keycodes';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -37,7 +38,7 @@ import Checkbox from '../Checkbox';
 import { Cell, Input, TextField } from '../../material-components';
 const { useSelect, useDispatch } = Data;
 
-export default function UserInputSelectOptions( { slug, options, max } ) {
+export default function UserInputSelectOptions( { slug, options, max, next } ) {
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
 	const [ other, setOther ] = useState( values.filter( ( value ) => ! options[ value ] )[ 0 ] || '' );
 	const { setUserInputSetting } = useDispatch( CORE_USER );
@@ -124,6 +125,12 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 		);
 	} );
 
+	const handleKeyDown = useCallback( ( event ) => {
+		if ( event.keyCode === ENTER && other.trim().length > 0 && next && typeof next === 'function' ) {
+			next();
+		}
+	} );
+
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 			<div className="googlesitekit-user-input__select-options">
@@ -151,6 +158,8 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 							onChange={ onOtherChange }
 							ref={ inputRef }
 							disabled={ disabled }
+							tabIndex={ ! values.includes( other.trim() ) ? '-1' : undefined }
+							onKeyDown={ handleKeyDown }
 						/>
 					</TextField>
 					<label htmlFor={ `${ slug }-select-options` } className="screen-reader-text">
@@ -172,6 +181,7 @@ UserInputSelectOptions.propTypes = {
 	slug: PropTypes.string.isRequired,
 	options: PropTypes.shape( {} ).isRequired,
 	max: PropTypes.number,
+	next: PropTypes.func,
 };
 
 UserInputSelectOptions.defaultProps = {
