@@ -28,6 +28,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME, WIDGET_AREA_STYLES } from '../datastore/constants';
 import WidgetRenderer from './WidgetRenderer';
 import { getWidgetLayout, combineWidgets } from '../util';
+import { HIDDEN_CLASS } from '../util/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import WidgetCellWrapper from './WidgetCellWrapper';
 import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
@@ -75,16 +76,20 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		</WidgetCellWrapper>
 	) );
 
+	const { Icon, title, style, subtitle } = widgetArea;
+
 	// Here we render the bare output as it is guaranteed to render empty.
 	// This is important compared to returning `null` so that the area
 	// can maybe render later if conditions change for widgets to become active.
 	// Returning `null` here however would have the side-effect of making
 	// all widgets active again, which is why we must return the "null" output.
 	if ( ! activeWidgets.length ) {
-		return widgetsOutput;
+		return (
+			<Grid className={ `googlesitekit-widget-area googlesitekit-widget-area--${ slug } googlesitekit-widget-area--${ style } ${ HIDDEN_CLASS }` }>
+				{ widgetsOutput }
+			</Grid>
+		);
 	}
-
-	const { Icon, title, style, subtitle } = widgetArea;
 
 	return (
 		<Grid className={ `googlesitekit-widget-area googlesitekit-widget-area--${ slug } googlesitekit-widget-area--${ style }` }>
