@@ -36,7 +36,7 @@ export default function Accordion( { title, children, initialOpen, onOpen, onClo
 		} else if ( ! isActive && onClose && typeof onClose === 'function' ) {
 			onClose();
 		}
-	}, [ isActive ] );
+	}, [ isActive, onClose, onOpen ] );
 
 	const toggleAccordion = useCallback( () => {
 		setActive( ! isActive );
