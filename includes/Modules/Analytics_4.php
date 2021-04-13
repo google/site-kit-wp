@@ -171,6 +171,7 @@ final class Analytics_4 extends Module
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 web data stream on your behalf.', 'google-site-kit' ),
 			),
 			'GET:properties'            => array( 'service' => 'analyticsadmin' ),
+			'GET:property'              => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams'        => array( 'service' => 'analyticsadmin' ),
 		);
 	}
@@ -229,6 +230,16 @@ final class Analytics_4 extends Module
 						'filter' => 'parent:accounts/' . $data['accountID'],
 					)
 				);
+			case 'GET:property':
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+				return $this->get_service( 'analyticsadmin' )->properties->get( 'properties/' . $data['propertyID'] );
 			case 'GET:webdatastreams':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
