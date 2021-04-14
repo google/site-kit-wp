@@ -88,7 +88,7 @@ final class Header {
 			true
 		);
 
-		// JavaScript for SwgPress.
+		// JavaScript for single posts.
 		wp_enqueue_script(
 			'subscribe-with-google',
 			plugins_url( '../../../dist/assets/js/subscribe-with-google--single-posts.js', __FILE__ ),
@@ -97,7 +97,7 @@ final class Header {
 			true
 		);
 
-		// Styles for SwgPress.
+		// Styles for single posts.
 		wp_enqueue_style(
 			'subscribe-with-google',
 			plugins_url( '../../../dist/assets/css/subscribe-with-google--single-posts.css', __FILE__ ),
