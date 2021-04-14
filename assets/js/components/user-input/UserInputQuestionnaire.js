@@ -215,6 +215,7 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				>
 					<UserInputSelectOptions
+						isActive={ activeSlug === USER_INPUT_QUESTION_ROLE }
 						slug={ USER_INPUT_QUESTION_ROLE }
 						options={ USER_INPUT_ANSWERS_ROLE }
 						next={ nextCallback }
@@ -235,6 +236,7 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				>
 					<UserInputSelectOptions
+						isActive={ activeSlug === USER_INPUT_QUESTION_POST_FREQUENCY }
 						slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
 						options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
 						next={ nextCallback }
@@ -255,6 +257,7 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				>
 					<UserInputSelectOptions
+						isActive={ activeSlug === USER_INPUT_QUESTION_GOALS }
 						slug={ USER_INPUT_QUESTION_GOALS }
 						max={ 2 }
 						options={ USER_INPUT_ANSWERS_GOALS }
@@ -276,6 +279,7 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				>
 					<UserInputSelectOptions
+						isActive={ activeSlug === USER_INPUT_QUESTION_HELP_NEEDED }
 						slug={ USER_INPUT_QUESTION_HELP_NEEDED }
 						max={ 3 }
 						options={ USER_INPUT_ANSWERS_HELP_NEEDED }
@@ -298,6 +302,7 @@ export default function UserInputQuestionnaire() {
 					allowEmptyValues
 				>
 					<UserInputKeywords
+						isActive={ activeSlug === USER_INPUT_QUESTION_SEARCH_TERMS }
 						slug={ USER_INPUT_QUESTION_SEARCH_TERMS }
 						max={ 3 }
 						next={ nextCallback }

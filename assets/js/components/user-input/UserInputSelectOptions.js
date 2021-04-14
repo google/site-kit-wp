@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState, useRef } from '@wordpress/element';
+import { useCallback, useEffect, useState, useRef } from '@wordpress/element';
 import { ENTER } from '@wordpress/keycodes';
 import { __ } from '@wordpress/i18n';
 
@@ -38,15 +38,41 @@ import Checkbox from '../Checkbox';
 import { Cell, Input, TextField } from '../../material-components';
 const { useSelect, useDispatch } = Data;
 
-export default function UserInputSelectOptions( { slug, options, max, next } ) {
+export default function UserInputSelectOptions( { slug, options, max, next, isActive } ) {
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
 	const [ other, setOther ] = useState( values.filter( ( value ) => ! options[ value ] )[ 0 ] || '' );
 	const { setUserInputSetting } = useDispatch( CORE_USER );
 	const inputRef = useRef();
+	const optionsRef = useRef();
 	const [ disabled, setDisabled ] = useState( false );
 
 	// Need to make sure that dependencies list always has the same number of elements.
 	const dependencies = values.concat( Array( max ) ).slice( 0, max );
+
+	useEffect( () => {
+		if ( optionsRef && optionsRef.current && isActive ) {
+			focusRadioOrCheckbox( max === 1 ? 'radio' : 'checkbox' );
+		}
+	}, [ isActive, max ] );
+
+	const focusRadioOrCheckbox = ( optionType = 'radio' ) => {
+		const checkedEl = optionsRef.current.querySelector( `input[type="${ optionType }"]:checked:first-child` );
+
+		if ( checkedEl ) {
+			focusOption( checkedEl );
+		} else {
+			const firstEl = optionsRef.current.querySelector( `input[type="${ optionType }"]:first-child` );
+			focusOption( firstEl );
+		}
+	};
+
+	const focusOption = ( element ) => {
+		if ( element ) {
+			setTimeout( () => {
+				element.focus();
+			}, 50 );
+		}
+	};
 
 	const onClick = useCallback( ( event ) => {
 		const { target } = event;
@@ -106,6 +132,7 @@ export default function UserInputSelectOptions( { slug, options, max, next } ) {
 			id: `${ slug }-${ optionSlug }`,
 			value: optionSlug,
 			checked: values.includes( optionSlug ),
+			tabIndex: ! isActive ? '-1' : undefined,
 			...onClickProps,
 		};
 
@@ -133,7 +160,7 @@ export default function UserInputSelectOptions( { slug, options, max, next } ) {
 
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
-			<div className="googlesitekit-user-input__select-options">
+			<div className="googlesitekit-user-input__select-options" ref={ optionsRef }>
 				{ items }
 
 				<div className="googlesitekit-user-input__select-option">
@@ -143,6 +170,7 @@ export default function UserInputSelectOptions( { slug, options, max, next } ) {
 						value={ other }
 						checked={ values.includes( other.trim() ) }
 						disabled={ max > 1 && values.length >= max && ! values.includes( other.trim() ) }
+						tabIndex={ ! isActive ? '-1' : undefined }
 						{ ...onClickProps }
 					>
 						{ __( 'Other:', 'google-site-kit' ) }
@@ -158,7 +186,7 @@ export default function UserInputSelectOptions( { slug, options, max, next } ) {
 							onChange={ onOtherChange }
 							ref={ inputRef }
 							disabled={ disabled }
-							tabIndex={ ! values.includes( other.trim() ) ? '-1' : undefined }
+							tabIndex={ ! values.includes( other.trim() ) || ! isActive ? '-1' : undefined }
 							onKeyDown={ handleKeyDown }
 						/>
 					</TextField>
@@ -182,6 +210,7 @@ UserInputSelectOptions.propTypes = {
 	options: PropTypes.shape( {} ).isRequired,
 	max: PropTypes.number,
 	next: PropTypes.func,
+	isActive: PropTypes.bool,
 };
 
 UserInputSelectOptions.defaultProps = {

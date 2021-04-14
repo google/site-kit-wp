@@ -40,6 +40,7 @@ const Radio = ( {
 	checked,
 	disabled,
 	children,
+	tabIndex,
 } ) => {
 	const formFieldRef = useCallback( ( el ) => {
 		if ( el !== null ) {
@@ -69,6 +70,7 @@ const Radio = ( {
 					value={ value }
 					checked={ checked }
 					disabled={ disabled }
+					tabIndex={ tabIndex }
 					readOnly
 				/>
 				<div className="mdc-radio__background">
@@ -89,12 +91,14 @@ Radio.propTypes = {
 	checked: PropTypes.bool,
 	disabled: PropTypes.bool,
 	children: PropTypes.string.isRequired,
+	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
 };
 
 Radio.defaultProps = {
 	onClick: null,
 	checked: false,
 	disabled: false,
+	tabIndex: undefined,
 };
 
 export default Radio;

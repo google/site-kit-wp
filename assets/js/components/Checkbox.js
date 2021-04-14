@@ -31,6 +31,7 @@ export default function Checkbox( props ) {
 		checked,
 		disabled,
 		children,
+		tabIndex,
 	} = props;
 
 	return (
@@ -45,6 +46,7 @@ export default function Checkbox( props ) {
 					checked={ checked }
 					disabled={ disabled }
 					onChange={ onChange }
+					tabIndex={ tabIndex }
 				/>
 
 				<div className="mdc-checkbox__background">
@@ -68,9 +70,11 @@ Checkbox.propTypes = {
 	checked: PropTypes.bool,
 	disabled: PropTypes.bool,
 	children: PropTypes.node.isRequired,
+	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
 };
 
 Checkbox.defaultProps = {
 	checked: false,
 	disabled: false,
+	tabIndex: undefined,
 };

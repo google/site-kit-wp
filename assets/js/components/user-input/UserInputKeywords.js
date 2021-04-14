@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback, useRef, useState } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { ENTER, BACKSPACE } from '@wordpress/keycodes';
 
@@ -38,10 +38,10 @@ import { Cell, Input, TextField } from '../../material-components';
 import Button from '../Button';
 import CloseIcon from '../../../svg/close.svg';
 import { COMMA } from '../../util/key-codes';
-import VisuallyHiden from '../VisuallyHidden';
+import VisuallyHidden from '../VisuallyHidden';
 const { useSelect, useDispatch } = Data;
 
-export default function UserInputKeywords( { slug, max } ) {
+export default function UserInputKeywords( { slug, max, next, isActive } ) {
 	const keywordsContainer = useRef();
 	const [ canDeleteKeyword, setCanDeleteKeyword ] = useState( false );
 
@@ -49,8 +49,15 @@ export default function UserInputKeywords( { slug, max } ) {
 	const { setUserInputSetting } = useDispatch( CORE_USER );
 
 	// Add an empty string if the values array is empty.
-	if ( values.length === 0 ) {
+	const valuesLength = values.length;
+	if ( valuesLength === 0 ) {
 		values.push( '' );
+	} else if ( valuesLength < max ) {
+		const missingValues = max - valuesLength;
+		let i = 0;
+		for ( i = 0; i < missingValues; i++ ) {
+			values.push( '' );
+		}
 	}
 
 	// Store values in local state to prevent
@@ -62,10 +69,19 @@ export default function UserInputKeywords( { slug, max } ) {
 
 	const focusInput = ( querySelector ) => {
 		const input = keywordsContainer.current.querySelector( querySelector );
+
 		if ( input ) {
-			input.focus();
+			setTimeout( () => {
+				input.focus();
+			}, 50 );
 		}
 	};
+
+	useEffect( () => {
+		if ( keywordsContainer && keywordsContainer.current && isActive ) {
+			focusInput( '.mdc-text-field__input:first-child' );
+		}
+	}, [ isActive ] );
 
 	const deleteKeyword = useCallback( ( index ) => {
 		updateKeywords( [
@@ -116,7 +132,12 @@ export default function UserInputKeywords( { slug, max } ) {
 		const nonEmptyValues = values.filter( ( value ) => value.length > 0 );
 		const nonEmptyValuesLength = nonEmptyValues.length;
 
-		if ( ( keyCode === ENTER || keyCode === COMMA ) && nonEmptyValues.length < max ) {
+		if ( keyCode === ENTER && nonEmptyValuesLength === max && next && typeof next === 'function' ) {
+			next();
+			return;
+		}
+
+		if ( ( keyCode === ENTER || keyCode === COMMA ) && nonEmptyValuesLength < max ) {
 			updateKeywords( [
 				...values.slice( 0, index + 1 ),
 				'',
@@ -125,17 +146,14 @@ export default function UserInputKeywords( { slug, max } ) {
 
 			// A new keyword has been added. Pressing backspace now will remove the entire keyword.
 			setCanDeleteKeyword( true );
-			setTimeout( () => {
-				focusInput( `#${ slug }-keyword-${ index + 1 }` );
-			}, 50 );
+			focusInput( `#${ slug }-keyword-${ index + 1 }` );
 		}
 
 		if ( target.value.length === 0 && keyCode === BACKSPACE ) {
 			// The input is empty, so pressing backspace should delete the last keyword.
 			deleteKeyword( nonEmptyValuesLength - 1 );
-			setTimeout( () => {
-				focusInput( `#${ slug }-keyword-${ nonEmptyValuesLength - 1 }` );
-			}, 50 );
+			focusInput( `#${ slug }-keyword-${ nonEmptyValuesLength - 1 }` );
+
 			// After deleting a keyword, pressing backspace again should continue to delete keywords.
 			setCanDeleteKeyword( true );
 		} else {
@@ -154,7 +172,7 @@ export default function UserInputKeywords( { slug, max } ) {
 							'googlesitekit-user-input__text-option': localValues.length > i + 1 || value.length > 0,
 						} ) }
 					>
-						<VisuallyHiden>
+						<VisuallyHidden>
 							<label htmlFor={ `${ slug }-keyword-${ i }` } >
 								{ sprintf(
 									/* translators: %s is the keyword number; 1, 2, or 3 */
@@ -162,7 +180,7 @@ export default function UserInputKeywords( { slug, max } ) {
 									i + 1, // Keys are zero-indexed; this starts keyword at "1".
 								) }
 							</label>
-						</VisuallyHiden>
+						</VisuallyHidden>
 						<TextField
 							label={ __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' ) }
 							noLabel
@@ -173,6 +191,7 @@ export default function UserInputKeywords( { slug, max } ) {
 								size={ value.length > 0 ? value.length : undefined }
 								onChange={ onKeywordChange.bind( null, i ) }
 								onKeyDown={ onKeyDown.bind( null, i ) }
+								tabIndex={ ! isActive ? '-1' : undefined }
 							/>
 						</TextField>
 
@@ -197,6 +216,8 @@ export default function UserInputKeywords( { slug, max } ) {
 UserInputKeywords.propTypes = {
 	slug: PropTypes.string.isRequired,
 	max: PropTypes.number,
+	next: PropTypes.func,
+	isActive: PropTypes.bool,
 };
 
 UserInputKeywords.defaultProps = {
