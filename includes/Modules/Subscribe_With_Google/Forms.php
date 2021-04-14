@@ -14,7 +14,7 @@ namespace Google\Site_Kit\Modules\Subscribe_With_Google;
 final class Forms {
 
 	/**
-	 * Returns value of field from POST body, if it exists and is accompanied by a valid nonce.
+	 * Returns value of field from request, if it exists and is accompanied by a valid nonce.
 	 * Returns a `false` boolean value otherwise.
 	 *
 	 * @param string $field_name Name of field (ex: "product").
@@ -25,20 +25,20 @@ final class Forms {
 	 *                     Returns a `false` boolean value otherwise.
 	 */
 	public static function receive_field( $field_name, $nonce_name, $nonce_action ) {
-		// Require nonce to exist in POST body.
+		// Require nonce to exist in request.
 		if (
-			! isset( $_POST[ $nonce_name ] ) ||
-			! isset( $_POST[ $field_name ] )
+			! isset( $_REQUEST[ $nonce_name ] ) ||
+			! isset( $_REQUEST[ $field_name ] )
 			) {
 				return false;
 		}
 
 		// Verify nonce.
-		$nonce = sanitize_key( $_POST[ $nonce_name ] );
+		$nonce = sanitize_key( $_REQUEST[ $nonce_name ] );
 		if ( ! wp_verify_nonce( $nonce, $nonce_action ) ) {
 			return false;
 		}
 
-		return sanitize_text_field( wp_unslash( $_POST[ $field_name ] ) );
+		return sanitize_text_field( wp_unslash( $_REQUEST[ $field_name ] ) );
 	}
 }
