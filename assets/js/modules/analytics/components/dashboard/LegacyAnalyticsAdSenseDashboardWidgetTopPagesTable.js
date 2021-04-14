@@ -32,14 +32,39 @@ import PreviewTable from '../../../../components/PreviewTable';
 import ctaWrapper from '../../../../components/legacy-notifications/cta-wrapper';
 import AdSenseLinkCTA from '../common/AdSenseLinkCTA';
 import { analyticsAdsenseReportDataDefaults, isDataZeroForReporting } from '../../util';
-import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../../adsense/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import AnalyticsAdSenseDashboardWidgetLayout from './AnalyticsAdSenseDashboardWidgetLayout';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import Link from '../../../../components/Link';
 import ReportTable from '../../../../components/ReportTable';
 const { useSelect } = Data;
 
+let currency;
+const getCurrencyFormat = () => currency ? ( {
+	style: 'currency',
+	currency,
+} ) : ( {
+	// Fall back to decimal if currency hasn't yet loaded.
+	style: 'decimal',
+	minimumFractionDigits: 2,
+	maximumFractionDigits: 2,
+} );
+
 const LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
+
+	const adsenseData = useSelect( ( select ) => select( MODULES_ADSENSE ).getReport( {
+		startDate,
+		endDate,
+		metrics: 'EARNINGS',
+	} ) );
+
+	currency = adsenseData?.headers?.[0].currency;
+
 	// Do not return zero data callout here since it will already be
 	// present on the page from other sources.
 	if ( isDataZeroForReporting( data ) ) {
@@ -91,11 +116,7 @@ const tableColumns = [
 		field: 'metrics.0.values.0',
 		Component: ( { fieldValue } ) => numFmt(
 			fieldValue,
-			{
-				style: 'decimal',
-				minimumFractionDigits: 2,
-				maximumFractionDigits: 2,
-			}
+			getCurrencyFormat(),
 		),
 	},
 	{
@@ -104,11 +125,7 @@ const tableColumns = [
 		field: 'metrics.0.values.1',
 		Component: ( { fieldValue } ) => numFmt(
 			fieldValue,
-			{
-				style: 'decimal',
-				minimumFractionDigits: 2,
-				maximumFractionDigits: 2,
-			}
+			getCurrencyFormat(),
 		),
 	},
 	{

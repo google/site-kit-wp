@@ -28,6 +28,7 @@ import { compose } from '@wordpress/compose';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME } from '../../datastore/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
@@ -38,6 +39,7 @@ import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
 import { numFmt } from '../../../../util';
+import { getCurrencyFormat } from '../../util/currency';
 const { useSelect } = Data;
 
 function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
@@ -47,10 +49,12 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 		data,
 		error,
 		loading,
+		currency,
 	} = useSelect( ( select ) => {
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
+
 		const args = {
 			startDate,
 			endDate,
@@ -66,6 +70,11 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 			},
 			limit: 5,
 		};
+		const adsenseData = select( STORE_NAME ).getReport( {
+			startDate,
+			endDate,
+			metrics: 'EARNINGS',
+		} );
 
 		return {
 			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
@@ -73,6 +82,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 			data: select( MODULES_ANALYTICS ).getReport( args ),
 			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ),
+			currency: getCurrencyFormat( adsenseData ),
 		};
 	} );
 
@@ -112,15 +122,11 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 			},
 		},
 		{
-			title: __( 'Revenue', 'google-site-kit' ),
-			tooltip: __( 'Revenue', 'google-site-kit' ),
+			title: __( 'Earnings', 'google-site-kit' ),
+			tooltip: __( 'Earnings', 'google-site-kit' ),
 			Component: ( { row } ) => numFmt(
 				row.metrics[ 0 ].values[ 0 ],
-				{
-					style: 'decimal',
-					minimumFractionDigits: 2,
-					maximumFractionDigits: 2,
-				}
+				...currency,
 			),
 		},
 	];
