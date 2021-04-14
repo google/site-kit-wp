@@ -136,7 +136,7 @@ export const determineSiteStatus = ( {
 
 	const lowerSiteURL = siteURL.toLowerCase();
 	const hasSiteURL = urlChannels.some( ( urlChannel ) => {
-		return 0 <= lowerSiteURL.indexOf( urlChannel.urlPattern );
+		return 0 <= lowerSiteURL.indexOf( urlChannel.urlPattern.toLowerCase() );
 	} );
 	if ( ! hasSiteURL ) {
 		return SITE_STATUS_NONE;
