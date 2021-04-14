@@ -46,21 +46,25 @@ final class ManagePosts {
 	 * @param number $post_ID Current post ID.
 	 */
 	public static function manage_posts_custom_column( $column_name, $post_ID ) {
-		if ( 'swg_product' === $column_name ) {
-			$product_key = Key::from( 'product' );
-			$product     = get_post_meta( $post_ID, $product_key, true );
-
-			$free_key = Key::from( 'free' );
-			$free     = get_post_meta( $post_ID, $free_key, true );
-
-			// TODO: Support default products per post-types.
-			if ( 'true' === $free ) {
-				$product = 'openaccess';
-			}
-
-			echo '<span id="swg-product-for-post-' . esc_attr( $post_ID ) . '">';
-			echo esc_html( $product );
-			echo '</span>';
+		if ( 'swg_product' !== $column_name ) {
+			return;
 		}
+
+		// Get product.
+		$product_key = Key::from( 'product' );
+		$product     = get_post_meta( $post_ID, $product_key, true );
+
+		// Fallback to "openaccess" product (free).
+		// TODO: Support defaults per post-type.
+		$product = isset( $product ) ? $product : 'openaccess';
+
+		// Create an `id` that JavaScript can query for.
+		// This helps us support Quick Edit.
+		$id = 'swg-product-for-post-' . $post_ID;
+
+		// Render product.
+		echo '<span id="' . esc_attr( $id ) . '">';
+		echo esc_html( $product );
+		echo '</span>';
 	}
 }
