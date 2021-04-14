@@ -74,7 +74,6 @@ final class EditPost {
 	/** Renders meta box. */
 	public function render() {
 		$this->render_products_dropdown();
-		$this->render_free_checkbox();
 
 		wp_nonce_field( $this->nonce_action, $this->nonce_name );
 	}
@@ -107,23 +106,6 @@ final class EditPost {
 		echo '</select>';
 		echo '<br />';
 		echo '<br />';
-	}
-
-	/** Renders free checkbox. */
-	public function render_free_checkbox() {
-		$free_key = Key::from( 'free' );
-		$free     = get_post_meta( get_the_ID(), $free_key, true ) === 'true';
-
-		echo 'Is Free&nbsp; ';
-		echo '<input';
-		echo ' id="' . esc_attr( $free_key ) . '"';
-		echo ' name="' . esc_attr( $free_key ) . '"';
-		echo ' type="checkbox"';
-		echo ' value="true"';
-		if ( $free ) {
-			echo ' checked';
-		}
-		echo '/>';
 	}
 
 	/**
