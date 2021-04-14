@@ -63,7 +63,7 @@ final class EditPost {
 	public function add_meta_boxes() {
 		add_meta_box(
 			Key::from( 'post-edit-metabox' ),
-			'Subscribe with Google',
+			'Reader Revenue',
 			array( $this, 'render' ),
 			'post',
 			'side',
