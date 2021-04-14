@@ -47,14 +47,15 @@ final class Header {
 			return;
 		}
 
-		// Get free status.
-		$is_free = get_post_meta( get_the_ID(), Key::from( 'free' ), true );
-		$is_free = $is_free ? $is_free : 'false';
-
-		// Get product ID.
+		// Get product.
+		// TODO: Support defaults per post-type.
 		$publication_id = $this->settings['publicationID'];
 		$product        = get_post_meta( get_the_ID(), Key::from( 'product' ), true );
 		$product_id     = $publication_id . ':' . $product;
+
+		// Get free status.
+		$is_free        = ! isset( $product ) || 'openaccess' === $product;
+		$is_free_string = $is_free ? 'true' : 'false';
 
 		// Add ld+json for Swgjs.
 		?>
@@ -62,7 +63,7 @@ final class Header {
 		{
 			"@context": "http:\/\/schema.org",
 			"@type": "NewsArticle",
-			"isAccessibleForFree": <?php echo esc_js( $is_free ); ?>,
+			"isAccessibleForFree": <?php echo esc_js( $is_free_string ); ?>,
 			"isPartOf": {
 				"@type": ["CreativeWork", "Product"],
 				"productID": "<?php echo esc_js( $product_id ); ?>"
