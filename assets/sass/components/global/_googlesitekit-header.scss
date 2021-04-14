@@ -91,13 +91,13 @@
 		.mdc-button__label {
 			font-weight: $fw-primary-normal;
 		}
+
+		& + .googlesitekit-dropdown-menu {
+			margin-left: 24px;
+		}
 	}
 
 	.googlesitekit-date-range-selector {
-
-		@media (min-width: $bp-wpAdminBarTablet) {
-			margin-right: $grid-gap-desktop;
-		}
 
 		svg {
 			margin-right: $grid-gap-phone / 2;
