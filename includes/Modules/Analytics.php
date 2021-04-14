@@ -1272,7 +1272,7 @@ final class Analytics extends Module
 	 * @since n.e.x.t
 	 *
 	 * @param array  $properties  An array of Analytics properties to search in.
-	 * @param string $property_id Optional. The Analytics property ID. Default the current property ID from the Analytics settings.
+	 * @param string $property_id Optional. The Analytics property ID. Default is the current property ID from the Analytics settings.
 	 * @param array  $urls        Optional. An array of URLs that searched property can have.
 	 * @return mixed A property instance on success, otherwise NULL.
 	 */
