@@ -188,8 +188,9 @@ const baseSelectors = {
 };
 
 const store = Data.combineStores(
-	fetchGetPropertiesStore,
 	fetchCreatePropertyStore,
+	fetchGetPropertiesStore,
+	fetchGetPropertyStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

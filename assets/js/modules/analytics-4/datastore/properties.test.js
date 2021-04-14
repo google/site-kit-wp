@@ -29,6 +29,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 	const createPropertyEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/create-property/;
 	const propertiesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/;
+	const propertyEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/property/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -154,6 +155,78 @@ describe( 'modules/analytics-4 properties', () => {
 
 				const properties = registry.select( STORE_NAME ).getProperties( fakeAccountID );
 				expect( properties ).toBeUndefined();
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getProperty', () => {
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.get( propertyEndpoint, {
+					body: fixtures.properties[ 0 ],
+					status: 200,
+				} );
+
+				const propertyID = '12345';
+				const initialProperty = registry.select( STORE_NAME ).getProperty( propertyID );
+				expect( initialProperty ).toBeUndefined();
+
+				await untilResolved( registry, STORE_NAME ).getProperty( propertyID );
+				expect( fetchMock ).toHaveFetched( propertyEndpoint, { query: { propertyID } } );
+
+				const property = registry.select( STORE_NAME ).getProperty( propertyID );
+				expect( property ).toEqual( fixtures.properties[ 0 ] );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should not make a network request if the property is already present', async () => {
+				const propertyID = '12345';
+				registry.dispatch( STORE_NAME ).receiveGetProperty( fixtures.properties[ 0 ], { propertyID } );
+
+				const property = registry.select( STORE_NAME ).getProperty( propertyID );
+				await untilResolved( registry, STORE_NAME ).getProperty( propertyID );
+
+				expect( fetchMock ).not.toHaveFetched( propertyEndpoint );
+				expect( property ).toEqual( fixtures.properties[ 0 ] );
+			} );
+
+			it( 'should not make a network request if the property is already received via getProperties selector', async () => {
+				fetchMock.get( propertiesEndpoint, {
+					body: fixtures.properties,
+					status: 200,
+				} );
+
+				const accountID = '100';
+				const propertyID = fixtures.properties[ 1 ]._ID;
+
+				registry.select( STORE_NAME ).getProperties( accountID );
+				await untilResolved( registry, STORE_NAME ).getProperties( accountID );
+				expect( fetchMock ).toHaveFetched( propertiesEndpoint );
+
+				const property = registry.select( STORE_NAME ).getProperty( propertyID );
+				expect( property ).toEqual( fixtures.properties[ 1 ] );
+				expect( fetchMock ).not.toHaveFetched( propertyEndpoint );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should dispatch an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( propertyEndpoint, {
+					body: response,
+					status: 500,
+				} );
+
+				const propertyID = '777888999';
+				registry.select( STORE_NAME ).getProperty( propertyID );
+				await untilResolved( registry, STORE_NAME ).getProperty( propertyID );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				const property = registry.select( STORE_NAME ).getProperty( propertyID );
+				expect( property ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );
 		} );
