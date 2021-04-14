@@ -178,7 +178,7 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 
 	return (
 		<Widget
-			className="googlesitekit-widget--footer-v2"
+			className="googlesitekit-widget--footer-v2 googlesitekit-widget__analytics--all-traffic"
 			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
