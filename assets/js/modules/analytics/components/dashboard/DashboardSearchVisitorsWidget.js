@@ -78,7 +78,7 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 					alias: 'Users',
 				},
 			],
-			dimensions: [ 'ga:date' ],
+			dimensions: [ 'ga:date', 'ga:channelGrouping' ],
 			...commonArgs,
 		};
 
