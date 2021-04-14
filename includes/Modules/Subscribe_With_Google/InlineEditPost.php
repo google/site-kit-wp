@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Subscribe_With_Google\EditPost
+ * Class Google\Site_Kit\Modules\Subscribe_With_Google\InlineEditPost
  *
  * @package   Google\Site_Kit\Modules\Subscribe_With_Google
  * @copyright 2021 Google LLC
@@ -10,8 +10,8 @@
 
 namespace Google\Site_Kit\Modules\Subscribe_With_Google;
 
-/** Supports editing of posts. */
-final class EditPost {
+/** Modifies inline post editing. */
+final class InlineEditPost {
 
 	/**
 	 * Name of product field.
@@ -35,95 +35,82 @@ final class EditPost {
 	private $nonce_action;
 
 	/**
-	 * Settings for SwG.
-	 *
-	 * @var object
-	 */
-	private $settings;
-
-	/**
 	 * Adds action handlers.
 	 *
 	 * @param object $settings Settings for SwG.
 	 */
 	public function __construct( $settings ) {
 		$this->product_field_name = Key::from( 'product' );
-		$this->nonce_name         = Key::from( 'edit_post_nonce' );
+		$this->nonce_name         = Key::from( 'quick_edit_nonce' );
 		$this->nonce_action       = Key::from( 'saving_post' );
 		$this->settings           = $settings;
 
-		// Render meta box on Post Edit page.
-		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
+		// Render a SwG product dropdown in the Bulk Edit interface.
+		// TODO: Get the saving working.
+		add_action( 'bulk_edit_custom_box', array( $this, 'quick_edit_custom_box' ) );
+
+		// Render a SwG product dropdown in the Quick Edit interface.
+		add_action( 'quick_edit_custom_box', array( $this, 'quick_edit_custom_box' ) );
 
 		// Handle Posts being saved.
 		add_action( 'save_post', array( $this, 'save_post' ) );
+
+		// Add admin JS.
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 	}
 
-	/** Adds meta boxes to the Post edit page. */
-	public function add_meta_boxes() {
-		add_meta_box(
-			Key::from( 'post-edit-metabox' ),
-			'Subscribe with Google',
-			array( $this, 'render' ),
-			'post',
-			'side',
-			'high'
+	/** Enqueues admin JS. */
+	public function admin_enqueue_scripts() {
+		wp_enqueue_script(
+			'subscribe-with-google',
+			plugins_url( '../../../dist/assets/js/subscribe-with-google--inline-edit-post.js', __FILE__ ),
+			null,
+			1,
+			true
 		);
 	}
 
-	/** Renders meta box. */
-	public function render() {
-		$this->render_products_dropdown();
-		$this->render_free_checkbox();
+	/**
+	 * Allow SwG product selection within the Quick Edit interface.
+	 *
+	 * @param string $column The column to potentially add HTML to.
+	 */
+	public function quick_edit_custom_box( $column ) {
+
+		if ( 'swg_product' !== $column ) {
+			return;
+		}
 
 		wp_nonce_field( $this->nonce_action, $this->nonce_name );
-	}
 
-	/** Renders products dropdown. */
-	public function render_products_dropdown() {
 		$products_str = trim( $this->settings['products'] );
 		$products     = explode( "\n", $products_str );
 		array_unshift( $products, 'openaccess' );
 
-		$selected_product = get_post_meta( get_the_ID(), $this->product_field_name, true );
-
 		// TODO: Translate.
-		echo 'Product&nbsp; ';
-		echo '<select';
-		echo ' name="' . esc_attr( $this->product_field_name ) . '"';
-		echo ' id="' . esc_attr( $this->product_field_name ) . '"';
-		echo '>';
+		echo '
+		<fieldset class="inline-edit-col-right clear">
+			<div class="inline-edit-col">
+				<div class="inline-edit-group wp-clearfix">
+					<label class="inline-edit-status alignleft">
+						<span class="title">Reader Revenue Product</span>
+						<select ';
+		echo '    name="' . esc_attr( $this->product_field_name ) . '"';
+		echo '    id="' . esc_attr( $this->product_field_name ) . '"';
+		echo '  >';
 		foreach ( $products as $product ) {
 			$product = trim( $product );
-			echo '<option';
-			echo ' value="' . esc_attr( $product ) . '"';
-			if ( $selected_product === $product ) {
-				echo ' selected';
-			}
-			echo '>';
+			echo '<option value="' . esc_attr( $product ) . '">';
 			echo esc_html( $product );
 			echo '</option>';
 		}
-		echo '</select>';
-		echo '<br />';
-		echo '<br />';
-	}
-
-	/** Renders free checkbox. */
-	public function render_free_checkbox() {
-		$free_key = Key::from( 'free' );
-		$free     = get_post_meta( get_the_ID(), $free_key, true ) === 'true';
-
-		echo 'Is Free&nbsp; ';
-		echo '<input';
-		echo ' id="' . esc_attr( $free_key ) . '"';
-		echo ' name="' . esc_attr( $free_key ) . '"';
-		echo ' type="checkbox"';
-		echo ' value="true"';
-		if ( $free ) {
-			echo ' checked';
-		}
-		echo '/>';
+		echo '
+						</select>
+					</label>
+				</div>
+			</div>
+		</fieldset>
+		';
 	}
 
 	/**

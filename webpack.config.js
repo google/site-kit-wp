@@ -285,8 +285,10 @@ const webpackConfig = ( env, argv ) => {
 				'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
 				// Analytics advanced tracking script to be injected in the frontend.
 				'analytics-advanced-tracking': './assets/js/analytics-advanced-tracking.js',
-				// Subscribe with Google script to be injected in the frontend.
+				// Subscribe with Google script to be injected in single posts.
 				'subscribe-with-google--single-posts': './assets/js/modules/subscribe-with-google/frontend/single-posts.js',
+				// Subscribe with Google script for inline editing of posts.
+				'subscribe-with-google--inline-edit-post': './assets/js/modules/subscribe-with-google/frontend/inline-edit-post.js',
 			},
 			externals,
 			output: {
@@ -315,7 +317,7 @@ const webpackConfig = ( env, argv ) => {
 				admin: './assets/sass/admin.scss',
 				adminbar: './assets/sass/adminbar.scss',
 				wpdashboard: './assets/sass/wpdashboard.scss',
-				// Subscribe with Google styles to be injected in the frontend.
+				// Subscribe with Google styles to be injected in single posts.
 				'subscribe-with-google--single-posts': './assets/sass/modules/subscribe-with-google/single-posts.scss',
 			},
 			module: {

@@ -28,10 +28,11 @@ final class ManagePosts {
 	 * @return string[]
 	 */
 	public static function manage_posts_columns( $columns ) {
-		// Only add the column on post-type overview pages.
+		// Only add the column on post-type overview pages, or in AJAX calls.
 		// Without this check, the column appears on the AMP plugin's
 		// Validated URLs page, for example.
-		if ( get_current_screen()->parent_file === 'edit.php' ) {
+		$current_screen = get_current_screen();
+		if ( null === $current_screen || 'edit.php' === $current_screen->parent_file ) {
 			$columns['swg_product'] = '<span title="Reader revenue product">Product</span>';
 		}
 
@@ -52,13 +53,14 @@ final class ManagePosts {
 			$free_key = Key::from( 'free' );
 			$free     = get_post_meta( $post_ID, $free_key, true );
 
-			if ( $product ) {
-				if ( 'true' === $free ) {
-					echo 'Free';
-				} else {
-					echo esc_attr( $product );
-				}
+			// TODO: Support default products per post-types.
+			if ( 'true' === $free ) {
+				$product = 'openaccess';
 			}
+
+			echo '<span id="swg-product-for-post-' . esc_attr( $post_ID ) . '">';
+			echo esc_html( $product );
+			echo '</span>';
 		}
 	}
 }

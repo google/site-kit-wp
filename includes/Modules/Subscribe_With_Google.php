@@ -21,6 +21,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Subscribe_With_Google\EditPost;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Header;
+use Google\Site_Kit\Modules\Subscribe_With_Google\InlineEditPost;
 use Google\Site_Kit\Modules\Subscribe_With_Google\ManagePosts;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Settings;
 use Google\Site_Kit\Modules\Subscribe_With_Google\SinglePost;
@@ -54,6 +55,7 @@ final class Subscribe_With_Google extends Module
 		new EditPost( $settings );
 		new Header( $is_amp, $settings );
 		new ManagePosts();
+		new InlineEditPost( $settings );
 		new SinglePost( $is_amp );
 	}
 
