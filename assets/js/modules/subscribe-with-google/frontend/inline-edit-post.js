@@ -18,7 +18,12 @@ global.inlineEditPost.edit = function( id ) {
 	}
 	const product = productEl.innerText;
 
-	// Update dropdown.
+	// Require dropdown.
 	const selectEl = document.querySelector( 'select#SubscribeWithGoogle_product' );
+	if ( ! selectEl ) {
+		return;
+	}
+
+	// Update dropdown.
 	selectEl.value = product;
 };
