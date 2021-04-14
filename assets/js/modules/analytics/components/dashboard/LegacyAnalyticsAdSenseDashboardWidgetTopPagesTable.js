@@ -39,18 +39,13 @@ import AnalyticsAdSenseDashboardWidgetLayout from './AnalyticsAdSenseDashboardWi
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import Link from '../../../../components/Link';
 import ReportTable from '../../../../components/ReportTable';
+import { getCurrencyFormat } from '../../../adsense/util/currency';
 const { useSelect } = Data;
 
-let currency;
-const getCurrencyFormat = () => currency ? ( {
-	style: 'currency',
-	currency,
-} ) : ( {
-	// Fall back to decimal if currency hasn't yet loaded.
-	style: 'decimal',
-	minimumFractionDigits: 2,
-	maximumFractionDigits: 2,
-} );
+let currencyFormat;
+const setCurrencyFormat = ( report ) => {
+	currencyFormat = getCurrencyFormat( report );
+};
 
 const LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
@@ -63,7 +58,7 @@ const LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		metrics: 'EARNINGS',
 	} ) );
 
-	currency = adsenseData?.headers?.[0].currency;
+	setCurrencyFormat( adsenseData );
 
 	// Do not return zero data callout here since it will already be
 	// present on the page from other sources.
@@ -116,7 +111,7 @@ const tableColumns = [
 		field: 'metrics.0.values.0',
 		Component: ( { fieldValue } ) => numFmt(
 			fieldValue,
-			getCurrencyFormat(),
+			currencyFormat,
 		),
 	},
 	{
@@ -125,7 +120,7 @@ const tableColumns = [
 		field: 'metrics.0.values.1',
 		Component: ( { fieldValue } ) => numFmt(
 			fieldValue,
-			getCurrencyFormat(),
+			currencyFormat,
 		),
 	},
 	{

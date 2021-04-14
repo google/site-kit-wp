@@ -49,7 +49,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 		data,
 		error,
 		loading,
-		currency,
+		currencyFormat,
 	} = useSelect( ( select ) => {
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -70,6 +70,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 			},
 			limit: 5,
 		};
+
 		const adsenseData = select( STORE_NAME ).getReport( {
 			startDate,
 			endDate,
@@ -82,7 +83,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 			data: select( MODULES_ANALYTICS ).getReport( args ),
 			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ),
-			currency: getCurrencyFormat( adsenseData ),
+			currencyFormat: getCurrencyFormat( adsenseData ),
 		};
 	} );
 
@@ -126,7 +127,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 			tooltip: __( 'Earnings', 'google-site-kit' ),
 			Component: ( { row } ) => numFmt(
 				row.metrics[ 0 ].values[ 0 ],
-				...currency,
+				...currencyFormat,
 			),
 		},
 	];
