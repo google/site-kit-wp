@@ -107,7 +107,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 
 	if ( error ) {
 		return (
-			<Widget noPadding>
+			<Widget>
 				<WidgetReportError moduleSlug="adsense" error={ error } />
 			</Widget>
 		);
@@ -115,7 +115,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 
 	if ( isZeroReport( today ) && isZeroReport( period ) && isZeroReport( daily ) ) {
 		return (
-			<Widget noPadding>
+			<Widget>
 				<WidgetReportZero moduleSlug="adsense" />
 			</Widget>
 		);

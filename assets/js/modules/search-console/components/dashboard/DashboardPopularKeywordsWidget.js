@@ -61,19 +61,18 @@ function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero, WidgetRepor
 		page: url ? `!${ url }` : undefined,
 	} ) );
 
+	const Footer = () => (
+		<SourceLink
+			className="googlesitekit-data-block__source"
+			name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+			href={ baseServiceURL }
+			external
+		/>
+	);
+
 	if ( loading ) {
 		return (
-			<Widget
-				noPadding
-				Footer={ () => (
-					<SourceLink
-						className="googlesitekit-data-block__source"
-						name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-						href={ baseServiceURL }
-						external
-					/>
-				) }
-			>
+			<Widget noPadding Footer={ Footer } >
 				<PreviewTable padding />
 			</Widget>
 		);
@@ -81,17 +80,7 @@ function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero, WidgetRepor
 
 	if ( error ) {
 		return (
-			<Widget
-				noPadding
-				Footer={ () => (
-					<SourceLink
-						className="googlesitekit-data-block__source"
-						name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-						href={ baseServiceURL }
-						external
-					/>
-				) }
-			>
+			<Widget Footer={ Footer } >
 				<WidgetReportError moduleSlug="search-console" error={ error } />
 			</Widget>
 		);
@@ -99,17 +88,7 @@ function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero, WidgetRepor
 
 	if ( isZeroReport( data ) ) {
 		return (
-			<Widget
-				noPadding
-				Footer={ () => (
-					<SourceLink
-						className="googlesitekit-data-block__source"
-						name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-						href={ baseServiceURL }
-						external
-					/>
-				) }
-			>
+			<Widget Footer={ Footer } >
 				<WidgetReportZero moduleSlug="search-console" />
 			</Widget>
 		);
@@ -156,17 +135,7 @@ function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero, WidgetRepor
 	];
 
 	return (
-		<Widget
-			noPadding
-			Footer={ () => (
-				<SourceLink
-					className="googlesitekit-data-block__source"
-					name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-					href={ baseServiceURL }
-					external
-				/>
-			) }
-		>
+		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data }

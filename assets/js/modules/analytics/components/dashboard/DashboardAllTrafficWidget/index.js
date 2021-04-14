@@ -170,7 +170,7 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 
 	if ( pieChartError ) {
 		return (
-			<Widget noPadding>
+			<Widget>
 				<WidgetReportError moduleSlug="analytics" error={ pieChartError } />
 			</Widget>
 		);
@@ -178,7 +178,7 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 
 	if ( isZeroReport( pieChartReport ) ) {
 		return (
-			<Widget noPadding>
+			<Widget>
 				<WidgetReportZero moduleSlug="analytics" />
 			</Widget>
 		);

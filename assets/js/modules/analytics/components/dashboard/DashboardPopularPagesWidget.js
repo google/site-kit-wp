@@ -82,6 +82,15 @@ function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 		};
 	} );
 
+	const Footer = () => (
+		<SourceLink
+			className="googlesitekit-data-block__source"
+			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+			href={ analyticsMainURL }
+			external
+		/>
+	);
+
 	if ( loading ) {
 		return (
 			<Widget
@@ -102,17 +111,7 @@ function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 
 	if ( error ) {
 		return (
-			<Widget
-				noPadding
-				Footer={ () => (
-					<SourceLink
-						className="googlesitekit-data-block__source"
-						name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-						href={ analyticsMainURL }
-						external
-					/>
-				) }
-			>
+			<Widget Footer={ Footer } >
 				<WidgetReportError moduleSlug="analytics" error={ error } />
 			</Widget>
 		);
@@ -120,34 +119,14 @@ function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 
 	if ( isZeroReport( data ) ) {
 		return (
-			<Widget
-				noPadding
-				Footer={ () => (
-					<SourceLink
-						className="googlesitekit-data-block__source"
-						name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-						href={ analyticsMainURL }
-						external
-					/>
-				) }
-			>
+			<Widget Footer={ Footer } >
 				<WidgetReportZero moduleSlug="analytics" />
 			</Widget>
 		);
 	}
 
 	return (
-		<Widget
-			noPadding
-			Footer={ () => (
-				<SourceLink
-					className="googlesitekit-data-block__source"
-					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					href={ analyticsMainURL }
-					external
-				/>
-			) }
-		>
+		<Widget noPadding Footer={ Footer } >
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data[ 0 ].data.rows }

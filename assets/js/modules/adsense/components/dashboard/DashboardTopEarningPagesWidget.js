@@ -76,6 +76,15 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 		};
 	} );
 
+	const Footer = () => (
+		<SourceLink
+			className="googlesitekit-data-block__source"
+			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+			href={ analyticsMainURL }
+			external
+		/>
+	);
+
 	if ( loading ) {
 		return (
 			<Widget
@@ -98,17 +107,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 	// so this check should happen before an error, which is only relevant if they are linked.
 	if ( ! isAdSenseLinked ) {
 		return (
-			<Widget
-				noPadding
-				Footer={ () => (
-					<SourceLink
-						className="googlesitekit-data-block__source"
-						name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-						href={ analyticsMainURL }
-						external
-					/>
-				) }
-			>
+			<Widget Footer={ Footer }>
 				<AdSenseLinkCTA />
 			</Widget>
 		);
@@ -116,35 +115,15 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 
 	if ( error ) {
 		return (
-			<Widget
-				noPadding
-				Footer={ () => (
-					<SourceLink
-						className="googlesitekit-data-block__source"
-						name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-						href={ analyticsMainURL }
-						external
-					/>
-				) }
-			>
+			<Widget Footer={ Footer } >
 				<WidgetReportError moduleSlug="analytics" error={ error } />
 			</Widget>
 		);
 	}
 
 	if ( isZeroReport( data ) ) {
-		<Widget
-			noPadding
-			Footer={ () => (
-				<SourceLink
-					className="googlesitekit-data-block__source"
-					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					href={ analyticsMainURL }
-					external
-				/>
-			) }
-		>
-			return <WidgetReportZero moduleSlug="analytics" />;
+		<Widget Footer={ Footer } >
+			 <WidgetReportZero moduleSlug="analytics" />
 		</Widget>;
 	}
 
