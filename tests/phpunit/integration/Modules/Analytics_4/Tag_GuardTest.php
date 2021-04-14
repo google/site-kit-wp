@@ -22,10 +22,21 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Tag_GuardTest extends TestCase {
 
-	public function test_can_activate() {
-		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$guard    = new Tag_Guard( $settings );
+	/**
+	 * @var Tag_Guard
+	 */
+	protected $guard;
 
+	public function setUp() {
+		parent::setUp();
+
+		$context     = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options     = new Options( $context );
+		$settings    = new Settings( $options );
+		$this->guard = new Tag_Guard( $settings );
+	}
+
+	public function test_can_activate() {
 		update_option(
 			Settings::OPTION,
 			array(
@@ -34,13 +45,10 @@ class Tag_GuardTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( $guard->can_activate() );
+		$this->assertTrue( $this->guard->can_activate() );
 	}
 
-	public function test_cant_activate() {
-		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$guard    = new Tag_Guard( $settings );
-
+	public function test_can_activate__with_use_snippet_false() {
 		update_option(
 			Settings::OPTION,
 			array(
@@ -49,8 +57,13 @@ class Tag_GuardTest extends TestCase {
 			)
 		);
 
-		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when useSnippet has negative value.' );
+		$this->assertFalse(
+			$this->guard->can_activate(),
+			'Should return FALSE when useSnippet is not enabled.'
+		);
+	}
 
+	public function test_can_activate__with_no_measurement_id() {
 		update_option(
 			Settings::OPTION,
 			array(
@@ -59,7 +72,10 @@ class Tag_GuardTest extends TestCase {
 			)
 		);
 
-		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when measurementID is empty.' );
+		$this->assertFalse(
+			$this->guard->can_activate(),
+			'Should return FALSE when measurementID is empty.'
+		);
 	}
 
 }
