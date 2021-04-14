@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
@@ -24,10 +25,13 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
-use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
+use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
+use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google_Service_GoogleAnalyticsAdmin;
 use Google\Site_Kit_Dependencies\Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty;
 use Google\Site_Kit_Dependencies\Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream;
@@ -43,6 +47,7 @@ use WP_Error;
  */
 final class Analytics_4 extends Module
 	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets {
+	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
@@ -60,6 +65,9 @@ final class Analytics_4 extends Module
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+
+		// Analytics 4 tag placement logic.
+		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 	}
 
 	/**
@@ -353,6 +361,28 @@ final class Analytics_4 extends Module
 				)
 			),
 		);
+	}
+
+	/**
+	 * Registers the Analytics 4 tag.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function register_tag() {
+		if ( $this->context->is_amp() ) {
+			return;
+		}
+
+		$module_settings = $this->get_settings();
+		$settings        = $module_settings->get();
+		$tag             = new Web_Tag( $settings['measurementID'], self::MODULE_SLUG );
+		if ( $tag && ! $tag->is_tag_blocked() ) {
+			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+			$tag->use_guard( new Tag_Guard( $module_settings ) );
+			if ( $tag->can_register() ) {
+				$tag->register();
+			}
+		}
 	}
 
 }
