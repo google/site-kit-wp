@@ -79,7 +79,7 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 
 	useEffect( () => {
 		if ( keywordsContainer && keywordsContainer.current && isActive ) {
-			focusInput( '.mdc-text-field__input:first-child' );
+			focusInput( '.googlesitekit-user-input__text-option:first-child .mdc-text-field__input' );
 		}
 	}, [ isActive ] );
 

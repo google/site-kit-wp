@@ -56,13 +56,13 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 	}, [ isActive, max ] );
 
 	const focusRadioOrCheckbox = ( optionType = 'radio' ) => {
-		const checkedEl = optionsRef.current.querySelector( `input[type="${ optionType }"]:checked:first-child` );
+		const checkedEls = optionsRef.current.querySelectorAll( `input[type="${ optionType }"]:checked` );
 
-		if ( checkedEl ) {
-			focusOption( checkedEl );
+		if ( checkedEls.length > 0 ) {
+			focusOption( checkedEls[ 0 ] );
 		} else {
-			const firstEl = optionsRef.current.querySelector( `input[type="${ optionType }"]:first-child` );
-			focusOption( firstEl );
+			const els = optionsRef.current.querySelectorAll( `input[type="${ optionType }"]` );
+			focusOption( els[ 0 ] );
 		}
 	};
 

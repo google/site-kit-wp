@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { Fragment, useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -47,9 +47,8 @@ export default function UserInputPreview( props ) {
 		submitChanges,
 		error,
 	} = props;
-
+	const previewContainer = useRef();
 	const settings = useSelect( ( select ) => select( CORE_USER ).getUserInputSettings() );
-
 	const {
 		USER_INPUT_ANSWERS_GOALS,
 		USER_INPUT_ANSWERS_HELP_NEEDED,
@@ -57,8 +56,19 @@ export default function UserInputPreview( props ) {
 		USER_INPUT_ANSWERS_ROLE,
 	} = getUserInputAnwsers();
 
+	useEffect( () => {
+		if ( previewContainer && previewContainer.current ) {
+			const buttons = previewContainer.current.querySelectorAll( '.mdc-button' );
+			if ( buttons.length > 0 ) {
+				setTimeout( () => {
+					buttons[ 0 ].focus();
+				}, 50 );
+			}
+		}
+	}, [] );
+
 	return (
-		<div className="googlesitekit-user-input__preview">
+		<div className="googlesitekit-user-input__preview" ref={ previewContainer }>
 			<Row>
 				<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
 					<Fragment>
