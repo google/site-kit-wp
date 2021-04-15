@@ -35,6 +35,8 @@ import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import AdBlockerWarning from '../common/AdBlockerWarning';
+import Row from '../../../../material-components/layout/Row';
+import Cell from '../../../../material-components/layout/Cell';
 
 const { useSelect } = Data;
 
@@ -103,11 +105,11 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 	if ( isAdblockerActive ) {
 		return (
 			<Widget className="googlesitekit-dashboard-adsense-stats mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+				<Row>
+					<Cell>
 						<AdBlockerWarning />
-					</div>
-				</div>
+					</Cell>
+				</Row>
 			</Widget>
 		);
 	}
