@@ -36,7 +36,7 @@ import { numFmt } from '../../../../../util';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import { isZeroReport } from '../../../util';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
-import Link from '../../../../../components/Link';
+import DetailsPermaLinks from '../../../../../components/DetailsPermaLinks';
 import ReportTable from '../../../../../components/ReportTable';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Header from './Header';
@@ -117,9 +117,7 @@ export default function ModulePopularPagesWidget( { Widget, WidgetReportError, W
 				} ) );
 
 				return (
-					<Link href={ serviceURL } external inherit>
-						{ title }
-					</Link>
+					<DetailsPermaLinks title={ title } path={ url } serviceURL={ serviceURL } />
 				);
 			},
 		},
