@@ -42,6 +42,7 @@ import { CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { listFormat } from '../../../util';
 import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
+import { createValidatedAction } from '../../data/utils';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -208,22 +209,25 @@ const baseActions = {
 	 * @param {boolean} active `true` to activate; `false` to deactivate.
 	 * @return {Object}         Object with `{response, error}`.
 	 */
-	*setModuleActivation( slug, active ) {
-		invariant( slug, 'slug is required.' );
-		invariant( active !== undefined, 'active is required.' );
+	setModuleActivation: createValidatedAction(
+		( slug, active ) => {
+			invariant( slug, 'slug is required.' );
+			invariant( active !== undefined, 'active is required.' );
+		},
+		function* ( slug, active ) {
+			const { response, error } = yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation( slug, active );
+			if ( response?.success === true ) {
+				// Fetch (or re-fetch) all modules, with their updated status.
+				yield fetchGetModulesStore.actions.fetchGetModules();
+				yield {
+					payload: {},
+					type: REFETCH_AUTHENTICATION,
+				};
+			}
 
-		const { response, error } = yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation( slug, active );
-		if ( response?.success === true ) {
-			// Fetch (or re-fetch) all modules, with their updated status.
-			yield fetchGetModulesStore.actions.fetchGetModules();
-			yield {
-				payload: {},
-				type: REFETCH_AUTHENTICATION,
-			};
+			return { response, error };
 		}
-
-		return { response, error };
-	},
+	),
 
 	/**
 	 * Registers a module.
