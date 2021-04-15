@@ -26,14 +26,20 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS } from '../../../datastore/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
 export default function Header() {
-	const url = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'trafficsources-overview' ) );
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
+	const url = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'trafficsources-overview',
+		generateDateRangeArgs( { startDate, endDate } ) )
+	);
 	const dateRangeNumberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 	const title = sprintf(
 		/* translators: %s: number of days */
