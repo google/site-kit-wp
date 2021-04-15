@@ -30,7 +30,7 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
-import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 const { useSelect } = Data;
 
 export default function Header() {
