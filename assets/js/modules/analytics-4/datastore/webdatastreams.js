@@ -43,7 +43,7 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 			...state,
 			webdatastreams: {
 				...state.webdatastreams,
-				[ propertyID ]: webDataStreams,
+				[ propertyID ]: Array.isArray( webDataStreams ) ? webDataStreams : [],
 			},
 		};
 	},
@@ -109,10 +109,9 @@ const baseActions = {
 	 * @since n.e.x.t
 	 *
 	 * @param {string} propertyID GA4 property ID.
-	 * @return {Object} Redux action.
 	 */
-	waitForWebDataStreams( propertyID ) {
-		return {
+	*waitForWebDataStreams( propertyID ) {
+		yield {
 			payload: { propertyID },
 			type: WAIT_FOR_WEBDATASTREAMS,
 		};
@@ -120,23 +119,10 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ WAIT_FOR_WEBDATASTREAMS ]: createRegistryControl( ( { select, subscribe } ) => {
-		return ( { payload } ) => {
+	[ WAIT_FOR_WEBDATASTREAMS ]: createRegistryControl( ( { __experimentalResolveSelect } ) => {
+		return async ( { payload } ) => {
 			const { propertyID } = payload;
-			const areLoaded = () => select( STORE_NAME ).getWebDataStreams( propertyID ) !== undefined;
-
-			if ( areLoaded() ) {
-				return true;
-			}
-
-			return new Promise( ( resolve ) => {
-				const unsubscribe = subscribe( () => {
-					if ( areLoaded() ) {
-						unsubscribe();
-						resolve();
-					}
-				} );
-			} );
+			await __experimentalResolveSelect( STORE_NAME ).getWebDataStreams( propertyID );
 		};
 	} ),
 };
@@ -189,16 +175,14 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		if ( Array.isArray( datastreams ) ) {
-			const normalizeURL = ( incomingURL ) => incomingURL
-				.replace( /^https?:\/\/(www\.)?/i, '' ) // Remove protocol and optional "www." prefix from the URL.
-				.replace( /\/$/, '' ); // Remove trailing slash.
+		const normalizeURL = ( incomingURL ) => incomingURL
+			.replace( /^https?:\/\/(www\.)?/i, '' ) // Remove protocol and optional "www." prefix from the URL.
+			.replace( /\/$/, '' ); // Remove trailing slash.
 
-			const url = normalizeURL( select( CORE_SITE ).getReferenceSiteURL() );
-			for ( const datastream of datastreams ) {
-				if ( normalizeURL( datastream.defaultUri ) === url ) {
-					return datastream;
-				}
+		const url = normalizeURL( select( CORE_SITE ).getReferenceSiteURL() );
+		for ( const datastream of datastreams ) {
+			if ( normalizeURL( datastream.defaultUri ) === url ) {
+				return datastream;
 			}
 		}
 

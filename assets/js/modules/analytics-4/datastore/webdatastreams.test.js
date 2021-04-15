@@ -161,6 +161,27 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 		} );
 
 		describe( 'getMatchingWebDataStream', () => {
+			const webDataStreamDotCom = {
+				name: 'properties/1000/webDataStreams/2000',
+				measurementId: '1A2BCD345E', // eslint-disable-line sitekit/acronym-case
+				firebaseAppId: '', // eslint-disable-line sitekit/acronym-case
+				createTime: '2014-10-02T15:01:23Z',
+				updateTime: '2014-10-02T15:01:23Z',
+				defaultUri: 'http://example.com',
+				displayName: 'Test GA4 WebDataStream',
+			};
+
+			const webDataStreamDotOrg = {
+				name: 'properties/1000/webDataStreams/2001',
+				measurementId: '1A2BCD346E', // eslint-disable-line sitekit/acronym-case
+				firebaseAppId: '', // eslint-disable-line sitekit/acronym-case
+				createTime: '2014-10-03T15:01:23Z',
+				updateTime: '2014-10-03T15:01:23Z',
+				defaultUri: 'http://example.org',
+				displayName: 'Another datastream',
+			};
+
+			const webDataStreams = [ webDataStreamDotCom, webDataStreamDotOrg ];
 			const propertyID = '12345';
 
 			it( 'should return undefined if web data streams arent loaded yet', () => {
@@ -172,7 +193,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 			it( 'should return NULL when no datastreams are matched', () => {
 				provideSiteInfo( registry, { referenceSiteURL: 'http://example.net' } );
-				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( webDataStreams, { propertyID } );
 
 				const datastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
 				expect( datastream ).toBeNull();
@@ -180,10 +201,10 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 			it( 'should return the correct datastream when reference site URL matches exactly', () => {
 				provideSiteInfo( registry, { referenceSiteURL: 'http://example.com' } );
-				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( webDataStreams, { propertyID } );
 
 				const datastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
-				expect( datastream ).toEqual( fixtures.webDataStreams[ 0 ] );
+				expect( datastream ).toEqual( webDataStreamDotCom );
 			} );
 
 			it.each( [
@@ -192,10 +213,10 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				[ 'trailing slash', 'https://www.example.org/' ],
 			] )( 'should return the correct datastream ignoring %s', ( _, referenceSiteURL ) => {
 				provideSiteInfo( registry, { referenceSiteURL } );
-				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( webDataStreams, { propertyID } );
 
 				const datastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
-				expect( datastream ).toEqual( fixtures.webDataStreams[ 1 ] );
+				expect( datastream ).toEqual( webDataStreamDotOrg );
 			} );
 		} );
 	} );
