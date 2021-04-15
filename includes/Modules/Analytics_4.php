@@ -195,6 +195,14 @@ final class Analytics_4 extends Module
 	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
 	 */
 	protected function create_data_request( Data_Request $data ) {
+		$prefix_account_id = function( $account_id ) {
+			return 'accounts/' . $account_id;
+		};
+
+		$prefix_property_id = function( $property_id ) {
+			return 'properties/' . $property_id;
+		};
+
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				return $this->get_service( 'analyticsadmin' )->accounts->listAccounts();
@@ -207,9 +215,11 @@ final class Analytics_4 extends Module
 						array( 'status' => 400 )
 					);
 				}
+
 				$property = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty();
-				$property->setParent( 'accounts/' . $data['accountID'] );
+				$property->setParent( $prefix_account_id( $data['accountID'] ) );
 				$property->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+
 				return $this->get_service( 'analyticsadmin' )->properties->create( $property );
 			case 'POST:create-webdatastream':
 				if ( ! isset( $data['propertyID'] ) ) {
@@ -220,10 +230,12 @@ final class Analytics_4 extends Module
 						array( 'status' => 400 )
 					);
 				}
+
 				$datastream = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream();
 				$datastream->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 				$datastream->setDefaultUri( $this->context->get_reference_site_url() );
-				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->create( 'properties/' . $data['propertyID'], $datastream );
+
+				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->create( $prefix_property_id( $data['propertyID'] ), $datastream );
 			case 'GET:properties':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -233,9 +245,10 @@ final class Analytics_4 extends Module
 						array( 'status' => 400 )
 					);
 				}
+
 				return $this->get_service( 'analyticsadmin' )->properties->listProperties(
 					array(
-						'filter' => 'parent:accounts/' . $data['accountID'],
+						'filter' => 'parent:' . $prefix_account_id( $data['accountID'] ),
 					)
 				);
 			case 'GET:property':
@@ -247,7 +260,8 @@ final class Analytics_4 extends Module
 						array( 'status' => 400 )
 					);
 				}
-				return $this->get_service( 'analyticsadmin' )->properties->get( 'properties/' . $data['propertyID'] );
+
+				return $this->get_service( 'analyticsadmin' )->properties->get( $prefix_property_id( $data['propertyID'] ) );
 			case 'GET:webdatastreams':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
@@ -257,7 +271,8 @@ final class Analytics_4 extends Module
 						array( 'status' => 400 )
 					);
 				}
-				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->listPropertiesWebDataStreams( 'properties/' . $data['propertyID'] );
+
+				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->listPropertiesWebDataStreams( $prefix_property_id( $data['propertyID'] ) );
 		}
 
 		return parent::create_data_request( $data );
@@ -274,13 +289,52 @@ final class Analytics_4 extends Module
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
+		$filter_account = function( $account ) {
+			$matches = array();
+			if ( preg_match( '#accounts/([^/]+)#', $account['name'], $matches ) ) {
+				$account['_ID'] = $matches[1];
+			}
+
+			return $account;
+		};
+
+		$filter_property = function( $property ) {
+			$matches = array();
+			if ( preg_match( '#properties/([^/]+)#', $property['name'], $matches ) ) {
+				$property['_ID'] = $matches[1];
+			}
+
+			$matches = array();
+			if ( preg_match( '#accounts/([^/]+)#', $property['parent'], $matches ) ) {
+				$property['_accountID'] = $matches[1];
+			}
+
+			return $property;
+		};
+
+		$filter_webdatastream = function( $webdatastream ) {
+			$matches = array();
+			if ( preg_match( '#properties/([^/]+)/webDataStreams/([^/]+)#', $webdatastream['name'], $matches ) ) {
+				$webdatastream['_ID']         = $matches[2];
+				$webdatastream['_propertyID'] = $matches[1];
+			}
+
+			return $webdatastream;
+		};
+
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
-				return $response->getAccounts();
+				return array_map( $filter_account, $response->getAccounts() );
+			case 'POST:create-property':
+				return $filter_property( $response );
+			case 'POST:create-webdatastream':
+				return $filter_webdatastream( $response );
 			case 'GET:properties':
-				return $response->getProperties();
+				return array_map( $filter_property, $response->getProperties() );
+			case 'GET:property':
+				return $filter_property( $response );
 			case 'GET:webdatastreams':
-				return $response->getWebDataStreams();
+				return array_map( $filter_webdatastream, $response->getWebDataStreams() );
 		}
 
 		return parent::parse_data_response( $data, $response );
