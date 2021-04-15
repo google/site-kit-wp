@@ -156,7 +156,7 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 		if ( event.keyCode === ENTER && other.trim().length > 0 && next && typeof next === 'function' ) {
 			next();
 		}
-	} );
+	}, dependencies );
 
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
