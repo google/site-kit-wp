@@ -93,7 +93,11 @@
 		}
 
 		& + .googlesitekit-dropdown-menu {
-			margin-left: 24px;
+			margin-left: $grid-gap-phone;
+
+			@media (min-width: $bp-wpAdminBarTablet) {
+				margin-left: $grid-gap-desktop;
+			}
 		}
 	}
 
