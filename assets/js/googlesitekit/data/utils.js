@@ -27,6 +27,7 @@ import memize from 'memize';
  * WordPress dependencies
  */
 import { createRegistryControl, createRegistrySelector } from '@wordpress/data';
+import isGenerator from '@wordpress/redux-routine/build-module/is-generator';
 
 const GET_REGISTRY = 'GET_REGISTRY';
 const AWAIT = 'AWAIT';
@@ -375,5 +376,26 @@ export function createValidationSelector( validate ) {
 	return {
 		safeSelector,
 		dangerousSelector,
+	};
+}
+
+/**
+ * Creates a validated action creator.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} validate      A function for validating action arguments.
+ * @param {Function} actionCreator A function for returning or yielding redux-style actions.
+ * @return {Function} An enhanced action creator.
+ */
+export function createValidatedAction( validate, actionCreator ) {
+	invariant( typeof validate === 'function', 'a validator function is required.' );
+	invariant( typeof actionCreator === 'function', 'an action creator function is required.' );
+	invariant( ! isGenerator( validate ), 'an action’s validator function must not be a generator.' );
+
+	return ( ...args ) => {
+		validate( ...args );
+
+		return actionCreator( ...args );
 	};
 }
