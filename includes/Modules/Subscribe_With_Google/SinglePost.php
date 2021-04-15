@@ -54,9 +54,9 @@ final class SinglePost {
 		}
 
 		// Bail if the post is free.
-		$free_key = Key::from( 'free' );
-		$free     = get_post_meta( get_the_ID(), $free_key, true );
-		if ( 'true' === $free ) {
+		$product = get_post_meta( get_the_ID(), Key::from( 'product' ), true );
+		$is_free = ! isset( $product ) || 'openaccess' === $product;
+		if ( $is_free ) {
 			return $content;
 		}
 
