@@ -112,9 +112,11 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 	}
 
 	if ( isZeroReport( data ) ) {
-		<Widget Footer={ Footer }>
-			 <WidgetReportZero moduleSlug="analytics" />
-		</Widget>;
+		return (
+			<Widget Footer={ Footer }>
+				<WidgetReportZero moduleSlug="analytics" />
+			</Widget>
+		);
 	}
 
 	const tableColumns = [
