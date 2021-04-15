@@ -93,17 +93,7 @@ function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 
 	if ( loading ) {
 		return (
-			<Widget
-				noPadding
-				Footer={ () => (
-					<SourceLink
-						className="googlesitekit-data-block__source"
-						name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-						href={ analyticsMainURL }
-						external
-					/>
-				) }
-			>
+			<Widget noPadding Footer={ Footer }>
 				<PreviewTable padding />
 			</Widget>
 		);
@@ -111,7 +101,7 @@ function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 
 	if ( error ) {
 		return (
-			<Widget Footer={ Footer } >
+			<Widget Footer={ Footer }>
 				<WidgetReportError moduleSlug="analytics" error={ error } />
 			</Widget>
 		);
@@ -119,14 +109,14 @@ function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 
 	if ( isZeroReport( data ) ) {
 		return (
-			<Widget Footer={ Footer } >
+			<Widget Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
 			</Widget>
 		);
 	}
 
 	return (
-		<Widget noPadding Footer={ Footer } >
+		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data[ 0 ].data.rows }
