@@ -130,7 +130,6 @@ export const selectors = {
 	 */
 	isAdBlockerActive( state ) {
 		const { isAdBlockerActive } = state;
-
 		return isAdBlockerActive;
 	},
 };
