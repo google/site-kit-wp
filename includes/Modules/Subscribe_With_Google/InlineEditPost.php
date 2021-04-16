@@ -47,7 +47,7 @@ final class InlineEditPost {
 
 		// Render a SwG product dropdown in the Bulk Edit interface.
 		// TODO: Get the saving working.
-		add_action( 'bulk_edit_custom_box', array( $this, 'quick_edit_custom_box' ) );
+		add_action( 'bulk_edit_custom_box', array( $this, 'bulk_edit_custom_box' ) );
 
 		// Render a SwG product dropdown in the Quick Edit interface.
 		add_action( 'quick_edit_custom_box', array( $this, 'quick_edit_custom_box' ) );
@@ -71,7 +71,21 @@ final class InlineEditPost {
 	}
 
 	/**
-	 * Allow SwG product selection within the Quick Edit interface.
+	 * Adds product selection to the Bulk Edit interface.
+	 *
+	 * @param string $column The column to potentially add HTML to.
+	 */
+	public function bulk_edit_custom_box( $column ) {
+
+		if ( 'swg_product' !== $column ) {
+			return;
+		}
+
+		$this->render_product_dropdown( true /* $render_no_change_option */ );
+	}
+
+	/**
+	 * Adds product selection to the Quick Edit interface.
 	 *
 	 * @param string $column The column to potentially add HTML to.
 	 */
@@ -80,6 +94,16 @@ final class InlineEditPost {
 		if ( 'swg_product' !== $column ) {
 			return;
 		}
+
+		$this->render_product_dropdown( false /* $render_no_change_option */ );
+	}
+
+	/**
+	 * Renders product dropdown within the Bulk/Quick Edit interfaces.
+	 *
+	 * @param bool $render_no_change_option Whether to render a "- No Change -" option.
+	 */
+	private function render_product_dropdown( $render_no_change_option ) {
 
 		wp_nonce_field( $this->nonce_action, $this->nonce_name );
 
@@ -98,6 +122,11 @@ final class InlineEditPost {
 		echo '    name="' . esc_attr( $this->product_field_name ) . '"';
 		echo '    id="' . esc_attr( $this->product_field_name ) . '"';
 		echo '  >';
+
+		if ( $render_no_change_option ) {
+			echo '<option value="🚫">— No Change —</option>';
+		}
+
 		foreach ( $products as $product ) {
 			$product = trim( $product );
 			echo '<option value="' . esc_attr( $product ) . '">';
@@ -126,7 +155,7 @@ final class InlineEditPost {
 		);
 
 		// Require product.
-		if ( false === $product ) {
+		if ( false === $product || '🚫' === $product ) {
 			return;
 		}
 
