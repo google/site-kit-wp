@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
-import { createTestRegistry, muteFetch, unsubscribeFromAll, untilResolved } from 'tests/js/utils';
+import { STORE_NAME, PROPERTY_CREATE } from './constants';
+import { createTestRegistry, muteFetch, provideSiteInfo, unsubscribeFromAll, untilResolved } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 properties', () => {
@@ -94,6 +94,100 @@ describe( 'modules/analytics-4 properties', () => {
 				// No properties should have been added yet, as the property creation failed.
 				expect( properties ).toBeUndefined();
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'selectProperty', () => {
+			it( 'should throw if property ID is invalid', () => {
+				const callback = () => registry.dispatch( STORE_NAME ).selectProperty( '' );
+				expect( callback ).toThrow( 'A valid propertyID selection is required.' );
+			} );
+
+			it( 'should set module settings correctly when PROPERTY_CREATE is passed', async () => {
+				const settings = {
+					propertyID: '12345',
+					webDataStreamID: '1000',
+					measurementID: 'abcd',
+				};
+
+				registry.dispatch( STORE_NAME ).receiveGetSettings( settings );
+				await registry.dispatch( STORE_NAME ).selectProperty( PROPERTY_CREATE );
+
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( '' );
+			} );
+
+			it( 'should set property ID only and reset datastream with measurement IDs when web data stream is not found', async () => {
+				const propertyID = '09876';
+				const settings = {
+					propertyID: '12345',
+					webDataStreamID: '1000',
+					measurementID: 'abcd',
+				};
+
+				provideSiteInfo( registry, { referenceSiteURL: 'https://www.example.io' } );
+
+				registry.dispatch( STORE_NAME ).receiveGetSettings( settings );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
+				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
+
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( '' );
+			} );
+
+			it( 'should set property, datastream, and measurement IDs when web data stream is found', async () => {
+				const propertyID = '09876';
+				const settings = {
+					propertyID: '12345',
+					webDataStreamID: '1000',
+					measurementID: 'abcd',
+				};
+
+				provideSiteInfo( registry, { referenceSiteURL: 'https://www.example.org' } );
+
+				registry.dispatch( STORE_NAME ).receiveGetSettings( settings );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
+				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
+
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( fixtures.webDataStreams[ 1 ].name.split( '/' ).pop() );
+				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( fixtures.webDataStreams[ 1 ].measurementId ); // eslint-disable-line sitekit/acronym-case
+			} );
+
+			it( 'supports asynchronous webdatastream resolution', async () => {
+				const propertyID = '09876';
+				const settings = {
+					propertyID: '12345',
+					webDataStreamID: '1000',
+					measurementID: 'abcd',
+				};
+				let resolveResponse;
+				const responsePromise = new Promise( ( resolve ) => {
+					resolveResponse = () => resolve( fixtures.webDataStreams );
+				} );
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams/,
+					responsePromise
+				);
+
+				provideSiteInfo( registry, { referenceSiteURL: 'https://www.example.org' } );
+				registry.dispatch( STORE_NAME ).receiveGetSettings( settings );
+
+				const promise = registry.dispatch( STORE_NAME ).selectProperty( propertyID );
+
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( '' );
+
+				resolveResponse();
+				await promise;
+
+				expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams/ );
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( fixtures.webDataStreams[ 1 ].name.split( '/' ).pop() );
+				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( fixtures.webDataStreams[ 1 ].measurementId ); // eslint-disable-line sitekit/acronym-case
 			} );
 		} );
 	} );
