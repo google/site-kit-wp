@@ -124,6 +124,9 @@ final class InlineEditPost {
 		echo '  >';
 
 		if ( $render_no_change_option ) {
+			// Emojis are not valid SwG product names,
+			// therefore this value will not collide with
+			// a real SwG product name.
 			echo '<option value="🚫">— No Change —</option>';
 		}
 
