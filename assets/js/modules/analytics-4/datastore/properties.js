@@ -115,11 +115,9 @@ const baseActions = {
 		return ( function* () {
 			const registry = yield Data.commonActions.getRegistry();
 
-			registry.dispatch( STORE_NAME ).setSettings( {
-				propertyID,
-				webDataStreamID: '',
-				measurementID: '',
-			} );
+			registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
+			registry.dispatch( STORE_NAME ).setWebDataStreamID( '' );
+			registry.dispatch( STORE_NAME ).setMeasurementID( '' );
 
 			if ( PROPERTY_CREATE === propertyID ) {
 				return;
@@ -129,10 +127,8 @@ const baseActions = {
 
 			const webdatastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
 			if ( webdatastream ) {
-				registry.dispatch( STORE_NAME ).setSettings( {
-					webDataStreamID: webdatastream.name.split( '/' ).pop(),
-					measurementID: webdatastream.measurementId, // eslint-disable-line sitekit/acronym-case
-				} );
+				registry.dispatch( STORE_NAME ).setWebDataStreamID( webdatastream.name.split( '/' ).pop() );
+				registry.dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
 			}
 		}() );
 	},
