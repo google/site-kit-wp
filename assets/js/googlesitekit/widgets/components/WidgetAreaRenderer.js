@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { HIDDEN_CLASS } from '../util/constants';
 import { STORE_NAME, WIDGET_AREA_STYLES } from '../datastore/constants';
 import WidgetRenderer from './WidgetRenderer';
 import { getWidgetLayout, combineWidgets } from '../util';
@@ -81,7 +82,11 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	// Returning `null` here however would have the side-effect of making
 	// all widgets active again, which is why we must return the "null" output.
 	if ( ! activeWidgets.length ) {
-		return widgetsOutput;
+		return (
+			<Grid className={ `${ HIDDEN_CLASS } googlesitekit-widget-area googlesitekit-widget-area--${ slug } googlesitekit-widget-area--${ style }` }>
+				{ widgetsOutput }
+			</Grid>
+		);
 	}
 
 	const { Icon, title, style, subtitle } = widgetArea;
