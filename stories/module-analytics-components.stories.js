@@ -297,6 +297,8 @@ generateAnalyticsWidgetStories( {
 			compareEndDate: '2020-08-10',
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
+			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+			dimensions: [ 'ga:channelGrouping' ],
 			metrics: [
 				{
 					expression: 'ga:users',
@@ -307,14 +309,14 @@ generateAnalyticsWidgetStories( {
 		{
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
-			dimensions: 'ga:date',
+			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+			dimensions: [ 'ga:date', 'ga:channelGrouping' ],
 			metrics: [
 				{
 					expression: 'ga:users',
 					alias: 'Users',
 				},
 			],
-
 		},
 	] ),
 	Component: DashboardSearchVisitorsWidget,
@@ -330,6 +332,8 @@ generateAnalyticsWidgetStories( {
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
 			url: 'https://www.example.com/example-page/',
+			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+			dimensions: [ 'ga:channelGrouping' ],
 			metrics: [
 				{
 					expression: 'ga:users',
@@ -341,14 +345,14 @@ generateAnalyticsWidgetStories( {
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
 			url: 'https://www.example.com/example-page/',
-			dimensions: 'ga:date',
+			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+			dimensions: [ 'ga:date', 'ga:channelGrouping' ],
 			metrics: [
 				{
 					expression: 'ga:users',
 					alias: 'Users',
 				},
 			],
-
 		},
 	] ),
 	Component: DashboardSearchVisitorsWidget,
