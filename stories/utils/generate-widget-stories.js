@@ -68,7 +68,7 @@ export function generateReportBasedWidgetStories( {
 } ) {
 	const stories = storiesOf( group, module );
 
-	const withRegistry = ( StoryComponent ) => {
+	const withRegistry = ( variantName ) => ( StoryComponent ) => {
 		const registry = createTestRegistry();
 		// Activate the module.
 		provideModules( registry, moduleSlugs.map( ( module ) => {
@@ -96,7 +96,7 @@ export function generateReportBasedWidgetStories( {
 		}
 
 		// Call the optional setup function.
-		setup( registry );
+		setup( registry, variantName );
 
 		return (
 			<StoryComponent registry={ registry } />
@@ -252,7 +252,7 @@ export function generateReportBasedWidgetStories( {
 			</WithTestRegistry>
 		), {
 			decorators: [
-				withRegistry,
+				withRegistry( variant ),
 			],
 		} );
 	} );

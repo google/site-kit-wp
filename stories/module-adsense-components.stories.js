@@ -30,12 +30,55 @@ import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 
 const generateAnalyticsData = makeReportDataGenerator( getAnalyticsMockResponse );
-
+const dashboardSummaryOptions = [
+	{
+		// Custom start and end date for this widget to match data range: 'today',
+		startDate: '2020-09-12',
+		endDate: '2020-09-12',
+		metrics: [
+			'EARNINGS',
+			'PAGE_VIEWS_RPM',
+			'IMPRESSIONS',
+		],
+	},
+	{
+		// getDateRangeDates( { offsetDays: 1 }) for 'last-28-days' and '2020-09-12'.
+		startDate: '2020-08-15',
+		endDate: '2020-09-11',
+		metrics: [
+			'EARNINGS',
+			'PAGE_VIEWS_RPM',
+			'IMPRESSIONS',
+		],
+	},
+	{
+		// Custom start and end date for this widget to match data range: 'this-month',
+		startDate: '2020-08-15',
+		endDate: '2020-09-11',
+		metrics: [
+			'EARNINGS',
+			'PAGE_VIEWS_RPM',
+			'IMPRESSIONS',
+		],
+		dimensions: [
+			'DATE',
+		],
+	},
+];
 generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'adsense' ],
+	moduleSlugs: [ 'adsense', 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'AdSense Module/Components/Dashboard/Summary Widget',
 	referenceDate: '2020-09-12',
+	setup: ( registry, variantName ) => {
+		registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
+
+		if ( variantName === 'Ad blocker active' ) {
+			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
+		} else {
+			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
+		}
+	},
 	data: [
 		{
 			kind: 'adsense#report',
@@ -124,47 +167,18 @@ generateReportBasedWidgetStories( {
 			endDate: '2020-09-12',
 		},
 	],
-	options: [
-		{
-			// Custom start and end date for this widget to match data range: 'today',
-			startDate: '2020-09-12',
-			endDate: '2020-09-12',
-			metrics: [
-				'EARNINGS',
-				'PAGE_VIEWS_RPM',
-				'IMPRESSIONS',
-			],
-		},
-		{
-			// getDateRangeDates( { offsetDays: 1 }) for 'last-28-days' and '2020-09-12'.
-			startDate: '2020-08-15',
-			endDate: '2020-09-11',
-			metrics: [
-				'EARNINGS',
-				'PAGE_VIEWS_RPM',
-				'IMPRESSIONS',
-			],
-		},
-		{
-			// Custom start and end date for this widget to match data range: 'this-month',
-			startDate: '2020-08-15',
-			endDate: '2020-09-11',
-			metrics: [
-				'EARNINGS',
-				'PAGE_VIEWS_RPM',
-				'IMPRESSIONS',
-			],
-			dimensions: [
-				'DATE',
-			],
-		},
-	],
+	options: dashboardSummaryOptions,
 	Component: DashboardSummaryWidget,
 	wrapWidget: false,
+	additionalVariants: {
+		'Ad blocker active': {
+			data: [],
+			options: [],
+		},
+	},
 } );
 
 const topEarningPagesArgs = {
-	// getDateRangeDates( { offsetDays: 1 }) for 'last-28-days' and '2020-09-12'.
 	startDate: '2020-08-15',
 	endDate: '2020-09-11',
 	dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
@@ -185,220 +199,21 @@ generateReportBasedWidgetStories( {
 	datastore: MODULES_ANALYTICS,
 	group: 'AdSense Module/Components/Dashboard/Top Earning Pages Widget',
 	referenceDate: '2020-09-12',
-	data: [
-		{
-			nextPageToken: '10',
-			columnHeader: {
-				dimensions: [
-					'ga:pageTitle',
-					'ga:pagePath',
-				],
-				metricHeader: {
-					metricHeaderEntries: [
-						{
-							name: 'Earnings',
-							type: 'CURRENCY',
-						},
-						{
-							name: 'Page RPM',
-							type: 'CURRENCY',
-						},
-						{
-							name: 'Impressions',
-							type: 'INTEGER',
-						},
-					],
-				},
-			},
-			data: {
-				dataLastRefreshed: null,
-				isDataGolden: null,
-				rowCount: 316,
-				samplesReadCounts: null,
-				samplingSpaceSizes: null,
-				rows: [
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 1',
-							'/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.76352',
-									'0.6059682539682539',
-									'499',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 2',
-							'/site-kit-top-earning-page-2/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.371714',
-									'10.32538888888889',
-									'38',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 3',
-							'/site-kit-top-earning-page-3/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.286556',
-									'0.8790061349693251',
-									'825',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 4',
-							'/site-kit-top-earning-page-4/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.212868',
-									'5.60178947368421',
-									'68',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 5',
-							'/site-kit-top-earning-page-5/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.152164',
-									'15.2164',
-									'22',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 6',
-							'/site-kit-top-earning-page-6/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.036977',
-									'0.33015178571428566',
-									'144',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 7',
-							'/site-kit-top-earning-page-7/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.029555',
-									'0.29555',
-									'206',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 8',
-							'/site-kit-top-earning-page-8/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.028485',
-									'1.0173214285714285',
-									'35',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 9',
-							'/site-kit-top-earning-page-9/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.024269',
-									'0.3677121212121212',
-									'81',
-								],
-							},
-						],
-					},
-					{
-						dimensions: [
-							'Site Kit Top Earning Page 10',
-							'/site-kit-top-earning-page-10/',
-						],
-						metrics: [
-							{
-								values: [
-									'0.019556',
-									'1.777818181818182',
-									'13',
-								],
-							},
-						],
-					},
-				],
-				totals: [
-					{
-						values: [
-							'2.150211',
-							'0.6847805732484076',
-							'4304',
-						],
-					},
-				],
-				minimums: [
-					{
-						values: [
-							'0.0',
-							'0.0',
-							'1',
-						],
-					},
-				],
-				maximums: [
-					{
-						values: [
-							'0.76352',
-							'15.2164',
-							'825',
-						],
-					},
-				],
-			},
-		},
-	],
+	...generateAnalyticsData( { ...topEarningPagesArgs } ),
 	options: topEarningPagesArgs,
+	setup: ( registry, variantName ) => {
+		if ( variantName === 'AdSense Not Linked' ) {
+			registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( false );
+		} else {
+			registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
+		}
+
+		if ( variantName === 'Ad blocker active' ) {
+			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
+		} else {
+			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
+		}
+	},
 	Component: DashboardTopEarningPagesWidget,
 	wrapWidget: false,
 	additionalVariants: {
@@ -406,50 +221,38 @@ generateReportBasedWidgetStories( {
 			data: [],
 			options: topEarningPagesArgs,
 		},
-	},
-	additionalVariantCallbacks: {
-		Loaded: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
-		Loading: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
-		DataUnavailable: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
-		Error: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
+		'Ad blocker active': {
+			data: [],
+			options: [],
+		},
 	},
 } );
 
-const optionsModuleTopEarningPagesWidget = {
-	startDate: '2020-08-15',
-	endDate: '2020-09-11',
-	dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-	metrics: [
-		{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
-		{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
-		{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
-	],
-	orderby: {
-		fieldName: 'ga:adsenseRevenue',
-		sortOrder: 'DESCENDING',
-	},
+const moduleTopEarningPagesWidgetOptions = {
+	...topEarningPagesArgs,
 	limit: 10,
 };
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense', 'analytics' ],
 	datastore: MODULES_ANALYTICS,
+	setup: ( registry, variantName ) => {
+		if ( variantName === 'AdSense Not Linked' ) {
+			registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( false );
+		} else {
+			registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
+		}
+	},
 	group: 'AdSense Module/Components/Module/Top Earning Pages Widget',
 	referenceDate: '2020-09-12',
-	...generateAnalyticsData( optionsModuleTopEarningPagesWidget ),
+	...generateAnalyticsData( moduleTopEarningPagesWidgetOptions ),
 	Component: ModuleTopEarningPagesWidget,
 	wrapWidget: false,
 	additionalVariants: {
 		'AdSense Not Linked': {
 			data: [],
-			options: optionsModuleTopEarningPagesWidget,
+			options: moduleTopEarningPagesWidgetOptions,
 		},
-	},
-	additionalVariantCallbacks: {
-		Loading: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
-		Loaded: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
-		DataUnavailable: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
-		Error: ( dispatch ) => dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true ),
 	},
 } );
 
