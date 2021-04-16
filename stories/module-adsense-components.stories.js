@@ -70,14 +70,9 @@ generateReportBasedWidgetStories( {
 	datastore: STORE_NAME,
 	group: 'AdSense Module/Components/Dashboard/Summary Widget',
 	referenceDate: '2020-09-12',
-	setup: ( registry, variantName ) => {
-		registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
-
-		if ( variantName === 'Ad blocker active' ) {
-			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
-		} else {
-			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
-		}
+	setup: ( { dispatch }, variantName ) => {
+		dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
+		dispatch( STORE_NAME ).receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
 	},
 	data: [
 		{
@@ -171,7 +166,7 @@ generateReportBasedWidgetStories( {
 	Component: DashboardSummaryWidget,
 	wrapWidget: false,
 	additionalVariants: {
-		'Ad blocker active': {
+		'Ad Blocker Active': {
 			data: [],
 			options: [],
 		},
@@ -201,18 +196,9 @@ generateReportBasedWidgetStories( {
 	referenceDate: '2020-09-12',
 	...generateAnalyticsData( { ...topEarningPagesArgs } ),
 	options: topEarningPagesArgs,
-	setup: ( registry, variantName ) => {
-		if ( variantName === 'AdSense Not Linked' ) {
-			registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( false );
-		} else {
-			registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
-		}
-
-		if ( variantName === 'Ad blocker active' ) {
-			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
-		} else {
-			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
-		}
+	setup: ( { dispatch }, variantName ) => {
+		dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
+		dispatch( STORE_NAME ).receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
 	},
 	Component: DashboardTopEarningPagesWidget,
 	wrapWidget: false,
@@ -221,7 +207,7 @@ generateReportBasedWidgetStories( {
 			data: [],
 			options: topEarningPagesArgs,
 		},
-		'Ad blocker active': {
+		'Ad Blocker Active': {
 			data: [],
 			options: [],
 		},
@@ -236,12 +222,8 @@ const moduleTopEarningPagesWidgetOptions = {
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense', 'analytics' ],
 	datastore: MODULES_ANALYTICS,
-	setup: ( registry, variantName ) => {
-		if ( variantName === 'AdSense Not Linked' ) {
-			registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( false );
-		} else {
-			registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
-		}
+	setup: ( { dispatch }, variantName ) => {
+		dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
 	},
 	group: 'AdSense Module/Components/Module/Top Earning Pages Widget',
 	referenceDate: '2020-09-12',

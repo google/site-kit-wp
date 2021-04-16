@@ -93,7 +93,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 
 	if ( isAdblockerActive ) {
 		return (
-			<Widget>
+			<Widget Footer={ Footer }>
 				<AdBlockerWarning />
 			</Widget>
 		);
