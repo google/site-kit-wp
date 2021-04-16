@@ -143,7 +143,7 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 
 					<TextField
 						label={ __( 'Type your own answer', 'google-site-kit' ) }
-						floatingLabelClassName="screen-reader-text"
+						noLabel
 					>
 						<Input
 							id={ `${ slug }-select-options` }
@@ -153,6 +153,9 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 							disabled={ disabled }
 						/>
 					</TextField>
+					<label htmlFor={ `${ slug }-select-options` } className="screen-reader-text">
+						{ __( 'Enter your own answer here', 'google-site-kit' ) }
+					</label>
 				</div>
 			</div>
 

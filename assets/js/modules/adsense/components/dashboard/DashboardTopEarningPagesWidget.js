@@ -100,21 +100,37 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 	}
 
 	if ( loading ) {
-		return <PreviewTable rows={ 5 } padding />;
+		return (
+			<Widget noPadding Footer={ Footer }>
+				<PreviewTable rows={ 5 } padding />
+			</Widget>
+		);
 	}
 
 	// A restricted metrics error will cause this value to change in the resolver
 	// so this check should happen before an error, which is only relevant if they are linked.
 	if ( ! isAdSenseLinked ) {
-		return <AdSenseLinkCTA />;
+		return (
+			<Widget Footer={ Footer }>
+				<AdSenseLinkCTA />
+			</Widget>
+		);
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+		return (
+			<Widget Footer={ Footer } >
+				<WidgetReportError moduleSlug="analytics" error={ error } />
+			</Widget>
+		);
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <WidgetReportZero moduleSlug="analytics" />;
+		return (
+			<Widget Footer={ Footer }>
+				<WidgetReportZero moduleSlug="analytics" />
+			</Widget>
+		);
 	}
 
 	const tableColumns = [

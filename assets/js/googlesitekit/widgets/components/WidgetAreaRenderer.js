@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -30,6 +29,7 @@ import { STORE_NAME, WIDGET_AREA_STYLES } from '../datastore/constants';
 import WidgetRenderer from './WidgetRenderer';
 import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
+import WidgetCellWrapper from './WidgetCellWrapper';
 import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
 const { useSelect } = Data;
 
@@ -41,7 +41,6 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 
 	// Compute the layout.
 	const {
-		classNames,
 		columnWidths,
 		rowIndexes,
 	} = getWidgetLayout( widgets, widgetStates );
@@ -53,25 +52,27 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	// A combined CTA will span the combined width of all widgets that it was
 	// combined from.
 	const {
-		gridClassNames,
+		gridColumnWidths,
 		overrideComponents,
 	} = combineWidgets( widgets, widgetStates, {
-		classNames,
 		columnWidths,
 		rowIndexes,
 	} );
 
 	// Render all widgets.
 	const widgetsOutput = widgets.map( ( widget, i ) => (
-		<WidgetRenderer
-			gridClassName={ classnames( gridClassNames[ i ] ) }
-			OverrideComponent={ overrideComponents[ i ] ? () => {
-				const { Component, metadata } = overrideComponents[ i ];
-				return <Component { ...metadata } />;
-			} : undefined }
-			key={ widget.slug }
-			slug={ widget.slug }
-		/>
+		<WidgetCellWrapper
+			key={ `${ widget.slug }-wrapper` }
+			gridColumnWidth={ gridColumnWidths[ i ] }
+		>
+			<WidgetRenderer
+				OverrideComponent={ overrideComponents[ i ] ? () => {
+					const { Component, metadata } = overrideComponents[ i ];
+					return <Component { ...metadata } />;
+				} : undefined }
+				slug={ widget.slug }
+			/>
+		</WidgetCellWrapper>
 	) );
 
 	// Here we render the bare output as it is guaranteed to render empty.

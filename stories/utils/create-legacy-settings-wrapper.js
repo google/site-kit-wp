@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import SettingsModule from '../../assets/js/components/settings/settings-module';
+import SettingsActiveModule from '../../assets/js/components/settings/SettingsActiveModule';
 import { WithTestRegistry } from '../../tests/js/utils';
 
 /**
@@ -57,7 +57,7 @@ export default function createLegacySettingsWrapper( moduleSlug ) {
 		return (
 			<WithTestRegistry registry={ registry } callback={ callback }>
 				<div style={ { background: 'white' } }>
-					<SettingsModule
+					<SettingsActiveModule
 						key={ moduleKey }
 						slug={ moduleSlug }
 						name={ module.name }
