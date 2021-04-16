@@ -11,6 +11,8 @@
     "displayName": "Test GA4 WebDataStream"
   },
   {
+    "_ID": "2001",
+    "_propertyID": "1000",
     "name": "properties/1000/webDataStreams/2001",
     "measurementId": "1A2BCD346E",
     "firebaseAppId": "",

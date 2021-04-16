@@ -153,7 +153,7 @@ describe( 'modules/analytics-4 properties', () => {
 				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
-				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( fixtures.webDataStreams[ 1 ].name.split( '/' ).pop() );
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( fixtures.webDataStreams[ 1 ]._ID );
 				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( fixtures.webDataStreams[ 1 ].measurementId ); // eslint-disable-line sitekit/acronym-case
 			} );
 
@@ -187,7 +187,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams/ );
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
-				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( fixtures.webDataStreams[ 1 ].name.split( '/' ).pop() );
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( fixtures.webDataStreams[ 1 ]._ID );
 				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( fixtures.webDataStreams[ 1 ].measurementId ); // eslint-disable-line sitekit/acronym-case
 			} );
 		} );

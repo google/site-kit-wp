@@ -157,7 +157,7 @@ const baseActions = {
 
 			const webdatastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
 			if ( webdatastream ) {
-				registry.dispatch( STORE_NAME ).setWebDataStreamID( webdatastream.name.split( '/' ).pop() );
+				registry.dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._ID );
 				registry.dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
 			}
 		}() );
