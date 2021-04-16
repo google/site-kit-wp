@@ -34,11 +34,11 @@ import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 const { useSelect } = Data;
 
 export default function Header() {
-	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+	const dates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
 	const visitorsOverview = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'visitors-overview',
-		generateDateRangeArgs( { startDate, endDate } ) )
+		generateDateRangeArgs( dates ) )
 	);
 	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 	const title = sprintf(
