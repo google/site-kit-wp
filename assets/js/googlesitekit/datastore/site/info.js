@@ -31,8 +31,8 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
-import { getLocale } from '../../../util/i18n';
+import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY, CORE_SITE } from './constants';
+import { getLocale } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
@@ -508,6 +508,23 @@ export const selectors = {
 	 * @return {(boolean|undefined)} `true` if the Web Stories plugin is enabled, `false` if not. Returns `undefined` if not loaded.
 	 */
 	isWebStoriesActive: getSiteInfoProperty( 'webStoriesActive' ),
+
+	/**
+	 * Determines whether the provided URL matches reference site URL or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} url The URL to compare with the reference site URL.
+	 * @return {boolean} TRUE if the URL matches reference site URL, otherwise FALSE.
+	 */
+	isSiteURLMatch: createRegistrySelector( ( select ) => ( state, url ) => {
+		const referenceURL = select( CORE_SITE ).getReferenceSiteURL();
+		const normalizeURL = ( incomingURL ) => incomingURL
+			.replace( /^https?:\/\/(www\.)?/i, '' ) // Remove protocol and optional "www." prefix from the URL.
+			.replace( /\/$/, '' ); // Remove trailing slash.
+
+		return normalizeURL( referenceURL ) === normalizeURL( url );
+	} ),
 };
 
 export default {

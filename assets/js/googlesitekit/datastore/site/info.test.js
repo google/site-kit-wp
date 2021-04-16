@@ -33,7 +33,7 @@ describe( 'core/site site info', () => {
 		adminURL: 'http://something.test/wp-admin',
 		ampMode: 'reader',
 		homeURL: 'http://something.test/homepage',
-		referenceSiteURL: 'http://something.test',
+		referenceSiteURL: 'http://example.com',
 		proxyPermissionsURL: '', // not available until site is authenticated
 		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/', // params omitted
 		siteName: 'Something Test',
@@ -357,6 +357,28 @@ describe( 'core/site site info', () => {
 				const referenceURL = registry.select( STORE_NAME ).getCurrentReferenceURL();
 
 				expect( referenceURL ).toEqual( baseInfo.referenceSiteURL );
+			} );
+		} );
+
+		describe( 'isSiteURLMatch', () => {
+			beforeEach( async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( baseInfo );
+			} );
+
+			it( 'should return TRUE when URL matches the reference site URL even if the protocol is different', () => {
+				expect( registry.select( STORE_NAME ).isSiteURLMatch( 'https://example.com' ) ).toBe( true );
+			} );
+
+			it( 'should return TRUE when URL matches the reference site URL even with www. subdomain', () => {
+				expect( registry.select( STORE_NAME ).isSiteURLMatch( 'http://www.example.com' ) ).toBe( true );
+			} );
+
+			it( 'should return TRUE when URL matches the reference site URL even with trailing slash', () => {
+				expect( registry.select( STORE_NAME ).isSiteURLMatch( 'http://example.com/' ) ).toBe( true );
+			} );
+
+			it( 'should return FALSE when URL does not match the reference site URL', () => {
+				expect( registry.select( STORE_NAME ).isSiteURLMatch( 'http://example.org/' ) ).toBe( false );
 			} );
 		} );
 	} );
