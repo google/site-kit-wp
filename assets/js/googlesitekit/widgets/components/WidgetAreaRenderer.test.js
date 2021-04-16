@@ -275,7 +275,7 @@ describe( 'WidgetAreaRenderer', () => {
 		} );
 	} );
 
-	it( 'should not render widget area with no active widgets', async () => {
+	it( 'should still render widget area with no active widgets', async () => {
 		createWidgets( registry, areaName, [
 			{ Component: WidgetComponentEmpty, slug: 'empty', width: WIDGET_WIDTHS.HALF },
 		] );
@@ -285,7 +285,7 @@ describe( 'WidgetAreaRenderer', () => {
 
 		await waitFor( () => {
 			expect( widgets ).toHaveLength( 1 );
-			expect( container.querySelectorAll( '.googlesitekit-widget-area' ) ).toHaveLength( 0 );
+			expect( container.querySelectorAll( '.googlesitekit-widget-area' ) ).toHaveLength( 1 );
 		} );
 	} );
 
