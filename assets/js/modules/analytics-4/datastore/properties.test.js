@@ -103,7 +103,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( callback ).toThrow( 'A valid propertyID selection is required.' );
 			} );
 
-			it( 'should set module settings correctly when PROPERTY_CREATE is passed', () => {
+			it( 'should set module settings correctly when PROPERTY_CREATE is passed', async () => {
 				const settings = {
 					propertyID: '12345',
 					webDataStreamID: '1000',
@@ -111,14 +111,14 @@ describe( 'modules/analytics-4 properties', () => {
 				};
 
 				registry.dispatch( STORE_NAME ).receiveGetSettings( settings );
-				registry.dispatch( STORE_NAME ).selectProperty( PROPERTY_CREATE );
+				await registry.dispatch( STORE_NAME ).selectProperty( PROPERTY_CREATE );
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
 				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( '' );
 			} );
 
-			it( 'should set property ID only and reset datastream with measurement IDs when web data stream is not found', () => {
+			it( 'should set property ID only and reset datastream with measurement IDs when web data stream is not found', async () => {
 				const propertyID = '09876';
 				const settings = {
 					propertyID: '12345',
@@ -130,14 +130,14 @@ describe( 'modules/analytics-4 properties', () => {
 
 				registry.dispatch( STORE_NAME ).receiveGetSettings( settings );
 				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
-				registry.dispatch( STORE_NAME ).selectProperty( propertyID );
+				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
 				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( '' );
 			} );
 
-			it( 'should set property, datastream, and measurement IDs when web data stream is found', () => {
+			it( 'should set property, datastream, and measurement IDs when web data stream is found', async () => {
 				const propertyID = '09876';
 				const settings = {
 					propertyID: '12345',
@@ -149,7 +149,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				registry.dispatch( STORE_NAME ).receiveGetSettings( settings );
 				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( fixtures.webDataStreams, { propertyID } );
-				registry.dispatch( STORE_NAME ).selectProperty( propertyID );
+				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
 				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( fixtures.webDataStreams[ 1 ].name.split( '/' ).pop() );
