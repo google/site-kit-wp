@@ -39,8 +39,8 @@ export default function Header() {
 	} ) );
 	const visitorsOverview = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL(
 		'visitors-overview',
-		generateDateRangeArgs( dates ) )
-	);
+		generateDateRangeArgs( dates )
+	)	);
 	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 	const title = sprintf(
 		/* translators: %s: number of days */

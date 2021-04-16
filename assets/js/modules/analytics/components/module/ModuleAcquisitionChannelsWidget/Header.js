@@ -39,8 +39,8 @@ export default function Header() {
 	} ) );
 	const url = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL(
 		'trafficsources-overview',
-		generateDateRangeArgs( dates ) )
-	);
+		generateDateRangeArgs( dates )
+	)	);
 	const dateRangeNumberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 	const title = sprintf(
 		/* translators: %s: number of days */
