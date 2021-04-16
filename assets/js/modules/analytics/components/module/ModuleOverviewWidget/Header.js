@@ -37,7 +37,8 @@ export default function Header() {
 	const dates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
-	const visitorsOverview = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'visitors-overview',
+	const visitorsOverview = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL(
+		'visitors-overview',
 		generateDateRangeArgs( dates ) )
 	);
 	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
