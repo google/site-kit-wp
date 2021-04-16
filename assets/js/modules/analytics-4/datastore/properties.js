@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME, PROPERTY_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
+import { actions as webDataStreamActions } from './webdatastreams';
 
 const fetchGetPropertiesStore = createFetchStore( {
 	baseName: 'getProperties',
@@ -123,7 +124,7 @@ const baseActions = {
 				return;
 			}
 
-			yield registry.dispatch( STORE_NAME ).waitForWebDataStreams( propertyID );
+			yield webDataStreamActions.waitForWebDataStreams( propertyID );
 
 			const webdatastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
 			if ( webdatastream ) {
