@@ -173,6 +173,8 @@ const baseActions = {
 
 			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
+			const existingProfileID = registry.dispatch( STORE_NAME ).getProfileID(); // eslint-disable-line @wordpress/no-unused-vars-before-return
+
 			// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
 			registry.dispatch( STORE_NAME ).setProfileID( '' );
 
@@ -186,8 +188,13 @@ const baseActions = {
 				return; // Selection will happen in in getProfiles resolver.
 			}
 
-			const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // eslint-disable-line sitekit/acronym-case
-			registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
+			let profile = profiles.find( ( { id: ID } ) => ID === existingProfileID );
+
+			if ( ! profile ) {
+				profile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // eslint-disable-line sitekit/acronym-case
+			}
+
+			registry.dispatch( STORE_NAME ).setProfileID( profile.id );
 		}() );
 	},
 
