@@ -173,7 +173,7 @@ const baseActions = {
 
 			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
-			const existingProfileID = registry.dispatch( STORE_NAME ).getProfileID(); // eslint-disable-line @wordpress/no-unused-vars-before-return
+			const existingProfileID = registry.select( STORE_NAME ).getProfileID(); // eslint-disable-line @wordpress/no-unused-vars-before-return
 
 			// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
 			registry.dispatch( STORE_NAME ).setProfileID( '' );
