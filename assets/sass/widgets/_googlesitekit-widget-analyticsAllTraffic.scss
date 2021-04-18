@@ -18,8 +18,8 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-widget.googlesitekit-widget--legacy-all-traffic-widget,
-	.googlesitekit-widget.googlesitekit-widget--analyticsAllTraffic {
+	.googlesitekit-widget__analytics--all-traffic,
+	.googlesitekit-widget.googlesitekit-widget--legacy-all-traffic-widget {
 
 		.mdc-tab-scroller__scroll-content {
 			justify-content: center;
@@ -283,6 +283,13 @@
 			.googlesitekit-widget--analyticsAllTraffic__underlay {
 				opacity: 0;
 			}
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend--single {
+
+		.googlesitekit-widget--analyticsAllTraffic__legend-slice:not(:first-child) {
+			display: none;
 		}
 	}
 }

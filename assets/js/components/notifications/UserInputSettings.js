@@ -35,10 +35,10 @@ import Notification from '../legacy-notifications/notification';
 import { getTimeInSeconds } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import PersonSittingSVG from '../../../svg/person-sitting.svg';
+import UserInputPromptSVG from '../../../svg/user-input-prompt.svg';
 const { useSelect } = Data;
 
-export default function UserInputSettings( { onCTAClick, isDimissable } ) {
+export default function UserInputSettings( { onCTAClick, onDismiss, isDismissable } ) {
 	const instanceID = useInstanceID( UserInputSettings );
 	const ctaLink = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
 	const userInputState = useSelect( ( select ) => select( CORE_USER ).getUserInputState() );
@@ -59,8 +59,9 @@ export default function UserInputSettings( { onCTAClick, isDimissable } ) {
 			ctaLabel={ __( 'Let’s go', 'google-site-kit' ) }
 			onCTAClick={ onCTAClick }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-			WinImageSVG={ ( props ) => <PersonSittingSVG width="100%" height="100%" { ...props } /> }
-			isDismissable={ isDimissable }
+			WinImageSVG={ UserInputPromptSVG }
+			isDismissable={ isDismissable }
+			onDismiss={ onDismiss }
 		/>
 	);
 }
@@ -68,9 +69,6 @@ export default function UserInputSettings( { onCTAClick, isDimissable } ) {
 UserInputSettings.propTypes = {
 	// Used to bypass link functionality within Storybook to avoid breakage.
 	onCTAClick: PropTypes.func,
-	isDimissable: PropTypes.bool,
-};
-
-UserInputSettings.defaultProps = {
-	isDimissable: true,
+	onDismiss: PropTypes.func,
+	isDismissable: PropTypes.bool,
 };

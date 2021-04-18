@@ -31,8 +31,8 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Layout from '../assets/js/components/layout/Layout';
-import AnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetOverview';
-import AnalyticsDashboardWidgetSiteStats from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetSiteStats';
+import LegacyAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetOverview';
+import LegacyAnalyticsDashboardWidgetSiteStats from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetSiteStats';
 import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
@@ -250,11 +250,11 @@ storiesOf( 'Analytics Module', module )
 					headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
 					headerCTALink="http://analytics.google.com"
 				>
-					<AnalyticsDashboardWidgetOverview
+					<LegacyAnalyticsDashboardWidgetOverview
 						selectedStats={ selectedStats }
 						handleDataError={ () => {} }
 					/>
-					<AnalyticsDashboardWidgetSiteStats
+					<LegacyAnalyticsDashboardWidgetSiteStats
 						selectedStats={ selectedStats }
 						series={ series }
 						vAxes={ vAxes }
@@ -264,6 +264,8 @@ storiesOf( 'Analytics Module', module )
 		);
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
+	// This uses the legacy widget, the new one is in:
+	// 'Analytics Module/Components/Module Page/Acquisition Channels Widget'.
 	.add( 'Top Acquisition Pie Chart', () => {
 		global._googlesitekitLegacyData = analyticsData;
 

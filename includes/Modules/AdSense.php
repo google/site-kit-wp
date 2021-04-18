@@ -109,24 +109,6 @@ final class AdSense extends Module
 	}
 
 	/**
-	 * Returns all module information data for passing it to JavaScript.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array Module information data.
-	 */
-	public function prepare_info_for_js() {
-		$info = parent::prepare_info_for_js();
-
-		$info['provides'] = array(
-			__( 'Monetize your website', 'google-site-kit' ),
-			__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
-		);
-
-		return $info;
-	}
-
-	/**
 	 * Checks whether the module is connected.
 	 *
 	 * A module being connected means that all steps required as part of its activation are completed.
@@ -555,10 +537,16 @@ final class AdSense extends Module
 			$opt_params['maxResults'] = (int) $args['limit'];
 		}
 
-		$host = wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
-		if ( ! empty( $host ) ) {
-			$opt_params['filter'] = 'DOMAIN_NAME==' . $host;
-		}
+		$hostnames = array_unique(
+			array_map(
+				function ( $site_url ) {
+					return 'DOMAIN_NAME==' . wp_parse_url( $site_url, PHP_URL_HOST );
+				},
+				$this->permute_site_url( $this->context->get_reference_site_url() )
+			)
+		);
+
+		$opt_params['filter'] = join( ',', $hostnames );
 
 		$service = $this->get_service( 'adsense' );
 		return $service->accounts_reports->generate( $account_id, $args['start_date'], $args['end_date'], $opt_params );

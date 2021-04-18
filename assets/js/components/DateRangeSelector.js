@@ -83,7 +83,7 @@ function DateRangeSelector() {
 		<div className="googlesitekit-date-range-selector googlesitekit-dropdown-menu mdc-menu-surface--anchor">
 			<Button
 				ref={ menuButtonRef }
-				className="googlesitekit-header__date-range-selector-menu mdc-button--dropdown"
+				className="googlesitekit-header__date-range-selector-menu mdc-button--dropdown googlesitekit-header__dropdown"
 				text
 				onClick={ handleMenu }
 				icon={ <DateRangeIcon width="18" height="20" /> }
@@ -99,6 +99,7 @@ function DateRangeSelector() {
 				menuItems={ menuItems }
 				onSelected={ handleMenuItemSelect }
 				id="date-range-selector-menu"
+				className="googlesitekit-width-auto"
 			/>
 		</div>
 	);

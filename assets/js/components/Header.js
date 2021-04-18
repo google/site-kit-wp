@@ -60,7 +60,7 @@ const Header = ( { children } ) => {
 							mdc-layout-grid__cell--span-6-tablet
 							mdc-layout-grid__cell--span-8-desktop
 						">
-							{ isAuthenticated && children }
+							{ children }
 							{ isAuthenticated && <UserMenu /> }
 						</div>
 					</div>

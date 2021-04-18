@@ -32,9 +32,9 @@ import { __, _n, _x, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import SearchConsoleIcon from '../../../../../svg/search-console.svg';
-import SearchConsoleDashboardWidgetSiteStats from './SearchConsoleDashboardWidgetSiteStats';
+import LegacySearchConsoleDashboardWidgetSiteStats from './LegacySearchConsoleDashboardWidgetSiteStats';
 import LegacySearchConsoleDashboardWidgetKeywordTable from './LegacySearchConsoleDashboardWidgetKeywordTable';
-import SearchConsoleDashboardWidgetOverview from './SearchConsoleDashboardWidgetOverview';
+import LegacySearchConsoleDashboardWidgetOverview from './LegacySearchConsoleDashboardWidgetOverview';
 import PageHeader from '../../../../components/PageHeader';
 import Layout from '../../../../components/layout/Layout';
 import ProgressBar from '../../../../components/ProgressBar';
@@ -47,10 +47,13 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { untrailingslashit } from '../../../../util';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import { useFeature } from '../../../../hooks/useFeature';
 
 const { useSelect } = Data;
 
 const GoogleSitekitSearchConsoleDashboardWidget = () => {
+	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
+
 	const [ selectedStats, setSelectedStats ] = useState( [ 0, 1 ] );
 	const [ receivingData, setReceivingData ] = useState( true );
 	const [ error, setError ] = useState( false );
@@ -212,13 +215,13 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 								) }
 								headerCTALink={ searchConsoleDeepLink }
 							>
-								<SearchConsoleDashboardWidgetOverview
+								<LegacySearchConsoleDashboardWidgetOverview
 									selectedStats={ selectedStats }
 									handleStatSelection={ handleStatSelection }
 									handleDataError={ handleDataError }
 									handleDataSuccess={ handleDataSuccess }
 								/>
-								<SearchConsoleDashboardWidgetSiteStats selectedStats={ selectedStats } series={ series } vAxes={ vAxes } />
+								<LegacySearchConsoleDashboardWidgetSiteStats selectedStats={ selectedStats } series={ series } vAxes={ vAxes } />
 							</Layout>
 						</div>
 						<div className={ classnames(
@@ -247,13 +250,15 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 								<LegacySearchConsoleDashboardWidgetKeywordTable />
 							</Layout>
 						</div>
-						<div className="
+						{ ! helpVisibilityEnabled && (
+							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 								mdc-layout-grid__cell--align-right
 							">
-							<HelpLink />
-						</div>
+								<HelpLink />
+							</div>
+						) }
 					</div>
 				</div>
 			</div>

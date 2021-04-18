@@ -22,7 +22,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
  */
 final class Permissions {
 	/*
-	 * Custom primitive capabilities.
+	 * Custom base capabilities.
 	 */
 	const AUTHENTICATE        = 'googlesitekit_authenticate';
 	const SETUP               = 'googlesitekit_setup';
@@ -54,12 +54,12 @@ final class Permissions {
 	protected $authentication;
 
 	/**
-	 * Mappings for custom primitive capabilities to WordPress core built-in ones.
+	 * Mappings for custom base capabilities to WordPress core built-in ones.
 	 *
-	 * @since 1.0.0
+	 * @since 1.30.0
 	 * @var array
 	 */
-	private $primitive_to_core = array();
+	private $base_to_core = array();
 
 	/**
 	 * Mappings for custom meta capabilities to WordPress core built-in ones.
@@ -70,20 +70,20 @@ final class Permissions {
 	private $meta_to_core = array();
 
 	/**
-	 * Mappings for custom meta capabilities to custom primitive capabilities.
+	 * Mappings for custom meta capabilities to custom base capabilities.
 	 *
-	 * @since 1.0.0
+	 * @since 1.30.0
 	 * @var array
 	 */
-	private $meta_to_primitive = array();
+	private $meta_to_base = array();
 
 	/**
-	 * List of custom primitive capabilities that should require network access if the plugin is in network mode.
+	 * List of custom base capabilities that should require network access if the plugin is in network mode.
 	 *
-	 * @since 1.0.0
+	 * @since 1.30.0
 	 * @var array
 	 */
-	private $network_primitive = array();
+	private $network_base = array();
 
 	/**
 	 * Constructor.
@@ -103,7 +103,7 @@ final class Permissions {
 		}
 		$this->authentication = $authentication;
 
-		$this->primitive_to_core = array(
+		$this->base_to_core = array(
 			// By default, only allow administrators to authenticate.
 			self::AUTHENTICATE        => 'manage_options',
 
@@ -127,12 +127,12 @@ final class Permissions {
 			self::VIEW_POST_INSIGHTS => 'edit_post',
 		);
 
-		$this->meta_to_primitive = array(
+		$this->meta_to_base = array(
 			// Allow users that can generally view posts insights to view a specific post's insights.
 			self::VIEW_POST_INSIGHTS => self::VIEW_POSTS_INSIGHTS,
 		);
 
-		$this->network_primitive = array(
+		$this->network_base = array(
 			// Require network admin access to view the dashboard and module details in network mode.
 			self::VIEW_DASHBOARD      => 'manage_network',
 			self::VIEW_MODULE_DETAILS => 'manage_network',
@@ -204,12 +204,12 @@ final class Permissions {
 	}
 
 	/**
-	 * Resolves meta capabilities to their primitive capabilities.
+	 * Resolves meta capabilities to their base capabilities.
 	 *
-	 * This method first maps plugin meta capabilities to their primitive capabilities. In addition, if the meta
+	 * This method first maps plugin meta capabilities to their base capabilities. In addition, if the meta
 	 * capability should also map to a core meta capability, that mapping is taken care of as well.
 	 *
-	 * If in network mode and the custom primitive capability requires network access, it is checked that the user
+	 * If in network mode and the custom base capability requires network access, it is checked that the user
 	 * has that access, and if not, the method bails early causing in a result of false.
 	 *
 	 * @since 1.0.0
@@ -222,12 +222,12 @@ final class Permissions {
 	 */
 	private function map_meta_capabilities( array $caps, $cap, $user_id, $args ) {
 		// Bail early under these circumstances as we already know for sure the check will result in false.
-		if ( isset( $this->network_primitive[ $cap ] ) && $this->context->is_network_mode() && ! is_super_admin( $user_id ) ) {
+		if ( isset( $this->network_base[ $cap ] ) && $this->context->is_network_mode() && ! is_super_admin( $user_id ) ) {
 			return array( 'do_not_allow' );
 		}
 
-		if ( isset( $this->meta_to_primitive[ $cap ] ) ) {
-			$caps = (array) $this->meta_to_primitive[ $cap ];
+		if ( isset( $this->meta_to_base[ $cap ] ) ) {
+			$caps = (array) $this->meta_to_base[ $cap ];
 		}
 
 		if ( isset( $this->meta_to_core[ $cap ] ) ) {
@@ -243,7 +243,7 @@ final class Permissions {
 		}
 
 		// Special setup and authentication rules.
-		if ( ( isset( $this->primitive_to_core[ $cap ] ) || isset( $this->meta_to_core[ $cap ] ) ) ) {
+		if ( ( isset( $this->base_to_core[ $cap ] ) || isset( $this->meta_to_core[ $cap ] ) ) ) {
 			// If setup has not yet been completed, require administrator capabilities for everything.
 			if ( self::SETUP !== $cap && ! $this->authentication->is_setup_completed() ) {
 				$caps[] = self::SETUP;
@@ -284,7 +284,7 @@ final class Permissions {
 	 * @return array Filtered value of $allcaps.
 	 */
 	private function grant_additional_caps( array $allcaps ) {
-		foreach ( $this->primitive_to_core as $custom_cap => $core_cap ) {
+		foreach ( $this->base_to_core as $custom_cap => $core_cap ) {
 			if ( isset( $allcaps[ $core_cap ] ) ) {
 				$allcaps[ $custom_cap ] = $allcaps[ $core_cap ];
 			}

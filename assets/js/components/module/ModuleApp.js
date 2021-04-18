@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * External dependencies
@@ -38,13 +39,15 @@ import ModuleHeader from './ModuleHeader';
 import ModuleFooter from './ModuleFooter';
 import LegacyModuleApp from './LegacyModuleApp';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
-
+import HelpMenu from '../help/HelpMenu';
 import DateRangeSelector from '../DateRangeSelector';
+import HelpMenuLink from '../help/HelpMenuLink';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 const { useSelect } = Data;
 
 function ModuleApp( { moduleSlug } ) {
+	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const screenWidgetContext = useSelect( ( select ) => select( CORE_MODULES ).getScreenWidgetContext( moduleSlug ) );
 	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleSlug ) );
 	const shouldRenderWidget = useFeature( 'widgets.moduleScreens' ) && screenWidgetContext;
@@ -53,6 +56,15 @@ function ModuleApp( { moduleSlug } ) {
 	return (
 		<Fragment>
 			<Header>
+				{ helpVisibilityEnabled && (
+					<HelpMenu>
+						{ moduleSlug === 'adsense' && (
+							<HelpMenuLink gaEventLabel="adsense_help" href="https://support.google.com/adsense/">
+								{ __( 'Get help with AdSense', 'google-site-kit' ) }
+							</HelpMenuLink>
+						) }
+					</HelpMenu>
+				) }
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
 			<Alert module={ moduleSlug } />

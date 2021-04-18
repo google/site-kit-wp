@@ -56,7 +56,6 @@ class AuthenticationTest extends TestCase {
 		$auth->register();
 
 		// Authentication::handle_oauth is invoked on init but we cannot test it due to use of filter_input.
-		$this->assertTrue( has_action( 'init' ) );
 		$this->assertTrue( has_action( 'admin_init' ) );
 		$this->assertTrue( has_action( 'admin_action_' . Google_Proxy::ACTION_SETUP ) );
 		$this->assertTrue( has_action( OAuth_Client::CRON_REFRESH_PROFILE_DATA ) );
@@ -185,7 +184,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertFalse( has_action( 'googlesitekit_reauthorize_user' ) );
 
 		// Response is not used here, so just pass an array.
-		do_action( 'googlesitekit_authorize_user', array() );
+		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		do_action( 'googlesitekit_reauthorize_user', array() );
 		$this->assertEquals( '1.1.0', $initial_version->get() );
 	}
@@ -348,8 +347,48 @@ class AuthenticationTest extends TestCase {
 		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
 
 		$this->assertEmpty( $user_input_state->get() );
-		do_action( 'googlesitekit_authorize_user', array() );
+		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		$this->assertEquals( User_Input_State::VALUE_REQUIRED, $user_input_state->get() );
+	}
+
+	public function test_user_input_not_triggered() {
+		$this->enable_feature( 'userInput' );
+		remove_all_actions( 'googlesitekit_authorize_user' );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$auth->register();
+
+		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
+		// Mocking User_Input_Settings here to avoid adding a ton of complexity
+		// from intercepting a request to the proxy, returning, settings etc.
+		$mock_user_input_settings = $this->getMockBuilder( User_Input_Settings::class )
+			->disableOriginalConstructor()
+			->disableProxyingToOriginalMethods()
+			->setMethods( array( 'set_settings' ) )
+			->getMock();
+		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
+
+		$this->assertEmpty( $user_input_state->get() );
+
+		$mock_scopes = array(
+			'openid',
+			'https://www.googleapis.com/auth/userinfo.profile',
+			'https://www.googleapis.com/auth/userinfo.email',
+			'https://www.googleapis.com/auth/siteverification',
+			'https://www.googleapis.com/auth/webmasters',
+			'https://www.googleapis.com/auth/analytics.readonly',
+		);
+
+		$mock_previous_scopes = array(
+			'openid',
+			'https://www.googleapis.com/auth/userinfo.profile',
+			'https://www.googleapis.com/auth/userinfo.email',
+			'https://www.googleapis.com/auth/siteverification',
+			'https://www.googleapis.com/auth/webmasters',
+		);
+		do_action( 'googlesitekit_authorize_user', array(), $mock_scopes, $mock_previous_scopes );
+		$this->assertEmpty( $user_input_state->get() );
 	}
 
 	public function test_require_user_input__without_feature() {
@@ -370,7 +409,7 @@ class AuthenticationTest extends TestCase {
 		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
 
 		$this->assertEmpty( $user_input_state->get() );
-		do_action( 'googlesitekit_authorize_user', array() );
+		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		$this->assertEmpty( $user_input_state->get() );
 	}
 
@@ -511,13 +550,14 @@ class AuthenticationTest extends TestCase {
 	public function test_googlesitekit_connect() {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
 		remove_all_actions( 'init' );
+		remove_all_actions( 'admin_init' );
 		$this->fake_proxy_site_connection();
 		$auth->register();
 
 		// Does nothing if query parameter is not set, and not is_admin.
 		$this->assertTrue( empty( $_GET['googlesitekit_connect'] ) );
 		$this->assertFalse( is_admin() );
-		do_action( 'init' );
+		do_action( 'admin_init' );
 
 		$_GET['googlesitekit_connect'] = 1;
 		// Does nothing if not is_admin.
@@ -529,7 +569,7 @@ class AuthenticationTest extends TestCase {
 
 		// Requires 'connect' nonce.
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
 			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
@@ -540,7 +580,7 @@ class AuthenticationTest extends TestCase {
 		// Requires authenticate permissions.
 		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
 			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
@@ -551,7 +591,7 @@ class AuthenticationTest extends TestCase {
 		$_GET['nonce'] = wp_create_nonce( 'connect' );
 		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
 			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
@@ -563,7 +603,7 @@ class AuthenticationTest extends TestCase {
 		$_GET['nonce'] = wp_create_nonce( 'connect' );
 		$this->assertTrue( current_user_can( Permissions::AUTHENTICATE ) );
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected redirection to connect URL' );
 		} catch ( RedirectException $e ) {
 			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/o/oauth2/auth/', $e->get_location() );
@@ -573,7 +613,7 @@ class AuthenticationTest extends TestCase {
 		$extra_scopes              = array( 'http://example.com/test/scope/a', 'http://example.com/test/scope/b' );
 		$_GET['additional_scopes'] = $extra_scopes;
 		try {
-			do_action( 'init' );
+			do_action( 'admin_init' );
 			$this->fail( 'Expected redirection to connect URL' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
@@ -621,7 +661,7 @@ class AuthenticationTest extends TestCase {
 		};
 
 		add_filter( 'home_url', $home_url_hook );
-		do_action( 'googlesitekit_authorize_user' );
+		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		remove_filter( 'home_url', $home_url_hook );
 
 		$this->assertEquals( 'https://example.com/subsite/', $options->get( Connected_Proxy_URL::OPTION ) );

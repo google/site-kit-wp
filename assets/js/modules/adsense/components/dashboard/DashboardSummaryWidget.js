@@ -34,6 +34,7 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import AdBlockerWarning from '../common/AdBlockerWarning';
 
 const { useSelect } = Data;
 
@@ -47,6 +48,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 		rpmReportURL,
 		earningsURL,
 		impressionsURL,
+		isAdblockerActive,
 	} = useSelect( ( select ) => {
 		const referenceDate = select( CORE_USER ).getReferenceDate();
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
@@ -94,19 +96,40 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 				...dateRangeArgs,
 				gm: 'monetizableImpressions',
 			} ),
+			isAdblockerActive: select( STORE_NAME ).isAdBlockerActive(),
 		};
 	} );
 
+	if ( isAdblockerActive ) {
+		return (
+			<Widget>
+				<AdBlockerWarning />
+			</Widget>
+		);
+	}
+
 	if ( loading ) {
-		return <PreviewBlock width="100%" height="276px" />;
+		return (
+			<Widget>
+				<PreviewBlock width="100%" height="276px" />
+			</Widget>
+		);
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="adsense" error={ error } />;
+		return (
+			<Widget>
+				<WidgetReportError moduleSlug="adsense" error={ error } />
+			</Widget>
+		);
 	}
 
 	if ( isZeroReport( today ) && isZeroReport( period ) && isZeroReport( daily ) ) {
-		return <WidgetReportZero moduleSlug="adsense" />;
+		return (
+			<Widget>
+				<WidgetReportZero moduleSlug="adsense" />
+			</Widget>
+		);
 	}
 
 	const processedData = reduceAdSenseData( daily.rows );

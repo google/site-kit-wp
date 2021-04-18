@@ -66,39 +66,42 @@ export function generateReportBasedWidgetStories( {
 	additionalVariantCallbacks = {},
 	setup = () => {},
 } ) {
-	const stories = storiesOf( group, module )
-		.addDecorator( ( storyFn ) => {
-			const registry = createTestRegistry();
-			// Activate the module.
-			provideModules( registry, moduleSlugs.map( ( module ) => {
-				return {
-					slug: module,
-					active: true,
-					connected: true,
-				};
-			} ) );
+	const stories = storiesOf( group, module );
 
-			let currentEntityURL = null;
-			if ( Array.isArray( options ) && options[ 0 ].url ) {
-				currentEntityURL = options[ 0 ].url;
-			} else if ( options.url ) {
-				currentEntityURL = options.url;
-			}
+	const withRegistry = ( variantName ) => ( StoryComponent ) => {
+		const registry = createTestRegistry();
+		// Activate the module.
+		provideModules( registry, moduleSlugs.map( ( module ) => {
+			return {
+				slug: module,
+				active: true,
+				connected: true,
+			};
+		} ) );
 
-			// Set some site information.
-			provideSiteInfo( registry, {
-				currentEntityURL,
-			} );
+		let currentEntityURL = null;
+		if ( Array.isArray( options ) && options[ 0 ].url ) {
+			currentEntityURL = options[ 0 ].url;
+		} else if ( options.url ) {
+			currentEntityURL = options.url;
+		}
 
-			if ( referenceDate ) {
-				registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
-			}
-
-			// Call the optional setup function.
-			setup( registry );
-
-			return storyFn( registry );
+		// Set some site information.
+		provideSiteInfo( registry, {
+			currentEntityURL,
 		} );
+
+		if ( referenceDate ) {
+			registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
+		}
+
+		// Call the optional setup function.
+		setup( registry, variantName );
+
+		return (
+			<StoryComponent registry={ registry } />
+		);
+	};
 
 	if ( Array.isArray( options ) ) {
 		// 	If options is an array, so must data.
@@ -112,14 +115,15 @@ export function generateReportBasedWidgetStories( {
 	}
 
 	const {
-		Loaded: additionalLoadingCallback,
-		'Data Unavailable': additionalDataUnavailableCallback,
+		Loaded: additionalLoadedCallback,
+		Loading: additionalLoadingCallback,
+		DataUnavailable: additionalDataUnavailableCallback,
 		Error: additionalErrorCallback,
 	} = additionalVariantCallbacks;
 
 	// Existing default variants.
 	const defaultVariants = {
-		Loaded: ( { dispatch } ) => {
+		Loaded( { dispatch } ) {
 			if ( Array.isArray( options ) ) {
 				options.forEach( ( option, index ) => {
 					dispatch( datastore ).receiveGetReport( data[ index ], { options: option } );
@@ -129,11 +133,27 @@ export function generateReportBasedWidgetStories( {
 			}
 
 			// Run additional callback if it exists.
+			if ( additionalLoadedCallback ) {
+				additionalLoadedCallback( dispatch, data, options );
+			}
+		},
+		Loading( { dispatch } ) {
+			if ( Array.isArray( options ) ) {
+				options.forEach( ( option, index ) => {
+					dispatch( datastore ).receiveGetReport( data[ index ], { options: option } );
+					dispatch( datastore ).startResolution( 'getReport', [ option ] );
+				} );
+			} else {
+				dispatch( datastore ).receiveGetReport( data, { options } );
+				dispatch( datastore ).startResolution( 'getReport', [ options ] );
+			}
+
+			// Run additional callback if it exists.
 			if ( additionalLoadingCallback ) {
 				additionalLoadingCallback( dispatch, data, options );
 			}
 		},
-		'Data Unavailable': ( { dispatch } ) => {
+		DataUnavailable( { dispatch } ) {
 			if ( Array.isArray( options ) ) {
 				options.forEach( ( option, index ) => {
 					const returnType = Array.isArray( data[ index ] ) ? [] : {};
@@ -148,12 +168,13 @@ export function generateReportBasedWidgetStories( {
 				additionalDataUnavailableCallback( dispatch, data, options );
 			}
 		},
-		Error: ( { dispatch } ) => {
+		Error( { dispatch } ) {
 			const error = {
 				code: 'missing_required_param',
 				message: 'Request parameter is empty: metrics.',
 				data: {},
 			};
+
 			if ( Array.isArray( options ) ) {
 				options.forEach( ( option ) => {
 					dispatch( datastore ).receiveError( error, 'getReport', [ option ] );
@@ -225,11 +246,15 @@ export function generateReportBasedWidgetStories( {
 	}
 
 	Object.keys( variants ).forEach( ( variant ) => {
-		stories.add( variant, ( registry ) => (
+		stories.add( variant.replace( /([a-z])([A-Z])/, '$1 $2' ), ( args, { registry } ) => (
 			<WithTestRegistry registry={ registry } callback={ variants[ variant ] }>
 				{ widgetElement }
 			</WithTestRegistry>
-		) );
+		), {
+			decorators: [
+				withRegistry( variant ),
+			],
+		} );
 	} );
 
 	return stories;

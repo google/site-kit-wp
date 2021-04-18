@@ -43,14 +43,14 @@ export const camelCaseToConstantCase = ( name ) => {
 };
 
 /**
- * Transforms a kebab-case name into its PascalCase name.
+ * Transforms a hyphen-case name into its PascalCase name.
  *
- * @since 1.16.0
+ * @since 1.30.0
  * @private
  *
- * @param {string} name "kebab-case" name to transform.
+ * @param {string} name "hyphen-case" name to transform.
  * @return {string} PascalCase name.
  */
-export function kebabCaseToPascalCase( name ) {
+export function hyphenCaseToPascalCase( name ) {
 	return name.split( '-' ).map( ( part ) => part.charAt( 0 ).toUpperCase() + part.slice( 1 ) ).join( '' );
 }

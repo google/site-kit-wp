@@ -32,18 +32,18 @@ import { provideModuleRegistrations, provideSiteInfo, WithTestRegistry } from '.
 import UserInputSuccessNotification from '../assets/js/components/notifications/UserInputSuccessNotification';
 import ModulesList from '../assets/js/components/ModulesList';
 import Notification from '../assets/js/components/legacy-notifications/notification';
-import UserInputSettings from '../assets/js/components/notifications/UserInputSettings';
+import UserInputPromptNotification from '../assets/js/components/notifications/UserInputPromptNotification';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { withConnected } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
-import RocketImageSVG from '../assets/svg/rocket.svg';
-import ThumbsUpSVG from '../assets/svg/thumbs-up.svg';
+import SuccessGreenSVG from '../assets/svg/success-green.svg';
+import AwardSVG from '../assets/svg/award.svg';
 
 storiesOf( 'Global/Notifications', module )
 	.add( 'Module Setup Complete', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( CORE_MODULES ).receiveGetModules( withConnected( 'analytics', 'pagespeed-insights' ) );
+			registry.dispatch( CORE_MODULES ).receiveGetModules( withConnected( 'search-console', 'analytics', 'pagespeed-insights' ) );
 			provideModuleRegistrations( registry );
 			registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( false );
 		};
@@ -53,7 +53,7 @@ storiesOf( 'Global/Notifications', module )
 				<Notification
 					id="notification-id"
 					title={ __( 'Congrats on completing the setup for Analytics!', 'google-site-kit' ) }
-					WinImageSVG={ RocketImageSVG }
+					WinImageSVG={ SuccessGreenSVG }
 					dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 					format="large"
 					type="win-success"
@@ -73,7 +73,7 @@ storiesOf( 'Global/Notifications', module )
 			learnMore={ __( 'Learn more', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="small"
-			SmallImageSVG={ ThumbsUpSVG }
+			SmallImageSVG={ AwardSVG }
 			type="win-success"
 		/>
 	) )
@@ -119,7 +119,7 @@ storiesOf( 'Global/Notifications', module )
 			pageIndex="First detected: 2/13/18"
 		/>
 	) )
-	.add( 'User Input Settings', () => {
+	.add( 'User Input Prompt Notification', () => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( CORE_USER ).receiveUserInputState( 'missing' );
 			provideSiteInfo( registry );
@@ -127,7 +127,7 @@ storiesOf( 'Global/Notifications', module )
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<UserInputSettings onCTAClick={ ( event ) => event.preventDefault() } />
+				<UserInputPromptNotification />
 			</WithTestRegistry>
 		);
 	} )

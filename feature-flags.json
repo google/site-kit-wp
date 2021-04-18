@@ -1,8 +1,10 @@
 [
+  "helpVisibility",
   "serviceSetupV2",
   "storeErrorNotifications",
   "userInput",
   "widgets.dashboard",
   "widgets.pageDashboard",
-  "widgets.moduleScreens"
+  "widgets.moduleScreens",
+  "ga4setup"
 ]

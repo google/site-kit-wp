@@ -1,7 +1,15 @@
 <style>
-  .googlesitekit-plugin-preview {
-	  padding: 50px;
-  }
+	:root {
+		--preview-margin: 50px;
+	}
+
+	.googlesitekit-plugin-preview {
+		padding: var(--preview-margin);
+	}
+
+	.-googlesitekit-plugin-preview {
+		margin: calc(0px - var(--preview-margin));
+	}
 </style>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script>
@@ -35,7 +43,7 @@
 </script>
 <script src="https://www.gstatic.com/charts/loader.js"></script>
 <script>
-	google.charts.load( 'current', {
+	google.charts.load( '49', {
 		packages: [ 'corechart' ],
 	} );
 </script>

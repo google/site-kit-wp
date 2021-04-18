@@ -20,22 +20,33 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Notification from '../legacy-notifications/notification';
-import UserInputSuccessImage from '../../../svg/congrats.svg';
+import MilestoneBlueSVG from '../../../svg/milestone-blue.svg';
+import { trackEvent } from '../../util';
 
 export default function UserInputSuccessNotification() {
+	useEffect( () => {
+		trackEvent( 'user_input', 'success_notification_view' );
+	}, [] );
+
+	const handleOnDismiss = () => {
+		trackEvent( 'user_input', 'success_notification_dismiss' );
+	};
+
 	return (
 		<Notification
 			id="user-input-success"
 			title={ __( 'Congrats! You set your site goals.', 'google-site-kit' ) }
 			description={ __( 'Now Site Kit will begin suggesting metrics to add to your dashboard that are relevant specifically to you, based on the goals you shared.', 'google-site-kit' ) }
-			SmallImageSVG={ UserInputSuccessImage }
+			SmallImageSVG={ MilestoneBlueSVG }
 			dismiss={ __( 'OK, got it!', 'google-site-kit' ) }
 			format="small"
+			onDismiss={ handleOnDismiss }
 		/>
 	);
 }

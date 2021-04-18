@@ -29,19 +29,20 @@ import {
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
 	AREA_DASHBOARD_SEARCH_FUNNEL,
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
-	AREA_DASHBOARD_POPULARITY,
+	AREA_DASHBOARD_ACQUISITION,
 } from '../../googlesitekit/widgets/default-areas';
+import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
+import AnalyticsIcon from '../../../svg/analytics.svg';
+import { CONTEXT_MODULE_ANALYTICS, AREA_MODULE_ANALYTICS_MAIN } from './constants';
+import { STORE_NAME } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
 import DashboardPopularPagesWidget from './components/dashboard/DashboardPopularPagesWidget';
 import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
-import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
+import DashboardSearchVisitorsWidget from './components/dashboard/DashboardSearchVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
-import AnalyticsIcon from '../../../svg/analytics.svg';
-import { STORE_NAME } from './datastore/constants';
-import { CONTEXT_MODULE_ANALYTICS, AREA_MODULE_ANALYTICS_MAIN } from './constants';
-import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
+import { ModuleOverviewWidget, ModulePopularPagesWidget, ModuleAcquisitionChannelsWidget } from './components/module';
 
 export { registerStore } from './datastore';
 
@@ -54,6 +55,11 @@ export const registerModule = ( modules ) => {
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
 			Icon: AnalyticsIcon,
+			features: [
+				__( 'Audience overview', 'google-site-kit' ),
+				__( 'Top pages', 'google-site-kit' ),
+				__( 'Top acquisition channels', 'google-site-kit' ),
+			],
 			screenWidgetContext: CONTEXT_MODULE_ANALYTICS,
 		}
 	);
@@ -77,7 +83,7 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'analyticsUniqueVisitors',
 		{
-			Component: DashboardUniqueVisitorsWidget,
+			Component: DashboardSearchVisitorsWidget,
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 3,
 			wrapWidget: true,
@@ -123,7 +129,20 @@ export const registerWidgets = ( widgets ) => {
 			wrapWidget: false,
 		},
 		[
-			AREA_DASHBOARD_POPULARITY,
+			AREA_DASHBOARD_ACQUISITION,
+		],
+	);
+
+	widgets.registerWidget(
+		'analyticsModuleAcquisitionChannels',
+		{
+			Component: ModuleAcquisitionChannelsWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 3,
+			wrapWidget: false,
+		},
+		[
+			AREA_MODULE_ANALYTICS_MAIN,
 		],
 	);
 
@@ -135,5 +154,31 @@ export const registerWidgets = ( widgets ) => {
 			title: __( 'Overview', 'google-site-kit' ),
 		},
 		CONTEXT_MODULE_ANALYTICS,
+	);
+
+	widgets.registerWidget(
+		'analyticsModuleOverview',
+		{
+			Component: ModuleOverviewWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+		},
+		[
+			AREA_MODULE_ANALYTICS_MAIN,
+		],
+	);
+
+	widgets.registerWidget(
+		'analyticsModulePopularPages',
+		{
+			Component: ModulePopularPagesWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 2,
+			wrapWidget: false,
+		},
+		[
+			AREA_MODULE_ANALYTICS_MAIN,
+		],
 	);
 };
