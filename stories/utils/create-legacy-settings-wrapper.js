@@ -20,13 +20,14 @@
  * Internal dependencies
  */
 import SettingsActiveModule from '../../assets/js/components/settings/SettingsActiveModule';
-import { WithTestRegistry } from '../../tests/js/utils';
+import { createTestRegistry, provideModules, WithTestRegistry } from '../../tests/js/utils';
 
 /**
  * Creates a legacy settings wrapper component for the given module.
  *
  * @since 1.12.0
  * @since 1.20.0 Removed `moduleComponent` argument (now provided via module registration).
+ * @since n.e.x.t Reworked to support new setting components.
  * @private
  *
  * @param {string} moduleSlug The module's slug.
@@ -35,48 +36,33 @@ import { WithTestRegistry } from '../../tests/js/utils';
 export default function createLegacySettingsWrapper( moduleSlug ) {
 	return function SettingsLegacy( props ) {
 		const {
-			registry,
+			registry = createTestRegistry(),
 			callback,
-			module = {
-				...global._googlesitekitLegacyData.modules[ moduleSlug ],
-				active: true,
-				setupComplete: true,
-			},
 			isEditing = false,
 			isOpen = true,
 			isSaving = false,
-			error = false,
-			handleAccordion = global.console.log.bind( null, 'handleAccordion' ),
-			handleDialog = global.console.log.bind( null, 'handleDialog' ),
-			updateModulesList = global.console.log.bind( null, 'updateModulesList' ),
-			handleButtonAction = global.console.log.bind( null, 'handleButtonAction' ),
+			error = undefined,
 		} = props;
 
-		const moduleKey = `${ moduleSlug }-module`;
+		provideModules( registry, [ {
+			slug: moduleSlug,
+			active: true,
+			connected: true,
+		} ] );
 
 		return (
 			<WithTestRegistry registry={ registry } callback={ callback }>
 				<div style={ { background: 'white' } }>
 					<SettingsActiveModule
-						key={ moduleKey }
 						slug={ moduleSlug }
-						name={ module.name }
-						description={ module.description }
-						homepage={ module.homepage }
-						learnmore={ module.learnMore }
-						active={ module.active }
-						setupComplete={ module.setupComplete }
-						autoActivate={ module.autoActivate }
-						updateModulesList={ updateModulesList }
-						handleEdit={ handleButtonAction }
-						handleConfirm
-						isEditing={ isEditing ? { [ moduleKey ]: true } : {} }
+						onEdit={ () => {} }
+						onConfirm={ () => {} }
+						onCancel={ () => {} }
+						onToggle={ () => {} }
+						isEditing={ isEditing }
 						isOpen={ isOpen }
-						handleAccordion={ handleAccordion }
-						handleDialog={ handleDialog }
-						provides={ module.provides }
 						isSaving={ isSaving }
-						screenID={ module.screenID }
+						isLocked={ false }
 						error={ error }
 					/>
 				</div>
