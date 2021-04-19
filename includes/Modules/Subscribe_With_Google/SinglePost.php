@@ -20,10 +20,10 @@ final class SinglePost {
 	 */
 	public function __construct( $is_amp ) {
 		if ( $is_amp ) {
-			add_filter( 'body_class', array( __CLASS__, 'body_class' ) );
+			add_filter( 'body_class', array( $this, 'body_class' ) );
 		}
 
-		add_filter( 'the_content', array( __CLASS__, 'the_content' ) );
+		add_filter( 'the_content', array( $this, 'the_content' ) );
 	}
 
 	/**
@@ -31,9 +31,9 @@ final class SinglePost {
 	 *
 	 * @param string[] $classes already assigned to body.
 	 */
-	public static function body_class( $classes ) {
+	public function body_class( $classes ) {
 		// Only modify single posts.
-		if ( ! self::is_single_post() ) {
+		if ( ! $this->is_single_post() ) {
 			return $classes;
 		}
 
@@ -47,9 +47,9 @@ final class SinglePost {
 	 * @param string $content Initial content of Post.
 	 * @return string Filtered content of Post.
 	 */
-	public static function the_content( $content ) {
+	public function the_content( $content ) {
 		// Only modify single posts.
-		if ( ! self::is_single_post() ) {
+		if ( ! $this->is_single_post() ) {
 			return $content;
 		}
 
@@ -82,7 +82,7 @@ final class SinglePost {
 	 *
 	 * @return bool True if a single post is rendering.
 	 */
-	private static function is_single_post() {
+	private function is_single_post() {
 		// Check if we're inside the main loop in a single post page.
 		return is_single() && is_main_query();
 	}

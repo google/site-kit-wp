@@ -17,8 +17,8 @@ final class ManagePosts {
 
 	/** Adds WordPress filters. */
 	public function __construct() {
-		add_filter( 'manage_posts_columns', array( __CLASS__, 'manage_posts_columns' ) );
-		add_action( 'manage_posts_custom_column', array( __CLASS__, 'manage_posts_custom_column' ), 1, 2 );
+		add_filter( 'manage_posts_columns', array( $this, 'manage_posts_columns' ) );
+		add_action( 'manage_posts_custom_column', array( $this, 'manage_posts_custom_column' ), 1, 2 );
 	}
 
 	/**
@@ -27,7 +27,7 @@ final class ManagePosts {
 	 * @param string[] $columns Columns to filter.
 	 * @return string[]
 	 */
-	public static function manage_posts_columns( $columns ) {
+	public function manage_posts_columns( $columns ) {
 		// Only add the column on post-type overview pages, or in AJAX calls.
 		// Without this check, the column appears on the AMP plugin's
 		// Validated URLs page, for example.
@@ -45,7 +45,7 @@ final class ManagePosts {
 	 * @param string $column_name Current column name.
 	 * @param number $post_ID Current post ID.
 	 */
-	public static function manage_posts_custom_column( $column_name, $post_ID ) {
+	public function manage_posts_custom_column( $column_name, $post_ID ) {
 		if ( 'swg_product' !== $column_name ) {
 			return;
 		}
