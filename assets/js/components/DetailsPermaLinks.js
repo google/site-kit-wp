@@ -45,7 +45,7 @@ export default function DetailsPermaLinks( { title, path, serviceURL } ) {
 	return (
 		<Fragment>
 			<Link
-				className={ serviceURL === null && 'googlesitekit-display-block' }
+				className={ serviceURL === null ? 'googlesitekit-display-block' : '' }
 				href={ serviceURL !== null ? serviceURL : detailsURL }
 				inherit
 				external={ serviceURL !== null ? true : false }
