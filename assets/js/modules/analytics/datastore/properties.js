@@ -179,22 +179,22 @@ const baseActions = {
 			registry.dispatch( STORE_NAME ).setProfileID( '' );
 
 			const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
-			if ( property.defaultProfileId && profiles?.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/acronym-case
-				registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
-				return;
-			}
 
 			if ( profiles === undefined ) {
 				return; // Selection will happen in in getProfiles resolver.
 			}
 
-			let profile = profiles.find( ( { id: ID } ) => ID === existingProfileID );
+			let returnProfile = profiles.find( ( { id: ID } ) => ID === existingProfileID );
 
-			if ( ! profile ) {
-				profile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // eslint-disable-line sitekit/acronym-case
+			if ( ! returnProfile ) {
+				if ( property.defaultProfileId && profiles?.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/acronym-case
+					registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
+					return;
+				}
+				returnProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // eslint-disable-line sitekit/acronym-case
 			}
 
-			registry.dispatch( STORE_NAME ).setProfileID( profile.id );
+			registry.dispatch( STORE_NAME ).setProfileID( returnProfile.id );
 		}() );
 	},
 
