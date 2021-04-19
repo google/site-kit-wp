@@ -78,7 +78,7 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 	};
 
 	useEffect( () => {
-		if ( keywordsContainer && keywordsContainer.current && isActive ) {
+		if ( keywordsContainer?.current && isActive ) {
 			focusInput( '.googlesitekit-user-input__text-option:first-child .mdc-text-field__input' );
 		}
 	}, [ isActive ] );
@@ -160,7 +160,7 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 			// User is typing, so pressing backspace should delete the last character rather than the keyword.
 			setCanDeleteKeyword( false );
 		}
-	}, [ keywordsContainer.current, ...dependencies, canDeleteKeyword ] );
+	}, [ keywordsContainer.current, ...dependencies, canDeleteKeyword, next ] );
 
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>

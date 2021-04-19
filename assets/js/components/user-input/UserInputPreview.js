@@ -33,10 +33,11 @@ import { Fragment, useEffect, useRef } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Row } from '../../material-components';
+import { getUserInputAnwsers } from './util/constants';
 import Button from '../Button';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
-import { getUserInputAnwsers } from './util/constants';
+import useQueryArg from '../../hooks/useQueryArg';
 import ErrorNotice from '../ErrorNotice';
 const { useSelect } = Data;
 
@@ -55,9 +56,10 @@ export default function UserInputPreview( props ) {
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
 		USER_INPUT_ANSWERS_ROLE,
 	} = getUserInputAnwsers();
+	const [ page ] = useQueryArg( 'page' );
 
 	useEffect( () => {
-		if ( previewContainer && previewContainer.current ) {
+		if ( previewContainer?.current && ! page.startsWith( 'googlesitekit-settings' ) ) {
 			const buttons = previewContainer.current.querySelectorAll( '.mdc-button' );
 			if ( buttons.length > 0 ) {
 				setTimeout( () => {
@@ -65,7 +67,7 @@ export default function UserInputPreview( props ) {
 				}, 50 );
 			}
 		}
-	}, [] );
+	}, [ page ] );
 
 	return (
 		<div className="googlesitekit-user-input__preview" ref={ previewContainer }>
