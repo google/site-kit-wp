@@ -529,6 +529,7 @@ final class Authentication {
 	 * Gets the URL for connecting to Site Kit.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Updated to use dedicated action URL.
 	 *
 	 * @return string Connect URL.
 	 */
@@ -546,6 +547,7 @@ final class Authentication {
 	 * Gets the URL for disconnecting from Site Kit.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Updated to use dedicated action URL.
 	 *
 	 * @return string Disconnect URL.
 	 */
