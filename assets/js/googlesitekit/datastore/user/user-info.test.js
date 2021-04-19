@@ -36,7 +36,7 @@ describe( 'core/user userInfo', () => {
 			name: 'admin',
 			picture: 'https://path/to/image',
 		},
-		connectURL: 'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&googlesitekit_connect=1&nonce=a1b2c3d4e5',
+		connectURL: 'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
 		initialVersion: '1.0.0',
 		verified: true,
 		userInputState: 'completed',
