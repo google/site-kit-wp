@@ -100,7 +100,7 @@ export default function PrototypeForm( { doneCallback } ) {
 			{ doneCallback &&
 			<div className="googlesitekit-setup-module__action">
 				<Button onClick={ doneHandler } disabled={ ! publicationID || ! products }>
-					{ __( 'Done', 'google-site-kit' ) }
+					{ __( 'Configure Subscribe with Google', 'google-site-kit' ) }
 				</Button>
 			</div>
 			}
