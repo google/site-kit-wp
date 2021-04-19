@@ -31,6 +31,30 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
 
+const fetchGetPropertyStore = createFetchStore( {
+	baseName: 'getProperty',
+	controlCallback( { propertyID } ) {
+		return API.get( 'modules', 'analytics-4', 'property', { propertyID }, {
+			useCache: true,
+		} );
+	},
+	reducerCallback( state, property, { propertyID } ) {
+		return {
+			...state,
+			propertiesByID: {
+				...state.propertiesByID,
+				[ propertyID ]: property,
+			},
+		};
+	},
+	argsToParams( propertyID ) {
+		return { propertyID };
+	},
+	validateParams( { propertyID } = {} ) {
+		invariant( propertyID, 'propertyID is required.' );
+	},
+} );
+
 const fetchGetPropertiesStore = createFetchStore( {
 	baseName: 'getProperties',
 	controlCallback( { accountID } ) {
@@ -45,6 +69,10 @@ const fetchGetPropertiesStore = createFetchStore( {
 				...state.properties,
 				[ accountID ]: properties,
 			},
+			propertiesByID: properties.reduce(
+				( accum, property ) => ( { ...accum, [ property._id ]: property } ),
+				state.propertiesByID || {},
+			),
 		};
 	},
 	argsToParams( accountID ) {
@@ -82,6 +110,7 @@ const fetchCreatePropertyStore = createFetchStore( {
 
 const baseInitialState = {
 	properties: {},
+	propertiesByID: {},
 };
 
 const baseActions = {
@@ -128,7 +157,7 @@ const baseActions = {
 
 			const webdatastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
 			if ( webdatastream ) {
-				registry.dispatch( STORE_NAME ).setWebDataStreamID( webdatastream.name.split( '/' ).pop() );
+				registry.dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._id );
 				registry.dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
 			}
 		}() );
@@ -155,6 +184,13 @@ const baseResolvers = {
 			yield fetchGetPropertiesStore.actions.fetchGetProperties( accountID );
 		}
 	},
+	*getProperty( propertyID ) {
+		const registry = yield Data.commonActions.getRegistry();
+		const property = registry.select( STORE_NAME ).getProperty( propertyID );
+		if ( property === undefined ) {
+			yield fetchGetPropertyStore.actions.fetchGetProperty( propertyID );
+		}
+	},
 };
 
 const baseSelectors = {
@@ -170,11 +206,25 @@ const baseSelectors = {
 	getProperties( state, accountID ) {
 		return state.properties[ accountID ];
 	},
+
+	/**
+	 * Gets a property with specific ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} propertyID The GA4 property ID to fetch property object for.
+	 * @return {(Object|undefined)} A property object; `undefined` if not loaded.
+	 */
+	getProperty( state, propertyID ) {
+		return state.propertiesByID[ propertyID ];
+	},
 };
 
 const store = Data.combineStores(
-	fetchGetPropertiesStore,
 	fetchCreatePropertyStore,
+	fetchGetPropertiesStore,
+	fetchGetPropertyStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
