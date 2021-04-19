@@ -53,7 +53,8 @@
         "allowedTextDomain": "google-site-kit"
       }
     ],
-    "quotes": ["error", "single", { "allowTemplateLiterals": true, "avoidEscape": true }]
+    "quotes": ["error", "single", { "allowTemplateLiterals": true, "avoidEscape": true }],
+    "react-hooks/exhaustive-deps": "error"
   },
   "overrides": [
     {
