@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 /**
  * Class for Tag Manager settings.
  *
- * @since 1.2.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since 1.2.0
+	 * @since n.e.x.t
 	 */
 	public function register() {
 		parent::register();
@@ -40,7 +40,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Returns keys for owned settings.
 	 *
-	 * @since 1.16.0
+	 * @since n.e.x.t
 	 *
 	 * @return array An array of keys for owned settings.
 	 */
@@ -54,7 +54,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Gets the default value.
 	 *
-	 * @since 1.2.0
+	 * @since n.e.x.t
 	 *
 	 * @return array
 	 */
