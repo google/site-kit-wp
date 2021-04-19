@@ -117,7 +117,11 @@ export default function ModulePopularPagesWidget( { Widget, WidgetReportError, W
 				} ) );
 
 				return (
-					<DetailsPermaLinks title={ title } path={ url } serviceURL={ serviceURL } />
+					<DetailsPermaLinks
+						title={ title }
+						path={ url }
+						serviceURL={ serviceURL }
+					/>
 				);
 			},
 		},

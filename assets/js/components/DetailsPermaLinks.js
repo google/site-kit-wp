@@ -45,10 +45,10 @@ export default function DetailsPermaLinks( { title, path, serviceURL } ) {
 	return (
 		<Fragment>
 			<Link
-				className={ serviceURL === null ? 'googlesitekit-display-block' : '' }
-				href={ serviceURL !== null ? serviceURL : detailsURL }
+				className={ ! serviceURL ? classnames( 'googlesitekit-display-block' ) : '' }
+				href={ serviceURL || detailsURL }
 				inherit
-				external={ serviceURL !== null ? true : false }
+				external={ !! serviceURL }
 			>
 				{ title }
 			</Link>
@@ -73,8 +73,4 @@ DetailsPermaLinks.propTypes = {
 	title: PropTypes.string,
 	path: PropTypes.string,
 	serviceURL: PropTypes.string,
-};
-
-DetailsPermaLinks.defaultProps = {
-	serviceURL: null,
 };

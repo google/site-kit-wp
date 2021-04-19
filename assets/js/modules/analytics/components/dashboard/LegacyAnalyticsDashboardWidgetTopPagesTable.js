@@ -74,7 +74,11 @@ const LegacyAnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 					} );
 				} );
 				return (
-					<DetailsPermaLinks title={ title } path={ url } serviceURL={ serviceURL } />
+					<DetailsPermaLinks
+						title={ title }
+						path={ url }
+						serviceURL={ serviceURL }
+					/>
 				);
 			},
 		},
