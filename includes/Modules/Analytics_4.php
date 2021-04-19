@@ -196,14 +196,6 @@ final class Analytics_4 extends Module
 	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
 	 */
 	protected function create_data_request( Data_Request $data ) {
-		$prefix_account_id = function( $account_id ) {
-			return 'accounts/' . $account_id;
-		};
-
-		$prefix_property_id = function( $property_id ) {
-			return 'properties/' . $property_id;
-		};
-
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				return $this->get_service( 'analyticsadmin' )->accounts->listAccounts();
@@ -218,7 +210,7 @@ final class Analytics_4 extends Module
 				}
 
 				$property = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty();
-				$property->setParent( $prefix_account_id( $data['accountID'] ) );
+				$property->setParent( self::normalize_account_id( $data['accountID'] ) );
 				$property->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 
 				return $this->get_service( 'analyticsadmin' )->properties->create( $property );
@@ -236,7 +228,7 @@ final class Analytics_4 extends Module
 				$datastream->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 				$datastream->setDefaultUri( $this->context->get_reference_site_url() );
 
-				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->create( $prefix_property_id( $data['propertyID'] ), $datastream );
+				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->create( self::normalize_property_id( $data['propertyID'] ), $datastream );
 			case 'GET:properties':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -249,7 +241,7 @@ final class Analytics_4 extends Module
 
 				return $this->get_service( 'analyticsadmin' )->properties->listProperties(
 					array(
-						'filter' => 'parent:' . $prefix_account_id( $data['accountID'] ),
+						'filter' => 'parent:' . self::normalize_account_id( $data['accountID'] ),
 					)
 				);
 			case 'GET:property':
@@ -262,7 +254,7 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				return $this->get_service( 'analyticsadmin' )->properties->get( $prefix_property_id( $data['propertyID'] ) );
+				return $this->get_service( 'analyticsadmin' )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
 			case 'GET:webdatastreams':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
@@ -273,7 +265,7 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->listPropertiesWebDataStreams( $prefix_property_id( $data['propertyID'] ) );
+				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->listPropertiesWebDataStreams( self::normalize_property_id( $data['propertyID'] ) );
 		}
 
 		return parent::create_data_request( $data );
@@ -462,6 +454,30 @@ final class Analytics_4 extends Module
 		}
 
 		return $webdatastream;
+	}
+
+	/**
+	 * Normalizes account ID and returns it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $account_id Account ID.
+	 * @return string Updated account ID with "accounts/" prefix.
+	 */
+	public static function normalize_account_id( $account_id ) {
+		return 'accounts/' . $account_id;
+	}
+
+	/**
+	 * Normalizes property ID and returns it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $property_id Property ID.
+	 * @return string Updated property ID with "properties/" prefix.
+	 */
+	public static function normalize_property_id( $property_id ) {
+		return 'properties/' . $property_id;
 	}
 
 }
