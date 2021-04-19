@@ -129,6 +129,23 @@ describe( 'modules/analytics properties', () => {
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBeUndefined();
 			} );
 
+			// selects a previously set property
+			it( 'selects a previously set property when available', async () => {
+				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+				const propertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
+				const propertyID2 = fixtures.propertiesProfiles.properties[ 1 ].id;
+
+				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID, propertyID } );
+				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID, propertyID: propertyID2 } );
+				await registry.dispatch( STORE_NAME ).setAccountID( accountID );
+				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
+				expect( registry.select( STORE_NAME ).getProfileID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].defaultProfileId ); // eslint-disable-line sitekit/acronym-case
+				await registry.dispatch( STORE_NAME ).selectProperty( propertyID2 );
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toMatch( propertyID2 );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toEqual( fixtures.propertiesProfiles.properties[ 1 ].internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
+			} );
+
 			it( 'selects the property and its default profile when set', async () => {
 				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const propertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
