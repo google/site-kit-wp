@@ -72,29 +72,26 @@ export default function PrototypeForm( { doneCallback } ) {
 
 			<TextField
 				className={ classnames( { 'mdc-text-field--error': ! publicationID } ) }
-				label={ 'Publication ID' }
+				label="Publication ID"
 				outlined
 			>
 				<Input
-					id={ 'publicationID' }
-					name={ 'publicationID' }
+					id="publicationID"
+					name="publicationID"
 					value={ publicationID }
 					onChange={ onChangePublicationID }
 				/>
 			</TextField>
 
-			<br />
-			<br />
-
 			<TextField
 				className={ classnames( { 'mdc-text-field--error': ! products } ) }
-				label={ 'Products' }
+				label="Products"
 				textarea
 				outlined
 			>
 				<Input
-					id={ 'products' }
-					name={ 'products' }
+					id="products"
+					name="products"
 					value={ products }
 					onChange={ onChangeProducts }
 				/>
