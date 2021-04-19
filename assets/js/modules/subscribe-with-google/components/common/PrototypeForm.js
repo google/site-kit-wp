@@ -57,52 +57,51 @@ export default function PrototypeForm( { finishSetup } ) {
 		setSettings( { publicationID: currentTarget.value } );
 	}, [] );
 
-	// Handle form completion.
-	const finishSetupHandler = useCallback( () => {
+	// Handle form submissions.
+	const submitForm = useCallback( () => {
 		submitChanges();
 		finishSetup();
 	}, [ canSubmitChanges, finishSetup ] );
 
 	return (
-		<div className="googlesitekit-setup-module__inputs">
-			<StoreErrorNotices moduleSlug="subscribe-with-google" storeName={ STORE_NAME } />
+		<form className="googlesitekit-analytics-setup__form" onSubmit={ submitForm }>
+			<div className="googlesitekit-setup-module__inputs">
+				<StoreErrorNotices moduleSlug="subscribe-with-google" storeName={ STORE_NAME } />
 
-			<TextField
-				className={ classnames( { 'mdc-text-field--error': ! publicationID } ) }
-				label="Publication ID"
-				outlined
-			>
-				<Input
-					id="publicationID"
-					name="publicationID"
-					value={ publicationID }
-					onChange={ onChangePublicationID }
-				/>
-			</TextField>
+				<TextField
+					className={ classnames( { 'mdc-text-field--error': ! publicationID } ) }
+					label="Publication ID"
+					outlined
+				>
+					<Input
+						id="publicationID"
+						name="publicationID"
+						value={ publicationID }
+						onChange={ onChangePublicationID }
+					/>
+				</TextField>
 
-			<TextField
-				className={ classnames( { 'mdc-text-field--error': ! products } ) }
-				label="Products"
-				textarea
-				outlined
-			>
-				<Input
-					id="products"
-					name="products"
-					value={ products }
-					onChange={ onChangeProducts }
-				/>
-			</TextField>
+				<TextField
+					className={ classnames( { 'mdc-text-field--error': ! products } ) }
+					label="Products"
+					textarea
+					outlined
+				>
+					<Input
+						id="products"
+						name="products"
+						value={ products }
+						onChange={ onChangeProducts }
+					/>
+				</TextField>
 
-			{ finishSetup &&
-			<div className="googlesitekit-setup-module__action">
-				<Button onClick={ finishSetupHandler } disabled={ ! canSubmitChanges }>
-					{ __( 'Configure Subscribe with Google', 'google-site-kit' ) }
-				</Button>
+				<div className="googlesitekit-setup-module__action">
+					<Button disabled={ ! canSubmitChanges }>
+						{ __( 'Configure Subscribe with Google', 'google-site-kit' ) }
+					</Button>
+				</div>
 			</div>
-			}
-
-		</div>
+		</form>
 	);
 }
 
