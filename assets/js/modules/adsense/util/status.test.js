@@ -107,6 +107,12 @@ const otherURLChannelA = {
 	urlPattern: 'other-website.org',
 };
 
+const otherURLChannelB = {
+	id: 'ca-pub-2833782679114991:other-website.org',
+	kind: 'adsense#urlChannel',
+	urlPattern: 'Camel-Case-weBSite.org',
+};
+
 describe( 'determineAccountStatus', () => {
 	test.each( [
 		[ 'none for noAdSenseAccount error', ACCOUNT_STATUS_NONE, {
@@ -361,6 +367,14 @@ describe( 'determineSiteStatus', () => {
 			siteURL: 'https://example.com',
 		};
 		expect( determineSiteStatus( params ) ).not.toEqual( undefined );
+	} );
+
+	it( 'returns added for camel case URLs', () => {
+		const params = {
+			urlChannels: [ otherURLChannelB ],
+			siteURL: 'https://caMel-caSe-wEbsite.org',
+		};
+		expect( determineSiteStatus( params ) ).toEqual( SITE_STATUS_ADDED );
 	} );
 } );
 

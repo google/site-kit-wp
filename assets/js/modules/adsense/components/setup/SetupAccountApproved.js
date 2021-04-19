@@ -96,10 +96,10 @@ export default function SetupAccountApproved() {
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
 				{ isApprovedFromVeryBeginning &&
-					__( 'Looks like you’re already using AdSense', 'google-site-kit' )
+					<span>{ __( 'Looks like you’re already using AdSense', 'google-site-kit' ) }</span>
 				}
 				{ ! isApprovedFromVeryBeginning &&
-					__( 'Your account is ready to use AdSense', 'google-site-kit' )
+					<span>{ __( 'Your account is ready to use AdSense', 'google-site-kit' ) }</span>
 				}
 			</h3>
 
@@ -107,10 +107,10 @@ export default function SetupAccountApproved() {
 
 			<p>
 				{ isApprovedFromVeryBeginning &&
-					__( 'Site Kit will place AdSense code on your site to connect your site to AdSense and help you get the most out of ads. This means Google will automatically place ads for you in all the best places.', 'google-site-kit' )
+					<span>{ __( 'Site Kit will place AdSense code on your site to connect your site to AdSense and help you get the most out of ads. This means Google will automatically place ads for you in all the best places.', 'google-site-kit' ) }</span>
 				}
 				{ ! isApprovedFromVeryBeginning &&
-					__( 'Site Kit has placed AdSense code on your site to connect your site to AdSense and help you get the most out of ads. This means Google will automatically place ads for you in all the best places.', 'google-site-kit' )
+					<span>{ __( 'Site Kit has placed AdSense code on your site to connect your site to AdSense and help you get the most out of ads. This means Google will automatically place ads for you in all the best places.', 'google-site-kit' ) }</span>
 				}
 			</p>
 
