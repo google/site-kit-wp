@@ -86,11 +86,11 @@ storiesOf( 'Search Console Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetMatchedProperties( [
 			{
 				permissionLevel: 'siteFullUser',
-				siteURL: 'https://www.example.io/',
+				siteURL: 'https://www.example.com/',
 			},
 			{
 				permissionLevel: 'siteFullUser',
-				siteURL: 'http://example.net/',
+				siteURL: 'http://example.com/',
 			},
 			{
 				permissionLevel: 'siteFullUser',
