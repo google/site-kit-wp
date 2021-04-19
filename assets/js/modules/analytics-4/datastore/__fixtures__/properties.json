@@ -1,6 +1,6 @@
 [
   {
-    "_ID": "1000",
+    "_id": "1000",
     "_accountID": "100",
     "name": "properties/1000",
     "createTime": "2014-10-02T15:01:23Z",
@@ -13,7 +13,7 @@
     "deleted": false
   },
   {
-    "_ID": "1001",
+    "_id": "1001",
     "_accountID": "100",
     "name": "properties/1001",
     "createTime": "2014-10-03T11:01:23Z",

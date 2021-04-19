@@ -292,7 +292,7 @@ final class Analytics_4 extends Module
 		$filter_account = function( $account ) {
 			$matches = array();
 			if ( preg_match( '#accounts/([^/]+)#', $account['name'], $matches ) ) {
-				$account['_ID'] = $matches[1];
+				$account['_id'] = $matches[1];
 			}
 
 			return $account;
@@ -301,7 +301,7 @@ final class Analytics_4 extends Module
 		$filter_property = function( $property ) {
 			$matches = array();
 			if ( preg_match( '#properties/([^/]+)#', $property['name'], $matches ) ) {
-				$property['_ID'] = $matches[1];
+				$property['_id'] = $matches[1];
 			}
 
 			$matches = array();
@@ -315,7 +315,7 @@ final class Analytics_4 extends Module
 		$filter_webdatastream = function( $webdatastream ) {
 			$matches = array();
 			if ( preg_match( '#properties/([^/]+)/webDataStreams/([^/]+)#', $webdatastream['name'], $matches ) ) {
-				$webdatastream['_ID']         = $matches[2];
+				$webdatastream['_id']         = $matches[2];
 				$webdatastream['_propertyID'] = $matches[1];
 			}
 

@@ -70,7 +70,7 @@ const fetchGetPropertiesStore = createFetchStore( {
 				[ accountID ]: properties,
 			},
 			propertiesByID: properties.reduce(
-				( accum, property ) => ( { ...accum, [ property._ID ]: property } ),
+				( accum, property ) => ( { ...accum, [ property._id ]: property } ),
 				state.propertiesByID || {},
 			),
 		};
@@ -157,7 +157,7 @@ const baseActions = {
 
 			const webdatastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
 			if ( webdatastream ) {
-				registry.dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._ID );
+				registry.dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._id );
 				registry.dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
 			}
 		}() );
