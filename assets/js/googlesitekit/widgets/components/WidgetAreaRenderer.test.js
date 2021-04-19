@@ -275,7 +275,7 @@ describe( 'WidgetAreaRenderer', () => {
 		} );
 	} );
 
-	it( 'should render empty widget area when has an inactive widget', async () => {
+	it( 'should render a hidden widget area when it has no active widget', async () => {
 		createWidgets( registry, areaName, [
 			{ Component: WidgetComponentEmpty, slug: 'empty', width: WIDGET_WIDTHS.HALF },
 		] );
