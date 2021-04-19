@@ -40,7 +40,7 @@ export default function Header() {
 	const contentPagesURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL(
 		'content-pages',
 		generateDateRangeArgs( dates )
-	)	);
+	) );
 	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 	const title = sprintf(
 		/* translators: %s: number of days */
