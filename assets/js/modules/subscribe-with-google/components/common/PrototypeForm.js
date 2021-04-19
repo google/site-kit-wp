@@ -61,7 +61,7 @@ export default function PrototypeForm( { finishSetup } ) {
 	const finishSetupHandler = useCallback( () => {
 		submitChanges();
 		finishSetup();
-	}, [ products, publicationID ] );
+	}, [ canSubmitChanges, finishSetup ] );
 
 	return (
 		<div className="googlesitekit-setup-module__inputs">
