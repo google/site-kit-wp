@@ -48,7 +48,11 @@ const storyOptions = {
 			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 
 			provideUserAuthentication( registry );
-			provideModules( registry );
+			provideModules( registry, [ {
+				slug: 'search-console',
+				active: true,
+				connected: true,
+			} ] );
 			provideModuleRegistrations( registry );
 
 			return <Story registry={ registry } />;

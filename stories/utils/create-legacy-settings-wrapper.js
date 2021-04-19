@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import SettingsActiveModule from '../../assets/js/components/settings/SettingsActiveModule';
-import { createTestRegistry, provideModules, WithTestRegistry } from '../../tests/js/utils';
+import { WithTestRegistry } from '../../tests/js/utils';
 
 /**
  * Creates a legacy settings wrapper component for the given module.
@@ -36,19 +36,13 @@ import { createTestRegistry, provideModules, WithTestRegistry } from '../../test
 export default function createLegacySettingsWrapper( moduleSlug ) {
 	return function SettingsLegacy( props ) {
 		const {
-			registry = createTestRegistry(),
+			registry,
 			callback,
 			isEditing = false,
 			isOpen = true,
 			isSaving = false,
 			error = undefined,
 		} = props;
-
-		provideModules( registry, [ {
-			slug: moduleSlug,
-			active: true,
-			connected: true,
-		} ] );
 
 		return (
 			<WithTestRegistry registry={ registry } callback={ callback }>
