@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.7
 Requires PHP:      5.6
-Stable tag:        1.29.0
+Stable tag:        1.30.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -84,9 +84,40 @@ We plan to expand the plugin’s capabilities and integrations in the future; we
 
 = How can I contribute to the plugin? =
 
-If you have some ideas to improve the plugin or to solve a bug, feel free to raise an issue or submit a pull request in the [GitHub repository for the plugin](https://github.com/google/site-kit-wp). Please stick to the [contributing guidelines](https://github.com/google/site-kit-wp/blob/master/CONTRIBUTING.md). You can also contribute to the plugin by translating it. Simply visit [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/google-site-kit) to get started.
+If you have some ideas to improve the plugin or to solve a bug, feel free to raise an issue or submit a pull request in the [GitHub repository for the plugin](https://github.com/google/site-kit-wp). Please stick to the [contributing guidelines](https://github.com/google/site-kit-wp/blob/main/CONTRIBUTING.md). You can also contribute to the plugin by translating it. Simply visit [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/google-site-kit) to get started.
 
 == Changelog ==
+
+= 1.30.0 =
+
+**Enhanced**
+
+* Add tracking events for help visibility menu links. See [#3027](https://github.com/google/site-kit-wp/issues/3027).
+* Scaffold `analytics-4` module PHP class. See [#2974](https://github.com/google/site-kit-wp/issues/2974).
+* Clarify wording of warning message when disabling the AdSense snippet. See [#2962](https://github.com/google/site-kit-wp/issues/2962).
+* Introduce hidden labels for search term fields of the User Input Settings flow. See [#2901](https://github.com/google/site-kit-wp/issues/2901).
+* Fix low-contrast color for keyword bubbles in the user input flow. See [#2896](https://github.com/google/site-kit-wp/issues/2896).
+* Ensure that the user is not sent to the user input flow when granting additional scopes after being already authenticated, even if submitting the user input response is still required. See [#2874](https://github.com/google/site-kit-wp/issues/2874).
+* Update assets across the plugin with new side kick-based branding illustrations. See [#2616](https://github.com/google/site-kit-wp/issues/2616).
+* Include button to reset Site Kit under "Available Tools" in WordPress, as a way to reset the plugin data e.g. when currently not being connected. See [#2384](https://github.com/google/site-kit-wp/issues/2384).
+* Update modules settings to use separate components for active and inactive modules. See [#2184](https://github.com/google/site-kit-wp/issues/2184).
+* Improve the pre-setup compatibility checks to properly warn if the REST API is disabled instead of failing with an unexpected error. See [#2101](https://github.com/google/site-kit-wp/issues/2101).
+* Migrate Analytics module page Top Acquisition Channels widget to use Widget API. See [#2069](https://github.com/google/site-kit-wp/issues/2069).
+* Migrate Analytics module page popular pages widget to use Widget API. See [#2068](https://github.com/google/site-kit-wp/issues/2068).
+* Migrate Analytics module page overview widget to use Widget API. See [#2067](https://github.com/google/site-kit-wp/issues/2067).
+* Migrate AdSense module page overview widget to use Widget API. See [#2065](https://github.com/google/site-kit-wp/issues/2065).
+* Migrate Search Console module page popular keywords widget to use Widget API. See [#2064](https://github.com/google/site-kit-wp/issues/2064).
+* Migrate Search Console module page overview widget to use Widget API. See [#2063](https://github.com/google/site-kit-wp/issues/2063).
+
+**Fixed**
+
+* Fix critical JS error due to a new version of the Google charts library being released, by locking to a specific version. See [#3132](https://github.com/google/site-kit-wp/issues/3132).
+* Fix regression where modules may be sorted incorrectly on the plugin's settings screen. See [#3093](https://github.com/google/site-kit-wp/issues/3093).
+* Fix bug with help visibility icon in header where clicking it wouldn't trigger the menu to open in some scenarios, and also address some visual design problems with it. See [#3026](https://github.com/google/site-kit-wp/issues/3026).
+* Fix Ad Blocker detection issue which occurred on sites with GoDaddy CDN enabled. See [#3018](https://github.com/google/site-kit-wp/issues/3018).
+* Ensure changing the site URL between HTTP and HTTPS or `www.` and non-`www.` does not impact the results displayed in Analytics and AdSense widgets. See [#3005](https://github.com/google/site-kit-wp/issues/3005).
+* Fix bug where Analytics snippet could still be placed when an existing snippet was already present in the frontend. See [#2909](https://github.com/google/site-kit-wp/issues/2909).
+* Ensure that the AdSense snippet is not included on 404 pages in the frontend. See [#2784](https://github.com/google/site-kit-wp/issues/2784).
 
 = 1.29.0 =
 
@@ -868,7 +899,7 @@ If you have some ideas to improve the plugin or to solve a bug, feel free to rai
 * Ensure that the Tag Manager snippet rendered is always compatible with the current context (AMP vs non-AMP). See [#1036](https://github.com/google/site-kit-wp/issues/1036).
 * Do not render `amp-auto-ads` element in AMP stories because it is invalid in that context. See [#979](https://github.com/google/site-kit-wp/issues/979).
 * Ensure that Google Charts JS library is loaded as expected even when a `window.google` global already exists because of another library. See [#939](https://github.com/google/site-kit-wp/issues/939).
-* Do not refetch PageSpeed Insights data when the date range selector is changed, as its data its date-agnostic. See [#890](https://github.com/google/site-kit-wp/issues/890).
+* Do not refetch PageSpeed Insights data when the date range selector is changed, as its data its date-unaware. See [#890](https://github.com/google/site-kit-wp/issues/890).
 * Fix incorrect change arrow direction and color on "inverted" properties like bounce rate. Props WebFactoryLtd. See [#481](https://github.com/google/site-kit-wp/issues/481).
 * Add missing support for Search Console domain properties and rely on the correct property when requesting Search Console data. Props IgorCode. See [#325](https://github.com/google/site-kit-wp/issues/325).
 

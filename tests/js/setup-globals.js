@@ -36,6 +36,18 @@ global._googlesitekitLegacyData = {
 			slug: 'analytics',
 			name: 'Analytics',
 		},
+		adsense: {
+			slug: 'adsense',
+			name: 'AdSense',
+		},
+		optimize: {
+			slug: 'optimize',
+			name: 'Optimize',
+		},
+		tagmanager: {
+			slug: 'tagmanager',
+			name: 'Tag Manager',
+		},
 	},
 	setup: {
 

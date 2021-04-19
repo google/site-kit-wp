@@ -147,6 +147,7 @@ export default function GoogleChartV2( props ) {
 				className="googlesitekit-chart-v2__inner"
 				chartEvents={ combinedChartEvents }
 				chartType={ chartType }
+				chartVersion="49"
 				loader={ loader }
 				height={ height }
 				getChartWrapper={ ( chartWrapper, google ) => {

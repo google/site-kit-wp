@@ -94,13 +94,13 @@ export default function TotalUserCount( { loaded, error, report, dimensionValue 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__totalcount googlesitekit-data-block">
 			<h3 className="googlesitekit-subheading-1 googlesitekit-data-block__title">
-				{ ! dimensionValue && __( 'All Users', 'google-site-kit' ) }
+				{ ! dimensionValue && <span>{ __( 'All Users', 'google-site-kit' ) } </span> }
 				{ dimensionValue && (
 					<Fragment>
 						{ dimensionValue && <Link onClick={ showAllUsers }>{ __( 'All Users', 'google-site-kit' ) }</Link> }
-						{ ! dimensionValue && __( 'All Users', 'google-site-kit' ) }
+						{ ! dimensionValue && <span>{ __( 'All Users', 'google-site-kit' ) }</span> }
 						<Icon icon={ chevronRight } size="18" fill="currentColor" />
-						{ dimensionValue }
+						<span>{ dimensionValue }</span>
 					</Fragment>
 				) }
 			</h3>

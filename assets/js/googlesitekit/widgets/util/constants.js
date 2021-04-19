@@ -27,22 +27,4 @@ export const WIDTH_GRID_COUNTER_MAP = {
 	[ WIDGET_WIDTHS.FULL ]: 12,
 };
 
-export const WIDTH_GRID_CLASS_MAP = {
-	[ WIDGET_WIDTHS.QUARTER ]: [
-		'mdc-layout-grid__cell',
-		'mdc-layout-grid__cell--span-2-phone',
-		'mdc-layout-grid__cell--span-3-desktop',
-		'mdc-layout-grid__cell--span-4-tablet',
-	],
-	[ WIDGET_WIDTHS.HALF ]: [
-		'mdc-layout-grid__cell',
-		'mdc-layout-grid__cell--span-6-desktop',
-		'mdc-layout-grid__cell--span-8-tablet',
-	],
-	[ WIDGET_WIDTHS.FULL ]: [
-		'mdc-layout-grid__cell',
-		'mdc-layout-grid__cell--span-12',
-	],
-};
-
 export const HIDDEN_CLASS = 'googlesitekit-hidden';

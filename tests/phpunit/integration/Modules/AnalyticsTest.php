@@ -187,7 +187,7 @@ class AnalyticsTest extends TestCase {
 		remove_all_actions( 'wp_enqueue_scripts' );
 		$analytics->register();
 
-		// Hook `wp_print_head_scripts` on dummy action for capturing.
+		// Hook `wp_print_head_scripts` on placeholder action for capturing.
 		add_action( '__test_print_scripts', 'wp_print_head_scripts' );
 
 		if ( $enabled ) {
@@ -251,39 +251,6 @@ class AnalyticsTest extends TestCase {
 				true,
 			),
 		);
-	}
-
-	public function test_prepare_info_for_js() {
-		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$info = $analytics->prepare_info_for_js();
-
-		$this->assertEqualSets(
-			array(
-				'slug',
-				'name',
-				'description',
-				'cta',
-				'sort',
-				'homepage',
-				'learnMore',
-				'required',
-				'autoActivate',
-				'internal',
-				'screenID',
-				'settings',
-				'provides',
-			),
-			array_keys( $info )
-		);
-
-		$this->assertEquals( 'analytics', $info['slug'] );
-		$this->assertArrayHasKey( 'accountID', $info['settings'] );
-		$this->assertArrayHasKey( 'propertyID', $info['settings'] );
-		$this->assertArrayHasKey( 'profileID', $info['settings'] );
-		$this->assertArrayHasKey( 'internalWebPropertyID', $info['settings'] );
-		$this->assertArrayHasKey( 'useSnippet', $info['settings'] );
-		$this->assertArrayHasKey( 'trackingDisabled', $info['settings'] );
 	}
 
 	public function test_is_connected() {
@@ -498,7 +465,7 @@ class AnalyticsTest extends TestCase {
 		do_action( 'template_redirect' );
 
 		$head_html = $this->capture_action( 'wp_head' );
-		// Sanity check.
+		// Confidence check.
 		$this->assertNotEmpty( $head_html );
 		// Whether or not tracking is disabled does not affect output of snippet.
 		if ( $settings['useSnippet'] ) {
@@ -729,13 +696,15 @@ class AnalyticsTest extends TestCase {
 		$this->assertTrue( is_array( $filters ) );
 		$this->assertEquals( 1, count( $filters ) );
 		$this->assertEquals( 'ga:hostname', $filters[0]->getDimensionName() );
-		$this->assertEquals( 'EXACT', $filters[0]->getOperator() );
+		$this->assertEquals( 'IN_LIST', $filters[0]->getOperator() );
 
 		$hostname    = wp_parse_url( $context->get_reference_site_url(), PHP_URL_HOST );
 		$expressions = $filters[0]->getExpressions();
+
 		$this->assertTrue( is_array( $expressions ) );
-		$this->assertEquals( 1, count( $expressions ) );
-		$this->assertEquals( $hostname, $expressions[0] );
+		$this->assertEquals( 2, count( $expressions ) );
+		$this->assertContains( $hostname, $expressions );
+		$this->assertContains( 'www.' . $hostname, $expressions );
 	}
 
 }

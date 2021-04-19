@@ -272,7 +272,7 @@ final class OAuth_Client {
 		// This is called when the client refreshes the access token on-the-fly.
 		$client->setTokenCallback(
 			function( $cache_key, $access_token ) use ( $client ) {
-				$expires_in = HOUR_IN_SECONDS; // Sane default, Google OAuth tokens are typically valid for an hour.
+				$expires_in = HOUR_IN_SECONDS; // Reasonable default, Google OAuth tokens are typically valid for an hour.
 				$created    = 0; // This will be replaced with the current timestamp when saving.
 
 				// Try looking up the real values if possible.
@@ -697,6 +697,9 @@ final class OAuth_Client {
 		$refresh_token = $this->get_client()->getRefreshToken();
 		$this->set_refresh_token( $refresh_token );
 
+		// Store the previously granted scopes for use in the action below before they're updated.
+		$previous_scopes = $this->get_granted_scopes();
+
 		// Update granted scopes.
 		if ( isset( $token_response['scope'] ) ) {
 			$scopes = explode( ' ', sanitize_text_field( $token_response['scope'] ) );
@@ -731,10 +734,13 @@ final class OAuth_Client {
 		 *
 		 * @since 1.3.0
 		 * @since 1.6.0 The $token_response parameter was added.
+		 * @since 1.30.0 The $scopes and $previous_scopes parameters were added.
 		 *
 		 * @param array $token_response Token response data.
+		 * @param string[] $scopes List of scopes.
+		 * @param string[] $previous_scopes List of previous scopes.
 		 */
-		do_action( 'googlesitekit_authorize_user', $token_response );
+		do_action( 'googlesitekit_authorize_user', $token_response, $scopes, $previous_scopes );
 
 		// This must happen after googlesitekit_authorize_user as the permissions checks depend on
 		// values set which affect the meta capability mapping.

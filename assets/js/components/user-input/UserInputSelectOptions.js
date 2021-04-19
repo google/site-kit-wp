@@ -143,7 +143,7 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 
 					<TextField
 						label={ __( 'Type your own answer', 'google-site-kit' ) }
-						floatingLabelClassName="screen-reader-text"
+						noLabel
 					>
 						<Input
 							id={ `${ slug }-select-options` }
@@ -153,13 +153,16 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 							disabled={ disabled }
 						/>
 					</TextField>
+					<label htmlFor={ `${ slug }-select-options` } className="screen-reader-text">
+						{ __( 'Enter your own answer here', 'google-site-kit' ) }
+					</label>
 				</div>
 			</div>
 
 			<p className="googlesitekit-user-input__note">
-				{ max === 1 && __( 'Choose up to one (1) answer', 'google-site-kit' ) }
-				{ max === 2 && __( 'Choose up to two (2) answers', 'google-site-kit' ) }
-				{ max === 3 && __( 'Choose up to three (3) answers', 'google-site-kit' ) }
+				{ max === 1 && <span>{ __( 'Choose up to one (1) answer', 'google-site-kit' ) }</span> }
+				{ max === 2 && <span>{ __( 'Choose up to two (2) answers', 'google-site-kit' ) }</span> }
+				{ max === 3 && <span>{ __( 'Choose up to three (3) answers', 'google-site-kit' ) }</span> }
 			</p>
 		</Cell>
 	);
