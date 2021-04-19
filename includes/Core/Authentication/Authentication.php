@@ -650,7 +650,7 @@ final class Authentication {
 	private function handle_connect() {
 		$input = $this->context->input();
 		$nonce = $input->filter( INPUT_GET, 'nonce' );
-		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, self::ACTION_CONNECT ) ) {
+		if ( ! wp_verify_nonce( $nonce, self::ACTION_CONNECT ) ) {
 			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
 		}
 
@@ -680,7 +680,7 @@ final class Authentication {
 	 */
 	private function handle_disconnect() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
-		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, self::ACTION_DISCONNECT ) ) {
+		if ( ! wp_verify_nonce( $nonce, self::ACTION_DISCONNECT ) ) {
 			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
 		}
 
