@@ -38,7 +38,10 @@ import { STORE_NAME } from '../../datastore/constants';
 import { TextField, Input } from '../../../../material-components';
 const { useDispatch, useSelect } = Data;
 
-export default function PrototypeForm( { doneCallback } ) {
+export default function PrototypeForm( { finishSetup } ) {
+	// Get validation function.
+	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
+
 	// Get mutation functions.
 	const { setSettings, submitChanges } = useDispatch( STORE_NAME );
 
@@ -55,15 +58,9 @@ export default function PrototypeForm( { doneCallback } ) {
 	}, [] );
 
 	// Handle form completion.
-	const doneHandler = useCallback( () => {
-		// Trim values before submitting.
-		setSettings( {
-			products: products.trim(),
-			publicationID: publicationID.trim(),
-		} );
-
+	const finishSetupHandler = useCallback( () => {
 		submitChanges();
-		doneCallback();
+		finishSetup();
 	}, [ products, publicationID ] );
 
 	return (
@@ -97,9 +94,9 @@ export default function PrototypeForm( { doneCallback } ) {
 				/>
 			</TextField>
 
-			{ doneCallback &&
+			{ finishSetup &&
 			<div className="googlesitekit-setup-module__action">
-				<Button onClick={ doneHandler } disabled={ ! publicationID || ! products }>
+				<Button onClick={ finishSetupHandler } disabled={ ! canSubmitChanges }>
 					{ __( 'Configure Subscribe with Google', 'google-site-kit' ) }
 				</Button>
 			</div>
@@ -110,7 +107,7 @@ export default function PrototypeForm( { doneCallback } ) {
 }
 
 PrototypeForm.propTypes = {
-	doneCallback: PropTypes.func,
+	finishSetup: PropTypes.func,
 };
 
 PrototypeForm.defaultProps = {};

@@ -46,7 +46,7 @@ export default function SetupMain( { finishSetup } ) {
 	if ( isDoingSubmitChanges || isNavigating || submitInProgress ) {
 		viewComponent = <ProgressBar />;
 	} else {
-		viewComponent = <PrototypeForm doneCallback={ finishSetup } />;
+		viewComponent = <PrototypeForm finishSetup={ finishSetup } />;
 	}
 
 	return (
