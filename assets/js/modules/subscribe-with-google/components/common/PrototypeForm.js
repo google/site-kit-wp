@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -35,29 +34,16 @@ import Data from 'googlesitekit-data';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Button from '../../../../components/Button';
 import { STORE_NAME } from '../../datastore/constants';
-import { TextField, Input } from '../../../../material-components';
+import ProductsInput from './ProductsInput';
+import PublicationIDInput from './PublicationIDInput';
 const { useDispatch, useSelect } = Data;
 
 export default function PrototypeForm( { finishSetup } ) {
 	// Get validation function.
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 
-	// Get mutation functions.
-	const { setSettings, submitChanges } = useDispatch( STORE_NAME );
-
-	// Get values.
-	const products = useSelect( ( select ) => select( STORE_NAME ).getProducts() );
-	const publicationID = useSelect( ( select ) => select( STORE_NAME ).getPublicationID() );
-
-	// Handle form input.
-	const onChangeProducts = useCallback( ( { currentTarget } ) => {
-		setSettings( { products: currentTarget.value } );
-	}, [] );
-	const onChangePublicationID = useCallback( ( { currentTarget } ) => {
-		setSettings( { publicationID: currentTarget.value } );
-	}, [] );
-
 	// Handle form submissions.
+	const { submitChanges } = useDispatch( STORE_NAME );
 	const submitForm = useCallback( () => {
 		submitChanges();
 		finishSetup();
@@ -68,32 +54,9 @@ export default function PrototypeForm( { finishSetup } ) {
 			<div className="googlesitekit-setup-module__inputs">
 				<StoreErrorNotices moduleSlug="subscribe-with-google" storeName={ STORE_NAME } />
 
-				<TextField
-					className={ classnames( { 'mdc-text-field--error': ! publicationID } ) }
-					label="Publication ID"
-					outlined
-				>
-					<Input
-						id="publicationID"
-						name="publicationID"
-						value={ publicationID }
-						onChange={ onChangePublicationID }
-					/>
-				</TextField>
+				<PublicationIDInput />
 
-				<TextField
-					className={ classnames( { 'mdc-text-field--error': ! products } ) }
-					label="Products"
-					textarea
-					outlined
-				>
-					<Input
-						id="products"
-						name="products"
-						value={ products }
-						onChange={ onChangeProducts }
-					/>
-				</TextField>
+				<ProductsInput />
 
 				<div className="googlesitekit-setup-module__action">
 					<Button disabled={ ! canSubmitChanges }>
