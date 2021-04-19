@@ -276,8 +276,6 @@ final class Permissions {
 			self::VIEW_DASHBOARD,
 			self::VIEW_MODULE_DETAILS,
 			self::MANAGE_OPTIONS,
-			self::PUBLISH_POSTS,
-			self::VIEW_POST_INSIGHTS,
 		);
 	}
 }
