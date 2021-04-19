@@ -50,14 +50,8 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 
 	// Add an empty string if the values array is empty.
 	const valuesLength = values.length;
-	if ( valuesLength === 0 ) {
+	if ( valuesLength === 0 || values.length < max ) {
 		values.push( '' );
-	} else if ( valuesLength < max ) {
-		const missingValues = max - valuesLength;
-		let i = 0;
-		for ( i = 0; i < missingValues; i++ ) {
-			values.push( '' );
-		}
 	}
 
 	// Store values in local state to prevent
