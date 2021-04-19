@@ -99,6 +99,7 @@
   "plugins": [
     "filenames",
     "sitekit",
-    "jsdoc"
+    "jsdoc",
+    "react-hooks"
   ]
 }
