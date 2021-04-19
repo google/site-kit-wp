@@ -68,7 +68,7 @@ export default function PrototypeForm( { doneCallback } ) {
 
 	return (
 		<div>
-			<StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="subscribe-with-google" storeName={ STORE_NAME } />
 
 			<TextField
 				className={ classnames( { 'mdc-text-field--error': ! publicationID } ) }

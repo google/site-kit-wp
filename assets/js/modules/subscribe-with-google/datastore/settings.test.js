@@ -29,7 +29,7 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { STORE_NAME } from './constants';
 import { INVARIANT_INVALID_PRODUCTS, INVARIANT_INVALID_PUBLICATION_ID } from './settings';
 
-describe( 'modules/tagmanager settings', () => {
+describe( 'modules/subscribe-with-google settings', () => {
 	let registry;
 
 	const defaultSettings = {
