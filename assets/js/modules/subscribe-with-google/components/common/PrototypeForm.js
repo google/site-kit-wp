@@ -67,7 +67,7 @@ export default function PrototypeForm( { doneCallback } ) {
 	}, [ products, publicationID ] );
 
 	return (
-		<div>
+		<div className="googlesitekit-setup-module__inputs">
 			<StoreErrorNotices moduleSlug="subscribe-with-google" storeName={ STORE_NAME } />
 
 			<TextField
