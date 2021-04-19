@@ -518,16 +518,10 @@ class AuthenticationTest extends TestCase {
 
 		$connect_url = $auth->get_connect_url();
 
-		$this->assertStringStartsWith( admin_url(), $connect_url );
+		$this->assertStringStartsWith( admin_url( 'index.php' ), $connect_url );
 		wp_parse_str( parse_url( $connect_url, PHP_URL_QUERY ), $params );
-		$this->assertEquals( 1, wp_verify_nonce( $params['nonce'], 'connect' ) );
-		$this->assertArraySubset(
-			array(
-				'googlesitekit_connect' => 1,
-				'page'                  => 'googlesitekit-splash',
-			),
-			$params
-		);
+		$this->assertEquals( 1, wp_verify_nonce( $params['nonce'], Authentication::ACTION_CONNECT ) );
+		$this->assertEquals( Authentication::ACTION_CONNECT, $params['action'] );
 	}
 
 	public function test_get_disconnect_url() {
@@ -535,16 +529,10 @@ class AuthenticationTest extends TestCase {
 
 		$disconnect_url = $auth->get_disconnect_url();
 
-		$this->assertStringStartsWith( admin_url(), $disconnect_url );
+		$this->assertStringStartsWith( admin_url( 'index.php' ), $disconnect_url );
 		wp_parse_str( parse_url( $disconnect_url, PHP_URL_QUERY ), $params );
-		$this->assertEquals( 1, wp_verify_nonce( $params['nonce'], 'disconnect' ) );
-		$this->assertArraySubset(
-			array(
-				'googlesitekit_disconnect' => 1,
-				'page'                     => 'googlesitekit-splash',
-			),
-			$params
-		);
+		$this->assertEquals( 1, wp_verify_nonce( $params['nonce'], Authentication::ACTION_DISCONNECT ) );
+		$this->assertEquals( Authentication::ACTION_DISCONNECT, $params['action'] );
 	}
 
 	public function test_googlesitekit_connect() {
