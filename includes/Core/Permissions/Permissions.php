@@ -262,9 +262,9 @@ final class Permissions {
 	}
 
 	/**
-	 * Get all capabilities used in Google Site Kit.
+	 * Gets all capabilities used in Google Site Kit.
 	 *
-	 * @since 1.x
+	 * @since n.e.x.t
 	 *
 	 * @return array
 	 */
