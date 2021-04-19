@@ -20,11 +20,15 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import baseModuleStore from './base';
 import { STORE_NAME } from './constants';
+import baseModuleStore from './base';
+import properties from './properties';
+import webdatastreams from './webdatastreams';
 
 const store = Data.combineStores(
 	baseModuleStore,
+	properties,
+	webdatastreams,
 );
 
 export const initialState = store.initialState;
