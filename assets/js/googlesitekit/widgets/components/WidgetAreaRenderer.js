@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * Internal dependencies
@@ -83,7 +84,13 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	// all widgets active again, which is why we must return the "null" output.
 	if ( ! activeWidgets.length ) {
 		return (
-			<Grid className={ `${ HIDDEN_CLASS } googlesitekit-widget-area googlesitekit-widget-area--${ slug } googlesitekit-widget-area--${ style }` }>
+			<Grid
+				className={ classnames(
+					HIDDEN_CLASS,
+					'googlesitekit-widget-area',
+					`googlesitekit-widget-area--${ slug }`, `googlesitekit-widget-area--${ style }`
+				) }
+			>
 				{ widgetsOutput }
 			</Grid>
 		);
