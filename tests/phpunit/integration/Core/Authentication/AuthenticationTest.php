@@ -600,6 +600,59 @@ class AuthenticationTest extends TestCase {
 		}
 	}
 
+	public function test_handle_disconnect() {
+		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$auth              = new Authentication( $context );
+		$disconnect_action = 'admin_action_' . Authentication::ACTION_DISCONNECT;
+		remove_all_actions( $disconnect_action );
+		$auth->register();
+
+		// Requires 'disconnect' nonce.
+		try {
+			do_action( $disconnect_action );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( WPDieException $e ) {
+			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
+		}
+
+		$_GET['nonce'] = wp_create_nonce( Authentication::ACTION_DISCONNECT );
+
+		// Requires authenticate permissions.
+		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
+		try {
+			do_action( $disconnect_action );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( WPDieException $e ) {
+			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
+		}
+
+		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $editor_id );
+		$_GET['nonce'] = wp_create_nonce( Authentication::ACTION_DISCONNECT );
+		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
+		try {
+			do_action( $disconnect_action );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( WPDieException $e ) {
+			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
+		}
+
+		// Administrators can authenticate.
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$_GET['nonce'] = wp_create_nonce( Authentication::ACTION_DISCONNECT );
+		$this->assertTrue( current_user_can( Permissions::AUTHENTICATE ) );
+		try {
+			do_action( $disconnect_action );
+			$this->fail( 'Expected redirection to splash URL' );
+		} catch ( RedirectException $e ) {
+			$redirect_url = $e->get_location();
+			$this->assertStringStartsWith( $context->admin_url( 'splash' ), $redirect_url );
+			wp_parse_str( parse_url( $redirect_url, PHP_URL_QUERY ), $params );
+			$this->assertEquals( 1, $params['googlesitekit_reset_session'] );
+		}
+	}
+
 	public function test_get_proxy_setup_url() {
 		$class  = new \ReflectionClass( Authentication::class );
 		$method = $class->getMethod( 'get_proxy_setup_url' );
