@@ -785,7 +785,6 @@ final class Assets {
 				'canViewDashboard'     => current_user_can( Permissions::VIEW_DASHBOARD ),
 				'canViewModuleDetails' => current_user_can( Permissions::VIEW_MODULE_DETAILS ),
 				'canManageOptions'     => current_user_can( Permissions::MANAGE_OPTIONS ),
-				'canPublishPosts'      => current_user_can( Permissions::PUBLISH_POSTS ),
 			),
 
 			/**
