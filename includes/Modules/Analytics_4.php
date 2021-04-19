@@ -32,6 +32,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
+use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google_Service_GoogleAnalyticsAdmin;
 use Google\Site_Kit_Dependencies\Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty;
 use Google\Site_Kit_Dependencies\Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream;
@@ -289,52 +290,19 @@ final class Analytics_4 extends Module
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
-		$filter_account = function( $account ) {
-			$matches = array();
-			if ( preg_match( '#accounts/([^/]+)#', $account['name'], $matches ) ) {
-				$account['_id'] = $matches[1];
-			}
-
-			return $account;
-		};
-
-		$filter_property = function( $property ) {
-			$matches = array();
-			if ( preg_match( '#properties/([^/]+)#', $property['name'], $matches ) ) {
-				$property['_id'] = $matches[1];
-			}
-
-			$matches = array();
-			if ( preg_match( '#accounts/([^/]+)#', $property['parent'], $matches ) ) {
-				$property['_accountID'] = $matches[1];
-			}
-
-			return $property;
-		};
-
-		$filter_webdatastream = function( $webdatastream ) {
-			$matches = array();
-			if ( preg_match( '#properties/([^/]+)/webDataStreams/([^/]+)#', $webdatastream['name'], $matches ) ) {
-				$webdatastream['_id']         = $matches[2];
-				$webdatastream['_propertyID'] = $matches[1];
-			}
-
-			return $webdatastream;
-		};
-
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
-				return array_map( $filter_account, $response->getAccounts() );
+				return array_map( array( self::class, 'filter_account_with_ids' ), $response->getAccounts() );
 			case 'POST:create-property':
-				return $filter_property( $response );
+				return self::filter_property_with_ids( $response );
 			case 'POST:create-webdatastream':
-				return $filter_webdatastream( $response );
+				return self::filter_webdatastream_with_ids( $response );
 			case 'GET:properties':
-				return array_map( $filter_property, $response->getProperties() );
+				return array_map( array( self::class, 'filter_property_with_ids' ), $response->getProperties() );
 			case 'GET:property':
-				return $filter_property( $response );
+				return self::filter_property_with_ids( $response );
 			case 'GET:webdatastreams':
-				return array_map( $filter_webdatastream, $response->getWebDataStreams() );
+				return array_map( array( self::class, 'filter_webdatastream_with_ids' ), $response->getWebDataStreams() );
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -437,6 +405,63 @@ final class Analytics_4 extends Module
 				$tag->register();
 			}
 		}
+	}
+
+	/**
+	 * Parses account ID, adds it to the model object and returns updated model.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Model $account Account model.
+	 * @return Google_Model Updated model with _id attribute.
+	 */
+	public static function filter_account_with_ids( $account ) {
+		$matches = array();
+		if ( preg_match( '#accounts/([^/]+)#', $account['name'], $matches ) ) {
+			$account['_id'] = $matches[1];
+		}
+
+		return $account;
+	}
+
+	/**
+	 * Parses account and property IDs, adds it to the model object and returns updated model.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Model $property Property model.
+	 * @return Google_Model Updated model with _id and _accountID attributes.
+	 */
+	public static function filter_property_with_ids( $property ) {
+		$matches = array();
+		if ( preg_match( '#properties/([^/]+)#', $property['name'], $matches ) ) {
+			$property['_id'] = $matches[1];
+		}
+
+		$matches = array();
+		if ( preg_match( '#accounts/([^/]+)#', $property['parent'], $matches ) ) {
+			$property['_accountID'] = $matches[1];
+		}
+
+		return $property;
+	}
+
+	/**
+	 * Parses property and web datastream IDs, adds it to the model object and returns updated model.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Model $webdatastream Web datastream model.
+	 * @return Google_Model Updated model with _id and _propertyID attributes.
+	 */
+	public static function filter_webdatastream_with_ids( $webdatastream ) {
+		$matches = array();
+		if ( preg_match( '#properties/([^/]+)/webDataStreams/([^/]+)#', $webdatastream['name'], $matches ) ) {
+			$webdatastream['_id']         = $matches[2];
+			$webdatastream['_propertyID'] = $matches[1];
+		}
+
+		return $webdatastream;
 	}
 
 }
