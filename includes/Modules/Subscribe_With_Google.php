@@ -18,6 +18,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Subscribe_With_Google\EditPost;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Header;
@@ -34,9 +36,10 @@ use Google\Site_Kit\Modules\Subscribe_With_Google\SinglePost;
  * @ignore
  */
 final class Subscribe_With_Google extends Module
-	implements Module_With_Assets, Module_With_Settings {
+	implements Module_With_Assets, Module_With_Owner, Module_With_Settings {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
+	use Module_With_Owner_Trait;
 	use Module_With_Settings_Trait;
 
 	/**
