@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { createTestRegistry, freezeFetch, unsubscribeFromAll, untilResolved } from 'tests/js/utils';
+import { createTestRegistry, freezeFetch, provideSiteInfo, unsubscribeFromAll, untilResolved } from 'tests/js/utils';
 import { STORE_NAME } from './constants';
 import * as fixtures from './__fixtures__';
 
@@ -157,6 +157,66 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				const webdatastreams = registry.select( STORE_NAME ).getWebDataStreams( fakePropertyID );
 				expect( webdatastreams ).toBeUndefined();
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getMatchingWebDataStream', () => {
+			const webDataStreamDotCom = {
+				name: 'properties/1000/webDataStreams/2000',
+				measurementId: '1A2BCD345E', // eslint-disable-line sitekit/acronym-case
+				firebaseAppId: '', // eslint-disable-line sitekit/acronym-case
+				createTime: '2014-10-02T15:01:23Z',
+				updateTime: '2014-10-02T15:01:23Z',
+				defaultUri: 'http://example.com',
+				displayName: 'Test GA4 WebDataStream',
+			};
+
+			const webDataStreamDotOrg = {
+				name: 'properties/1000/webDataStreams/2001',
+				measurementId: '1A2BCD346E', // eslint-disable-line sitekit/acronym-case
+				firebaseAppId: '', // eslint-disable-line sitekit/acronym-case
+				createTime: '2014-10-03T15:01:23Z',
+				updateTime: '2014-10-03T15:01:23Z',
+				defaultUri: 'http://example.org',
+				displayName: 'Another datastream',
+			};
+
+			const webDataStreams = [ webDataStreamDotCom, webDataStreamDotOrg ];
+			const propertyID = '12345';
+
+			it( 'should return undefined if web data streams arent loaded yet', () => {
+				freezeFetch( webDataStreamsEndpoint );
+
+				const datastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
+				expect( datastream ).toBeUndefined();
+			} );
+
+			it( 'should return NULL when no datastreams are matched', () => {
+				provideSiteInfo( registry, { referenceSiteURL: 'http://example.net' } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( webDataStreams, { propertyID } );
+
+				const datastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
+				expect( datastream ).toBeNull();
+			} );
+
+			it( 'should return the correct datastream when reference site URL matches exactly', () => {
+				provideSiteInfo( registry, { referenceSiteURL: 'http://example.com' } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( webDataStreams, { propertyID } );
+
+				const datastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
+				expect( datastream ).toEqual( webDataStreamDotCom );
+			} );
+
+			it.each( [
+				[ 'protocol differences', 'https://example.org' ],
+				[ '"www." prefix', 'http://www.example.org' ],
+				[ 'trailing slash', 'https://www.example.org/' ],
+			] )( 'should return the correct datastream ignoring %s', ( _, referenceSiteURL ) => {
+				provideSiteInfo( registry, { referenceSiteURL } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( webDataStreams, { propertyID } );
+
+				const datastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
+				expect( datastream ).toEqual( webDataStreamDotOrg );
 			} );
 		} );
 	} );
