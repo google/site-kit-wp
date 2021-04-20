@@ -284,8 +284,10 @@ final class Analytics_4 extends Module
 					$datastreams   = $service->properties_webDataStreams; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 					foreach ( $data['propertyIDs'] as $property_id ) {
-						$request = $datastreams->listPropertiesWebDataStreams( self::normalize_property_id( $property_id ) );
-						$batch->add( $request );
+						$batch->add(
+							$datastreams->listPropertiesWebDataStreams( self::normalize_property_id( $property_id ) ),
+							$property_id
+						);
 					}
 
 					$restore_defer();
@@ -322,6 +324,16 @@ final class Analytics_4 extends Module
 				return self::filter_property_with_ids( $response );
 			case 'GET:webdatastreams':
 				return array_map( array( self::class, 'filter_webdatastream_with_ids' ), $response->getWebDataStreams() );
+			case 'GET:webdatastreams-batch':
+				$results = array();
+				foreach ( $response as $key => $datastreams ) {
+					$property_id             = substr( $key, strlen( 'response-' ) );
+					$results[ $property_id ] = array_map(
+						array( self::class, 'filter_webdatastream_with_ids' ),
+						$datastreams->getWebDataStreams()
+					);
+				}
+				return $results;
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -478,6 +490,9 @@ final class Analytics_4 extends Module
 		if ( preg_match( '#properties/([^/]+)/webDataStreams/([^/]+)#', $webdatastream['name'], $matches ) ) {
 			$webdatastream['_id']         = $matches[2];
 			$webdatastream['_propertyID'] = $matches[1];
+		} else {
+			$webdatastream['_id']         = false;
+			$webdatastream['_propertyID'] = null;
 		}
 
 		return $webdatastream;
