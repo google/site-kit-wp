@@ -100,5 +100,8 @@ export default function useExistingTagEffect() {
 		gtmAnalyticsAccountID,
 		gtmAnalyticsPermission,
 		gtmModuleActive,
+		selectProperty,
+		setAccountID,
+		setUseSnippet,
 	] );
 }
