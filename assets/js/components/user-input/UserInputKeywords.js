@@ -43,7 +43,6 @@ const { useSelect, useDispatch } = Data;
 
 export default function UserInputKeywords( { slug, max } ) {
 	const keywordsContainer = useRef();
-	const [ canDeleteKeyword, setCanDeleteKeyword ] = useState( false );
 
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
 	const { setUserInputSetting } = useDispatch( CORE_USER );
@@ -69,9 +68,7 @@ export default function UserInputKeywords( { slug, max } ) {
 			...values.slice( 0, index ),
 			...values.slice( index + 1 ),
 		] );
-		// After deleting a keyword, hitting backspace will delete the next keyword.
-		setCanDeleteKeyword( true );
-	}, [ updateKeywords, values ], canDeleteKeyword );
+	}, [ updateKeywords, values ] );
 
 	const onKeywordDelete = useCallback( ( index ) => {
 		deleteKeyword( index );
@@ -120,8 +117,6 @@ export default function UserInputKeywords( { slug, max } ) {
 				...values.slice( index + 1 ),
 			] );
 
-			// A new keyword has been added. Pressing backspace now will remove the entire keyword.
-			setCanDeleteKeyword( true );
 			setTimeout( () => {
 				focusInput( `#${ slug }-keyword-${ index + 1 }` );
 			}, 50 );
@@ -133,11 +128,6 @@ export default function UserInputKeywords( { slug, max } ) {
 			setTimeout( () => {
 				focusInput( `#${ slug }-keyword-${ nonEmptyValuesLength - 1 }` );
 			}, 50 );
-			// After deleting a keyword, pressing backspace again should continue to delete keywords.
-			setCanDeleteKeyword( true );
-		} else {
-			// User is typing, so pressing backspace should delete the last character rather than the keyword.
-			setCanDeleteKeyword( false );
 		}
 	}, [ deleteKeyword, max, slug, updateKeywords, values ] );
 
