@@ -33,6 +33,7 @@ import { ESCAPE } from '@wordpress/keycodes';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { clearWebStorage } from '../../../util';
 import Dialog from '../../Dialog';
 const { useSelect, useDispatch } = Data;
@@ -43,8 +44,7 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 	const dependentModules = useSelect( ( select ) => select( CORE_MODULES ).getModuleDependantNames( slug ) );
 	const provides = useSelect( ( select ) => select( CORE_MODULES ).getModuleFeatures( slug ) );
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
-	const moduleStoreName = useSelect( ( select ) => select( CORE_MODULES ).getModuleStoreName( slug ) );
-	const adminReauthURL = useSelect( ( select ) => select( moduleStoreName )?.getAdminReauthURL( false ) );
+	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 
 	useEffect( () => {
 		const onKeyPress = ( e ) => {
@@ -71,9 +71,9 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 
 		if ( ! error ) {
 			clearWebStorage();
-			global.location.assign( adminReauthURL );
+			global.location.assign( dashboardURL );
 		}
-	}, [ module?.slug ] );
+	}, [ slug, module, dashboardURL ] );
 
 	if ( ! module ) {
 		return null;
