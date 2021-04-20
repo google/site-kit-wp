@@ -327,7 +327,7 @@ final class Analytics_4 extends Module
 			case 'GET:webdatastreams-batch':
 				$results = array();
 				foreach ( $response as $key => $datastreams ) {
-					$property_id             = substr( $key, strlen( 'response-' ) );
+					$property_id             = str_replace( 'response-', '', $key );
 					$results[ $property_id ] = array_map(
 						array( self::class, 'filter_webdatastream_with_ids' ),
 						$datastreams->getWebDataStreams()
@@ -444,15 +444,17 @@ final class Analytics_4 extends Module
 	 * @since n.e.x.t
 	 *
 	 * @param Google_Model $account Account model.
-	 * @return Google_Model Updated model with _id attribute.
+	 * @return \stdClass Updated model with _id attribute.
 	 */
 	public static function filter_account_with_ids( $account ) {
+		$obj = $account->toSimpleObject();
+
 		$matches = array();
 		if ( preg_match( '#accounts/([^/]+)#', $account['name'], $matches ) ) {
-			$account['_id'] = $matches[1];
+			$obj->_id = $matches[1];
 		}
 
-		return $account;
+		return $obj;
 	}
 
 	/**
@@ -461,20 +463,22 @@ final class Analytics_4 extends Module
 	 * @since n.e.x.t
 	 *
 	 * @param Google_Model $property Property model.
-	 * @return Google_Model Updated model with _id and _accountID attributes.
+	 * @return \stdClass Updated model with _id and _accountID attributes.
 	 */
 	public static function filter_property_with_ids( $property ) {
+		$obj = $property->toSimpleObject();
+
 		$matches = array();
 		if ( preg_match( '#properties/([^/]+)#', $property['name'], $matches ) ) {
-			$property['_id'] = $matches[1];
+			$obj->_id = $matches[1];
 		}
 
 		$matches = array();
 		if ( preg_match( '#accounts/([^/]+)#', $property['parent'], $matches ) ) {
-			$property['_accountID'] = $matches[1];
+			$obj->_accountID = $matches[1]; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		}
 
-		return $property;
+		return $obj;
 	}
 
 	/**
@@ -483,19 +487,18 @@ final class Analytics_4 extends Module
 	 * @since n.e.x.t
 	 *
 	 * @param Google_Model $webdatastream Web datastream model.
-	 * @return Google_Model Updated model with _id and _propertyID attributes.
+	 * @return \stdClass Updated model with _id and _propertyID attributes.
 	 */
 	public static function filter_webdatastream_with_ids( $webdatastream ) {
+		$obj = $webdatastream->toSimpleObject();
+
 		$matches = array();
 		if ( preg_match( '#properties/([^/]+)/webDataStreams/([^/]+)#', $webdatastream['name'], $matches ) ) {
-			$webdatastream['_id']         = $matches[2];
-			$webdatastream['_propertyID'] = $matches[1];
-		} else {
-			$webdatastream['_id']         = false;
-			$webdatastream['_propertyID'] = null;
+			$obj->_id         = $matches[2];
+			$obj->_propertyID = $matches[1]; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		}
 
-		return $webdatastream;
+		return $obj;
 	}
 
 	/**
