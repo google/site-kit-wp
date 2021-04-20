@@ -467,4 +467,36 @@ class Context {
 
 		return $url;
 	}
+
+	/**
+	 * Calls the WordPress core functions to get the locale and return it in the required format.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $context Optional. Defines which WordPress core locale function to call.
+	 * @param string $format Optional. Defines the format the locale is returned in.
+	 * @return string Locale in the required format.
+	 */
+	public function get_locale( $context = 'site', $format = 'default' ) {
+
+		// Get the site or user locale.
+		if ( 'user' === $context ) {
+			$wp_locale = get_user_locale();
+		} else {
+			$wp_locale = get_locale();
+		}
+
+		// Return locale in the required format.
+		if ( 'language-code' === $format ) {
+			$code_array = explode( '_', $wp_locale );
+			return $code_array[0];
+
+		} elseif ( 'language-variant' === $format ) {
+			$variant_array  = explode( '_', $wp_locale );
+			$variant_string = array_key_exists( 1, $variant_array ) ? $variant_array[0] . '_' . $variant_array[1] : $variant_array[0];
+			return $variant_string;
+		}
+
+		return $wp_locale;
+	}
 }

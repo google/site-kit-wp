@@ -777,7 +777,7 @@ final class Assets {
 			 * @param array $data Data about each module.
 			 */
 			'modules'       => apply_filters( 'googlesitekit_modules_data', array() ),
-			'locale'        => get_user_locale(),
+			'locale'        => $this->context->get_locale( 'user' ),
 			'permissions'   => array(
 				'canAuthenticate'      => current_user_can( Permissions::AUTHENTICATE ),
 				'canSetup'             => current_user_can( Permissions::SETUP ),
