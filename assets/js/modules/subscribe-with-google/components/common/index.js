@@ -16,4 +16,5 @@
  * limitations under the License.
  */
 
-export { default as PrototypeForm } from './PrototypeForm';
+export { default as ProductsInput } from './ProductsInput';
+export { default as PublicationIDInput } from './PublicationIDInput';

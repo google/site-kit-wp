@@ -34,8 +34,7 @@ import Data from 'googlesitekit-data';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Button from '../../../../components/Button';
 import { STORE_NAME } from '../../datastore/constants';
-import ProductsInput from '../common/ProductsInput';
-import PublicationIDInput from '../common/PublicationIDInput';
+import { ProductsInput, PublicationIDInput } from '../common';
 const { useDispatch, useSelect } = Data;
 
 export default function SetupForm( { finishSetup } ) {

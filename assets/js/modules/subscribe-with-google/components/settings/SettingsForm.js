@@ -26,8 +26,7 @@ import { Fragment } from 'react';
  */
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { STORE_NAME } from '../../datastore/constants';
-import ProductsInput from '../common/ProductsInput';
-import PublicationIDInput from '../common/PublicationIDInput';
+import { ProductsInput, PublicationIDInput } from '../common';
 
 export default function SettingsForm() {
 	return (
