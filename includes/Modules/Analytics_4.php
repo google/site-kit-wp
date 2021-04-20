@@ -286,22 +286,20 @@ final class Analytics_4 extends Module
 				}
 
 				return function() use ( $data ) {
-					$restore_defer = $this->with_client_defer( true );
-					$service       = $this->get_service( 'analyticsadmin' );
-					$batch         = $service->createBatch();
-					$datastreams   = $service->properties_webDataStreams; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					$requests = array();
 
 					foreach ( $data['propertyIDs'] as $property_id ) {
-						$batch->add(
-							$datastreams->listPropertiesWebDataStreams( self::normalize_property_id( $property_id ) ),
+						$requests[] = new Data_Request(
+							'GET',
+							'modules',
+							self::MODULE_SLUG,
+							'webdatastreams',
+							array( 'propertyID' => $property_id ),
 							$property_id
 						);
 					}
 
-					$restore_defer();
-					$results = $batch->execute();
-
-					return $results;
+					return $this->get_batch_data( $requests );
 				};
 		}
 
@@ -332,16 +330,6 @@ final class Analytics_4 extends Module
 				return self::filter_property_with_ids( $response );
 			case 'GET:webdatastreams':
 				return array_map( array( self::class, 'filter_webdatastream_with_ids' ), $response->getWebDataStreams() );
-			case 'GET:webdatastreams-batch':
-				$results = array();
-				foreach ( $response as $key => $datastreams ) {
-					$property_id             = str_replace( 'response-', '', $key );
-					$results[ $property_id ] = array_map(
-						array( self::class, 'filter_webdatastream_with_ids' ),
-						$datastreams->getWebDataStreams()
-					);
-				}
-				return $results;
 		}
 
 		return parent::parse_data_response( $data, $response );
