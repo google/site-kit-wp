@@ -30,7 +30,7 @@ import { Cell, Grid, Row } from '../../../../material-components';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import GoogleChart from '../../../../components/GoogleChart';
+import GoogleChartV2 from '../../../../components/GoogleChartV2';
 import { getSiteStatsDataForGoogleChart, isZeroReport } from '../../util';
 const { useSelect } = Data;
 
@@ -160,11 +160,11 @@ export default function LegacyAdSenseDashboardWidgetSiteStats( props ) {
 		<Grid className="googlesitekit-adsense-site-stats">
 			<Row>
 				<Cell size={ 12 }>
-					<GoogleChart
-						chartType="line"
-						selectedStats={ [ selectedStats ] }
+					<GoogleChartV2
+						chartType="LineChart"
 						data={ dataMap }
 						options={ options }
+						selectedColumns={ [ selectedStats ] }
 					/>
 				</Cell>
 			</Row>

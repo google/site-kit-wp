@@ -38,6 +38,7 @@ export default function GoogleChartV2( props ) {
 		chartType,
 		children,
 		className,
+		data,
 		getChartWrapper,
 		height,
 		loaded,
@@ -47,9 +48,21 @@ export default function GoogleChartV2( props ) {
 		onMouseOut,
 		onReady,
 		onSelect,
+		selectedColumns,
 		width,
 		...otherProps
 	} = props;
+
+	// If only certain columns should be displayed for the data set we have
+	// then filter out that data.
+	let modifiedData = data;
+	if ( selectedColumns?.length > 0 ) {
+		modifiedData = data.map( ( row ) => {
+			return row.filter( ( _columnValue, columnIndex ) => {
+				return columnIndex === 0 || selectedColumns.includes( columnIndex - 1 );
+			} );
+		} );
+	}
 
 	const loadingHeightToUse = loadingHeight || height;
 	const loadingWidthToUse = loadingWidth || width;
@@ -148,6 +161,31 @@ export default function GoogleChartV2( props ) {
 				chartEvents={ combinedChartEvents }
 				chartType={ chartType }
 				chartVersion="49"
+				data={ modifiedData }
+				// controls={ [
+				// 	{
+				// 		controlEvents: [
+				// 			{
+				// 				eventName: 'statechange',
+				// 				callback: ( { chartWrapper, controlWrapper } ) => {
+				// 					alert(
+				// 						'State changed to ' + JSON.stringify( controlWrapper.getState() ),
+				// 					);
+				// 				},
+				// 			},
+				// 		],
+				// 		controlType: 'NumberRangeFilter',
+				// 		options: {
+				// 			filterColumnIndex: 1,
+				// 			// ui: {
+				// 			// 	labelStacking: 'vertical',
+				// 			// 	label: 'Gender Selection:',
+				// 			// 	allowTyping: false,
+				// 			// 	allowMultiple: false,
+				// 			// },
+				// 		},
+				// 	},
+				// ] }
 				loader={ loader }
 				height={ height }
 				getChartWrapper={ ( chartWrapper, google ) => {

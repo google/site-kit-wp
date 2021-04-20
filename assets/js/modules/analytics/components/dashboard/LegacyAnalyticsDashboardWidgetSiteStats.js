@@ -28,7 +28,7 @@ import { Component } from '@wordpress/element';
 import {
 	getTimeInSeconds,
 } from '../../../../util';
-import GoogleChart from '../../../../components/GoogleChart';
+import GoogleChartV2 from '../../../../components/GoogleChartV2';
 import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import { extractAnalyticsDashboardData, getTimeColumnVaxisFormat, siteAnalyticsReportDataDefaults } from '../../util';
@@ -140,11 +140,11 @@ class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 			<section className="googlesitekit-analytics-site-stats mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-						<GoogleChart
-							chartType="line"
-							selectedStats={ selectedStats }
+						<GoogleChartV2
+							chartType="LineChart"
 							data={ dataMap }
 							options={ options }
+							selectedColumns={ selectedStats }
 						/>
 					</div>
 				</div>

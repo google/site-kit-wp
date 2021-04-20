@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import GoogleChart from './GoogleChart';
+import GoogleChartV2 from './GoogleChartV2';
 
 function MiniChart( { index, change } ) {
 	const colors = [
@@ -71,15 +71,11 @@ function MiniChart( { index, change } ) {
 
 	return (
 		<div className="googlesitekit-mini-chart">
-			<GoogleChart
+			<GoogleChartV2
+				chartType="PieChart"
 				data={ data }
+				loadingHeight={ 24 }
 				options={ options }
-				chartType="pie"
-				loadSmall
-				loadCompressed
-				loadHeight={ 24 }
-				loadText={ false }
-				id={ 'minichart' + index }
 			/>
 		</div>
 	);
