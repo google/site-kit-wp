@@ -32,6 +32,9 @@ on:
       - '!packages/**/test/*.js'
       - '!packages/**/*.test.js'
   pull_request:
+    branches:
+      - develop
+      - main
     # Ignore Storybook-only and unit-test-only changes when checking to run
     # E2E tests. This is useful when adding/modifying/refactoring/removing
     # test code ONLY in a commit, but saves running the expensive E2E test

@@ -77,6 +77,18 @@ storiesOf( 'Global', module )
 			withRegistry,
 		],
 	} )
+	.add( 'Plugin Header with Help Menu and Date Range Selector', () => {
+		return (
+			<Header>
+				<HelpMenu />
+				<DateRangeSelector />
+			</Header>
+		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
+	} )
 	.add( 'Plugin Header with custom Help Menu links', () => {
 		return (
 			<Header>
