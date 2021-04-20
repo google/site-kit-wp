@@ -88,7 +88,8 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 				className={ classnames(
 					HIDDEN_CLASS,
 					'googlesitekit-widget-area',
-					`googlesitekit-widget-area--${ slug }`, `googlesitekit-widget-area--${ style }`
+					`googlesitekit-widget-area--${ slug }`,
+					`googlesitekit-widget-area--${ style }`
 				) }
 			>
 				{ widgetsOutput }
@@ -99,7 +100,13 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const { Icon, title, style, subtitle } = widgetArea;
 
 	return (
-		<Grid className={ `googlesitekit-widget-area googlesitekit-widget-area--${ slug } googlesitekit-widget-area--${ style }` }>
+		<Grid
+			className={ classnames(
+				'googlesitekit-widget-area',
+				`googlesitekit-widget-area--${ slug }`,
+				`googlesitekit-widget-area--${ style }`
+			) }
+		>
 			{ totalAreas > 1 && (
 				<Row>
 					<Cell className="googlesitekit-widget-area-header" size={ 12 }>
