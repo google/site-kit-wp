@@ -105,9 +105,10 @@ describe( 'ProfileSelect', () => {
 		const { getAllByRole } = render( <ProfileSelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-		// Note: we do length + 1 here because there should also be an item for
+
+		// Note: we do a length = 3 corresponding to the 2 items in the properties profiles and one more for
 		// "Set up a new property".
-		expect( listItems ).toHaveLength( fixtures.accountsPropertiesProfiles.profiles.length + 1 );
+		expect( listItems ).toHaveLength( 3 );
 	} );
 
 	it( 'should display profile options of an existing account when present, and not be disabled.', async () => {
