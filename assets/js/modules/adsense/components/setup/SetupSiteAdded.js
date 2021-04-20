@@ -52,7 +52,7 @@ export default function SetupSiteAdded( { finishSetup } ) {
 			await trackEvent( 'adsense_setup', 'complete_adsense_setup' );
 			finishSetup();
 		}
-	}, [ isDoingSubmitChanges, finishSetup ] );
+	}, [ isDoingSubmitChanges, finishSetup, completeSiteSetup ] );
 
 	return (
 		<Fragment>

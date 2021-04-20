@@ -73,7 +73,7 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 			clearWebStorage();
 			global.location.assign( adminReauthURL );
 		}
-	}, [ module?.slug ] );
+	}, [ adminReauthURL, deactivateModule, module.forceActive, slug ] );
 
 	if ( ! module ) {
 		return null;

@@ -66,7 +66,7 @@ export default function PropertySelect() {
 			selectProperty( newPropertyID, item.dataset.internalId ); // eslint-disable-line sitekit/acronym-case
 			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
 		}
-	}, [ propertyID ] );
+	}, [ propertyID, selectProperty ] );
 
 	if ( ! hasResolvedAccounts || isResolvingProperties ) {
 		return <ProgressBar small />;

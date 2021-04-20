@@ -42,7 +42,7 @@ export default function ProfileNameTextField() {
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback( ( { currentTarget } ) => {
 		setValues( FORM_SETUP, { profileName: currentTarget.value } );
-	}, [] );
+	}, [ setValues ] );
 
 	useEffect( () => {
 		if ( ! profileName ) {

@@ -72,7 +72,7 @@ function ModulesList( { moduleSlugs } ) {
 
 		// Redirect to ReAuthentication URL
 		navigateTo( response.moduleReauthURL );
-	}, [ activateModule ] );
+	}, [ activateModule, navigateTo ] );
 
 	if ( ! modulesData ) {
 		return null;

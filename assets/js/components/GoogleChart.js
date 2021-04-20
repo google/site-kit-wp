@@ -88,7 +88,7 @@ export default function GoogleChart( props ) {
 
 			setChart( googleChart );
 		}
-	}, [ loading, !! chartRef.current, visualizationLoaded, !! chart ] );
+	}, [ loading, visualizationLoaded, chart, chartID, chartType, onReady ] );
 
 	// Draw the chart whenever one of these properties has changed.
 	useEffect( () => {
@@ -126,10 +126,11 @@ export default function GoogleChart( props ) {
 		};
 	}, [
 		chart,
-		JSON.stringify( data ),
-		JSON.stringify( options ),
 		selectedStats,
 		singleStat,
+		chartID,
+		data,
+		options,
 	] );
 
 	useEffect( () => {

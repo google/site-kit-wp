@@ -62,7 +62,7 @@ export default function SettingsActiveModules( { activeModule, moduleState, setM
 			setModuleState( slug, 'view' );
 			clearWebStorage();
 		}
-	}, [ setModuleState ] );
+	}, [ setModuleState, submitChanges ] );
 
 	const onToggle = useCallback( ( slug, e ) => {
 		// Set focus on heading when clicked.

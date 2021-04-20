@@ -57,9 +57,6 @@ export default function UserInputKeywords( { slug, max } ) {
 	// https://github.com/google/site-kit-wp/issues/2900#issuecomment-814843972.
 	const [ localValues, setLocalValues ] = useState( values );
 
-	// Need to make sure that dependencies list always has the same number of elements.
-	const dependencies = values.concat( Array( max ) ).slice( 0, max );
-
 	const focusInput = ( querySelector ) => {
 		const input = keywordsContainer.current.querySelector( querySelector );
 		if ( input ) {
@@ -74,11 +71,11 @@ export default function UserInputKeywords( { slug, max } ) {
 		] );
 		// After deleting a keyword, hitting backspace will delete the next keyword.
 		setCanDeleteKeyword( true );
-	}, dependencies, canDeleteKeyword );
+	}, [ updateKeywords, values ], canDeleteKeyword );
 
 	const onKeywordDelete = useCallback( ( index ) => {
 		deleteKeyword( index );
-	}, dependencies );
+	}, [ deleteKeyword ] );
 
 	const updateKeywords = useCallback( ( keywords ) => {
 		const EOT = String.fromCharCode( 4 );
@@ -98,7 +95,7 @@ export default function UserInputKeywords( { slug, max } ) {
 
 		setLocalValues( newKeywords );
 		setUserInputSetting( slug, newKeywords );
-	}, [ slug ] );
+	}, [ slug, max, setUserInputSetting ] );
 
 	const onKeywordChange = useCallback( ( index, { target } ) => {
 		if ( target.value[ target.value.length - 1 ] === ',' ) {
@@ -110,7 +107,7 @@ export default function UserInputKeywords( { slug, max } ) {
 			target.value,
 			...values.slice( index + 1 ),
 		] );
-	}, dependencies );
+	}, [ updateKeywords, values ] );
 
 	const onKeyDown = useCallback( ( index, { keyCode, target } ) => {
 		const nonEmptyValues = values.filter( ( value ) => value.length > 0 );
@@ -142,7 +139,7 @@ export default function UserInputKeywords( { slug, max } ) {
 			// User is typing, so pressing backspace should delete the last character rather than the keyword.
 			setCanDeleteKeyword( false );
 		}
-	}, [ keywordsContainer.current, ...dependencies, canDeleteKeyword ] );
+	}, [ deleteKeyword, max, slug, updateKeywords, values ] );
 
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
