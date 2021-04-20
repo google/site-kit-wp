@@ -85,9 +85,13 @@ export default function LegacyAdSenseDashboardWidgetOverview( props ) {
 			}
 		}
 	}, [
-		currentDataLoaded && previousDataLoaded, // All reports are fetched.
-		!! currentError || !! previousError, // Whether there is an error or not.
-		JSON.stringify( currentRangeData ),
+		currentDataLoaded,
+		currentError,
+		currentRangeData,
+		handleDataError,
+		handleDataSuccess,
+		previousDataLoaded,
+		previousError,
 	] );
 
 	if ( ! currentDataLoaded || ! previousDataLoaded ) {
