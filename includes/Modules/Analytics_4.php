@@ -182,6 +182,7 @@ final class Analytics_4 extends Module
 			'GET:properties'            => array( 'service' => 'analyticsadmin' ),
 			'GET:property'              => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams'        => array( 'service' => 'analyticsadmin' ),
+			'GET:webdatastreams-batch'  => array( 'service' => 'analyticsadmin' ),
 		);
 	}
 
@@ -266,6 +267,32 @@ final class Analytics_4 extends Module
 				}
 
 				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->listPropertiesWebDataStreams( self::normalize_property_id( $data['propertyID'] ) );
+			case 'GET:webdatastreams-batch':
+				if ( ! isset( $data['propertyIDs'] ) || ! is_array( $data['propertyIDs'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyIDs' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return function() use ( $data ) {
+					$restore_defer = $this->with_client_defer( true );
+					$service       = $this->get_service( 'analyticsadmin' );
+					$batch         = $service->createBatch();
+					$datastreams   = $service->properties_webDataStreams; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
+					foreach ( $data['propertyIDs'] as $property_id ) {
+						$request = $datastreams->listPropertiesWebDataStreams( self::normalize_property_id( $property_id ) );
+						$batch->add( $request );
+					}
+
+					$restore_defer();
+					$results = $batch->execute();
+
+					return $results;
+				};
 		}
 
 		return parent::create_data_request( $data );
