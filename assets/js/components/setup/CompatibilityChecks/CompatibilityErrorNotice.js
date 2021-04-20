@@ -89,8 +89,8 @@ export default function CompatibilityErrorNotice( { error } ) {
 		case ERROR_FETCH_FAIL:
 			return (
 				<p>
-					{ ! installed && __( 'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console.', 'google-site-kit' ) }
-					{ installed && __( 'Looks like this may be a staging environment and you already have the helper plugin. Before you can use Site Kit, please make sure you’ve provided the necessary credentials in the Authentication section and verified your production site in Search Console.', 'google-site-kit' ) }
+					{ ! installed && <span>{ __( 'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console.', 'google-site-kit' ) }</span> }
+					{ installed && <span>{ __( 'Looks like this may be a staging environment and you already have the helper plugin. Before you can use Site Kit, please make sure you’ve provided the necessary credentials in the Authentication section and verified your production site in Search Console.', 'google-site-kit' ) }</span> }
 					{ ' ' }
 					<Link
 						{ ...helperCTA( developerPlugin ) }

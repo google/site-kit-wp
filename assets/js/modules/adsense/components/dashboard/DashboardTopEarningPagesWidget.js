@@ -37,6 +37,7 @@ import { isZeroReport } from '../../../analytics/util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
+import AdBlockerWarning from '../common/AdBlockerWarning';
 import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
 import { numFmt } from '../../../../util';
 import { getCurrencyFormat } from '../../util/currency';
@@ -44,11 +45,12 @@ const { useSelect } = Data;
 
 function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
-		isAdSenseLinked,
 		analyticsMainURL,
 		data,
 		error,
 		loading,
+		isAdSenseLinked,
+		isAdblockerActive,
 		currencyFormat,
 	} = useSelect( ( select ) => {
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
@@ -77,32 +79,68 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 			metrics: 'EARNINGS',
 		} );
 
+		const adSenseLinked = select( MODULES_ANALYTICS ).getAdsenseLinked();
+
 		return {
-			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
 			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL( 'content-publisher-overview', generateDateRangeArgs( { startDate, endDate } ) ),
 			data: select( MODULES_ANALYTICS ).getReport( args ),
 			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ),
+			isAdSenseLinked: adSenseLinked,
+			isAdblockerActive: select( STORE_NAME ).isAdBlockerActive(),
 			currencyFormat: getCurrencyFormat( adsenseData ),
 		};
 	} );
 
+	const Footer = () => (
+		<SourceLink
+			className="googlesitekit-data-block__source"
+			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+			href={ analyticsMainURL }
+			external
+		/>
+	);
+
+	if ( isAdblockerActive ) {
+		return (
+			<Widget Footer={ Footer }>
+				<AdBlockerWarning />
+			</Widget>
+		);
+	}
+
 	if ( loading ) {
-		return <PreviewTable rows={ 5 } padding />;
+		return (
+			<Widget noPadding Footer={ Footer }>
+				<PreviewTable rows={ 5 } padding />
+			</Widget>
+		);
 	}
 
 	// A restricted metrics error will cause this value to change in the resolver
 	// so this check should happen before an error, which is only relevant if they are linked.
 	if ( ! isAdSenseLinked ) {
-		return <AdSenseLinkCTA />;
+		return (
+			<Widget Footer={ Footer }>
+				<AdSenseLinkCTA />
+			</Widget>
+		);
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+		return (
+			<Widget Footer={ Footer } >
+				<WidgetReportError moduleSlug="analytics" error={ error } />
+			</Widget>
+		);
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <WidgetReportZero moduleSlug="analytics" />;
+		return (
+			<Widget Footer={ Footer }>
+				<WidgetReportZero moduleSlug="analytics" />
+			</Widget>
+		);
 	}
 
 	const tableColumns = [
@@ -133,17 +171,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 	];
 
 	return (
-		<Widget
-			noPadding
-			Footer={ () => (
-				<SourceLink
-					className="googlesitekit-data-block__source"
-					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					href={ analyticsMainURL }
-					external
-				/>
-			) }
-		>
+		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data[ 0 ].data.rows }
