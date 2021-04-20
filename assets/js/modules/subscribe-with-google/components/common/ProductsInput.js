@@ -49,6 +49,7 @@ export default function ProductsInput() {
 			className={ classnames( { 'mdc-text-field--error': ! products } ) }
 			label="Products"
 			outlined
+			textarea
 		>
 			<Input
 				id="products"
