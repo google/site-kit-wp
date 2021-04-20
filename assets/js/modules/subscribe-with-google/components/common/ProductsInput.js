@@ -22,13 +22,13 @@
 import classnames from 'classnames';
 
 /**
-	* WordPress dependencies
-	*/
+ * WordPress dependencies
+ */
 import { useCallback } from '@wordpress/element';
 
 /**
-	* Internal dependencies
-	*/
+ * Internal dependencies
+ */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { TextField, Input } from '../../../../material-components';
