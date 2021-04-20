@@ -97,6 +97,7 @@ class Analytics_4Test extends TestCase {
 				'properties',
 				'property',
 				'webdatastreams',
+				'webdatastreams-batch',
 			),
 			$analytics->get_datapoints()
 		);
