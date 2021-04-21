@@ -197,9 +197,9 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 			</div>
 
 			<p className="googlesitekit-user-input__note">
-				{ max === 1 && __( 'Choose up to one (1) answer', 'google-site-kit' ) }
-				{ max === 2 && __( 'Choose up to two (2) answers', 'google-site-kit' ) }
-				{ max === 3 && __( 'Choose up to three (3) answers', 'google-site-kit' ) }
+				{ max === 1 && <span>{ __( 'Choose up to one (1) answer', 'google-site-kit' ) }</span> }
+				{ max === 2 && <span>{ __( 'Choose up to two (2) answers', 'google-site-kit' ) }</span> }
+				{ max === 3 && <span>{ __( 'Choose up to three (3) answers', 'google-site-kit' ) }</span> }
 			</p>
 		</Cell>
 	);

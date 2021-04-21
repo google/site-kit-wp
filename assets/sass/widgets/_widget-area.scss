@@ -23,7 +23,19 @@
 }
 
 .googlesitekit-widget-area-header {
-	margin: 0 0 1rem 0;
+
+	// Use the existing MDC grid margins (--mdc-layout-grid-margin-phone,
+	// --mdc-layout-grid-margin-desktop, etc.) for the margins between the
+	// widget header and body.
+	@each $size in map-keys($mdc-layout-grid-columns) {
+
+		@include mdc-layout-grid-media-query_($size) {
+			$margin: map-get($mdc-layout-grid-default-margin, $size);
+
+			margin-bottom: $margin;
+			margin-bottom: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+		}
+	}
 
 	.googlesitekit-widget-area-header__title {
 		color: $c-tertiary;
