@@ -27,7 +27,7 @@ import { WithTestRegistry } from '../../tests/js/utils';
  *
  * @since 1.12.0
  * @since 1.20.0 Removed `moduleComponent` argument (now provided via module registration).
- * @since n.e.x.t Reworked to support new setting components.
+ * @since 1.31.0 Reworked to support new setting components.
  * @private
  *
  * @param {string} moduleSlug The module's slug.
