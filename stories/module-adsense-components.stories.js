@@ -189,6 +189,32 @@ const topEarningPagesArgs = {
 	limit: 5,
 };
 
+const topEarningPagesAdSenseReport = {
+	kind: 'adsense#report',
+	totalMatchedRows: '1',
+	headers: [
+		{ name: 'EARNINGS', type: 'METRIC_CURRENCY', currency: 'USD' },
+		{ name: 'PAGE_VIEWS_RPM', type: 'METRIC_CURRENCY', currency: 'USD' },
+		{ name: 'IMPRESSIONS', type: 'METRIC_TALLY' },
+	],
+	rows: [
+		[ '2103.23', '1.89', '5693093' ],
+	],
+	totals: [
+		'2103.23', '1.89', '5693093' ],
+	averages: [
+		'2103.23', null, '5693093',
+	],
+	startDate: '2020-08-15',
+	endDate: '2020-09-11',
+};
+
+const adsenseReportOptions = {
+	startDate: '2020-08-15',
+	endDate: '2020-09-11',
+	metrics: 'EARNINGS',
+};
+
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense', 'analytics' ],
 	datastore: MODULES_ANALYTICS,
@@ -199,6 +225,8 @@ generateReportBasedWidgetStories( {
 	setup: ( { dispatch }, variantName ) => {
 		dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
 		dispatch( STORE_NAME ).receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
+		dispatch( STORE_NAME ).receiveGetReport( topEarningPagesAdSenseReport, { options: adsenseReportOptions } );
+		dispatch( STORE_NAME ).finishResolution( 'getReport', [ adsenseReportOptions ] );
 	},
 	Component: DashboardTopEarningPagesWidget,
 	wrapWidget: false,
@@ -224,6 +252,8 @@ generateReportBasedWidgetStories( {
 	datastore: MODULES_ANALYTICS,
 	setup: ( { dispatch }, variantName ) => {
 		dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
+		dispatch( STORE_NAME ).receiveGetReport( topEarningPagesAdSenseReport, { options: adsenseReportOptions } );
+		dispatch( STORE_NAME ).finishResolution( 'getReport', [ adsenseReportOptions ] );
 	},
 	group: 'AdSense Module/Components/Module/Top Earning Pages Widget',
 	referenceDate: '2020-09-12',

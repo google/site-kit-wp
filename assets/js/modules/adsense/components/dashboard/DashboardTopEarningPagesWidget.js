@@ -165,7 +165,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 			tooltip: __( 'Earnings', 'google-site-kit' ),
 			Component: ( { row } ) => numFmt(
 				row.metrics[ 0 ].values[ 0 ],
-				...currencyFormat,
+				currencyFormat,
 			),
 		},
 	];
