@@ -32,6 +32,7 @@ import { ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { clearWebStorage } from '../../../util';
@@ -60,6 +61,7 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 	}, [ handleDialog ] );
 
 	const { deactivateModule } = useDispatch( CORE_MODULES );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const handleDisconnect = useCallback( async () => {
 		if ( module.forceActive ) {
 			return;
@@ -67,13 +69,15 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 
 		setIsDeactivating( true );
 		const { error } = await deactivateModule( slug );
-		setIsDeactivating( false );
 
 		if ( ! error ) {
 			clearWebStorage();
-			global.location.assign( dashboardURL );
+			navigateTo( dashboardURL );
+		} else {
+			// Only set deactivating to false if there is an error.
+			setIsDeactivating( false );
 		}
-	}, [ slug, module, dashboardURL ] );
+	}, [ slug, module, dashboardURL, navigateTo ] );
 
 	if ( ! module ) {
 		return null;
