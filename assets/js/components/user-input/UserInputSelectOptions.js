@@ -50,7 +50,7 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 	const dependencies = values.concat( Array( max ) ).slice( 0, max );
 
 	useEffect( () => {
-		if ( ! isActive ) {
+		if ( ! optionsRef?.current || ! isActive ) {
 			return;
 		}
 
@@ -62,17 +62,14 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 			}
 		};
 
-		if ( optionsRef?.current ) {
-			const optionType = max === 1 ? 'radio' : 'checkbox';
+		const optionType = max === 1 ? 'radio' : 'checkbox';
+		const checkedEl = optionsRef.current.querySelector( `input[type="${ optionType }"]:checked` );
 
-			const checkedEls = optionsRef.current.querySelectorAll( `input[type="${ optionType }"]:checked` );
-
-			if ( checkedEls.length > 0 ) {
-				focusOption( checkedEls[ 0 ] );
-			} else {
-				const els = optionsRef.current.querySelectorAll( `input[type="${ optionType }"]` );
-				focusOption( els[ 0 ] );
-			}
+		if ( checkedEl ) {
+			focusOption( checkedEl );
+		} else {
+			const el = optionsRef.current.querySelector( `input[type="${ optionType }"]` );
+			focusOption( el );
 		}
 	}, [ isActive, max ] );
 

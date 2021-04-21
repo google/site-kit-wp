@@ -59,17 +59,15 @@ export default function UserInputPreview( props ) {
 	const [ page ] = useQueryArg( 'page' );
 
 	useEffect( () => {
-		if ( page.startsWith( 'googlesitekit-settings' ) ) {
+		if ( ! previewContainer?.current || page.startsWith( 'googlesitekit-settings' ) ) {
 			return;
 		}
 
-		if ( previewContainer?.current ) {
-			const buttons = previewContainer.current.querySelectorAll( '.mdc-button' );
-			if ( buttons.length > 0 ) {
-				setTimeout( () => {
-					buttons[ 0 ].focus();
-				}, 50 );
-			}
+		const buttonEl = previewContainer.current.querySelector( '.mdc-button' );
+		if ( buttonEl ) {
+			setTimeout( () => {
+				buttonEl.focus();
+			}, 50 );
 		}
 	}, [ page ] );
 
