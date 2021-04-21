@@ -59,7 +59,11 @@ export default function UserInputPreview( props ) {
 	const [ page ] = useQueryArg( 'page' );
 
 	useEffect( () => {
-		if ( previewContainer?.current && ! page.startsWith( 'googlesitekit-settings' ) ) {
+		if ( page.startsWith( 'googlesitekit-settings' ) ) {
+			return;
+		}
+
+		if ( previewContainer?.current ) {
 			const buttons = previewContainer.current.querySelectorAll( '.mdc-button' );
 			if ( buttons.length > 0 ) {
 				setTimeout( () => {

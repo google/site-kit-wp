@@ -50,16 +50,9 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 	const dependencies = values.concat( Array( max ) ).slice( 0, max );
 
 	useEffect( () => {
-		const focusRadioOrCheckbox = ( optionType = 'radio' ) => {
-			const checkedEls = optionsRef.current.querySelectorAll( `input[type="${ optionType }"]:checked` );
-
-			if ( checkedEls.length > 0 ) {
-				focusOption( checkedEls[ 0 ] );
-			} else {
-				const els = optionsRef.current.querySelectorAll( `input[type="${ optionType }"]` );
-				focusOption( els[ 0 ] );
-			}
-		};
+		if ( ! isActive ) {
+			return;
+		}
 
 		const focusOption = ( element ) => {
 			if ( element ) {
@@ -69,8 +62,17 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 			}
 		};
 
-		if ( optionsRef?.current && isActive ) {
-			focusRadioOrCheckbox( max === 1 ? 'radio' : 'checkbox' );
+		if ( optionsRef?.current ) {
+			const optionType = max === 1 ? 'radio' : 'checkbox';
+
+			const checkedEls = optionsRef.current.querySelectorAll( `input[type="${ optionType }"]:checked` );
+
+			if ( checkedEls.length > 0 ) {
+				focusOption( checkedEls[ 0 ] );
+			} else {
+				const els = optionsRef.current.querySelectorAll( `input[type="${ optionType }"]` );
+				focusOption( els[ 0 ] );
+			}
 		}
 	}, [ isActive, max ] );
 
@@ -156,7 +158,7 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 		if ( event.keyCode === ENTER && other.trim().length > 0 && next && typeof next === 'function' ) {
 			next();
 		}
-	}, [ ...dependencies, next ] );
+	}, [ other, next ] );
 
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
