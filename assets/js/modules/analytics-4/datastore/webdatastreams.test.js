@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import pick from 'lodash/pick';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -29,6 +34,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 	const createWebDataStreamsEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/create-webdatastream/;
 	const webDataStreamsEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams/;
+	const webDataStreamsBatchEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -111,8 +117,8 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				} );
 
 				const propertyID = '12345';
-				const initialProperties = registry.select( STORE_NAME ).getWebDataStreams( propertyID );
-				expect( initialProperties ).toBeUndefined();
+				const initialDataStreams = registry.select( STORE_NAME ).getWebDataStreams( propertyID );
+				expect( initialDataStreams ).toBeUndefined();
 
 				await untilResolved( registry, STORE_NAME ).getWebDataStreams( propertyID );
 				expect( fetchMock ).toHaveFetched( webDataStreamsEndpoint, { query: { propertyID } } );
@@ -217,6 +223,65 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 				const datastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
 				expect( datastream ).toEqual( webDataStreamDotOrg );
+			} );
+		} );
+
+		describe( 'getWebDataStreamsBatch', () => {
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.get( webDataStreamsBatchEndpoint, {
+					body: fixtures.webDataStreamsBatch,
+					status: 200,
+				} );
+
+				const propertyIDs = Object.keys( fixtures.webDataStreamsBatch );
+				const initialDataStreams = registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs );
+				expect( initialDataStreams ).toBeUndefined();
+
+				await untilResolved( registry, STORE_NAME ).getWebDataStreamsBatch( propertyIDs );
+				expect( fetchMock ).toHaveFetched( webDataStreamsBatchEndpoint );
+
+				const webdatastreams = registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs );
+				expect( webdatastreams ).toEqual( fixtures.webDataStreamsBatch );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should make a network request with property IDs that are not loaded yet', async () => {
+				const propertyIDs = Object.keys( fixtures.webDataStreamsBatch );
+
+				fetchMock.get( webDataStreamsBatchEndpoint, {
+					body: pick( fixtures.webDataStreamsBatch, propertyIDs.slice( 1 ) ),
+					status: 200,
+				} );
+
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams(
+					fixtures.webDataStreamsBatch[ propertyIDs[ 0 ] ],
+					{
+						propertyID: propertyIDs[ 0 ],
+					},
+				);
+
+				const initialDataStreams = registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs );
+				expect( initialDataStreams ).toEqual( pick( fixtures.webDataStreamsBatch, propertyIDs.slice( 0, 1 ) ) );
+
+				await untilResolved( registry, STORE_NAME ).getWebDataStreamsBatch( propertyIDs );
+				expect( fetchMock ).toHaveFetched( webDataStreamsBatchEndpoint );
+
+				const webdatastreams = registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs );
+				expect( webdatastreams ).toEqual( fixtures.webDataStreamsBatch );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should not make a network request if webdatastreams for the selected properties are already present', async () => {
+				for ( const [ propertyID, webdatastreams ] of Object.entries( fixtures.webDataStreamsBatch ) ) {
+					registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( webdatastreams, { propertyID } );
+				}
+
+				const propertyIDs = Object.keys( fixtures.webDataStreamsBatch );
+				const initialDataStreams = registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs );
+				expect( initialDataStreams ).toEqual( fixtures.webDataStreamsBatch );
+				expect( fetchMock ).not.toHaveFetched( webDataStreamsBatchEndpoint );
 			} );
 		} );
 	} );

@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import pick from 'lodash/pick';
+import difference from 'lodash/difference';
 
 /**
  * Internal dependencies
@@ -69,7 +70,7 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 			...state,
 			webdatastreams: {
 				...state.webdatastreams,
-				...( Array.isArray( webDataStreams ) ? webDataStreams : [] ),
+				...( webDataStreams || {} ),
 			},
 		};
 	},
@@ -175,9 +176,12 @@ const baseResolvers = {
 	},
 	*getWebDataStreamsBatch( propertyIDs ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const webdatastreams = registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs );
-		if ( Object.keys( webdatastreams ).length !== propertyIDs.length ) {
-			yield fetchGetWebDataStreamsBatchStore.actions.fetchGetWebDataStreamsBatch( propertyIDs );
+		const webdatastreams = registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs ) || {};
+
+		const availablePropertyIDs = Object.keys( webdatastreams );
+		const remainingPropertyIDs = difference( propertyIDs, availablePropertyIDs );
+		if ( remainingPropertyIDs.length > 0 ) {
+			yield fetchGetWebDataStreamsBatchStore.actions.fetchGetWebDataStreamsBatch( remainingPropertyIDs );
 		}
 	},
 };
@@ -235,12 +239,18 @@ const baseSelectors = {
 	 * @return {Object} Web data streams.
 	 */
 	getWebDataStreamsBatch( state, propertyIDs ) {
-		return pick( state, propertyIDs );
+		const webdatastreams = pick( state.webdatastreams, propertyIDs );
+		if ( Object.keys( webdatastreams ).length === 0 ) {
+			return undefined;
+		}
+
+		return webdatastreams;
 	},
 };
 
 const store = Data.combineStores(
 	fetchGetWebDataStreamsStore,
+	fetchGetWebDataStreamsBatchStore,
 	fetchCreateWebDataStreamStore,
 	{
 		initialState: baseInitialState,
