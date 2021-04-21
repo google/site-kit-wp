@@ -19,6 +19,9 @@ on:
       - '**/package.json'
       - 'package-lock.json'
   pull_request:
+    branches:
+      - develop
+      - main
     # Only run if CSS/JS/MD-related files changed.
     paths:
       - '.github/workflows/storybook.yml'
