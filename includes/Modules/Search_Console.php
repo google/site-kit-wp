@@ -276,7 +276,7 @@ final class Search_Console extends Module
 			case 'GET:matched-sites':
 				/* @var Google_Service_SearchConsole_SitesListResponse $response Response object. */
 				$entries = $this->map_sites( (array) $response->getSiteEntry() );
-				$strict  = filter_var( $data['strict'], FILTER_VALIDATE_BOOL );
+				$strict  = filter_var( $data['strict'], FILTER_VALIDATE_BOOLEAN );
 
 				$current_url = $this->context->get_reference_site_url();
 				if ( ! $strict ) {
