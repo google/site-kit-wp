@@ -95,6 +95,7 @@ class Analytics_4Test extends TestCase {
 				'create-property',
 				'create-webdatastream',
 				'properties',
+				'property',
 				'webdatastreams',
 			),
 			$analytics->get_datapoints()

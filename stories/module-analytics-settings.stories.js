@@ -51,8 +51,15 @@ const Settings = createLegacySettingsWrapper( 'analytics' );
 function usingGenerateGTMAnalyticsPropertyStory( args ) {
 	return generateGTMAnalyticsPropertyStory( {
 		...args,
-		Component( { callback } ) {
-			return <Settings isOpen={ true } isEditing={ true } callback={ callback } />;
+		Component( { callback, registry } ) {
+			return (
+				<Settings
+					isOpen={ true }
+					isEditing={ true }
+					callback={ callback }
+					registry={ registry }
+				/>
+			);
 		},
 	} );
 }
