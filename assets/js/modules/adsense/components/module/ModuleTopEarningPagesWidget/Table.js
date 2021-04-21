@@ -32,7 +32,9 @@ import Data from 'googlesitekit-data';
 import ReportTable from '../../../../../components/ReportTable';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import Link from '../../../../../components/Link';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../../analytics/datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
 import { numFmt } from '../../../../../util';
 const { useSelect } = Data;
 
@@ -44,9 +46,14 @@ export default function Table( { report } ) {
 			primary: true,
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
-				const serviceURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceReportURL( 'content-pages', {
+				const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+					offsetDays: DATE_RANGE_OFFSET,
+				} ) );
+
+				const serviceURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'content-pages', {
 					'explorer-table.plotKeys': '[]',
 					'_r.drilldown': `analytics.pagePath:${ url }`,
+					...generateDateRangeArgs( dateRange ),
 				} ) );
 				return (
 					<Link
