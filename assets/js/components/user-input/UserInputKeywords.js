@@ -49,8 +49,7 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 	const { setUserInputSetting } = useDispatch( CORE_USER );
 
 	// Add an empty string if the values array is empty.
-	const valuesLength = values.length;
-	if ( valuesLength === 0 || valuesLength < max ) {
+	if ( values.length === 0 || values.length < max ) {
 		values.push( '' );
 	}
 
