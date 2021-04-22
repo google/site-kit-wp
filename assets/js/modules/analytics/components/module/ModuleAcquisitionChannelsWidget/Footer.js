@@ -25,12 +25,20 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS } from '../../../datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import SourceLink from '../../../../../components/SourceLink';
+import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 const { useSelect } = Data;
 
 export default function Footer() {
-	const url = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'trafficsources-overview' ) );
+	const dates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
+	const url = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL(
+		'trafficsources-overview',
+		generateDateRangeArgs( dates )
+	) );
 	return (
 		<SourceLink
 			className="googlesitekit-data-block__source"

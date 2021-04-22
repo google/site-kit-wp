@@ -61,16 +61,37 @@ function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero, WidgetRepor
 		page: url ? `!${ url }` : undefined,
 	} ) );
 
+	const Footer = () => (
+		<SourceLink
+			className="googlesitekit-data-block__source"
+			name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+			href={ baseServiceURL }
+			external
+		/>
+	);
+
 	if ( loading ) {
-		return <PreviewTable padding />;
+		return (
+			<Widget noPadding Footer={ Footer } >
+				<PreviewTable padding />
+			</Widget>
+		);
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="search-console" error={ error } />;
+		return (
+			<Widget Footer={ Footer } >
+				<WidgetReportError moduleSlug="search-console" error={ error } />
+			</Widget>
+		);
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <WidgetReportZero moduleSlug="search-console" />;
+		return (
+			<Widget Footer={ Footer } >
+				<WidgetReportZero moduleSlug="search-console" />
+			</Widget>
+		);
 	}
 
 	const tableColumns = [
@@ -114,17 +135,7 @@ function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero, WidgetRepor
 	];
 
 	return (
-		<Widget
-			noPadding
-			Footer={ () => (
-				<SourceLink
-					className="googlesitekit-data-block__source"
-					name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-					href={ baseServiceURL }
-					external
-				/>
-			) }
-		>
+		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data }

@@ -26,8 +26,34 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { STORE_NAME, PROPERTY_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { isValidPropertySelection } from '../utils/validation';
+import { actions as webDataStreamActions } from './webdatastreams';
+
+const fetchGetPropertyStore = createFetchStore( {
+	baseName: 'getProperty',
+	controlCallback( { propertyID } ) {
+		return API.get( 'modules', 'analytics-4', 'property', { propertyID }, {
+			useCache: true,
+		} );
+	},
+	reducerCallback( state, property, { propertyID } ) {
+		return {
+			...state,
+			propertiesByID: {
+				...state.propertiesByID,
+				[ propertyID ]: property,
+			},
+		};
+	},
+	argsToParams( propertyID ) {
+		return { propertyID };
+	},
+	validateParams( { propertyID } = {} ) {
+		invariant( propertyID, 'propertyID is required.' );
+	},
+} );
 
 const fetchGetPropertiesStore = createFetchStore( {
 	baseName: 'getProperties',
@@ -43,6 +69,10 @@ const fetchGetPropertiesStore = createFetchStore( {
 				...state.properties,
 				[ accountID ]: properties,
 			},
+			propertiesByID: properties.reduce(
+				( accum, property ) => ( { ...accum, [ property._id ]: property } ),
+				state.propertiesByID || {},
+			),
 		};
 	},
 	argsToParams( accountID ) {
@@ -80,13 +110,14 @@ const fetchCreatePropertyStore = createFetchStore( {
 
 const baseInitialState = {
 	properties: {},
+	propertiesByID: {},
 };
 
 const baseActions = {
 	/**
 	 * Creates a new GA4 property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param {string} accountID Analytics account ID.
 	 * @return {Object} Object with `response` and `error`.
@@ -97,6 +128,38 @@ const baseActions = {
 		return ( function*() {
 			const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
 			return { response, error };
+		}() );
+	},
+
+	/**
+	 * Sets the given property and related fields in the store.
+	 *
+	 * @since 1.31.0
+	 *
+	 * @param {string} propertyID GA4 property ID.
+	 * @return {Object} A Generator function.
+	 */
+	selectProperty( propertyID ) {
+		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
+
+		return ( function* () {
+			const registry = yield Data.commonActions.getRegistry();
+
+			registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
+			registry.dispatch( STORE_NAME ).setWebDataStreamID( '' );
+			registry.dispatch( STORE_NAME ).setMeasurementID( '' );
+
+			if ( PROPERTY_CREATE === propertyID ) {
+				return;
+			}
+
+			yield webDataStreamActions.waitForWebDataStreams( propertyID );
+
+			const webdatastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
+			if ( webdatastream ) {
+				registry.dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._id );
+				registry.dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
+			}
 		}() );
 	},
 };
@@ -121,13 +184,20 @@ const baseResolvers = {
 			yield fetchGetPropertiesStore.actions.fetchGetProperties( accountID );
 		}
 	},
+	*getProperty( propertyID ) {
+		const registry = yield Data.commonActions.getRegistry();
+		const property = registry.select( STORE_NAME ).getProperty( propertyID );
+		if ( property === undefined ) {
+			yield fetchGetPropertyStore.actions.fetchGetProperty( propertyID );
+		}
+	},
 };
 
 const baseSelectors = {
 	/**
 	 * Gets all GA4 properties this account can access.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The GA4 Account ID to fetch properties for.
@@ -136,11 +206,25 @@ const baseSelectors = {
 	getProperties( state, accountID ) {
 		return state.properties[ accountID ];
 	},
+
+	/**
+	 * Gets a property with specific ID.
+	 *
+	 * @since 1.31.0
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} propertyID The GA4 property ID to fetch property object for.
+	 * @return {(Object|undefined)} A property object; `undefined` if not loaded.
+	 */
+	getProperty( state, propertyID ) {
+		return state.propertiesByID[ propertyID ];
+	},
 };
 
 const store = Data.combineStores(
-	fetchGetPropertiesStore,
 	fetchCreatePropertyStore,
+	fetchGetPropertiesStore,
+	fetchGetPropertyStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

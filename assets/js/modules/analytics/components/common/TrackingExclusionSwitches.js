@@ -66,8 +66,7 @@ export default function TrackingExclusionSwitches() {
 			</div>
 
 			<p>
-				{ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) && __( 'Logged-in users will be excluded from Analytics tracking.', 'google-site-kit' ) }
-				{ ! trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) && __( 'Logged-in users will be included in Analytics tracking.', 'google-site-kit' ) }
+				{ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) ? __( 'Logged-in users will be excluded from Analytics tracking.', 'google-site-kit' ) : __( 'Logged-in users will be included in Analytics tracking.', 'google-site-kit' ) }
 			</p>
 		</fieldset>
 	);

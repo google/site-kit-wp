@@ -67,8 +67,8 @@ export default function SettingsView() {
 				{ ( ! isAMP || isSecondaryAMP ) && (
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ isSecondaryAMP && __( 'Web Container ID', 'google-site-kit' ) }
-							{ ! isSecondaryAMP && __( 'Container ID', 'google-site-kit' ) }
+							{ isSecondaryAMP && <span>{ __( 'Web Container ID', 'google-site-kit' ) }</span> }
+							{ ! isSecondaryAMP && <span>{ __( 'Container ID', 'google-site-kit' ) }</span> }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting value={ containerID } />
@@ -79,8 +79,8 @@ export default function SettingsView() {
 				{ isAMP && (
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ isSecondaryAMP && __( 'AMP Container ID', 'google-site-kit' ) }
-							{ ! isSecondaryAMP && __( 'Container ID', 'google-site-kit' ) }
+							{ isSecondaryAMP && <span>{ __( 'AMP Container ID', 'google-site-kit' ) }</span> }
+							{ ! isSecondaryAMP && <span>{ __( 'Container ID', 'google-site-kit' ) }</span> }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting value={ ampContainerID } />
@@ -96,8 +96,8 @@ export default function SettingsView() {
 					</h5>
 
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ useSnippet && __( 'Snippet is inserted', 'google-site-kit' ) }
-						{ ! useSnippet && __( 'Snippet is not inserted', 'google-site-kit' ) }
+						{ useSnippet && <span>{ __( 'Snippet is inserted', 'google-site-kit' ) }</span> }
+						{ ! useSnippet && <span>{ __( 'Snippet is not inserted', 'google-site-kit' ) }</span> }
 					</p>
 
 					{ hasExistingTag && (

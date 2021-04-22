@@ -28,7 +28,9 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { STORE_NAME } from './constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+const { createRegistryControl, createRegistrySelector } = Data;
 
 const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',
@@ -42,7 +44,7 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 			...state,
 			webdatastreams: {
 				...state.webdatastreams,
-				[ propertyID ]: webDataStreams,
+				[ propertyID ]: Array.isArray( webDataStreams ) ? webDataStreams : [],
 			},
 		};
 	},
@@ -79,6 +81,9 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 	},
 } );
 
+// Actions
+const WAIT_FOR_WEBDATASTREAMS = 'WAIT_FOR_WEBDATASTREAMS';
+
 const baseInitialState = {
 	webdatastreams: {},
 };
@@ -87,7 +92,7 @@ const baseActions = {
 	/**
 	 * Creates a new GA4 web data stream.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param {string} propertyID GA4 property ID.
 	 * @return {Object} Object with `response` and `error`.
@@ -99,9 +104,29 @@ const baseActions = {
 		const { response, error } = yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream( propertyID );
 		return { response, error };
 	} ),
+
+	/**
+	 * Waits for web data streams to be loaded for a property.
+	 *
+	 * @since 1.31.0
+	 *
+	 * @param {string} propertyID GA4 property ID.
+	 */
+	*waitForWebDataStreams( propertyID ) {
+		yield {
+			payload: { propertyID },
+			type: WAIT_FOR_WEBDATASTREAMS,
+		};
+	},
 };
 
 const baseControls = {
+	[ WAIT_FOR_WEBDATASTREAMS ]: createRegistryControl( ( { __experimentalResolveSelect } ) => {
+		return async ( { payload } ) => {
+			const { propertyID } = payload;
+			await __experimentalResolveSelect( STORE_NAME ).getWebDataStreams( propertyID );
+		};
+	} ),
 };
 
 const baseReducer = ( state, { type } ) => {
@@ -127,7 +152,7 @@ const baseSelectors = {
 	/**
 	 * Gets all GA4 web data streams this account can access.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The GA4 property ID to fetch web data streams for.
@@ -136,6 +161,35 @@ const baseSelectors = {
 	getWebDataStreams( state, propertyID ) {
 		return state.webdatastreams[ propertyID ];
 	},
+
+	/**
+	 * Gets matched web data stream for selected property.
+	 *
+	 * @since 1.31.0
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} propertyID The GA4 property ID to find matched web data stream.
+	 * @return {(Object|null|undefined)} A web data stream object if found, otherwise null; `undefined` if web data streams are not loaded.
+	 */
+	getMatchingWebDataStream: createRegistrySelector( ( select ) => ( state, propertyID ) => {
+		const datastreams = select( STORE_NAME ).getWebDataStreams( propertyID );
+		if ( datastreams === undefined ) {
+			return undefined;
+		}
+
+		const normalizeURL = ( incomingURL ) => incomingURL
+			.replace( /^https?:\/\/(www\.)?/i, '' ) // Remove protocol and optional "www." prefix from the URL.
+			.replace( /\/$/, '' ); // Remove trailing slash.
+
+		const url = normalizeURL( select( CORE_SITE ).getReferenceSiteURL() );
+		for ( const datastream of datastreams ) {
+			if ( normalizeURL( datastream.defaultUri ) === url ) {
+				return datastream;
+			}
+		}
+
+		return null;
+	} ),
 };
 
 const store = Data.combineStores(

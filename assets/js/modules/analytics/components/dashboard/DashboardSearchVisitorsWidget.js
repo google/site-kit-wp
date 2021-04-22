@@ -63,6 +63,7 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 		const commonArgs = {
 			startDate,
 			endDate,
+			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
@@ -71,13 +72,13 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 		}
 
 		const sparklineArgs = {
-			dimensions: 'ga:date',
 			metrics: [
 				{
 					expression: 'ga:users',
 					alias: 'Users',
 				},
 			],
+			dimensions: [ 'ga:date', 'ga:channelGrouping' ],
 			...commonArgs,
 		};
 
@@ -91,6 +92,7 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 					alias: 'Total Users',
 				},
 			],
+			dimensions: [ 'ga:channelGrouping' ],
 			...commonArgs,
 		};
 
@@ -99,8 +101,8 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
 			// Due to the nature of these queries, we need to run them separately.
 			sparkData: store.getReport( sparklineArgs ),
-			serviceURL: store.getServiceReportURL( 'visitors-overview', {
-				'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
+			serviceURL: store.getServiceReportURL( 'acquisition-channels', {
+				'_r.drilldown': url ? `analytics.trafficChannel:Organic Search,analytics.pagePath:${ getURLPath( url ) }` : undefined,
 				...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
 			} ),
 			visitorsData: store.getReport( args ),
@@ -122,7 +124,7 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 	const sparkLineData = [
 		[
 			{ type: 'date', label: 'Day' },
-			{ type: 'number', label: 'Unique Visitors' },
+			{ type: 'number', label: 'Unique Visitors from Search' },
 		],
 	];
 	const dataRows = sparkData[ 0 ].data.rows;
@@ -146,7 +148,7 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 	return (
 		<DataBlock
 			className="overview-total-users"
-			title={ __( 'Unique Visitors', 'google-site-kit' ) }
+			title={ __( 'Unique Visitors from Search', 'google-site-kit' ) }
 			datapoint={ totalUsers }
 			change={ totalUsersChange }
 			changeDataUnit="%"

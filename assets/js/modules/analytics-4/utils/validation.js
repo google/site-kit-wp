@@ -17,6 +17,11 @@
  */
 
 /**
+ * Internal dependencies
+ */
+import { PROPERTY_CREATE } from '../datastore/constants';
+
+/**
  * Checks whether the given property ID appears to be valid.
  *
  * @since 1.31.0
@@ -25,5 +30,21 @@
  * @return {boolean} Whether or not the given property ID is valid.
  */
 export function isValidPropertyID( propertyID ) {
-	return typeof propertyID === 'string' && propertyID.length > 0;
+	return typeof propertyID === 'string' && /^\w+$/.test( propertyID );
+}
+
+/**
+ * Checks if the given value is a valid selection for a Property.
+ *
+ * @since 1.31.0
+ *
+ * @param {?string} value Selected value.
+ * @return {boolean} True if valid, otherwise false.
+ */
+export function isValidPropertySelection( value ) {
+	if ( value === PROPERTY_CREATE ) {
+		return true;
+	}
+
+	return isValidPropertyID( value );
 }
