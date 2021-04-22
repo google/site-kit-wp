@@ -27,6 +27,7 @@ import isPlainObject from 'lodash/isPlainObject';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../util';
 import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
@@ -119,9 +120,10 @@ const baseActions = {
 			.invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
 
-	*selectAccount( accountID ) {
+	selectAccount: createValidatedAction( ( accountID ) => {
 		invariant( isValidAccountSelection( accountID ), 'A valid accountID is required to select.' );
-
+	},
+	function* ( accountID ) {
 		const registry = yield Data.commonActions.getRegistry();
 
 		registry.dispatch( STORE_NAME ).setSettings( {
@@ -142,7 +144,7 @@ const baseActions = {
 		}
 		const property = properties[ 0 ] || { id: PROPERTY_CREATE };
 		registry.dispatch( STORE_NAME ).selectProperty( property.id );
-	},
+	} ),
 
 	/**
 	 * Creates a new Analytics account.

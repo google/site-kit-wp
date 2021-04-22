@@ -254,7 +254,10 @@ const baseActions = {
 	 * @param {Function}       [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
 	 * @param {Function}       [settings.screenWidgetContext]              Optional. Get the registered context name for a given module.
 	 */
-	*registerModule( slug, {
+	registerModule: createValidatedAction( ( slug ) => {
+		invariant( slug, 'module slug is required' );
+	},
+	function* ( slug, {
 		storeName,
 		name,
 		description,
@@ -269,8 +272,6 @@ const baseActions = {
 		checkRequirements = () => true,
 		screenWidgetContext,
 	} = {} ) {
-		invariant( slug, 'module slug is required' );
-
 		const settings = {
 			storeName,
 			name,
@@ -300,7 +301,7 @@ const baseActions = {
 		// As we can specify a custom checkRequirements function here, we're invalidating the resolvers for activation checks.
 		yield registry.dispatch( STORE_NAME ).invalidateResolution( 'canActivateModule', [ slug ] );
 		yield registry.dispatch( STORE_NAME ).invalidateResolution( 'getCheckRequirementsError', [ slug ] );
-	},
+	} ),
 
 	/**
 	 * Receives the check requirements error map for specified modules modules.

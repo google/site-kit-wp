@@ -26,6 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
@@ -91,12 +92,13 @@ const baseActions = {
 	 * @param {string} propertyID GA4 property ID.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createWebDataStream( propertyID ) {
+	createWebDataStream: createValidatedAction( ( propertyID ) => {
 		invariant( propertyID, 'GA4 propertyID is required.' );
-
+	},
+	function* ( propertyID ) {
 		const { response, error } = yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream( propertyID );
 		return { response, error };
-	},
+	} ),
 };
 
 const baseControls = {

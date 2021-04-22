@@ -52,9 +52,15 @@ describe( 'core/location', () => {
 	describe( 'actions', () => {
 		describe( 'navigateTo', () => {
 			it( 'should require a valid URL', () => {
-				return expect( registry.dispatch( STORE_NAME ).navigateTo( 'testurl' ) )
-					.rejects
-					.toThrow( 'url must be a valid URI.' );
+				// return expect( registry.dispatch( STORE_NAME ).navigateTo( 'testurl' ) )
+				// 	.rejects
+				// 	.toThrow( 'url must be a valid URI.' );
+
+				try {
+					registry.dispatch( STORE_NAME ).navigateTo( 'testurl' );
+				} catch ( e ) {
+					expect( e.message ).toEqual( 'url must be a valid URI.' );
+				}
 			} );
 
 			it( 'should use location.assign() function when navigating', async () => {
