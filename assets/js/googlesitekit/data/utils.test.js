@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import noop from 'lodash/noop';
+
+/**
  * WordPress dependencies
  */
 import { createRegistry } from '@wordpress/data';
@@ -30,6 +35,7 @@ import {
 	collectName,
 	combineStores,
 	createStrictSelect,
+	createValidatedAction,
 } from './utils';
 
 describe( 'data utils', () => {
@@ -785,6 +791,23 @@ describe( 'data utils', () => {
 				expect( strictSelect( STORE_NAME ) ).toStrictEqual( strictSelect( STORE_NAME ) );
 				expect( createStrictSelect( registry.select )( STORE_NAME ) ).toStrictEqual( strictSelect( STORE_NAME ) );
 			} );
+		} );
+	} );
+
+	describe( 'createValidatedAction', () => {
+		it( 'should throw an error if a validator function is not provided', () => {
+			expect( true ).toBe( true );
+
+			const actionCreator = noop;
+
+			// TODO -> this is not caught by Jest. Is nicer syntax though so look into
+			// expect( createValidatedAction( null, actionCreator ) ).toThrow();
+
+			try {
+				createValidatedAction( null, actionCreator );
+			} catch ( e ) {
+				expect( e.message ).toEqual( 'a validator function is required.' );
+			}
 		} );
 	} );
 } );
