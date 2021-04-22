@@ -48,7 +48,11 @@ const storyOptions = {
 			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 
 			provideUserAuthentication( registry );
-			provideModules( registry );
+			provideModules( registry, [ {
+				slug: 'search-console',
+				active: true,
+				connected: true,
+			} ] );
 			provideModuleRegistrations( registry );
 
 			return <Story registry={ registry } />;
@@ -82,11 +86,11 @@ storiesOf( 'Search Console Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetMatchedProperties( [
 			{
 				permissionLevel: 'siteFullUser',
-				siteURL: 'https://www.example.io/',
+				siteURL: 'https://www.example.com/',
 			},
 			{
 				permissionLevel: 'siteFullUser',
-				siteURL: 'http://example.net/',
+				siteURL: 'http://example.com/',
 			},
 			{
 				permissionLevel: 'siteFullUser',

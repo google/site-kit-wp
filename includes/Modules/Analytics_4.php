@@ -352,7 +352,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
@@ -380,7 +380,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Registers the Analytics 4 tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 */
 	private function register_tag() {
 		if ( $this->context->is_amp() ) {
@@ -402,64 +402,70 @@ final class Analytics_4 extends Module
 	/**
 	 * Parses account ID, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param Google_Model $account Account model.
-	 * @return Google_Model Updated model with _id attribute.
+	 * @return \stdClass Updated model with _id attribute.
 	 */
 	public static function filter_account_with_ids( $account ) {
+		$obj = $account->toSimpleObject();
+
 		$matches = array();
 		if ( preg_match( '#accounts/([^/]+)#', $account['name'], $matches ) ) {
-			$account['_id'] = $matches[1];
+			$obj->_id = $matches[1];
 		}
 
-		return $account;
+		return $obj;
 	}
 
 	/**
 	 * Parses account and property IDs, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param Google_Model $property Property model.
-	 * @return Google_Model Updated model with _id and _accountID attributes.
+	 * @return \stdClass Updated model with _id and _accountID attributes.
 	 */
 	public static function filter_property_with_ids( $property ) {
+		$obj = $property->toSimpleObject();
+
 		$matches = array();
 		if ( preg_match( '#properties/([^/]+)#', $property['name'], $matches ) ) {
-			$property['_id'] = $matches[1];
+			$obj->_id = $matches[1];
 		}
 
 		$matches = array();
 		if ( preg_match( '#accounts/([^/]+)#', $property['parent'], $matches ) ) {
-			$property['_accountID'] = $matches[1];
+			$obj->_accountID = $matches[1]; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		}
 
-		return $property;
+		return $obj;
 	}
 
 	/**
 	 * Parses property and web datastream IDs, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param Google_Model $webdatastream Web datastream model.
-	 * @return Google_Model Updated model with _id and _propertyID attributes.
+	 * @return \stdClass Updated model with _id and _propertyID attributes.
 	 */
 	public static function filter_webdatastream_with_ids( $webdatastream ) {
+		$obj = $webdatastream->toSimpleObject();
+
 		$matches = array();
 		if ( preg_match( '#properties/([^/]+)/webDataStreams/([^/]+)#', $webdatastream['name'], $matches ) ) {
-			$webdatastream['_id']         = $matches[2];
-			$webdatastream['_propertyID'] = $matches[1];
+			$obj->_id         = $matches[2];
+			$obj->_propertyID = $matches[1]; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		}
 
-		return $webdatastream;
+		return $obj;
 	}
 
 	/**
 	 * Normalizes account ID and returns it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param string $account_id Account ID.
 	 * @return string Updated account ID with "accounts/" prefix.
@@ -471,7 +477,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Normalizes property ID and returns it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param string $property_id Property ID.
 	 * @return string Updated property ID with "properties/" prefix.

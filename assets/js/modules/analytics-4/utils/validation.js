@@ -24,7 +24,7 @@ import { PROPERTY_CREATE } from '../datastore/constants';
 /**
  * Checks whether the given property ID appears to be valid.
  *
- * @since n.e.x.t
+ * @since 1.31.0
  *
  * @param {*} propertyID Property ID to check.
  * @return {boolean} Whether or not the given property ID is valid.
@@ -36,7 +36,7 @@ export function isValidPropertyID( propertyID ) {
 /**
  * Checks if the given value is a valid selection for a Property.
  *
- * @since n.e.x.t
+ * @since 1.31.0
  *
  * @param {?string} value Selected value.
  * @return {boolean} True if valid, otherwise false.
