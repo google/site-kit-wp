@@ -796,8 +796,6 @@ describe( 'data utils', () => {
 
 	describe( 'createValidatedAction', () => {
 		it( 'should throw an error if a validator function is not provided', () => {
-			expect( true ).toBe( true );
-
 			const actionCreator = noop;
 
 			// TODO -> this is not caught by Jest. Is nicer syntax though so look into
@@ -813,8 +811,6 @@ describe( 'data utils', () => {
 		} );
 
 		it( 'should throw an error if an action creator function is not provided', () => {
-			expect( true ).toBe( true );
-
 			const validator = noop;
 
 			// expect( createValidatedAction( validator ) ).toThrow();
@@ -829,8 +825,6 @@ describe( 'data utils', () => {
 		} );
 
 		it( 'should throw an error if validator function is a generator object', () => {
-			expect( true ).toBe( true );
-
 			const validator = noop;
 			function* actionCreator() { }
 
@@ -847,6 +841,46 @@ describe( 'data utils', () => {
 			} catch ( e ) {
 				expect( e.message ).toEqual( 'an action creator function is required.' );
 			}
+		} );
+
+		it( 'should call validation function', () => {
+			const args = { foo: 'bar' };
+			const validator = jest.fn();
+			const actionCreator = noop;
+
+			expect( validator ).toHaveBeenCalledTimes( 0 );
+
+			// expect( createValidatedAction( validator, actionCreator ) ).toThrow();
+
+			const validatedAction = createValidatedAction(
+				validator,
+				actionCreator
+			);
+
+			validatedAction( args );
+
+			expect( validator ).toHaveBeenCalledTimes( 1 );
+			expect( validator ).toHaveBeenCalledWith( args );
+		} );
+
+		it( 'should call action creator', () => {
+			const args = { foo: 'bar' };
+			const validator = noop;
+			const actionCreator = jest.fn();
+
+			expect( actionCreator ).toHaveBeenCalledTimes( 0 );
+
+			// expect( createValidatedAction( validator, actionCreator ) ).toThrow();
+
+			const validatedAction = createValidatedAction(
+				validator,
+				actionCreator
+			);
+
+			validatedAction( args );
+
+			expect( actionCreator ).toHaveBeenCalledTimes( 1 );
+			expect( actionCreator ).toHaveBeenCalledWith( args );
 		} );
 	} );
 } );
