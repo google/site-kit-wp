@@ -38,12 +38,27 @@ import AdBlockerWarning from '../common/AdBlockerWarning';
 
 const { useSelect } = Data;
 
+/**
+ * Calculates the absolute change between two values.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} previous The previous value.
+ * @param {number} current  The current value.
+ * @return {number} The absolute change between values.
+ */
+const calculateAbsoluteChange = ( previous, current ) => {
+	const change = Number( current ) - Number( previous );
+	return change.toFixed( 2 );
+};
+
 function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		error,
 		loading,
 		today,
 		period,
+		previousPeriod,
 		daily,
 		rpmReportURL,
 		earningsURL,
@@ -51,9 +66,16 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 		isAdblockerActive,
 	} = useSelect( ( select ) => {
 		const referenceDate = select( CORE_USER ).getReferenceDate();
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+		const { startDate, endDate, compareStartDate, compareEndDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
 		} );
+
+		const previousPeriodArgs = {
+			startDate: compareStartDate,
+			endDate: compareEndDate,
+			metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
+		};
 
 		const periodArgs = {
 			startDate,
@@ -77,12 +99,15 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 		return {
 			today: select( STORE_NAME ).getReport( todayArgs ),
 			period: select( STORE_NAME ).getReport( periodArgs ),
+			previousPeriod: select( STORE_NAME ).getReport( previousPeriodArgs ),
 			daily: select( STORE_NAME ).getReport( dailyArgs ),
 			loading: ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ todayArgs ] ) ||
 				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ periodArgs ] ) ||
+				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousPeriodArgs ] ) ||
 				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ dailyArgs ] ),
 			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ todayArgs ] ) ||
 				select( STORE_NAME ).getErrorForSelector( 'getReport', [ periodArgs ] ) ||
+				select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousPeriodArgs ] ) ||
 				select( STORE_NAME ).getErrorForSelector( 'getReport', [ dailyArgs ] ),
 			rpmReportURL: select( STORE_NAME ).getServiceReportURL( {
 				...dateRangeArgs,
@@ -137,6 +162,12 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 	const currencyHeader = period.headers.find( ( header ) => null !== header.currency && 0 < header.currency.length );
 	const currencyCode = currencyHeader ? currencyHeader.currency : false;
 
+	const change = {
+		earnings: calculateAbsoluteChange( previousPeriod.totals[ 0 ], period.totals[ 0 ] ),
+		rpm: calculateAbsoluteChange( previousPeriod.totals[ 1 ], period.totals[ 1 ] ),
+		impressions: calculateAbsoluteChange( previousPeriod.totals[ 2 ], period.totals[ 2 ] ),
+	};
+
 	return (
 		<Widget className="googlesitekit-dashboard-adsense-stats mdc-layout-grid">
 			<div className="mdc-layout-grid__inner">
@@ -146,6 +177,8 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 						title={ __( 'RPM', 'google-site-kit' ) }
 						datapoint={ period.totals[ 1 ] }
 						datapointUnit={ currencyCode }
+						change={ Number( change.rpm ) }
+						changeDataUnit={ currencyCode }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 							link: rpmReportURL,
@@ -172,7 +205,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 							link: earningsURL,
 							external: true,
 						} }
-						change={ today.totals[ 0 ] }
+						change={ Number( change.earnings ) }
 						changeDataUnit={ currencyCode }
 						sparkline={ daily &&
 							<Sparkline
@@ -189,6 +222,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 						className="overview-adsense-impressions"
 						title={ __( 'Ad Impressions', 'google-site-kit' ) }
 						datapoint={ period.totals[ 2 ] }
+						change={ Number( change.impressions ) }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 							link: impressionsURL,
