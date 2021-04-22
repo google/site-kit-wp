@@ -19,7 +19,7 @@
 /**
  * Checks whether the given property ID appears to be valid.
  *
- * @since n.e.x.t
+ * @since 1.31.0
  *
  * @param {*} propertyID Property ID to check.
  * @return {boolean} Whether or not the given property ID is valid.
