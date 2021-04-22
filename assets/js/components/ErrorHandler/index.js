@@ -35,6 +35,7 @@ import { Icon, check, stack } from '@wordpress/icons';
 import Notification from '../legacy-notifications/notification';
 import Link from '../Link';
 import Button from '../Button';
+import { trackEvent } from '../../util';
 
 class ErrorHandler extends Component {
 	constructor( props ) {
@@ -50,9 +51,16 @@ class ErrorHandler extends Component {
 	}
 
 	componentDidCatch( error, info ) {
+		const { viewContext = 'unknown' } = this.props;
 		global.console.error( 'Caught an error:', error, info );
 
 		this.setState( { error, info } );
+
+		trackEvent(
+			'react_error',
+			`handle_${ viewContext }_error`,
+			`${ error?.message }\n${ info?.componentStack }`
+		);
 	}
 
 	onErrorClick() {
