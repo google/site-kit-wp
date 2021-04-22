@@ -153,7 +153,7 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 			// User is typing, so pressing backspace should delete the last character rather than the keyword.
 			setCanDeleteKeyword( false );
 		}
-	}, [ keywordsContainer.current, ...dependencies, canDeleteKeyword, next ] );
+	}, [ keywordsContainer.current, ...dependencies, canDeleteKeyword, next, max ] );
 
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
