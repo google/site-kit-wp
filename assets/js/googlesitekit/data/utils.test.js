@@ -805,8 +805,47 @@ describe( 'data utils', () => {
 
 			try {
 				createValidatedAction( null, actionCreator );
+				// hack to assert exception is thrown
+				expect( false ).toBe( true );
 			} catch ( e ) {
 				expect( e.message ).toEqual( 'a validator function is required.' );
+			}
+		} );
+
+		it( 'should throw an error if an action creator function is not provided', () => {
+			expect( true ).toBe( true );
+
+			const validator = noop;
+
+			// expect( createValidatedAction( validator ) ).toThrow();
+
+			try {
+				createValidatedAction( validator );
+				// hack to assert exception is thrown
+				expect( false ).toBe( true );
+			} catch ( e ) {
+				expect( e.message ).toEqual( 'an action creator function is required.' );
+			}
+		} );
+
+		it( 'should throw an error if validator function is a generator object', () => {
+			expect( true ).toBe( true );
+
+			const validator = noop;
+			function* actionCreator() { }
+
+			// expect( createValidatedAction( validator, actionCreator ) ).toThrow();
+
+			try {
+				createValidatedAction(
+					validator,
+					// NOTE - this has to be called to return generator object from generator function
+					actionCreator()
+				);
+				// hack
+				expect( false ).toBe( true );
+			} catch ( e ) {
+				expect( e.message ).toEqual( 'an action creator function is required.' );
 			}
 		} );
 	} );
