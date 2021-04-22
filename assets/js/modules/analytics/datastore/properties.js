@@ -93,11 +93,13 @@ const RECEIVE_MATCHED_PROPERTY = 'RECEIVE_MATCHED_PROPERTY';
 const RECEIVE_GET_PROPERTIES = 'RECEIVE_GET_PROPERTIES';
 const RECEIVE_PROPERTIES_PROFILES_COMPLETION = 'RECEIVE_PROPERTIES_PROFILES_COMPLETION';
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
+const SET_PRIMARY_PROPERTY_TYPE = 'SET_PRIMARY_PROPERTY_TYPE';
 
 const baseInitialState = {
 	properties: {},
 	isAwaitingPropertiesProfilesCompletion: {},
 	matchedProperty: undefined,
+	primaryPropertyType: 'ua',
 };
 
 const baseActions = {
@@ -216,6 +218,15 @@ const baseActions = {
 			type: WAIT_FOR_PROPERTIES,
 		};
 	},
+
+	setPrimaryPropertyType( primaryPropertyType ) {
+		invariant( [ 'ua', 'ga4' ].includes( primaryPropertyType ), 'type must be "ua" or "ga4"' );
+
+		return {
+			payload: { primaryPropertyType },
+			type: SET_PRIMARY_PROPERTY_TYPE,
+		};
+	},
 };
 
 const baseControls = {
@@ -269,6 +280,15 @@ const baseReducer = ( state, { type, payload } ) => {
 					...state.isAwaitingPropertiesProfilesCompletion,
 					[ accountID ]: false,
 				},
+			};
+		}
+
+		case SET_PRIMARY_PROPERTY_TYPE: {
+			const { primaryPropertyType } = payload;
+
+			return {
+				...state,
+				primaryPropertyType,
 			};
 		}
 
