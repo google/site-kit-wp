@@ -28,11 +28,7 @@ import memize from 'memize';
  */
 import { createRegistryControl, createRegistrySelector } from '@wordpress/data';
 
-// TO FIX - causing tests to fail because doesn't build... although tests are done through wp-scripts...
-// import isGenerator from '@wordpress/redux-routine/build-module/is-generator';
-export default function isGenerator( object ) {
-	return !! object && object[ Symbol.toStringTag ] === 'Generator';
-}
+import isGenerator from '@wordpress/redux-routine/build/is-generator';
 
 const GET_REGISTRY = 'GET_REGISTRY';
 const AWAIT = 'AWAIT';
