@@ -299,6 +299,7 @@ const withData = (
 			} else if ( isDataZero( returnedData, datapoint, requestData ) ) { // No data error, next check for zero data.
 				// If we have a `handleDataError` call it without any parameters (indicating empty data).
 				if ( handleDataError ) {
+					// another example here that will end as notifcation
 					handleDataError( errorMessage, returnedData );
 				}
 

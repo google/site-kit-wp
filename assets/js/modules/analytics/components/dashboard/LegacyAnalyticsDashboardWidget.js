@@ -86,6 +86,7 @@ export default function LegacyAnalyticsDashboardWidget() {
 	const handleDataError = ( err, errObj ) => {
 		setReceivingData( false );
 		setLoading( false );
+		// this will end up as a CTA description
 		setError( err );
 		setErrorObj( errObj );
 	};

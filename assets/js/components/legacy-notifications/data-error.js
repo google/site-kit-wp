@@ -61,6 +61,7 @@ function getDataErrorComponent( moduleSlug, errorMessage, inGrid = false, fullWi
 
 	const reconnectURL = errorObj?.data?.reconnectURL;
 	const description = reconnectURL ? <ErrorText message={ message } reconnectURL={ reconnectURL } /> : message;
+	// TODO - check where these props are coming from!
 	const cta = <CTA title={ title } description={ description } error />;
 
 	// This is to handle token expired error specifically.

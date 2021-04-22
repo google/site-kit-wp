@@ -54,6 +54,7 @@ export default function ReportError( { moduleSlug, error } ) {
 	const reconnectURL = error?.data?.reconnectURL;
 	const description = reconnectURL ? <ErrorText message={ message } reconnectURL={ reconnectURL } /> : message;
 
+	// TODO - go back through calls and check where props come from!
 	return <CTA title={ title } description={ description } error />;
 }
 
