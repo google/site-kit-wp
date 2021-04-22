@@ -47,7 +47,7 @@ export default function ReportZero( { moduleSlug } ) {
 			description={
 				sprintf(
 					/* translators: %s: Module name */
-					__( '%s data is not yet available, please check back later.', 'google-site-kit' ),
+					__( '%s data is not yet available, please check back later', 'google-site-kit' ),
 					module?.name
 				)
 			}
