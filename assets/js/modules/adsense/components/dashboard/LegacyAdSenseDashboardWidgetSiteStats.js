@@ -161,8 +161,7 @@ export default function LegacyAdSenseDashboardWidgetSiteStats( props ) {
 			<Row>
 				<Cell size={ 12 }>
 					<GoogleChart
-						chartType="line"
-						selectedStats={ [ selectedStats ] }
+						chartType="LineChart"
 						data={ dataMap }
 						options={ options }
 					/>

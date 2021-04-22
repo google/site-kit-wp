@@ -35,7 +35,7 @@ import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, UI_DIMENSION_COLOR } from '../../../datastore/constants';
-import GoogleChartV2 from '../../../../../components/GoogleChartV2';
+import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import ReportError from '../../../../../components/ReportError';
 const { useSelect } = Data;
@@ -160,7 +160,7 @@ export default function UserCountGraph( { loaded, error, report } ) {
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__user-count-chart">
-			<GoogleChartV2
+			<GoogleChart
 				chartType="LineChart"
 				data={ chartData }
 				height="368px"

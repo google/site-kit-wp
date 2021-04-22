@@ -263,9 +263,9 @@ storiesOf( 'Analytics Module', module )
 			</WithTestRegistry>
 		);
 	},
-	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
 	// This uses the legacy widget, the new one is in:
 	// 'Analytics Module/Components/Module Page/Acquisition Channels Widget'.
+	{ options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' } } )
 	.add( 'Top Acquisition Pie Chart', () => {
 		global._googlesitekitLegacyData = analyticsData;
 
@@ -312,4 +312,4 @@ storiesOf( 'Analytics Module', module )
 			</WithTestRegistry>
 		);
 	},
-	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } );
+	{ options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' } } );
