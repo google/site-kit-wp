@@ -23,14 +23,32 @@ import Button from './Button';
 
 const Template = ( args ) => <Button { ...args } />;
 
-export const DefaultButton = () => <Button>Default Button</Button>;
+export const DefaultButton = Template.bind( {} );
 DefaultButton.storyName = 'Default Button';
+DefaultButton.args = {
+	children: 'Default Button',
+	href: '#',
+};
+
+export const HoverButton = Template.bind( {} );
+HoverButton.storyName = 'Default Button Hover';
+HoverButton.args = {
+	children: 'Default Button Hover',
+	className: 'googlesitekit-button--hover',
+};
+HoverButton.parameters = {
+	options: {
+		hoverSelector: '.googlesitekit-button--hover',
+		postInteractionWait: 3000, // Wait for shadows to animate.
+		onReadyScript: 'mouse.js',
+	},
+};
 
 export const LinkButton = Template.bind( {} );
 LinkButton.storyName = 'Default Button Link';
 LinkButton.args = {
 	children: 'Default Button Link',
-	href: 'http://google.com',
+	href: '#',
 };
 
 export const DangerButton = Template.bind( {} );
@@ -45,18 +63,6 @@ DisabledButton.storyName = 'Disabled Button';
 DisabledButton.args = {
 	children: 'Disabled Button',
 	disabled: true,
-};
-
-export const HoverButton = Template.bind( {} );
-HoverButton.storyName = 'Default Button Hover';
-HoverButton.args = {
-	children: 'VRT: Default Button Hover',
-	className: 'googlesitekit-button--hover',
-	options: {
-		hoverSelector: '.googlesitekit-button--hover',
-		postInteractionWait: 3000, // Wait for shadows to animate.
-		onReadyScript: 'mouse.js',
-	},
 };
 
 export default {
