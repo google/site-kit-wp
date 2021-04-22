@@ -20,95 +20,126 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
-import { Component } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
-import { getDataTableFromData } from '../../../../components/data-table';
+import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../../adsense/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import PreviewTable from '../../../../components/PreviewTable';
 import Layout from '../../../../components/layout/Layout';
 import AdSenseLinkCTA from '../common/AdSenseLinkCTA';
-import { getTimeInSeconds } from '../../../../util';
 import {
 	analyticsAdsenseReportDataDefaults,
 	isDataZeroForReporting,
 } from '../../util';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import { getTimeInSeconds, numFmt } from '../../../../util';
+import { getCurrencyFormat } from '../../../adsense/util/currency';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import ReportTable from '../../../../components/ReportTable';
+import Link from '../../../../components/Link';
+const { useSelect } = Data;
 
-class LegacyAdSenseDashboardWidgetTopPagesTableSmall extends Component {
-	static renderLayout( component ) {
-		return (
-			<div className="
+let currencyFormat;
+const setCurrencyFormat = ( report ) => {
+	currencyFormat = getCurrencyFormat( report );
+};
+
+function renderLayout( component ) {
+	return (
+		<div className="
 				mdc-layout-grid__cell
 				mdc-layout-grid__cell--span-6-desktop
 				mdc-layout-grid__cell--span-4-tablet
 			">
-				<Layout
-					className="googlesitekit-top-earnings-pages"
-					footer
-					footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					footerCTALink="http://analytics.google.com"
-					fill
-				>
-					{ component }
-				</Layout>
-			</div>
-		);
-	}
-
-	render() {
-		const { data } = this.props;
-
-		if ( ! data || ! data.length ) {
-			return null;
-		}
-
-		if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
-			return null;
-		}
-
-		const headers = [
-			{
-				title: __( 'Top Earning Pages', 'google-site-kit' ),
-				tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
-				primary: true,
-			},
-			{
-				title: __( 'Revenue', 'google-site-kit' ),
-				tooltip: __( 'Revenue', 'google-site-kit' ),
-			},
-		];
-
-		const links = [];
-		const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-			links[ i ] = row.dimensions[ 1 ];
-			return [
-				row.dimensions[ 0 ],
-				Number( row.metrics[ 0 ].values[ 0 ] ).toFixed( 2 ),
-			];
-		} );
-
-		const options = {
-			hideHeader: false,
-			chartsEnabled: false,
-			cap: 5,
-			links,
-		};
-
-		const dataTable = getDataTableFromData( dataMapped, headers, options );
-
-		return (
-			LegacyAdSenseDashboardWidgetTopPagesTableSmall.renderLayout(
-				<TableOverflowContainer>
-					{ dataTable }
-				</TableOverflowContainer>
-			)
-		);
-	}
+			<Layout
+				className="googlesitekit-top-earnings-pages"
+				footer
+				footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+				footerCTALink="http://analytics.google.com"
+				fill
+			>
+				{ component }
+			</Layout>
+		</div>
+	);
 }
+
+const LegacyAdSenseDashboardWidgetTopPagesTableSmall = ( { data } ) => {
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
+
+	const adsenseData = useSelect( ( select ) => select( MODULES_ADSENSE ).getReport( {
+		startDate,
+		endDate,
+		metrics: 'EARNINGS',
+	} ) );
+
+	setCurrencyFormat( adsenseData );
+	if ( ! data || ! data.length ) {
+		return null;
+	}
+	const { rows } = data?.[ 0 ]?.data || {};
+	if ( ! Array.isArray( rows ) ) {
+		return null;
+	}
+
+	// Before ReportTable, this originally used
+	// the DataTable's `cap` prop
+	const firstFiveRows = rows.slice( 0, 5 );
+
+	return renderLayout(
+		<TableOverflowContainer>
+			<ReportTable
+				rows={ firstFiveRows }
+				columns={ tableColumns }
+			/>
+		</TableOverflowContainer>
+	);
+};
+
+const tableColumns = [
+	{
+		title: __( 'Top Earning Pages', 'google-site-kit' ),
+		tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
+		primary: true,
+		Component: ( { row } ) => {
+			const [ title, url ] = row.dimensions;
+			const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} ) );
+			const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages', {
+				'explorer-table.plotKeys': '[]',
+				'_r.drilldown': `analytics.pagePath:${ url }`,
+				...generateDateRangeArgs( dateRange ),
+			} ) );
+			return (
+				<Link
+					href={ serviceURL }
+					external
+					inherit
+				>
+					{ title }
+				</Link>
+			);
+		},
+	},
+	{
+		title: __( 'Earnings', 'google-site-kit' ),
+		description: __( 'Earnings', 'google-site-kit' ),
+		field: 'metrics.0.values.0',
+		Component: ( { fieldValue } ) => numFmt(
+			fieldValue,
+			currencyFormat,
+		),
+	},
+];
 
 /**
  * Checks error data response.
@@ -166,7 +197,7 @@ export default withData(
 			context: 'Dashboard',
 		},
 	],
-	LegacyAdSenseDashboardWidgetTopPagesTableSmall.renderLayout(
+	renderLayout(
 		<PreviewTable rows={ 5 } padding />
 	),
 	{
