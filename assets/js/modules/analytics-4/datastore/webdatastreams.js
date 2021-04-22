@@ -121,7 +121,7 @@ const baseActions = {
 	/**
 	 * Creates a new GA4 web data stream.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param {string} propertyID GA4 property ID.
 	 * @return {Object} Object with `response` and `error`.
@@ -136,7 +136,7 @@ const baseActions = {
 	/**
 	 * Waits for web data streams to be loaded for a property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param {string} propertyID GA4 property ID.
 	 */
@@ -190,7 +190,7 @@ const baseSelectors = {
 	/**
 	 * Gets all GA4 web data streams this account can access.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The GA4 property ID to fetch web data streams for.
@@ -203,7 +203,7 @@ const baseSelectors = {
 	/**
 	 * Gets matched web data stream for selected property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The GA4 property ID to find matched web data stream.
