@@ -366,6 +366,18 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Gets the primary property type.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string} "ua" or "ga4".
+	 */
+	getPrimaryPropertyType( state ) {
+		return state.primaryPropertyType;
+	},
+
+	/**
 	 * Gets the matched property, if any.
 	 *
 	 * @since 1.8.0
