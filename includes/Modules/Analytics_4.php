@@ -277,10 +277,11 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				if ( count( $data['propertyIDs'] ) > 10 ) {
+				if ( ! is_array( $data['propertyIDs'] ) || count( $data['propertyIDs'] ) > 10 ) {
 					return new WP_Error(
-						'invalid_param',
-						__( 'Too many properties. Only 10 are allowed per batch request.', 'google-site-kit' ),
+						'rest_invalid_param',
+						/* translators: %s: List of invalid parameters. */
+						sprintf( __( 'Invalid parameter(s): %s', 'google-site-kit' ), 'propertyIDs' ),
 						array( 'status' => 400 )
 					);
 				}
