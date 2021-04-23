@@ -35,7 +35,11 @@ const Settings = createLegacySettingsWrapper( 'pagespeed-insights' );
 
 const withRegistry = ( Story ) => {
 	const registry = createTestRegistry();
-	provideModules( registry );
+	provideModules( registry, [ {
+		slug: 'pagespeed-insights',
+		active: true,
+		connected: true,
+	} ] );
 	provideModuleRegistrations( registry );
 
 	return (
