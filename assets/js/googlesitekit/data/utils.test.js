@@ -798,49 +798,27 @@ describe( 'data utils', () => {
 		it( 'should throw an error if a validator function is not provided', () => {
 			const actionCreator = noop;
 
-			// TODO -> this is not caught by Jest. Is nicer syntax though so look into
-			// expect( createValidatedAction( null, actionCreator ) ).toThrow();
-
-			try {
-				createValidatedAction( null, actionCreator );
-				// hack to assert exception is thrown
-				expect( false ).toBe( true );
-			} catch ( e ) {
-				expect( e.message ).toEqual( 'a validator function is required.' );
-			}
+			return expect( () => createValidatedAction( null, actionCreator ) )
+				.toThrow( 'a validator function is required.' );
 		} );
 
 		it( 'should throw an error if an action creator function is not provided', () => {
 			const validator = noop;
 
-			// expect( createValidatedAction( validator ) ).toThrow();
-
-			try {
-				createValidatedAction( validator );
-				// hack to assert exception is thrown
-				expect( false ).toBe( true );
-			} catch ( e ) {
-				expect( e.message ).toEqual( 'an action creator function is required.' );
-			}
+			return expect( () => createValidatedAction( validator ) )
+				.toThrow( 'an action creator function is required.' );
 		} );
 
 		it( 'should throw an error if validator function is a generator object', () => {
 			const validator = noop;
 			function* actionCreator() { }
 
-			// expect( createValidatedAction( validator, actionCreator ) ).toThrow();
-
-			try {
-				createValidatedAction(
-					validator,
-					// NOTE - this has to be called to return generator object from generator function
-					actionCreator()
-				);
-				// hack
-				expect( false ).toBe( true );
-			} catch ( e ) {
-				expect( e.message ).toEqual( 'an action creator function is required.' );
-			}
+			return expect( () => createValidatedAction(
+				validator,
+				// this has to be called to return generator object from generator function
+				actionCreator()
+			) )
+				.toThrow( 'an action creator function is required.' );
 		} );
 
 		it( 'should call validation function', () => {
@@ -849,8 +827,6 @@ describe( 'data utils', () => {
 			const actionCreator = noop;
 
 			expect( validator ).toHaveBeenCalledTimes( 0 );
-
-			// expect( createValidatedAction( validator, actionCreator ) ).toThrow();
 
 			const validatedAction = createValidatedAction(
 				validator,
@@ -869,8 +845,6 @@ describe( 'data utils', () => {
 			const actionCreator = jest.fn();
 
 			expect( actionCreator ).toHaveBeenCalledTimes( 0 );
-
-			// expect( createValidatedAction( validator, actionCreator ) ).toThrow();
 
 			const validatedAction = createValidatedAction(
 				validator,

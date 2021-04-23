@@ -57,8 +57,6 @@ export const actions = {
 		function* ( url ) {
 			const payload = { url };
 
-			// invariant in generator here
-
 			yield {
 				type: SET_NAVIGATING_TO,
 				payload,
