@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { useMount } from 'react-use';
 import debounce from 'lodash/debounce';
 import PropTypes from 'prop-types';
 
@@ -134,7 +133,7 @@ export default function GoogleChart( props ) {
 		options,
 	] );
 
-	useMount( () => {
+	useEffect( () => {
 		const interval = setInterval( () => {
 			if (
 				!! global.google?.visualization?.AreaChart &&
@@ -171,7 +170,10 @@ export default function GoogleChart( props ) {
 
 			clearInterval( interval );
 		};
-	} );
+	},
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	[]
+	);
 
 	return (
 		<div className="googlesitekit-graph-wrapper">

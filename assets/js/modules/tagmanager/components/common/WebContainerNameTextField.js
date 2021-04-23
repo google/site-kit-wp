@@ -17,15 +17,11 @@
  */
 
 /**
- * External dependencies
- */
-import { useMount } from 'react-use';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -50,11 +46,14 @@ export default function WebContainerNameTextField() {
 	}
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	useMount( () => {
+	useEffect( () => {
 		if ( ! initialContainerName ) {
 			setValues( FORM_SETUP, { containerName } );
 		}
-	} );
+	},
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	[]
+	);
 
 	if ( containerID !== CONTAINER_CREATE ) {
 		return null;

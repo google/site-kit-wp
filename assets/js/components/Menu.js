@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { useMount } from 'react-use';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import useMergedRef from '@react-hook/merged-ref';
@@ -51,7 +50,7 @@ const Menu = forwardRef( ( {
 		onSelected( index, event );
 	}, [ onSelected ] );
 
-	useMount( () => {
+	useEffect( () => {
 		if ( ! menuRef?.current ) {
 			return;
 		}
@@ -63,7 +62,9 @@ const Menu = forwardRef( ( {
 		return () => {
 			menuComponent.unlisten( 'MDCMenu:selected', handleMenuSelected );
 		};
-	} );
+	},
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	[] );
 
 	useEffect( () => {
 		if ( menu ) {
