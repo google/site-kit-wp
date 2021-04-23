@@ -54,7 +54,7 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 		return { propertyID };
 	},
 	validateParams( { propertyID } = {} ) {
-		invariant( isValidPropertyID( propertyID ), 'GA4 propertyID is required.' );
+		invariant( isValidPropertyID( propertyID ), 'A valid GA4 propertyID is required.' );
 	},
 } );
 
@@ -78,9 +78,9 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 		return { propertyIDs };
 	},
 	validateParams( { propertyIDs } = {} ) {
-		invariant( Array.isArray( propertyIDs ), 'GA4 propertyIDs is required.' );
+		invariant( Array.isArray( propertyIDs ), 'GA4 propertyIDs must be an array.' );
 		propertyIDs.forEach( ( propertyID ) => {
-			invariant( isValidPropertyID( propertyID ), 'Valid GA4 propertyID is required.' );
+			invariant( isValidPropertyID( propertyID ), 'A valid GA4 propertyID is required.' );
 		} );
 	},
 } );
@@ -106,7 +106,7 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 		return { propertyID };
 	},
 	validateParams( { propertyID } = {} ) {
-		invariant( isValidPropertyID( propertyID ), 'GA4 propertyID is required.' );
+		invariant( isValidPropertyID( propertyID ), 'A valid GA4 propertyID is required.' );
 	},
 } );
 
