@@ -181,7 +181,9 @@ const baseResolvers = {
 		const availablePropertyIDs = Object.keys( webdatastreams );
 		const remainingPropertyIDs = difference( propertyIDs, availablePropertyIDs );
 		if ( remainingPropertyIDs.length > 0 ) {
-			yield fetchGetWebDataStreamsBatchStore.actions.fetchGetWebDataStreamsBatch( remainingPropertyIDs );
+			for ( let i = 0; i < remainingPropertyIDs.length; i += 10 ) {
+				yield fetchGetWebDataStreamsBatchStore.actions.fetchGetWebDataStreamsBatch( remainingPropertyIDs.slice( i, i + 10 ) );
+			}
 		}
 	},
 };
