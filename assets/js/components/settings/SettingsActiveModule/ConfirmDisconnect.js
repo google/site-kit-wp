@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
@@ -117,3 +122,7 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 	);
 }
 
+ConfirmDisconnect.propTypes = {
+	slug: PropTypes.string.isRequired,
+	handleDialog: PropTypes.func.isRequired,
+};
