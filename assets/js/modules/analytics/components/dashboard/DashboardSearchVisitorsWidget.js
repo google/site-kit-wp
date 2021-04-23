@@ -1,5 +1,5 @@
 /**
- * DashboardAllTrafficWidget component.
+ * DashboardSearchVisitorsWidget component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -108,6 +108,7 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 			visitorsData: store.getReport( args ),
 		};
 	} );
+	console.log('okoko');
 
 	if ( loading ) {
 		return <PreviewBlock width="100%" height="202px" />;

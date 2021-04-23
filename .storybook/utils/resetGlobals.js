@@ -24,7 +24,7 @@ import cloneDeep from 'lodash/cloneDeep';
 /**
  * Internal dependencies
  */
-import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
+import { googlesitekit as dashboardData } from '../data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
 
 export const resetGlobals = () => {
 	global._googlesitekitLegacyData = cloneDeep( dashboardData );

@@ -32,15 +32,23 @@ import './assets/sass/wp-admin.scss';
 import './polyfill-globals';
 import { resetGlobals } from './utils/resetGlobals';
 import { bootstrapFetchMocks } from './fetch-mocks';
+import { WithTestRegistry } from '../tests/js/utils';
 
 bootstrapFetchMocks();
+
+const setupRegistry = ( { dispatch } ) => {
+	// @TODO setupRegistry
+	global.console.log( dispatch );
+};
 
 export const decorators = [
 	( Story ) => {
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<div className="googlesitekit-plugin-preview js">
-					<Story />
+					<div className="googlesitekit-plugin">
+						<Story />
+					</div>
 				</div>
 			</WithTestRegistry>
 		);

@@ -19,10 +19,31 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+const { useRegistry } = Data;
 
 const WithRegistrySetup = ( { func, children } ) => {
+	const registry = useRegistry();
+	const [ ready, setReady ] = useState( false );
 
+	useEffect( () => {
+		if ( func && typeof func === 'function' ) {
+			func( registry );
+
+			setReady( true );
+		}
+	}, [] );
+
+	if ( ready ) {
+		return children;
+	}
+
+	return null;
 };
 
 export default WithRegistrySetup;
