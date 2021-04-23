@@ -30,6 +30,7 @@ import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import { isValidAccountID, isValidContainerID, isValidContainerName, isValidUsageContext } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector, createRegistryControl } = Data;
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 
 // Actions
 const WAIT_FOR_CONTAINERS = 'WAIT_FOR_CONTAINERS';
@@ -103,15 +104,16 @@ const baseActions = {
 	 * @param {string} args.containerName The name for a new container.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createContainer( accountID, usageContext, { containerName } ) {
+	createContainer: createValidatedAction( ( accountID, usageContext, { containerName } ) => {
 		invariant( isValidAccountID( accountID ), 'A valid accountID is required to create a container.' );
 		invariant( isValidUsageContext( usageContext ), 'A valid usageContext is required to create a container.' );
 		invariant( isValidContainerName( containerName ), 'A valid containerName is required to create a container.' );
-
+	},
+	function* ( accountID, usageContext, { containerName } ) {
 		const { response, error } = yield fetchCreateContainerStore.actions.fetchCreateContainer( accountID, usageContext, { containerName } );
 
 		return { response, error };
-	},
+	} ),
 
 	/**
 	 * Sets selected container settings for the given container ID of the current account.
@@ -123,12 +125,14 @@ const baseActions = {
 	 *
 	 * @param {string} containerID Tag Manager container `publicId` of container to select.
 	 */
-	*selectContainerByID( containerID ) {
+	selectContainerByID: createValidatedAction( ( containerID ) => {
 		// This action relies on looking up the container in state to know what
 		// settings to set the container IDs for. For this reason we cannot use this
 		// for selecting the option to "set up a new container"
+		// another instance here
 		invariant( isValidContainerID( containerID ), 'A valid container ID is required to select a container by ID.' );
-
+	},
+	function* ( containerID ) {
 		const { select, dispatch } = yield Data.commonActions.getRegistry();
 		const accountID = select( STORE_NAME ).getAccountID();
 
@@ -156,7 +160,7 @@ const baseActions = {
 			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
 		}
-	},
+	} ),
 
 	/**
 	 * Waits for containers to be resolved for the given account ID.
@@ -167,13 +171,15 @@ const baseActions = {
 	 * @param {string} accountID Google Tag Manager account ID to await containers for.
 	 * @return {Object} Redux-style action.
 	 */
-	*waitForContainers( accountID ) {
+	waitForContainers: createValidatedAction( ( accountID ) => {
 		invariant( isValidAccountID( accountID ), 'A valid accountID is required to wait for containers.' );
+	},
+	function* ( accountID ) {
 		return {
 			payload: { accountID },
 			type: WAIT_FOR_CONTAINERS,
 		};
-	},
+	} ),
 };
 
 const baseControls = {
