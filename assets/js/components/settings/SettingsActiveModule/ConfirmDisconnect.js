@@ -72,7 +72,7 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 			// Only set deactivating to false if there is an error.
 			setIsDeactivating( false );
 		}
-	}, [ slug, module, dashboardURL, deactivateModule, navigateTo ] );
+	}, [ slug, module?.forceActive, dashboardURL, deactivateModule, navigateTo ] );
 
 	if ( ! module ) {
 		return null;

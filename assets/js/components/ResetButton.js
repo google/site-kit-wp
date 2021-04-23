@@ -49,14 +49,14 @@ function ResetButton( { children } ) {
 	 * the navigate call starting, we will just set a debounce to keep the spinner for 3 seconds.
 	 */
 	const debouncedSetInProgress = useDebounce( setInProgress, 3000 );
-	const mediatedSetInProgress = useCallback(
-		( bool ) => bool ? setInProgress( true ) : debouncedSetInProgress( false ),
-		[ debouncedSetInProgress ]
-	);
 
 	useEffect( () => {
-		mediatedSetInProgress( isDoingReset || isNavigatingToPostResetURL );
-	}, [ isDoingReset, isNavigatingToPostResetURL, mediatedSetInProgress ] );
+		if ( isDoingReset || isNavigatingToPostResetURL ) {
+			setInProgress( true );
+		} else {
+			debouncedSetInProgress( false );
+		}
+	}, [ isDoingReset, isNavigatingToPostResetURL, debouncedSetInProgress ] );
 
 	useEffect( () => {
 		const handleCloseModal = ( event ) => {
