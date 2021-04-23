@@ -110,6 +110,20 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 		setUserInputSetting( slug, Array.from( newValues ).slice( 0, max ) );
 	}, dependencies );
 
+	const onKeyDown = useCallback( ( event ) => {
+		if (
+			event.keyCode === ENTER &&
+			(
+				other.trim().length > 0 ||
+				( values.length > 0 && values.length <= max && ! values.includes( '' ) )
+			) &&
+			next &&
+			typeof next === 'function'
+		) {
+			next();
+		}
+	}, [ ...dependencies, other, next, max ] );
+
 	const onOtherChange = useCallback( ( { target } ) => {
 		const newValues = [
 			target.value,
@@ -132,6 +146,7 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 			value: optionSlug,
 			checked: values.includes( optionSlug ),
 			tabIndex: ! isActive ? '-1' : undefined,
+			onKeyDown,
 			...onClickProps,
 		};
 
@@ -151,12 +166,6 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 		);
 	} );
 
-	const handleKeyDown = useCallback( ( event ) => {
-		if ( event.keyCode === ENTER && other.trim().length > 0 && next && typeof next === 'function' ) {
-			next();
-		}
-	}, [ other, next ] );
-
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 			<div className="googlesitekit-user-input__select-options" ref={ optionsRef }>
@@ -170,6 +179,7 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 						checked={ values.includes( other.trim() ) }
 						disabled={ max > 1 && values.length >= max && ! values.includes( other.trim() ) }
 						tabIndex={ ! isActive ? '-1' : undefined }
+						onKeyDown={ onKeyDown }
 						{ ...onClickProps }
 					>
 						{ __( 'Other:', 'google-site-kit' ) }
@@ -186,7 +196,7 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 							ref={ inputRef }
 							disabled={ disabled }
 							tabIndex={ ! values.includes( other.trim() ) || ! isActive ? '-1' : undefined }
-							onKeyDown={ handleKeyDown }
+							onKeyDown={ onKeyDown }
 						/>
 					</TextField>
 					<label htmlFor={ `${ slug }-select-options` } className="screen-reader-text">
