@@ -42,8 +42,7 @@ export default function useExistingTagEffect() {
 				await selectContainerByID( existingTag );
 			}
 		} )();
-	},
-	[
+	},	[
 		hasExistingTag,
 		existingTag,
 		hasExistingTagPermission,

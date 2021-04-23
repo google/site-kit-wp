@@ -98,7 +98,7 @@ export default function SetupForm( { finishSetup } ) {
 		}
 		// Mark the submit as no longer in progress in all cases.
 		setValues( FORM_SETUP, { submitInProgress: false } );
-	}, [ finishSetup, , analyticsModuleActive, activateModule, submitChanges, setValues ] );
+	}, [ finishSetup, analyticsModuleActive, activateModule, submitChanges, setValues ] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
