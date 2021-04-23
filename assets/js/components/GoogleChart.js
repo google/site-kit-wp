@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /* eslint-disable react-hooks/exhaustive-deps */
 
 /**
@@ -90,8 +89,7 @@ export default function GoogleChart( props ) {
 
 			setChart( googleChart );
 		}
-	},
-	[ loading, !! chartRef.current, visualizationLoaded, !! chart ] );
+	}, [ loading, !! chartRef.current, visualizationLoaded, !! chart ] );
 
 	// Draw the chart whenever one of these properties has changed.
 	useEffect( () => {
@@ -127,8 +125,7 @@ export default function GoogleChart( props ) {
 		return () => {
 			global.removeEventListener( 'resize', resize );
 		};
-	},
-	[
+	}, [
 		chart,
 		JSON.stringify( data ),
 		JSON.stringify( options ),
@@ -140,8 +137,8 @@ export default function GoogleChart( props ) {
 		const interval = setInterval( () => {
 			if (
 				!! global.google?.visualization?.AreaChart &&
-         !! global.google?.visualization?.PieChart &&
-         !! global.google?.visualization?.LineChart
+				!! global.google?.visualization?.PieChart &&
+				!! global.google?.visualization?.LineChart
 			) {
 				clearInterval( interval );
 				setLoading( false );
@@ -225,4 +222,3 @@ GoogleChart.defaultProps = {
 };
 
 GoogleChart.charts = new Map();
-

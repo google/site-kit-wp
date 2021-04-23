@@ -17,11 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
-import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -47,14 +51,11 @@ export default function AMPContainerNameTextField() {
 	ampContainerName += ' AMP';
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	useEffect( () => {
+	useMount( () => {
 		if ( ! initialAMPContainerName ) {
 			setValues( FORM_SETUP, { ampContainerName } );
 		}
-	},
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	[]
-	);
+	} );
 
 	if ( ampContainerID !== CONTAINER_CREATE ) {
 		return null;
