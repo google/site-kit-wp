@@ -296,7 +296,7 @@ final class Permissions {
 	/**
 	 * Gets all capabilities used in Google Site Kit.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @return array
 	 */

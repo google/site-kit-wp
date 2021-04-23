@@ -117,7 +117,7 @@ const baseActions = {
 	/**
 	 * Creates a new GA4 property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param {string} accountID Analytics account ID.
 	 * @return {Object} Object with `response` and `error`.
@@ -134,7 +134,7 @@ const baseActions = {
 	/**
 	 * Sets the given property and related fields in the store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param {string} propertyID GA4 property ID.
 	 * @return {Object} A Generator function.
@@ -197,7 +197,7 @@ const baseSelectors = {
 	/**
 	 * Gets all GA4 properties this account can access.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The GA4 Account ID to fetch properties for.
@@ -210,7 +210,7 @@ const baseSelectors = {
 	/**
 	 * Gets a property with specific ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The GA4 property ID to fetch property object for.

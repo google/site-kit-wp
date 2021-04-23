@@ -50,7 +50,7 @@ export const getChartDifferenceArrow = ( difference, options = {} ) => {
 /**
  * Checks if there is a single row of data or one row is contributing 100% of the total for a given dimension.
  *
- * @since n.e.x.t
+ * @since 1.31.0
  *
  * @param {Array.<Object>} report An array of report data objects.
  * @return {(boolean|undefined)} Returns undefined if report is undefined, true/false for the above conditions.
