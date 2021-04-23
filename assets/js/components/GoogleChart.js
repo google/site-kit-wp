@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable react-hooks/exhaustive-deps */
+
 /**
  * External dependencies
  */
@@ -88,7 +90,8 @@ export default function GoogleChart( props ) {
 
 			setChart( googleChart );
 		}
-	}, [ loading, visualizationLoaded, chart, chartID, chartType, onReady ] );
+	},
+	[ loading, !! chartRef.current, visualizationLoaded, !! chart ] );
 
 	// Draw the chart whenever one of these properties has changed.
 	useEffect( () => {
@@ -124,21 +127,21 @@ export default function GoogleChart( props ) {
 		return () => {
 			global.removeEventListener( 'resize', resize );
 		};
-	}, [
+	},
+	[
 		chart,
+		JSON.stringify( data ),
+		JSON.stringify( options ),
 		selectedStats,
 		singleStat,
-		chartID,
-		data,
-		options,
 	] );
 
 	useEffect( () => {
 		const interval = setInterval( () => {
 			if (
 				!! global.google?.visualization?.AreaChart &&
-				!! global.google?.visualization?.PieChart &&
-				!! global.google?.visualization?.LineChart
+         !! global.google?.visualization?.PieChart &&
+         !! global.google?.visualization?.LineChart
 			) {
 				clearInterval( interval );
 				setLoading( false );
@@ -170,10 +173,7 @@ export default function GoogleChart( props ) {
 
 			clearInterval( interval );
 		};
-	},
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	[]
-	);
+	}, [] );
 
 	return (
 		<div className="googlesitekit-graph-wrapper">
@@ -225,3 +225,4 @@ GoogleChart.defaultProps = {
 };
 
 GoogleChart.charts = new Map();
+
