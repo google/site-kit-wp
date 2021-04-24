@@ -92,8 +92,8 @@ const withRegistry = ( Story ) => {
 };
 
 storiesOf( 'AdSense Module/Settings', module )
-	.add( 'View, closed', () => {
-		return <Settings isOpen={ false } />;
+	.add( 'View, closed', ( args, { registry } ) => {
+		return <Settings registry={ registry } isOpen={ false } />;
 	}, {
 		decorators: [
 			withRegistry,

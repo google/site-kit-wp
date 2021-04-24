@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.7
 Requires PHP:      5.6
-Stable tag:        1.30.0
+Stable tag:        1.31.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -87,6 +87,43 @@ We plan to expand the plugin’s capabilities and integrations in the future; we
 If you have some ideas to improve the plugin or to solve a bug, feel free to raise an issue or submit a pull request in the [GitHub repository for the plugin](https://github.com/google/site-kit-wp). Please stick to the [contributing guidelines](https://github.com/google/site-kit-wp/blob/main/CONTRIBUTING.md). You can also contribute to the plugin by translating it. Simply visit [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/google-site-kit) to get started.
 
 == Changelog ==
+
+= 1.31.0 =
+
+**Enhanced**
+
+* Add method to get list of all base capabilities used by Site Kit. Props JoryHogeveen. See [#3130](https://github.com/google/site-kit-wp/issues/3130).
+* Update widget header styles to use grid mechanics instead of static margins. See [#3119](https://github.com/google/site-kit-wp/issues/3119).
+* Implement the technical infrastructure for rendering GA4 snippets in the frontend, including support for double tagging integrating with a UA snippet. See [#3106](https://github.com/google/site-kit-wp/issues/3106).
+* Implement REST data point and JS data store selector to look up a single GA4 property by ID. See [#3102](https://github.com/google/site-kit-wp/issues/3102).
+* Rename "Popularity" / "Top Queries" section to "Acquisition" for new widget-based UI. See [#3065](https://github.com/google/site-kit-wp/issues/3065).
+* Improve styling for Site Kit header, especially on mobile devices. See [#3058](https://github.com/google/site-kit-wp/issues/3058).
+* Update remaining external links in widgets on module pages to include correct date range parameters. See [#3042](https://github.com/google/site-kit-wp/issues/3042).
+* Improve speed and reliability of Analytics property matching. See [#3012](https://github.com/google/site-kit-wp/issues/3012).
+* Add placeholder to all "Other" text input fields in user input flow. See [#2993](https://github.com/google/site-kit-wp/issues/2993).
+* Implement data store selector to detect whether a GA4 property has a web data stream that matches the current site. See [#2981](https://github.com/google/site-kit-wp/issues/2981).
+* Update the `modules/analytics-4` store with actions and selectors for creating and querying web data streams. See [#2980](https://github.com/google/site-kit-wp/issues/2980).
+* Implement JS data store infrastructure to query and create GA4 properties. See [#2979](https://github.com/google/site-kit-wp/issues/2979).
+* Introduce new JS asset for upcoming GA4 integration. See [#2977](https://github.com/google/site-kit-wp/issues/2977).
+* Introduce JS data store `modules/analytics-4` as infrastructure for upcoming GA4 integration. See [#2976](https://github.com/google/site-kit-wp/issues/2976).
+* Allow modifying the active Search Console property in the module's settings panel, relevant for example when a site has multiple applicable properties. See [#2937](https://github.com/google/site-kit-wp/issues/2937).
+* Fix accessibility problem where it wasn't possible to delete user input search terms using the keyboard. See [#2900](https://github.com/google/site-kit-wp/issues/2900).
+* Update user input styles to fix visual issues on small devices. See [#2886](https://github.com/google/site-kit-wp/issues/2886).
+* Migrate AdSense module page "Top earning pages" widget to use Widget API. See [#2066](https://github.com/google/site-kit-wp/issues/2066).
+
+**Fixed**
+
+* Update Unique Visitors widget to display the actual number of users coming from search. See [#3064](https://github.com/google/site-kit-wp/issues/3064).
+* Fix visual spacing problems with widget-based dashboard due to empty containers disrupting grid layout. See [#3062](https://github.com/google/site-kit-wp/issues/3062).
+* Update Site Kit widgets to always return their content wrapped in a `Widget`. See [#3060](https://github.com/google/site-kit-wp/issues/3060).
+* Update AdSense dashboard widgets to render ad blocker warning. See [#3011](https://github.com/google/site-kit-wp/issues/3011).
+* Fix broken alignment of data block elements when there is one with zero data. See [#2992](https://github.com/google/site-kit-wp/issues/2992).
+* Fix UI issues on the pie chart of the All Traffic widget when there is just a single slice. See [#2991](https://github.com/google/site-kit-wp/issues/2991).
+* Fix Analytics links in new widgets on the Analytics module page to take into account selected days. See [#2983](https://github.com/google/site-kit-wp/issues/2983).
+* Fix a bug where select menu components could be partially covered by the Site Kit header making some items unclickable. See [#2885](https://github.com/google/site-kit-wp/issues/2885).
+* Improve performance of potentially slow database query to migrate user data from an older version of Site Kit. See [#2870](https://github.com/google/site-kit-wp/issues/2870).
+* Fix issue with AdSense existing site detection when using camelcase URLs in WordPress settings. See [#2695](https://github.com/google/site-kit-wp/issues/2695).
+* Fix javascript issues that appear when admin pages have been translated with Google Translate. See [#2280](https://github.com/google/site-kit-wp/issues/2280).
 
 = 1.30.0 =
 

@@ -292,4 +292,22 @@ final class Permissions {
 
 		return $allcaps;
 	}
+
+	/**
+	 * Gets all capabilities used in Google Site Kit.
+	 *
+	 * @since 1.31.0
+	 *
+	 * @return array
+	 */
+	public static function get_capabilities() {
+		return array(
+			self::AUTHENTICATE,
+			self::SETUP,
+			self::VIEW_POSTS_INSIGHTS,
+			self::VIEW_DASHBOARD,
+			self::VIEW_MODULE_DETAILS,
+			self::MANAGE_OPTIONS,
+		);
+	}
 }

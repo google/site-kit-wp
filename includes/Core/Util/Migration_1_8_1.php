@@ -231,7 +231,7 @@ class Migration_1_8_1 {
 	/**
 	 * Gets all user IDs that are verified via Site Kit.
 	 *
-	 * @since @n.e.x.t
+	 * @since @1.31.0
 	 *
 	 * @return array List of user ids of verified users. Maximum of 20.
 	 */

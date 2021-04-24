@@ -27,15 +27,21 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS } from '../../../datastore/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
+import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 const { useSelect } = Data;
 
 export default function Header() {
-	const visitorsOverview = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'visitors-overview' ) );
+	const dates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
+	const visitorsOverview = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL(
+		'visitors-overview',
+		generateDateRangeArgs( dates )
+	) );
 	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
-
 	const title = sprintf(
 		/* translators: %s: number of days */
 		_n( 'Audience overview for the last %s day', 'Audience overview for the last %s days', currentDayCount, 'google-site-kit', ),
