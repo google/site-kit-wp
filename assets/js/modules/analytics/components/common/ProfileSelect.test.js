@@ -105,7 +105,6 @@ describe( 'ProfileSelect', () => {
 		const { getAllByRole } = render( <ProfileSelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-
 		// Note: we do length + 1 here because there should also be an item for
 		// "Set up a new property".
 		expect( listItems ).toHaveLength( fixtures.accountsPropertiesProfiles.profiles.length + 1 );
