@@ -21,7 +21,7 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
  */
 class Settings extends Module_Settings {
 
-	const OPTION = 'googlesitekit_idea_hub_settings';
+	const OPTION = 'googlesitekit_idea-hub_settings';
 
 	/**
 	 * Gets the default value.
