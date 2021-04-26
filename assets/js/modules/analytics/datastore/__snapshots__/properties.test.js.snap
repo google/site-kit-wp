@@ -1,6 +1,13 @@
-[
-  {
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`modules/analytics properties selectors getPropertiesIncludingGA4 calls getProperties and GA4 data store getProperties  1`] = `
+Array [
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-10/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-11-20T21:14:23.356Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -11,30 +18,30 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "accepted-land.example.com",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-10",
     "starred": null,
     "updated": "2019-11-20T21:14:24.849Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-10/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-12/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-11-21T19:18:33.920Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -45,36 +52,36 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "amused-condor.example.com",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-12",
     "starred": null,
     "updated": "2019-11-21T19:18:35.449Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-12/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
+  Object {
+    "_accountID": "151753095",
     "_id": "151753095-9",
     "id": "151753095-9",
-    "_accountID": "151753095",
-    "name": "continental-song.example.com"
+    "name": "continental-song.example.com",
   },
-  {
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-9/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-11-14T17:17:12.709Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -85,30 +92,30 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "continental-song.example.com",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-9",
     "starred": null,
     "updated": "2019-11-14T17:17:14.305Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-9/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-17/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-12-05T16:02:23.384Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -119,30 +126,30 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "driving-gazelle.example.com",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-17",
     "starred": null,
     "updated": "2019-12-05T16:02:25.241Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-17/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-15/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-12-04T19:01:58.158Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -153,30 +160,30 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "heavy-turtle.example.com",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-15",
     "starred": null,
     "updated": "2019-12-04T19:01:59.417Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-15/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-14/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-11-25T14:36:13.163Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -187,30 +194,30 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "maximum-rainbow.example.com",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-14",
     "starred": null,
     "updated": "2019-11-25T14:36:14.533Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-14/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-16/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-12-05T14:38:36.289Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -221,30 +228,30 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "native-bird.example.com",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-16",
     "starred": null,
     "updated": "2019-12-05T14:38:38.168Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-16/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-13/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-11-25T13:40:16.332Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -255,30 +262,30 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "occupational-hornets.example.com",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-13",
     "starred": null,
     "updated": "2019-11-25T13:40:17.977Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-13/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-11/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-11-21T13:31:48.033Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -289,36 +296,36 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "passive-west.example.com",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-11",
     "starred": null,
     "updated": "2019-11-21T13:31:49.388Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-11/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
+  Object {
+    "_accountID": "151753095",
     "_id": "151753095-1",
     "id": "151753095-1",
-    "_accountID": "151753095",
-    "name": "rwh"
+    "name": "rwh",
   },
-  {
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-1/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-11-07T11:19:21.809Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -329,36 +336,36 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "rwh",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-1",
     "starred": null,
     "updated": "2019-11-07T11:19:21.809Z",
     "websiteUrl": "http://wrhwh.com",
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-1/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
+  Object {
+    "_accountID": "151753095",
     "_id": "151753095-2",
     "id": "151753095-2",
-    "_accountID": "151753095",
-    "name": "troubled-tipped.example.com"
+    "name": "troubled-tipped.example.com",
   },
-  {
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-2/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-11-07T18:19:42.743Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -369,36 +376,36 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "troubled-tipped.example.com",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-2",
     "starred": null,
     "updated": "2019-11-07T18:19:44.019Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-2/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
+  Object {
+    "_accountID": "151753095-8",
     "_id": "151753095",
     "id": "151753095",
-    "_accountID": "151753095-8",
-    "name": "wide-eastern.example.com"
+    "name": "wide-eastern.example.com",
   },
-  {
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-8/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-11-08T11:51:03.017Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -409,36 +416,42 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "wide-eastern.example.com",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-8",
     "starred": null,
     "updated": "2019-11-08T11:51:04.546Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-8/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
+  Object {
+    "_accountID": "151753095",
     "_id": "151753095-3",
     "id": "151753095-3",
-    "_accountID": "151753095",
-    "name": "www.elasticpress.io"
+    "name": "www.elasticpress.io",
   },
-  {
+  Object {
+    "_accountID": "151753095",
+    "_id": "151753095-4",
+    "id": "151753095-4",
+    "name": "www.elasticpress.io",
+  },
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-3/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-11-07T18:26:20.368Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -449,36 +462,30 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "www.elasticpress.io",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-3",
     "starred": null,
     "updated": "2019-11-07T18:26:23.774Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-3/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
-    "_id": "151753095-4",
-    "id": "151753095-4",
-    "_accountID": "151753095",
-    "name": "www.elasticpress.io"
-  },
-  {
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-4/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-11-07T18:33:00.502Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -489,30 +496,30 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "www.elasticpress.io",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-4",
     "starred": null,
     "updated": "2019-11-07T18:33:02.868Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-4/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-5/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-11-07T19:07:26.522Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -523,30 +530,30 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "www.elasticpress.io",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-5",
     "starred": null,
     "updated": "2019-11-07T19:07:29.427Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-5/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-6/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-11-07T19:12:54.407Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -557,30 +564,30 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "www.elasticpress.io",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-6",
     "starred": null,
     "updated": "2019-11-07T19:12:57.636Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-6/profiles",
-      "type": "analytics#profiles"
-    }
   },
-  {
+  Object {
     "accountId": "151753095",
+    "childLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-7/profiles",
+      "type": "analytics#profiles",
+    },
     "created": "2019-11-07T19:19:01.491Z",
     "dataRetentionResetOnNewActivity": true,
     "dataRetentionTtl": "MONTHS_26",
@@ -591,26 +598,23 @@
     "kind": "analytics#webproperty",
     "level": "STANDARD",
     "name": "www.elasticpress.io",
+    "parentLink": Object {
+      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
+      "type": "analytics#account",
+    },
+    "permissions": Object {
+      "effective": Array [
+        "COLLABORATE",
+        "EDIT",
+        "MANAGE_USERS",
+        "READ_AND_ANALYZE",
+      ],
+    },
     "profileCount": 1,
     "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-7",
     "starred": null,
     "updated": "2019-11-07T19:19:04.038Z",
     "websiteUrl": null,
-    "permissions": {
-      "effective": [
-        "COLLABORATE",
-        "EDIT",
-        "MANAGE_USERS",
-        "READ_AND_ANALYZE"
-      ]
-    },
-    "parentLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095",
-      "type": "analytics#account"
-    },
-    "childLink": {
-      "href": "https://www.googleapis.com/analytics/v3/management/accounts/151753095/webproperties/UA-151753095-7/profiles",
-      "type": "analytics#profiles"
-    }
-  }
+  },
 ]
+`;

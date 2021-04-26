@@ -27,7 +27,6 @@ export { default as getTagPermissionsNoAccess } from './tag-permissions-no-acces
 export { default as createAccount } from './create-account';
 export { default as report } from './report';
 export { default as propertiesGA4 } from './properties-ga4';
-export { default as propertiesExpectedSorted } from './properties-expected-sorted';
 
 import defaultSettings from './settings--default.json';
 

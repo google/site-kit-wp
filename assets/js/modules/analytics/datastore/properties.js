@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import sortBy from 'lodash/sortBy';
 
 /**
  * Internal dependencies
@@ -36,17 +37,6 @@ import { actions as errorStoreActions } from '../../../googlesitekit/data/create
 // yielded error actions will be a no-op.
 const { clearError, receiveError } = errorStoreActions;
 const { createRegistrySelector, createRegistryControl } = Data;
-
-// TODO - util function? exists in helper?
-const compareStrings = ( a, b ) => {
-	if ( a < b ) {
-		return -1;
-	}
-	if ( a > b ) {
-		return 1;
-	}
-	return 0;
-};
 
 const fetchGetPropertiesProfilesStore = createFetchStore( {
 	baseName: 'getPropertiesProfiles',
@@ -425,27 +415,13 @@ const baseSelectors = {
 
 		let propertiesGA4 = [];
 
-		// get ga4 properties
-		try {
-			// TODO - store name should be a constant? Check existing code for examples
+		if ( select( 'modules/analytics-4' ) ) {
 			propertiesGA4 = select( 'modules/analytics-4' ).getProperties( accountID );
-			// propertiesGA4 = [];
-		} catch ( error ) { }
+		}
 
 		const propertiesGA4Mapped = propertiesGA4.map( ( property ) => ( { ...property, id: property._id } ) );
 
-		const unsorted = [ ...propertiesGA4Mapped, ...properties ];
-
-		unsorted.sort( ( a, b ) => {
-			if ( a.name !== b.name ) {
-				return compareStrings( a.name, b.name );
-			}
-
-			// NOTE - I read IB as wanting to sort by ID and ignore the prefix, but it could be read as sort so all UAs are together
-			return compareStrings( a.id.split( 'UA-' ).pop(), b.id.split( 'UA-' ).pop() );
-		} );
-
-		return unsorted;
+		return sortBy( [ ...propertiesGA4Mapped, ...properties ], [ 'name', 'id' ] );
 	} ),
 };
 

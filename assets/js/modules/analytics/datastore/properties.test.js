@@ -270,32 +270,14 @@ describe( 'modules/analytics properties', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const accountID = testAccountID;
 
-				// Load data into this store so there are matches for the data we're about to select,
-				// even though the selector hasn't fulfilled yet.
+				// Load data into this store so there are matches for the data we're about to select
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
-				// TODO - why are fixtures so different? ping in group (examples of each)
 				registry.dispatch( 'modules/analytics-4' ).receiveGetProperties( fixtures.propertiesGA4, { accountID } );
 
-				// ACTUAL TEST
 				const properties = registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID );
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getProperties', [ testAccountID ] )
-				);
-
-				// TODO - manually sort these fixtures and have here to assert
-				expect( properties ).toEqual(
-					// fixtures.propertiesProfiles.properties.concat( fixtures.propertiesGA4 )
-					fixtures.propertiesExpectedSorted
-				);
+				expect( properties ).toMatchSnapshot();
 				expect( properties ).toHaveLength( 17 + 6 );
-
-				// It _may_ make a request for profiles internally if not loaded,
-				// so we only care that it did not fetch properties here.
-				expect( fetchMock ).not.toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-				);
 			} );
 
 			// left question in Slack
@@ -304,7 +286,7 @@ describe( 'modules/analytics properties', () => {
 
 			// TO TEST
 			// -> when stores are NOT populated
-			// -> permutations on one store populated and other not?
+			// -> permutations on one store populated and other not? not sure if excessive...
 		} );
 
 		describe( 'getPropertyByID', () => {
