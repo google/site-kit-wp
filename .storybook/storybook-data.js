@@ -14,10 +14,10 @@ module.exports = [
 		},
 	},
 	{
-		id: 'global--buttons',
+		id: 'components-button--vrt-story',
 		kind: 'Global',
 		name: 'Buttons',
-		story: 'Buttons VRT',
+		story: 'VRT Story',
 		parameters: {
 			fileName: './assets/js/components/ButtonsVRT.stories.js',
 			options: {

@@ -36,13 +36,6 @@ HoverButton.args = {
 	children: 'Default Button Hover',
 	className: 'googlesitekit-button--hover',
 };
-HoverButton.parameters = {
-	options: {
-		hoverSelector: '.googlesitekit-button--hover',
-		postInteractionWait: 3000, // Wait for shadows to animate.
-		onReadyScript: 'mouse.js',
-	},
-};
 
 export const LinkButton = Template.bind( {} );
 LinkButton.storyName = 'Default Button Link';
@@ -64,6 +57,26 @@ DisabledButton.args = {
 	children: 'Disabled Button',
 	disabled: true,
 };
+
+export const VRTStory = () => (
+	<div>
+		<p>
+			<DefaultButton { ...DefaultButton.args } />
+		</p>
+		<p>
+			<HoverButton { ...HoverButton.args } />
+		</p>
+		<p>
+			<LinkButton { ...LinkButton.args } />
+		</p>
+		<p>
+			<DangerButton { ...DangerButton.args } />
+		</p>
+		<p>
+			<DisabledButton { ...DisabledButton.args } />
+		</p>
+	</div>
+);
 
 export default {
 	title: 'Components/Button',
