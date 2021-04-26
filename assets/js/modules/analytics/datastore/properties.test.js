@@ -256,7 +256,7 @@ describe( 'modules/analytics properties', () => {
 			} );
 		} );
 		describe( 'getPropertiesIncludingGA4', () => {
-			it( 'initially just calls getProperties ', async () => {
+			it( 'calls getProperties and GA4 data store getProperties ', async () => {
 				// assume getProperties already has populated properties?
 				// need tests for both cases?
 
@@ -265,13 +265,19 @@ describe( 'modules/analytics properties', () => {
 
 				// prefill store (no other way?)
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
+				// TODO - use ga4 fixture? find this in related tests
+				registry.dispatch( 'modules/analytics-4' ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
 
 				// ACTUAL TEST
 				const properties = registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID );
 
-				expect( properties ).toEqual( fixtures.propertiesProfiles.properties );
-				expect( properties ).toHaveLength( 17 );
+				expect( properties ).toEqual( fixtures.propertiesProfiles.properties.concat( fixtures.propertiesProfiles.properties ) );
+				expect( properties ).toHaveLength( 17 * 2 );
 			} );
+
+			// TO TEST
+			// -> when ga4 data store is NOT available: how to do this? how to remove store?
+			// when store not populated
 		} );
 
 		describe( 'getPropertyByID', () => {

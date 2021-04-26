@@ -410,10 +410,28 @@ const baseSelectors = {
 
 	// TODO java doc
 	getPropertiesIncludingGA4: createRegistrySelector( ( select ) => ( state, accountID ) => {
-		return select( STORE_NAME ).getProperties( accountID );
-		// TODO - get ga4 properties
+		const properties = select( STORE_NAME ).getProperties( accountID );
 
-		// TODO - sort as per IB`
+		let propertiesGA4 = [];
+
+		// get ga4 properties
+		try {
+			// TODO - should be a constant?
+			propertiesGA4 = select( 'modules/analytics-4' ).getProperties( accountID );
+			// propertiesGA4 = [];
+
+			// eslint-disable-next-line
+			// console.log( 'propertiesGA4 ', propertiesGA4 );
+		} catch ( error ) {
+			// eslint-disable-next-line
+			// console.error( 'GA4 module not available' );
+		}
+
+		// return properties;
+
+		return [ ...properties, ...propertiesGA4 ];
+
+		// TODO - sort as per IB
 	} ),
 };
 
