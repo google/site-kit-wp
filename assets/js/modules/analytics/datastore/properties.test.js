@@ -265,19 +265,20 @@ describe( 'modules/analytics properties', () => {
 
 				// prefill store (no other way?)
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
-				// TODO - use ga4 fixture? find this in related tests
-				registry.dispatch( 'modules/analytics-4' ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
+				registry.dispatch( 'modules/analytics-4' ).receiveGetProperties( fixtures.propertiesGA4, { accountID } );
 
 				// ACTUAL TEST
 				const properties = registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID );
 
-				expect( properties ).toEqual( fixtures.propertiesProfiles.properties.concat( fixtures.propertiesProfiles.properties ) );
-				expect( properties ).toHaveLength( 17 * 2 );
+				// TODO - manually sort these fixtures and have here to assert
+				expect( properties ).toEqual( fixtures.propertiesProfiles.properties.concat( fixtures.propertiesGA4 ) );
+				expect( properties ).toHaveLength( 17 + 2 );
 			} );
 
 			// TO TEST
 			// -> when ga4 data store is NOT available: how to do this? how to remove store?
-			// when store not populated
+			// -> when stores are NOT populated
+			// -> permutations on one store populated and other not?
 		} );
 
 		describe( 'getPropertyByID', () => {
