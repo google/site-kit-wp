@@ -16,11 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { registerStore as registerDataStore } from './datastore/index';
-
-export const registerStore = ( registry ) => {
-	registerDataStore( registry );
-};
+export { registerStore } from './datastore';
