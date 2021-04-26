@@ -1,28 +1,32 @@
 [
   {
-    "_id": "1000",
-    "_accountID": "100",
-    "name": "properties/1000",
-    "createTime": "2014-10-02T15:01:23Z",
-    "updateTime": "2014-10-02T15:01:23Z",
-    "parent": "accounts/100",
-    "displayName": "Test GA4 Property",
-    "industryCategory": "TECHNOLOGY",
-    "timeZone": "America/Los_Angeles",
-    "currencyCode": "USD",
-    "deleted": false
+    "_id": "151753095-3",
+    "_accountID": "151753095",
+    "name": "www.elasticpress.io"
   },
   {
-    "_id": "1001",
-    "_accountID": "100",
-    "name": "properties/1001",
-    "createTime": "2014-10-03T11:01:23Z",
-    "updateTime": "2014-10-03T11:01:23Z",
-    "parent": "accounts/100",
-    "displayName": "Another GA4 Property",
-    "industryCategory": "TECHNOLOGY",
-    "timeZone": "America/Los_Angeles",
-    "currencyCode": "USD",
-    "deleted": false
+    "_id": "151753095-9",
+    "_accountID": "151753095",
+    "name": "continental-song.example.com"
+  },
+  {
+    "_id": "151753095-1",
+    "_accountID": "151753095",
+    "name": "rwh"
+  },
+  {
+    "_id": "151753095-2",
+    "_accountID": "151753095",
+    "name": "troubled-tipped.example.com"
+  },
+  {
+    "_id": "151753095",
+    "_accountID": "151753095-8",
+    "name": "wide-eastern.example.com"
+  },
+  {
+    "_id": "151753095-4",
+    "_accountID": "151753095",
+    "name": "www.elasticpress.io"
   }
 ]

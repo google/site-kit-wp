@@ -37,7 +37,8 @@ describe( 'modules/analytics properties', () => {
 	} );
 
 	beforeEach( () => {
-		registry = createTestRegistry();
+		// NOTE - this is initialising all modules.  need a way to filter? my idea (arg does nothing)
+		registry = createTestRegistry( { ignoreModules: 'modulesAnalytics4' } );
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 	} );
@@ -256,6 +257,12 @@ describe( 'modules/analytics properties', () => {
 			} );
 		} );
 		describe( 'getPropertiesIncludingGA4', () => {
+			// but also need to mention that it aggregates two... is this testing what is already tested though? TBH... yes
+			// this is testing already tested selectors AND @wordpress/redux-routine
+			it.todo( 'uses a resolver to make a network request' );
+
+			// name like above "does not make a network request if properties for this account are already present"
+			// no. a name that just says calls both and sorts
 			it( 'calls getProperties and GA4 data store getProperties ', async () => {
 				// assume getProperties already has populated properties?
 				// need tests for both cases?
@@ -263,20 +270,39 @@ describe( 'modules/analytics properties', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const accountID = testAccountID;
 
-				// prefill store (no other way?)
+				// Load data into this store so there are matches for the data we're about to select,
+				// even though the selector hasn't fulfilled yet.
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
+				// TODO - why are fixtures so different? ping in group (examples of each)
 				registry.dispatch( 'modules/analytics-4' ).receiveGetProperties( fixtures.propertiesGA4, { accountID } );
 
 				// ACTUAL TEST
 				const properties = registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID );
 
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getProperties', [ testAccountID ] )
+				);
+
 				// TODO - manually sort these fixtures and have here to assert
-				expect( properties ).toEqual( fixtures.propertiesProfiles.properties.concat( fixtures.propertiesGA4 ) );
+				expect( properties ).toEqual(
+					// fixtures.propertiesProfiles.properties.concat( fixtures.propertiesGA4 )
+					fixtures.propertiesExpectedSorted
+				);
 				expect( properties ).toHaveLength( 17 + 2 );
+
+				// It _may_ make a request for profiles internally if not loaded,
+				// so we only care that it did not fetch properties here.
+				expect( fetchMock ).not.toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+				);
 			} );
 
+			// left question in Slack
+			it.todo( 'just returns ua properties when ga4 store is not available ' );
+			// NO WAY TO UNREGISTER STORE! checked source code. where are stores being registered here?
+
 			// TO TEST
-			// -> when ga4 data store is NOT available: how to do this? how to remove store?
 			// -> when stores are NOT populated
 			// -> permutations on one store populated and other not?
 		} );
