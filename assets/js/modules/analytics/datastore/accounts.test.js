@@ -364,6 +364,11 @@ describe( 'modules/analytics accounts', () => {
 					),
 				);
 
+				await registry.__experimentalResolveSelect( STORE_NAME ).getProfiles(
+					registry.select( STORE_NAME ).getAccountID(),
+					registry.select( STORE_NAME ).getPropertyID()
+				);
+
 				expect( store.getState().matchedProperty ).toMatchObject( matchedProperty );
 				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( matchedProperty.accountId ); // eslint-disable-line sitekit/acronym-case
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( matchedProperty.id );

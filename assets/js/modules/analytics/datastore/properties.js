@@ -174,14 +174,10 @@ const baseActions = {
 			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
 			const existingProfileID = registry.select( STORE_NAME ).getProfileID(); // eslint-disable-line @wordpress/no-unused-vars-before-return
-
-			// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
-			registry.dispatch( STORE_NAME ).setProfileID( '' );
-
-			const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+			const profiles = yield Data.commonActions.await( registry.__experimentalResolveSelect( STORE_NAME ).getProfiles( accountID, propertyID ) );
 
 			if ( profiles === undefined ) {
-				return; // Selection will happen in in getProfiles resolver.
+				return; // Selection will happen in getProfiles resolver.
 			}
 
 			let returnProfile = profiles.find( ( { id: ID } ) => ID === existingProfileID );
