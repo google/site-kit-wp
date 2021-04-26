@@ -97,13 +97,14 @@ const baseActions = {
 	 * @param {string} propertyID GA4 property ID.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	createWebDataStream: createValidatedAction( ( propertyID ) => {
-		invariant( propertyID, 'GA4 propertyID is required.' );
-	},
-	function* ( propertyID ) {
-		const { response, error } = yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream( propertyID );
-		return { response, error };
-	} ),
+	createWebDataStream: createValidatedAction(
+		( propertyID ) => {
+			invariant( propertyID, 'GA4 propertyID is required.' );
+		},
+		function* ( propertyID ) {
+			const { response, error } = yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream( propertyID );
+			return { response, error };
+		} ),
 
 	/**
 	 * Waits for web data streams to be loaded for a property.

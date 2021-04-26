@@ -110,15 +110,16 @@ const baseActions = {
 	 * @param {string} args.profileName The name for a new profile.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	createProfile: createValidatedAction( ( accountID, propertyID, { profileName } ) => {
-		invariant( isValidAccountID( accountID ), 'a valid account ID is required to create a profile.' );
-		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
-		invariant( isValidProfileName( profileName ), 'a valid name is required to create a profile.' );
-	},
-	function* ( accountID, propertyID, { profileName } ) {
-		const { response, error } = yield fetchCreateProfileStore.actions.fetchCreateProfile( accountID, propertyID, { profileName } );
-		return { response, error };
-	} ),
+	createProfile: createValidatedAction(
+		( accountID, propertyID, { profileName } ) => {
+			invariant( isValidAccountID( accountID ), 'a valid account ID is required to create a profile.' );
+			invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
+			invariant( isValidProfileName( profileName ), 'a valid name is required to create a profile.' );
+		},
+		function* ( accountID, propertyID, { profileName } ) {
+			const { response, error } = yield fetchCreateProfileStore.actions.fetchCreateProfile( accountID, propertyID, { profileName } );
+			return { response, error };
+		} ),
 };
 
 const baseResolvers = {

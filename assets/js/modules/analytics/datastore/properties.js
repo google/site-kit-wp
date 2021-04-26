@@ -112,13 +112,14 @@ const baseActions = {
 	 * @param {string} accountID Google Analytics account ID.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	createProperty: createValidatedAction( ( accountID ) => {
-		invariant( accountID, 'accountID is required.' );
-	},
-	function* ( accountID ) {
-		const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
-		return { response, error };
-	} ),
+	createProperty: createValidatedAction(
+		( accountID ) => {
+			invariant( accountID, 'accountID is required.' );
+		},
+		function* ( accountID ) {
+			const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
+			return { response, error };
+		} ),
 
 	/**
 	 * Adds a matchedProperty to the store.

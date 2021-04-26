@@ -826,8 +826,6 @@ describe( 'data utils', () => {
 			const validator = jest.fn();
 			const actionCreator = noop;
 
-			expect( validator ).toHaveBeenCalledTimes( 0 );
-
 			const validatedAction = createValidatedAction(
 				validator,
 				actionCreator
@@ -844,8 +842,6 @@ describe( 'data utils', () => {
 			const validator = noop;
 			const actionCreator = jest.fn();
 
-			expect( actionCreator ).toHaveBeenCalledTimes( 0 );
-
 			const validatedAction = createValidatedAction(
 				validator,
 				actionCreator
@@ -855,6 +851,23 @@ describe( 'data utils', () => {
 
 			expect( actionCreator ).toHaveBeenCalledTimes( 1 );
 			expect( actionCreator ).toHaveBeenCalledWith( args );
+		} );
+
+		it( 'should not call action creator if validator throws an exception ', () => {
+			const args = { foo: 'bar' };
+			const validator = () => {
+				throw new Error( 'foo' );
+			};
+			const actionCreator = jest.fn();
+
+			const validatedAction = createValidatedAction(
+				validator,
+				actionCreator
+			);
+
+			expect( () =>	validatedAction( args ) ).toThrow( 'foo' );
+
+			expect( actionCreator ).toHaveBeenCalledTimes( 0 );
 		} );
 	} );
 } );

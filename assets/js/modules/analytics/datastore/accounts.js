@@ -120,31 +120,32 @@ const baseActions = {
 			.invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
 
-	selectAccount: createValidatedAction( ( accountID ) => {
-		invariant( isValidAccountSelection( accountID ), 'A valid accountID is required to select.' );
-	},
-	function* ( accountID ) {
-		const registry = yield Data.commonActions.getRegistry();
+	selectAccount: createValidatedAction(
+		( accountID ) => {
+			invariant( isValidAccountSelection( accountID ), 'A valid accountID is required to select.' );
+		},
+		function* ( accountID ) {
+			const registry = yield Data.commonActions.getRegistry();
 
-		registry.dispatch( STORE_NAME ).setSettings( {
-			accountID,
-			internalWebPropertyID: '',
-			propertyID: '',
-			profileID: '',
-		} );
+			registry.dispatch( STORE_NAME ).setSettings( {
+				accountID,
+				internalWebPropertyID: '',
+				propertyID: '',
+				profileID: '',
+			} );
 
-		if ( ACCOUNT_CREATE === accountID ) {
-			return;
-		}
+			if ( ACCOUNT_CREATE === accountID ) {
+				return;
+			}
 
-		// Trigger cascading selections.
-		const properties = registry.select( STORE_NAME ).getProperties( accountID );
-		if ( properties === undefined ) {
-			return; // Selection will happen in resolver.
-		}
-		const property = properties[ 0 ] || { id: PROPERTY_CREATE };
-		registry.dispatch( STORE_NAME ).selectProperty( property.id );
-	} ),
+			// Trigger cascading selections.
+			const properties = registry.select( STORE_NAME ).getProperties( accountID );
+			if ( properties === undefined ) {
+				return; // Selection will happen in resolver.
+			}
+			const property = properties[ 0 ] || { id: PROPERTY_CREATE };
+			registry.dispatch( STORE_NAME ).selectProperty( property.id );
+		} ),
 
 	/**
 	 * Creates a new Analytics account.
