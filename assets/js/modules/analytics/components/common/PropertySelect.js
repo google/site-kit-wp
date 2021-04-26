@@ -91,14 +91,16 @@ export default function PropertySelect() {
 					<Option
 						key={ index }
 						value={ id }
-						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
+						data-internal-id={ internalWebPropertyId } /* eslint-disable-line sitekit/acronym-case */
 					>
-						{ sprintf(
-							/* translators: %1$s: property name, %2$s: property ID */
-							__( '%1$s (%2$s)', 'google-site-kit' ),
-							name,
-							id
-						) }
+						{ internalWebPropertyId // eslint-disable-line sitekit/acronym-case
+							? sprintf(
+								/* translators: %1$s: property name, %2$s: property ID */
+								__( '%1$s (%2$s)', 'google-site-kit' ),
+								name,
+								id
+							) : name
+						}
 					</Option>
 				) ) }
 		</Select>
