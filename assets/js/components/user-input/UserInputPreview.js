@@ -59,7 +59,7 @@ export default function UserInputPreview( props ) {
 	const [ page ] = useQueryArg( 'page' );
 
 	useEffect( () => {
-		if ( ! previewContainer?.current || page.startsWith( 'googlesitekit-settings' ) ) {
+		if ( ! previewContainer?.current || page?.startsWith( 'googlesitekit-settings' ) ) {
 			return;
 		}
 
