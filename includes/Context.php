@@ -493,7 +493,7 @@ class Context {
 
 		} elseif ( 'language-variant' === $format ) {
 			$variant_array  = explode( '_', $wp_locale );
-			$variant_string = array_key_exists( 1, $variant_array ) ? $variant_array[0] . '_' . $variant_array[1] : $variant_array[0];
+			$variant_string = implode( '_', array_slice( $variant_array, 0, 2 ) );
 			return $variant_string;
 		}
 
