@@ -151,10 +151,11 @@ const webpackConfig = ( env, argv ) => {
 				'googlesitekit-modules-adsense': './assets/js/googlesitekit-modules-adsense.js',
 				'googlesitekit-modules-analytics': './assets/js/googlesitekit-modules-analytics.js',
 				'googlesitekit-modules-analytics-4': './assets/js/googlesitekit-modules-analytics-4.js',
+				'googlesitekit-modules-idea-hub': './assets/js/googlesitekit-modules-idea-hub.js',
+				'googlesitekit-modules-optimize': './assets/js/googlesitekit-modules-optimize.js',
 				'googlesitekit-modules-pagespeed-insights': 'assets/js/googlesitekit-modules-pagespeed-insights.js',
 				'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
 				'googlesitekit-modules-tagmanager': './assets/js/googlesitekit-modules-tagmanager.js',
-				'googlesitekit-modules-optimize': './assets/js/googlesitekit-modules-optimize.js',
 				'googlesitekit-user-input': './assets/js/googlesitekit-user-input.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
