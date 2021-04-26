@@ -122,14 +122,12 @@ final class Permissions {
 
 		$this->meta_to_core = array(
 			// Allow users that can edit a post to view that post's insights.
-			// TODO change to map to edit_post when Site Kit supports non admin access.
-			self::VIEW_POST_INSIGHTS => 'manage_options',
+			self::VIEW_POST_INSIGHTS => 'edit_post',
 		);
 
 		$this->meta_to_base = array(
 			// Allow users that can generally view posts insights to view a specific post's insights.
-			// TODO change to map to self::VIEW_POSTS_INSIGHTS when Site Kit supports non admin access.
-			self::VIEW_POST_INSIGHTS => 'manage_options',
+			self::VIEW_POST_INSIGHTS => self::VIEW_POSTS_INSIGHTS,
 		);
 
 		$this->network_base = array(
