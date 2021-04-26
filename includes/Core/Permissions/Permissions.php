@@ -30,7 +30,6 @@ final class Permissions {
 	const VIEW_DASHBOARD      = 'googlesitekit_view_dashboard';
 	const VIEW_MODULE_DETAILS = 'googlesitekit_view_module_details';
 	const MANAGE_OPTIONS      = 'googlesitekit_manage_options';
-	const PUBLISH_POSTS       = 'googlesitekit_publish_posts';
 
 	/*
 	 * Custom meta capabilities.
@@ -108,18 +107,17 @@ final class Permissions {
 			self::AUTHENTICATE        => 'manage_options',
 
 			// Allow contributors and up to view their own post's insights.
-			self::VIEW_POSTS_INSIGHTS => 'edit_posts',
+			// TODO change to map to edit_posts when Site Kit supports non admin access.
+			self::VIEW_POSTS_INSIGHTS => 'manage_options',
 
 			// Allow editors and up to view the dashboard and module details.
-			self::VIEW_DASHBOARD      => 'edit_others_posts',
-			self::VIEW_MODULE_DETAILS => 'edit_others_posts',
+			// TODO change to map to edit_others_posts when Site Kit supports non admin access.
+			self::VIEW_DASHBOARD      => 'manage_options',
+			self::VIEW_MODULE_DETAILS => 'manage_options',
 
 			// Allow administrators and up to manage options and set up the plugin.
 			self::MANAGE_OPTIONS      => 'manage_options',
 			self::SETUP               => 'manage_options',
-
-			// Allow to differentiate between authors and contributors.
-			self::PUBLISH_POSTS       => 'publish_posts',
 		);
 
 		$this->meta_to_core = array(
@@ -134,8 +132,9 @@ final class Permissions {
 
 		$this->network_base = array(
 			// Require network admin access to view the dashboard and module details in network mode.
-			self::VIEW_DASHBOARD      => 'manage_network',
-			self::VIEW_MODULE_DETAILS => 'manage_network',
+			// TODO change to map to manage_network when Site Kit supports non admin access.
+			self::VIEW_DASHBOARD      => 'manage_options',
+			self::VIEW_MODULE_DETAILS => 'manage_options',
 
 			// Require network admin access to manage options and set up the plugin in network mode.
 			self::MANAGE_OPTIONS      => 'manage_network_options',
@@ -194,7 +193,6 @@ final class Permissions {
 			self::VIEW_DASHBOARD,
 			self::VIEW_MODULE_DETAILS,
 			self::MANAGE_OPTIONS,
-			self::PUBLISH_POSTS,
 		);
 
 		return array_combine(
