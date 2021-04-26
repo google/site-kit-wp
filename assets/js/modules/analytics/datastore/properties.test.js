@@ -289,7 +289,7 @@ describe( 'modules/analytics properties', () => {
 					// fixtures.propertiesProfiles.properties.concat( fixtures.propertiesGA4 )
 					fixtures.propertiesExpectedSorted
 				);
-				expect( properties ).toHaveLength( 17 + 2 );
+				expect( properties ).toHaveLength( 17 + 6 );
 
 				// It _may_ make a request for profiles internally if not loaded,
 				// so we only care that it did not fetch properties here.

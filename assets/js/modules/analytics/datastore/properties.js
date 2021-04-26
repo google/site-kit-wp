@@ -37,6 +37,17 @@ import { actions as errorStoreActions } from '../../../googlesitekit/data/create
 const { clearError, receiveError } = errorStoreActions;
 const { createRegistrySelector, createRegistryControl } = Data;
 
+// TODO - util function? exists in helper?
+const compareStrings = ( a, b ) => {
+	if ( a < b ) {
+		return -1;
+	}
+	if ( a > b ) {
+		return 1;
+	}
+	return 0;
+};
+
 const fetchGetPropertiesProfilesStore = createFetchStore( {
 	baseName: 'getPropertiesProfiles',
 	controlCallback: ( { accountID } ) => {
@@ -416,22 +427,25 @@ const baseSelectors = {
 
 		// get ga4 properties
 		try {
-			// TODO - should be a constant?
+			// TODO - store name should be a constant? Check existing code for examples
 			propertiesGA4 = select( 'modules/analytics-4' ).getProperties( accountID );
 			// propertiesGA4 = [];
+		} catch ( error ) { }
 
-			// eslint-disable-next-line
-			// console.log( 'propertiesGA4 ', propertiesGA4 );
-		} catch ( error ) {
-			// eslint-disable-next-line
-			// console.error( 'GA4 module not available' );
-		}
+		const propertiesGA4Mapped = propertiesGA4.map( ( property ) => ( { ...property, id: property._id } ) );
 
-		// return properties;
+		const unsorted = [ ...propertiesGA4Mapped, ...properties ];
 
-		return [ ...properties, ...propertiesGA4 ];
+		unsorted.sort( ( a, b ) => {
+			if ( a.name !== b.name ) {
+				return compareStrings( a.name, b.name );
+			}
 
-		// TODO - sort as per IB
+			// NOTE - I read IB as wanting to sort by ID and ignore the prefix, but it could be read as sort so all UAs are together
+			return compareStrings( a.id.split( 'UA-' ).pop(), b.id.split( 'UA-' ).pop() );
+		} );
+
+		return unsorted;
 	} ),
 };
 
