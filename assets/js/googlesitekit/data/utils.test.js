@@ -809,7 +809,7 @@ describe( 'data utils', () => {
 				.toThrow( 'an action creator function is required.' );
 		} );
 
-		it( 'should throw an error if validator function is a generator object', () => {
+		it( 'should throw an error if action creator function is a generator object', () => {
 			const validator = noop;
 			function* actionCreator() { }
 
