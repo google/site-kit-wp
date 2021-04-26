@@ -91,7 +91,7 @@ export default function PropertySelect() {
 					<Option
 						key={ index }
 						value={ id }
-						data-internal-id={ internalWebPropertyId } /* eslint-disable-line sitekit/acronym-case */
+						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
 					>
 						{ internalWebPropertyId // eslint-disable-line sitekit/acronym-case
 							? sprintf(
