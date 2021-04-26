@@ -167,25 +167,28 @@ describe( 'modules/analytics properties', () => {
 		} );
 
 		describe( 'setPrimaryPropertyType', () => {
-			it( 'can only be "ga" or "ua4"', () => {
-				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( 'ua' );
-				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( 'ga4' );
+			it.each( [
+				[ 'ua' ],
+				[ 'ga4' ],
+			] )( 'should not throw when %s is passed', ( type ) => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).setPrimaryPropertyType( type );
+				} ).not.toThrow();
+			} );
 
+			it( 'should throw an error when invalid type is passed', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).setPrimaryPropertyType( 'foo-bar' );
 				} ).toThrow( 'type must be "ua" or "ga4"' );
 			} );
 
-			it( 'can be set and read', () => {
-				expect( registry.select( STORE_NAME ).getPrimaryPropertyType( ) ).toEqual( 'ua' );
+			it.each( [
+				[ 'ua' ],
+				[ 'ga4' ],
+			] )( 'should set and read when %s is passed', ( type ) => {
+				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( type );
 
-				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( 'ga4' );
-
-				expect( registry.select( STORE_NAME ).getPrimaryPropertyType( ) ).toEqual( 'ga4' );
-
-				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( 'ua' );
-
-				expect( registry.select( STORE_NAME ).getPrimaryPropertyType( ) ).toEqual( 'ua' );
+				expect( registry.stores[ STORE_NAME ].store.getState().primaryPropertyType ).toBe( type );
 			} );
 		} );
 	} );
@@ -305,8 +308,14 @@ describe( 'modules/analytics properties', () => {
 			} );
 		} );
 		describe( 'getPrimaryPropertyType', () => {
-			it( 'returns the primary property type from the store', () => {
-				expect( registry.select( STORE_NAME ).getPrimaryPropertyType( ) ).toEqual( 'ua' );
+			it( 'should correctly return the default value', () => {
+				expect( registry.select( STORE_NAME ).getPrimaryPropertyType( ) ).toBe( 'ua' );
+			} );
+
+			it( 'should return the new state when it has been changed', () => {
+				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( 'ga4' );
+
+				expect( registry.select( STORE_NAME ).getPrimaryPropertyType( ) ).toBe( 'ga4' );
 			} );
 		} );
 	} );
