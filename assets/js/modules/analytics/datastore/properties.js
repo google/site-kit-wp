@@ -407,6 +407,14 @@ const baseSelectors = {
 
 		return select( STORE_NAME ).isFetchingGetPropertiesProfiles( accountID );
 	} ),
+
+	// TODO java doc
+	getPropertiesIncludingGA4: createRegistrySelector( ( select ) => ( state, accountID ) => {
+		return select( STORE_NAME ).getProperties( accountID );
+		// TODO - get ga4 properties
+
+		// TODO - sort as per IB`
+	} ),
 };
 
 const store = Data.combineStores(

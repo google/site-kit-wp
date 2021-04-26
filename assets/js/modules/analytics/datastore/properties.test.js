@@ -255,6 +255,25 @@ describe( 'modules/analytics properties', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
+		describe( 'getPropertiesIncludingGA4', () => {
+			it( 'initially just calls getProperties ', async () => {
+				// assume getProperties already has populated properties?
+				// need tests for both cases?
+
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+				const accountID = testAccountID;
+
+				// prefill store (no other way?)
+				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
+
+				// ACTUAL TEST
+				const properties = registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID );
+
+				expect( properties ).toEqual( fixtures.propertiesProfiles.properties );
+				expect( properties ).toHaveLength( 17 );
+			} );
+		} );
+
 		describe( 'getPropertyByID', () => {
 			it( 'returns the property object by its ID when present in the store', () => {
 				const { properties } = fixtures.propertiesProfiles;
