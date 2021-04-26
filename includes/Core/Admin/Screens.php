@@ -364,16 +364,14 @@ final class Screens {
 						return;
 					}
 
-					$notification = $context->input()->filter( INPUT_GET, 'notification' );
-					$error        = $context->input()->filter( INPUT_GET, 'error' );
-
-					// Redirect to dashboard if success parameter indicator.
-					if ( 'authentication_success' === $notification && empty( $error ) ) {
+					// Redirect to dashboard if user is authenticated.
+					if ( $authentication->is_authenticated() ) {
 						wp_safe_redirect(
 							$context->admin_url(
 								'dashboard',
 								array(
-									'notification' => 'authentication_success',
+									// Pass through the notification parameter, or removes it if none.
+									'notification' => $context->input()->filter( INPUT_GET, 'notification' ),
 								)
 							)
 						);
