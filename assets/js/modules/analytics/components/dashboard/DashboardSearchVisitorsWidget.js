@@ -96,13 +96,18 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 			...commonArgs,
 		};
 
+		const drilldowns = [ 'analytics.trafficChannel:Organic Search' ];
+		if ( url ) {
+			drilldowns.push( `analytics.pagePath:${ getURLPath( url ) }` );
+		}
+
 		return {
 			loading: ! store.hasFinishedResolution( 'getReport', [ sparklineArgs ] ) || ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
 			// Due to the nature of these queries, we need to run them separately.
 			sparkData: store.getReport( sparklineArgs ),
 			serviceURL: store.getServiceReportURL( 'acquisition-channels', {
-				'_r.drilldown': url ? `analytics.trafficChannel:Organic Search,analytics.pagePath:${ getURLPath( url ) }` : undefined,
+				'_r.drilldown': drilldowns.join( ',' ),
 				...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
 			} ),
 			visitorsData: store.getReport( args ),

@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { Fragment, useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,10 +33,11 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Row } from '../../material-components';
+import { getUserInputAnwsers } from './util/constants';
 import Button from '../Button';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
-import { getUserInputAnwsers } from './util/constants';
+import useQueryArg from '../../hooks/useQueryArg';
 import ErrorNotice from '../ErrorNotice';
 const { useSelect } = Data;
 
@@ -47,18 +48,31 @@ export default function UserInputPreview( props ) {
 		submitChanges,
 		error,
 	} = props;
-
+	const previewContainer = useRef();
 	const settings = useSelect( ( select ) => select( CORE_USER ).getUserInputSettings() );
-
 	const {
 		USER_INPUT_ANSWERS_GOALS,
 		USER_INPUT_ANSWERS_HELP_NEEDED,
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
 		USER_INPUT_ANSWERS_ROLE,
 	} = getUserInputAnwsers();
+	const [ page ] = useQueryArg( 'page' );
+
+	useEffect( () => {
+		if ( ! previewContainer?.current || page?.startsWith( 'googlesitekit-settings' ) ) {
+			return;
+		}
+
+		const buttonEl = previewContainer.current.querySelector( '.mdc-button' );
+		if ( buttonEl ) {
+			setTimeout( () => {
+				buttonEl.focus();
+			}, 50 );
+		}
+	}, [ page ] );
 
 	return (
-		<div className="googlesitekit-user-input__preview">
+		<div className="googlesitekit-user-input__preview" ref={ previewContainer }>
 			<Row>
 				<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
 					<Fragment>
