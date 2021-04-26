@@ -28,8 +28,6 @@ import memize from 'memize';
  */
 import { createRegistryControl, createRegistrySelector } from '@wordpress/data';
 
-import isGenerator from '@wordpress/redux-routine/build/is-generator';
-
 const GET_REGISTRY = 'GET_REGISTRY';
 const AWAIT = 'AWAIT';
 
@@ -392,7 +390,8 @@ export function createValidationSelector( validate ) {
 export function createValidatedAction( validate, actionCreator ) {
 	invariant( typeof validate === 'function', 'a validator function is required.' );
 	invariant( typeof actionCreator === 'function', 'an action creator function is required.' );
-	invariant( ! isGenerator( validate ), 'an action’s validator function must not be a generator.' );
+	invariant( validate[ Symbol.toStringTag ] !== 'Generator' && validate[ Symbol.toStringTag ] !== 'GeneratorFunction',
+		'an action’s validator function must not be a generator.' );
 
 	return ( ...args ) => {
 		validate( ...args );

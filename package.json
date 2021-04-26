@@ -113,7 +113,6 @@
     "@wordpress/i18n": "^3.14.0",
     "@wordpress/icons": "^2.9.0",
     "@wordpress/keycodes": "^2.16.0",
-    "@wordpress/redux-routine": "^3.14.2",
     "@wordpress/scripts": "^12.2.0",
     "@wordpress/url": "^2.17.0",
     "accessible-autocomplete": "^2.0.3",
