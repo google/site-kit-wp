@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`modules/analytics properties selectors getPropertiesIncludingGA4 calls getProperties and GA4 data store getProperties  1`] = `
+exports[`modules/analytics properties selectors getPropertiesIncludingGA4 returns a sorted list of ua and ga4 properties  1`] = `
 Array [
   Object {
     "accountId": "151753095",

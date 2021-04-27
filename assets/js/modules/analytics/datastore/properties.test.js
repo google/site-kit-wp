@@ -37,7 +37,7 @@ describe( 'modules/analytics properties', () => {
 	} );
 
 	beforeEach( () => {
-		registry = createTestRegistry( );
+		registry = createTestRegistry();
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 	} );

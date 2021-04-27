@@ -31,6 +31,7 @@ import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySe
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
@@ -427,8 +428,8 @@ const baseSelectors = {
 
 		let propertiesGA4 = [];
 
-		if ( select( 'modules/analytics-4' ) ) {
-			propertiesGA4 = select( 'modules/analytics-4' ).getProperties( accountID );
+		if ( select( MODULES_ANALYTICS_4 ) ) {
+			propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
 		}
 
 		const propertiesGA4Mapped = propertiesGA4.map( ( property ) => ( { ...property, id: property._id } ) );
