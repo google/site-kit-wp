@@ -108,7 +108,6 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 			visitorsData: store.getReport( args ),
 		};
 	} );
-	console.log('okoko');
 
 	if ( loading ) {
 		return <PreviewBlock width="100%" height="202px" />;

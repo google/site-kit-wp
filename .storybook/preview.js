@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import cloneDeep from 'lodash/cloneDeep';
-
-/**
  * Internal dependencies
  */
 import '../assets/sass/wpdashboard.scss';
@@ -36,23 +31,16 @@ import { WithTestRegistry } from '../tests/js/utils';
 
 bootstrapFetchMocks();
 
-const setupRegistry = ( { dispatch } ) => {
-	// @TODO setupRegistry
-	global.console.log( dispatch );
-};
-
 export const decorators = [
-	( Story ) => {
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<div className="googlesitekit-plugin-preview js">
-					<div className="googlesitekit-plugin">
-						<Story />
-					</div>
+	( Story ) => (
+		<WithTestRegistry>
+			<div className="googlesitekit-plugin-preview js">
+				<div className="googlesitekit-plugin">
+					<Story />
 				</div>
-			</WithTestRegistry>
-		);
-	},
+			</div>
+		</WithTestRegistry>
+	),
 	// Decorators run from last added to first
 	( Story ) => {
 		resetGlobals();
