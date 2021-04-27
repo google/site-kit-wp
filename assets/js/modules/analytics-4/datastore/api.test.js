@@ -46,13 +46,14 @@ describe( 'modules/analytics-4 properties', () => {
 
 	describe( 'selectors', () => {
 		describe( 'isAdminAPIWorking', () => {
-			// TODO - better names for all tests
+			// TODO - REMOVE
 			it( 'should return false TODO AS PER SPEC', async () => {
 				const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking( );
 
 				expect( isAdminAPIWorking ).toBe( undefined );
 			} );
 
+			// TODO - REMOVE
 			it( 'should return true if both exist', async () => {
 				// NOTE - selector does not work for receiveGetProperty. assuming that IB knows this!
 				registry.dispatch( STORE_NAME ).receiveGetProperties( [
@@ -97,6 +98,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( isAdminAPIWorking ).toBe( true );
 			} );
 
+			// TODO - REMOVE
 			it( 'should return false if has at least one error with key starting with getProperties', async () => {
 				registry.dispatch( STORE_NAME ).receiveError(
 					new Error( 'foo' ),	'getProperties', [ 'foo', 'bar' ]
@@ -107,6 +109,7 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( isAdminAPIWorking ).toBe( false );
 			} );
 
+			// TODO - REMOVE
 			it( 'should return false if has at least one error with key starting with getWebDataStreams', async () => {
 				registry.dispatch( STORE_NAME ).receiveError(
 					new Error( 'foo' ),	'getWebDataStreams', [ 'foo', 'bar' ]
@@ -117,16 +120,74 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( isAdminAPIWorking ).toBe( false );
 			} );
 
-			// not strictly correct
-			// it( 'should return false if has errors starting with other keys', async () => {
-			// 	registry.dispatch( STORE_NAME ).receiveError(
-			// 		new Error( 'foo' ),	'getFoo', [ 'foo', 'bar' ]
-			// 	);
+			test.each`
+               property   | webData    | errorProperty | errorWebData | expected
+               ${ true }  | ${ true }  |  ${ false }   | ${ false }   | ${ true }
+               ${ true }  | ${ false } |  ${ false }   | ${ false }   | ${ undefined }
+               ${ false } | ${ true }  |  ${ false }   | ${ false }   | ${ undefined }
+               ${ false } | ${ false } |  ${ false }   | ${ false }   | ${ undefined }
+               ${ true }  | ${ true }  |  ${ true }    | ${ false }   | ${ false }
+               ${ true }  | ${ true }  |  ${ false }   | ${ true }    | ${ false }
+               ${ true }  | ${ true }  |  ${ true }    | ${ true }    | ${ false }
+               ${ false } | ${ true }  |  ${ true }    | ${ true }    | ${ false }
+               ${ true }  | ${ false } |  ${ true }    | ${ true }    | ${ false }
+               ${ false } | ${ false } |  ${ true }    | ${ true }    | ${ false }
+            `( 'DOES $propertyValue | $webDataValue | $errorProperty | $errorWebData',
+				( { property, webData, errorProperty, errorWebData, expected } ) => {
+					if ( property ) {
+						registry.dispatch( STORE_NAME ).receiveGetProperties( [
+							{
+								_id: '1000',
+								_accountID: '100',
+								name: 'properties/1000',
+								createTime: '2014-10-02T15:01:23Z',
+								updateTime: '2014-10-02T15:01:23Z',
+								parent: 'accounts/100',
+								displayName: 'Test GA4 Property',
+								industryCategory: 'TECHNOLOGY',
+								timeZone: 'America/Los_Angeles',
+								currencyCode: 'USD',
+								deleted: false,
+							},
+						],
+						{ accountID: 'foo-bar' },
+						);
+					}
+					if ( webData ) {
+						registry.dispatch( STORE_NAME ).receiveGetWebDataStreams(
+							[
+								{
+									_id: '2000',
+									_propertyID: '1000',
+									name: 'properties/1000/webDataStreams/2000',
+									// eslint-disable-next-line sitekit/acronym-case
+									measurementId: '1A2BCD345E',
+									// eslint-disable-next-line sitekit/acronym-case
+									firebaseAppId: '',
+									createTime: '2014-10-02T15:01:23Z',
+									updateTime: '2014-10-02T15:01:23Z',
+									defaultUri: 'http://example.com',
+									displayName: 'Test GA4 WebDataStream',
+								},
+							],
+							{ propertyID: 'foo-bar' }
+						);
+					}
+					if ( errorProperty ) {
+						registry.dispatch( STORE_NAME ).receiveError(
+							new Error( 'foo' ),	'getProperties', [ 'foo', 'bar' ]
+						);
+					}
+					if ( errorWebData ) {
+						registry.dispatch( STORE_NAME ).receiveError(
+							new Error( 'foo' ),	'getWebDataStreams', [ 'foo', 'bar' ]
+						);
+					}
 
-			// 	const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking( );
+					const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking( );
 
-			// 	expect( isAdminAPIWorking ).toBe( false );
-			// } );
+					expect( isAdminAPIWorking ).toBe( expected );
+				} );
 		} );
 	} );
 } );

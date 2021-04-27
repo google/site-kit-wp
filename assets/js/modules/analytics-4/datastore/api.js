@@ -36,20 +36,6 @@ const baseSelectors = {
 
 	// TODO - JSdoc
 	isAdminAPIWorking( state ) {
-		// The state['properties'] object has at least one account with a non-empty array of properties;
-		for ( const propertyList of Object.values( state.properties ) ) {
-			if ( propertyList && propertyList.length && propertyList.length > 0 ) {
-				return true;
-			}
-		}
-
-		// The state['webdatastreams'] object has at least one property with a non-empty array of web datastreams;
-		for ( const webdatastreamList of Object.values( state.webdatastreams ) ) {
-			if ( webdatastreamList && webdatastreamList.length && webdatastreamList.length > 0 ) {
-				return true;
-			}
-		}
-
 		// TODO - should be helper method exported from create-error-store? not sure what kind of encapuslation is wanted.
 
 		// There are no entries in the state['errors'] object which key start with getProperties:: prefix;
@@ -60,6 +46,18 @@ const baseSelectors = {
                 errorKey.startsWith( 'getWebDataStreams' )
 			) {
 				return false;
+			}
+		}
+
+		// The state['properties'] object has at least one account with a non-empty array of properties;
+		for ( const propertyList of Object.values( state.properties ) ) {
+			if ( propertyList && propertyList.length && propertyList.length > 0 ) {
+				// The state['webdatastreams'] object has at least one property with a non-empty array of web datastreams;
+				for ( const webdatastreamList of Object.values( state.webdatastreams ) ) {
+					if ( webdatastreamList && webdatastreamList.length && webdatastreamList.length > 0 ) {
+						return true;
+					}
+				}
 			}
 		}
 
