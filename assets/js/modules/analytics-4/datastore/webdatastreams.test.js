@@ -283,6 +283,42 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				expect( initialDataStreams ).toEqual( fixtures.webDataStreamsBatch );
 				expect( fetchMock ).not.toHaveFetched( webDataStreamsBatchEndpoint );
 			} );
+
+			it( 'should send multiple request if propertyIDs array has more than 10 items', async () => {
+				const propertyIDs = [];
+				const allDataStreams = {};
+				const firstBatch = {};
+				const secondBatch = {};
+
+				for ( let i = 0; i < 15; i++ ) {
+					const propertyID = `${ 1000 + i }`;
+					const datastream = {
+						_id: `${ 2000 + i }`,
+						_propertyID: propertyID,
+					};
+
+					propertyIDs.push( propertyID );
+
+					allDataStreams[ propertyID ] = datastream;
+					if ( i < 10 ) {
+						firstBatch[ propertyID ] = datastream;
+					} else {
+						secondBatch[ propertyID ] = datastream;
+					}
+				}
+
+				const responses = [ firstBatch, secondBatch ];
+				fetchMock.get( webDataStreamsBatchEndpoint, () => {
+					return { body: responses.pop() };
+				} );
+
+				expect( registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs ) ).toEqual( {} );
+				await untilResolved( registry, STORE_NAME ).getWebDataStreamsBatch( propertyIDs );
+				expect( registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs ) ).toEqual( allDataStreams );
+
+				expect( fetchMock ).toHaveFetched( webDataStreamsBatchEndpoint );
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
 		} );
 	} );
 } );
