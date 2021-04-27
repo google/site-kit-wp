@@ -55,6 +55,7 @@ export default function PropertySelect() {
 	} );
 
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) );
 
 	const { selectProperty } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -65,7 +66,7 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID ] );
 
-	if ( isResolvingProperties ) {
+	if ( ! hasResolvedAccounts || isResolvingProperties ) {
 		return <ProgressBar small />;
 	}
 

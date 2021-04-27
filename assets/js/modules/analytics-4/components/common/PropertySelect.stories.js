@@ -27,12 +27,7 @@ import { storiesOf } from '@storybook/react';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { STORE_NAME } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
-import * as analyticsFixtures from '../../../analytics/datastore/__fixtures__';
 import { WithTestRegistry } from '../../../../../../tests/js/utils';
-
-/**
- * Internal dependencies
- */
 import PropertySelect from './PropertySelect';
 
 function SetupWrap( { children } ) {
@@ -55,7 +50,6 @@ storiesOf( 'GA4', module )
 			properties,
 			webDataStreams,
 		} = fixtures;
-		const { accounts } = analyticsFixtures.accountsPropertiesProfiles;
 		const accountID = createProperty._accountID;
 		const propertyID = createWebDataStream._propertyID;
 
@@ -64,7 +58,12 @@ storiesOf( 'GA4', module )
 				accountID,
 				propertyID,
 			} );
-			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [ {
+				id: properties[ 0 ]._accountID,
+				kind: 'analytics#account',
+				name: 'GA4 Account',
+			} ] );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
 			dispatch( STORE_NAME ).receiveGetWebDataStreams( webDataStreams, { propertyID } );
 		};
