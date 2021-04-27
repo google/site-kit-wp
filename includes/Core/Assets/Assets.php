@@ -392,8 +392,7 @@ final class Assets {
 					'src'          => 'https://www.gstatic.com/charts/loader.js',
 					'in_footer'    => false,
 					'before_print' => function( $handle ) {
-						// The "42" version is important because it contains a fix for the tooltip flickering issue.
-						wp_add_inline_script( $handle, 'google.charts.load( "current", { packages: [ "corechart" ] } );' );
+						wp_add_inline_script( $handle, 'google.charts.load( "49", { packages: [ "corechart" ] } );' );
 					},
 				)
 			),
@@ -778,7 +777,7 @@ final class Assets {
 			 * @param array $data Data about each module.
 			 */
 			'modules'       => apply_filters( 'googlesitekit_modules_data', array() ),
-			'locale'        => get_user_locale(),
+			'locale'        => $this->context->get_locale( 'user' ),
 			'permissions'   => array(
 				'canAuthenticate'      => current_user_can( Permissions::AUTHENTICATE ),
 				'canSetup'             => current_user_can( Permissions::SETUP ),
@@ -786,7 +785,6 @@ final class Assets {
 				'canViewDashboard'     => current_user_can( Permissions::VIEW_DASHBOARD ),
 				'canViewModuleDetails' => current_user_can( Permissions::VIEW_MODULE_DETAILS ),
 				'canManageOptions'     => current_user_can( Permissions::MANAGE_OPTIONS ),
-				'canPublishPosts'      => current_user_can( Permissions::PUBLISH_POSTS ),
 			),
 
 			/**

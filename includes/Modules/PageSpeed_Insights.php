@@ -115,7 +115,7 @@ final class PageSpeed_Insights extends Module
 				return $service->pagespeedapi->runpagespeed(
 					$page_url,
 					array(
-						'locale'   => substr( get_locale(), 0, 2 ),
+						'locale'   => $this->context->get_locale( 'site', 'language-code' ),
 						'strategy' => $data['strategy'],
 					)
 				);

@@ -169,16 +169,24 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 	}, [ firstLoad, pieChartLoaded, totalUsersLoaded, userCountGraphLoaded ] );
 
 	if ( pieChartError ) {
-		return <WidgetReportError moduleSlug="analytics" error={ pieChartError } />;
+		return (
+			<Widget>
+				<WidgetReportError moduleSlug="analytics" error={ pieChartError } />
+			</Widget>
+		);
 	}
 
 	if ( isZeroReport( pieChartReport ) ) {
-		return <WidgetReportZero moduleSlug="analytics" />;
+		return (
+			<Widget>
+				<WidgetReportZero moduleSlug="analytics" />
+			</Widget>
+		);
 	}
 
 	return (
 		<Widget
-			className="googlesitekit-widget--footer-v2"
+			className="googlesitekit-widget--footer-v2 googlesitekit-widget__analytics--all-traffic"
 			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
