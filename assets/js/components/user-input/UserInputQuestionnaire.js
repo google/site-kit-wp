@@ -48,9 +48,9 @@ import { Cell, Row } from '../../material-components';
 import { trackEvent } from '../../util';
 const { useSelect, useDispatch } = Data;
 
-export default function UserInputQuestionnaire() {
-	const steps = [ ...USER_INPUT_QUESTIONS_LIST, 'preview' ];
+const steps = [ ...USER_INPUT_QUESTIONS_LIST, 'preview' ];
 
+export default function UserInputQuestionnaire() {
 	const [ activeSlug, setActiveSlug ] = useQueryArg( 'question', steps[ 0 ] );
 	const [ shouldScrollToActiveQuestion, setShouldScrollToActiveQuestion ] = useState( false );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
@@ -83,7 +83,7 @@ export default function UserInputQuestionnaire() {
 		if ( activeSlugIndex > answeredUntilIndex ) {
 			setActiveSlug( steps[ answeredUntilIndex ] );
 		}
-	}, [ answeredUntilIndex, activeSlugIndex ] );
+	}, [ answeredUntilIndex, activeSlugIndex, setActiveSlug ] );
 
 	useEffect( () => {
 		if ( activeSlug === 'preview' ) {
@@ -103,7 +103,7 @@ export default function UserInputQuestionnaire() {
 	const next = useCallback( () => {
 		trackEvent( 'user_input', 'question_advance', steps[ activeSlugIndex ] );
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );
-	}, [ activeSlugIndex ] );
+	}, [ activeSlugIndex, setActiveSlug ] );
 
 	const goTo = useCallback( ( num = 1, singleType = false ) => {
 		trackEvent(
@@ -118,12 +118,12 @@ export default function UserInputQuestionnaire() {
 		if ( steps.length >= num && num > 0 ) {
 			setActiveSlug( steps[ num - 1 ] );
 		}
-	}, [ activeSlugIndex, isSettings ] );
+	}, [ setActiveSlug, setSingle ] );
 
 	const back = useCallback( () => {
 		trackEvent( 'user_input', 'question_return', steps[ activeSlugIndex ] );
 		setActiveSlug( steps[ activeSlugIndex - 1 ] );
-	}, [ activeSlugIndex ] );
+	}, [ activeSlugIndex, setActiveSlug ] );
 
 	const submitChanges = useCallback( async () => {
 		trackEvent(
@@ -142,12 +142,12 @@ export default function UserInputQuestionnaire() {
 
 			navigateTo( url.toString() );
 		}
-	}, [ dashboardURL, isSettings ] );
+	}, [ dashboardURL, isSettings, navigateTo, redirectURL, activeSlugIndex, saveUserInputSettings ] );
 
 	const goToPreview = useCallback( () => {
 		trackEvent( 'user_input', 'question_update', steps[ activeSlugIndex ] );
 		setActiveSlug( steps[ steps.length - 1 ] );
-	}, [ activeSlugIndex ] );
+	}, [ activeSlugIndex, setActiveSlug ] );
 
 	useEffect( () => {
 		if ( ! shouldScrollToActiveQuestion ) {
@@ -156,7 +156,7 @@ export default function UserInputQuestionnaire() {
 		}
 
 		global.document?.querySelector( '.googlesitekit-user-input__header' )?.scrollIntoView( { behavior: 'smooth' } );
-	}, [ activeSlug ] );
+	}, [ activeSlug, shouldScrollToActiveQuestion ] );
 
 	// Update the callbacks and labels for the questions if the user is editing a *single question*.
 	let backCallback = back;

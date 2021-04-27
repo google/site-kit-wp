@@ -151,7 +151,7 @@ export default function SetupMain( { finishSetup } ) {
 		setAccountID( accountID );
 		// Set flag to await background submission.
 		setIsAwaitingBackgroundSubmit( true );
-	}, [ previousAccountID, accountID ] );
+	}, [ previousAccountID, accountID, setAccountID ] );
 
 	// Update current client ID setting on-the-fly.
 	useEffect( () => {
@@ -163,7 +163,7 @@ export default function SetupMain( { finishSetup } ) {
 		setClientID( clientID );
 		// Set flag to await background submission.
 		setIsAwaitingBackgroundSubmit( true );
-	}, [ previousClientID, clientID ] );
+	}, [ previousClientID, clientID, setClientID ] );
 
 	// Update account status setting on-the-fly.
 	useEffect( () => {
@@ -183,7 +183,15 @@ export default function SetupMain( { finishSetup } ) {
 		setAccountStatus( accountStatus );
 		// Set flag to await background submission.
 		setIsAwaitingBackgroundSubmit( true );
-	}, [ previousAccountStatus, accountStatus ] );
+	},
+	[
+		previousAccountStatus,
+		accountStatus,
+		setAccountSetupComplete,
+		setSiteSetupComplete,
+		setUseSnippet,
+		setAccountStatus,
+	] );
 
 	// Update site status setting on-the-fly.
 	useEffect( () => {
@@ -199,7 +207,7 @@ export default function SetupMain( { finishSetup } ) {
 		setSiteStatus( siteStatus );
 		// Set flag to await background submission.
 		setIsAwaitingBackgroundSubmit( true );
-	}, [ previousSiteStatus, siteStatus ] );
+	}, [ previousSiteStatus, siteStatus, setSiteSetupComplete, setSiteStatus ] );
 
 	// Submit changes for determined parameters in the background when they are valid.
 	const [ isSubmittingInBackground, setIsSubmittingInBackground ] = useState( false );
@@ -224,7 +232,7 @@ export default function SetupMain( { finishSetup } ) {
 			await submitChanges();
 			setIsSubmittingInBackground( false );
 		} )();
-	}, [ isAwaitingBackgroundSubmit, isSubmittingInBackground, canSubmitChanges ] );
+	}, [ isAwaitingBackgroundSubmit, isSubmittingInBackground, canSubmitChanges, submitChanges ] );
 
 	const isAdBlockerActive = useSelect( ( select ) => select( STORE_NAME ).isAdBlockerActive() );
 
@@ -268,7 +276,15 @@ export default function SetupMain( { finishSetup } ) {
 			global.removeEventListener( 'blur', countIdleTime );
 			global.clearTimeout( timeout );
 		};
-	}, [ accountStatus ] );
+	},
+	[
+		accountStatus,
+		clearError,
+		resetAccounts,
+		resetAlerts,
+		resetClients,
+		resetURLChannels,
+	] );
 
 	// Fetch existing tag right here, to ensure the progress bar is still being
 	// shown while this is being loaded. It is technically used only by child

@@ -46,9 +46,6 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 	const optionsRef = useRef();
 	const [ disabled, setDisabled ] = useState( false );
 
-	// Need to make sure that dependencies list always has the same number of elements.
-	const dependencies = values.concat( Array( max ) ).slice( 0, max );
-
 	useEffect( () => {
 		if ( ! optionsRef?.current || ! isActive ) {
 			return;
@@ -108,7 +105,7 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 		}
 
 		setUserInputSetting( slug, Array.from( newValues ).slice( 0, max ) );
-	}, dependencies );
+	}, [ max, other, setUserInputSetting, slug, values ] );
 
 	const onKeyDown = useCallback( ( event ) => {
 		if (
@@ -122,7 +119,7 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 		) {
 			next();
 		}
-	}, [ ...dependencies, other, next, max ] );
+	}, [ values, other, next, max ] );
 
 	const onOtherChange = useCallback( ( { target } ) => {
 		const newValues = [
@@ -132,7 +129,7 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 
 		setOther( target.value );
 		setUserInputSetting( slug, newValues.slice( 0, max ) );
-	}, dependencies );
+	}, [ max, setUserInputSetting, slug, values, options ] );
 
 	const onClickProps = {
 		[ max > 1 ? 'onChange' : 'onClick' ]: onClick,
