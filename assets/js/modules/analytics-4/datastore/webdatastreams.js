@@ -179,13 +179,8 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		const normalizeURL = ( incomingURL ) => incomingURL
-			.replace( /^https?:\/\/(www\.)?/i, '' ) // Remove protocol and optional "www." prefix from the URL.
-			.replace( /\/$/, '' ); // Remove trailing slash.
-
-		const url = normalizeURL( select( CORE_SITE ).getReferenceSiteURL() );
 		for ( const datastream of datastreams ) {
-			if ( normalizeURL( datastream.defaultUri ) === url ) {
+			if ( select( CORE_SITE ).isSiteURLMatch( datastream.defaultUri ) ) {
 				return datastream;
 			}
 		}
