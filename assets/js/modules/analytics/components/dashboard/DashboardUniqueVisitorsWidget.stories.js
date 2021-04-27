@@ -69,8 +69,7 @@ const optionsCompareEntityURL = {
 const WidgetAreaTemplate = ( args ) => {
 	return (
 		<WithRegistrySetup func={ args?.setupRegistry }>
-			<WidgetAreaRenderer slug={ areaName }>
-			</WidgetAreaRenderer>
+			<WidgetAreaRenderer slug={ areaName } />
 		</WithRegistrySetup>
 	);
 };
