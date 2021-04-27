@@ -119,7 +119,8 @@ const baseActions = {
 		function* ( accountID, propertyID, { profileName } ) {
 			const { response, error } = yield fetchCreateProfileStore.actions.fetchCreateProfile( accountID, propertyID, { profileName } );
 			return { response, error };
-		} ),
+		}
+	),
 };
 
 const baseResolvers = {

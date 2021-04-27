@@ -114,7 +114,8 @@ const baseActions = {
 			const { response, error } = yield fetchCreateContainerStore.actions.fetchCreateContainer( accountID, usageContext, { containerName } );
 
 			return { response, error };
-		} ),
+		}
+	),
 
 	/**
 	 * Sets selected container settings for the given container ID of the current account.
@@ -162,7 +163,8 @@ const baseActions = {
 				// eslint-disable-next-line sitekit/acronym-case
 				dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
 			}
-		} ),
+		}
+	),
 
 	/**
 	 * Waits for containers to be resolved for the given account ID.
@@ -182,7 +184,8 @@ const baseActions = {
 				payload: { accountID },
 				type: WAIT_FOR_CONTAINERS,
 			};
-		} ),
+		}
+	),
 };
 
 const baseControls = {

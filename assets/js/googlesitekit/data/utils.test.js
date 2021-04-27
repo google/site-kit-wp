@@ -864,7 +864,7 @@ describe( 'data utils', () => {
 				actionCreator
 			);
 
-			expect( () =>	validatedAction( args ) ).toThrow( 'foo' );
+			expect( () => validatedAction( args ) ).toThrow( 'foo' );
 
 			expect( actionCreator ).toHaveBeenCalledTimes( 0 );
 		} );

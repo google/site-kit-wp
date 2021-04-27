@@ -302,7 +302,8 @@ const baseActions = {
 			// As we can specify a custom checkRequirements function here, we're invalidating the resolvers for activation checks.
 			yield registry.dispatch( STORE_NAME ).invalidateResolution( 'canActivateModule', [ slug ] );
 			yield registry.dispatch( STORE_NAME ).invalidateResolution( 'getCheckRequirementsError', [ slug ] );
-		} ),
+		}
+	),
 
 	/**
 	 * Receives the check requirements error map for specified modules modules.

@@ -145,7 +145,8 @@ const baseActions = {
 			}
 			const property = properties[ 0 ] || { id: PROPERTY_CREATE };
 			registry.dispatch( STORE_NAME ).selectProperty( property.id );
-		} ),
+		}
+	),
 
 	/**
 	 * Creates a new Analytics account.

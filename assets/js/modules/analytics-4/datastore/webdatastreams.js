@@ -104,7 +104,8 @@ const baseActions = {
 		function* ( propertyID ) {
 			const { response, error } = yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream( propertyID );
 			return { response, error };
-		} ),
+		}
+	),
 
 	/**
 	 * Waits for web data streams to be loaded for a property.

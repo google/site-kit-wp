@@ -119,7 +119,8 @@ const baseActions = {
 		function* ( accountID ) {
 			const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
 			return { response, error };
-		} ),
+		}
+	),
 
 	/**
 	 * Adds a matchedProperty to the store.
