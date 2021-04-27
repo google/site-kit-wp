@@ -14,12 +14,12 @@ module.exports = [
 		},
 	},
 	{
-		id: 'global--buttons',
+		id: 'components-button--vrt-story',
 		kind: 'Global',
 		name: 'Buttons',
-		story: 'Buttons',
+		story: 'VRT Story',
 		parameters: {
-			fileName: './stories/buttons.stories.js',
+			fileName: './assets/js/components/Button.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},

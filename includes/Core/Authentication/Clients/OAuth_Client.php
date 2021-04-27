@@ -641,7 +641,7 @@ final class OAuth_Client {
 		$this->get_client()->setScopes( array_unique( $scopes ) );
 
 		$query_params = array(
-			'hl' => get_user_locale(),
+			'hl' => $this->context->get_locale( 'user' ),
 		);
 
 		return add_query_arg( $query_params, $this->get_client()->createAuthUrl() );

@@ -69,7 +69,7 @@ const resetGlobals = () => {
 			email: 'wapuu.wordpress@gmail.com',
 			picture: 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
 		},
-		connectURL: 'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&googlesitekit_connect=1&nonce=abc123',
+		connectURL: 'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
 		initialVersion: '',
 		verified: true,
 		userInputState: 'completed',

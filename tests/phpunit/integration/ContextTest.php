@@ -359,4 +359,34 @@ class ContextTest extends TestCase {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->assertTrue( $context->is_network_active() );
 	}
+
+	public function test_get_locale() {
+
+		// Set locale site and user.
+		$original_locale   = $GLOBALS['locale'];
+		$GLOBALS['locale'] = 'pt_PT_ao90';
+		$user              = wp_get_current_user();
+		$user->locale      = 'nl_NL_formal';
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$locale  = $context->get_locale();
+
+		$this->assertEquals( 'pt_PT_ao90', $context->get_locale() );
+		$this->assertEquals( 'pt_PT_ao90', $context->get_locale( 'site' ) );
+		$this->assertEquals( 'pt', $context->get_locale( 'site', 'language-code' ) );
+		$this->assertEquals( 'pt_PT', $context->get_locale( 'site', 'language-variant' ) );
+		$this->assertEquals( 'nl_NL_formal', $context->get_locale( 'user' ) );
+		$this->assertEquals( 'nl', $context->get_locale( 'user', 'language-code' ) );
+		$this->assertEquals( 'nl_NL', $context->get_locale( 'user', 'language-variant' ) );
+
+		// Change site locale
+		$GLOBALS['locale'] = 'te';
+		$this->assertEquals( 'te', $context->get_locale() );
+		$this->assertEquals( 'te', $context->get_locale( 'site' ) );
+		$this->assertEquals( 'te', $context->get_locale( 'site', 'language-code' ) );
+
+		// Reset locale.
+		$GLOBALS['locale'] = $original_locale;
+		unset( $user->locale );
+	}
 }
