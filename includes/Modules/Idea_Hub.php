@@ -124,11 +124,11 @@ final class Idea_Hub extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
+			'POST:create-idea-draft-post' => array( 'service' => '' ),
 			'GET:draft-post-ideas'        => array( 'service' => '' ),
 			'GET:new-ideas'               => array( 'service' => '' ),
 			'GET:published-post-ideas'    => array( 'service' => '' ),
 			'GET:saved-ideas'             => array( 'service' => '' ),
-			'POST:create-idea-draft-post' => array( 'service' => '' ),
 			'POST:update-idea-state'      => array( 'service' => '' ),
 		);
 	}
@@ -145,6 +145,11 @@ final class Idea_Hub extends Module
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'POST:create-idea-draft-post':
+				// @TODO implementation
+				return function() {
+					return null;
+				};
 			case 'GET:draft-post-ideas':
 				// @TODO: Implement this with the real API endpoint.
 				return function() {
@@ -221,11 +226,6 @@ final class Idea_Hub extends Module
 				return function() {
 					return null;
 				};
-			case 'POST:create-idea-draft-post':
-				// @TODO implementation
-				return function() {
-					return null;
-				};
 			case 'POST:update-idea-state':
 				// @TODO implementation
 				return function() {
@@ -252,7 +252,6 @@ final class Idea_Hub extends Module
 			'order'       => 7,
 			'homepage'    => __( 'https://www.google.com', 'google-site-kit' ),
 			'learn_more'  => __( 'https://www.google.com', 'google-site-kit' ),
-			'internal'    => true,
 		);
 	}
 
