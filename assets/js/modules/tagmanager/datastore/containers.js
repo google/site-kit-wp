@@ -30,6 +30,7 @@ import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import { isValidAccountID, isValidContainerID, isValidContainerName, isValidUsageContext } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector, createRegistryControl } = Data;
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 
 // Actions
 const WAIT_FOR_CONTAINERS = 'WAIT_FOR_CONTAINERS';
@@ -103,15 +104,18 @@ const baseActions = {
 	 * @param {string} args.containerName The name for a new container.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createContainer( accountID, usageContext, { containerName } ) {
-		invariant( isValidAccountID( accountID ), 'A valid accountID is required to create a container.' );
-		invariant( isValidUsageContext( usageContext ), 'A valid usageContext is required to create a container.' );
-		invariant( isValidContainerName( containerName ), 'A valid containerName is required to create a container.' );
+	createContainer: createValidatedAction(
+		( accountID, usageContext, { containerName } ) => {
+			invariant( isValidAccountID( accountID ), 'A valid accountID is required to create a container.' );
+			invariant( isValidUsageContext( usageContext ), 'A valid usageContext is required to create a container.' );
+			invariant( isValidContainerName( containerName ), 'A valid containerName is required to create a container.' );
+		},
+		function* ( accountID, usageContext, { containerName } ) {
+			const { response, error } = yield fetchCreateContainerStore.actions.fetchCreateContainer( accountID, usageContext, { containerName } );
 
-		const { response, error } = yield fetchCreateContainerStore.actions.fetchCreateContainer( accountID, usageContext, { containerName } );
-
-		return { response, error };
-	},
+			return { response, error };
+		}
+	),
 
 	/**
 	 * Sets selected container settings for the given container ID of the current account.
@@ -123,40 +127,44 @@ const baseActions = {
 	 *
 	 * @param {string} containerID Tag Manager container `publicId` of container to select.
 	 */
-	*selectContainerByID( containerID ) {
+	selectContainerByID: createValidatedAction(
+		( containerID ) => {
 		// This action relies on looking up the container in state to know what
 		// settings to set the container IDs for. For this reason we cannot use this
 		// for selecting the option to "set up a new container"
-		invariant( isValidContainerID( containerID ), 'A valid container ID is required to select a container by ID.' );
+		// another instance here
+			invariant( isValidContainerID( containerID ), 'A valid container ID is required to select a container by ID.' );
+		},
+		function* ( containerID ) {
+			const { select, dispatch } = yield Data.commonActions.getRegistry();
+			const accountID = select( STORE_NAME ).getAccountID();
 
-		const { select, dispatch } = yield Data.commonActions.getRegistry();
-		const accountID = select( STORE_NAME ).getAccountID();
+			if ( ! isValidAccountID( accountID ) ) {
+				return;
+			}
 
-		if ( ! isValidAccountID( accountID ) ) {
-			return;
-		}
+			// Containers may not be loaded yet for this account,
+			// and no selections are done in the getContainers resolver, so we wait here.
+			// This will not guarantee that containers exist, as an account may also have no containers
+			// it will simply wait for `getContainers` to be resolved for this account ID.
+			yield baseActions.waitForContainers( accountID );
 
-		// Containers may not be loaded yet for this account,
-		// and no selections are done in the getContainers resolver, so we wait here.
-		// This will not guarantee that containers exist, as an account may also have no containers
-		// it will simply wait for `getContainers` to be resolved for this account ID.
-		yield baseActions.waitForContainers( accountID );
-
-		const container = select( STORE_NAME ).getContainerByID( accountID, containerID );
-		if ( ! container ) {
+			const container = select( STORE_NAME ).getContainerByID( accountID, containerID );
+			if ( ! container ) {
 			// Do nothing if the container was not found.
-			return;
+				return;
+			}
+			if ( container.usageContext.includes( CONTEXT_WEB ) ) {
+				dispatch( STORE_NAME ).setContainerID( containerID );
+				// eslint-disable-next-line sitekit/acronym-case
+				dispatch( STORE_NAME ).setInternalContainerID( container.containerId );
+			} else if ( container.usageContext.includes( CONTEXT_AMP ) ) {
+				dispatch( STORE_NAME ).setAMPContainerID( containerID );
+				// eslint-disable-next-line sitekit/acronym-case
+				dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
+			}
 		}
-		if ( container.usageContext.includes( CONTEXT_WEB ) ) {
-			dispatch( STORE_NAME ).setContainerID( containerID );
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).setInternalContainerID( container.containerId );
-		} else if ( container.usageContext.includes( CONTEXT_AMP ) ) {
-			dispatch( STORE_NAME ).setAMPContainerID( containerID );
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
-		}
-	},
+	),
 
 	/**
 	 * Waits for containers to be resolved for the given account ID.
@@ -167,34 +175,39 @@ const baseActions = {
 	 * @param {string} accountID Google Tag Manager account ID to await containers for.
 	 * @return {Object} Redux-style action.
 	 */
-	*waitForContainers( accountID ) {
-		invariant( isValidAccountID( accountID ), 'A valid accountID is required to wait for containers.' );
-		return {
-			payload: { accountID },
-			type: WAIT_FOR_CONTAINERS,
-		};
-	},
+	waitForContainers: createValidatedAction(
+		( accountID ) => {
+			invariant( isValidAccountID( accountID ), 'A valid accountID is required to wait for containers.' );
+		},
+		function* ( accountID ) {
+			return {
+				payload: { accountID },
+				type: WAIT_FOR_CONTAINERS,
+			};
+		}
+	),
 };
 
 const baseControls = {
-	[ WAIT_FOR_CONTAINERS ]: createRegistryControl( ( registry ) => ( { payload: { accountID } } ) => {
+	[ WAIT_FOR_CONTAINERS ]: createRegistryControl(
+		( registry ) => ( { payload: { accountID } } ) => {
 		// Select first to ensure resolution is always triggered.
-		registry.select( STORE_NAME ).getContainers( accountID );
-		const areContainersLoaded = () => registry.select( STORE_NAME ).hasFinishedResolution( 'getContainers', [ accountID ] );
+			registry.select( STORE_NAME ).getContainers( accountID );
+			const areContainersLoaded = () => registry.select( STORE_NAME ).hasFinishedResolution( 'getContainers', [ accountID ] );
 
-		if ( areContainersLoaded() ) {
-			return;
-		}
+			if ( areContainersLoaded() ) {
+				return;
+			}
 
-		return new Promise( ( resolve ) => {
-			const unsubscribe = registry.subscribe( () => {
-				if ( areContainersLoaded() ) {
-					unsubscribe();
-					resolve();
-				}
+			return new Promise( ( resolve ) => {
+				const unsubscribe = registry.subscribe( () => {
+					if ( areContainersLoaded() ) {
+						unsubscribe();
+						resolve();
+					}
+				} );
 			} );
-		} );
-	} ),
+		} ),
 };
 
 const baseResolvers = {

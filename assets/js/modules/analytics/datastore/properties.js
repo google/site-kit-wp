@@ -26,6 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySelection } from '../util';
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -113,12 +114,15 @@ const baseActions = {
 	 * @param {string} accountID Google Analytics account ID.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createProperty( accountID ) {
-		invariant( accountID, 'accountID is required.' );
-
-		const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
-		return { response, error };
-	},
+	createProperty: createValidatedAction(
+		( accountID ) => {
+			invariant( accountID, 'accountID is required.' );
+		},
+		function* ( accountID ) {
+			const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
+			return { response, error };
+		}
+	),
 
 	/**
 	 * Adds a matchedProperty to the store.
