@@ -1,5 +1,5 @@
 /**
- * `modules/analytics-4` data store
+ * `modules/analytics-4` data store: api.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,17 +20,35 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
-import baseModuleStore from './base';
-import properties from './properties';
-import webdatastreams from './webdatastreams';
-import api from './api';
+
+const baseInitialState = { };
+const baseActions = {};
+const baseControls = {};
+const baseReducer = ( state, { type } ) => {
+	switch ( type ) {
+		default: {
+			return state;
+		}
+	}
+};
+const baseResolvers = {};
+const baseSelectors = {
+
+	// TODO - JSdoc
+	isAdminAPIWorking( ) {
+		return false;
+	},
+};
 
 const store = Data.combineStores(
-	baseModuleStore,
-	properties,
-	webdatastreams,
-	api
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		controls: baseControls,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
 );
 
 export const initialState = store.initialState;
@@ -39,9 +57,5 @@ export const controls = store.controls;
 export const reducer = store.reducer;
 export const resolvers = store.resolvers;
 export const selectors = store.selectors;
-
-export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, store );
-};
 
 export default store;
