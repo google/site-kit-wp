@@ -66,182 +66,110 @@ const optionsCompareEntityURL = {
 	...optionsCompare,
 	url: currentEntityURL,
 };
+const WidgetAreaTemplate = ( args ) => {
+	return (
+		<WithRegistrySetup func={ args?.setupRegistry }>
+			<WidgetAreaRenderer slug={ areaName }>
+			</WidgetAreaRenderer>
+		</WithRegistrySetup>
+	);
+};
 
-export const Loaded = () => null;
+export const Loaded = WidgetAreaTemplate.bind();
 Loaded.storyName = 'Loaded';
-Loaded.decorators = [
-	( Story ) => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsCompare ), { options: optionsCompare } );
-			dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( options ), { options } );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<WidgetAreaRenderer slug={ areaName }>
-					<Story />
-				</WidgetAreaRenderer>
-			</WithRegistrySetup>
-		);
+Loaded.args = {
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsCompare ), { options: optionsCompare } );
+		dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( options ), { options } );
 	},
-];
+};
 
-export const Loading = () => null;
+export const Loading = WidgetAreaTemplate.bind();
 Loading.storyName = 'Loading';
-Loading.decorators = [
-	( Story ) => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsCompare ), { options: optionsCompare } );
-			dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( options ), { options } );
-			dispatch( STORE_NAME ).startResolution( 'getReport', [ options ] );
-			dispatch( STORE_NAME ).startResolution( 'getReport', [ optionsCompare ] );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<WidgetAreaRenderer slug={ areaName }>
-					<Story />
-				</WidgetAreaRenderer>
-			</WithRegistrySetup>
-		);
+Loading.args = {
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsCompare ), { options: optionsCompare } );
+		dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( options ), { options } );
+		dispatch( STORE_NAME ).startResolution( 'getReport', [ options ] );
+		dispatch( STORE_NAME ).startResolution( 'getReport', [ optionsCompare ] );
 	},
-];
+};
 
-export const DataUnavailable = () => null;
+export const DataUnavailable = WidgetAreaTemplate.bind();
 DataUnavailable.storyName = 'Data Unavailable';
-DataUnavailable.decorators = [
-	( Story ) => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetReport( [], { options } );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<WidgetAreaRenderer slug={ areaName }>
-					<Story />
-				</WidgetAreaRenderer>
-			</WithRegistrySetup>
-		);
+DataUnavailable.args = {
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( STORE_NAME ).receiveGetReport( [], { options } );
 	},
-];
+};
 
-export const Error = () => null;
+export const Error = WidgetAreaTemplate.bind();
 Error.storyName = 'Error';
-Error.decorators = [
-	( Story ) => {
-		const setupRegistry = ( { dispatch } ) => {
-			const error = {
-				code: 'missing_required_param',
-				message: 'Request parameter is empty: metrics.',
-				data: {},
-			};
-			dispatch( STORE_NAME ).receiveError( error, 'getReport', [ options ] );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ options ] );
+Error.args = {
+	setupRegistry: ( { dispatch } ) => {
+		const error = {
+			code: 'missing_required_param',
+			message: 'Request parameter is empty: metrics.',
+			data: {},
 		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<WidgetAreaRenderer slug={ areaName }>
-					<Story />
-				</WidgetAreaRenderer>
-			</WithRegistrySetup>
-		);
+		dispatch( STORE_NAME ).receiveError( error, 'getReport', [ options ] );
+		dispatch( STORE_NAME ).finishResolution( 'getReport', [ options ] );
 	},
-];
+};
 
-export const LoadedEntityURL = () => null;
+export const LoadedEntityURL = WidgetAreaTemplate.bind();
 LoadedEntityURL.storyName = 'Loaded with entity URL set';
-LoadedEntityURL.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			const { dispatch } = registry;
+LoadedEntityURL.args = {
+	setupRegistry: ( registry ) => {
+		const { dispatch } = registry;
 
-			provideSiteInfo( registry, { currentEntityURL } );
-			dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsCompareEntityURL ), { options: optionsCompareEntityURL } );
-			dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsEntityURL ), { options: optionsEntityURL } );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<WidgetAreaRenderer slug={ areaName }>
-					<Story />
-				</WidgetAreaRenderer>
-			</WithRegistrySetup>
-		);
+		provideSiteInfo( registry, { currentEntityURL } );
+		dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsCompareEntityURL ), { options: optionsCompareEntityURL } );
+		dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsEntityURL ), { options: optionsEntityURL } );
 	},
-];
+};
 
-export const LoadingEntityURL = () => null;
+export const LoadingEntityURL = WidgetAreaTemplate.bind();
 LoadingEntityURL.storyName = 'Loading with entity URL set';
-LoadingEntityURL.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			const { dispatch } = registry;
+LoadingEntityURL.args = {
+	setupRegistry: ( registry ) => {
+		const { dispatch } = registry;
 
-			provideSiteInfo( registry, { currentEntityURL } );
-			dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsCompareEntityURL ), { options: optionsCompareEntityURL } );
-			dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsEntityURL ), { options: optionsEntityURL } );
-			dispatch( STORE_NAME ).startResolution( 'getReport', [ optionsEntityURL ] );
-			dispatch( STORE_NAME ).startResolution( 'getReport', [ optionsCompareEntityURL ] );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<WidgetAreaRenderer slug={ areaName }>
-					<Story />
-				</WidgetAreaRenderer>
-			</WithRegistrySetup>
-		);
+		provideSiteInfo( registry, { currentEntityURL } );
+		dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsCompareEntityURL ), { options: optionsCompareEntityURL } );
+		dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsEntityURL ), { options: optionsEntityURL } );
+		dispatch( STORE_NAME ).startResolution( 'getReport', [ optionsEntityURL ] );
+		dispatch( STORE_NAME ).startResolution( 'getReport', [ optionsCompareEntityURL ] );
 	},
-];
+};
 
-export const DataUnavailableEntityURL = () => null;
+export const DataUnavailableEntityURL = WidgetAreaTemplate.bind();
 DataUnavailableEntityURL.storyName = 'Data Unavailable with entity URL set';
-DataUnavailableEntityURL.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			const { dispatch } = registry;
+DataUnavailableEntityURL.args = {
+	setupRegistry: ( registry ) => {
+		const { dispatch } = registry;
 
-			provideSiteInfo( registry, { currentEntityURL } );
-			dispatch( STORE_NAME ).receiveGetReport( [], { options: optionsEntityURL } );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<WidgetAreaRenderer slug={ areaName }>
-					<Story />
-				</WidgetAreaRenderer>
-			</WithRegistrySetup>
-		);
+		provideSiteInfo( registry, { currentEntityURL } );
+		dispatch( STORE_NAME ).receiveGetReport( [], { options: optionsEntityURL } );
 	},
-];
+};
 
-export const ErrorEntityURL = () => null;
+export const ErrorEntityURL = WidgetAreaTemplate.bind();
 ErrorEntityURL.storyName = 'Error with entity URL set';
-ErrorEntityURL.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			const { dispatch } = registry;
-			const error = {
-				code: 'missing_required_param',
-				message: 'Request parameter is empty: metrics.',
-				data: {},
-			};
-
-			provideSiteInfo( registry, { currentEntityURL } );
-			dispatch( STORE_NAME ).receiveError( error, 'getReport', [ optionsEntityURL ] );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ optionsEntityURL ] );
+ErrorEntityURL.args = {
+	setupRegistry: ( registry ) => {
+		const { dispatch } = registry;
+		const error = {
+			code: 'missing_required_param',
+			message: 'Request parameter is empty: metrics.',
+			data: {},
 		};
 
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<WidgetAreaRenderer slug={ areaName }>
-					<Story />
-				</WidgetAreaRenderer>
-			</WithRegistrySetup>
-		);
+		provideSiteInfo( registry, { currentEntityURL } );
+		dispatch( STORE_NAME ).receiveError( error, 'getReport', [ optionsEntityURL ] );
+		dispatch( STORE_NAME ).finishResolution( 'getReport', [ optionsEntityURL ] );
 	},
-];
+};
 
 export default {
 	title: 'Modules/Analytics/Widgets/DashboardUniqueVisitorsWidget',
