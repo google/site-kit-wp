@@ -70,6 +70,12 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 		}
 	}, [ isActive, max ] );
 
+	useEffect( () => {
+		if ( max > 1 && max === values.length && other.trim().length === 0 ) {
+			setDisabled( true );
+		}
+	}, [ setDisabled, max, values, other ] );
+
 	const onClick = useCallback( ( event ) => {
 		const { target } = event;
 		const { value, checked, name, type, id } = target;
