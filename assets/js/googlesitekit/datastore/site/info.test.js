@@ -366,14 +366,17 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'should return TRUE when URL matches the reference site URL even if the protocol is different', () => {
+				expect( registry.select( STORE_NAME ).isSiteURLMatch( 'http://example.com' ) ).toBe( true );
 				expect( registry.select( STORE_NAME ).isSiteURLMatch( 'https://example.com' ) ).toBe( true );
 			} );
 
-			it( 'should return TRUE when URL matches the reference site URL even with www. subdomain', () => {
+			it( 'should return TRUE when URL matches the reference site URL with or without a www. subdomain', () => {
+				expect( registry.select( STORE_NAME ).isSiteURLMatch( 'http://example.com' ) ).toBe( true );
 				expect( registry.select( STORE_NAME ).isSiteURLMatch( 'http://www.example.com' ) ).toBe( true );
 			} );
 
-			it( 'should return TRUE when URL matches the reference site URL even with trailing slash', () => {
+			it( 'should return TRUE when URL matches the reference site URL with or without a trailing slash', () => {
+				expect( registry.select( STORE_NAME ).isSiteURLMatch( 'http://example.com' ) ).toBe( true );
 				expect( registry.select( STORE_NAME ).isSiteURLMatch( 'http://example.com/' ) ).toBe( true );
 			} );
 
