@@ -26,7 +26,7 @@ export { default as DashboardAllTrafficWidget } from './DashboardAllTrafficWidge
 export { default as DashboardPopularPagesWidget } from './DashboardPopularPagesWidget';
 export { default as DashboardBounceRateWidget } from './DashboardBounceRateWidget';
 export { default as DashboardGoalsWidget } from './DashboardGoalsWidget';
-export { default as DashboardSearchVisitorsWidget } from './DashboardSearchVisitorsWidget';
+export { default as DashboardUniqueVisitorsWidget } from './DashboardUniqueVisitorsWidget';
 export { default as LegacyAdSenseDashboardWidgetTopPagesTableSmall } from './LegacyAdSenseDashboardWidgetTopPagesTableSmall';
 export { default as LegacyAnalyticsDashboardWidgetPopularPagesTable } from './LegacyAnalyticsDashboardWidgetPopularPagesTable';
 export { default as LegacyAnalyticsDashboardWidgetTopAcquisitionSources } from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';

@@ -27,7 +27,7 @@ import { provideModules, provideSiteInfo } from '../../../../../../tests/js/util
 import { getAnalyticsMockResponse } from '../../util/data-mock';
 import WidgetAreaRenderer from '../../../../googlesitekit/widgets/components/WidgetAreaRenderer';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import DashboardUniqueVisitorsWidget from './DashboardSearchVisitorsWidget';
+import DashboardUniqueVisitorsWidget from './DashboardUniqueVisitorsWidget';
 
 const areaName = 'moduleAnalyticsMain';
 const widgetSlug = 'analyticsUniqueVisitors';
@@ -244,7 +244,7 @@ ErrorEntityURL.decorators = [
 ];
 
 export default {
-	title: 'Modules/Analytics/Widgets/DashboardSearchVisitorsWidget',
+	title: 'Modules/Analytics/Widgets/DashboardUniqueVisitorsWidget',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {

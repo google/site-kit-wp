@@ -1,5 +1,5 @@
 /**
- * DashboardSearchVisitorsWidget component.
+ * DashboardUniqueVisitorsWidget component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
