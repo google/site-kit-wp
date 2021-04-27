@@ -102,6 +102,36 @@ describe( 'modules/analytics-4 properties', () => {
 
 				expect( isAdminAPIWorking ).toBe( true );
 			} );
+
+			it( 'should return true if has at least one error with key starting with getProperties', async () => {
+				registry.dispatch( STORE_NAME ).receiveError(
+					new Error( 'foo' ),	'getProperties', [ 'foo', 'bar' ]
+				);
+
+				const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking( );
+
+				expect( isAdminAPIWorking ).toBe( true );
+			} );
+
+			it( 'should return true if has at least one error with key starting with getWebDataStreams', async () => {
+				registry.dispatch( STORE_NAME ).receiveError(
+					new Error( 'foo' ),	'getWebDataStreams', [ 'foo', 'bar' ]
+				);
+
+				const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking( );
+
+				expect( isAdminAPIWorking ).toBe( true );
+			} );
+
+			it( 'should return false if has errors starting with other keys', async () => {
+				registry.dispatch( STORE_NAME ).receiveError(
+					new Error( 'foo' ),	'getFoo', [ 'foo', 'bar' ]
+				);
+
+				const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking( );
+
+				expect( isAdminAPIWorking ).toBe( false );
+			} );
 		} );
 	} );
 } );

@@ -50,9 +50,17 @@ const baseSelectors = {
 			}
 		}
 
+		// TODO - should be helper method exported from create-error-store? not sure what kind of encapuslation is wanted.
 		// There are no entries in the state['errors'] object which key start with getProperties:: prefix;
-
 		// There are no entries in the state['errors'] object which key start with getWebDataStreams:: prefix.
+		for ( const errorKey in state.errors ) {
+			if (
+				errorKey.startsWith( 'getProperties' ) ||
+                errorKey.startsWith( 'getWebDataStreams' )
+			) {
+				return true;
+			}
+		}
 
 		return false;
 	},
