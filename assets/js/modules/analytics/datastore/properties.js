@@ -409,7 +409,19 @@ const baseSelectors = {
 		return select( STORE_NAME ).isFetchingGetPropertiesProfiles( accountID );
 	} ),
 
-	// TODO java doc
+	/**
+	 * Gets all "classic" Universal Analytic and Google Analytics 4 (GA4) properties this account can access.
+	 *
+	 * Returns an array of all UA + GA4 analytics properties.
+	 *
+	 * Returns `undefined` if accounts have not yet loaded.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state     Data store's state.
+	 * @param {string} accountID The Analytics Account ID to fetch properties for.
+	 * @return {(Array.<Object>|undefined)} An array of Analytics properties; `undefined` if not loaded.
+	 */
 	getPropertiesIncludingGA4: createRegistrySelector( ( select ) => ( state, accountID ) => {
 		const properties = select( STORE_NAME ).getProperties( accountID );
 
