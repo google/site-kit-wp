@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -91,7 +91,10 @@ export default function PropertySelect() {
 						value={ _id }
 						data-internal-id={ _id }
 					>
-						{ displayName }
+						{
+							/* translators: 1: Property name. 2: Property ID. */
+							sprintf( __( '%1$s (%2$s)', 'google-site-kit' ), displayName, _id )
+						}
 					</Option>
 				) ) }
 		</Select>
