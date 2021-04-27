@@ -165,6 +165,32 @@ describe( 'modules/analytics properties', () => {
 				expect( registry.select( STORE_NAME ).getProfileID() ).not.toBe( nonExistentProfileID );
 			} );
 		} );
+
+		describe( 'setPrimaryPropertyType', () => {
+			it.each( [
+				[ 'ua' ],
+				[ 'ga4' ],
+			] )( 'should not throw when %s is passed', ( type ) => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).setPrimaryPropertyType( type );
+				} ).not.toThrow();
+			} );
+
+			it( 'should throw an error when invalid type is passed', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).setPrimaryPropertyType( 'foo-bar' );
+				} ).toThrow( 'type must be "ua" or "ga4"' );
+			} );
+
+			it.each( [
+				[ 'ua' ],
+				[ 'ga4' ],
+			] )( 'should set and read when %s is passed', ( type ) => {
+				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( type );
+
+				expect( registry.stores[ STORE_NAME ].store.getState().primaryPropertyType ).toBe( type );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -279,6 +305,17 @@ describe( 'modules/analytics properties', () => {
 				const foundProperty = registry.select( STORE_NAME ).getPropertyByID( findProperty.id );
 
 				expect( foundProperty ).toEqual( undefined );
+			} );
+		} );
+		describe( 'getPrimaryPropertyType', () => {
+			it( 'should correctly return the default value', () => {
+				expect( registry.select( STORE_NAME ).getPrimaryPropertyType( ) ).toBe( 'ua' );
+			} );
+
+			it( 'should return the new state when it has been changed', () => {
+				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( 'ga4' );
+
+				expect( registry.select( STORE_NAME ).getPrimaryPropertyType( ) ).toBe( 'ga4' );
 			} );
 		} );
 	} );

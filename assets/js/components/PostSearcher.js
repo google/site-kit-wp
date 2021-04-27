@@ -51,7 +51,7 @@ function PostSearcher() {
 	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const onClick = useCallback( () => navigateTo( detailsURL ), [ detailsURL ] );
+	const onClick = useCallback( () => navigateTo( detailsURL ), [ detailsURL, navigateTo ] );
 
 	return (
 		<div

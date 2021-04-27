@@ -47,7 +47,7 @@ export default function WebStoriesAdUnitSelect() {
 		if ( webStoriesAdUnit !== newWebStoriesAdUnit ) {
 			setWebStoriesAdUnit( newWebStoriesAdUnit );
 		}
-	}, [ webStoriesAdUnit ] );
+	}, [ webStoriesAdUnit, setWebStoriesAdUnit ] );
 
 	if ( ! hasResolvedAdUnits ) {
 		return <ProgressBar small />;
