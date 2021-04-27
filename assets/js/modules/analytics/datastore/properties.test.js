@@ -37,8 +37,7 @@ describe( 'modules/analytics properties', () => {
 	} );
 
 	beforeEach( () => {
-		// NOTE - this is initialising all modules.  need a way to filter? my idea (arg does nothing)
-		registry = createTestRegistry( { ignoreModules: 'modulesAnalytics4' } );
+		registry = createTestRegistry( );
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 	} );
@@ -257,36 +256,19 @@ describe( 'modules/analytics properties', () => {
 			} );
 		} );
 		describe( 'getPropertiesIncludingGA4', () => {
-			// but also need to mention that it aggregates two... is this testing what is already tested though? TBH... yes
-			// this is testing already tested selectors AND @wordpress/redux-routine
-			it.todo( 'uses a resolver to make a network request' );
-
-			// name like above "does not make a network request if properties for this account are already present"
-			// no. a name that just says calls both and sorts
-			it( 'calls getProperties and GA4 data store getProperties ', async () => {
-				// assume getProperties already has populated properties?
-				// need tests for both cases?
-
+			it( 'returns a sorted list of ua and ga4 properties ', async () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const accountID = testAccountID;
 
-				// Load data into this store so there are matches for the data we're about to select
+				// Load data into stores
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
 				registry.dispatch( 'modules/analytics-4' ).receiveGetProperties( fixtures.propertiesGA4, { accountID } );
 
 				const properties = registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID );
 
 				expect( properties ).toMatchSnapshot();
-				expect( properties ).toHaveLength( 17 + 6 );
+				expect( properties ).toHaveLength( 23 );
 			} );
-
-			// left question in Slack
-			it.todo( 'just returns ua properties when ga4 store is not available ' );
-			// NO WAY TO UNREGISTER STORE! checked source code. where are stores being registered here?
-
-			// TO TEST
-			// -> when stores are NOT populated
-			// -> permutations on one store populated and other not? not sure if excessive...
 		} );
 
 		describe( 'getPropertyByID', () => {
