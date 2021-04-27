@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import SetupForm from './SetupForm';
-import { render, createTestRegistry } from '../../../../../../tests/js/test-utils';
+import { createTestRegistry, fireEvent, render } from '../../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME } from '../../datastore/constants';
 
@@ -42,6 +42,10 @@ describe( 'SetupForm', () => {
 		// Prevent extra fetches during tests.
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
 		registry.dispatch( STORE_NAME ).setSettings( defaultSettings );
+
+		// Mock `fetch` method.
+		const pendingPromise = new Promise( () => {} );
+		self.fetch = jest.fn().mockReturnValue( pendingPromise );
 	} );
 
 	describe( '"Configure Subscribe with Google" button', () => {
@@ -56,6 +60,20 @@ describe( 'SetupForm', () => {
 			const finishSetupButton = render( <SetupForm finishSetup={ jest.fn() } />, { registry } )
 				.getByRole( 'button', { name: /Configure Subscribe with Google/i } );
 			expect( finishSetupButton ).toBeDisabled();
+		} );
+
+		it( 'submits form', () => {
+			// Render enabled button.
+			registry.dispatch( STORE_NAME ).setSettings( validSettings );
+			const finishSetup = jest.fn();
+			const finishSetupButton = render( <SetupForm finishSetup={ finishSetup } />, { registry } )
+				.getByRole( 'button', { name: /Configure Subscribe with Google/i } );
+
+			// Click button.
+			fireEvent.click( finishSetupButton );
+
+			expect( finishSetup ).toHaveBeenCalled();
+			expect( self.fetch ).toHaveBeenCalled();
 		} );
 	} );
 } );
