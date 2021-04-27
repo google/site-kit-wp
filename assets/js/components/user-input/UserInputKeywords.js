@@ -43,7 +43,6 @@ const { useSelect, useDispatch } = Data;
 
 export default function UserInputKeywords( { slug, max, next, isActive } ) {
 	const keywordsContainer = useRef();
-	const [ canDeleteKeyword, setCanDeleteKeyword ] = useState( false );
 
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
 	const { setUserInputSetting } = useDispatch( CORE_USER );
@@ -56,9 +55,6 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 	// Store values in local state to prevent
 	// https://github.com/google/site-kit-wp/issues/2900#issuecomment-814843972.
 	const [ localValues, setLocalValues ] = useState( values );
-
-	// Need to make sure that dependencies list always has the same number of elements.
-	const dependencies = values.concat( Array( max ) ).slice( 0, max );
 
 	const focusInput = ( querySelector ) => {
 		const input = keywordsContainer.current.querySelector( querySelector );
@@ -81,13 +77,11 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 			...values.slice( 0, index ),
 			...values.slice( index + 1 ),
 		] );
-		// After deleting a keyword, hitting backspace will delete the next keyword.
-		setCanDeleteKeyword( true );
-	}, dependencies, canDeleteKeyword );
+	}, [ updateKeywords, values ] );
 
 	const onKeywordDelete = useCallback( ( index ) => {
 		deleteKeyword( index );
-	}, dependencies );
+	}, [ deleteKeyword ] );
 
 	const updateKeywords = useCallback( ( keywords ) => {
 		const EOT = String.fromCharCode( 4 );
@@ -107,7 +101,7 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 
 		setLocalValues( newKeywords );
 		setUserInputSetting( slug, newKeywords );
-	}, [ slug ] );
+	}, [ slug, max, setUserInputSetting ] );
 
 	const onKeywordChange = useCallback( ( index, { target } ) => {
 		if ( target.value[ target.value.length - 1 ] === ',' ) {
@@ -119,7 +113,7 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 			target.value,
 			...values.slice( index + 1 ),
 		] );
-	}, dependencies );
+	}, [ updateKeywords, values ] );
 
 	const onKeyDown = useCallback( ( index, { keyCode, target } ) => {
 		const nonEmptyValues = values.filter( ( value ) => value.length > 0 );
@@ -137,8 +131,6 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 				...values.slice( index + 1 ),
 			] );
 
-			// A new keyword has been added. Pressing backspace now will remove the entire keyword.
-			setCanDeleteKeyword( true );
 			focusInput( `#${ slug }-keyword-${ index + 1 }` );
 		}
 
@@ -146,14 +138,8 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 			// The input is empty, so pressing backspace should delete the last keyword.
 			deleteKeyword( nonEmptyValuesLength - 1 );
 			focusInput( `#${ slug }-keyword-${ nonEmptyValuesLength - 1 }` );
-
-			// After deleting a keyword, pressing backspace again should continue to delete keywords.
-			setCanDeleteKeyword( true );
-		} else {
-			// User is typing, so pressing backspace should delete the last character rather than the keyword.
-			setCanDeleteKeyword( false );
 		}
-	}, [ keywordsContainer.current, ...dependencies, canDeleteKeyword, next, max ] );
+	}, [ next, max, deleteKeyword, slug, updateKeywords, values ] );
 
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>

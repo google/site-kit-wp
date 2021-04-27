@@ -85,10 +85,10 @@ export default function DashboardPageSpeed() {
 	const { setValues } = useDispatch( CORE_UI );
 	const { invalidateResolution } = useDispatch( STORE_NAME );
 
-	const setStrategyMobile = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_MOBILE } ), [] );
-	const setStrategyDesktop = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_DESKTOP } ), [] );
-	const setDataSrcField = useCallback( () => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_FIELD } ), [] );
-	const setDataSrcLab = useCallback( () => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_LAB } ), [] );
+	const setStrategyMobile = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_MOBILE } ), [ setValues ] );
+	const setStrategyDesktop = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_DESKTOP } ), [ setValues ] );
+	const setDataSrcField = useCallback( () => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_FIELD } ), [ setValues ] );
+	const setDataSrcLab = useCallback( () => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_LAB } ), [ setValues ] );
 	const [ trackingRef, inView ] = useInView( { triggerOnce: true, threshold: 0.25 } );
 
 	useEffect( () => {
@@ -96,7 +96,7 @@ export default function DashboardPageSpeed() {
 			trackEvent( 'pagespeed_widget', 'widget_view' );
 			trackEvent( 'pagespeed_widget', 'default_tab_view', dataSrc.replace( 'data_', '' ) );
 		}
-	}, [ inView ] );
+	}, [ inView, dataSrc ] );
 
 	// Update the active tab for "In the Lab" or "In The Field".
 	const updateActiveTab = useCallback( ( dataSrcIndex ) => {
@@ -111,7 +111,7 @@ export default function DashboardPageSpeed() {
 		}
 
 		trackEvent( 'pagespeed_widget', 'tab_select', eventLabel );
-	}, [] );
+	}, [ setDataSrcField, setDataSrcLab ] );
 
 	// Update the active tab for "mobile" or "desktop".
 	const updateActiveDeviceSize = useCallback( ( { slug } ) => {
@@ -120,7 +120,7 @@ export default function DashboardPageSpeed() {
 		} else {
 			setStrategyMobile();
 		}
-	}, [] );
+	}, [ setStrategyDesktop, setStrategyMobile ] );
 
 	const updateReport = useCallback( async ( event ) => {
 		event.preventDefault();
@@ -138,7 +138,7 @@ export default function DashboardPageSpeed() {
 		if ( reportMobile?.loadingExperience?.metrics && reportDesktop?.loadingExperience?.metrics ) {
 			setDataSrcField();
 		}
-	}, [ reportMobile, reportDesktop ] );
+	}, [ reportMobile, reportDesktop, setDataSrcField ] );
 
 	if ( ! referenceURL || isFetchingMobile || isFetchingDesktop || ! dataSrc ) {
 		return (

@@ -49,7 +49,7 @@ export default function AMPContainerSelect() {
 			setAMPContainerID( newContainerID );
 			setInternalAMPContainerID( newInternalContainerID || '' );
 		}
-	}, [ ampContainerID ] );
+	}, [ ampContainerID, setAMPContainerID, setInternalAMPContainerID ] );
 
 	if ( ! isAMP ) {
 		return null;

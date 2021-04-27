@@ -48,7 +48,7 @@ export default function CountrySelect() {
 				timezone: countriesByCode[ newCountryCode ].defaultTimeZoneId,
 			} );
 		}
-	}, [ setValues ] );
+	}, [ setValues, value ] );
 
 	return (
 		<Select
