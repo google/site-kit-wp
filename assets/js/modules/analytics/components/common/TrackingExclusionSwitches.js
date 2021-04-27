@@ -44,7 +44,7 @@ export default function TrackingExclusionSwitches() {
 		const { checked } = event.target;
 		const exclusions = checked ? [ TRACKING_LOGGED_IN_USERS ] : [];
 		setTrackingDisabled( exclusions );
-	}, [ trackingDisabled ] );
+	}, [ setTrackingDisabled ] );
 
 	if ( ! Array.isArray( trackingDisabled ) ) {
 		return null;

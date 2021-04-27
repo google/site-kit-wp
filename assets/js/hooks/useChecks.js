@@ -17,9 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
-import { useEffect, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 
 /**
  * Runs a series of checks returning the first encountered error.
@@ -36,7 +41,7 @@ export function useChecks( checks ) {
 	const [ complete, setComplete ] = useState( ! stableChecks?.length );
 	const [ error, setError ] = useState( undefined );
 
-	useEffect( () => {
+	useMount( () => {
 		const runChecks = async () => {
 			try {
 				for ( const check of stableChecks ) {
@@ -51,7 +56,7 @@ export function useChecks( checks ) {
 		if ( ! complete ) {
 			runChecks();
 		}
-	}, [] );
+	} );
 
 	return { complete, error };
 }

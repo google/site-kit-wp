@@ -105,7 +105,7 @@ function UserMenu() {
 			default:
 				handleMenu();
 		}
-	}, [ proxyPermissionsURL, handleMenu, handleDialog ] );
+	}, [ proxyPermissionsURL, handleMenu, handleDialog, navigateTo ] );
 
 	// Log the user out if they confirm the dialog.
 	const handleUnlinkConfirm = useCallback( () => {
@@ -117,7 +117,7 @@ function UserMenu() {
 
 		// Navigate back to the splash screen to reconnect.
 		navigateTo( postDisconnectURL );
-	}, [ postDisconnectURL ] );
+	}, [ postDisconnectURL, navigateTo ] );
 
 	if ( ! userEmail ) {
 		return null;

@@ -55,7 +55,7 @@ export default function SetupForm( { finishSetup } ) {
 		if ( ! error ) {
 			finishSetup();
 		}
-	}, [ canSubmitChanges, finishSetup ] );
+	}, [ finishSetup, submitChanges ] );
 
 	return (
 		<form className="googlesitekit-optimize-setup__form" onSubmit={ submitForm }>

@@ -47,7 +47,7 @@ export default function OptimizeIDField() {
 	const { setOptimizeID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( event ) => {
 		setOptimizeID( event.target.value );
-	}, [] );
+	}, [ setOptimizeID ] );
 
 	return (
 		<Fragment>

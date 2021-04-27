@@ -56,7 +56,7 @@ export default function OptIn( { id, name, className, optinAction } ) {
 				trackEvent( 'tracking_plugin', optinAction );
 			}
 		}
-	}, [ enabled, optinAction ] );
+	}, [ optinAction, setTrackingEnabled ] );
 
 	if ( enabled === undefined ) {
 		return null;

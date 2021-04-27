@@ -26,6 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySelection } from '../util';
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -93,11 +94,13 @@ const RECEIVE_MATCHED_PROPERTY = 'RECEIVE_MATCHED_PROPERTY';
 const RECEIVE_GET_PROPERTIES = 'RECEIVE_GET_PROPERTIES';
 const RECEIVE_PROPERTIES_PROFILES_COMPLETION = 'RECEIVE_PROPERTIES_PROFILES_COMPLETION';
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
+const SET_PRIMARY_PROPERTY_TYPE = 'SET_PRIMARY_PROPERTY_TYPE';
 
 const baseInitialState = {
 	properties: {},
 	isAwaitingPropertiesProfilesCompletion: {},
 	matchedProperty: undefined,
+	primaryPropertyType: 'ua',
 };
 
 const baseActions = {
@@ -111,12 +114,15 @@ const baseActions = {
 	 * @param {string} accountID Google Analytics account ID.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createProperty( accountID ) {
-		invariant( accountID, 'accountID is required.' );
-
-		const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
-		return { response, error };
-	},
+	createProperty: createValidatedAction(
+		( accountID ) => {
+			invariant( accountID, 'accountID is required.' );
+		},
+		function* ( accountID ) {
+			const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
+			return { response, error };
+		}
+	),
 
 	/**
 	 * Adds a matchedProperty to the store.
@@ -216,6 +222,23 @@ const baseActions = {
 			type: WAIT_FOR_PROPERTIES,
 		};
 	},
+
+	/**
+	 * Sets the primary property type.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} primaryPropertyType Must be "ua" or "ga4".
+	 * @return {Object} Redux-style action.
+	 */
+	setPrimaryPropertyType( primaryPropertyType ) {
+		invariant( [ 'ua', 'ga4' ].includes( primaryPropertyType ), 'type must be "ua" or "ga4"' );
+
+		return {
+			payload: { primaryPropertyType },
+			type: SET_PRIMARY_PROPERTY_TYPE,
+		};
+	},
 };
 
 const baseControls = {
@@ -269,6 +292,15 @@ const baseReducer = ( state, { type, payload } ) => {
 					...state.isAwaitingPropertiesProfilesCompletion,
 					[ accountID ]: false,
 				},
+			};
+		}
+
+		case SET_PRIMARY_PROPERTY_TYPE: {
+			const { primaryPropertyType } = payload;
+
+			return {
+				...state,
+				primaryPropertyType,
 			};
 		}
 
@@ -343,6 +375,18 @@ const baseSelectors = {
 		const { accountID } = parsePropertyID( propertyID );
 
 		return ( state.properties[ accountID ] || [] ).find( ( { id } ) => id === propertyID );
+	},
+
+	/**
+	 * Gets the primary property type.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string} "ua" or "ga4".
+	 */
+	getPrimaryPropertyType( state ) {
+		return state.primaryPropertyType;
 	},
 
 	/**

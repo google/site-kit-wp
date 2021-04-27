@@ -56,7 +56,7 @@ export default function PostSearcherAutoSuggest( { id, setCanSubmit, setMatch } 
 		} else {
 			setCanSubmit( false );
 		}
-	}, [ results, setCanSubmit, setMatch ] );
+	}, [ results, setCanSubmit, setMatch, noResultsMessage ] );
 
 	const onInputChange = useCallback( ( event ) => {
 		setCanSubmit( false );
