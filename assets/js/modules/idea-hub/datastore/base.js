@@ -1,5 +1,5 @@
 /**
- * `useWidgetStateEffect` hook.
+ * `modules/idea-hub` base data store
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,24 +17,16 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useEffect } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore/constants';
-const { useDispatch } = Data;
+import Modules from 'googlesitekit-modules';
+import { STORE_NAME } from './constants';
 
-export default function useWidgetStateEffect( widgetSlug, Component, metadata ) {
-	const { setWidgetState, unsetWidgetState } = useDispatch( STORE_NAME );
+const baseModuleStore = Modules.createModuleStore( 'idea-hub', {
+	storeName: STORE_NAME,
+	settingSlugs: [
+		'ideaLocale',
+	],
+} );
 
-	useEffect( () => {
-		setWidgetState( widgetSlug, Component, metadata );
-		return () => {
-			unsetWidgetState( widgetSlug, Component, metadata );
-		};
-	}, [ widgetSlug, Component, metadata, setWidgetState, unsetWidgetState ] );
-}
+export default baseModuleStore;

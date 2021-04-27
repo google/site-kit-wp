@@ -45,23 +45,23 @@ import { Select, Option } from '../../../../../material-components';
 import { trackEvent } from '../../../../../util';
 const { useDispatch } = Data;
 
+const tabs = [
+	{
+		tabText: __( 'Channels', 'google-site-kit' ),
+		dimensionName: 'ga:channelGrouping',
+	},
+	{
+		tabText: __( 'Locations', 'google-site-kit' ),
+		dimensionName: 'ga:country',
+	},
+	{
+		tabText: __( 'Devices', 'google-site-kit' ),
+		dimensionName: 'ga:deviceCategory',
+	},
+];
+
 export default function DimensionTabs( { dimensionName, loaded } ) {
 	const { setValues } = useDispatch( CORE_UI );
-
-	const tabs = [
-		{
-			tabText: __( 'Channels', 'google-site-kit' ),
-			dimensionName: 'ga:channelGrouping',
-		},
-		{
-			tabText: __( 'Locations', 'google-site-kit' ),
-			dimensionName: 'ga:country',
-		},
-		{
-			tabText: __( 'Devices', 'google-site-kit' ),
-			dimensionName: 'ga:deviceCategory',
-		},
-	];
 
 	const activeTab = tabs.findIndex( ( v ) => v.dimensionName === dimensionName );
 
@@ -76,7 +76,7 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 		} );
 
 		trackEvent( 'all_traffic_widget', 'tab_select', name );
-	} );
+	}, [ setValues ] );
 
 	if ( ! loaded ) {
 		return (

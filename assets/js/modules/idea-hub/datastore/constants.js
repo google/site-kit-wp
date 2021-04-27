@@ -1,5 +1,5 @@
 /**
- * Modal component.
+ * `modules/idea-hub` data store constants.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,31 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import { useMount } from 'react-use';
+export const STORE_NAME = 'modules/idea-hub';
+export { STORE_NAME as MODULES_IDEA_HUB };
 
-/**
- * WordPress dependencies
- */
-import { createPortal, useState } from '@wordpress/element';
-
-function Modal( { children } ) {
-	// Using state as we need `el` to not change when the component re-renders
-	const [ el ] = useState( document.createElement( 'div' ) );
-
-	useMount( () => {
-		const root = document.querySelector( '.googlesitekit-plugin' ) || document.body;
-		root.appendChild( el );
-
-		return () => root.removeChild( el );
-	} );
-
-	return createPortal(
-		children,
-		el,
-	);
-}
-
-export default Modal;

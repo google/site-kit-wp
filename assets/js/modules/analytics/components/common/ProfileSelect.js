@@ -70,7 +70,7 @@ export default function ProfileSelect() {
 			setProfileID( item.dataset.value );
 			trackEvent( 'analytics_setup', 'profile_change', item.dataset.value );
 		}
-	}, [ profileID ] );
+	}, [ profileID, setProfileID ] );
 
 	if ( ! hasResolvedAccounts || isResolvingProperties || isResolvingProfiles ) {
 		return <ProgressBar small />;

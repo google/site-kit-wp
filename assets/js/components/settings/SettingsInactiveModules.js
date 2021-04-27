@@ -50,7 +50,7 @@ const SettingsInactiveModules = () => {
 			.filter( ( slug ) => ! modules[ slug ].active );
 
 		setInitialInactiveSlugs( inactiveSlugs );
-	}, [ modules ] );
+	}, [ modules, initialInactiveSlugs ] );
 
 	if ( ! initialInactiveSlugs ) {
 		return null;
