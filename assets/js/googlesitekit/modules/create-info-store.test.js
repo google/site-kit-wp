@@ -168,11 +168,10 @@ describe( 'createInfoStore store', () => {
 
 			// Uses connect URL when needsReautentication is true.
 			it( 'adds connectURL to the adminReauthURL when needsReautentication is true', () => {
-				const connectURLBase = 'http://connect.com/wp-admin/admin.php';
+				const connectURLBase = 'http://example.com/wp-admin/index.php';
 				const connectURLQueryParams = {
-					page: 'googlesitekit-splash',
-					googlesitekit_connect: '1',
-					nonce: '12345',
+					action: 'googlesitekit_connect',
+					nonce: 'abc123',
 				};
 				const connectURL = addQueryArgs( connectURLBase, connectURLQueryParams );
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( { adminURL: 'http://example.com/wp-admin/' } );

@@ -352,7 +352,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
@@ -380,7 +380,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Registers the Analytics 4 tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 */
 	private function register_tag() {
 		if ( $this->context->is_amp() ) {
@@ -402,7 +402,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Parses account ID, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param Google_Model $account Account model.
 	 * @return \stdClass Updated model with _id attribute.
@@ -421,7 +421,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Parses account and property IDs, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param Google_Model $property Property model.
 	 * @return \stdClass Updated model with _id and _accountID attributes.
@@ -445,7 +445,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Parses property and web datastream IDs, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param Google_Model $webdatastream Web datastream model.
 	 * @return \stdClass Updated model with _id and _propertyID attributes.
@@ -465,7 +465,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Normalizes account ID and returns it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param string $account_id Account ID.
 	 * @return string Updated account ID with "accounts/" prefix.
@@ -477,7 +477,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Normalizes property ID and returns it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param string $property_id Property ID.
 	 * @return string Updated property ID with "properties/" prefix.
