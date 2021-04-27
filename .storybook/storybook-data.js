@@ -19,7 +19,7 @@ module.exports = [
 		name: 'Buttons',
 		story: 'VRT Story',
 		parameters: {
-			fileName: './assets/js/components/ButtonsVRT.stories.js',
+			fileName: './assets/js/components/Button.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
