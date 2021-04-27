@@ -24,7 +24,8 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState, useRef } from '@wordpress/element';
+import { useCallback, useEffect, useState, useRef } from '@wordpress/element';
+import { ENTER } from '@wordpress/keycodes';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -37,15 +38,40 @@ import Checkbox from '../Checkbox';
 import { Cell, Input, TextField } from '../../material-components';
 const { useSelect, useDispatch } = Data;
 
-export default function UserInputSelectOptions( { slug, options, max } ) {
+export default function UserInputSelectOptions( { slug, options, max, next, isActive } ) {
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
 	const [ other, setOther ] = useState( values.filter( ( value ) => ! options[ value ] )[ 0 ] || '' );
 	const { setUserInputSetting } = useDispatch( CORE_USER );
 	const inputRef = useRef();
+	const optionsRef = useRef();
 	const [ disabled, setDisabled ] = useState( false );
 
 	// Need to make sure that dependencies list always has the same number of elements.
 	const dependencies = values.concat( Array( max ) ).slice( 0, max );
+
+	useEffect( () => {
+		if ( ! optionsRef?.current || ! isActive ) {
+			return;
+		}
+
+		const focusOption = ( element ) => {
+			if ( element ) {
+				setTimeout( () => {
+					element.focus();
+				}, 50 );
+			}
+		};
+
+		const optionType = max === 1 ? 'radio' : 'checkbox';
+		const checkedEl = optionsRef.current.querySelector( `input[type="${ optionType }"]:checked` );
+
+		if ( checkedEl ) {
+			focusOption( checkedEl );
+		} else {
+			const el = optionsRef.current.querySelector( `input[type="${ optionType }"]` );
+			focusOption( el );
+		}
+	}, [ isActive, max ] );
 
 	const onClick = useCallback( ( event ) => {
 		const { target } = event;
@@ -84,6 +110,20 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 		setUserInputSetting( slug, Array.from( newValues ).slice( 0, max ) );
 	}, dependencies );
 
+	const onKeyDown = useCallback( ( event ) => {
+		if (
+			event.keyCode === ENTER &&
+			(
+				other.trim().length > 0 ||
+				( values.length > 0 && values.length <= max && ! values.includes( '' ) )
+			) &&
+			next &&
+			typeof next === 'function'
+		) {
+			next();
+		}
+	}, [ ...dependencies, other, next, max ] );
+
 	const onOtherChange = useCallback( ( { target } ) => {
 		const newValues = [
 			target.value,
@@ -105,6 +145,8 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 			id: `${ slug }-${ optionSlug }`,
 			value: optionSlug,
 			checked: values.includes( optionSlug ),
+			tabIndex: ! isActive ? '-1' : undefined,
+			onKeyDown,
 			...onClickProps,
 		};
 
@@ -126,7 +168,7 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
-			<div className="googlesitekit-user-input__select-options">
+			<div className="googlesitekit-user-input__select-options" ref={ optionsRef }>
 				{ items }
 
 				<div className="googlesitekit-user-input__select-option">
@@ -136,6 +178,8 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 						value={ other }
 						checked={ values.includes( other.trim() ) }
 						disabled={ max > 1 && values.length >= max && ! values.includes( other.trim() ) }
+						tabIndex={ ! isActive ? '-1' : undefined }
+						onKeyDown={ onKeyDown }
 						{ ...onClickProps }
 					>
 						{ __( 'Other:', 'google-site-kit' ) }
@@ -151,6 +195,8 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 							onChange={ onOtherChange }
 							ref={ inputRef }
 							disabled={ disabled }
+							tabIndex={ ! values.includes( other.trim() ) || ! isActive ? '-1' : undefined }
+							onKeyDown={ onKeyDown }
 						/>
 					</TextField>
 					<label htmlFor={ `${ slug }-select-options` } className="screen-reader-text">
@@ -172,6 +218,8 @@ UserInputSelectOptions.propTypes = {
 	slug: PropTypes.string.isRequired,
 	options: PropTypes.shape( {} ).isRequired,
 	max: PropTypes.number,
+	next: PropTypes.func,
+	isActive: PropTypes.bool,
 };
 
 UserInputSelectOptions.defaultProps = {
