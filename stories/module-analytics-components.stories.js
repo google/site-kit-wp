@@ -24,7 +24,6 @@ import DashboardAllTrafficWidget from '../assets/js/modules/analytics/components
 import DashboardPopularPagesWidget from '../assets/js/modules/analytics/components/dashboard/DashboardPopularPagesWidget';
 import DashboardBounceRateWidget from '../assets/js/modules/analytics/components/dashboard/DashboardBounceRateWidget';
 import DashboardGoalsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardGoalsWidget';
-import DashboardSearchVisitorsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardSearchVisitorsWidget';
 import { ModulePopularPagesWidget, ModuleOverviewWidget, ModuleAcquisitionChannelsWidget } from '../assets/js/modules/analytics/components/module';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
 import { accountsPropertiesProfiles, goals } from '../assets/js/modules/analytics/datastore/__fixtures__';
@@ -286,76 +285,6 @@ generateAnalyticsWidgetStories( {
 		Loaded: ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
 		DataUnavailable: ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
 	},
-} );
-
-generateAnalyticsWidgetStories( {
-	group: 'Analytics Module/Components/Dashboard/Unique Visitors Widget',
-	referenceDate: '2020-09-08',
-	...generateData( [
-		{
-			compareStartDate: '2020-07-14',
-			compareEndDate: '2020-08-10',
-			startDate: '2020-08-11',
-			endDate: '2020-09-07',
-			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-			dimensions: [ 'ga:channelGrouping' ],
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Total Users',
-				},
-			],
-		},
-		{
-			startDate: '2020-08-11',
-			endDate: '2020-09-07',
-			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-			dimensions: [ 'ga:date', 'ga:channelGrouping' ],
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Users',
-				},
-			],
-		},
-	] ),
-	Component: DashboardSearchVisitorsWidget,
-} );
-
-generateAnalyticsWidgetStories( {
-	group: 'Analytics Module/Components/Page Dashboard/Unique Visitors Widget',
-	referenceDate: '2020-09-08',
-	...generateData( [
-		{
-			compareStartDate: '2020-07-14',
-			compareEndDate: '2020-08-10',
-			startDate: '2020-08-11',
-			endDate: '2020-09-07',
-			url: 'https://www.example.com/example-page/',
-			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-			dimensions: [ 'ga:channelGrouping' ],
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Total Users',
-				},
-			],
-		},
-		{
-			startDate: '2020-08-11',
-			endDate: '2020-09-07',
-			url: 'https://www.example.com/example-page/',
-			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-			dimensions: [ 'ga:date', 'ga:channelGrouping' ],
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Users',
-				},
-			],
-		},
-	] ),
-	Component: DashboardSearchVisitorsWidget,
 } );
 
 generateAnalyticsWidgetStories( {
