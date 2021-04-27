@@ -196,7 +196,6 @@ final class Idea_Hub extends Module
 			'order'       => 7,
 			'homepage'    => __( 'https://www.google.com', 'google-site-kit' ),
 			'learn_more'  => __( 'https://www.google.com', 'google-site-kit' ),
-			'internal'    => true,
 		);
 	}
 
