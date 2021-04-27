@@ -809,16 +809,15 @@ describe( 'data utils', () => {
 				.toThrow( 'an action creator function is required.' );
 		} );
 
-		it( 'should throw an error if action creator function is a generator object', () => {
-			const validator = noop;
-			function* actionCreator() { }
+		it( 'should throw an error if validator function is a generator object', () => {
+			function* validator() { }
+			const actionCreator = noop;
 
 			return expect( () => createValidatedAction(
 				validator,
-				// this has to be called to return generator object from generator function
-				actionCreator()
+				actionCreator
 			) )
-				.toThrow( 'an action creator function is required.' );
+				.toThrow( 'an action’s validator function must not be a generator.' );
 		} );
 
 		it( 'should call validation function', () => {
