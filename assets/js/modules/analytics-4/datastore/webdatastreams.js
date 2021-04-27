@@ -35,6 +35,8 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { isValidPropertyID } from '../utils/validation';
 const { createRegistryControl, createRegistrySelector } = Data;
 
+const MAX_WEBDATASTREAMS_PER_BATCH = 10;
+
 const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',
 	controlCallback( { propertyID } ) {
@@ -185,8 +187,9 @@ const baseResolvers = {
 		const availablePropertyIDs = Object.keys( webdatastreams );
 		const remainingPropertyIDs = difference( propertyIDs, availablePropertyIDs );
 		if ( remainingPropertyIDs.length > 0 ) {
-			for ( let i = 0; i < remainingPropertyIDs.length; i += 10 ) {
-				yield fetchGetWebDataStreamsBatchStore.actions.fetchGetWebDataStreamsBatch( remainingPropertyIDs.slice( i, i + 10 ) );
+			for ( let i = 0; i < remainingPropertyIDs.length; i += MAX_WEBDATASTREAMS_PER_BATCH ) {
+				const chunk = remainingPropertyIDs.slice( i, i + MAX_WEBDATASTREAMS_PER_BATCH );
+				yield fetchGetWebDataStreamsBatchStore.actions.fetchGetWebDataStreamsBatch( chunk );
 			}
 		}
 	},
