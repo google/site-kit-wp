@@ -390,8 +390,10 @@ export function createValidationSelector( validate ) {
 export function createValidatedAction( validate, actionCreator ) {
 	invariant( typeof validate === 'function', 'a validator function is required.' );
 	invariant( typeof actionCreator === 'function', 'an action creator function is required.' );
-	invariant( validate[ Symbol.toStringTag ] !== 'Generator' && validate[ Symbol.toStringTag ] !== 'GeneratorFunction',
-		'an action’s validator function must not be a generator.' );
+	invariant(
+		validate[ Symbol.toStringTag ] !== 'Generator' && validate[ Symbol.toStringTag ] !== 'GeneratorFunction',
+		'an action’s validator function must not be a generator.'
+	);
 
 	return ( ...args ) => {
 		validate( ...args );
