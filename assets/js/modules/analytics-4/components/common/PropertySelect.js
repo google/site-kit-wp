@@ -55,13 +55,12 @@ export default function PropertySelect() {
 	} );
 
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	// const hasResolvedAccounts = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) );
 
 	const { selectProperty } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
 		const newPropertyID = item.dataset.value;
 		if ( propertyID !== newPropertyID ) {
-			selectProperty( newPropertyID, item.dataset.internalId ); // eslint-disable-line sitekit/acronym-case
+			selectProperty( newPropertyID );
 			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
 		}
 	}, [ propertyID ] );
@@ -82,16 +81,16 @@ export default function PropertySelect() {
 		>
 			{ ( properties || [] )
 				.concat( {
-					id: PROPERTY_CREATE,
-					name: __( 'Set up a new property', 'google-site-kit' ),
+					_id: PROPERTY_CREATE,
+					displayName: __( 'Set up a new property', 'google-site-kit' ),
 				} )
-				.map( ( { id, name, internalWebPropertyId }, index ) => ( // eslint-disable-line sitekit/acronym-case
+				.map( ( { _id, displayName }, index ) => (
 					<Option
 						key={ index }
-						value={ id }
-						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
+						value={ _id }
+						data-internal-id={ _id }
 					>
-						{ name }
+						{ displayName }
 					</Option>
 				) ) }
 		</Select>
