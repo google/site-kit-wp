@@ -219,6 +219,14 @@ const baseActions = {
 		};
 	},
 
+	/**
+	 * Sets the primary property type.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} primaryPropertyType Must be "ua" or "ga4".
+	 * @return {Object} Redux-style action.
+	 */
 	setPrimaryPropertyType( primaryPropertyType ) {
 		invariant( [ 'ua', 'ga4' ].includes( primaryPropertyType ), 'type must be "ua" or "ga4"' );
 
