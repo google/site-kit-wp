@@ -26,26 +26,26 @@ class Idea_HubTest extends TestCase {
 	use Module_With_Settings_ContractTests;
 
 	public function test_register() {
-		$analytics = new Idea_Hub( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$idea_hub = new Idea_Hub( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 
-		$analytics->register();
+		$idea_hub->register();
 
 		// Adding required scopes.
 		$this->assertEquals(
-			$analytics->get_scopes(),
+			$idea_hub->get_scopes(),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
 	}
 
 	public function test_get_scopes() {
-		$analytics = new Idea_Hub( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$idea_hub = new Idea_Hub( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertEqualSets(
 			array(
 				'https://www.googleapis.com/auth/ideahub.read',
 			),
-			$analytics->get_scopes()
+			$idea_hub->get_scopes()
 		);
 	}
 
@@ -72,14 +72,14 @@ class Idea_HubTest extends TestCase {
 		$options = new Options( $context );
 		$options->set( Settings::OPTION, 'test-value' );
 
-		$analytics = new Idea_Hub( $context, $options );
-		$analytics->on_deactivation();
+		$idea_hub = new Idea_Hub( $context, $options );
+		$idea_hub->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
 	}
 
 	public function test_get_datapoints() {
-		$analytics = new Idea_Hub( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$idea_hub = new Idea_Hub( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertEqualSets(
 			array(
@@ -90,7 +90,7 @@ class Idea_HubTest extends TestCase {
 				'create-idea-draft-post',
 				'update-idea-state',
 			),
-			$analytics->get_datapoints()
+			$idea_hub->get_datapoints()
 		);
 	}
 
