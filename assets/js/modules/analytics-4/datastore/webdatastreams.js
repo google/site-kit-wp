@@ -248,12 +248,7 @@ const baseSelectors = {
 	 * @return {Object} Web data streams.
 	 */
 	getWebDataStreamsBatch( state, propertyIDs ) {
-		const webdatastreams = pick( state.webdatastreams, propertyIDs );
-		if ( Object.keys( webdatastreams ).length === 0 ) {
-			return undefined;
-		}
-
-		return webdatastreams;
+		return pick( state.webdatastreams, propertyIDs );
 	},
 };
 

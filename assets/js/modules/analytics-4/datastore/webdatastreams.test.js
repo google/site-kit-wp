@@ -235,7 +235,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 				const propertyIDs = Object.keys( fixtures.webDataStreamsBatch );
 				const initialDataStreams = registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs );
-				expect( initialDataStreams ).toBeUndefined();
+				expect( initialDataStreams ).toEqual( {} );
 
 				await untilResolved( registry, STORE_NAME ).getWebDataStreamsBatch( propertyIDs );
 				expect( fetchMock ).toHaveFetched( webDataStreamsBatchEndpoint );
