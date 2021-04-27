@@ -50,10 +50,10 @@ describe( 'modules/analytics-4 properties', () => {
 			it( 'should return false TODO AS PER SPEC', async () => {
 				const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking( );
 
-				expect( isAdminAPIWorking ).toBe( false );
+				expect( isAdminAPIWorking ).toBe( undefined );
 			} );
 
-			it( 'should return true if at least one property with a non-empty array of properties', async () => {
+			it( 'should return true if both exist', async () => {
 				// NOTE - selector does not work for receiveGetProperty. assuming that IB knows this!
 				registry.dispatch( STORE_NAME ).receiveGetProperties( [
 					{
@@ -73,12 +73,6 @@ describe( 'modules/analytics-4 properties', () => {
 				{ accountID: 'foo-bar' },
 				);
 
-				const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking( );
-
-				expect( isAdminAPIWorking ).toBe( true );
-			} );
-
-			it( 'should return true if has at least one property with a non-empty array of web datastreams', async () => {
 				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams(
 					[
 						{
@@ -103,35 +97,36 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( isAdminAPIWorking ).toBe( true );
 			} );
 
-			it( 'should return true if has at least one error with key starting with getProperties', async () => {
+			it( 'should return false if has at least one error with key starting with getProperties', async () => {
 				registry.dispatch( STORE_NAME ).receiveError(
 					new Error( 'foo' ),	'getProperties', [ 'foo', 'bar' ]
 				);
 
 				const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking( );
 
-				expect( isAdminAPIWorking ).toBe( true );
+				expect( isAdminAPIWorking ).toBe( false );
 			} );
 
-			it( 'should return true if has at least one error with key starting with getWebDataStreams', async () => {
+			it( 'should return false if has at least one error with key starting with getWebDataStreams', async () => {
 				registry.dispatch( STORE_NAME ).receiveError(
 					new Error( 'foo' ),	'getWebDataStreams', [ 'foo', 'bar' ]
 				);
 
 				const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking( );
 
-				expect( isAdminAPIWorking ).toBe( true );
-			} );
-
-			it( 'should return false if has errors starting with other keys', async () => {
-				registry.dispatch( STORE_NAME ).receiveError(
-					new Error( 'foo' ),	'getFoo', [ 'foo', 'bar' ]
-				);
-
-				const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking( );
-
 				expect( isAdminAPIWorking ).toBe( false );
 			} );
+
+			// not strictly correct
+			// it( 'should return false if has errors starting with other keys', async () => {
+			// 	registry.dispatch( STORE_NAME ).receiveError(
+			// 		new Error( 'foo' ),	'getFoo', [ 'foo', 'bar' ]
+			// 	);
+
+			// 	const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking( );
+
+			// 	expect( isAdminAPIWorking ).toBe( false );
+			// } );
 		} );
 	} );
 } );
