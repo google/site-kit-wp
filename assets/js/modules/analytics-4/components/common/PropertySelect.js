@@ -28,8 +28,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME } from '../../datastore/constants';
-import { MODULES_ANALYTICS, PROPERTY_CREATE } from '../../../analytics/datastore/constants';
+import { STORE_NAME, PROPERTY_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { isValidAccountID } from '../../../analytics/util';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
@@ -64,7 +64,7 @@ export default function PropertySelect() {
 			selectProperty( newPropertyID );
 			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
 		}
-	}, [ propertyID ] );
+	}, [ propertyID, selectProperty ] );
 
 	if ( ! hasResolvedAccounts || isResolvingProperties ) {
 		return <ProgressBar small />;
@@ -93,7 +93,7 @@ export default function PropertySelect() {
 					>
 						{
 							/* translators: 1: Property name. 2: Property ID. */
-							sprintf( __( '%1$s (%2$s)', 'google-site-kit' ), displayName, _id )
+							_id === PROPERTY_CREATE ? displayName : sprintf( __( '%1$s (%2$s)', 'google-site-kit' ), displayName, _id )
 						}
 					</Option>
 				) ) }
