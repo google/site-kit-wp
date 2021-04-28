@@ -411,7 +411,7 @@ const baseSelectors = {
 	} ),
 
 	/**
-	 * Gets all "classic" Universal Analytic and Google Analytics 4 (GA4) properties this account can access.
+	 * Gets all Analytic and GA4 properties this account can access.
 	 *
 	 * Returns an array of all UA + GA4 analytics properties.
 	 *
@@ -427,7 +427,7 @@ const baseSelectors = {
 		let properties = select( STORE_NAME ).getProperties( accountID );
 
 		if ( select( MODULES_ANALYTICS_4 ) ) {
-			const	propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+			const propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
 			const propertiesGA4Mapped = propertiesGA4.map( ( property ) => ( { ...property, id: property._id } ) );
 			properties = properties.concat( propertiesGA4Mapped );
 		}
