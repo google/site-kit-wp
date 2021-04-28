@@ -36,8 +36,16 @@ describe( 'getFullURL', () => {
 		).toEqual( 'https://www.example.com/path' );
 
 		expect(
+			getFullURL( 'https://www.example.com:444/slug/slug', '/path' )
+		).toEqual( 'https://www.example.com:444/path' );
+
+		expect(
 			getFullURL( 'https://www.firstexample.com/slug', 'https://www.secondexample.com/path' )
 		).toEqual( 'https://www.secondexample.com/path' );
+
+		expect(
+			getFullURL( 'https://www.firstexample.com/slug', 'https://www.secondexample.com:9000/path' )
+		).toEqual( 'https://www.secondexample.com:9000/path' );
 	} );
 
 	it( 'throws if not a valid URL and/or path', () => {
