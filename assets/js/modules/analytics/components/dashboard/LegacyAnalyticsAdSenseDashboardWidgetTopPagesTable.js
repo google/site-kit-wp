@@ -43,23 +43,20 @@ import { getCurrencyFormat } from '../../../adsense/util/currency';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
-let currencyFormat;
-const setCurrencyFormat = ( report ) => {
-	currencyFormat = getCurrencyFormat( report );
-};
-
 const LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
-	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
+	const currencyFormat = useSelect( ( select ) => {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
 
-	const adsenseData = useSelect( ( select ) => select( MODULES_ADSENSE ).getReport( {
-		startDate,
-		endDate,
-		metrics: 'EARNINGS',
-	} ) );
+		const adsenseData = select( MODULES_ADSENSE ).getReport( {
+			startDate,
+			endDate,
+			metrics: 'EARNINGS',
+		} );
 
-	setCurrencyFormat( adsenseData );
+		return getCurrencyFormat( adsenseData );
+	} );
 
 	// Do not return zero data callout here since it will already be
 	// present on the page from other sources.
@@ -72,6 +69,57 @@ const LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		return null;
 	}
 
+	const tableColumns = [
+		{
+			title: __( 'Page Title', 'google-site-kit' ),
+			description: __( 'Page Title', 'google-site-kit' ),
+			primary: true,
+			Component: ( { row } ) => {
+				const [ title, url ] = row.dimensions;
+				const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+					offsetDays: DATE_RANGE_OFFSET,
+				} ) );
+				const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages', {
+					'explorer-table.plotKeys': '[]',
+					'_r.drilldown': `analytics.pagePath:${ url }`,
+					...generateDateRangeArgs( dateRange ),
+				} ) );
+				return (
+					<Link
+						href={ serviceURL }
+						external
+						inherit
+					>
+						{ title }
+					</Link>
+				);
+			},
+		},
+		{
+			title: __( 'Earnings', 'google-site-kit' ),
+			description: __( 'Earnings', 'google-site-kit' ),
+			field: 'metrics.0.values.0',
+			Component: ( { fieldValue } ) => numFmt(
+				fieldValue,
+				currencyFormat,
+			),
+		},
+		{
+			title: __( 'Page RPM', 'google-site-kit' ),
+			description: __( 'Page RPM', 'google-site-kit' ),
+			field: 'metrics.0.values.1',
+			Component: ( { fieldValue } ) => numFmt(
+				fieldValue,
+				currencyFormat,
+			),
+		},
+		{
+			title: __( 'Impressions', 'google-site-kit' ),
+			description: __( 'Impressions', 'google-site-kit' ),
+			field: 'metrics.0.values.2',
+			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+		},
+	];
 	return (
 		<AnalyticsAdSenseDashboardWidgetLayout>
 			<TableOverflowContainer>
@@ -83,58 +131,6 @@ const LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		</AnalyticsAdSenseDashboardWidgetLayout>
 	);
 };
-
-const tableColumns = [
-	{
-		title: __( 'Page Title', 'google-site-kit' ),
-		description: __( 'Page Title', 'google-site-kit' ),
-		primary: true,
-		Component: ( { row } ) => {
-			const [ title, url ] = row.dimensions;
-			const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ) );
-			const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages', {
-				'explorer-table.plotKeys': '[]',
-				'_r.drilldown': `analytics.pagePath:${ url }`,
-				...generateDateRangeArgs( dateRange ),
-			} ) );
-			return (
-				<Link
-					href={ serviceURL }
-					external
-					inherit
-				>
-					{ title }
-				</Link>
-			);
-		},
-	},
-	{
-		title: __( 'Earnings', 'google-site-kit' ),
-		description: __( 'Earnings', 'google-site-kit' ),
-		field: 'metrics.0.values.0',
-		Component: ( { fieldValue } ) => numFmt(
-			fieldValue,
-			currencyFormat,
-		),
-	},
-	{
-		title: __( 'Page RPM', 'google-site-kit' ),
-		description: __( 'Page RPM', 'google-site-kit' ),
-		field: 'metrics.0.values.1',
-		Component: ( { fieldValue } ) => numFmt(
-			fieldValue,
-			currencyFormat,
-		),
-	},
-	{
-		title: __( 'Impressions', 'google-site-kit' ),
-		description: __( 'Impressions', 'google-site-kit' ),
-		field: 'metrics.0.values.2',
-		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
-	},
-];
 
 /**
  * Checks error data response, and handle the INVALID_ARGUMENT specifically.

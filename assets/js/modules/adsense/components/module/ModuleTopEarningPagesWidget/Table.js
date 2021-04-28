@@ -41,9 +41,7 @@ import { numFmt } from '../../../../../util';
 const { useSelect } = Data;
 
 export default function Table( { report } ) {
-	const {
-		currencyFormat,
-	} = useSelect( ( select ) => {
+	const currencyFormat = useSelect( ( select ) => {
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -52,9 +50,7 @@ export default function Table( { report } ) {
 			endDate,
 			metrics: 'EARNINGS',
 		} );
-		return {
-			currencyFormat: getCurrencyFormat( adsenseData ),
-		};
+		return getCurrencyFormat( adsenseData );
 	} );
 
 	const tableColumns = [
