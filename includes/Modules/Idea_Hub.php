@@ -230,10 +230,10 @@ final class Idea_Hub extends Module
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules-idea-hub.js',
 					'dependencies' => array(
-						'googlesitekit_vendor',
-						'googlesitekit_api',
-						'googlesitekit_data',
-						'googlesitekit_modules',
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+						'googlesitekit-data',
+						'googlesitekit-modules',
 					),
 				)
 			),
