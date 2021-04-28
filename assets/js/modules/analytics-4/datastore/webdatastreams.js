@@ -28,11 +28,14 @@ import difference from 'lodash/difference';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { STORE_NAME } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../utils/validation';
 const { createRegistryControl, createRegistrySelector } = Data;
+
+const MAX_WEBDATASTREAMS_PER_BATCH = 10;
 
 const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',
@@ -54,7 +57,7 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 		return { propertyID };
 	},
 	validateParams( { propertyID } = {} ) {
-		invariant( isValidPropertyID( propertyID ), 'GA4 propertyID is required.' );
+		invariant( isValidPropertyID( propertyID ), 'A valid GA4 propertyID is required.' );
 	},
 } );
 
@@ -78,9 +81,9 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 		return { propertyIDs };
 	},
 	validateParams( { propertyIDs } = {} ) {
-		invariant( Array.isArray( propertyIDs ), 'GA4 propertyIDs is required.' );
+		invariant( Array.isArray( propertyIDs ), 'GA4 propertyIDs must be an array.' );
 		propertyIDs.forEach( ( propertyID ) => {
-			invariant( isValidPropertyID( propertyID ), 'Valid GA4 propertyID is required.' );
+			invariant( isValidPropertyID( propertyID ), 'A valid GA4 propertyID is required.' );
 		} );
 	},
 } );
@@ -106,7 +109,7 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 		return { propertyID };
 	},
 	validateParams( { propertyID } = {} ) {
-		invariant( isValidPropertyID( propertyID ), 'GA4 propertyID is required.' );
+		invariant( isValidPropertyID( propertyID ), 'A valid GA4 propertyID is required.' );
 	},
 } );
 
@@ -126,12 +129,15 @@ const baseActions = {
 	 * @param {string} propertyID GA4 property ID.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createWebDataStream( propertyID ) {
-		invariant( propertyID, 'GA4 propertyID is required.' );
-
-		const { response, error } = yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream( propertyID );
-		return { response, error };
-	},
+	createWebDataStream: createValidatedAction(
+		( propertyID ) => {
+			invariant( propertyID, 'GA4 propertyID is required.' );
+		},
+		function* ( propertyID ) {
+			const { response, error } = yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream( propertyID );
+			return { response, error };
+		}
+	),
 
 	/**
 	 * Waits for web data streams to be loaded for a property.
@@ -181,7 +187,10 @@ const baseResolvers = {
 		const availablePropertyIDs = Object.keys( webdatastreams );
 		const remainingPropertyIDs = difference( propertyIDs, availablePropertyIDs );
 		if ( remainingPropertyIDs.length > 0 ) {
-			yield fetchGetWebDataStreamsBatchStore.actions.fetchGetWebDataStreamsBatch( remainingPropertyIDs );
+			for ( let i = 0; i < remainingPropertyIDs.length; i += MAX_WEBDATASTREAMS_PER_BATCH ) {
+				const chunk = remainingPropertyIDs.slice( i, i + MAX_WEBDATASTREAMS_PER_BATCH );
+				yield fetchGetWebDataStreamsBatchStore.actions.fetchGetWebDataStreamsBatch( chunk );
+			}
 		}
 	},
 };
@@ -215,13 +224,8 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		const normalizeURL = ( incomingURL ) => incomingURL
-			.replace( /^https?:\/\/(www\.)?/i, '' ) // Remove protocol and optional "www." prefix from the URL.
-			.replace( /\/$/, '' ); // Remove trailing slash.
-
-		const url = normalizeURL( select( CORE_SITE ).getReferenceSiteURL() );
 		for ( const datastream of datastreams ) {
-			if ( normalizeURL( datastream.defaultUri ) === url ) {
+			if ( select( CORE_SITE ).isSiteURLMatch( datastream.defaultUri ) ) {
 				return datastream;
 			}
 		}
@@ -239,12 +243,7 @@ const baseSelectors = {
 	 * @return {Object} Web data streams.
 	 */
 	getWebDataStreamsBatch( state, propertyIDs ) {
-		const webdatastreams = pick( state.webdatastreams, propertyIDs );
-		if ( Object.keys( webdatastreams ).length === 0 ) {
-			return undefined;
-		}
-
-		return webdatastreams;
+		return pick( state.webdatastreams, propertyIDs );
 	},
 };
 

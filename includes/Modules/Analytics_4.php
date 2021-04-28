@@ -271,19 +271,20 @@ final class Analytics_4 extends Module
 
 				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->listPropertiesWebDataStreams( self::normalize_property_id( $data['propertyID'] ) );
 			case 'GET:webdatastreams-batch':
-				if ( ! isset( $data['propertyIDs'] ) || ! is_array( $data['propertyIDs'] ) ) {
+				if ( ! isset( $data['propertyIDs'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
 						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty or not an array: %s.', 'google-site-kit' ), 'propertyIDs' ),
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyIDs' ),
 						array( 'status' => 400 )
 					);
 				}
 
-				if ( count( $data['propertyIDs'] ) > 10 ) {
+				if ( ! is_array( $data['propertyIDs'] ) || count( $data['propertyIDs'] ) > 10 ) {
 					return new WP_Error(
-						'invalid_param',
-						__( 'Too many properties. Only 10 are allowed per batch request.', 'google-site-kit' ),
+						'rest_invalid_param',
+						/* translators: %s: List of invalid parameters. */
+						sprintf( __( 'Invalid parameter(s): %s', 'google-site-kit' ), 'propertyIDs' ),
 						array( 'status' => 400 )
 					);
 				}

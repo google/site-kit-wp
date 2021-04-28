@@ -1,5 +1,5 @@
 /**
- * `core/user` isValidDateInstance utility.
+ * `isValidDateRange` utility tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,14 +17,22 @@
  */
 
 /**
- * Asserts whether a given date instance is valid or invalid.
- *
- * @since 1.18.0
- *
- * @param {Date} date Date instance to be asserted against.
- * @return {boolean}  True if the given date instance is valid.
+ * Internal dependencies
  */
-export const isValidDateInstance = ( date ) => {
-	// type coercion provided by isNaN is preferred here over Number.isNaN
-	return date instanceof Date && ! isNaN( date );
-};
+import { isValidDateRange } from './is-valid-date-range';
+
+describe( 'isValidDateString', () => {
+	// [ dateRange, expectedReturnValue ]
+	const valuesToTest = [
+		[ 'last-1-days', true ],
+		[ 'last-7-days', true ],
+		[ 'last-28-days', true ],
+		[ 'last-1-day', false ],
+		[ 'invalid-range', false ],
+		[ 'invalid-date-range', false ],
+	];
+
+	it.each( valuesToTest )( 'with date range of %s should return %s', ( dateRange, expected ) => {
+		expect( isValidDateRange( dateRange ) ).toEqual( expected );
+	} );
+} );

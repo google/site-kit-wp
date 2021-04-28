@@ -235,7 +235,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 				const propertyIDs = Object.keys( fixtures.webDataStreamsBatch );
 				const initialDataStreams = registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs );
-				expect( initialDataStreams ).toBeUndefined();
+				expect( initialDataStreams ).toEqual( {} );
 
 				await untilResolved( registry, STORE_NAME ).getWebDataStreamsBatch( propertyIDs );
 				expect( fetchMock ).toHaveFetched( webDataStreamsBatchEndpoint );
@@ -282,6 +282,42 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				const initialDataStreams = registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs );
 				expect( initialDataStreams ).toEqual( fixtures.webDataStreamsBatch );
 				expect( fetchMock ).not.toHaveFetched( webDataStreamsBatchEndpoint );
+			} );
+
+			it( 'should send multiple request if propertyIDs array has more than 10 items', async () => {
+				const propertyIDs = [];
+				const allDataStreams = {};
+				const firstBatch = {};
+				const secondBatch = {};
+
+				for ( let i = 0; i < 15; i++ ) {
+					const propertyID = `${ 1000 + i }`;
+					const datastream = {
+						_id: `${ 2000 + i }`,
+						_propertyID: propertyID,
+					};
+
+					propertyIDs.push( propertyID );
+
+					allDataStreams[ propertyID ] = datastream;
+					if ( i < 10 ) {
+						firstBatch[ propertyID ] = datastream;
+					} else {
+						secondBatch[ propertyID ] = datastream;
+					}
+				}
+
+				const responses = [ firstBatch, secondBatch ];
+				fetchMock.get( webDataStreamsBatchEndpoint, () => {
+					return { body: responses.pop() };
+				} );
+
+				expect( registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs ) ).toEqual( {} );
+				await untilResolved( registry, STORE_NAME ).getWebDataStreamsBatch( propertyIDs );
+				expect( registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs ) ).toEqual( allDataStreams );
+
+				expect( fetchMock ).toHaveFetched( webDataStreamsBatchEndpoint );
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 			} );
 		} );
 	} );

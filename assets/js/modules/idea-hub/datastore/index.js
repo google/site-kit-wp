@@ -1,5 +1,5 @@
 /**
- * `core/user` isValidDateRange utility.
+ * `modules/idea-hub` data store
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,18 +17,11 @@
  */
 
 /**
- * Asserts whether a given dateRange string is valid or invalid.
- *
- * @since 1.18.0
- *
- * @param {string} dateRange Date string to be asserted against. Defaults to an empty string.
- * @return {boolean}          True if the given dateRange string is valid.
+ * Internal dependencies
  */
-export const isValidDateRange = ( dateRange = '' ) => {
-	const parts = dateRange.split( '-' );
+import { STORE_NAME } from './constants';
+import baseModuleStore from './base';
 
-	return parts.length === 3 &&
-		parts[ 0 ] === 'last' &&
-		! Number.isNaN( parts[ 1 ] ) && ! Number.isNaN( parseFloat( parts[ 1 ] ) ) &&
-		parts[ 2 ] === 'days';
+export const registerStore = ( registry ) => {
+	registry.registerStore( STORE_NAME, baseModuleStore );
 };

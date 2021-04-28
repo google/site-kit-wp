@@ -35,7 +35,6 @@ import {
 	PERMISSION_VIEW_DASHBOARD,
 	PERMISSION_VIEW_MODULE_DETAILS,
 	PERMISSION_MANAGE_OPTIONS,
-	PERMISSION_PUBLISH_POSTS,
 	CORE_USER,
 } from '../../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
@@ -242,7 +241,6 @@ export const provideUserCapabilities = ( registry, extraData = {} ) => {
 		[ PERMISSION_VIEW_DASHBOARD ]: true,
 		[ PERMISSION_VIEW_MODULE_DETAILS ]: true,
 		[ PERMISSION_MANAGE_OPTIONS ]: true,
-		[ PERMISSION_PUBLISH_POSTS ]: true,
 	};
 
 	registry.dispatch( CORE_USER ).receiveCapabilities( {
