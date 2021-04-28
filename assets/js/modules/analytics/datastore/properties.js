@@ -186,17 +186,19 @@ const baseActions = {
 				return; // Something unexpected occurred and we want to avoid type errors.
 			}
 
-			let returnProfile = profiles.find( ( { id: ID } ) => ID === existingProfileID );
+			const matchedProfileID = profiles.find( ( { id: ID } ) => ID === existingProfileID )?.id;
 
-			if ( ! returnProfile ) {
-				if ( property.defaultProfileId && profiles?.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/acronym-case
-					registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
-					return;
-				}
-				returnProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // eslint-disable-line sitekit/acronym-case
+			if ( matchedProfileID ) {
+				registry.dispatch( STORE_NAME ).setProfileID( matchedProfileID );
+				return;
 			}
 
-			registry.dispatch( STORE_NAME ).setProfileID( returnProfile.id );
+			if ( property.defaultProfileId && profiles?.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/acronym-case
+				registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
+				return;
+			}
+			const profileID = profiles.shift()?.id || PROFILE_CREATE;
+			registry.dispatch( STORE_NAME ).setProfileID( profileID );
 		}() );
 	},
 
