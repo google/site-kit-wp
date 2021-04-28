@@ -55,7 +55,7 @@ export default function UseSnippetSwitch( props ) {
 		if ( saveOnChange ) {
 			await saveSettings();
 		}
-	}, [ useSnippet ] );
+	}, [ useSnippet, saveOnChange, setUseSnippet, saveSettings ] );
 
 	if ( undefined === useSnippet ) {
 		return null;

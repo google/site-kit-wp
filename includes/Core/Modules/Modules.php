@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Idea_Hub;
 use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
@@ -147,6 +148,9 @@ final class Modules {
 
 		if ( Feature_Flags::enabled( 'ga4setup' ) ) {
 			$this->core_modules[] = Analytics_4::class;
+		}
+		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
+			$this->core_modules[] = Idea_Hub::class;
 		}
 	}
 

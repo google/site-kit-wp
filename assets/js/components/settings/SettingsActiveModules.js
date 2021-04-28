@@ -54,7 +54,7 @@ export default function SettingsActiveModules( { activeModule, moduleState, setM
 			.filter( ( slug ) => modules[ slug ].active );
 
 		setInitialActiveSlugs( activeSlugs );
-	}, [ modules ] );
+	}, [ modules, initialActiveSlugs ] );
 	const { submitChanges } = useDispatch( CORE_MODULES );
 
 	const onEdit = useCallback( ( slug ) => {
@@ -76,7 +76,7 @@ export default function SettingsActiveModules( { activeModule, moduleState, setM
 			setModuleState( slug, 'view' );
 			clearWebStorage();
 		}
-	}, [ setModuleState ] );
+	}, [ setModuleState, submitChanges ] );
 
 	const onToggle = useCallback( ( slug, e ) => {
 		// Set focus on heading when clicked.

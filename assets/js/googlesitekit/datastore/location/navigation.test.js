@@ -52,8 +52,7 @@ describe( 'core/location', () => {
 	describe( 'actions', () => {
 		describe( 'navigateTo', () => {
 			it( 'should require a valid URL', () => {
-				return expect( registry.dispatch( STORE_NAME ).navigateTo( 'testurl' ) )
-					.rejects
+				return expect( () => registry.dispatch( STORE_NAME ).navigateTo( 'testurl' ) )
 					.toThrow( 'url must be a valid URI.' );
 			} );
 
