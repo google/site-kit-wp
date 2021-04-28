@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import sortBy from 'lodash/sortBy';
 
 /**
  * Internal dependencies
@@ -327,6 +326,19 @@ const baseResolvers = {
 	},
 };
 
+const isGA4 = ( property ) => !! property._id;
+
+function compare( a, b ) {
+	if ( a < b ) {
+		return -1;
+	}
+	if ( a > b ) {
+		return 1;
+	}
+	// a must be equal to b
+	return 0;
+}
+
 const baseSelectors = {
 	/**
 	 * Gets the property object by the property ID.
@@ -428,11 +440,23 @@ const baseSelectors = {
 
 		if ( select( MODULES_ANALYTICS_4 ) ) {
 			const propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
-			const propertiesGA4Mapped = propertiesGA4.map( ( property ) => ( { ...property, id: property._id } ) );
-			properties = properties.concat( propertiesGA4Mapped );
+			properties = properties.concat( propertiesGA4 );
 		}
 
-		return sortBy( properties, [ 'name', 'id' ] );
+		return properties.sort( ( a, b ) => {
+			// TODO - refactor
+			const aName = isGA4( a ) ? a.displayName : a.name;
+			const bName = isGA4( b ) ? b.displayName : b.name;
+
+			if ( aName !== bName ) {
+				return compare( aName, bName );
+			}
+
+			const aID = isGA4( a ) ? a._id : a.id;
+			const bID = isGA4( b ) ? b._id : b.id;
+
+			return compare( aID, bID );
+		} );
 	} ),
 };
 
