@@ -1,5 +1,5 @@
 /**
- * `core/user` getDateString utility tests.
+ * `getDateString` utility tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
