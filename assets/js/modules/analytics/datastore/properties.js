@@ -182,8 +182,8 @@ const baseActions = {
 			const existingProfileID = registry.select( STORE_NAME ).getProfileID(); // eslint-disable-line @wordpress/no-unused-vars-before-return
 			const profiles = yield Data.commonActions.await( registry.__experimentalResolveSelect( STORE_NAME ).getProfiles( accountID, propertyID ) );
 
-			if ( profiles === undefined ) {
-				return; // Selection will happen in getProfiles resolver.
+			if ( ! Array.isArray( profiles ) ) {
+				return; // Something unexpected occurred and we want to avoid type errors.
 			}
 
 			let returnProfile = profiles.find( ( { id: ID } ) => ID === existingProfileID );
