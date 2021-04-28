@@ -188,11 +188,11 @@ const baseActions = {
 				return; // Something unexpected occurred and we want to avoid type errors.
 			}
 
-			const matchedProfileID = profiles.find( ( { id: ID } ) => ID === existingProfileID )?.id;
-
-			if ( matchedProfileID ) {
-				registry.dispatch( STORE_NAME ).setProfileID( matchedProfileID );
-				return;
+			if ( existingProfileID ) {
+				const matchedProfileID = profiles.find( ( { id: ID } ) => ID === existingProfileID )?.id;
+				if ( matchedProfileID ) {
+					return;
+				}
 			}
 
 			if ( property.defaultProfileId && profiles?.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/acronym-case
