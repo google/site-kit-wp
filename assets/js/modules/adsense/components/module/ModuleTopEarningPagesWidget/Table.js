@@ -32,11 +32,11 @@ import Data from 'googlesitekit-data';
 import ReportTable from '../../../../../components/ReportTable';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import Link from '../../../../../components/Link';
-import { STORE_NAME } from '../../../datastore/constants';
 import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../../analytics/datastore/constants';
+import { STORE_NAME } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
 import { getCurrencyFormat } from '../../../util/currency';
+import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
 import { numFmt } from '../../../../../util';
 const { useSelect } = Data;
 
