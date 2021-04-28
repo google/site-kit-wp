@@ -517,7 +517,7 @@ final class AdSense extends Module
 		}
 
 		$opt_params = array(
-			'locale' => get_locale(),
+			'locale' => $this->context->get_locale(),
 			'metric' => array( 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ),
 		);
 

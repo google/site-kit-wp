@@ -40,6 +40,8 @@ const Radio = ( {
 	checked,
 	disabled,
 	children,
+	tabIndex,
+	onKeyDown,
 } ) => {
 	const formFieldRef = useCallback( ( el ) => {
 		if ( el !== null ) {
@@ -63,12 +65,14 @@ const Radio = ( {
 				<input
 					className="mdc-radio__native-control"
 					onClick={ onClick }
+					onKeyDown={ onKeyDown }
 					type="radio"
 					id={ id }
 					name={ name }
 					value={ value }
 					checked={ checked }
 					disabled={ disabled }
+					tabIndex={ tabIndex }
 					readOnly
 				/>
 				<div className="mdc-radio__background">
@@ -83,18 +87,22 @@ const Radio = ( {
 
 Radio.propTypes = {
 	onClick: PropTypes.func,
+	onKeyDown: PropTypes.func,
 	id: PropTypes.string.isRequired,
 	name: PropTypes.string.isRequired,
 	value: PropTypes.string.isRequired,
 	checked: PropTypes.bool,
 	disabled: PropTypes.bool,
 	children: PropTypes.string.isRequired,
+	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
 };
 
 Radio.defaultProps = {
 	onClick: null,
+	onKeyDown: null,
 	checked: false,
 	disabled: false,
+	tabIndex: undefined,
 };
 
 export default Radio;
