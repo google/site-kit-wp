@@ -28,6 +28,7 @@ import {
 	unsubscribeFromAll,
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 describe( 'modules/analytics properties', () => {
 	let registry;
@@ -263,7 +264,7 @@ describe( 'modules/analytics properties', () => {
 
 				// Load data into stores
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
-				registry.dispatch( 'modules/analytics-4' ).receiveGetProperties( fixtures.propertiesGA4, { accountID } );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( fixtures.propertiesGA4, { accountID } );
 
 				const properties = registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID );
 
