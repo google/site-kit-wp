@@ -188,19 +188,19 @@ const baseActions = {
 				return; // Something unexpected occurred and we want to avoid type errors.
 			}
 
-			if ( existingProfileID ) {
-				const matchedProfileID = profiles.find( ( { id: ID } ) => ID === existingProfileID )?.id;
-				if ( matchedProfileID ) {
-					return;
-				}
+			// If there was an existing profile ID set and it belongs to the selected property, we're done.
+			if ( existingProfileID && profiles.some( ( profile ) => profile.id === existingProfileID ) ) {
+				return;
 			}
 
-			if ( property.defaultProfileId && profiles?.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/acronym-case
+			// If the property has a default profile that exists, use that.
+			if ( property.defaultProfileId && profiles.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/acronym-case
 				registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
 				return;
 			}
-			const profileID = profiles.shift()?.id || PROFILE_CREATE;
-			registry.dispatch( STORE_NAME ).setProfileID( profileID );
+
+			// Otherwise just select the first profile, or the option to create if none.
+			registry.dispatch( STORE_NAME ).setProfileID( profiles[ 0 ]?.id || PROFILE_CREATE );
 		}() );
 	},
 
