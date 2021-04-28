@@ -96,7 +96,7 @@ describe( 'modules/analytics-4 properties', () => {
 									displayName: 'Test GA4 WebDataStream',
 								},
 							],
-							{ propertyID: 'foo-bar' }
+							{ propertyID: 'foobar' }
 						);
 					}
 					if ( errorProperty ) {
