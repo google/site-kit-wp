@@ -48,7 +48,7 @@ export default function AMPExperimentJSONField() {
 	const { setAMPExperimentJSON } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( event ) => {
 		setAMPExperimentJSON( event.target.value );
-	}, [] );
+	}, [ setAMPExperimentJSON ] );
 
 	if ( ! useSnippet || ! ampMode ) {
 		return null;

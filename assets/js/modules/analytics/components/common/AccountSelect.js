@@ -62,7 +62,7 @@ export default function AccountSelect() {
 			selectAccount( newAccountID );
 			trackEvent( 'analytics_setup', 'account_change', newAccountID );
 		}
-	}, [ accountID ] );
+	}, [ accountID, selectAccount ] );
 
 	if ( ! hasResolvedAccounts ) {
 		return <ProgressBar small />;

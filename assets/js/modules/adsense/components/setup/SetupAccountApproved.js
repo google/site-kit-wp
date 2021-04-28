@@ -49,7 +49,7 @@ export default function SetupAccountApproved() {
 			return;
 		}
 		await completeAccountSetup();
-	}, [ isDoingSubmitChanges ] );
+	}, [ isDoingSubmitChanges, completeAccountSetup ] );
 
 	if ( undefined === existingTag || undefined === originalAccountStatus ) {
 		return null;

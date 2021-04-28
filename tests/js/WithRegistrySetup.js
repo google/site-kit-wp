@@ -37,7 +37,7 @@ const WithRegistrySetup = ( { func, children } ) => {
 
 			setReady( true );
 		}
-	}, [] );
+	} );
 
 	if ( ready ) {
 		return children;

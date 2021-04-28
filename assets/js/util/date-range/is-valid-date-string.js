@@ -1,5 +1,5 @@
 /**
- * `core/user` isValidDateInstance utility.
+ * `isValidDateString` utility.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,14 +17,26 @@
  */
 
 /**
- * Asserts whether a given date instance is valid or invalid.
+ * Internal dependencies
+ */
+import { isValidDateInstance } from './is-valid-date-instance';
+
+/**
+ * Asserts whether a given date string is valid or invalid.
  *
  * @since 1.18.0
  *
- * @param {Date} date Date instance to be asserted against.
- * @return {boolean}  True if the given date instance is valid.
+ * @param {string} dateString Date string to be asserted against. Defaults to an empty string.
+ * @return {boolean}          True if the given date string is valid.
  */
-export const isValidDateInstance = ( date ) => {
-	// type coercion provided by isNaN is preferred here over Number.isNaN
-	return date instanceof Date && ! isNaN( date );
+export const isValidDateString = ( dateString = '' ) => {
+	const isString = typeof dateString === 'string';
+
+	if ( ! isString ) {
+		return false;
+	}
+
+	const dateArray = dateString.split( '-' );
+
+	return dateArray.length === 3 && isValidDateInstance( new Date( dateString ) );
 };

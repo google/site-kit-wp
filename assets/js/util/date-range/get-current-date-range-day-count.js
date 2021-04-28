@@ -1,5 +1,5 @@
 /**
- * Modal component.
+ * `getCurrentDateRangeDayCount` utility.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,30 +17,20 @@
  */
 
 /**
- * External dependencies
+ * Gets the current dateRange day count.
+ *
+ * @since 1.19.0
+ * @since 1.26.0 `dateRange` is now a required argument.
+ *
+ * @param {string} dateRange The date range slug.
+ * @return {number} The number of days in the range.
  */
-import { useMount } from 'react-use';
+export function getCurrentDateRangeDayCount( dateRange ) {
+	const daysMatch = dateRange.match( /last-(\d+)-days/ );
 
-/**
- * WordPress dependencies
- */
-import { createPortal, useState } from '@wordpress/element';
+	if ( daysMatch && daysMatch[ 1 ] ) {
+		return parseInt( daysMatch[ 1 ], 10 );
+	}
 
-function Modal( { children } ) {
-	// Using state as we need `el` to not change when the component re-renders
-	const [ el ] = useState( document.createElement( 'div' ) );
-
-	useMount( () => {
-		const root = document.querySelector( '.googlesitekit-plugin' ) || document.body;
-		root.appendChild( el );
-
-		return () => root.removeChild( el );
-	} );
-
-	return createPortal(
-		children,
-		el,
-	);
+	throw new Error( 'Unrecognized date range slug.' );
 }
-
-export default Modal;
