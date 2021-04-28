@@ -55,27 +55,27 @@ describe( 'modules/analytics-4 accounts', () => {
 					status: 200,
 				} );
 
-				const initialProperties = registry.select( STORE_NAME ).getAccountSummaries();
-				expect( initialProperties ).toBeUndefined();
+				const initialAccountSummaries = registry.select( STORE_NAME ).getAccountSummaries();
+				expect( initialAccountSummaries ).toBeUndefined();
 
 				await untilResolved( registry, STORE_NAME ).getAccountSummaries();
 				expect( fetchMock ).toHaveFetched( accountSummariesEndpoint );
 
-				const properties = registry.select( STORE_NAME ).getAccountSummaries();
+				const accountSummaries = registry.select( STORE_NAME ).getAccountSummaries();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( properties ).toEqual( fixtures.accountSummaries );
-				expect( properties ).toHaveLength( fixtures.accountSummaries.length );
+				expect( accountSummaries ).toEqual( fixtures.accountSummaries );
+				expect( accountSummaries ).toHaveLength( fixtures.accountSummaries.length );
 			} );
 
 			it( 'should not make a network request if properties for this account are already present', async () => {
 				registry.dispatch( STORE_NAME ).receiveGetAccountSummaries( fixtures.accountSummaries );
 
-				const properties = registry.select( STORE_NAME ).getAccountSummaries();
+				const accountSummaries = registry.select( STORE_NAME ).getAccountSummaries();
 				await untilResolved( registry, STORE_NAME ).getAccountSummaries();
 
 				expect( fetchMock ).not.toHaveFetched( accountSummariesEndpoint );
-				expect( properties ).toEqual( fixtures.accountSummaries );
-				expect( properties ).toHaveLength( fixtures.accountSummaries.length );
+				expect( accountSummaries ).toEqual( fixtures.accountSummaries );
+				expect( accountSummaries ).toHaveLength( fixtures.accountSummaries.length );
 			} );
 
 			it( 'should dispatch an error if the request fails', async () => {
@@ -94,8 +94,8 @@ describe( 'modules/analytics-4 accounts', () => {
 				await untilResolved( registry, STORE_NAME ).getAccountSummaries();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const properties = registry.select( STORE_NAME ).getAccountSummaries();
-				expect( properties ).toBeUndefined();
+				const accountSummaries = registry.select( STORE_NAME ).getAccountSummaries();
+				expect( accountSummaries ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );
 		} );
