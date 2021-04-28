@@ -32,7 +32,7 @@ import Data from 'googlesitekit-data';
 import ReportTable from '../../../../../components/ReportTable';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import Link from '../../../../../components/Link';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { STORE_NAME } from '../../../datastore/constants';
 import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../../analytics/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
@@ -47,7 +47,7 @@ export default function Table( { report } ) {
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
-		const adsenseData = select( MODULES_ADSENSE ).getReport( {
+		const adsenseData = select( STORE_NAME ).getReport( {
 			startDate,
 			endDate,
 			metrics: 'EARNINGS',
