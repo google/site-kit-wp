@@ -49,8 +49,6 @@ const baseSelectors = {
 	 * @return {(boolean | undefined)} True, false, or undefined.
 	 */
 	isAdminAPIWorking( state ) {
-		// There are no entries in the state['errors'] object which key start with getProperties:: prefix;
-		// There are no entries in the state['errors'] object which key start with getWebDataStreams:: prefix.
 		for ( const errorKey in state.errors ) {
 			if (
 				errorKey.startsWith( 'getProperties' ) ||
@@ -60,10 +58,8 @@ const baseSelectors = {
 			}
 		}
 
-		// The state['properties'] object has at least one account with a non-empty array of properties;
 		for ( const propertyList of Object.values( state.properties ) ) {
 			if ( propertyList && propertyList.length && propertyList.length > 0 ) {
-				// The state['webdatastreams'] object has at least one property with a non-empty array of web datastreams;
 				for ( const webdatastreamList of Object.values( state.webdatastreams ) ) {
 					if ( webdatastreamList && webdatastreamList.length && webdatastreamList.length > 0 ) {
 						return true;
