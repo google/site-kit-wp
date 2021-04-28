@@ -335,7 +335,6 @@ function compare( a, b ) {
 	if ( a > b ) {
 		return 1;
 	}
-	// a must be equal to b
 	return 0;
 }
 
@@ -444,7 +443,6 @@ const baseSelectors = {
 		}
 
 		return properties.sort( ( a, b ) => {
-			// TODO - refactor
 			const aName = isGA4( a ) ? a.displayName : a.name;
 			const bName = isGA4( b ) ? b.displayName : b.name;
 

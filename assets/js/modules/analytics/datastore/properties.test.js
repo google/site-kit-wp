@@ -262,14 +262,50 @@ describe( 'modules/analytics properties', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const accountID = testAccountID;
 
-				// Load data into stores
-				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( fixtures.propertiesGA4, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetProperties(
+					[
+						{
+							// eslint-disable-next-line sitekit/acronym-case
+							accountId: '151753095',
+							id: 'UA-151753095-1',
+							name: 'rwh',
+						},
+						{
+							// eslint-disable-next-line sitekit/acronym-case
+							accountId: '151753095',
+							id: 'UA-151753095-1',
+							name: 'troubled-tipped.example.com',
+						},
+
+					],
+					{ accountID }
+				);
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [
+					{
+						_id: '151753095-3',
+						_accountID: '151753095',
+						displayName: 'www.elasticpress.io',
+					},
+					{
+						_id: '151753095-4',
+						_accountID: '151753095',
+						displayName: 'troubled-tipped.example.com',
+					},
+				], { accountID } );
 
 				const properties = registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID );
 
-				expect( properties ).toMatchSnapshot();
-				expect( properties ).toHaveLength( 23 );
+				expect( properties ).toHaveLength( 4 );
+
+				expect( properties[ 0 ].id ).toBe( 'UA-151753095-1' );
+				expect( properties[ 1 ]._id ).toBe( '151753095-4' );
+				expect( properties[ 2 ].id ).toBe( 'UA-151753095-1' );
+				expect( properties[ 3 ]._id ).toBe( '151753095-3' );
+
+				expect( properties[ 0 ].name ).toBe( 'rwh' );
+				expect( properties[ 1 ].displayName ).toBe( 'troubled-tipped.example.com' );
+				expect( properties[ 2 ].name ).toBe( 'troubled-tipped.example.com' );
+				expect( properties[ 3 ].displayName ).toBe( 'www.elasticpress.io' );
 			} );
 		} );
 
