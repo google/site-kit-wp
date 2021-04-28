@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback, useRef, useState } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { ENTER, BACKSPACE } from '@wordpress/keycodes';
 
@@ -38,18 +38,17 @@ import { Cell, Input, TextField } from '../../material-components';
 import Button from '../Button';
 import CloseIcon from '../../../svg/close.svg';
 import { COMMA } from '../../util/key-codes';
-import VisuallyHiden from '../VisuallyHidden';
+import VisuallyHidden from '../VisuallyHidden';
 const { useSelect, useDispatch } = Data;
 
-export default function UserInputKeywords( { slug, max } ) {
+export default function UserInputKeywords( { slug, max, next, isActive } ) {
 	const keywordsContainer = useRef();
-	const [ canDeleteKeyword, setCanDeleteKeyword ] = useState( false );
 
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
 	const { setUserInputSetting } = useDispatch( CORE_USER );
 
 	// Add an empty string if the values array is empty.
-	if ( values.length === 0 ) {
+	if ( values.length === 0 || values.length < max ) {
 		values.push( '' );
 	}
 
@@ -57,28 +56,32 @@ export default function UserInputKeywords( { slug, max } ) {
 	// https://github.com/google/site-kit-wp/issues/2900#issuecomment-814843972.
 	const [ localValues, setLocalValues ] = useState( values );
 
-	// Need to make sure that dependencies list always has the same number of elements.
-	const dependencies = values.concat( Array( max ) ).slice( 0, max );
-
 	const focusInput = ( querySelector ) => {
 		const input = keywordsContainer.current.querySelector( querySelector );
+
 		if ( input ) {
-			input.focus();
+			setTimeout( () => {
+				input.focus();
+			}, 50 );
 		}
 	};
+
+	useEffect( () => {
+		if ( keywordsContainer?.current && isActive ) {
+			focusInput( '.googlesitekit-user-input__text-option:first-child .mdc-text-field__input' );
+		}
+	}, [ isActive ] );
 
 	const deleteKeyword = useCallback( ( index ) => {
 		updateKeywords( [
 			...values.slice( 0, index ),
 			...values.slice( index + 1 ),
 		] );
-		// After deleting a keyword, hitting backspace will delete the next keyword.
-		setCanDeleteKeyword( true );
-	}, dependencies, canDeleteKeyword );
+	}, [ updateKeywords, values ] );
 
 	const onKeywordDelete = useCallback( ( index ) => {
 		deleteKeyword( index );
-	}, dependencies );
+	}, [ deleteKeyword ] );
 
 	const updateKeywords = useCallback( ( keywords ) => {
 		const EOT = String.fromCharCode( 4 );
@@ -98,7 +101,7 @@ export default function UserInputKeywords( { slug, max } ) {
 
 		setLocalValues( newKeywords );
 		setUserInputSetting( slug, newKeywords );
-	}, [ slug ] );
+	}, [ slug, max, setUserInputSetting ] );
 
 	const onKeywordChange = useCallback( ( index, { target } ) => {
 		if ( target.value[ target.value.length - 1 ] === ',' ) {
@@ -110,39 +113,33 @@ export default function UserInputKeywords( { slug, max } ) {
 			target.value,
 			...values.slice( index + 1 ),
 		] );
-	}, dependencies );
+	}, [ updateKeywords, values ] );
 
 	const onKeyDown = useCallback( ( index, { keyCode, target } ) => {
 		const nonEmptyValues = values.filter( ( value ) => value.length > 0 );
 		const nonEmptyValuesLength = nonEmptyValues.length;
 
-		if ( ( keyCode === ENTER || keyCode === COMMA ) && nonEmptyValues.length < max ) {
+		if ( keyCode === ENTER && nonEmptyValuesLength === max && next && typeof next === 'function' ) {
+			next();
+			return;
+		}
+
+		if ( ( keyCode === ENTER || keyCode === COMMA ) && nonEmptyValuesLength < max ) {
 			updateKeywords( [
 				...values.slice( 0, index + 1 ),
 				'',
 				...values.slice( index + 1 ),
 			] );
 
-			// A new keyword has been added. Pressing backspace now will remove the entire keyword.
-			setCanDeleteKeyword( true );
-			setTimeout( () => {
-				focusInput( `#${ slug }-keyword-${ index + 1 }` );
-			}, 50 );
+			focusInput( `#${ slug }-keyword-${ index + 1 }` );
 		}
 
 		if ( target.value.length === 0 && keyCode === BACKSPACE ) {
 			// The input is empty, so pressing backspace should delete the last keyword.
 			deleteKeyword( nonEmptyValuesLength - 1 );
-			setTimeout( () => {
-				focusInput( `#${ slug }-keyword-${ nonEmptyValuesLength - 1 }` );
-			}, 50 );
-			// After deleting a keyword, pressing backspace again should continue to delete keywords.
-			setCanDeleteKeyword( true );
-		} else {
-			// User is typing, so pressing backspace should delete the last character rather than the keyword.
-			setCanDeleteKeyword( false );
+			focusInput( `#${ slug }-keyword-${ nonEmptyValuesLength - 1 }` );
 		}
-	}, [ keywordsContainer.current, ...dependencies, canDeleteKeyword ] );
+	}, [ next, max, deleteKeyword, slug, updateKeywords, values ] );
 
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
@@ -154,7 +151,7 @@ export default function UserInputKeywords( { slug, max } ) {
 							'googlesitekit-user-input__text-option': localValues.length > i + 1 || value.length > 0,
 						} ) }
 					>
-						<VisuallyHiden>
+						<VisuallyHidden>
 							<label htmlFor={ `${ slug }-keyword-${ i }` } >
 								{ sprintf(
 									/* translators: %s is the keyword number; 1, 2, or 3 */
@@ -162,7 +159,7 @@ export default function UserInputKeywords( { slug, max } ) {
 									i + 1, // Keys are zero-indexed; this starts keyword at "1".
 								) }
 							</label>
-						</VisuallyHiden>
+						</VisuallyHidden>
 						<TextField
 							label={ __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' ) }
 							noLabel
@@ -173,6 +170,7 @@ export default function UserInputKeywords( { slug, max } ) {
 								size={ value.length > 0 ? value.length : undefined }
 								onChange={ onKeywordChange.bind( null, i ) }
 								onKeyDown={ onKeyDown.bind( null, i ) }
+								tabIndex={ ! isActive ? '-1' : undefined }
 							/>
 						</TextField>
 
@@ -197,6 +195,8 @@ export default function UserInputKeywords( { slug, max } ) {
 UserInputKeywords.propTypes = {
 	slug: PropTypes.string.isRequired,
 	max: PropTypes.number,
+	next: PropTypes.func,
+	isActive: PropTypes.bool,
 };
 
 UserInputKeywords.defaultProps = {

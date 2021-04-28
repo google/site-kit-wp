@@ -53,7 +53,7 @@ export default function AccountCreateLegacy() {
 	const { resetAccounts } = useDispatch( STORE_NAME );
 	const refetchAccountsHandler = useCallback( () => {
 		resetAccounts();
-	} );
+	}, [ resetAccounts ] );
 
 	if ( ! hasResolvedAccounts ) {
 		return <ProgressBar />;

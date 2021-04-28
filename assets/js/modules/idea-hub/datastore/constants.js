@@ -1,5 +1,5 @@
 /**
- * Dropdown menu styles.
+ * `modules/idea-hub` data store constants.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,35 +16,6 @@
  * limitations under the License.
  */
 
-.googlesitekit-dropdown-menu {
+export const STORE_NAME = 'modules/idea-hub';
+export { STORE_NAME as MODULES_IDEA_HUB };
 
-	.googlesitekit-header__dropdown {
-		// align the dropdown with it's button
-		margin-right: -8px;
-
-		&:focus {
-			outline: 0;
-		}
-	}
-
-	.mdc-list-item .googlesitekit-cta-link:hover {
-		text-decoration: none;
-	}
-
-	&.googlesitekit-dropdown-menu__icon-menu {
-
-		.mdc-button--dropdown {
-			background-image: none;
-			padding-right: $grid-gap-phone / 2;
-
-			@media (max-width: $bp-mobileOnly ) {
-				padding-right: 0;
-			}
-		}
-	}
-
-	.mdc-button--dropdown[aria-expanded="true"] {
-		background-color: $c-gallery;
-		color: rgba(0, 0, 0, 0.87);
-	}
-}

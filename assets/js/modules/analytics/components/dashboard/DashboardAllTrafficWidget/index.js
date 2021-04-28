@@ -166,7 +166,7 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 		if ( firstLoad && pieChartLoaded && totalUsersLoaded && userCountGraphLoaded ) {
 			setValue( UI_ALL_TRAFFIC_LOADED, true );
 		}
-	}, [ firstLoad, pieChartLoaded, totalUsersLoaded, userCountGraphLoaded ] );
+	}, [ firstLoad, pieChartLoaded, totalUsersLoaded, userCountGraphLoaded, setValue ] );
 
 	if ( pieChartError ) {
 		return (

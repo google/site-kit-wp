@@ -39,7 +39,7 @@ export default function UseSnippetSwitch() {
 	const onChange = useCallback( () => {
 		setUseSnippet( ! useSnippet );
 		trackEvent( 'analytics_setup', useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled' );
-	}, [ useSnippet ] );
+	}, [ useSnippet, setUseSnippet ] );
 
 	if ( useSnippet === undefined ) {
 		return null;

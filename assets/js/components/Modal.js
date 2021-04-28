@@ -17,20 +17,25 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
-import { createPortal, useEffect, useState } from '@wordpress/element';
+import { createPortal, useState } from '@wordpress/element';
 
 function Modal( { children } ) {
 	// Using state as we need `el` to not change when the component re-renders
 	const [ el ] = useState( document.createElement( 'div' ) );
 
-	useEffect( () => {
+	useMount( () => {
 		const root = document.querySelector( '.googlesitekit-plugin' ) || document.body;
 		root.appendChild( el );
 
 		return () => root.removeChild( el );
-	}, [] );
+	} );
 
 	return createPortal(
 		children,

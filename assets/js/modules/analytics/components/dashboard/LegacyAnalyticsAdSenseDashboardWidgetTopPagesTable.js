@@ -40,6 +40,7 @@ import TableOverflowContainer from '../../../../components/TableOverflowContaine
 import Link from '../../../../components/Link';
 import ReportTable from '../../../../components/ReportTable';
 import { getCurrencyFormat } from '../../../adsense/util/currency';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
 let currencyFormat;
@@ -90,9 +91,13 @@ const tableColumns = [
 		primary: true,
 		Component: ( { row } ) => {
 			const [ title, url ] = row.dimensions;
+			const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} ) );
 			const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages', {
 				'explorer-table.plotKeys': '[]',
 				'_r.drilldown': `analytics.pagePath:${ url }`,
+				...generateDateRangeArgs( dateRange ),
 			} ) );
 			return (
 				<Link

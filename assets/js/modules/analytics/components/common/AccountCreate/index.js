@@ -71,7 +71,7 @@ export default function AccountCreate() {
 		if ( accountTicketTermsOfServiceURL ) {
 			navigateTo( accountTicketTermsOfServiceURL );
 		}
-	}, [ accountTicketTermsOfServiceURL ] );
+	}, [ accountTicketTermsOfServiceURL, navigateTo ] );
 
 	// Set form defaults on initial render.
 	useEffect( () => {
@@ -84,7 +84,7 @@ export default function AccountCreate() {
 				timezone,
 			} ) );
 		}
-	}, [ hasAccountCreateForm, siteName, siteURL, timezone ] );
+	}, [ hasAccountCreateForm, siteName, siteURL, timezone, setValues ] );
 
 	const { createAccount } = useDispatch( STORE_NAME );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
@@ -116,7 +116,7 @@ export default function AccountCreate() {
 				setIsNavigating( true );
 			}
 		},
-		[ createAccount, setIsNavigating, hasProvisioningScope, setPermissionScopeError ]
+		[ createAccount, setIsNavigating, hasProvisioningScope, setPermissionScopeError, setValues ]
 	);
 
 	// If the user ends up back on this component with the provisioning scope granted,
@@ -129,7 +129,7 @@ export default function AccountCreate() {
 
 	// If the user clicks "Back", rollback settings to restore saved values, if any.
 	const { rollbackSettings } = useDispatch( STORE_NAME );
-	const handleBack = useCallback( () => rollbackSettings() );
+	const handleBack = useCallback( () => rollbackSettings(), [ rollbackSettings ] );
 
 	if ( isDoingCreateAccount || isNavigating || ! hasResolvedAccounts || hasProvisioningScope === undefined ) {
 		return <ProgressBar />;
