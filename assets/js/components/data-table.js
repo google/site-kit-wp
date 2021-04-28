@@ -29,6 +29,7 @@ import {
  */
 import SourceLink from './SourceLink';
 import Link from './Link';
+import getFullURL from '../util/getFullURL';
 import { getSiteKitAdminURL } from '../util';
 
 // Construct a table component from a data object.
@@ -50,8 +51,13 @@ export const getDataTableFromData = ( data, headers, options ) => {
 	each( data, ( row, j ) => {
 		const cells = [];
 		const link = links && links[ j ];
-		const permaLink = link && link[ 0 ] === '/' ? global._googlesitekitLegacyData.admin.siteURL + link : link;
-
+		// const oldLink = link && link[ 0 ] === '/' ? global._googlesitekitLegacyData.admin.siteURL + link : link;
+		// console.log( 'SiteURL', global._googlesitekitLegacyData.admin.siteURL );
+		// console.log( 'path', link );
+		// console.log( 'oldlink', oldLink );
+		const permaLink = link && link[ 0 ] === '/' ? getFullURL( global._googlesitekitLegacyData.admin.siteURL, link ) : link;
+		// console.log( 'newLink', permaLink );
+		// console.log( 'URL', getFullURL( 'https://www.example.com/', '' ) );
 		each( row, ( cell, i ) => {
 			// Replace (none) by direct.
 			if ( 'string' === typeof cell ) {
