@@ -34,10 +34,21 @@ const baseReducer = ( state, { type } ) => {
 const baseResolvers = {};
 const baseSelectors = {
 
-	// TODO - JSdoc
+	/**
+	 * Checks if the Admin API is working.
+	 *
+	 * Returns false if there are any errors for getProperties or getWebDataStreams.
+	 *
+	 * Returns true if getProperties or getWebDataStreams has fetched successfully.
+	 *
+	 * Else returns undefined.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean | undefined)} True, false, or undefined.
+	 */
 	isAdminAPIWorking( state ) {
-		// TODO - should be helper method exported from create-error-store? not sure what kind of encapuslation is wanted.
-
 		// There are no entries in the state['errors'] object which key start with getProperties:: prefix;
 		// There are no entries in the state['errors'] object which key start with getWebDataStreams:: prefix.
 		for ( const errorKey in state.errors ) {
