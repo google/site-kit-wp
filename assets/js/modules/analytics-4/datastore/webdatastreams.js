@@ -20,6 +20,8 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import pick from 'lodash/pick';
+import difference from 'lodash/difference';
 
 /**
  * Internal dependencies
@@ -30,7 +32,10 @@ import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { STORE_NAME } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { isValidPropertyID } from '../utils/validation';
 const { createRegistryControl, createRegistrySelector } = Data;
+
+const MAX_WEBDATASTREAMS_PER_BATCH = 10;
 
 const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',
@@ -52,7 +57,34 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 		return { propertyID };
 	},
 	validateParams( { propertyID } = {} ) {
-		invariant( propertyID, 'GA4 propertyID is required.' );
+		invariant( isValidPropertyID( propertyID ), 'A valid GA4 propertyID is required.' );
+	},
+} );
+
+const fetchGetWebDataStreamsBatchStore = createFetchStore( {
+	baseName: 'getWebDataStreamsBatch',
+	controlCallback( { propertyIDs } ) {
+		return API.get( 'modules', 'analytics-4', 'webdatastreams-batch', { propertyIDs }, {
+			useCache: true,
+		} );
+	},
+	reducerCallback( state, webDataStreams ) {
+		return {
+			...state,
+			webdatastreams: {
+				...state.webdatastreams,
+				...( webDataStreams || {} ),
+			},
+		};
+	},
+	argsToParams( propertyIDs ) {
+		return { propertyIDs };
+	},
+	validateParams( { propertyIDs } = {} ) {
+		invariant( Array.isArray( propertyIDs ), 'GA4 propertyIDs must be an array.' );
+		propertyIDs.forEach( ( propertyID ) => {
+			invariant( isValidPropertyID( propertyID ), 'A valid GA4 propertyID is required.' );
+		} );
 	},
 } );
 
@@ -77,7 +109,7 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 		return { propertyID };
 	},
 	validateParams( { propertyID } = {} ) {
-		invariant( propertyID, 'GA4 propertyID is required.' );
+		invariant( isValidPropertyID( propertyID ), 'A valid GA4 propertyID is required.' );
 	},
 } );
 
@@ -148,6 +180,19 @@ const baseResolvers = {
 			yield fetchGetWebDataStreamsStore.actions.fetchGetWebDataStreams( propertyID );
 		}
 	},
+	*getWebDataStreamsBatch( propertyIDs ) {
+		const registry = yield Data.commonActions.getRegistry();
+		const webdatastreams = registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs ) || {};
+
+		const availablePropertyIDs = Object.keys( webdatastreams );
+		const remainingPropertyIDs = difference( propertyIDs, availablePropertyIDs );
+		if ( remainingPropertyIDs.length > 0 ) {
+			for ( let i = 0; i < remainingPropertyIDs.length; i += MAX_WEBDATASTREAMS_PER_BATCH ) {
+				const chunk = remainingPropertyIDs.slice( i, i + MAX_WEBDATASTREAMS_PER_BATCH );
+				yield fetchGetWebDataStreamsBatchStore.actions.fetchGetWebDataStreamsBatch( chunk );
+			}
+		}
+	},
 };
 
 const baseSelectors = {
@@ -187,10 +232,24 @@ const baseSelectors = {
 
 		return null;
 	} ),
+
+	/**
+	 * Gets web data streams in batch for selected properties.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}         state       Data store's state.
+	 * @param {Array.<string>} propertyIDs GA4 property IDs.
+	 * @return {Object} Web data streams.
+	 */
+	getWebDataStreamsBatch( state, propertyIDs ) {
+		return pick( state.webdatastreams, propertyIDs );
+	},
 };
 
 const store = Data.combineStores(
 	fetchGetWebDataStreamsStore,
+	fetchGetWebDataStreamsBatchStore,
 	fetchCreateWebDataStreamStore,
 	{
 		initialState: baseInitialState,
