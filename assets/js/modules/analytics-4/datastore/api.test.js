@@ -47,18 +47,18 @@ describe( 'modules/analytics-4 properties', () => {
 	describe( 'selectors', () => {
 		describe( 'isAdminAPIWorking', () => {
 			test.each`
-               property   | webData    | errorProperty | errorWebData | expected
-               ${ true }  | ${ true }  |  ${ false }   | ${ false }   | ${ true }
-               ${ true }  | ${ false } |  ${ false }   | ${ false }   | ${ undefined }
-               ${ false } | ${ true }  |  ${ false }   | ${ false }   | ${ undefined }
-               ${ false } | ${ false } |  ${ false }   | ${ false }   | ${ undefined }
-               ${ true }  | ${ true }  |  ${ true }    | ${ false }   | ${ false }
-               ${ true }  | ${ true }  |  ${ false }   | ${ true }    | ${ false }
-               ${ true }  | ${ true }  |  ${ true }    | ${ true }    | ${ false }
-               ${ false } | ${ true }  |  ${ true }    | ${ true }    | ${ false }
-               ${ true }  | ${ false } |  ${ true }    | ${ true }    | ${ false }
-               ${ false } | ${ false } |  ${ true }    | ${ true }    | ${ false }
-            `( 'DOES $propertyValue | $webDataValue | $errorProperty | $errorWebData',
+			property   | webData    | errorProperty | errorWebData | expected
+			${ true }  | ${ true }  |  ${ false }   | ${ false }   | ${ true }
+			${ true }  | ${ false } |  ${ false }   | ${ false }   | ${ undefined }
+			${ false } | ${ true }  |  ${ false }   | ${ false }   | ${ undefined }
+			${ false } | ${ false } |  ${ false }   | ${ false }   | ${ undefined }
+			${ true }  | ${ true }  |  ${ true }    | ${ false }   | ${ false }
+			${ true }  | ${ true }  |  ${ false }   | ${ true }    | ${ false }
+			${ true }  | ${ true }  |  ${ true }    | ${ true }    | ${ false }
+			${ false } | ${ true }  |  ${ true }    | ${ true }    | ${ false }
+			${ true }  | ${ false } |  ${ true }    | ${ true }    | ${ false }
+			${ false } | ${ false } |  ${ true }    | ${ true }    | ${ false }
+			`( 'When has values for property:$property & webData:$webData, and has errors property:$errorProperty & webData:$errorWebData then expects: $expected',
 				( { property, webData, errorProperty, errorWebData, expected } ) => {
 					if ( property ) {
 						registry.dispatch( STORE_NAME ).receiveGetProperties( [

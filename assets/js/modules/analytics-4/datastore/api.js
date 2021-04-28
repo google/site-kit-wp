@@ -33,7 +33,6 @@ const baseReducer = ( state, { type } ) => {
 };
 const baseResolvers = {};
 const baseSelectors = {
-
 	/**
 	 * Checks if the Admin API is working.
 	 *
@@ -52,7 +51,7 @@ const baseSelectors = {
 		for ( const errorKey in state.errors ) {
 			if (
 				errorKey.startsWith( 'getProperties' ) ||
-                errorKey.startsWith( 'getWebDataStreams' )
+				errorKey.startsWith( 'getWebDataStreams' )
 			) {
 				return false;
 			}
