@@ -326,18 +326,6 @@ const baseResolvers = {
 	},
 };
 
-const isGA4 = ( property ) => !! property._id;
-
-function compare( a, b ) {
-	if ( a < b ) {
-		return -1;
-	}
-	if ( a > b ) {
-		return 1;
-	}
-	return 0;
-}
-
 const baseSelectors = {
 	/**
 	 * Gets the property object by the property ID.
@@ -440,6 +428,18 @@ const baseSelectors = {
 		if ( select( MODULES_ANALYTICS_4 ) ) {
 			const propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
 			properties = properties.concat( propertiesGA4 );
+		}
+
+		const isGA4 = ( property ) => !! property._id;
+
+		function compare( a, b ) {
+			if ( a < b ) {
+				return -1;
+			}
+			if ( a > b ) {
+				return 1;
+			}
+			return 0;
 		}
 
 		return properties.sort( ( a, b ) => {
