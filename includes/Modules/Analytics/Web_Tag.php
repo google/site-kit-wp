@@ -38,7 +38,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @since 1.24.0
 	 * @var bool
 	 */
-	private $anonymize_ip = false;
+	private $anonymize_ip;
 
 	/**
 	 * Ads conversion ID.
@@ -67,7 +67,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @param bool $anonymize_ip Anonymize or not.
 	 */
 	public function set_anonymize_ip( $anonymize_ip ) {
-		$this->anonymize_ip = $anonymize_ip;
+		$this->anonymize_ip = (bool) $anonymize_ip;
 	}
 
 	/**
