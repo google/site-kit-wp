@@ -29,9 +29,6 @@ import {
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
-import * as modulesAnalytics from '../';
-
-import { createRegistry } from '@wordpress/data';
 
 describe( 'modules/analytics properties', () => {
 	let registry;
@@ -309,45 +306,6 @@ describe( 'modules/analytics properties', () => {
 				expect( properties[ 1 ].displayName ).toBe( 'troubled-tipped.example.com' );
 				expect( properties[ 2 ].name ).toBe( 'troubled-tipped.example.com' );
 				expect( properties[ 3 ].displayName ).toBe( 'www.elasticpress.io' );
-			} );
-
-			it( 'returns only ua properties when ga4 datastore not available ', async () => {
-				// only register this module
-				const newRegistry = createRegistry();
-
-				[
-					modulesAnalytics,
-				].forEach( ( { registerStore } ) => registerStore?.( newRegistry ) );
-
-				registry = newRegistry;
-				// Receive empty settings to prevent unexpected fetch by resolver.
-				registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-
-				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
-				const accountID = testAccountID;
-
-				registry.dispatch( STORE_NAME ).receiveGetProperties(
-					[
-						{
-							// eslint-disable-next-line sitekit/acronym-case
-							accountId: '151753095',
-							id: 'UA-151753095-1',
-							name: 'rwh',
-						},
-						{
-							// eslint-disable-next-line sitekit/acronym-case
-							accountId: '151753095',
-							id: 'UA-151753095-1',
-							name: 'troubled-tipped.example.com',
-						},
-
-					],
-					{ accountID }
-				);
-
-				const properties = registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID );
-
-				expect( properties ).toHaveLength( 2 );
 			} );
 		} );
 
