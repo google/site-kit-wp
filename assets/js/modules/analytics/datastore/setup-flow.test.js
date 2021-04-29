@@ -79,12 +79,50 @@ describe( 'modules/analytics properties', () => {
 	} );
 
 	it( 'should return undefined if isAdminAPIWorking() returns undefined ', () => {
-		// console.debug( 'isAdminAPIWorking ', registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() );
-
 		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( undefined );
 	} );
 
-	it.todo( 'should return “ua” if there is no account selected' );
+	it( 'should return “ua” if there is no account selected',	() => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [
+			{
+				_id: '1000',
+				_accountID: '100',
+				name: 'properties/1000',
+				createTime: '2014-10-02T15:01:23Z',
+				updateTime: '2014-10-02T15:01:23Z',
+				parent: 'accounts/100',
+				displayName: 'Test GA4 Property',
+				industryCategory: 'TECHNOLOGY',
+				timeZone: 'America/Los_Angeles',
+				currencyCode: 'USD',
+				deleted: false,
+			},
+		],
+		{ accountID: 'foo-bar' },
+		);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams(
+			[
+				{
+					_id: '2000',
+					_propertyID: '1000',
+					name: 'properties/1000/webDataStreams/2000',
+					// eslint-disable-next-line sitekit/acronym-case
+					measurementId: '1A2BCD345E',
+					// eslint-disable-next-line sitekit/acronym-case
+					firebaseAppId: '',
+					createTime: '2014-10-02T15:01:23Z',
+					updateTime: '2014-10-02T15:01:23Z',
+					defaultUri: 'http://example.com',
+					displayName: 'Test GA4 WebDataStream',
+				},
+			],
+			{ propertyID: 'foobar' }
+		);
+
+		// console.debug( 'isAdminAPIWorking ', registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() );
+
+		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ua' );
+	} );
 
 	it.todo( 'should return “ua” if selected account returns an empty array from GA4 getProperties selector' );
 
