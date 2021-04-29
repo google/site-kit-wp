@@ -1,5 +1,5 @@
 /**
- * GA4 Datastore Fixtures.
+ * Absolute URL path getter utility function.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,9 +16,17 @@
  * limitations under the License.
  */
 
-export { default as accountSummaries } from './account-summaries.json';
-export { default as createProperty } from './create-property.json';
-export { default as createWebDataStream } from './create-webdatastream.json';
-export { default as properties } from './properties.json';
-export { default as webDataStreams } from './webdatastreams.json';
-export { default as webDataStreamsBatch } from './webdatastreams-batch.json';
+/**
+ * Returns the absolute URL from a path including the siteURL.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} siteURL The siteURL fo the WordPress install.
+ * @param {string} path    The path.
+ * @return {string} The URL path.
+ */
+export function getFullURL( siteURL, path ) {
+	return new URL( path, siteURL ).href;
+}
+
+export default getFullURL;
