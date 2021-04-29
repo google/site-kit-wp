@@ -74,7 +74,7 @@ function MiniChart( { index, change } ) {
 			<GoogleChart
 				chartType="PieChart"
 				data={ data }
-				loadingHeight={ 24 }
+				loadingHeight="24px"
 				options={ options }
 			/>
 		</div>

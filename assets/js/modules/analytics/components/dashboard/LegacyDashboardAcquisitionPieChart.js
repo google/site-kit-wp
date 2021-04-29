@@ -92,8 +92,8 @@ const LegacyDashboardAcquisitionPieChart = ( { data, source } ) => {
 			<GoogleChart
 				chartType="PieChart"
 				data={ processedData }
-				loadingHeight={ 205 }
-				loadingWidth={ 205 }
+				loadingHeight="205px"
+				loadingWidth="205px"
 				options={ options }
 			/>
 			{ source &&
