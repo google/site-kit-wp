@@ -47,6 +47,7 @@ export default function PropertySelect() {
 		};
 
 		if ( data.accountID ) {
+			// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
 			data.properties = select( STORE_NAME ).getProperties( data.accountID );
 			data.isResolvingProperties = select( STORE_NAME ).isResolving( 'getProperties', [ data.accountID ] );
 		}
