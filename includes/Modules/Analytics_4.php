@@ -133,7 +133,6 @@ final class Analytics_4 extends Module
 
 		return array(
 			// TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
-
 			/* // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 			'analytics_4_account_id'         => array(
 				'label' => __( 'Analytics 4 account ID', 'google-site-kit' ),
