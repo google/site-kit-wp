@@ -21,6 +21,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 import { Chart } from 'react-google-charts';
 
 /**
@@ -201,8 +202,34 @@ export default function GoogleChart( props ) {
 	);
 }
 
+GoogleChart.propTypes = {
+	// See: `import { ReactGoogleChartProps } from 'react-google-charts/dist/types';` for more types; creating an exhaustive list here is problematic.
+	data: PropTypes.any,
+	getChartWrapper: PropTypes.func,
+	height: PropTypes.string,
+	loadingHeight: PropTypes.string,
+	loadingWidth: PropTypes.string,
+	loadText: PropTypes.bool,
+	onMouseOut: PropTypes.func,
+	onMouseOver: PropTypes.func,
+	onReady: PropTypes.func,
+	onSelect: PropTypes.func,
+	selectedStats: PropTypes.arrayOf( PropTypes.number ),
+	singleStat: PropTypes.bool,
+	width: PropTypes.string,
+};
+
 GoogleChart.defaultProps = {
 	...Chart.defaultProps,
+	getChartWrapper: undefined,
+	height: undefined,
 	loaded: true,
+	loadingHeight: undefined,
+	loadingWidth: undefined,
+	onMouseOut: undefined,
+	onMouseOver: undefined,
+	onReady: undefined,
+	onSelect: undefined,
 	selectedStats: undefined,
+	width: undefined,
 };
