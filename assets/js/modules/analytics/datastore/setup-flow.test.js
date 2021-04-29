@@ -91,7 +91,7 @@ const populateAnalytics4DataStore = ( registry ) => {
 	);
 };
 
-describe( 'modules/analytics properties', () => {
+describe( 'modules/analytics setup-flow', () => {
 	let registry;
 
 	beforeAll( () => {
@@ -112,107 +112,113 @@ describe( 'modules/analytics properties', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	// TODO - in describe block like other tests for selector getSetupFlowMode
+	describe( 'selectors', () => {
+		describe( 'getSetupFlowMode', () => {
+			it( 'returns “legacy” if the modules/analytics-4 store is not available ', async () => {
+				// just for this test create new registry with only this module
+				const newRegistry = createRegistry();
 
-	it( 'returns “legacy” if the modules/analytics-4 store is not available ', async () => {
-		// only register this module
-		const newRegistry = createRegistry();
+				[
+					modulesAnalytics,
+				].forEach( ( { registerStore } ) => registerStore?.( newRegistry ) );
 
-		[
-			modulesAnalytics,
-		].forEach( ( { registerStore } ) => registerStore?.( newRegistry ) );
+				registry = newRegistry;
+				// Receive empty settings to prevent unexpected fetch by resolver.
+				registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 
-		registry = newRegistry;
-		// Receive empty settings to prevent unexpected fetch by resolver.
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+				expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'legacy' );
+			} );
 
-		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'legacy' );
-	} );
+			it( 'should return “legacy” if isAdminAPIWorking() returns false ', () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+					new Error( 'foo' ), 'getProperties', [ 'foo', 'bar' ]
+				);
 
-	it( 'should return “legacy” if isAdminAPIWorking() returns false ', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
-			new Error( 'foo' ), 'getProperties', [ 'foo', 'bar' ]
-		);
+				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( false );
 
-		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'legacy' );
-	} );
+				expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'legacy' );
+			} );
 
-	it( 'should return undefined if isAdminAPIWorking() returns undefined ', () => {
-		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( undefined );
-	} );
+			it( 'should return undefined if isAdminAPIWorking() returns undefined ', () => {
+				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( undefined );
 
-	it( 'should return “ua” if there is no account selected', () => {
-		populateAnalytics4DataStore( registry );
+				expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( undefined );
+			} );
 
-		// console.debug( 'isAdminAPIWorking ', registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() );
+			it( 'should return “ua” if there is no account selected', () => {
+				expect( registry.select( STORE_NAME ).getAccountID( accountID ) ).toBe( undefined );
 
-		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ua' );
-	} );
+				populateAnalytics4DataStore( registry );
 
-	it( 'should return “ua” if selected account returns an empty array from GA4 getProperties selector', () => {
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		populateAnalyticsDataStore( registry );
+				expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ua' );
+			} );
 
-		// // Needs to have one non-zero array of GA4 properties so that isAdminAPIWorking returns true
-		// // TODO - check this is not an oversight?  OTHER TICKET STILL NOT QA'D THOUGH
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [
-			{
-				_id: '1000',
-				_accountID: '100',
-				name: 'properties/1000',
-				createTime: '2014-10-02T15:01:23Z',
-				updateTime: '2014-10-02T15:01:23Z',
-				parent: 'accounts/100',
-				displayName: 'Test GA4 Property',
-				industryCategory: 'TECHNOLOGY',
-				timeZone: 'America/Los_Angeles',
-				currencyCode: 'USD',
-				deleted: false,
-			},
-		],
-		{ accountID: 'another-different-id' },
-		);
+			it( 'should return “ua” if selected account returns an empty array from GA4 getProperties selector', () => {
+				registry.dispatch( STORE_NAME ).setAccountID( accountID );
+				populateAnalyticsDataStore( registry );
 
-		// need to dispatch empty properties list for this accountId OTHERWISE the selector getProperties (called from getSetupFlowMode below) will do a fetch
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
-			[],
-			{ accountID },
-		);
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams(
-			[
-				{
-					_id: '2000',
-					_propertyID: '1000',
-					name: 'properties/1000/webDataStreams/2000',
-					// eslint-disable-next-line sitekit/acronym-case
-					measurementId: '1A2BCD345E',
-					// eslint-disable-next-line sitekit/acronym-case
-					firebaseAppId: '',
-					createTime: '2014-10-02T15:01:23Z',
-					updateTime: '2014-10-02T15:01:23Z',
-					defaultUri: 'http://example.com',
-					displayName: 'Test GA4 WebDataStream',
-				},
-			],
-			{ propertyID: 'foobar' }
-		);
+				// // Needs to have one non-zero array of GA4 properties so that isAdminAPIWorking returns true
+				// // TODO - check this is not an oversight?  OTHER TICKET STILL NOT QA'D THOUGH
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [
+					{
+						_id: '1000',
+						_accountID: '100',
+						name: 'properties/1000',
+						createTime: '2014-10-02T15:01:23Z',
+						updateTime: '2014-10-02T15:01:23Z',
+						parent: 'accounts/100',
+						displayName: 'Test GA4 Property',
+						industryCategory: 'TECHNOLOGY',
+						timeZone: 'America/Los_Angeles',
+						currencyCode: 'USD',
+						deleted: false,
+					},
+				],
+				{ accountID: 'another-different-id' },
+				);
 
-		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ua' );
-	} );
+				// need to dispatch empty properties list for this accountId OTHERWISE the selector getProperties (called from getSetupFlowMode below) will do a fetch
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+					[],
+					{ accountID },
+				);
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams(
+					[
+						{
+							_id: '2000',
+							_propertyID: '1000',
+							name: 'properties/1000/webDataStreams/2000',
+							// eslint-disable-next-line sitekit/acronym-case
+							measurementId: '1A2BCD345E',
+							// eslint-disable-next-line sitekit/acronym-case
+							firebaseAppId: '',
+							createTime: '2014-10-02T15:01:23Z',
+							updateTime: '2014-10-02T15:01:23Z',
+							defaultUri: 'http://example.com',
+							displayName: 'Test GA4 WebDataStream',
+						},
+					],
+					{ propertyID: 'foobar' }
+				);
 
-	it( 'should return “ga4” if selected account returns an empty array from UA getProperties selector', () => {
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		populateAnalytics4DataStore( registry );
+				expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ua' );
+			} );
 
-		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ga4' );
-	} );
+			it( 'should return “ga4” if selected account returns an empty array from UA getProperties selector', () => {
+				registry.dispatch( STORE_NAME ).setAccountID( accountID );
+				populateAnalytics4DataStore( registry );
 
-	it( 'should return “ga4-transitional” if both GA4 and UA getProperties return non-empty array', () => {
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		populateAnalytics4DataStore( registry );
-		populateAnalyticsDataStore( registry );
+				expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ga4' );
+			} );
 
-		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ga4-transitional' );
+			it( 'should return “ga4-transitional” if both GA4 and UA getProperties return non-empty array', () => {
+				registry.dispatch( STORE_NAME ).setAccountID( accountID );
+				populateAnalytics4DataStore( registry );
+				populateAnalyticsDataStore( registry );
+
+				expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ga4-transitional' );
+			} );
+		} );
 	} );
 } );
 
