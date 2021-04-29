@@ -129,21 +129,28 @@ describe( 'modules/analytics properties', () => {
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBeUndefined();
 			} );
 
-			// selects a previously set property
-			it( 'selects a previously set property when available', async () => {
+			it( 'preserves the current profile ID when selecting the current property', async () => {
 				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const propertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
-				const propertyID2 = fixtures.propertiesProfiles.properties[ 1 ].id;
-
+				const internalWebPropertyID = fixtures.propertiesProfiles.properties[ 0 ].internalWebPropertyId; // eslint-disable-line sitekit/acronym-case
+				// Note: we're using the second profile in the list to differentiate between the default of selecting the first.
+				const profileID = fixtures.propertiesProfiles.profiles[ 1 ].id;
+				registry.dispatch( STORE_NAME ).receiveGetSettings( {
+					accountID,
+					propertyID,
+					internalWebPropertyID,
+					profileID,
+				} );
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
 				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID, propertyID } );
-				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID, propertyID: propertyID2 } );
-				await registry.dispatch( STORE_NAME ).setAccountID( accountID );
+
+				expect( registry.select( STORE_NAME ).getProfileID() ).toEqual( profileID );
+
 				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
-				expect( registry.select( STORE_NAME ).getProfileID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].defaultProfileId ); // eslint-disable-line sitekit/acronym-case
-				await registry.dispatch( STORE_NAME ).selectProperty( propertyID2 );
-				expect( registry.select( STORE_NAME ).getPropertyID() ).toMatch( propertyID2 );
-				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toEqual( fixtures.propertiesProfiles.properties[ 1 ].internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
+
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toMatch( propertyID );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toEqual( internalWebPropertyID );
+				expect( registry.select( STORE_NAME ).getProfileID() ).toEqual( profileID );
 			} );
 
 			it( 'selects the property and its default profile when set', async () => {
