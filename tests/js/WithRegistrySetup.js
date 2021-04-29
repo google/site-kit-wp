@@ -34,9 +34,9 @@ const WithRegistrySetup = ( { func, children } ) => {
 	useEffect( () => {
 		if ( func && typeof func === 'function' ) {
 			func( registry );
-
-			setReady( true );
 		}
+
+		setReady( true );
 	} );
 
 	if ( ready ) {
