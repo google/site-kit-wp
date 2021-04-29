@@ -1269,7 +1269,7 @@ final class Analytics extends Module
 			$tag->set_home_domain(
 				wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_HOST )
 			);
-			$tag->set_ads_id( $settings['adsID'] );
+			$tag->set_ads_conversion_id( $settings['adsConversionID'] );
 
 			$tag->register();
 		}

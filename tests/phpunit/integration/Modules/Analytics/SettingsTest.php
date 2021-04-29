@@ -107,7 +107,7 @@ class SettingsTest extends SettingsTestCase {
 				'anonymizeIP'           => true,
 				'trackingDisabled'      => array( 'loggedinUsers' ),
 				'adsenseLinked'         => false,
-				'adsID'                 => '',
+				'adsConversionID'       => '',
 			),
 			get_option( Settings::OPTION )
 		);

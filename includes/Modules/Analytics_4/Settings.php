@@ -66,7 +66,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'ownerID'         => 0,
 			// TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
 			/* 'accountID'       => '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-			'adsID'           => '',
+			'adsConversionID' => '',
 			'propertyID'      => '',
 			'webDataStreamID' => '',
 			'measurementID'   => '',

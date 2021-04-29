@@ -41,7 +41,7 @@ interface Tag_Interface {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $ads_id Ads ID.
+	 * @param string $ads_conversion_id Ads ID.
 	 */
-	public function set_ads_id( $ads_id );
+	public function set_ads_conversion_id( $ads_conversion_id );
 }

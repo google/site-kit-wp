@@ -46,7 +46,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @since n.e.x.t
 	 * @var string
 	 */
-	private $ads_id;
+	private $ads_conversion_id;
 
 	/**
 	 * Sets the current home domain.
@@ -75,10 +75,10 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $ads_id Ads ID.
+	 * @param string $ads_conversion_id Ads ID.
 	 */
-	public function set_ads_id( $ads_id ) {
-		$this->ads_id = $ads_id;
+	public function set_ads_conversion_id( $ads_conversion_id ) {
+		$this->ads_conversion_id = $ads_conversion_id;
 	}
 
 	/**
@@ -155,7 +155,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 			wp_add_inline_script( 'google_gtagjs', $config );
 		}
 
-		$this->add_inline_ads_id_config();
+		$this->add_inline_ads_conversion_id_config();
 
 		$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
 		if ( $block_on_consent_attrs ) {
@@ -190,11 +190,11 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 *
 	 * @since n.e.x.t
 	 */
-	protected function add_inline_ads_id_config() {
-		if ( $this->ads_id ) {
+	protected function add_inline_ads_conversion_id_config() {
+		if ( $this->ads_conversion_id ) {
 			wp_add_inline_script(
 				'google_gtagjs',
-				sprintf( 'gtag("config", "%s");', esc_js( $this->ads_id ) )
+				sprintf( 'gtag("config", "%s");', esc_js( $this->ads_conversion_id ) )
 			);
 		}
 	}

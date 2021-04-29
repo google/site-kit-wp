@@ -179,7 +179,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'ownerID'               => 0,
 			'accountID'             => '',
 			'adsenseLinked'         => false,
-			'adsID'                 => '',
+			'adsConversionID'       => '',
 			'anonymizeIP'           => true,
 			'internalWebPropertyID' => '',
 			'profileID'             => '',

@@ -38,7 +38,7 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	 * @since n.e.x.t
 	 * @var string
 	 */
-	private $ads_id;
+	private $ads_conversion_id;
 
 	/**
 	 * Sets the current home domain.
@@ -68,10 +68,10 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $ads_id Ads ID.
+	 * @param string $ads_conversion_id Ads ID.
 	 */
-	public function set_ads_id( $ads_id ) {
-		$this->ads_id = $ads_id;
+	public function set_ads_conversion_id( $ads_conversion_id ) {
+		$this->ads_conversion_id = $ads_conversion_id;
 	}
 
 	/**

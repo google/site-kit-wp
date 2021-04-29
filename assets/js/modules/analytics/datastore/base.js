@@ -27,7 +27,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	storeName: STORE_NAME,
 	settingSlugs: [
 		'accountID',
-		'adsID',
+		'adsConversionID',
 		'anonymizeIP',
 		'canUseSnippet',
 		'internalWebPropertyID',
