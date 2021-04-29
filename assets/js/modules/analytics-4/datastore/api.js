@@ -21,17 +21,6 @@
  */
 import Data from 'googlesitekit-data';
 
-const baseInitialState = {};
-const baseActions = {};
-const baseControls = {};
-const baseReducer = ( state, { type } ) => {
-	switch ( type ) {
-		default: {
-			return state;
-		}
-	}
-};
-const baseResolvers = {};
 const baseSelectors = {
 	/**
 	 * Checks if the Admin API is working.
@@ -74,11 +63,6 @@ const baseSelectors = {
 
 const store = Data.combineStores(
 	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		controls: baseControls,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}
 );
