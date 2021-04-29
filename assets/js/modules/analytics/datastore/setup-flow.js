@@ -1,5 +1,5 @@
 /**
- * `modules/analytics` data store
+ * `modules/analytics` data store: setup-flow.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,32 +20,13 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
-import baseModuleStore from './base';
-import accounts from './accounts';
-import adsense from './adsense';
-import goals from './goals';
-import properties from './properties';
-import profiles from './profiles';
-import report from './report';
-import tags from './tags';
-import service from './service';
-import setupFlow from './setup-flow';
 
-import { STORE_NAME } from './constants';
+const baseSelectors = {};
 
 const store = Data.combineStores(
-	baseModuleStore,
-	accounts,
-	adsense,
-	goals,
-	properties,
-	profiles,
-	report,
-	createSnapshotStore( STORE_NAME ),
-	tags,
-	service,
-	setupFlow
+	{
+		selectors: baseSelectors,
+	}
 );
 
 export const initialState = store.initialState;
@@ -54,9 +35,5 @@ export const controls = store.controls;
 export const reducer = store.reducer;
 export const resolvers = store.resolvers;
 export const selectors = store.selectors;
-
-export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, store );
-};
 
 export default store;
