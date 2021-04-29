@@ -29,5 +29,5 @@ export const pageWait = async ( delay = E2E_PAGE_WAIT ) => {
 	if ( typeof delay !== 'number' ) {
 		throw new Error( 'pageWait requires a number to be passed.' );
 	}
-	await page.waitFor( delay );
+	await page.waitForTimeout( delay );
 };
