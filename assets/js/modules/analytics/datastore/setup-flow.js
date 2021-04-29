@@ -56,13 +56,11 @@ const baseSelectors = {
 		}
 
 		// If there is an account selected for which the modules/analytics-4 store selector getProperties returns an empty array (i.e. no GA4 properties), it should return “ua”.
-
-		if ( select( MODULES_ANALYTICS_4 ).getProperties( accountID ).length === 0 ) {
+		if ( ! select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || select( MODULES_ANALYTICS_4 ).getProperties( accountID )?.length === 0 ) {
 			return 'ua';
 		}
 
 		// If there is an account selected for which the modules/analytics store selector getProperties returns an empty array (i.e. no UA properties), it should return “ga4”.
-		// TODO - odd null guarding
 		if ( ! select( STORE_NAME ).getProperties( accountID ) || select( STORE_NAME ).getProperties( accountID )?.length === 0 ) {
 			return 'ga4';
 		}
