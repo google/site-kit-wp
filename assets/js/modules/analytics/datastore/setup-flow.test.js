@@ -69,14 +69,16 @@ describe( 'modules/analytics properties', () => {
 		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'legacy' );
 	} );
 
-	// If the modules/analytics-4 store selector isAdminAPIWorking() (see #3169) returns false, it should return “legacy”. If it returns undefined, it should also return undefined (indicating "not loaded yet").
+	it.todo( 'should return “legacy” if isAdminAPIWorking() returns false ' );
 
-	// If there is no account selected, it should return “ua”.
+	it.todo( 'should return undefined if isAdminAPIWorking() returns undefined ' );
 
-	// If there is an account selected for which the modules/analytics-4 store selector getProperties returns an empty array (i.e. no GA4 properties), it should return “ua”.
+	it.todo( 'should return “ua” if there is no account selected' );
 
-	// If there is an account selected for which the modules/analytics store selector getProperties returns an empty array (i.e. no UA properties), it should return “ga4”.
+	it.todo( 'should return “ua” if selected account returns an empty array from GA4 getProperties selector' );
 
-	// If there is an account selected for which both the modules/analytics and modules/analytics-4 selectors getProperties return a non-empty array, it should return “ga4-transitional”.
+	it.todo( 'should return “ga4” if selected account returns an empty array from UA getProperties selector' );
+
+	it.todo( 'should return “ga4-transitional” if both GA4 and UA getProperties return non-empty array' );
 } );
 
