@@ -123,8 +123,9 @@ const Stats = ( { data, metrics, selectedStats } ) => {
 				<Cell size={ 12 }>
 					<GoogleChart
 						chartType="LineChart"
-						selectedStats={ [ selectedStats ] }
 						data={ googleChartData }
+						loadingHeight="270px"
+						loadingWidth="100%"
 						options={ options }
 					/>
 				</Cell>

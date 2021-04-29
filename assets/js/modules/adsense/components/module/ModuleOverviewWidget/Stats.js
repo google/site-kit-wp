@@ -131,8 +131,9 @@ const Stats = ( {
 				<Cell size={ 12 }>
 					<GoogleChart
 						chartType="LineChart"
-						selectedStats={ [ selectedStats ] }
 						data={ dataMap }
+						loadingHeight="270px"
+						loadingWidth="100%"
 						options={ options }
 					/>
 				</Cell>

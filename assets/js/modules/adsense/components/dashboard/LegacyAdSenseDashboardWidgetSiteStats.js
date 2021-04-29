@@ -163,6 +163,8 @@ export default function LegacyAdSenseDashboardWidgetSiteStats( props ) {
 					<GoogleChart
 						chartType="LineChart"
 						data={ dataMap }
+						loadingHeight="250px"
+						loadingWidth="100%"
 						options={ options }
 					/>
 				</Cell>
