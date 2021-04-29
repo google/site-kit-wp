@@ -27,6 +27,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	settingSlugs: [
 		// TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
 		// 'accountID',
+		'adsID',
 		'propertyID',
 		'webDataStreamID',
 		'measurementID',
