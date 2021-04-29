@@ -29,7 +29,7 @@ const baseSelectors = {
 	 *
 	 * Returns true if getProperties or getWebDataStreams has fetched successfully.
 	 *
-	 * This selector returns undefined if either `getProperties` and `getWebDataStreams` selectors have not resolved.
+	 * This selector returns undefined if either `getProperties` or `getWebDataStreams` selectors have not resolved.
 	 *
 	 * @since n.e.x.t
 	 * @private
@@ -38,6 +38,8 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} True, false, or undefined.
 	 */
 	isAdminAPIWorking( state ) {
+		// NOTE - This is against normal conventions. Usually we build selectors for everything
+		// we are working with an Alpha, unstable API at the time of development.
 		for ( const errorKey in state.errors ) {
 			if (
 				errorKey.startsWith( 'getProperties::' ) ||
