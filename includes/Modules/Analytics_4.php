@@ -95,7 +95,8 @@ final class Analytics_4 extends Module
 	 */
 	public function is_connected() {
 		$required_keys = array(
-			'accountID',
+			// TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
+			/* 'accountID', */
 			'propertyID',
 			'webDataStreamID',
 			'measurementID',
@@ -131,11 +132,15 @@ final class Analytics_4 extends Module
 		$settings = $this->get_settings()->get();
 
 		return array(
+			// TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
+
+			/* // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 			'analytics_4_account_id'         => array(
 				'label' => __( 'Analytics 4 account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
+			*/
 			'analytics_4_property_id'        => array(
 				'label' => __( 'Analytics 4 property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
