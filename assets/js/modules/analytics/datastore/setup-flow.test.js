@@ -23,6 +23,7 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
 import * as modulesAnalytics from '../';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 // import * as fixtures from './__fixtures__';
 // TODO - should be in own section? check other test copied from
 import { createRegistry } from '@wordpress/data';
@@ -69,9 +70,19 @@ describe( 'modules/analytics properties', () => {
 		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'legacy' );
 	} );
 
-	it.todo( 'should return “legacy” if isAdminAPIWorking() returns false ' );
+	it( 'should return “legacy” if isAdminAPIWorking() returns false ', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+			new Error( 'foo' ), 'getProperties', [ 'foo', 'bar' ]
+		);
 
-	it.todo( 'should return undefined if isAdminAPIWorking() returns undefined ' );
+		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'legacy' );
+	} );
+
+	it( 'should return undefined if isAdminAPIWorking() returns undefined ', () => {
+		// console.debug( 'isAdminAPIWorking ', registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() );
+
+		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( undefined );
+	} );
 
 	it.todo( 'should return “ua” if there is no account selected' );
 

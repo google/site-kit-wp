@@ -43,6 +43,11 @@ const baseSelectors = {
 			return 'legacy';
 		}
 
+		// If isAdminAPIWorking() returns undefined -> return undefined
+		if ( isAdminAPIWorking === undefined ) {
+			return undefined;
+		}
+
 		const accountID = select( STORE_NAME ).getAccountID();
 
 		// If there is no account selected, it should return “ua”.
