@@ -151,6 +151,11 @@ final class Idea_Hub extends Module
 					return null;
 				};
 			case 'GET:draft-post-ideas':
+				// @TODO implementation
+				return function() {
+					return null;
+				};
+			case 'GET:new-ideas':
 				// @TODO: Implement this with the real API endpoint.
 				return function() {
 					return array(
@@ -210,11 +215,6 @@ final class Idea_Hub extends Module
 								),
 						),
 					);
-				};
-			case 'GET:new-ideas':
-				// @TODO implementation
-				return function() {
-					return null;
 				};
 			case 'GET:published-post-ideas':
 				// @TODO implementation
