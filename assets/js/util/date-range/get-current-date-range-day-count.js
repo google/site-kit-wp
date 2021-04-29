@@ -1,5 +1,5 @@
 /**
- * GA4 Datastore Fixtures.
+ * `getCurrentDateRangeDayCount` utility.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,9 +16,21 @@
  * limitations under the License.
  */
 
-export { default as accountSummaries } from './account-summaries.json';
-export { default as createProperty } from './create-property.json';
-export { default as createWebDataStream } from './create-webdatastream.json';
-export { default as properties } from './properties.json';
-export { default as webDataStreams } from './webdatastreams.json';
-export { default as webDataStreamsBatch } from './webdatastreams-batch.json';
+/**
+ * Gets the current dateRange day count.
+ *
+ * @since 1.19.0
+ * @since 1.26.0 `dateRange` is now a required argument.
+ *
+ * @param {string} dateRange The date range slug.
+ * @return {number} The number of days in the range.
+ */
+export function getCurrentDateRangeDayCount( dateRange ) {
+	const daysMatch = dateRange.match( /last-(\d+)-days/ );
+
+	if ( daysMatch && daysMatch[ 1 ] ) {
+		return parseInt( daysMatch[ 1 ], 10 );
+	}
+
+	throw new Error( 'Unrecognized date range slug.' );
+}

@@ -91,12 +91,14 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSets(
 			array(
+				'account-summaries',
 				'accounts',
 				'create-property',
 				'create-webdatastream',
 				'properties',
 				'property',
 				'webdatastreams',
+				'webdatastreams-batch',
 			),
 			$analytics->get_datapoints()
 		);
