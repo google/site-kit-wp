@@ -1,5 +1,5 @@
 /**
- * Utility functions.
+ * `getAvailableDateRanges` utility.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,25 +20,6 @@
  * WordPress dependencies
  */
 import { _n, sprintf } from '@wordpress/i18n';
-
-/**
- * Gets the current dateRange day count.
- *
- * @since 1.19.0
- * @since 1.26.0 `dateRange` is now a required argument.
- *
- * @param {string} dateRange The date range slug.
- * @return {number} The number of days in the range.
- */
-export function getCurrentDateRangeDayCount( dateRange ) {
-	const daysMatch = dateRange.match( /last-(\d+)-days/ );
-
-	if ( daysMatch && daysMatch[ 1 ] ) {
-		return parseInt( daysMatch[ 1 ], 10 );
-	}
-
-	throw new Error( 'Unrecognized date range slug.' );
-}
 
 /**
  * Gets the hash of available date ranges.
