@@ -179,21 +179,28 @@ const baseActions = {
 
 			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
-			// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
-			registry.dispatch( STORE_NAME ).setProfileID( '' );
+			const existingProfileID = registry.select( STORE_NAME ).getProfileID(); // eslint-disable-line @wordpress/no-unused-vars-before-return
+			const profiles = yield Data.commonActions.await(
+				registry.__experimentalResolveSelect( STORE_NAME ).getProfiles( accountID, propertyID )
+			);
 
-			const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
-			if ( property.defaultProfileId && profiles?.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/acronym-case
+			if ( ! Array.isArray( profiles ) ) {
+				return; // Something unexpected occurred and we want to avoid type errors.
+			}
+
+			// If there was an existing profile ID set and it belongs to the selected property, we're done.
+			if ( existingProfileID && profiles.some( ( profile ) => profile.id === existingProfileID ) ) {
+				return;
+			}
+
+			// If the property has a default profile that exists, use that.
+			if ( property.defaultProfileId && profiles.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/acronym-case
 				registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
 				return;
 			}
 
-			if ( profiles === undefined ) {
-				return; // Selection will happen in in getProfiles resolver.
-			}
-
-			const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // eslint-disable-line sitekit/acronym-case
-			registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
+			// Otherwise just select the first profile, or the option to create if none.
+			registry.dispatch( STORE_NAME ).setProfileID( profiles[ 0 ]?.id || PROFILE_CREATE );
 		}() );
 	},
 

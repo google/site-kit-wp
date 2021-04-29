@@ -46,7 +46,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	public function get_owned_keys() {
 		return array(
-			'accountID',
+			// TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
+			/* 'accountID', */
 			'propertyID',
 			'webDataStreamID',
 			'measurementID',
@@ -63,7 +64,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	protected function get_default() {
 		return array(
 			'ownerID'         => 0,
-			'accountID'       => '',
+			// TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
+			/* 'accountID'       => '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 			'propertyID'      => '',
 			'webDataStreamID' => '',
 			'measurementID'   => '',
