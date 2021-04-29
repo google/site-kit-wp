@@ -56,9 +56,12 @@ export default function GoogleChart( props ) {
 
 	// Ensure we don't filter out columns that aren't data, but are things like
 	// tooltips or other content.
-	const nonDataColumns = data?.length ? data[ 0 ].reduce( ( acc, row, rowIndex ) => {
-		return row?.role ? [ ...acc, rowIndex ] : acc;
-	}, [] ) : [];
+	let nonDataColumns = [];
+	if ( data?.length ) {
+		nonDataColumns = data[ 0 ].reduce( ( acc, row, rowIndex ) => {
+			return row?.role ? [ ...acc, rowIndex ] : acc;
+		}, [] );
+	}
 
 	// If only certain columns should be displayed for the data set we have
 	// then filter out that data.
