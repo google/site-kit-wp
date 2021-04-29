@@ -44,6 +44,7 @@ export default function SettingsView() {
 	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
 	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const adsConversionID = useSelect( ( select ) => select( STORE_NAME ).getAdsConversionID() );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 	const editViewSettingsURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
@@ -141,6 +142,18 @@ export default function SettingsView() {
 					</p>
 				</div>
 			</div>
+
+			<div className="googlesitekit-settings-module__meta-items">
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Ads Conversion ID', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ adsConversionID } />
+					</p>
+				</div>
+			</div>
+
 		</div>
 	);
 }

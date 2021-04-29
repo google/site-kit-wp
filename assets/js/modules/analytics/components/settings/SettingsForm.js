@@ -22,6 +22,7 @@
 import Data from 'googlesitekit-data';
 import {
 	AccountSelect,
+	AdsConversionIDTextField,
 	AnonymizeIPSwitch,
 	ExistingTagNotice,
 	ProfileSelect,
@@ -38,6 +39,7 @@ const { useSelect } = Data;
 
 export default function SettingsForm() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
@@ -62,6 +64,8 @@ export default function SettingsForm() {
 				<AnonymizeIPSwitch />
 
 				<TrackingExclusionSwitches />
+
+				{ useSnippet && <AdsConversionIDTextField /> }
 			</div>
 		</div>
 	);
