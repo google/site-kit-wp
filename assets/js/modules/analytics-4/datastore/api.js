@@ -38,8 +38,11 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} True, false, or undefined.
 	 */
 	isAdminAPIWorking( state ) {
-		// NOTE - This is against normal conventions. Usually we build selectors for everything
-		// we are working with an Alpha, unstable API at the time of development.
+		// This is against normal state access conventions.
+		// Usually we build selectors for any state access and avoid
+		// looking around state internals.
+		// But we are working with an Alpha, unstable Google API at the time
+		// of development.
 		for ( const errorKey in state.errors ) {
 			if (
 				errorKey.startsWith( 'getProperties::' ) ||
