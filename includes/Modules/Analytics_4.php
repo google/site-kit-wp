@@ -445,15 +445,20 @@ final class Analytics_4 extends Module
 			return;
 		}
 
-		$module_settings = $this->get_settings();
-		$settings        = $module_settings->get();
-		$tag             = new Web_Tag( $settings['measurementID'], self::MODULE_SLUG );
-		if ( $tag && ! $tag->is_tag_blocked() ) {
-			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-			$tag->use_guard( new Tag_Guard( $module_settings ) );
-			if ( $tag->can_register() ) {
-				$tag->register();
-			}
+		$settings = $this->get_settings()->get();
+		$tag      = new Web_Tag( $settings['measurementID'], self::MODULE_SLUG );
+
+		if ( $tag->is_tag_blocked() ) {
+			return;
+		}
+
+		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
+
+		if ( $tag->can_register() ) {
+			$tag->set_ads_conversion_id( $settings['adsConversionID'] );
+
+			$tag->register();
 		}
 	}
 
