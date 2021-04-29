@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-class Web_Tag extends Module_Web_Tag {
+class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 
 	use Method_Proxy_Trait;
 

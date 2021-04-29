@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-class AMP_Tag extends Module_AMP_Tag {
+class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 
 	use Method_Proxy_Trait;
 
@@ -49,6 +49,18 @@ class AMP_Tag extends Module_AMP_Tag {
 	 */
 	public function set_home_domain( $domain ) {
 		$this->home_domain = $domain;
+	}
+
+	/**
+	 * Sets whether or not to anonymize IP addresses.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param bool $anonymize_ip Anonymize or not.
+	 */
+	public function set_anonymize_ip( $anonymize_ip ) {
+		// Data from AMP documents is always IP anonymized.
+		// See https://support.google.com/analytics/answer/6343176.
 	}
 
 	/**
