@@ -21,7 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 
-const baseInitialState = { };
+const baseInitialState = {};
 const baseActions = {};
 const baseControls = {};
 const baseReducer = ( state, { type } ) => {
@@ -40,18 +40,19 @@ const baseSelectors = {
 	 *
 	 * Returns true if getProperties or getWebDataStreams has fetched successfully.
 	 *
-	 * Else returns undefined.
+	 * This selector returns undefined if either `getProperties` and `getWebDataStreams` selectors have not resolved.
 	 *
 	 * @since n.e.x.t
+	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean | undefined)} True, false, or undefined.
+	 * @return {(boolean|undefined)} True, false, or undefined.
 	 */
 	isAdminAPIWorking( state ) {
 		for ( const errorKey in state.errors ) {
 			if (
-				errorKey.startsWith( 'getProperties' ) ||
-				errorKey.startsWith( 'getWebDataStreams' )
+				errorKey.startsWith( 'getProperties::' ) ||
+				errorKey.startsWith( 'getWebDataStreams::' )
 			) {
 				return false;
 			}

@@ -101,7 +101,7 @@ describe( 'modules/analytics-4 properties', () => {
 					}
 					if ( errorProperty ) {
 						registry.dispatch( STORE_NAME ).receiveError(
-							new Error( 'foo' ),	'getProperties', [ 'foo', 'bar' ]
+							new Error( 'foo' ), 'getProperties', [ 'foo', 'bar' ]
 						);
 					}
 					if ( errorWebData ) {
@@ -110,7 +110,7 @@ describe( 'modules/analytics-4 properties', () => {
 						);
 					}
 
-					const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking( );
+					const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking();
 
 					expect( isAdminAPIWorking ).toBe( expected );
 				} );
