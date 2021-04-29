@@ -20,8 +20,29 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
-const baseSelectors = {};
+const { createRegistrySelector } = Data;
+
+const baseSelectors = {
+	getSetupFlowMode: createRegistrySelector( ( select ) => (
+		// state
+	) => {
+		// implement requirements from the AC section.
+
+		// If the modules/analytics-4 store is not available, it should return “legacy”.
+		if ( ! select( MODULES_ANALYTICS_4 ) ) {
+			return 'legacy';
+		}
+
+		const isAdminAPIWorking = select( MODULES_ANALYTICS_4 ).isAdminAPIWorking();
+
+		// If isAdminAPIWorking() returns false -> return “legacy”
+		if ( isAdminAPIWorking === false ) {
+			return 'legacy';
+		}
+	} ),
+};
 
 const store = Data.combineStores(
 	{
