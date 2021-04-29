@@ -74,7 +74,7 @@ function DateRangeSelector() {
 	const handleMenuItemSelect = useCallback( ( index ) => {
 		setDateRange( Object.values( ranges )[ index ].slug );
 		setMenuOpen( false );
-	}, [ handleMenu ] );
+	}, [ ranges, setDateRange ] );
 
 	const currentDateRangeLabel = ranges[ dateRange ]?.label;
 	const menuItems = Object.values( ranges ).map( ( range ) => range.label );

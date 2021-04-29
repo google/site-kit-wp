@@ -81,16 +81,18 @@ export default function UserDimensionsPieChart( {
 			}
 		};
 
-		if ( containerRef.current ) {
-			containerRef.current.addEventListener( 'click', onTooltipClick );
+		const currentContainerRef = containerRef.current;
+
+		if ( currentContainerRef ) {
+			currentContainerRef.addEventListener( 'click', onTooltipClick );
 		}
 
 		return () => {
-			if ( containerRef.current ) {
-				containerRef.current.removeEventListener( 'click', onTooltipClick );
+			if ( currentContainerRef ) {
+				currentContainerRef.removeEventListener( 'click', onTooltipClick );
 			}
 		};
-	}, [ containerRef.current ] );
+	}, [ ] );
 
 	const absOthers = {
 		current: report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],

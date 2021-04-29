@@ -36,7 +36,7 @@ export default function UseSnippetSwitch() {
 	const { setUseSnippet } = useDispatch( STORE_NAME );
 	const onChange = useCallback( () => {
 		setUseSnippet( ! useSnippet );
-	}, [ useSnippet ] );
+	}, [ useSnippet, setUseSnippet ] );
 
 	if ( useSnippet === undefined ) {
 		return null;

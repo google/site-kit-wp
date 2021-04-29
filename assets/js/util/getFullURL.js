@@ -1,5 +1,5 @@
 /**
- * `core/user` isValidDateInstance utility.
+ * Absolute URL path getter utility function.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,14 +17,16 @@
  */
 
 /**
- * Asserts whether a given date instance is valid or invalid.
+ * Returns the absolute URL from a path including the siteURL.
  *
- * @since 1.18.0
+ * @since n.e.x.t
  *
- * @param {Date} date Date instance to be asserted against.
- * @return {boolean}  True if the given date instance is valid.
+ * @param {string} siteURL The siteURL fo the WordPress install.
+ * @param {string} path    The path.
+ * @return {string} The URL path.
  */
-export const isValidDateInstance = ( date ) => {
-	// type coercion provided by isNaN is preferred here over Number.isNaN
-	return date instanceof Date && ! isNaN( date );
-};
+export function getFullURL( siteURL, path ) {
+	return new URL( path, siteURL ).href;
+}
+
+export default getFullURL;

@@ -22,11 +22,13 @@
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import baseModuleStore from './base';
+import accounts from './accounts';
 import properties from './properties';
 import webdatastreams from './webdatastreams';
 
 const store = Data.combineStores(
 	baseModuleStore,
+	accounts,
 	properties,
 	webdatastreams,
 );

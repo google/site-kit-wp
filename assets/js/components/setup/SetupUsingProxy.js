@@ -77,7 +77,7 @@ function SetupUsingProxy() {
 		event.preventDefault();
 		await trackEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
 		navigateTo( proxySetupURL );
-	}, [ proxySetupURL ] );
+	}, [ proxySetupURL, navigateTo ] );
 
 	// @TODO: this needs to be migrated to the core/site datastore in the future
 	const { errorMessage } = global._googlesitekitLegacyData.setup;

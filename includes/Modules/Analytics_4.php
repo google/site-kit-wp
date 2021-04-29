@@ -168,6 +168,7 @@ final class Analytics_4 extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
+			'GET:account-summaries'     => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'              => array( 'service' => 'analyticsadmin' ),
 			'POST:create-property'      => array(
 				'service'                => 'analyticsadmin',
@@ -182,6 +183,7 @@ final class Analytics_4 extends Module
 			'GET:properties'            => array( 'service' => 'analyticsadmin' ),
 			'GET:property'              => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams'        => array( 'service' => 'analyticsadmin' ),
+			'GET:webdatastreams-batch'  => array( 'service' => 'analyticsadmin' ),
 		);
 	}
 
@@ -199,6 +201,8 @@ final class Analytics_4 extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				return $this->get_service( 'analyticsadmin' )->accounts->listAccounts();
+			case 'GET:account-summaries':
+				return $this->get_service( 'analyticsadmin' )->accountSummaries->listAccountSummaries( array( 'pageSize' => 200 ) );
 			case 'POST:create-property':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -266,6 +270,41 @@ final class Analytics_4 extends Module
 				}
 
 				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->listPropertiesWebDataStreams( self::normalize_property_id( $data['propertyID'] ) );
+			case 'GET:webdatastreams-batch':
+				if ( ! isset( $data['propertyIDs'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyIDs' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! is_array( $data['propertyIDs'] ) || count( $data['propertyIDs'] ) > 10 ) {
+					return new WP_Error(
+						'rest_invalid_param',
+						/* translators: %s: List of invalid parameters. */
+						sprintf( __( 'Invalid parameter(s): %s', 'google-site-kit' ), 'propertyIDs' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return function() use ( $data ) {
+					$requests = array();
+
+					foreach ( $data['propertyIDs'] as $property_id ) {
+						$requests[] = new Data_Request(
+							'GET',
+							'modules',
+							self::MODULE_SLUG,
+							'webdatastreams',
+							array( 'propertyID' => $property_id ),
+							$property_id
+						);
+					}
+
+					return $this->get_batch_data( $requests );
+				};
 		}
 
 		return parent::create_data_request( $data );
@@ -285,6 +324,21 @@ final class Analytics_4 extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				return array_map( array( self::class, 'filter_account_with_ids' ), $response->getAccounts() );
+			case 'GET:account-summaries':
+				return array_map(
+					function( $account ) {
+						$obj                    = self::filter_account_with_ids( $account, 'account' );
+						$obj->propertySummaries = array_map( // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+							function( $property ) {
+								return self::filter_property_with_ids( $property, 'property' );
+							},
+							$account->getPropertySummaries()
+						);
+
+						return $obj;
+					},
+					$response->getAccountSummaries()
+				);
 			case 'POST:create-property':
 				return self::filter_property_with_ids( $response );
 			case 'POST:create-webdatastream':
@@ -405,13 +459,14 @@ final class Analytics_4 extends Module
 	 * @since 1.31.0
 	 *
 	 * @param Google_Model $account Account model.
+	 * @param string       $id_key   Attribute name that contains account id.
 	 * @return \stdClass Updated model with _id attribute.
 	 */
-	public static function filter_account_with_ids( $account ) {
+	public static function filter_account_with_ids( $account, $id_key = 'name' ) {
 		$obj = $account->toSimpleObject();
 
 		$matches = array();
-		if ( preg_match( '#accounts/([^/]+)#', $account['name'], $matches ) ) {
+		if ( preg_match( '#accounts/([^/]+)#', $account[ $id_key ], $matches ) ) {
 			$obj->_id = $matches[1];
 		}
 
@@ -424,13 +479,14 @@ final class Analytics_4 extends Module
 	 * @since 1.31.0
 	 *
 	 * @param Google_Model $property Property model.
+	 * @param string       $id_key   Attribute name that contains property id.
 	 * @return \stdClass Updated model with _id and _accountID attributes.
 	 */
-	public static function filter_property_with_ids( $property ) {
+	public static function filter_property_with_ids( $property, $id_key = 'name' ) {
 		$obj = $property->toSimpleObject();
 
 		$matches = array();
-		if ( preg_match( '#properties/([^/]+)#', $property['name'], $matches ) ) {
+		if ( preg_match( '#properties/([^/]+)#', $property[ $id_key ], $matches ) ) {
 			$obj->_id = $matches[1];
 		}
 

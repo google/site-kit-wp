@@ -66,7 +66,7 @@ function HelpMenu( { children } ) {
 
 	const handleMenuSelected = useCallback( () => {
 		toggleMenu( false );
-	} );
+	}, [] );
 
 	return (
 		<div className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu googlesitekit-help-menu mdc-menu-surface--anchor">

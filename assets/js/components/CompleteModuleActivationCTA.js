@@ -44,7 +44,7 @@ const CompleteModuleActivationCTA = ( { moduleSlug, title, description } ) => {
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const onCTAClick = useCallback( () => navigateTo( adminReauthURL ), [ adminReauthURL ] );
+	const onCTAClick = useCallback( () => navigateTo( adminReauthURL ), [ adminReauthURL, navigateTo ] );
 
 	if ( ! module?.name || ! adminReauthURL || ! canManageOptions ) {
 		return null;

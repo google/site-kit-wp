@@ -42,7 +42,7 @@ export default function PropertySelect() {
 		if ( propertyID !== newPropertyID ) {
 			setPropertyID( newPropertyID );
 		}
-	}, [ propertyID ] );
+	}, [ propertyID, setPropertyID ] );
 
 	if ( ! hasResolvedProperties ) {
 		return <ProgressBar small />;
