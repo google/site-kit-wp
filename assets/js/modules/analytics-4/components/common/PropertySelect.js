@@ -41,13 +41,13 @@ export default function PropertySelect() {
 		isResolvingProperties,
 	} = useSelect( ( select ) => {
 		const data = {
+			// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
 			accountID: select( MODULES_ANALYTICS ).getAccountID(),
 			properties: [],
 			isResolvingProperties: false,
 		};
 
 		if ( data.accountID ) {
-			// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
 			data.properties = select( STORE_NAME ).getProperties( data.accountID );
 			data.isResolvingProperties = select( STORE_NAME ).isResolving( 'getProperties', [ data.accountID ] );
 		}
