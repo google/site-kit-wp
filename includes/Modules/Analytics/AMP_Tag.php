@@ -33,6 +33,14 @@ class AMP_Tag extends Module_AMP_Tag {
 	private $home_domain;
 
 	/**
+	 * Ads conversion ID.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	private $ads_id;
+
+	/**
 	 * Sets the current home domain.
 	 *
 	 * @since 1.24.0
@@ -41,6 +49,17 @@ class AMP_Tag extends Module_AMP_Tag {
 	 */
 	public function set_home_domain( $domain ) {
 		$this->home_domain = $domain;
+	}
+
+	/**
+	 * Sets the ads conversion ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $ads_id Ads ID.
+	 */
+	public function set_ads_id( $ads_id ) {
+		$this->ads_id = $ads_id;
 	}
 
 	/**
