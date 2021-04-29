@@ -124,7 +124,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 		);
 	}
 
-	if ( isZeroReport( period ) && isZeroReport( daily ) ) {
+	if ( isZeroReport( previousPeriod ) && isZeroReport( period ) && isZeroReport( daily ) ) {
 		return (
 			<Widget>
 				<WidgetReportZero moduleSlug="adsense" />
@@ -146,7 +146,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 						title={ __( 'RPM', 'google-site-kit' ) }
 						datapoint={ period.totals[ 1 ] }
 						datapointUnit={ currencyCode }
-						change={ previousPeriod.totals[ 1 ] - period.totals[ 1 ] }
+						change={ period.totals[ 1 ] - previousPeriod.totals[ 1 ] }
 						changeDataUnit={ currencyCode }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
@@ -174,7 +174,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 							link: earningsURL,
 							external: true,
 						} }
-						change={ previousPeriod.totals[ 0 ] - period.totals[ 0 ] }
+						change={ period.totals[ 0 ] - previousPeriod.totals[ 0 ] }
 						changeDataUnit={ currencyCode }
 						sparkline={ daily &&
 							<Sparkline
@@ -191,7 +191,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 						className="overview-adsense-impressions"
 						title={ __( 'Ad Impressions', 'google-site-kit' ) }
 						datapoint={ period.totals[ 2 ] }
-						change={ previousPeriod.totals[ 2 ] - period.totals[ 2 ] }
+						change={ period.totals[ 2 ] - previousPeriod.totals[ 2 ] }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 							link: impressionsURL,
