@@ -28,6 +28,29 @@ import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 // TODO - should be in own section? check other test copied from
 import { createRegistry } from '@wordpress/data';
 
+const accountID = 'foo-bar';
+
+const populateAnalyticsDataStore = ( registry ) => {
+	registry.dispatch( STORE_NAME ).receiveGetProperties(
+		[
+			{
+			// eslint-disable-next-line sitekit/acronym-case
+				accountId: '151753095',
+				id: 'UA-151753095-1',
+				name: 'rwh',
+			},
+			{
+			// eslint-disable-next-line sitekit/acronym-case
+				accountId: '151753095',
+				id: 'UA-151753095-1',
+				name: 'troubled-tipped.example.com',
+			},
+
+		],
+		{ accountID }
+	);
+};
+
 const populateAnalytics4DataStore = ( registry ) => {
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [
 		{
@@ -44,7 +67,7 @@ const populateAnalytics4DataStore = ( registry ) => {
 			deleted: false,
 		},
 	],
-	{ accountID: 'foo-bar' },
+	{ accountID },
 	);
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams(
 		[
@@ -89,10 +112,6 @@ describe( 'modules/analytics properties', () => {
 
 	// TODO - in describe block like other tests for selector getSetupFlowMode
 
-	it( 'should be true', () => {
-		expect( true ).toBe( true );
-	} );
-
 	it( 'returns “legacy” if the modules/analytics-4 store is not available ', async () => {
 		// only register this module
 		const newRegistry = createRegistry();
@@ -128,10 +147,28 @@ describe( 'modules/analytics properties', () => {
 		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ua' );
 	} );
 
-	it.todo( 'should return “ua” if selected account returns an empty array from GA4 getProperties selector' );
+	it.skip( 'should return “ua” if selected account returns an empty array from GA4 getProperties selector', () => {
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		populateAnalyticsDataStore( registry );
 
-	it.todo( 'should return “ga4” if selected account returns an empty array from UA getProperties selector' );
+		// how if required function means has been queried...
+		// basically needs ga4 working to get here... can populate with empty property array?
+		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ua' );
+	} );
 
-	it.todo( 'should return “ga4-transitional” if both GA4 and UA getProperties return non-empty array' );
+	it( 'should return “ga4” if selected account returns an empty array from UA getProperties selector', () => {
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		populateAnalytics4DataStore( registry );
+
+		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ga4' );
+	} );
+
+	it( 'should return “ga4-transitional” if both GA4 and UA getProperties return non-empty array', () => {
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		populateAnalytics4DataStore( registry );
+		populateAnalyticsDataStore( registry );
+
+		expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ga4-transitional' );
+	} );
 } );
 
