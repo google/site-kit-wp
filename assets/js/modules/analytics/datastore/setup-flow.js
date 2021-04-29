@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { STORE_NAME } from './constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 const { createRegistrySelector } = Data;
@@ -41,6 +42,27 @@ const baseSelectors = {
 		if ( isAdminAPIWorking === false ) {
 			return 'legacy';
 		}
+
+		const accountID = select( STORE_NAME ).getAccountID();
+
+		// If there is no account selected, it should return “ua”.
+		if ( ! accountID ) {
+			return 'ua';
+		}
+
+		// If there is an account selected for which the modules/analytics-4 store selector getProperties returns an empty array (i.e. no GA4 properties), it should return “ua”.
+
+		if ( select( MODULES_ANALYTICS_4 ).getProperties( accountID ).length === 0 ) {
+			return 'ua';
+		}
+
+		// If there is an account selected for which the modules/analytics store selector getProperties returns an empty array (i.e. no UA properties), it should return “ga4”.
+		if ( select( STORE_NAME ).getProperties( accountID ).length === 0 ) {
+			return 'ga4';
+		}
+
+		// If there is an account selected for which both the modules/analytics and modules/analytics-4 selectors getProperties return a non-empty array, it should return “ga4-transitional”.
+		return 'ga4-transitional';
 	} ),
 };
 
