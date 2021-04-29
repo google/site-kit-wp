@@ -41,6 +41,14 @@ class Web_Tag extends Module_Web_Tag {
 	private $anonymize_ip = false;
 
 	/**
+	 * Ads conversion ID.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	private $ads_id;
+
+	/**
 	 * Sets the current home domain.
 	 *
 	 * @since 1.24.0
@@ -60,6 +68,17 @@ class Web_Tag extends Module_Web_Tag {
 	 */
 	public function set_anonymize_ip( $anonymize_ip ) {
 		$this->anonymize_ip = $anonymize_ip;
+	}
+
+	/**
+	 * Sets the ads conversion ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $ads_id Ads ID.
+	 */
+	public function set_ads_id( $ads_id ) {
+		$this->ads_id = $ads_id;
 	}
 
 	/**
@@ -136,6 +155,8 @@ class Web_Tag extends Module_Web_Tag {
 			wp_add_inline_script( 'google_gtagjs', $config );
 		}
 
+		$this->add_inline_ads_id_config();
+
 		$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
 		if ( $block_on_consent_attrs ) {
 			$apply_block_on_consent_attrs = function ( $tag, $handle ) use ( $block_on_consent_attrs, $gtag_src ) {
@@ -161,6 +182,20 @@ class Web_Tag extends Module_Web_Tag {
 			};
 
 			add_filter( 'script_loader_tag', $apply_block_on_consent_attrs, 10, 2 );
+		}
+	}
+
+	/**
+	 * Adds an inline script to configure ads conversion tracking.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function add_inline_ads_id_config() {
+		if ( $this->ads_id ) {
+			wp_add_inline_script(
+				'google_gtagjs',
+				sprintf( 'gtag("config", "%s");', esc_js( $this->ads_id ) )
+			);
 		}
 	}
 
