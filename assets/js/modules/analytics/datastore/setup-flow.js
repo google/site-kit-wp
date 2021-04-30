@@ -26,8 +26,7 @@ import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 const { createRegistrySelector } = Data;
 
 const baseSelectors = {
-	getSetupFlowMode: createRegistrySelector( ( select ) => (
-	) => {
+	getSetupFlowMode: createRegistrySelector( ( select ) => () => {
 		if ( ! select( MODULES_ANALYTICS_4 ) ) {
 			return 'legacy';
 		}

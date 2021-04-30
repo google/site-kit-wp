@@ -36,13 +36,13 @@ const populateAnalyticsDataStore = ( registry ) => {
 	registry.dispatch( STORE_NAME ).receiveGetProperties(
 		[
 			{
-			// eslint-disable-next-line sitekit/acronym-case
+				// eslint-disable-next-line sitekit/acronym-case
 				accountId: '151753095',
 				id: 'UA-151753095-1',
 				name: 'rwh',
 			},
 			{
-			// eslint-disable-next-line sitekit/acronym-case
+				// eslint-disable-next-line sitekit/acronym-case
 				accountId: '151753095',
 				id: 'UA-151753095-1',
 				name: 'troubled-tipped.example.com',
@@ -157,9 +157,9 @@ describe( 'modules/analytics setup-flow', () => {
 				registry.dispatch( STORE_NAME ).setAccountID( accountID );
 				populateAnalyticsDataStore( registry );
 
-				// as per spec https://github.com/google/site-kit-wp/issues/3169
 				// For isAdminAPIWorking() to return true:
 				// "The state['properties'] object has at least one account with a non-empty array of properties;"
+				// See: https://github.com/google/site-kit-wp/issues/3169
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [
 					{
 						_id: '1000',
@@ -178,7 +178,7 @@ describe( 'modules/analytics setup-flow', () => {
 				{ accountID: 'another-different-id' },
 				);
 
-				//  Receive empty properties list to prevent unexpected fetch by resolver
+				//  Receive empty properties list to prevent unexpected fetch by resolver.
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
 					[],
 					{ accountID },
@@ -228,4 +228,3 @@ describe( 'modules/analytics setup-flow', () => {
 		} );
 	} );
 } );
-
