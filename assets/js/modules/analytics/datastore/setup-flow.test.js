@@ -32,7 +32,7 @@ import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 const accountID = 'foo-bar';
 
-const populateAnalyticsDataStore = ( registry ) => {
+const populateAnalyticsDatastore = ( registry ) => {
 	registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
 		[
 			{
@@ -53,7 +53,7 @@ const populateAnalyticsDataStore = ( registry ) => {
 	);
 };
 
-const populateAnalytics4DataStore = ( registry ) => {
+const populateAnalytics4Datastore = ( registry ) => {
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [
 		{
 			_id: '1000',
@@ -148,14 +148,14 @@ describe( 'modules/analytics setup-flow', () => {
 			it( 'should return “ua” if there is no account selected', () => {
 				expect( registry.select( MODULES_ANALYTICS ).getAccountID( accountID ) ).toBe( undefined );
 
-				populateAnalytics4DataStore( registry );
+				populateAnalytics4Datastore( registry );
 
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( 'ua' );
 			} );
 
 			it( 'should return “ua” if selected account returns an empty array from GA4 getProperties selector', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
-				populateAnalyticsDataStore( registry );
+				populateAnalyticsDatastore( registry );
 
 				// For isAdminAPIWorking() to return true:
 				// "The state['properties'] object has at least one account with a non-empty array of properties;"
@@ -209,7 +209,7 @@ describe( 'modules/analytics setup-flow', () => {
 
 			it( 'should return “ga4” if selected account returns an empty array from UA getProperties selector', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
-				populateAnalytics4DataStore( registry );
+				populateAnalytics4Datastore( registry );
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 
@@ -218,8 +218,8 @@ describe( 'modules/analytics setup-flow', () => {
 
 			it( 'should return “ga4-transitional” if both GA4 and UA getProperties return non-empty array', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
-				populateAnalytics4DataStore( registry );
-				populateAnalyticsDataStore( registry );
+				populateAnalytics4Datastore( registry );
+				populateAnalyticsDatastore( registry );
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 
