@@ -182,7 +182,7 @@ const baseActions = {
 
 			const existingProfileID = registry.select( STORE_NAME ).getProfileID(); // eslint-disable-line @wordpress/no-unused-vars-before-return
 			const profiles = yield Data.commonActions.await(
-				registry.__experimentalResolveSelect( STORE_NAME ).getProfiles( accountID, propertyID )
+				registry.resolveSelect( STORE_NAME ).getProfiles( accountID, propertyID )
 			);
 
 			if ( ! Array.isArray( profiles ) ) {

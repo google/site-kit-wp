@@ -136,7 +136,7 @@ const baseActions = {
 
 const baseControls = {
 	[ WAIT_FOR_HTML_FOR_URL ]: createRegistryControl( ( registry ) => ( { payload: { url } } ) => (
-		registry.__experimentalResolveSelect( STORE_NAME ).getHTMLForURL( url )
+		registry.resolveSelect( STORE_NAME ).getHTMLForURL( url )
 	) ),
 	[ CHECK_FOR_SETUP_TAG ]: createRegistryControl( ( registry ) => async () => {
 		let error;

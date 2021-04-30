@@ -57,7 +57,7 @@ let isAdBlockerActive = () => {};
 export const registerStore = ( registry ) => {
 	registerDataStore( registry );
 	// TODO: fix hack
-	isAdBlockerActive = () => registry.__experimentalResolveSelect( STORE_NAME ).isAdBlockerActive();
+	isAdBlockerActive = () => registry.resolveSelect( STORE_NAME ).isAdBlockerActive();
 };
 
 export const registerModule = ( modules ) => {

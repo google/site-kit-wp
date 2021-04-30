@@ -155,10 +155,10 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ WAIT_FOR_WEBDATASTREAMS ]: createRegistryControl( ( { __experimentalResolveSelect } ) => {
+	[ WAIT_FOR_WEBDATASTREAMS ]: createRegistryControl( ( { resolveSelect } ) => {
 		return async ( { payload } ) => {
 			const { propertyID } = payload;
-			await __experimentalResolveSelect( STORE_NAME ).getWebDataStreams( propertyID );
+			await resolveSelect( STORE_NAME ).getWebDataStreams( propertyID );
 		};
 	} ),
 };

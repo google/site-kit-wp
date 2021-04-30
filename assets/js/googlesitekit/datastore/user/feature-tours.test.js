@@ -253,11 +253,11 @@ describe( 'core/user feature-tours', () => {
 				registry.dispatch( STORE_NAME ).receiveAllFeatureTours( [ testTourA, testTourB ] );
 
 				expect(
-					await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' )
+					await registry.resolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' )
 				).toEqual( [ testTourA, testTourB ] );
 
 				expect(
-					await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'b-only-context' )
+					await registry.resolveSelect( STORE_NAME ).getFeatureToursForView( 'b-only-context' )
 				).toEqual( [ testTourB ] );
 			} );
 
@@ -270,7 +270,7 @@ describe( 'core/user feature-tours', () => {
 					{ ...testTourB, version: tourVersion },
 				] );
 				// Tour A's version matches the user's initial version, so only Tour B is returned.
-				const viewTours = await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' );
+				const viewTours = await registry.resolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' );
 				expect( viewTours.map( ( { slug } ) => slug ) ).toEqual( [ testTourB.slug ] );
 			} );
 
@@ -279,7 +279,7 @@ describe( 'core/user feature-tours', () => {
 				registry.dispatch( STORE_NAME ).receiveGetDismissedTours( [ testTourB.slug ] );
 				// Tour B was received as dismissed, but A was not.
 				expect(
-					await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' )
+					await registry.resolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' )
 				).toEqual( [ testTourA ] );
 			} );
 
@@ -297,7 +297,7 @@ describe( 'core/user feature-tours', () => {
 					{ ...testTourB, checkRequirements: checkB },
 				] );
 
-				const viewTours = await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' );
+				const viewTours = await registry.resolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' );
 				expect( viewTours.map( ( { slug } ) => slug ) ).toEqual( [ testTourA.slug ] );
 				// Check functions should be called with the registry as the first parameter.
 				const registryMatcher = expect.objectContaining( {
