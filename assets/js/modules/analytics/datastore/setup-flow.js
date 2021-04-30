@@ -20,22 +20,28 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS } from './constants';
+import {
+	MODULES_ANALYTICS,
+	SETUP_FLOW_MODE_LEGACY,
+	SETUP_FLOW_MODE_UA,
+	SETUP_FLOW_MODE_GA4,
+	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
+} from './constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 const { createRegistrySelector } = Data;
 
-const LEGACY = 'legacy';
-const UA = 'ua';
-const GA4 = 'ga4';
-const GA4_TRANSITIONAL = 'ga4-transitional';
-
 const baseSelectors = {
 	getSetupFlowMode: createRegistrySelector( ( select ) => () => {
+		// The Google Analytics 4 datastore hasn't been loaded, so we have
+		// to use the legacy implementation.
 		if ( ! select( MODULES_ANALYTICS_4 ) ) {
-			return LEGACY;
+			return SETUP_FLOW_MODE_LEGACY;
 		}
 
+		// Check to see if the Admin API is working—if it's `undefined` the request
+		// is loading, but if it's `false` we should also use the legacy analytics
+		// because the API isn't working properly.
 		const isAdminAPIWorking = select( MODULES_ANALYTICS_4 ).isAdminAPIWorking();
 
 		if ( isAdminAPIWorking === undefined ) {
@@ -43,10 +49,15 @@ const baseSelectors = {
 		}
 
 		if ( isAdminAPIWorking === false ) {
-			return LEGACY;
+			return SETUP_FLOW_MODE_LEGACY;
 		}
 
-		// check that accountID should have loaded
+		// Ensure the Analytics settings have loaded. If we check
+		// `select( MODULES_ANALYTICS ).getAccountID();` directly, it
+		// could return `undefined` because the settings are loading OR
+		// because accountID is not set. Ensuring the settings are loaded
+		// means an `undefined` accountID is legitimate.
+		// See: https://github.com/google/site-kit-wp/pull/3260#discussion_r623924928
 		if ( select( MODULES_ANALYTICS ).getSettings() === undefined ) {
 			return undefined;
 		}
@@ -54,7 +65,7 @@ const baseSelectors = {
 		const accountID = select( MODULES_ANALYTICS ).getAccountID();
 
 		if ( ! accountID ) {
-			return UA;
+			return SETUP_FLOW_MODE_UA;
 		}
 
 		const ga4Properties = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
@@ -63,8 +74,10 @@ const baseSelectors = {
 			return undefined;
 		}
 
+		// If there are no GA4 properties available for this account, don't use
+		// GA4 and use the UA version.
 		if ( ga4Properties.length === 0 ) {
-			return UA;
+			return SETUP_FLOW_MODE_UA;
 		}
 
 		const uaProperties = select( MODULES_ANALYTICS ).getProperties( accountID );
@@ -73,11 +86,13 @@ const baseSelectors = {
 			return undefined;
 		}
 
+		// If no UA properties exist and there are GA4 properties, use GA4-only.
 		if ( uaProperties.length === 0 ) {
-			return GA4;
+			return SETUP_FLOW_MODE_GA4;
 		}
 
-		return GA4_TRANSITIONAL;
+		// There are UA and GA4 properties, so use the transitional mode.
+		return SETUP_FLOW_MODE_GA4_TRANSITIONAL;
 	} ),
 };
 
