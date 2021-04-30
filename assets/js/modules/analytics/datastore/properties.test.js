@@ -280,18 +280,22 @@ describe( 'modules/analytics properties', () => {
 					],
 					{ accountID }
 				);
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [
-					{
-						_id: '151753095-3',
-						_accountID: '151753095',
-						displayName: 'www.elasticpress.io',
-					},
-					{
-						_id: '151753095-4',
-						_accountID: '151753095',
-						displayName: 'troubled-tipped.example.com',
-					},
-				], { accountID } );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+					[
+						{
+							_id: '151753095-3',
+							_accountID: '151753095',
+							displayName: 'www.elasticpress.io',
+						},
+						{
+							_id: '151753095-4',
+							_accountID: '151753095',
+							displayName: 'troubled-tipped.example.com',
+						},
+					],
+					{ accountID }
+				);
 
 				const properties = registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID );
 

@@ -431,8 +431,7 @@ const baseSelectors = {
 		}
 
 		const isGA4 = ( property ) => !! property._id;
-
-		function compare( a, b ) {
+		const compare = ( a, b ) => {
 			if ( a < b ) {
 				return -1;
 			}
