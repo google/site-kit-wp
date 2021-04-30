@@ -43,6 +43,8 @@ module.exports = {
 	],
 	// Matches aliases in webpack.config.js.
 	moduleNameMapper: {
+		'^react$': '<rootDir>/node_modules/react',
+		'^react-dom$': '<rootDir>/node_modules/react-dom',
 		// New (JSR) modules.
 		'^googlesitekit-(.+)$': '<rootDir>assets/js/googlesitekit-$1',
 		// Necessary mock to prevent test failures caused by SVGR
