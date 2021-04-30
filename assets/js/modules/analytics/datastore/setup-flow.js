@@ -46,8 +46,7 @@ const baseSelectors = {
 			return LEGACY;
 		}
 
-		// TODO - new test
-		// check that accountID could have loaded
+		// check that accountID should have loaded
 		if ( select( MODULES_ANALYTICS ).getSettings() === undefined ) {
 			return undefined;
 		}
@@ -60,7 +59,6 @@ const baseSelectors = {
 
 		const ga4Properties = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
 
-		// TODO - new test
 		if ( ga4Properties === undefined ) {
 			return undefined;
 		}

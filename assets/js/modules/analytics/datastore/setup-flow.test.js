@@ -147,7 +147,7 @@ describe( 'modules/analytics setup-flow', () => {
 			} );
 
 			it( 'should return undefined if settings are still loading', () => {
-				fetchMock.getOnce(
+				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
 					{
 						body: {
@@ -162,6 +162,8 @@ describe( 'modules/analytics setup-flow', () => {
 				registry = createTestRegistry();
 
 				populateAnalytics4Datastore( registry );
+
+				expect( registry.select( MODULES_ANALYTICS ).getSettings() ).toBe( undefined );
 
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
 			} );
@@ -232,6 +234,18 @@ describe( 'modules/analytics setup-flow', () => {
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( 'ua' );
+			} );
+
+			it( 'should return undefined if selected account returns undefined from GA4 getProperties selector', () => {
+				registry = createTestRegistry();
+				// Receive empty settings to prevent unexpected fetch by resolver.
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+				populateAnalyticsDatastore( registry );
+
+				expect( registry.select( MODULES_ANALYTICS ).getProperties() ).toBe( undefined );
+
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
 			} );
 
 			it( 'should return “ga4” if selected account returns an empty array from UA getProperties selector', () => {
