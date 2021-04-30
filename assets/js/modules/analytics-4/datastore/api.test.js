@@ -106,7 +106,7 @@ describe( 'modules/analytics-4 properties', () => {
 					}
 					if ( errorWebData ) {
 						registry.dispatch( STORE_NAME ).receiveError(
-							new Error( 'foo' ),	'getWebDataStreams', [ 'foo', 'bar' ]
+							new Error( 'foo' ), 'getWebDataStreams', [ 'foo', 'bar' ]
 						);
 					}
 

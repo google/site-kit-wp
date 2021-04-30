@@ -358,11 +358,7 @@ describe( 'modules/analytics accounts', () => {
 
 				registry.select( STORE_NAME ).getAccounts();
 
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getAccounts() !== undefined
-					),
-				);
+				await untilResolved( registry, STORE_NAME ).getAccounts();
 
 				expect( store.getState().matchedProperty ).toMatchObject( matchedProperty );
 				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( matchedProperty.accountId ); // eslint-disable-line sitekit/acronym-case
