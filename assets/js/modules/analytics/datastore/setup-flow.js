@@ -25,16 +25,21 @@ import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 const { createRegistrySelector } = Data;
 
+const LEGACY = 'legacy';
+const UA = 'ua';
+const GA4 = 'ga4';
+const GA4_TRANSITIONAL = 'ga4-transitional';
+
 const baseSelectors = {
 	getSetupFlowMode: createRegistrySelector( ( select ) => () => {
 		if ( ! select( MODULES_ANALYTICS_4 ) ) {
-			return 'legacy';
+			return LEGACY;
 		}
 
 		const isAdminAPIWorking = select( MODULES_ANALYTICS_4 ).isAdminAPIWorking();
 
 		if ( isAdminAPIWorking === false ) {
-			return 'legacy';
+			return LEGACY;
 		}
 
 		if ( isAdminAPIWorking === undefined ) {
@@ -44,18 +49,18 @@ const baseSelectors = {
 		const accountID = select( MODULES_ANALYTICS ).getAccountID();
 
 		if ( ! accountID ) {
-			return 'ua';
+			return UA;
 		}
 
 		if ( ! select( MODULES_ANALYTICS_4 ).getProperties( accountID )?.length > 0 ) {
-			return 'ua';
+			return UA;
 		}
 
 		if ( ! select( MODULES_ANALYTICS ).getProperties( accountID )?.length > 0 ) {
-			return 'ga4';
+			return GA4;
 		}
 
-		return 'ga4-transitional';
+		return GA4_TRANSITIONAL;
 	} ),
 };
 
