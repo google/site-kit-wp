@@ -71,7 +71,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 				expect( newIdeas ).toEqual( fixtures.newIdeas );
 			} );
 
-			it( 'correctly handles offset and length parameters', async () => {
+			it( 'uses offset and length parameters to adjust/limit the ideas returned by the selector', async () => {
 				const customOptions = {
 					offset: 2,
 					length: 2,
