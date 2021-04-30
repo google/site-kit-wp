@@ -32,8 +32,8 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 
 const fetchGetNewIdeasStore = createFetchStore( {
 	baseName: 'getNewIdeas',
-	controlCallback: ( { options } ) => {
-		return API.get( 'modules', 'idea-hub', 'new-ideas', options );
+	controlCallback: () => {
+		return API.get( 'modules', 'idea-hub', 'new-ideas' );
 	},
 	reducerCallback: ( state, newIdeas ) => {
 		return {
