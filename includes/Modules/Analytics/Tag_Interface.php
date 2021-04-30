@@ -32,7 +32,7 @@ interface Tag_Interface {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param bool $anonymize_ip Anonymize or not.
+	 * @param bool $anonymize_ip Whether to anonymize IP addresses or not.
 	 */
 	public function set_anonymize_ip( $anonymize_ip );
 

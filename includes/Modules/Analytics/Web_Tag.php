@@ -64,7 +64,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 *
 	 * @since 1.24.0
 	 *
-	 * @param bool $anonymize_ip Anonymize or not.
+	 * @param bool $anonymize_ip Whether to anonymize IP addresses or not.
 	 */
 	public function set_anonymize_ip( $anonymize_ip ) {
 		$this->anonymize_ip = (bool) $anonymize_ip;
