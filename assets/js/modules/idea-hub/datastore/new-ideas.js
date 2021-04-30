@@ -86,7 +86,7 @@ const baseSelectors = {
 		const { newIdeas } = state;
 		const offset = options?.offset || 0;
 		const length = options.length ? offset + options.length : newIdeas.length;
-		return 'offset' in options || 'length' in options ? newIdeas.slice( offset, length ) : newIdeas;
+		return ( 'offset' in options || 'length' in options ) ? newIdeas.slice( offset, length ) : newIdeas;
 	},
 };
 
