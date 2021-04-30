@@ -41,7 +41,7 @@ const fetchGetNewIdeasStore = createFetchStore( {
 			newIdeas,
 		};
 	},
-	validateParams: ( { options } = {} ) => {
+	validateParams: ( { options = {} } ) => {
 		invariant( isPlainObject( options ), 'options must be an object.' );
 		if ( options.length ) {
 			invariant( typeof options.length === 'number', 'options.length must be a number.' );
@@ -57,9 +57,9 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getNewIdeas() {
+	*getNewIdeas( options = {} ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const newIdeas = registry.select( STORE_NAME ).getNewIdeas();
+		const newIdeas = registry.select( STORE_NAME ).getNewIdeas( options );
 
 		// If there are already new ideas in state, don't make an API request.
 		if ( newIdeas.length ) {
@@ -82,10 +82,10 @@ const baseSelectors = {
 	 * @param {number} [options.length] Optional. Amount of new ideas to return.
 	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
 	 */
-	getNewIdeas( state, options ) {
+	getNewIdeas( state, options = {} ) {
 		const { newIdeas } = state;
 		const offset = options?.offset || 0;
-		const length = options.length ? offset + length : newIdeas.length;
+		const length = options.length ? offset + options.length : newIdeas.length;
 		return 'offset' in options || 'length' in options ? newIdeas.slice( offset, length ) : newIdeas;
 	},
 };
