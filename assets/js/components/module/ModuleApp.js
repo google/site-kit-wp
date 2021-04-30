@@ -68,20 +68,24 @@ function ModuleApp( { moduleSlug } ) {
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
 			<Alert module={ moduleSlug } />
-			{ shouldRenderWidget &&
-				<Fragment>
-					<WidgetContextRenderer
-						slug={ screenWidgetContext }
-						className={ classNames( [
-							'googlesitekit-module-page',
-							`googlesitekit-module-page--${ moduleSlug }`,
-						] ) }
-						Header={ getModuleHeader }
-						Footer={ ModuleFooter }
-					/>
-				</Fragment>
+			{ shouldRenderWidget
+				? (
+					<Fragment>
+						<WidgetContextRenderer
+							slug={ screenWidgetContext }
+							className={ classNames( [
+								'googlesitekit-module-page',
+								`googlesitekit-module-page--${ moduleSlug }`,
+							] ) }
+							Header={ getModuleHeader }
+							Footer={ ModuleFooter }
+						/>
+					</Fragment>
+				)
+				: (
+					<LegacyModuleApp />
+				)
 			}
-			<LegacyModuleApp />
 		</Fragment>
 	);
 }
