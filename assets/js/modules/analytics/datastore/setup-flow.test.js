@@ -98,12 +98,6 @@ describe( 'modules/analytics setup-flow', () => {
 		API.setUsingCache( false );
 	} );
 
-	beforeEach( () => {
-		registry = createTestRegistry();
-		// Receive empty settings to prevent unexpected fetch by resolver.
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
-	} );
-
 	afterAll( () => {
 		API.setUsingCache( true );
 	} );
@@ -115,6 +109,9 @@ describe( 'modules/analytics setup-flow', () => {
 	describe( 'selectors', () => {
 		describe( 'getSetupFlowMode', () => {
 			it( 'returns “legacy” if the modules/analytics-4 store is not available ', async () => {
+				registry = createTestRegistry();
+				// Receive empty settings to prevent unexpected fetch by resolver.
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				// just for this test create new registry with only this module
 				const newRegistry = createRegistry();
 
@@ -128,6 +125,9 @@ describe( 'modules/analytics setup-flow', () => {
 			} );
 
 			it( 'should return “legacy” if isAdminAPIWorking() returns false ', () => {
+				registry = createTestRegistry();
+				// Receive empty settings to prevent unexpected fetch by resolver.
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 					new Error( 'foo' ), 'getProperties', [ 'foo', 'bar' ]
 				);
@@ -138,12 +138,38 @@ describe( 'modules/analytics setup-flow', () => {
 			} );
 
 			it( 'should return undefined if isAdminAPIWorking() returns undefined ', () => {
+				registry = createTestRegistry();
+				// Receive empty settings to prevent unexpected fetch by resolver.
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( undefined );
 
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
 			} );
 
+			it( 'should return undefined if settings are still loading', () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					{
+						body: {
+							accountID: 'pub-12345678',
+							clientID: 'ca-pub-12345678',
+							useSnippet: true,
+						},
+						status: 200,
+					}
+				);
+
+				registry = createTestRegistry();
+
+				populateAnalytics4Datastore( registry );
+
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
+			} );
+
 			it( 'should return “ua” if there is no account selected', () => {
+				registry = createTestRegistry();
+				// Receive empty settings to prevent unexpected fetch by resolver.
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				expect( registry.select( MODULES_ANALYTICS ).getAccountID( accountID ) ).toBe( undefined );
 
 				populateAnalytics4Datastore( registry );
@@ -152,6 +178,9 @@ describe( 'modules/analytics setup-flow', () => {
 			} );
 
 			it( 'should return “ua” if selected account returns an empty array from GA4 getProperties selector', () => {
+				registry = createTestRegistry();
+				// Receive empty settings to prevent unexpected fetch by resolver.
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 				populateAnalyticsDatastore( registry );
 
@@ -206,6 +235,9 @@ describe( 'modules/analytics setup-flow', () => {
 			} );
 
 			it( 'should return “ga4” if selected account returns an empty array from UA getProperties selector', () => {
+				registry = createTestRegistry();
+				// Receive empty settings to prevent unexpected fetch by resolver.
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 				populateAnalytics4Datastore( registry );
 
@@ -221,6 +253,9 @@ describe( 'modules/analytics setup-flow', () => {
 			} );
 
 			it( 'should return “ga4-transitional” if both GA4 and UA getProperties return non-empty array', () => {
+				registry = createTestRegistry();
+				// Receive empty settings to prevent unexpected fetch by resolver.
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 				populateAnalytics4Datastore( registry );
 				populateAnalyticsDatastore( registry );
