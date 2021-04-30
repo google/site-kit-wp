@@ -25,12 +25,14 @@ import baseModuleStore from './base';
 import accounts from './accounts';
 import properties from './properties';
 import webdatastreams from './webdatastreams';
+import api from './api';
 
 const store = Data.combineStores(
 	baseModuleStore,
 	accounts,
 	properties,
 	webdatastreams,
+	api
 );
 
 export const initialState = store.initialState;
