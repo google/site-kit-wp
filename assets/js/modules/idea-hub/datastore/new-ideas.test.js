@@ -123,7 +123,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 2 ) );
 			} );
 
-			it( 'correctly handles length parameter only', async () => {
+			it( 'adjusts idea results when only limit parameter is supplied', async () => {
 				const customOptions = {
 					length: 3,
 				};
