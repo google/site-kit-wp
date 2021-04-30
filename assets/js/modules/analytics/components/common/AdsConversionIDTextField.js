@@ -42,8 +42,16 @@ export default function AdsConversionIDTextField() {
 
 	const { setAdsConversionID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( { currentTarget } ) => {
-		setAdsConversionID( currentTarget.value );
-	}, [ setAdsConversionID ] );
+		let newValue = currentTarget.value.trim().toUpperCase();
+		// Automatically add the AW- prefix if not provided.
+		if ( 'AW-'.length < newValue.length && ! /^AW-/.test( newValue ) ) {
+			newValue = `AW-${ newValue }`;
+		}
+
+		if ( newValue !== adsConversionID ) {
+			setAdsConversionID( newValue );
+		}
+	}, [ adsConversionID, setAdsConversionID ] );
 
 	let helperText;
 	let trailingIcon;
