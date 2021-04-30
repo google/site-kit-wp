@@ -38,11 +38,17 @@ const baseSelectors = {
 
 		const isAdminAPIWorking = select( MODULES_ANALYTICS_4 ).isAdminAPIWorking();
 
+		if ( isAdminAPIWorking === undefined ) {
+			return undefined;
+		}
+
 		if ( isAdminAPIWorking === false ) {
 			return LEGACY;
 		}
 
-		if ( isAdminAPIWorking === undefined ) {
+		// TODO - new test
+		// check that accountID could have loaded
+		if ( select( MODULES_ANALYTICS ).getSettings() === undefined ) {
 			return undefined;
 		}
 
@@ -52,11 +58,25 @@ const baseSelectors = {
 			return UA;
 		}
 
-		if ( ! select( MODULES_ANALYTICS_4 ).getProperties( accountID )?.length > 0 ) {
+		const ga4Properties = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+
+		// TODO - new test
+		if ( ga4Properties === undefined ) {
+			return undefined;
+		}
+
+		if ( ga4Properties.length === 0 ) {
 			return UA;
 		}
 
-		if ( ! select( MODULES_ANALYTICS ).getProperties( accountID )?.length > 0 ) {
+		const uaProperties = select( MODULES_ANALYTICS ).getProperties( accountID );
+
+		// TODO - new test
+		if ( uaProperties === undefined ) {
+			return undefined;
+		}
+
+		if ( uaProperties.length === 0 ) {
 			return GA4;
 		}
 

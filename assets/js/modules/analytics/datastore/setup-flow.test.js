@@ -209,6 +209,12 @@ describe( 'modules/analytics setup-flow', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 				populateAnalytics4Datastore( registry );
 
+				// Need to dispatch empty properties so has loaded
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
+					[],
+					{ accountID },
+				);
+
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( 'ga4' );
