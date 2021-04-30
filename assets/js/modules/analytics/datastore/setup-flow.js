@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS } from './constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 const { createRegistrySelector } = Data;
@@ -41,7 +41,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		const accountID = select( STORE_NAME ).getAccountID();
+		const accountID = select( MODULES_ANALYTICS ).getAccountID();
 
 		if ( ! accountID ) {
 			return 'ua';
@@ -51,7 +51,7 @@ const baseSelectors = {
 			return 'ua';
 		}
 
-		if ( ! select( STORE_NAME ).getProperties( accountID )?.length > 0 ) {
+		if ( ! select( MODULES_ANALYTICS ).getProperties( accountID )?.length > 0 ) {
 			return 'ga4';
 		}
 
