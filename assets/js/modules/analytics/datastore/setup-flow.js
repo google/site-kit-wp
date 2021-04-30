@@ -48,11 +48,11 @@ const baseSelectors = {
 			return 'ua';
 		}
 
-		if ( ! select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || select( MODULES_ANALYTICS_4 ).getProperties( accountID )?.length === 0 ) {
+		if ( ! select( MODULES_ANALYTICS_4 ).getProperties( accountID )?.length > 0 ) {
 			return 'ua';
 		}
 
-		if ( ! select( STORE_NAME ).getProperties( accountID ) || select( STORE_NAME ).getProperties( accountID )?.length === 0 ) {
+		if ( ! select( STORE_NAME ).getProperties( accountID )?.length > 0 ) {
 			return 'ga4';
 		}
 

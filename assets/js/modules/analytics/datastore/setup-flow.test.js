@@ -157,8 +157,9 @@ describe( 'modules/analytics setup-flow', () => {
 				registry.dispatch( STORE_NAME ).setAccountID( accountID );
 				populateAnalyticsDataStore( registry );
 
-				// // Needs to have one non-zero array of GA4 properties so that isAdminAPIWorking returns true
-				// // TODO - check this is not an oversight?  OTHER TICKET STILL NOT QA'D THOUGH
+				// as per spec https://github.com/google/site-kit-wp/issues/3169
+				// For isAdminAPIWorking() to return true:
+				// "The state['properties'] object has at least one account with a non-empty array of properties;"
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [
 					{
 						_id: '1000',
@@ -177,7 +178,7 @@ describe( 'modules/analytics setup-flow', () => {
 				{ accountID: 'another-different-id' },
 				);
 
-				// need to dispatch empty properties list for this accountId OTHERWISE the selector getProperties (called from getSetupFlowMode below) will do a fetch
+				//  Receive empty properties list to prevent unexpected fetch by resolver
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
 					[],
 					{ accountID },
@@ -201,12 +202,16 @@ describe( 'modules/analytics setup-flow', () => {
 					{ propertyID: 'foobar' }
 				);
 
+				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
+
 				expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ua' );
 			} );
 
 			it( 'should return “ga4” if selected account returns an empty array from UA getProperties selector', () => {
 				registry.dispatch( STORE_NAME ).setAccountID( accountID );
 				populateAnalytics4DataStore( registry );
+
+				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 
 				expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ga4' );
 			} );
@@ -215,6 +220,8 @@ describe( 'modules/analytics setup-flow', () => {
 				registry.dispatch( STORE_NAME ).setAccountID( accountID );
 				populateAnalytics4DataStore( registry );
 				populateAnalyticsDataStore( registry );
+
+				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 
 				expect( registry.select( STORE_NAME ).getSetupFlowMode() ).toBe( 'ga4-transitional' );
 			} );
