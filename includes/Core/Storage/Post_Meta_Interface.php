@@ -53,7 +53,7 @@ interface Post_Meta_Interface {
 	 * @param string $key     Metadata key.
 	 * @param mixed  $value   Metadata value.
 	 * @param bool   $unique  Whether the same key should not be added.
-	 * @return bool TRUE on success, otherwise FALSE.
+	 * @return int|bool Meta id on success, otherwise FALSE.
 	 */
 	public function add( $post_id, $key, $value, $unique = false );
 
