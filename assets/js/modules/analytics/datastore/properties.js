@@ -439,7 +439,7 @@ const baseSelectors = {
 				return 1;
 			}
 			return 0;
-		}
+		};
 
 		return properties.sort( ( a, b ) => {
 			const aName = isGA4( a ) ? a.displayName : a.name;
