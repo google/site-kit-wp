@@ -120,7 +120,7 @@ final class Analytics extends Module
 	 */
 	protected function is_tracking_disabled() {
 		$option   = $this->get_settings()->get();
-		$disabled = in_array( 'loggedinUsers', $option['trackingDisabled'], true ) && is_user_logged_in();
+		$disabled = in_array( 'loggedinUsers', $option['trackingDisabled'], true ) && in_array( 'contentCreators', $option['trackingDisabled'], true ) && is_user_logged_in() && current_user_can( 'edit_posts' );
 
 		/**
 		 * Filters whether or not the Analytics tracking snippet is output for the current request.
