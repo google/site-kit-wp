@@ -53,32 +53,25 @@ export default function AdsConversionIDTextField() {
 		}
 	}, [ adsConversionID, setAdsConversionID ] );
 
-	let helperText;
-	let trailingIcon;
 	const invalidValue = adsConversionID && ! isValidAdsConversionID( adsConversionID );
-	if ( invalidValue ) {
-		helperText = (
-			<HelperText persistent>
-				{ __( 'Conversion IDs must be in the format: AW-XXXXX', 'google-site-kit' ) }
-			</HelperText>
-		);
-
-		trailingIcon = (
-			<span className="googlesitekit-text-field-icon--error">
-				<VisuallyHidden>
-					{ __( 'Error', 'google-site-kit' ) }
-				</VisuallyHidden>
-			</span>
-		);
-	}
 
 	return (
 		<div>
 			<TextField
 				label={ __( 'Ads Conversion ID', 'google-site-kit' ) }
 				className={ classnames( { 'mdc-text-field--error': invalidValue } ) }
-				helperText={ helperText }
-				trailingIcon={ trailingIcon }
+				helperText={ invalidValue && (
+					<HelperText persistent>
+						{ __( 'Conversion IDs must be in the format: AW-XXXXX', 'google-site-kit' ) }
+					</HelperText>
+				) }
+				trailingIcon={ invalidValue && (
+					<span className="googlesitekit-text-field-icon--error">
+						<VisuallyHidden>
+							{ __( 'Error', 'google-site-kit' ) }
+						</VisuallyHidden>
+					</span>
+				) }
 				outlined
 			>
 				<Input
