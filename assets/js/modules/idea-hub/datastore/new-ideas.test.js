@@ -141,7 +141,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 0, 3 ) );
 			} );
 
-			it( 'only fetches once even with different options passed', async () => {
+			it( 'only fetches once even with different options are passed', async () => {
 				const customOptions = {
 					offset: 1,
 					length: 1,
