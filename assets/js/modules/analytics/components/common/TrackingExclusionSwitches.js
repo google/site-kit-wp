@@ -45,9 +45,9 @@ export default function TrackingExclusionSwitches() {
 	const { setTrackingDisabled } = useDispatch( STORE_NAME );
 
 	let message;
-	if ( trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) ) {
+	if ( trackingDisabled && trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) ) {
 		message = __( 'All logged-in users will be excluded from Analytics tracking.', 'google-site-kit' );
-	} else if ( trackingDisabled.includes( TRACKING_CONTENT_CREATORS ) ) {
+	} else if ( trackingDisabled && trackingDisabled.includes( TRACKING_CONTENT_CREATORS ) ) {
 		message = __( 'Users that can write posts will be excluded from Analytics tracking.', 'google-site-kit' );
 	} else {
 		message = __( 'All logged-in users will be included in Analytics tracking.', 'google-site-kit' );

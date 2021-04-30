@@ -204,6 +204,19 @@ storiesOf( 'Analytics Module', module )
 			</WithTestRegistry>
 		);
 	} )
+	.add( 'Tracking exclusions (including contentCreators)', () => {
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setTrackingDisabled( [ 'contentCreators' ] );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<TrackingExclusionSwitches />
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
 	.add( 'GA4 notice', () => {
 		return (
 			<SetupWrap>
