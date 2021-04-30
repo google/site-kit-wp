@@ -192,6 +192,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 						title={ __( 'Ad Impressions', 'google-site-kit' ) }
 						datapoint={ period.totals[ 2 ] }
 						change={ period.totals[ 2 ] - previousPeriod.totals[ 2 ] }
+						changeDataUnit
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 							link: impressionsURL,
