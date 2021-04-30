@@ -141,6 +141,25 @@ describe( 'modules/idea-hub new-ideas', () => {
 				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 0, 3 ) );
 			} );
 
+			it( 'only fetches once even with different options passed', async () => {
+				const customOptions = {
+					offset: 1,
+					length: 1,
+				};
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
+					{ body: fixtures.newIdeas, status: 200 }
+				);
+
+				registry.select( STORE_NAME ).getNewIdeas( customOptions );
+				await untilResolved( registry, STORE_NAME ).getNewIdeas( customOptions );
+
+				registry.select( STORE_NAME ).getNewIdeas( customOptions );
+				registry.select( STORE_NAME ).getNewIdeas( options );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
 			it( 'does not make a network request if report for given options is already present', async () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
