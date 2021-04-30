@@ -105,7 +105,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 				expect( newIdeas ).toEqual( fixtures.newIdeas );
 			} );
 
-			it( 'correctly handles offset parameter only', async () => {
+			it( 'adjusts idea results when only offset parameter is supplied', async () => {
 				const customOptions = {
 					offset: 2,
 				};
