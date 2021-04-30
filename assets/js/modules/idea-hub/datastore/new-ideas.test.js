@@ -90,7 +90,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 2, 4 ) );
 			} );
 
-			it( 'correctly handles missing options', async () => {
+			it( 'treats all options as optional', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
 					{ body: fixtures.newIdeas, status: 200 }
