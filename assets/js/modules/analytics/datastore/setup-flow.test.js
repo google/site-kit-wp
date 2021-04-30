@@ -118,9 +118,7 @@ describe( 'modules/analytics setup-flow', () => {
 				// just for this test create new registry with only this module
 				const newRegistry = createRegistry();
 
-				[
-					modulesAnalytics,
-				].forEach( ( { registerStore } ) => registerStore?.( newRegistry ) );
+				modulesAnalytics.registerStore( newRegistry );
 
 				registry = newRegistry;
 				// Receive empty settings to prevent unexpected fetch by resolver.
