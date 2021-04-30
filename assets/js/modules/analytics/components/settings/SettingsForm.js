@@ -39,6 +39,7 @@ const { useSelect } = Data;
 
 export default function SettingsForm() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const canUseSnippet = useSelect( ( select ) => select( STORE_NAME ).getCanUseSnippet() );
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 
 	return (
@@ -65,7 +66,7 @@ export default function SettingsForm() {
 
 				<TrackingExclusionSwitches />
 
-				{ useSnippet && <AdsConversionIDTextField /> }
+				{ canUseSnippet && useSnippet && <AdsConversionIDTextField /> }
 			</div>
 		</div>
 	);
