@@ -150,7 +150,11 @@ export default function SettingsView() {
 							{ __( 'Ads Conversion ID', 'google-site-kit' ) }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting value={ adsConversionID } />
+							{
+								adsConversionID
+									? <DisplaySetting value={ adsConversionID } />
+									: __( 'None', 'google-site-kit' )
+							}
 						</p>
 					</div>
 				</div>
