@@ -64,6 +64,8 @@ const baseSelectors = {
 
 		const accountID = select( MODULES_ANALYTICS ).getAccountID();
 
+		// If no accountID exists then no account is selected. This means we should
+		// use the UA setup flow.
 		if ( ! accountID ) {
 			return SETUP_FLOW_MODE_UA;
 		}
