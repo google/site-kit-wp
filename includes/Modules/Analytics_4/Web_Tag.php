@@ -45,8 +45,6 @@ class Web_Tag extends Analytics_Web_Tag {
 			// If the gtag script is already registered in the Analytics module, then we need to add G-<MEASUREMENT_ID> configuration only.
 			$config = sprintf( 'gtag("config", "G-%s");', esc_js( $this->tag_id ) );
 			wp_add_inline_script( 'google_gtagjs', $config );
-
-			$this->add_inline_ads_conversion_id_config();
 		} else {
 			// Otherwise register gtag as in the Analytics module knowing that we used Measurement ID from GA4 instead of Property ID.
 			parent::enqueue_gtag_script();
