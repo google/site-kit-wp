@@ -69,7 +69,6 @@ const baseSelectors = {
 
 		const uaProperties = select( MODULES_ANALYTICS ).getProperties( accountID );
 
-		// TODO - new test
 		if ( uaProperties === undefined ) {
 			return undefined;
 		}
