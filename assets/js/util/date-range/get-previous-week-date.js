@@ -1,5 +1,5 @@
 /**
- * `core/user` getPreviousWeekDate utility.
+ * `getPreviousWeekDate` utility.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

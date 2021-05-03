@@ -16,7 +16,7 @@ use Google\Site_Kit\Modules\Analytics\Web_Tag as Analytics_Web_Tag;
 /**
  * Class for Web tag.
  *
- * @since n.e.x.t
+ * @since 1.31.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Web_Tag extends Analytics_Web_Tag {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 */
 	public function register() {
 		// Do not call parent::register() because we need to override what is registered in the Analytics::Web_Tag class.
@@ -38,7 +38,7 @@ class Web_Tag extends Analytics_Web_Tag {
 	/**
 	 * Enqueues gtag script.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 */
 	protected function enqueue_gtag_script() {
 		if ( did_action( 'googlesitekit_analytics_init_tag' ) ) {

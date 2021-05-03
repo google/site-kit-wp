@@ -26,10 +26,12 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySelection } from '../util';
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
@@ -93,11 +95,13 @@ const RECEIVE_MATCHED_PROPERTY = 'RECEIVE_MATCHED_PROPERTY';
 const RECEIVE_GET_PROPERTIES = 'RECEIVE_GET_PROPERTIES';
 const RECEIVE_PROPERTIES_PROFILES_COMPLETION = 'RECEIVE_PROPERTIES_PROFILES_COMPLETION';
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
+const SET_PRIMARY_PROPERTY_TYPE = 'SET_PRIMARY_PROPERTY_TYPE';
 
 const baseInitialState = {
 	properties: {},
 	isAwaitingPropertiesProfilesCompletion: {},
 	matchedProperty: undefined,
+	primaryPropertyType: 'ua',
 };
 
 const baseActions = {
@@ -111,12 +115,15 @@ const baseActions = {
 	 * @param {string} accountID Google Analytics account ID.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createProperty( accountID ) {
-		invariant( accountID, 'accountID is required.' );
-
-		const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
-		return { response, error };
-	},
+	createProperty: createValidatedAction(
+		( accountID ) => {
+			invariant( accountID, 'accountID is required.' );
+		},
+		function* ( accountID ) {
+			const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
+			return { response, error };
+		}
+	),
 
 	/**
 	 * Adds a matchedProperty to the store.
@@ -173,21 +180,28 @@ const baseActions = {
 
 			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
-			// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
-			registry.dispatch( STORE_NAME ).setProfileID( '' );
+			const existingProfileID = registry.select( STORE_NAME ).getProfileID(); // eslint-disable-line @wordpress/no-unused-vars-before-return
+			const profiles = yield Data.commonActions.await(
+				registry.__experimentalResolveSelect( STORE_NAME ).getProfiles( accountID, propertyID )
+			);
 
-			const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
-			if ( property.defaultProfileId && profiles?.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/acronym-case
+			if ( ! Array.isArray( profiles ) ) {
+				return; // Something unexpected occurred and we want to avoid type errors.
+			}
+
+			// If there was an existing profile ID set and it belongs to the selected property, we're done.
+			if ( existingProfileID && profiles.some( ( profile ) => profile.id === existingProfileID ) ) {
+				return;
+			}
+
+			// If the property has a default profile that exists, use that.
+			if ( property.defaultProfileId && profiles.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/acronym-case
 				registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
 				return;
 			}
 
-			if ( profiles === undefined ) {
-				return; // Selection will happen in in getProfiles resolver.
-			}
-
-			const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // eslint-disable-line sitekit/acronym-case
-			registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
+			// Otherwise just select the first profile, or the option to create if none.
+			registry.dispatch( STORE_NAME ).setProfileID( profiles[ 0 ]?.id || PROFILE_CREATE );
 		}() );
 	},
 
@@ -214,6 +228,23 @@ const baseActions = {
 		return {
 			payload: { accountID },
 			type: WAIT_FOR_PROPERTIES,
+		};
+	},
+
+	/**
+	 * Sets the primary property type.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} primaryPropertyType Must be "ua" or "ga4".
+	 * @return {Object} Redux-style action.
+	 */
+	setPrimaryPropertyType( primaryPropertyType ) {
+		invariant( [ 'ua', 'ga4' ].includes( primaryPropertyType ), 'type must be "ua" or "ga4"' );
+
+		return {
+			payload: { primaryPropertyType },
+			type: SET_PRIMARY_PROPERTY_TYPE,
 		};
 	},
 };
@@ -269,6 +300,15 @@ const baseReducer = ( state, { type, payload } ) => {
 					...state.isAwaitingPropertiesProfilesCompletion,
 					[ accountID ]: false,
 				},
+			};
+		}
+
+		case SET_PRIMARY_PROPERTY_TYPE: {
+			const { primaryPropertyType } = payload;
+
+			return {
+				...state,
+				primaryPropertyType,
 			};
 		}
 
@@ -346,6 +386,18 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Gets the primary property type.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string} "ua" or "ga4".
+	 */
+	getPrimaryPropertyType( state ) {
+		return state.primaryPropertyType;
+	},
+
+	/**
 	 * Gets the matched property, if any.
 	 *
 	 * @since 1.8.0
@@ -406,6 +458,53 @@ const baseSelectors = {
 		}
 
 		return select( STORE_NAME ).isFetchingGetPropertiesProfiles( accountID );
+	} ),
+
+	/**
+	 * Gets all Analytic and GA4 properties this account can access.
+	 *
+	 * Returns an array of all UA + GA4 analytics properties.
+	 *
+	 * Returns `undefined` if accounts have not yet loaded.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state     Data store's state.
+	 * @param {string} accountID The Analytics Account ID to fetch properties for.
+	 * @return {(Array.<Object>|undefined)} An array of Analytics properties; `undefined` if not loaded.
+	 */
+	getPropertiesIncludingGA4: createRegistrySelector( ( select ) => ( state, accountID ) => {
+		let properties = select( STORE_NAME ).getProperties( accountID );
+
+		if ( select( MODULES_ANALYTICS_4 ) ) {
+			const propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+			properties = properties.concat( propertiesGA4 );
+		}
+
+		const isGA4 = ( property ) => !! property._id;
+		const compare = ( a, b ) => {
+			if ( a < b ) {
+				return -1;
+			}
+			if ( a > b ) {
+				return 1;
+			}
+			return 0;
+		};
+
+		return properties.sort( ( a, b ) => {
+			const aName = isGA4( a ) ? a.displayName : a.name;
+			const bName = isGA4( b ) ? b.displayName : b.name;
+
+			if ( aName !== bName ) {
+				return compare( aName, bName );
+			}
+
+			const aID = isGA4( a ) ? a._id : a.id;
+			const bID = isGA4( b ) ? b._id : b.id;
+
+			return compare( aID, bID );
+		} );
 	} ),
 };
 

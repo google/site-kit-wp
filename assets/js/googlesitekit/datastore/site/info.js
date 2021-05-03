@@ -508,6 +508,23 @@ export const selectors = {
 	 * @return {(boolean|undefined)} `true` if the Web Stories plugin is enabled, `false` if not. Returns `undefined` if not loaded.
 	 */
 	isWebStoriesActive: getSiteInfoProperty( 'webStoriesActive' ),
+
+	/**
+	 * Determines whether the provided URL matches reference site URL or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} url The URL to compare with the reference site URL.
+	 * @return {boolean} TRUE if the URL matches reference site URL, otherwise FALSE.
+	 */
+	isSiteURLMatch: createRegistrySelector( ( select ) => ( state, url ) => {
+		const referenceURL = select( STORE_NAME ).getReferenceSiteURL();
+		const normalizeURL = ( incomingURL ) => incomingURL
+			.replace( /^https?:\/\/(www\.)?/i, '' ) // Remove protocol and optional "www." prefix from the URL.
+			.replace( /\/$/, '' ); // Remove trailing slash.
+
+		return normalizeURL( referenceURL ) === normalizeURL( url );
+	} ),
 };
 
 export default {

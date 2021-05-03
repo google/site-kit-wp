@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useState, useCallback } from '@wordpress/element';
+import { useState, useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,9 +39,23 @@ const { useDispatch, useSelect } = Data;
 export default function SettingsActiveModules( { activeModule, moduleState, setModuleState } ) {
 	const [ error, setError ] = useState( undefined );
 	const [ isSaving, setIsSaving ] = useState( false );
-
-	const { submitChanges } = useDispatch( CORE_MODULES );
+	// We store `initialActiveSlugs` separately to avoid
+	// layout shifts when deactivating a module as it would otherwise
+	// cause the module to be removed upon deactivation.
+	const [ initialActiveSlugs, setInitialActiveSlugs ] = useState();
 	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
+	useEffect( () => {
+		// Only set initialActiveSlugs once, as soon as modules are available.
+		if ( ! modules || initialActiveSlugs !== undefined ) {
+			return;
+		}
+
+		const activeSlugs = Object.keys( modules )
+			.filter( ( slug ) => modules[ slug ].active );
+
+		setInitialActiveSlugs( activeSlugs );
+	}, [ modules, initialActiveSlugs ] );
+	const { submitChanges } = useDispatch( CORE_MODULES );
 
 	const onEdit = useCallback( ( slug ) => {
 		setModuleState( slug, 'edit' );
@@ -62,7 +76,7 @@ export default function SettingsActiveModules( { activeModule, moduleState, setM
 			setModuleState( slug, 'view' );
 			clearWebStorage();
 		}
-	}, [ setModuleState ] );
+	}, [ setModuleState, submitChanges ] );
 
 	const onToggle = useCallback( ( slug, e ) => {
 		// Set focus on heading when clicked.
@@ -73,17 +87,19 @@ export default function SettingsActiveModules( { activeModule, moduleState, setM
 		setModuleState( slug, isOpen ? 'view' : 'closed' );
 	}, [ activeModule, moduleState, setModuleState ] );
 
-	if ( ! modules ) {
+	if ( ! initialActiveSlugs ) {
 		return null;
 	}
 
-	const sortedModules = Object.values( modules )
-		.filter( ( module ) => ! module.internal && module.active )
-		.sort( ( a, b ) => a.order - b.order );
+	const activeModules = initialActiveSlugs
+		.map( ( slug ) => modules[ slug ] )
+		.filter( ( module ) => ! module.internal )
+		.sort( ( a, b ) => a.order - b.order )
+	;
 
 	return (
 		<Layout>
-			{ sortedModules.map( ( { slug } ) => (
+			{ activeModules.map( ( { slug } ) => (
 				<SettingsActiveModule
 					key={ slug }
 					slug={ slug }

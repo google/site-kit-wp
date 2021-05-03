@@ -95,7 +95,8 @@ final class Analytics_4 extends Module
 	 */
 	public function is_connected() {
 		$required_keys = array(
-			'accountID',
+			// TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
+			/* 'accountID', */
 			'propertyID',
 			'webDataStreamID',
 			'measurementID',
@@ -131,11 +132,14 @@ final class Analytics_4 extends Module
 		$settings = $this->get_settings()->get();
 
 		return array(
+			// TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
+			/* // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 			'analytics_4_account_id'         => array(
 				'label' => __( 'Analytics 4 account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
+			*/
 			'analytics_4_property_id'        => array(
 				'label' => __( 'Analytics 4 property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
@@ -168,6 +172,7 @@ final class Analytics_4 extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
+			'GET:account-summaries'     => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'              => array( 'service' => 'analyticsadmin' ),
 			'POST:create-property'      => array(
 				'service'                => 'analyticsadmin',
@@ -182,6 +187,7 @@ final class Analytics_4 extends Module
 			'GET:properties'            => array( 'service' => 'analyticsadmin' ),
 			'GET:property'              => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams'        => array( 'service' => 'analyticsadmin' ),
+			'GET:webdatastreams-batch'  => array( 'service' => 'analyticsadmin' ),
 		);
 	}
 
@@ -199,6 +205,8 @@ final class Analytics_4 extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				return $this->get_service( 'analyticsadmin' )->accounts->listAccounts();
+			case 'GET:account-summaries':
+				return $this->get_service( 'analyticsadmin' )->accountSummaries->listAccountSummaries( array( 'pageSize' => 200 ) );
 			case 'POST:create-property':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -266,6 +274,41 @@ final class Analytics_4 extends Module
 				}
 
 				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->listPropertiesWebDataStreams( self::normalize_property_id( $data['propertyID'] ) );
+			case 'GET:webdatastreams-batch':
+				if ( ! isset( $data['propertyIDs'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyIDs' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! is_array( $data['propertyIDs'] ) || count( $data['propertyIDs'] ) > 10 ) {
+					return new WP_Error(
+						'rest_invalid_param',
+						/* translators: %s: List of invalid parameters. */
+						sprintf( __( 'Invalid parameter(s): %s', 'google-site-kit' ), 'propertyIDs' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return function() use ( $data ) {
+					$requests = array();
+
+					foreach ( $data['propertyIDs'] as $property_id ) {
+						$requests[] = new Data_Request(
+							'GET',
+							'modules',
+							self::MODULE_SLUG,
+							'webdatastreams',
+							array( 'propertyID' => $property_id ),
+							$property_id
+						);
+					}
+
+					return $this->get_batch_data( $requests );
+				};
 		}
 
 		return parent::create_data_request( $data );
@@ -285,6 +328,21 @@ final class Analytics_4 extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				return array_map( array( self::class, 'filter_account_with_ids' ), $response->getAccounts() );
+			case 'GET:account-summaries':
+				return array_map(
+					function( $account ) {
+						$obj                    = self::filter_account_with_ids( $account, 'account' );
+						$obj->propertySummaries = array_map( // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+							function( $property ) {
+								return self::filter_property_with_ids( $property, 'property' );
+							},
+							$account->getPropertySummaries()
+						);
+
+						return $obj;
+					},
+					$response->getAccountSummaries()
+				);
 			case 'POST:create-property':
 				return self::filter_property_with_ids( $response );
 			case 'POST:create-webdatastream':
@@ -352,7 +410,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
@@ -380,7 +438,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Registers the Analytics 4 tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 */
 	private function register_tag() {
 		if ( $this->context->is_amp() ) {
@@ -402,64 +460,72 @@ final class Analytics_4 extends Module
 	/**
 	 * Parses account ID, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param Google_Model $account Account model.
-	 * @return Google_Model Updated model with _id attribute.
+	 * @param string       $id_key   Attribute name that contains account id.
+	 * @return \stdClass Updated model with _id attribute.
 	 */
-	public static function filter_account_with_ids( $account ) {
+	public static function filter_account_with_ids( $account, $id_key = 'name' ) {
+		$obj = $account->toSimpleObject();
+
 		$matches = array();
-		if ( preg_match( '#accounts/([^/]+)#', $account['name'], $matches ) ) {
-			$account['_id'] = $matches[1];
+		if ( preg_match( '#accounts/([^/]+)#', $account[ $id_key ], $matches ) ) {
+			$obj->_id = $matches[1];
 		}
 
-		return $account;
+		return $obj;
 	}
 
 	/**
 	 * Parses account and property IDs, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param Google_Model $property Property model.
-	 * @return Google_Model Updated model with _id and _accountID attributes.
+	 * @param string       $id_key   Attribute name that contains property id.
+	 * @return \stdClass Updated model with _id and _accountID attributes.
 	 */
-	public static function filter_property_with_ids( $property ) {
+	public static function filter_property_with_ids( $property, $id_key = 'name' ) {
+		$obj = $property->toSimpleObject();
+
 		$matches = array();
-		if ( preg_match( '#properties/([^/]+)#', $property['name'], $matches ) ) {
-			$property['_id'] = $matches[1];
+		if ( preg_match( '#properties/([^/]+)#', $property[ $id_key ], $matches ) ) {
+			$obj->_id = $matches[1];
 		}
 
 		$matches = array();
 		if ( preg_match( '#accounts/([^/]+)#', $property['parent'], $matches ) ) {
-			$property['_accountID'] = $matches[1];
+			$obj->_accountID = $matches[1]; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		}
 
-		return $property;
+		return $obj;
 	}
 
 	/**
 	 * Parses property and web datastream IDs, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param Google_Model $webdatastream Web datastream model.
-	 * @return Google_Model Updated model with _id and _propertyID attributes.
+	 * @return \stdClass Updated model with _id and _propertyID attributes.
 	 */
 	public static function filter_webdatastream_with_ids( $webdatastream ) {
+		$obj = $webdatastream->toSimpleObject();
+
 		$matches = array();
 		if ( preg_match( '#properties/([^/]+)/webDataStreams/([^/]+)#', $webdatastream['name'], $matches ) ) {
-			$webdatastream['_id']         = $matches[2];
-			$webdatastream['_propertyID'] = $matches[1];
+			$obj->_id         = $matches[2];
+			$obj->_propertyID = $matches[1]; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		}
 
-		return $webdatastream;
+		return $obj;
 	}
 
 	/**
 	 * Normalizes account ID and returns it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param string $account_id Account ID.
 	 * @return string Updated account ID with "accounts/" prefix.
@@ -471,7 +537,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Normalizes property ID and returns it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param string $property_id Property ID.
 	 * @return string Updated property ID with "properties/" prefix.

@@ -30,11 +30,12 @@ import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 
 const generateAnalyticsData = makeReportDataGenerator( getAnalyticsMockResponse );
+
 const dashboardSummaryOptions = [
 	{
-		// Custom start and end date for this widget to match data range: 'today',
-		startDate: '2020-09-12',
-		endDate: '2020-09-12',
+		// Custom start and end date for this widget to match data range: 'previousPeriod',
+		startDate: '2020-07-18',
+		endDate: '2020-08-14',
 		metrics: [
 			'EARNINGS',
 			'PAGE_VIEWS_RPM',

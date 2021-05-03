@@ -1,5 +1,5 @@
 /**
- * `core/user` isValidDateRange utility tests.
+ * `modules/idea-hub` data store
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,20 +19,25 @@
 /**
  * Internal dependencies
  */
-import { isValidDateRange } from './is-valid-date-range';
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from './constants';
+import baseModuleStore from './base';
+import newIdeas from './new-ideas';
 
-describe( 'isValidDateString', () => {
-	// [ dateRange, expectedReturnValue ]
-	const valuesToTest = [
-		[ 'last-1-days', true ],
-		[ 'last-7-days', true ],
-		[ 'last-28-days', true ],
-		[ 'last-1-day', false ],
-		[ 'invalid-range', false ],
-		[ 'invalid-date-range', false ],
-	];
+const store = Data.combineStores(
+	baseModuleStore,
+	newIdeas,
+);
 
-	it.each( valuesToTest )( 'with date range of %s should return %s', ( dateRange, expected ) => {
-		expect( isValidDateRange( dateRange ) ).toEqual( expected );
-	} );
-} );
+export const initialState = store.initialState;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export const registerStore = ( registry ) => {
+	registry.registerStore( STORE_NAME, store );
+};
+
+export default store;

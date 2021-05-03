@@ -49,7 +49,7 @@ export default function WebContainerSelect() {
 			setContainerID( newContainerID );
 			setInternalContainerID( newInternalContainerID || '' );
 		}
-	}, [ containerID ] );
+	}, [ containerID, setContainerID, setInternalContainerID ] );
 
 	if ( isPrimaryAMP ) {
 		return null;

@@ -32,7 +32,9 @@ import { ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { clearWebStorage } from '../../../util';
 import Dialog from '../../Dialog';
 const { useSelect, useDispatch } = Data;
@@ -43,8 +45,7 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 	const dependentModules = useSelect( ( select ) => select( CORE_MODULES ).getModuleDependantNames( slug ) );
 	const provides = useSelect( ( select ) => select( CORE_MODULES ).getModuleFeatures( slug ) );
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
-	const moduleStoreName = useSelect( ( select ) => select( CORE_MODULES ).getModuleStoreName( slug ) );
-	const adminReauthURL = useSelect( ( select ) => select( moduleStoreName )?.getAdminReauthURL( false ) );
+	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 
 	useEffect( () => {
 		const onKeyPress = ( e ) => {
@@ -60,6 +61,7 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 	}, [ handleDialog ] );
 
 	const { deactivateModule } = useDispatch( CORE_MODULES );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const handleDisconnect = useCallback( async () => {
 		if ( module.forceActive ) {
 			return;
@@ -67,13 +69,15 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 
 		setIsDeactivating( true );
 		const { error } = await deactivateModule( slug );
-		setIsDeactivating( false );
 
 		if ( ! error ) {
 			clearWebStorage();
-			global.location.assign( adminReauthURL );
+			navigateTo( dashboardURL );
+		} else {
+			// Only set deactivating to false if there is an error.
+			setIsDeactivating( false );
 		}
-	}, [ module?.slug ] );
+	}, [ slug, module?.forceActive, dashboardURL, deactivateModule, navigateTo ] );
 
 	if ( ! module ) {
 		return null;

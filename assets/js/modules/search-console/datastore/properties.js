@@ -62,7 +62,7 @@ const baseSelectors = {
 	/**
 	 * Gets all Google Search Console properties this account can access.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.31.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array.<Object>|undefined)} An array of Search Console properties; `undefined` if not loaded.

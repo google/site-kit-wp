@@ -1,5 +1,5 @@
 /**
- * `core/user` isValidDateString utility.
+ * `isValidDateRange` utility.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,26 +17,18 @@
  */
 
 /**
- * Internal dependencies
- */
-import { isValidDateInstance } from './is-valid-date-instance';
-
-/**
- * Asserts whether a given date string is valid or invalid.
+ * Asserts whether a given dateRange string is valid or invalid.
  *
  * @since 1.18.0
  *
- * @param {string} dateString Date string to be asserted against. Defaults to an empty string.
- * @return {boolean}          True if the given date string is valid.
+ * @param {string} dateRange Date string to be asserted against. Defaults to an empty string.
+ * @return {boolean}          True if the given dateRange string is valid.
  */
-export const isValidDateString = ( dateString = '' ) => {
-	const isString = typeof dateString === 'string';
+export const isValidDateRange = ( dateRange = '' ) => {
+	const parts = dateRange.split( '-' );
 
-	if ( ! isString ) {
-		return false;
-	}
-
-	const dateArray = dateString.split( '-' );
-
-	return dateArray.length === 3 && isValidDateInstance( new Date( dateString ) );
+	return parts.length === 3 &&
+		parts[ 0 ] === 'last' &&
+		! Number.isNaN( parts[ 1 ] ) && ! Number.isNaN( parseFloat( parts[ 1 ] ) ) &&
+		parts[ 2 ] === 'days';
 };
