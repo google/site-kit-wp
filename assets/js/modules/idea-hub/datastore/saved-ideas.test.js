@@ -73,8 +73,8 @@ describe( 'modules/idea-hub saved-ideas', () => {
 
 			it( 'uses offset and length parameters to adjust/limit the ideas returned by the selector', async () => {
 				const customOptions = {
-					offset: 3,
-					length: 1,
+					offset: 2,
+					length: 2,
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
