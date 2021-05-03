@@ -30,7 +30,7 @@ import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
 import * as modulesAnalytics from '../';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
-const accountID = '151753095';
+const accountID = 'pub-12345678';
 
 const populateAnalyticsDatastore = ( registry ) => {
 	registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
@@ -108,7 +108,7 @@ describe( 'modules/analytics setup-flow', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getSetupFlowMode', () => {
-			it( 'returns “legacy” if the modules/analytics-4 store is not available ', async () => {
+			it( 'returns "legacy" if the modules/analytics-4 store is not available ', async () => {
 				registry = createTestRegistry();
 				// Receive empty settings to prevent unexpected fetch by resolver.
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
@@ -124,7 +124,7 @@ describe( 'modules/analytics setup-flow', () => {
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( 'legacy' );
 			} );
 
-			it( 'should return “legacy” if isAdminAPIWorking() returns false', () => {
+			it( 'should return "legacy" if isAdminAPIWorking() returns false', () => {
 				registry = createTestRegistry();
 				// Receive empty settings to prevent unexpected fetch by resolver.
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
@@ -168,7 +168,7 @@ describe( 'modules/analytics setup-flow', () => {
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
 			} );
 
-			it( 'should return “ua” if there is no account selected', () => {
+			it( 'should return "ua" if there is no account selected', () => {
 				registry = createTestRegistry();
 				// Receive empty settings to prevent unexpected fetch by resolver.
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
@@ -191,7 +191,7 @@ describe( 'modules/analytics setup-flow', () => {
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
 			} );
 
-			it( 'should return “ua” if selected account returns an empty array from GA4 getProperties selector', () => {
+			it( 'should return "ua" if selected account returns an empty array from GA4 getProperties selector', () => {
 				registry = createTestRegistry();
 				// Receive empty settings to prevent unexpected fetch by resolver.
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
@@ -292,7 +292,7 @@ describe( 'modules/analytics setup-flow', () => {
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
 			} );
 
-			it( 'should return “ga4” if selected account returns an empty array from UA getProperties selector', () => {
+			it( 'should return "ga4" if selected account returns an empty array from UA getProperties selector', () => {
 				registry = createTestRegistry();
 				// Receive empty settings to prevent unexpected fetch by resolver.
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
@@ -310,7 +310,7 @@ describe( 'modules/analytics setup-flow', () => {
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( 'ga4' );
 			} );
 
-			it( 'should return “ga4-transitional” if both GA4 and UA properties are found for an account', () => {
+			it( 'should return "ga4-transitional" if both GA4 and UA properties are found for an account', () => {
 				registry = createTestRegistry();
 				// Receive empty settings to prevent unexpected fetch by resolver.
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
