@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useClickAway } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
@@ -40,37 +45,26 @@ function DateRangeSelector() {
 	const { setDateRange } = useDispatch( CORE_USER );
 
 	const [ menuOpen, setMenuOpen ] = useState( false );
-	const menuButtonRef = useRef();
-	const menuRef = useRef();
+	const menuWrapperRef = useRef();
 
+	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
+
+	// close menu on click outside
 	useEffect( () => {
 		const handleMenuClose = ( event ) => {
-			if ( ( menuButtonRef && menuButtonRef.current ) && ( menuRef && menuRef.current ) ) {
-				// Close the menu if the user presses the Escape or Tab key
-				// while the menu is focused
-				if ( 'keyup' === event.type && [ TAB, ESCAPE ].includes( event.keyCode ) &&
-					menuButtonRef.current.contains( event.target ) &&
-					menuRef.current.contains( event.target )
-				) {
-					setMenuOpen( false );
-				}
+			console.debug( 'handleMenuClose' );
 
-				// Close the menu if the user clicks outside of the menu.
-				if (
-					( 'mouseup' === event.type ) &&
-					! menuButtonRef.current.contains( event.target ) &&
-					! menuRef.current.contains( event.target )
-				) {
-					setMenuOpen( false );
-				}
+			// Close the menu if the user presses the Escape or Tab key
+			// while the menu is focused
+			if ( 'keyup' === event.type && [ TAB, ESCAPE ].includes( event.keyCode ) ) {
+				console.debug( 'KEY closing menu' );
+				setMenuOpen( false );
 			}
 		};
 
-		global.addEventListener( 'mouseup', handleMenuClose );
 		global.addEventListener( 'keyup', handleMenuClose );
 
 		return () => {
-			global.removeEventListener( 'mouseup', handleMenuClose );
 			global.removeEventListener( 'keyup', handleMenuClose );
 		};
 	}, [] );
@@ -88,9 +82,8 @@ function DateRangeSelector() {
 	const menuItems = Object.values( ranges ).map( ( range ) => range.label );
 
 	return (
-		<div className="googlesitekit-date-range-selector googlesitekit-dropdown-menu mdc-menu-surface--anchor">
+		<div ref={ menuWrapperRef } className="googlesitekit-date-range-selector googlesitekit-dropdown-menu mdc-menu-surface--anchor">
 			<Button
-				ref={ menuButtonRef }
 				className="googlesitekit-header__date-range-selector-menu mdc-button--dropdown googlesitekit-header__dropdown"
 				text
 				onClick={ handleMenu }
@@ -102,7 +95,6 @@ function DateRangeSelector() {
 				{ currentDateRangeLabel }
 			</Button>
 			<Menu
-				ref={ menuRef }
 				menuOpen={ menuOpen }
 				menuItems={ menuItems }
 				onSelected={ handleMenuItemSelect }
