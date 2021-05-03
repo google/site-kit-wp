@@ -143,7 +143,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 					<DataBlock
 						className="overview-adsense-rpm"
-						title={ __( 'RPM', 'google-site-kit' ) }
+						title={ __( 'Page RPM', 'google-site-kit' ) }
 						datapoint={ period.totals[ 1 ] }
 						datapointUnit={ currencyCode }
 						change={ period.totals[ 1 ] - previousPeriod.totals[ 1 ] }
