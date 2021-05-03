@@ -162,6 +162,7 @@ describe( 'modules/analytics setup-flow', () => {
 				registry = createTestRegistry();
 
 				populateAnalytics4Datastore( registry );
+				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 
 				expect( registry.select( MODULES_ANALYTICS ).getSettings() ).toBe( undefined );
 
@@ -175,6 +176,7 @@ describe( 'modules/analytics setup-flow', () => {
 				expect( registry.select( MODULES_ANALYTICS ).getAccountID( accountID ) ).toBe( undefined );
 
 				populateAnalytics4Datastore( registry );
+				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( 'ua' );
 			} );
@@ -216,7 +218,8 @@ describe( 'modules/analytics setup-flow', () => {
 						deleted: false,
 					},
 				],
-				{ accountID: 'another-different-id' },
+				// This is a different accountID
+				{ accountID: 'bar-1234567' },
 				);
 
 				//  Receive empty properties list to prevent unexpected fetch by resolver.
@@ -248,46 +251,15 @@ describe( 'modules/analytics setup-flow', () => {
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( 'ua' );
 			} );
 
-			it( 'should return undefined if selected account returns an empty array from UA getProperties selector', () => {
+			it( 'should return undefined if selected account returns undefined from UA getProperties selector', () => {
 				registry = createTestRegistry();
 				// Receive empty settings to prevent unexpected fetch by resolver.
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams(
-					[
-						{
-							_id: '2000',
-							_propertyID: '1000',
-							name: 'properties/1000/webDataStreams/2000',
-							// eslint-disable-next-line sitekit/acronym-case
-							measurementId: '1A2BCD345E',
-							// eslint-disable-next-line sitekit/acronym-case
-							firebaseAppId: '',
-							createTime: '2014-10-02T15:01:23Z',
-							updateTime: '2014-10-02T15:01:23Z',
-							defaultUri: 'http://example.com',
-							displayName: 'Test GA4 WebDataStream',
-						},
-					],
-					{ propertyID: 'foobar' }
-				);
+				populateAnalytics4Datastore( registry );
 
-				// Need to dispatch empty UA properties so has loaded
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
-					[],
-					{ accountID },
-				);
-
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
-					{
-						body: [],
-						status: 200,
-					}
-				);
-
-				expect( registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID ) ).toBe( undefined );
+				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
 			} );
