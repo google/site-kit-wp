@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
-import { ESCAPE } from '@wordpress/keycodes';
+import { ESCAPE, TAB } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -46,10 +46,18 @@ function DateRangeSelector() {
 	useEffect( () => {
 		const handleMenuClose = ( event ) => {
 			if ( ( menuButtonRef && menuButtonRef.current ) && ( menuRef && menuRef.current ) ) {
-				// Close the menu if the user presses the Escape key
-				// or if they click outside of the menu.
+				// Close the menu if the user presses the Escape or Tab key
+				// while the menu is focused
+				if ( 'keyup' === event.type && [ TAB, ESCAPE ].includes( event.keyCode ) &&
+					menuButtonRef.current.contains( event.target ) &&
+					menuRef.current.contains( event.target )
+				) {
+					setMenuOpen( false );
+				}
+
+				// Close the menu if the user clicks outside of the menu.
 				if (
-					( ( 'keyup' === event.type && ESCAPE === event.keyCode ) || 'mouseup' === event.type ) &&
+					( 'mouseup' === event.type ) &&
 					! menuButtonRef.current.contains( event.target ) &&
 					! menuRef.current.contains( event.target )
 				) {
