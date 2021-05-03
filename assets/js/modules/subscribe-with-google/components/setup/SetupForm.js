@@ -47,7 +47,7 @@ export default function SetupForm( { finishSetup } ) {
 		e.preventDefault();
 		submitChanges();
 		finishSetup();
-	}, [ canSubmitChanges, finishSetup ] );
+	}, [ submitChanges, finishSetup ] );
 
 	return (
 		<form className="googlesitekit-analytics-setup__form" onSubmit={ submitForm }>
