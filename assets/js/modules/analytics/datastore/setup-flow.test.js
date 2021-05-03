@@ -87,7 +87,7 @@ const populateAnalytics4Datastore = ( registry ) => {
 				displayName: 'Test GA4 WebDataStream',
 			},
 		],
-		{ propertyID: 'foobar' }
+		{ propertyID: '12345' }
 	);
 };
 
@@ -243,7 +243,7 @@ describe( 'modules/analytics setup-flow', () => {
 							displayName: 'Test GA4 WebDataStream',
 						},
 					],
-					{ propertyID: 'foobar' }
+					{ propertyID: '12345' }
 				);
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
