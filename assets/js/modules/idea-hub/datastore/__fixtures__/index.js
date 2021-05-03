@@ -1,5 +1,5 @@
 /**
- * `modules/analytics-4` base data store
+ * Idea Hub Datastore Fixtures.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,19 +19,8 @@
 /**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './constants';
+import { default as newIdeas } from './new-ideas';
 
-const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
-	storeName: STORE_NAME,
-	settingSlugs: [
-		// TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
-		// 'accountID',
-		'propertyID',
-		'webDataStreamID',
-		'measurementID',
-		'useSnippet',
-	],
-} );
-
-export default baseModuleStore;
+export {
+	newIdeas,
+};

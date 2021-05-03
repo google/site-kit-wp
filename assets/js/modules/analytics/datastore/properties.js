@@ -31,6 +31,7 @@ import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySe
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
@@ -457,6 +458,53 @@ const baseSelectors = {
 		}
 
 		return select( STORE_NAME ).isFetchingGetPropertiesProfiles( accountID );
+	} ),
+
+	/**
+	 * Gets all Analytic and GA4 properties this account can access.
+	 *
+	 * Returns an array of all UA + GA4 analytics properties.
+	 *
+	 * Returns `undefined` if accounts have not yet loaded.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state     Data store's state.
+	 * @param {string} accountID The Analytics Account ID to fetch properties for.
+	 * @return {(Array.<Object>|undefined)} An array of Analytics properties; `undefined` if not loaded.
+	 */
+	getPropertiesIncludingGA4: createRegistrySelector( ( select ) => ( state, accountID ) => {
+		let properties = select( STORE_NAME ).getProperties( accountID );
+
+		if ( select( MODULES_ANALYTICS_4 ) ) {
+			const propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+			properties = properties.concat( propertiesGA4 );
+		}
+
+		const isGA4 = ( property ) => !! property._id;
+		const compare = ( a, b ) => {
+			if ( a < b ) {
+				return -1;
+			}
+			if ( a > b ) {
+				return 1;
+			}
+			return 0;
+		};
+
+		return properties.sort( ( a, b ) => {
+			const aName = isGA4( a ) ? a.displayName : a.name;
+			const bName = isGA4( b ) ? b.displayName : b.name;
+
+			if ( aName !== bName ) {
+				return compare( aName, bName );
+			}
+
+			const aID = isGA4( a ) ? a._id : a.id;
+			const bID = isGA4( b ) ? b._id : b.id;
+
+			return compare( aID, bID );
+		} );
 	} ),
 };
 

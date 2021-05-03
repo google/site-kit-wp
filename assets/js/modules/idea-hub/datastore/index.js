@@ -19,9 +19,25 @@
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import baseModuleStore from './base';
+import newIdeas from './new-ideas';
+
+const store = Data.combineStores(
+	baseModuleStore,
+	newIdeas,
+);
+
+export const initialState = store.initialState;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
 
 export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, baseModuleStore );
+	registry.registerStore( STORE_NAME, store );
 };
+
+export default store;
