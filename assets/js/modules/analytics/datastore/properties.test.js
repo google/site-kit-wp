@@ -28,6 +28,7 @@ import {
 	unsubscribeFromAll,
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 describe( 'modules/analytics properties', () => {
 	let registry;
@@ -305,6 +306,63 @@ describe( 'modules/analytics properties', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
+
+		describe( 'getPropertiesIncludingGA4', () => {
+			it( 'returns a sorted list of ua and ga4 properties ', async () => {
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+				const accountID = testAccountID;
+
+				registry.dispatch( STORE_NAME ).receiveGetProperties(
+					[
+						{
+							// eslint-disable-next-line sitekit/acronym-case
+							accountId: '151753095',
+							id: 'UA-151753095-1',
+							name: 'rwh',
+						},
+						{
+							// eslint-disable-next-line sitekit/acronym-case
+							accountId: '151753095',
+							id: 'UA-151753095-1',
+							name: 'troubled-tipped.example.com',
+						},
+
+					],
+					{ accountID }
+				);
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+					[
+						{
+							_id: '151753095-3',
+							_accountID: '151753095',
+							displayName: 'www.elasticpress.io',
+						},
+						{
+							_id: '151753095-4',
+							_accountID: '151753095',
+							displayName: 'troubled-tipped.example.com',
+						},
+					],
+					{ accountID }
+				);
+
+				const properties = registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID );
+
+				expect( properties ).toHaveLength( 4 );
+
+				expect( properties[ 0 ].id ).toBe( 'UA-151753095-1' );
+				expect( properties[ 1 ]._id ).toBe( '151753095-4' );
+				expect( properties[ 2 ].id ).toBe( 'UA-151753095-1' );
+				expect( properties[ 3 ]._id ).toBe( '151753095-3' );
+
+				expect( properties[ 0 ].name ).toBe( 'rwh' );
+				expect( properties[ 1 ].displayName ).toBe( 'troubled-tipped.example.com' );
+				expect( properties[ 2 ].name ).toBe( 'troubled-tipped.example.com' );
+				expect( properties[ 3 ].displayName ).toBe( 'www.elasticpress.io' );
+			} );
+		} );
+
 		describe( 'getPropertyByID', () => {
 			it( 'returns the property object by its ID when present in the store', () => {
 				const { properties } = fixtures.propertiesProfiles;
