@@ -227,9 +227,9 @@ final class Idea_Hub extends Module
 					return null;
 				};
 			case 'GET:saved-ideas':
-				// @TODO implementation
+				// @TODO: Implement this with the real API endpoint.
 				return function() {
-					return null;
+					return array();
 				};
 			case 'POST:update-idea-state':
 				// @TODO implementation
