@@ -32,6 +32,7 @@ import { useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { TextField, Input } from '../../../../material-components';
+import { isValidPublicationID } from '../../util/validation';
 const { useDispatch, useSelect } = Data;
 
 export default function PublicationIDInput() {
@@ -46,7 +47,7 @@ export default function PublicationIDInput() {
 
 	return (
 		<TextField
-			className={ classnames( { 'mdc-text-field--error': ! publicationID } ) }
+			className={ classnames( { 'mdc-text-field--error': ! isValidPublicationID( publicationID ) } ) }
 			label="Publication ID"
 			outlined
 		>

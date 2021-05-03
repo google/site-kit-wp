@@ -32,6 +32,7 @@ import { useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { TextField, Input } from '../../../../material-components';
+import { isValidProducts } from '../../util/validation';
 const { useDispatch, useSelect } = Data;
 
 export default function ProductsInput() {
@@ -46,7 +47,7 @@ export default function ProductsInput() {
 
 	return (
 		<TextField
-			className={ classnames( { 'mdc-text-field--error': ! products } ) }
+			className={ classnames( { 'mdc-text-field--error': ! isValidProducts( products ) } ) }
 			label="Products"
 			outlined
 			textarea
