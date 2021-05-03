@@ -19,12 +19,12 @@
 /**
  * External dependencies
  */
-import { useClickAway } from 'react-use';
+import { useClickAway, useKey } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import { useCallback, useRef, useState } from '@wordpress/element';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 
 /**
@@ -48,26 +48,9 @@ function DateRangeSelector() {
 	const menuWrapperRef = useRef();
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
-
-	// close menu on click outside
-	useEffect( () => {
-		const handleMenuClose = ( event ) => {
-			console.debug( 'handleMenuClose' );
-
-			// Close the menu if the user presses the Escape or Tab key
-			// while the menu is focused
-			if ( 'keyup' === event.type && [ TAB, ESCAPE ].includes( event.keyCode ) ) {
-				console.debug( 'KEY closing menu' );
-				setMenuOpen( false );
-			}
-		};
-
-		global.addEventListener( 'keyup', handleMenuClose );
-
-		return () => {
-			global.removeEventListener( 'keyup', handleMenuClose );
-		};
-	}, [] );
+	useKey( ESCAPE, () => setMenuOpen( false ) );
+	// this loses focus...
+	useKey( TAB, () => setMenuOpen( false ) );
 
 	const handleMenu = useCallback( () => {
 		setMenuOpen( ! menuOpen );
