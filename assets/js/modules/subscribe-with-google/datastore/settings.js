@@ -25,8 +25,6 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { TYPE_MODULES } from '../../../components/data/constants';
-import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import { STORE_NAME } from './constants';
 import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
@@ -48,8 +46,6 @@ export async function submitChanges( { select, dispatch } ) {
 	}
 
 	await API.invalidateCache( 'modules', 'subscribe-with-google' );
-	// TODO: Remove once legacy dataAPI is no longer used.
-	invalidateCacheGroup( TYPE_MODULES, 'subscribe-with-google' );
 
 	return {};
 }
