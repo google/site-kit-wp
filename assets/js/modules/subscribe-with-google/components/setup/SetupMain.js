@@ -31,19 +31,17 @@ import { _x } from '@wordpress/i18n';
  */
 import SubscribeWithGoogleIcon from '../../../../../svg/subscribe-with-google.svg';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME, FORM_SETUP } from '../../datastore/constants';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { STORE_NAME } from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { useSelect } from 'googlesitekit-data';
 import SetupForm from './SetupForm';
 
 export default function SetupMain( { finishSetup } ) {
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
-	const submitInProgress = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' ) );
 	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
 
 	let viewComponent;
-	if ( isDoingSubmitChanges || isNavigating || submitInProgress ) {
+	if ( isDoingSubmitChanges || isNavigating ) {
 		viewComponent = <ProgressBar />;
 	} else {
 		viewComponent = <SetupForm finishSetup={ finishSetup } />;
