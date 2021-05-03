@@ -19,8 +19,10 @@
 /**
  * Internal dependencies
  */
+import { default as newIdeas } from './new-ideas';
 import { default as savedIdeas } from './saved-ideas';
 
 export {
+	newIdeas,
 	savedIdeas,
 };
