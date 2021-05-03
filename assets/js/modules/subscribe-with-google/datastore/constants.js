@@ -18,6 +18,3 @@
 
 export const STORE_NAME = 'modules/subscribe-with-google';
 export { STORE_NAME as MODULES_SUBSCRIBE_WITH_GOOGLE };
-
-// Form ID for the module setup form.
-export const FORM_SETUP = 'subscribeWithGoogleSetup';
