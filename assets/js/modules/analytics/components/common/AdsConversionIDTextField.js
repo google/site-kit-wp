@@ -39,6 +39,10 @@ const { useSelect, useDispatch } = Data;
 
 export default function AdsConversionIDTextField() {
 	const adsConversionID = useSelect( ( select ) => select( STORE_NAME ).getAdsConversionID() );
+	const snippetEnabled = useSelect( ( select ) => {
+		return select( STORE_NAME ).getCanUseSnippet() &&
+			select( STORE_NAME ).getUseSnippet();
+	} );
 
 	const { setAdsConversionID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( { currentTarget } ) => {
@@ -53,19 +57,25 @@ export default function AdsConversionIDTextField() {
 		}
 	}, [ adsConversionID, setAdsConversionID ] );
 
-	const invalidValue = adsConversionID && ! isValidAdsConversionID( adsConversionID );
+	const isValidValue = Boolean( ! adsConversionID || isValidAdsConversionID( adsConversionID ) );
+
+	// Only show the field if the snippet is enabled for output,
+	// but only hide it if the value is valid otherwise the user will be blocked.
+	if ( isValidValue && ! snippetEnabled ) {
+		return null;
+	}
 
 	return (
 		<div>
 			<TextField
 				label={ __( 'Ads Conversion ID', 'google-site-kit' ) }
-				className={ classnames( { 'mdc-text-field--error': invalidValue } ) }
-				helperText={ invalidValue && (
+				className={ classnames( { 'mdc-text-field--error': ! isValidValue } ) }
+				helperText={ ! isValidValue && (
 					<HelperText persistent>
 						{ __( 'Conversion IDs must be in the format: AW-XXXXX', 'google-site-kit' ) }
 					</HelperText>
 				) }
-				trailingIcon={ invalidValue && (
+				trailingIcon={ ! isValidValue && (
 					<span className="googlesitekit-text-field-icon--error">
 						<VisuallyHidden>
 							{ __( 'Error', 'google-site-kit' ) }
