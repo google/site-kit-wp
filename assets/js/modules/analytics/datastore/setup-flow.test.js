@@ -30,20 +30,20 @@ import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
 import * as modulesAnalytics from '../';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
-const accountID = 'foo-bar';
+const accountID = '151753095';
 
 const populateAnalyticsDatastore = ( registry ) => {
 	registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
 		[
 			{
 				// eslint-disable-next-line sitekit/acronym-case
-				accountId: '151753095',
+				accountId: accountID,
 				id: 'UA-151753095-1',
 				name: 'rwh',
 			},
 			{
 				// eslint-disable-next-line sitekit/acronym-case
-				accountId: '151753095',
+				accountId: accountID,
 				id: 'UA-151753095-1',
 				name: 'troubled-tipped.example.com',
 			},
@@ -124,7 +124,7 @@ describe( 'modules/analytics setup-flow', () => {
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( 'legacy' );
 			} );
 
-			it( 'should return “legacy” if isAdminAPIWorking() returns false ', () => {
+			it( 'should return “legacy” if isAdminAPIWorking() returns false', () => {
 				registry = createTestRegistry();
 				// Receive empty settings to prevent unexpected fetch by resolver.
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
@@ -310,7 +310,7 @@ describe( 'modules/analytics setup-flow', () => {
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( 'ga4' );
 			} );
 
-			it( 'should return “ga4-transitional” if both GA4 and UA getProperties return non-empty array', () => {
+			it( 'should return “ga4-transitional” if both GA4 and UA properties are found for an account', () => {
 				registry = createTestRegistry();
 				// Receive empty settings to prevent unexpected fetch by resolver.
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
