@@ -422,21 +422,12 @@ class AnalyticsTest extends TestCase {
 			// Ensure transient was deleted by the method.
 			$this->assertFalse( get_transient( $account_ticked_id_transient ) );
 			// Ensure settings were set correctly.
-			$this->assertEqualSetsWithIndex(
-				array(
-					'accountID'             => $_GET['accountId'],
-					'propertyID'            => $_GET['webPropertyId'],
-					'profileID'             => $_GET['profileId'],
-					'internalWebPropertyID' => $expected_internal_id,
-					'useSnippet'            => true,
-					'canUseSnippet'         => true,
-					'anonymizeIP'           => true,
-					'adsenseLinked'         => false,
-					'trackingDisabled'      => array( 'loggedinUsers' ),
-					'ownerID'               => $admin_id,
-				),
-				$analytics->get_settings()->get()
-			);
+			$settings = $analytics->get_settings()->get();
+			$this->assertEquals( $_GET['accountId'], $settings['accountID'] );
+			$this->assertEquals( $_GET['webPropertyId'], $settings['propertyID'] );
+			$this->assertEquals( $expected_internal_id, $settings['internalWebPropertyID'] );
+			$this->assertEquals( $_GET['profileId'], $settings['profileID'] );
+			$this->assertEquals( $admin_id, $settings['ownerID'] );
 		}
 	}
 

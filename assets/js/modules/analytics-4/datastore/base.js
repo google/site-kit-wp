@@ -25,8 +25,9 @@ import { STORE_NAME } from './constants';
 const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	storeName: STORE_NAME,
 	settingSlugs: [
-		// TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
+		// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
 		// 'accountID',
+		// 'adsConversionID',
 		'propertyID',
 		'webDataStreamID',
 		'measurementID',
