@@ -240,6 +240,7 @@ describe( 'core/site site info', () => {
 				const info = registry.select( STORE_NAME ).getSiteInfo();
 
 				expect( info ).toBe( initialState.siteInfo );
+				await untilResolved( registry, STORE_NAME ).getSiteInfo();
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -284,6 +285,7 @@ describe( 'core/site site info', () => {
 				const result = registry.select( STORE_NAME )[ selector ]();
 
 				expect( result ).toEqual( undefined );
+				await untilResolved( registry, STORE_NAME ).getSiteInfo();
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -324,6 +326,7 @@ describe( 'core/site site info', () => {
 				const result = registry.select( STORE_NAME ).isAMP();
 
 				expect( result ).toEqual( undefined );
+				await untilResolved( registry, STORE_NAME ).getSiteInfo();
 				expect( console ).toHaveErrored();
 			} );
 		} );
