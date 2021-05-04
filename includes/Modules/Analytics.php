@@ -880,7 +880,7 @@ final class Analytics extends Module
 	 *     @type string                                              $start_date        Start date in 'Y-m-d' format. Default empty string.
 	 *     @type string                                              $end_date          End date in 'Y-m-d' format. Default empty string.
 	 *     @type string                                              $page              Specific page URL to filter by. Default empty string.
-	 *     @type int                                                 $row_limit         Limit of rows to return. Default 100.
+	 *     @type int                                                 $row_limit         Limit of rows to return. Default empty string.
 	 * }
 	 * @return Google_Service_AnalyticsReporting_ReportRequest|WP_Error Analytics site request instance.
 	 */
@@ -893,7 +893,7 @@ final class Analytics extends Module
 				'start_date'        => '',
 				'end_date'          => '',
 				'page'              => '',
-				'row_limit'         => 100,
+				'row_limit'         => '',
 			)
 		);
 
