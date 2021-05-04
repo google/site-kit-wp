@@ -27,7 +27,7 @@ module.exports = async ( page, scenario ) => {
 	}
 
 	if ( postInteractionWait ) {
-		await page.waitForSelector( postInteractionWait );
+		await page.waitForTimeout( postInteractionWait );
 	}
 
 	if ( scrollToSelector ) {
