@@ -41,8 +41,10 @@ function HelpMenu( { children } ) {
 	const menuWrapperRef = useRef();
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
-	useKey( ESCAPE, () => setMenuOpen( false ) );
-	useKey( TAB, () => setMenuOpen( false ) );
+	useKey(
+		( { keyCode } ) => [ ESCAPE, TAB ].includes( keyCode ),
+		() => setMenuOpen( false )
+	);
 
 	const handleMenu = useCallback( () => {
 		setMenuOpen( ! menuOpen );

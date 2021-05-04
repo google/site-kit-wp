@@ -54,8 +54,10 @@ function UserMenu() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
-	useKey( ESCAPE, () => setMenuOpen( false ) );
-	useKey( TAB, () => setMenuOpen( false ) );
+	useKey(
+		( { keyCode } ) => [ ESCAPE, TAB ].includes( keyCode ),
+		() => setMenuOpen( false )
+	);
 
 	useEffect( () => {
 		const handleDialogClose = ( e ) => {
