@@ -161,9 +161,65 @@ final class Idea_Hub extends Module
 					return null;
 				};
 			case 'GET:new-ideas':
-				// @TODO implementation
+				// @TODO: Implement this with the real API endpoint.
 				return function() {
-					return null;
+					return array(
+						array(
+							'name'   => 'ideas/17450692223393508734',
+							'text'   => 'Why Penguins are guanotelic?',
+							'topics' =>
+								array(
+									array(
+										'mid'          => '/m/05z6w',
+										'display_name' => 'Penguins',
+									),
+								),
+						),
+						array(
+							'name'   => 'ideas/14025103994557865535',
+							'text'   => 'When was sushi Kalam introduced?',
+							'topics' =>
+								array(
+									array(
+										'mid'          => '/m/07030',
+										'display_name' => 'Sushi',
+									),
+								),
+						),
+						array(
+							'name'   => 'ideas/7612031899179595408',
+							'text'   => 'How to speed up your WordPress site',
+							'topics' =>
+								array(
+									array(
+										'mid'          => '/m/09kqc',
+										'display_name' => 'Websites',
+									),
+								),
+						),
+						array(
+							'name'   => 'ideas/2285812891948871921',
+							'text'   => 'Using Site Kit to analyze your success',
+							'topics' =>
+								array(
+									array(
+										'mid'          => '/m/080ag',
+										'display_name' => 'Analytics',
+									),
+								),
+						),
+						array(
+							'name'   => 'ideas/68182298994557866271',
+							'text'   => 'How to make carne asada',
+							'topics' =>
+								array(
+									array(
+										'mid'          => '/m/07fhc',
+										'display_name' => 'Cooking',
+									),
+								),
+						),
+					);
 				};
 			case 'GET:published-post-ideas':
 				// @TODO implementation
@@ -171,9 +227,9 @@ final class Idea_Hub extends Module
 					return null;
 				};
 			case 'GET:saved-ideas':
-				// @TODO implementation
+				// @TODO: Implement this with the real API endpoint.
 				return function() {
-					return null;
+					return array();
 				};
 			case 'POST:update-idea-state':
 				// @TODO implementation
