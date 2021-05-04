@@ -91,7 +91,7 @@ export default function AdsConversionIDTextField() {
 			</TextField>
 
 			<p>
-				{ __( 'Insert your Ads Conversion ID here if you want Site Kit to place the snippet on your site', 'google-site-kit' ) }
+				{ __( 'If you’re using Google Ads, insert your Ads conversion ID if you’d like Site Kit to place the snippet on your site', 'google-site-kit' ) }
 			</p>
 		</div>
 	);
