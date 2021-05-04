@@ -68,6 +68,10 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID, selectProperty ] );
 
+	if ( ! accountID ) {
+		return null;
+	}
+
 	if ( ! hasResolvedAccounts || isResolvingProperties ) {
 		return <ProgressBar small />;
 	}

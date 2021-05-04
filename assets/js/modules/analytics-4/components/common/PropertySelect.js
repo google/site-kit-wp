@@ -54,6 +54,10 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID, selectProperty ] );
 
+	if ( ! accountID ) {
+		return null;
+	}
+
 	if ( isLoading ) {
 		return <ProgressBar small />;
 	}

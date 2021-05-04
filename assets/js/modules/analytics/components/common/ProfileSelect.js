@@ -53,6 +53,10 @@ export default function ProfileSelect() {
 		}
 	}, [ profileID, setProfileID ] );
 
+	if ( ! accountID || ! propertyID ) {
+		return null;
+	}
+
 	if ( isLoading ) {
 		return <ProgressBar small />;
 	}
