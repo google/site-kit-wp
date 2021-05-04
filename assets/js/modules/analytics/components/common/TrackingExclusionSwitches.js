@@ -28,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
+import Grid from '../../../../material-components/layout/Grid';
 import Row from '../../../../material-components/layout/Row';
 import Cell from '../../../../material-components/layout/Cell';
 const { useSelect, useDispatch } = Data;
@@ -80,29 +81,29 @@ export default function TrackingExclusionSwitches() {
 			<legend className="googlesitekit-setup-module__text">
 				{ __( 'Exclude from Analytics', 'google-site-kit' ) }
 			</legend>
-
-			<Row>
-				<Cell>
-					<Switch
-						label={ trackingExclusionLabels[ TRACKING_LOGGED_IN_USERS ] }
-						checked={ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) }
-						onClick={ onChangeTrackLoggedInUsers }
-						hideLabel={ false }
-					/>
-				</Cell>
-
-				{ ! trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) && (
-					<Cell>
+			<Grid>
+				<Row>
+					<Cell lgSize={ 6 } mdSize={ 4 } smSize={ 4 }>
 						<Switch
-							label={ trackingExclusionLabels[ TRACKING_CONTENT_CREATORS ] }
-							checked={ trackingDisabled.includes( TRACKING_CONTENT_CREATORS ) }
-							onClick={ onChangeTrackContentCreators }
+							label={ trackingExclusionLabels[ TRACKING_LOGGED_IN_USERS ] }
+							checked={ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) }
+							onClick={ onChangeTrackLoggedInUsers }
 							hideLabel={ false }
 						/>
 					</Cell>
-				) }
-			</Row>
 
+					{ ! trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) && (
+						<Cell lgSize={ 6 } mdSize={ 4 } smSize={ 4 }>
+							<Switch
+								label={ trackingExclusionLabels[ TRACKING_CONTENT_CREATORS ] }
+								checked={ trackingDisabled.includes( TRACKING_CONTENT_CREATORS ) }
+								onClick={ onChangeTrackContentCreators }
+								hideLabel={ false }
+							/>
+						</Cell>
+					) }
+				</Row>
+			</Grid>
 			<p>{ message }</p>
 		</fieldset>
 	);
