@@ -190,6 +190,29 @@ const topEarningPagesArgs = {
 	limit: 5,
 };
 
+// These components make a simple AdSense report query to determine the
+// currency that should be displayed in the report table.
+const getCurrencyFromReport = {
+	kind: 'adsense#report',
+	totalMatchedRows: '1',
+	headers: [
+		{ name: 'EARNINGS', type: 'METRIC_CURRENCY', currency: 'USD' },
+	],
+	rows: [
+		[ '680.67' ],
+	],
+	totals: [ '680.67' ],
+	averages: [ '680.67' ],
+	startDate: '2020-08-15',
+	endDate: '2020-09-11',
+};
+
+const getCurrencyFromReportOptions = {
+	startDate: '2020-08-15',
+	endDate: '2020-09-11',
+	metrics: 'EARNINGS',
+};
+
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense', 'analytics' ],
 	datastore: MODULES_ANALYTICS,
@@ -200,6 +223,8 @@ generateReportBasedWidgetStories( {
 	setup: ( { dispatch }, variantName ) => {
 		dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
 		dispatch( STORE_NAME ).receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
+		dispatch( STORE_NAME ).receiveGetReport( getCurrencyFromReport, { options: getCurrencyFromReportOptions } );
+		dispatch( STORE_NAME ).finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
 	},
 	Component: DashboardTopEarningPagesWidget,
 	wrapWidget: false,
@@ -225,6 +250,8 @@ generateReportBasedWidgetStories( {
 	datastore: MODULES_ANALYTICS,
 	setup: ( { dispatch }, variantName ) => {
 		dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
+		dispatch( STORE_NAME ).receiveGetReport( getCurrencyFromReport, { options: getCurrencyFromReportOptions } );
+		dispatch( STORE_NAME ).finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
 	},
 	group: 'AdSense Module/Components/Module/Top Earning Pages Widget',
 	referenceDate: '2020-09-12',
