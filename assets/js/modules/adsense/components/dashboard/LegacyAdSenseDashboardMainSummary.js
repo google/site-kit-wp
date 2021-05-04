@@ -121,7 +121,7 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 								">
 									<DataBlock
 										className="overview-adsense-rpm"
-										title={ __( 'RPM', 'google-site-kit' ) }
+										title={ __( 'Page RPM', 'google-site-kit' ) }
 										datapoint={ period.totals[ 1 ] }
 										datapointUnit={ currencyCode }
 										source={ {

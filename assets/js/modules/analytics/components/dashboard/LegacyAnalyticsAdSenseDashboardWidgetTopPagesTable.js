@@ -33,15 +33,31 @@ import ctaWrapper from '../../../../components/legacy-notifications/cta-wrapper'
 import AdSenseLinkCTA from '../common/AdSenseLinkCTA';
 import { analyticsAdsenseReportDataDefaults, isDataZeroForReporting } from '../../util';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../../adsense/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import AnalyticsAdSenseDashboardWidgetLayout from './AnalyticsAdSenseDashboardWidgetLayout';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import Link from '../../../../components/Link';
 import ReportTable from '../../../../components/ReportTable';
+import { getCurrencyFormat } from '../../../adsense/util/currency';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
 const LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
+	const currencyFormat = useSelect( ( select ) => {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const adsenseData = select( MODULES_ADSENSE ).getReport( {
+			startDate,
+			endDate,
+			metrics: 'EARNINGS',
+		} );
+
+		return getCurrencyFormat( adsenseData );
+	} );
+
 	// Do not return zero data callout here since it will already be
 	// present on the page from other sources.
 	if ( isDataZeroForReporting( data ) ) {
@@ -53,6 +69,57 @@ const LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		return null;
 	}
 
+	const tableColumns = [
+		{
+			title: __( 'Page Title', 'google-site-kit' ),
+			description: __( 'Page Title', 'google-site-kit' ),
+			primary: true,
+			Component: ( { row } ) => {
+				const [ title, url ] = row.dimensions;
+				const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+					offsetDays: DATE_RANGE_OFFSET,
+				} ) );
+				const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages', {
+					'explorer-table.plotKeys': '[]',
+					'_r.drilldown': `analytics.pagePath:${ url }`,
+					...generateDateRangeArgs( dateRange ),
+				} ) );
+				return (
+					<Link
+						href={ serviceURL }
+						external
+						inherit
+					>
+						{ title }
+					</Link>
+				);
+			},
+		},
+		{
+			title: __( 'Earnings', 'google-site-kit' ),
+			description: __( 'Earnings', 'google-site-kit' ),
+			field: 'metrics.0.values.0',
+			Component: ( { fieldValue } ) => numFmt(
+				fieldValue,
+				currencyFormat,
+			),
+		},
+		{
+			title: __( 'Page RPM', 'google-site-kit' ),
+			description: __( 'Page RPM', 'google-site-kit' ),
+			field: 'metrics.0.values.1',
+			Component: ( { fieldValue } ) => numFmt(
+				fieldValue,
+				currencyFormat,
+			),
+		},
+		{
+			title: __( 'Impressions', 'google-site-kit' ),
+			description: __( 'Impressions', 'google-site-kit' ),
+			field: 'metrics.0.values.2',
+			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+		},
+	];
 	return (
 		<AnalyticsAdSenseDashboardWidgetLayout>
 			<TableOverflowContainer>
@@ -64,66 +131,6 @@ const LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		</AnalyticsAdSenseDashboardWidgetLayout>
 	);
 };
-
-const tableColumns = [
-	{
-		title: __( 'Page Title', 'google-site-kit' ),
-		description: __( 'Page Title', 'google-site-kit' ),
-		primary: true,
-		Component: ( { row } ) => {
-			const [ title, url ] = row.dimensions;
-			const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ) );
-			const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages', {
-				'explorer-table.plotKeys': '[]',
-				'_r.drilldown': `analytics.pagePath:${ url }`,
-				...generateDateRangeArgs( dateRange ),
-			} ) );
-			return (
-				<Link
-					href={ serviceURL }
-					external
-					inherit
-				>
-					{ title }
-				</Link>
-			);
-		},
-	},
-	{
-		title: __( 'Earnings', 'google-site-kit' ),
-		description: __( 'Earnings', 'google-site-kit' ),
-		field: 'metrics.0.values.0',
-		Component: ( { fieldValue } ) => numFmt(
-			fieldValue,
-			{
-				style: 'decimal',
-				minimumFractionDigits: 2,
-				maximumFractionDigits: 2,
-			}
-		),
-	},
-	{
-		title: __( 'Page RPM', 'google-site-kit' ),
-		description: __( 'Page RPM', 'google-site-kit' ),
-		field: 'metrics.0.values.1',
-		Component: ( { fieldValue } ) => numFmt(
-			fieldValue,
-			{
-				style: 'decimal',
-				minimumFractionDigits: 2,
-				maximumFractionDigits: 2,
-			}
-		),
-	},
-	{
-		title: __( 'Impressions', 'google-site-kit' ),
-		description: __( 'Impressions', 'google-site-kit' ),
-		field: 'metrics.0.values.2',
-		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
-	},
-];
 
 /**
  * Checks error data response, and handle the INVALID_ARGUMENT specifically.
