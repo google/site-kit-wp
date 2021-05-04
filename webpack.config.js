@@ -116,6 +116,7 @@ const rules = [
 
 const resolve = {
 	alias: {
+		react: path.resolve( './node_modules/react' ),
 		'@wordpress/api-fetch__non-shim': require.resolve( '@wordpress/api-fetch' ),
 		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
 		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
