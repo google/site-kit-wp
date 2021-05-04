@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Core\Storage\Setting_With_Owned_Keys_ContractTests;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
@@ -31,8 +30,8 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'       => '',
-				'adsConversionID' => '',
+				// TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
+				// 'accountID'       => '',
 				'propertyID'      => '',
 				'webDataStreamID' => '',
 				'measurementID'   => '',
@@ -41,39 +40,6 @@ class SettingsTest extends SettingsTestCase {
 			),
 			get_option( Settings::OPTION )
 		);
-	}
-
-	public function test_proxies_ua_settings() {
-		$options     = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$ua_settings = new Analytics_Settings( $options );
-		$settings    = new Settings( $options );
-		$settings->register();
-
-		$ga4_settings = get_option( Settings::OPTION );
-		$this->assertEquals( '', $ga4_settings['accountID'] );
-		$this->assertEquals( '', $ga4_settings['adsConversionID'] );
-
-		$ua_settings->merge(
-			array(
-				'accountID'       => '12345',
-				'adsConversionID' => 'AW-424242424242',
-			)
-		);
-		$ga4_settings = get_option( Settings::OPTION );
-
-		$this->assertEquals( '12345', $ga4_settings['accountID'] );
-		$this->assertEquals( 'AW-424242424242', $ga4_settings['adsConversionID'] );
-
-		$settings->merge(
-			array(
-				'accountID'       => '99999',
-				'adsConversionID' => 'AW-929292929292',
-			)
-		);
-		$ga4_settings = get_option( Settings::OPTION );
-
-		$this->assertEquals( '12345', $ga4_settings['accountID'] );
-		$this->assertEquals( 'AW-424242424242', $ga4_settings['adsConversionID'] );
 	}
 
 	protected function get_testcase() {

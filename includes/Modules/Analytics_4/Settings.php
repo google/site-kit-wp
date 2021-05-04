@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
-use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 
 /**
  * Class for Analytics 4 settings.
@@ -36,8 +35,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		parent::register();
 
 		$this->register_owned_keys();
-
-		$this->proxy_ua_settings();
 	}
 
 	/**
@@ -49,7 +46,9 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	public function get_owned_keys() {
 		return array(
-			'accountID',
+			// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
+			/* 'accountID', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+			/* 'adsConversionID', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 			'propertyID',
 			'webDataStreamID',
 			'measurementID',
@@ -66,8 +65,9 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	protected function get_default() {
 		return array(
 			'ownerID'         => 0,
-			'accountID'       => '',
-			'adsConversionID' => '',
+			// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
+			/* 'accountID'       => '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+			/* 'adsConversionID' => '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 			'propertyID'      => '',
 			'webDataStreamID' => '',
 			'measurementID'   => '',
@@ -91,28 +91,5 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			}
 			return $option;
 		};
-	}
-
-	/**
-	 * Proxies setting values for select settings from classic Analytics.
-	 *
-	 * The values of these settings will be sourced from the original
-	 * Analytics module's settings, regardless of the value in the GA4 settings.
-	 *
-	 * @TODO Remove once Analytics and Analytics 4 modules are officially separated.
-	 *
-	 * @since n.e.x.t
-	 */
-	protected function proxy_ua_settings() {
-		$analytics_settings   = new Analytics_Settings( $this->options );
-		$proxy_values_from_ua = function ( $ga4_settings ) use ( $analytics_settings ) {
-			$ua_settings                     = $analytics_settings->get();
-			$ga4_settings['accountID']       = $ua_settings['accountID'];
-			$ga4_settings['adsConversionID'] = $ua_settings['adsConversionID'];
-
-			return $ga4_settings;
-		};
-		add_filter( 'default_option_' . self::OPTION, $proxy_values_from_ua );
-		add_filter( 'option_' . self::OPTION, $proxy_values_from_ua );
 	}
 }
