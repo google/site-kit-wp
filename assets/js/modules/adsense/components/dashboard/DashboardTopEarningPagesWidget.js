@@ -40,20 +40,23 @@ import Link from '../../../../components/Link';
 import AdBlockerWarning from '../common/AdBlockerWarning';
 import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
 import { numFmt } from '../../../../util';
+import { getCurrencyFormat } from '../../util/currency';
 const { useSelect } = Data;
 
 function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
-		isAdSenseLinked,
 		analyticsMainURL,
 		data,
 		error,
 		loading,
+		isAdSenseLinked,
 		isAdblockerActive,
+		currencyFormat,
 	} = useSelect( ( select ) => {
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
+
 		const args = {
 			startDate,
 			endDate,
@@ -70,6 +73,12 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 			limit: 5,
 		};
 
+		const adsenseData = select( STORE_NAME ).getReport( {
+			startDate,
+			endDate,
+			metrics: 'EARNINGS',
+		} );
+
 		const adSenseLinked = select( MODULES_ANALYTICS ).getAdsenseLinked();
 
 		return {
@@ -79,6 +88,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 			loading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ),
 			isAdSenseLinked: adSenseLinked,
 			isAdblockerActive: select( STORE_NAME ).isAdBlockerActive(),
+			currencyFormat: getCurrencyFormat( adsenseData ),
 		};
 	} );
 
@@ -151,15 +161,11 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 			},
 		},
 		{
-			title: __( 'Revenue', 'google-site-kit' ),
-			tooltip: __( 'Revenue', 'google-site-kit' ),
+			title: __( 'Earnings', 'google-site-kit' ),
+			tooltip: __( 'Earnings', 'google-site-kit' ),
 			Component: ( { row } ) => numFmt(
 				row.metrics[ 0 ].values[ 0 ],
-				{
-					style: 'decimal',
-					minimumFractionDigits: 2,
-					maximumFractionDigits: 2,
-				}
+				currencyFormat,
 			),
 		},
 	];
