@@ -38,6 +38,7 @@ import {
 	isValidProfileSelection,
 	isValidPropertyID,
 	isValidProfileName,
+	isValidAdsConversionID,
 } from '../util';
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE, FORM_SETUP } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
@@ -46,6 +47,7 @@ import { createStrictSelect } from '../../../googlesitekit/data/utils';
 export const INVARIANT_INVALID_ACCOUNT_ID = 'a valid accountID is required to submit changes';
 export const INVARIANT_INVALID_PROPERTY_SELECTION = 'a valid propertyID is required to submit changes';
 export const INVARIANT_INVALID_PROFILE_SELECTION = 'a valid profileID is required to submit changes';
+export const INVARIANT_INVALID_CONVERSION_ID = 'a valid adsConversionID is required to submit changes';
 export const INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS = 'cannot submit changes without having permissions for GTM property ID';
 export const INVARIANT_INVALID_PROFILE_NAME = 'a valid profile name is required to submit changes';
 export const INVARIANT_INVALID_INTERNAL_PROPERTY_ID = 'cannot submit changes with incorrect internal webPropertyID';
@@ -100,6 +102,7 @@ export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
 	const {
 		getAccountID,
+		getAdsConversionID,
 		getInternalWebPropertyID,
 		getProfileID,
 		getPropertyID,
@@ -125,6 +128,10 @@ export function validateCanSubmitChanges( select ) {
 	invariant( isValidAccountID( getAccountID() ), INVARIANT_INVALID_ACCOUNT_ID );
 	invariant( isValidPropertySelection( getPropertyID() ), INVARIANT_INVALID_PROPERTY_SELECTION );
 	invariant( isValidProfileSelection( getProfileID() ), INVARIANT_INVALID_PROFILE_SELECTION );
+
+	if ( getAdsConversionID() ) {
+		invariant( isValidAdsConversionID( getAdsConversionID() ), INVARIANT_INVALID_CONVERSION_ID );
+	}
 
 	if ( getProfileID() === PROFILE_CREATE ) {
 		const profileName = select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' );
