@@ -25,7 +25,13 @@ import { createRegistry } from '@wordpress/data';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { MODULES_ANALYTICS } from './constants';
+import {
+	MODULES_ANALYTICS,
+	SETUP_FLOW_MODE_LEGACY,
+	SETUP_FLOW_MODE_UA,
+	SETUP_FLOW_MODE_GA4,
+	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
+} from './constants';
 import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
 import * as modulesAnalytics from '../';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
@@ -121,7 +127,7 @@ describe( 'modules/analytics setup-flow', () => {
 				// Receive empty settings to prevent unexpected fetch by resolver.
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( 'legacy' );
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_LEGACY );
 			} );
 
 			it( 'should return "legacy" if isAdminAPIWorking() returns false', () => {
@@ -134,7 +140,7 @@ describe( 'modules/analytics setup-flow', () => {
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( false );
 
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( 'legacy' );
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_LEGACY );
 			} );
 
 			it( 'should return undefined if isAdminAPIWorking() returns undefined ', () => {
@@ -178,7 +184,7 @@ describe( 'modules/analytics setup-flow', () => {
 				populateAnalytics4Datastore( registry );
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( 'ua' );
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_UA );
 			} );
 
 			it( 'should return undefined if selected account returns undefined from GA4 getProperties selector', () => {
@@ -248,7 +254,7 @@ describe( 'modules/analytics setup-flow', () => {
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( 'ua' );
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_UA );
 			} );
 
 			it( 'should return undefined if selected account returns undefined from UA getProperties selector', () => {
@@ -278,7 +284,7 @@ describe( 'modules/analytics setup-flow', () => {
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( 'ga4' );
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_GA4 );
 			} );
 
 			it( 'should return "ga4-transitional" if both GA4 and UA properties are found for an account', () => {
@@ -291,7 +297,7 @@ describe( 'modules/analytics setup-flow', () => {
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( 'ga4-transitional' );
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_GA4_TRANSITIONAL );
 			} );
 		} );
 	} );
