@@ -54,12 +54,10 @@ export default function TrackingExclusionSwitches() {
 	}
 
 	const updateTrackingDisabled = useCallback( ( users, exclude ) => {
-		let trackingDisabledArray;
-		if ( exclude ) {
-			trackingDisabledArray = trackingDisabled.concat( users );
-		} else {
-			trackingDisabledArray = trackingDisabled.filter( ( item ) => item !== users );
-		}
+		const trackingDisabledArray = exclude
+			? trackingDisabled.concat( users )
+			: trackingDisabled.filter( ( item ) => item !== users );
+
 		setTrackingDisabled( trackingDisabledArray );
 	}, [ trackingDisabled, setTrackingDisabled ] );
 
@@ -93,8 +91,7 @@ export default function TrackingExclusionSwitches() {
 					/>
 				</Cell>
 
-				{ ! trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) &&
-				(
+				{ ! trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) && (
 					<Cell>
 						<Switch
 							label={ trackingExclusionLabels[ TRACKING_CONTENT_CREATORS ] }
