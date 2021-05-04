@@ -70,21 +70,17 @@ function ModuleApp( { moduleSlug } ) {
 			<Alert module={ moduleSlug } />
 			{ shouldRenderWidget
 				? (
-					<Fragment>
-						<WidgetContextRenderer
-							slug={ screenWidgetContext }
-							className={ classNames( [
-								'googlesitekit-module-page',
-								`googlesitekit-module-page--${ moduleSlug }`,
-							] ) }
-							Header={ getModuleHeader }
-							Footer={ ModuleFooter }
-						/>
-					</Fragment>
+					<WidgetContextRenderer
+						slug={ screenWidgetContext }
+						className={ classNames( [
+							'googlesitekit-module-page',
+							`googlesitekit-module-page--${ moduleSlug }`,
+						] ) }
+						Header={ getModuleHeader }
+						Footer={ ModuleFooter }
+					/>
 				)
-				: (
-					<LegacyModuleApp />
-				)
+				: <LegacyModuleApp />
 			}
 		</Fragment>
 	);
