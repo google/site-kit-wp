@@ -29,6 +29,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
@@ -452,7 +453,11 @@ final class Analytics_4 extends Module
 		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
 
 		if ( $tag->can_register() ) {
-			$tag->set_ads_conversion_id( $settings['adsConversionID'] );
+			// Here we need to retrieve the ads conversion ID from the
+			// classic/UA Analytics settings as it does not exist yet for this module.
+			// TODO: Update the value to be sourced from GA4 module settings once decoupled.
+			$ua_settings = ( new Analytics_Settings( $this->options ) )->get();
+			$tag->set_ads_conversion_id( $ua_settings['adsConversionID'] );
 
 			$tag->register();
 		}
