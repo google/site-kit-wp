@@ -49,7 +49,6 @@ function DateRangeSelector() {
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 	useKey( ESCAPE, () => setMenuOpen( false ) );
-	// this loses focus...
 	useKey( TAB, () => setMenuOpen( false ) );
 
 	const handleMenu = useCallback( () => {
