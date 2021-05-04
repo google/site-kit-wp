@@ -5,6 +5,10 @@ import fetchMockJest from 'fetch-mock-jest';
 // It is re-set here since fetch-mock-jest must be imported during Jest's `setupFilesAfterEnv` or later.
 global.fetchMock = fetchMockJest;
 
+beforeAll( () => {
+	jest.useRealTimers();
+} );
+
 beforeEach( () => {
 	localStorage.clear();
 	sessionStorage.clear();
