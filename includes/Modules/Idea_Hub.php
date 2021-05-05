@@ -31,7 +31,7 @@ use WP_Error;
 /**
  * Class representing the Idea Hub module.
  *
- * @since n.e.x.t
+ * @since 1.32.0
  * @access private
  * @ignore
  */
@@ -49,7 +49,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -58,7 +58,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array List of Google OAuth scopes.
 	 */
@@ -73,7 +73,7 @@ final class Idea_Hub extends Module
 	 *
 	 * A module being connected means that all steps required as part of its activation are completed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return bool True if module is connected, false otherwise.
 	 */
@@ -95,7 +95,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Cleans up when the module is deactivated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
@@ -104,7 +104,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array
 	 */
@@ -123,7 +123,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -141,7 +141,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Creates a request object for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
@@ -244,7 +244,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Sets up information about the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array Associative array of module info.
 	 */
@@ -263,7 +263,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return Module_Settings
 	 */
@@ -274,7 +274,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */

@@ -31,7 +31,7 @@ const baseSelectors = {
 	 *
 	 * This selector returns undefined if either `getProperties` or `getWebDataStreams` selectors have not resolved.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.

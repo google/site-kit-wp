@@ -512,7 +512,7 @@ export const selectors = {
 	/**
 	 * Determines whether the provided URL matches reference site URL or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param {string} url The URL to compare with the reference site URL.
 	 * @return {boolean} TRUE if the URL matches reference site URL, otherwise FALSE.

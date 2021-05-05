@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Analytics;
 /**
  * Interface for an Analytics tag.
  *
- * @since n.e.x.t
+ * @since 1.32.0
  * @access private
  * @ignore
  */
@@ -21,7 +21,7 @@ interface Tag_Interface {
 	/**
 	 * Sets the current home domain.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param string $domain Domain name.
 	 */
@@ -30,7 +30,7 @@ interface Tag_Interface {
 	/**
 	 * Sets whether or not to anonymize IP addresses.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param bool $anonymize_ip Whether to anonymize IP addresses or not.
 	 */
@@ -39,7 +39,7 @@ interface Tag_Interface {
 	/**
 	 * Sets the ads conversion ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param string $ads_conversion_id Ads ID.
 	 */
