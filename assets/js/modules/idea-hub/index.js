@@ -16,4 +16,20 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { STORE_NAME } from './datastore/constants';
+import IdeaHubIcon from '../../../svg/idea-hub.svg';
+
 export { registerStore } from './datastore';
+
+export const registerModule = ( modules ) => {
+	modules.registerModule(
+		'idea-hub',
+		{
+			storeName: STORE_NAME,
+			Icon: IdeaHubIcon,
+		}
+	);
+};
