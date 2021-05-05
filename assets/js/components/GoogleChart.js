@@ -227,12 +227,7 @@ GoogleChart.propTypes = {
 		'LineChart',
 		'PieChart',
 	] ).isRequired,
-	data: PropTypes.arrayOf(
-		PropTypes.oneOfType( [
-			PropTypes.arrayOf( PropTypes.object ),
-			PropTypes.object,
-		] ),
-	),
+	data: PropTypes.array,
 	getChartWrapper: PropTypes.func,
 	height: PropTypes.string,
 	loaded: PropTypes.bool,
