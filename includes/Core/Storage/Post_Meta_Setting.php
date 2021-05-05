@@ -117,7 +117,7 @@ abstract class Post_Meta_Setting {
 	public function get( $post_id ) {
 		$value = $this->post_meta->get( $post_id, static::META_KEY, true );
 		if ( false === $value ) {
-			$value = $this->get_default();
+			return $this->get_default();
 		}
 
 		return $value;
