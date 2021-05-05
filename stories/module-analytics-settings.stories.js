@@ -33,18 +33,7 @@ import {
 } from '../tests/js/utils';
 import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
-
-const defaultSettings = {
-	ownerID: 0,
-	accountID: '',
-	adsenseLinked: false,
-	anonymizeIP: true,
-	internalWebPropertyID: '',
-	profileID: '',
-	propertyID: '',
-	trackingDisabled: [ 'loggedinUsers' ],
-	useSnippet: true,
-};
+import defaultSettings from '../assets/js/modules/analytics/datastore/__fixtures__/settings--default.json';
 
 const Settings = createLegacySettingsWrapper( 'analytics' );
 

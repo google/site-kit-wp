@@ -1249,30 +1249,29 @@ final class Analytics extends Module
 	 * @since 1.24.0
 	 */
 	private function register_tag() {
-		$tag             = null;
-		$module_settings = $this->get_settings();
-		$settings        = $module_settings->get();
+		$settings = $this->get_settings()->get();
 
 		if ( $this->context->is_amp() ) {
 			$tag = new AMP_Tag( $settings['propertyID'], self::MODULE_SLUG );
 		} else {
 			$tag = new Web_Tag( $settings['propertyID'], self::MODULE_SLUG );
-			$tag->set_anonymize_ip( ! empty( $settings['anonymizeIP'] ) );
 		}
 
-		if ( $tag && ! $tag->is_tag_blocked() ) {
-			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-			$tag->use_guard( new Tag_Guard( $module_settings ) );
+		if ( $tag->is_tag_blocked() ) {
+			return;
+		}
 
-			if ( $tag->can_register() ) {
-				if ( $this->context->get_amp_mode() ) {
-					$home = $this->context->get_canonical_home_url();
-					$home = wp_parse_url( $home, PHP_URL_HOST );
-					$tag->set_home_domain( $home );
-				}
+		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
 
-				$tag->register();
-			}
+		if ( $tag->can_register() ) {
+			$tag->set_anonymize_ip( $settings['anonymizeIP'] );
+			$tag->set_home_domain(
+				wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_HOST )
+			);
+			$tag->set_ads_conversion_id( $settings['adsConversionID'] );
+
+			$tag->register();
 		}
 	}
 

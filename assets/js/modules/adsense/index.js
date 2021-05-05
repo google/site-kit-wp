@@ -44,7 +44,7 @@ import AdSenseIcon from '../../../svg/adsense.svg';
 import { STORE_NAME } from './datastore/constants';
 import { ERROR_CODE_ADBLOCKER_ACTIVE, CONTEXT_MODULE_ADSENSE, AREA_MODULE_ADSENSE_MAIN } from './constants';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
-import { registerStore as registerDataStore } from './datastore';
+import { registerStore as registerDatastore } from './datastore';
 
 addFilter(
 	'googlesitekit.AdSenseDashboardZeroData',
@@ -55,7 +55,7 @@ addFilter(
 let isAdBlockerActive = () => {};
 
 export const registerStore = ( registry ) => {
-	registerDataStore( registry );
+	registerDatastore( registry );
 	// TODO: fix hack
 	isAdBlockerActive = () => registry.__experimentalResolveSelect( STORE_NAME ).isAdBlockerActive();
 };
