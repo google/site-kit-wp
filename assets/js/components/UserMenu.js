@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useClickAway, useKey } from 'react-use';
+import { useClickAway } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -40,6 +40,7 @@ import Modal from './Modal';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
 const { useSelect, useDispatch } = Data;
 
 function UserMenu() {
@@ -54,10 +55,7 @@ function UserMenu() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
-	useKey(
-		( { keyCode } ) => [ ESCAPE, TAB ].includes( keyCode ),
-		() => setMenuOpen( false )
-	);
+	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () => setMenuOpen( false ) );
 
 	useEffect( () => {
 		const handleDialogClose = ( e ) => {

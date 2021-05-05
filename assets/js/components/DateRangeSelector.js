@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useClickAway, useKey } from 'react-use';
+import { useClickAway } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -35,6 +35,7 @@ import DateRangeIcon from '../../svg/date-range.svg';
 import Menu from './Menu';
 import { getAvailableDateRanges } from '../util/date-range';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
 import Button from './Button';
 
 const { useSelect, useDispatch } = Data;
@@ -49,10 +50,7 @@ function DateRangeSelector() {
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 
-	useKey(
-		( { keyCode } ) => [ ESCAPE, TAB ].includes( keyCode ),
-		() => setMenuOpen( false )
-	);
+	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () => setMenuOpen( false ) );
 
 	const handleMenu = useCallback( () => {
 		setMenuOpen( ! menuOpen );

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useClickAway, useKey } from 'react-use';
+import { useClickAway } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -35,16 +35,14 @@ import Button from '../Button';
 import HelpIcon from '../../../svg/help.svg';
 import HelpMenuLink from './HelpMenuLink';
 import Menu from '../Menu';
+import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 
 function HelpMenu( { children } ) {
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
-	useKey(
-		( { keyCode } ) => [ ESCAPE, TAB ].includes( keyCode ),
-		() => setMenuOpen( false )
-	);
+	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () => setMenuOpen( false ) );
 
 	const handleMenu = useCallback( () => {
 		setMenuOpen( ! menuOpen );
