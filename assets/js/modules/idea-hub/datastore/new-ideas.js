@@ -74,7 +74,7 @@ const baseSelectors = {
 	/**
 	 * Gets New Ideas from the Idea Hub.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param {Object} state            Data store's state.
 	 * @param {Object} options          Options for getting new ideas.

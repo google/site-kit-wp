@@ -24,7 +24,7 @@ import { useKey } from 'react-use';
 /**
  * Calls handler when event happens with a given keyCode inside a target ref.
  *
- * @since n.e.x.t
+ * @since 1.32.0
  *
  * @param {Array}    keyCodes Array of keyCodes.
  * @param {Object}   ref      React ref to element containing target.

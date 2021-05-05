@@ -43,7 +43,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	/**
 	 * Ads conversion ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 * @var string
 	 */
 	private $ads_conversion_id;
@@ -73,7 +73,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	/**
 	 * Sets the ads conversion ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param string $ads_conversion_id Ads ID.
 	 */
@@ -188,7 +188,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	/**
 	 * Adds an inline script to configure ads conversion tracking.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 */
 	protected function add_inline_ads_conversion_id_config() {
 		if ( $this->ads_conversion_id ) {

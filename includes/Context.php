@@ -471,7 +471,7 @@ class Context {
 	/**
 	 * Calls the WordPress core functions to get the locale and return it in the required format.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param string $context Optional. Defines which WordPress core locale function to call.
 	 * @param string $format Optional. Defines the format the locale is returned in.
