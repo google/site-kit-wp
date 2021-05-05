@@ -37,7 +37,8 @@ export default function PieChart( { report } ) {
 				options={ PieChart.options }
 				chartType="PieChart"
 				id="overview-piechart"
-				loadHeight={ 205 }
+				loadingHeight="230px"
+				loadingWidth="230px"
 			/>
 		</div>
 	);

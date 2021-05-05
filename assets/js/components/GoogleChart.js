@@ -75,8 +75,17 @@ export default function GoogleChart( props ) {
 		} );
 	}
 
-	const loadingHeightToUse = loadingHeight || height;
-	const loadingWidthToUse = loadingWidth || width;
+	let loadingHeightToUse = loadingHeight || height;
+	let loadingWidthToUse = loadingWidth || width;
+	// If a loading height is set but a width is not (or a loading width is set
+	// but not a height), change the "unset" value to 100% to avoid visual bugs.
+	// See: https://github.com/google/site-kit-wp/pull/2916#discussion_r623866269
+	if ( loadingHeightToUse && ! loadingWidthToUse ) {
+		loadingWidthToUse = '100%';
+	}
+	if ( loadingWidthToUse && ! loadingHeightToUse ) {
+		loadingHeightToUse = '100%';
+	}
 	const loadingShape = chartType === 'PieChart' ? 'circular' : 'square';
 
 	const loader = (
@@ -203,10 +212,46 @@ export default function GoogleChart( props ) {
 }
 
 GoogleChart.propTypes = {
-	// See: `import { ReactGoogleChartProps } from 'react-google-charts/dist/types';` for more types; creating an exhaustive list here is problematic.
-	data: PropTypes.any,
+	className: PropTypes.string,
+	children: PropTypes.node,
+	chartEvents: PropTypes.arrayOf( PropTypes.shape( {
+		eventName: PropTypes.string,
+		callback: PropTypes.func,
+	} ) ),
+	chartType: PropTypes.oneOf( [
+		'AnnotationChart',
+		'AreaChart',
+		'BarChart',
+		'BubbleChart',
+		'Calendar',
+		'CandlestickChart',
+		'ColumnChart',
+		'ComboChart',
+		'DiffChart',
+		'DonutChart',
+		'Gantt',
+		'Gauge',
+		'GeoChart',
+		'Histogram',
+		'LineChart',
+		'Line',
+		'Bar',
+		'Map',
+		'OrgChart',
+		'PieChart',
+		'Sankey',
+		'ScatterChart',
+		'SteppedAreaChart',
+		'Table',
+		'Timeline',
+		'TreeMap',
+		'WaterfallChart',
+		'WordTree',
+	] ).isRequired,
+	data: PropTypes.array,
 	getChartWrapper: PropTypes.func,
 	height: PropTypes.string,
+	loaded: PropTypes.bool,
 	loadingHeight: PropTypes.string,
 	loadingWidth: PropTypes.string,
 	loadText: PropTypes.bool,
@@ -221,15 +266,5 @@ GoogleChart.propTypes = {
 
 GoogleChart.defaultProps = {
 	...Chart.defaultProps,
-	getChartWrapper: undefined,
-	height: undefined,
 	loaded: true,
-	loadingHeight: undefined,
-	loadingWidth: undefined,
-	onMouseOut: undefined,
-	onMouseOver: undefined,
-	onReady: undefined,
-	onSelect: undefined,
-	selectedStats: undefined,
-	width: undefined,
 };
