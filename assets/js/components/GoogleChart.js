@@ -228,7 +228,7 @@ GoogleChart.propTypes = {
 		'PieChart',
 	] ).isRequired,
 	data: PropTypes.arrayOf(
-		PropTypes.oneOf( [
+		PropTypes.oneOfType( [
 			PropTypes.arrayOf( PropTypes.object ),
 			PropTypes.object,
 		] ),
