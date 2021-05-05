@@ -61,7 +61,7 @@ class ResetTest extends TestCase {
 		$this->assertEquals( 'keep', get_option( 'googlesitekitkeep' ) );
 		$this->assertEquals( 'keep', get_option( 'googlesitekit-keep' ) );
 
-		// Ensure post meta that don't start with googlesitekit_ isn't deleted.
+		// Ensure post meta that do not start with googlesitekit_ are not deleted.
 		$this->assertEquals( 'keep', get_post_meta( $post_id, 'googlesitekitkeep', true ) );
 		$this->assertEquals( 'keep', get_post_meta( $post_id, 'googlesitekit-keep', true ) );
 		$this->assertEquals( '', get_post_meta( $post_id, 'googlesitekit_keep', true ) );
