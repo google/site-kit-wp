@@ -44,6 +44,7 @@ describe( 'useKeyCodesInside', () => {
 	let testComponent;
 	const onKeyCodeInsideMock = jest.fn();
 	beforeEach( () => {
+		onKeyCodeInsideMock.mockReset();
 		getByText = render( <TestComponent onKeyCodeInside={ onKeyCodeInsideMock } /> ).getByText;
 		testComponent = getByText( 'TestComponent' );
 	} );
@@ -61,7 +62,6 @@ describe( 'useKeyCodesInside', () => {
 	} );
 
 	it( 'should not call handler when included keycode is pressed outside ref', () => {
-		onKeyCodeInsideMock.mockReset();
 		expect( onKeyCodeInsideMock ).not.toHaveBeenCalled();
 
 		fireEvent.keyDown( document, { keyCode: ESCAPE } );
@@ -73,6 +73,7 @@ describe( 'useKeyCodesInside', () => {
 	it( 'should not call handler when another keycode is pressed inside or outside ref', () => {
 		expect( onKeyCodeInsideMock ).not.toHaveBeenCalled();
 
+		// We only listen for `ESCAPE` and `TAB`, so these should never trigger.
 		fireEvent.keyDown( testComponent, { keyCode: ENTER } );
 		fireEvent.keyDown( testComponent, { keyCode: SPACE } );
 		fireEvent.keyDown( document, { keyCode: ENTER } );
