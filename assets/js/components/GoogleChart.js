@@ -228,10 +228,10 @@ GoogleChart.propTypes = {
 		'PieChart',
 	] ).isRequired,
 	data: PropTypes.arrayOf(
-		PropTypes.oneOf(
+		PropTypes.oneOf( [
 			PropTypes.arrayOf( PropTypes.object ),
 			PropTypes.object,
-		),
+		] ),
 	),
 	getChartWrapper: PropTypes.func,
 	height: PropTypes.string,
