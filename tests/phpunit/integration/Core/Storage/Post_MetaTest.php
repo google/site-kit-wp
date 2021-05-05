@@ -42,18 +42,16 @@ class Post_MetaTest extends TestCase {
 	}
 
 	public function test_add() {
-		global $wpdb;
-
 		$post_meta  = new Post_Meta();
 		$post_id    = $this->factory()->post->create();
 		$meta_key   = 'test_meta';
 		$meta_value = 'test_value';
 
-		$meta_id   = $post_meta->add( $post_id, $meta_key, $meta_value );
-		$new_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = %s", $post_id, $meta_key ) );
+		$meta_id = $post_meta->add( $post_id, $meta_key, $meta_value );
+		$meta    = $this->queryPostMeta( $post_id, $meta_key );
 
 		$this->assertGreaterThan( 0, $meta_id );
-		$this->assertEquals( $meta_value, $new_value );
+		$this->assertEquals( $meta_value, $meta['meta_value'] );
 	}
 
 	public function test_update() {
@@ -74,12 +72,11 @@ class Post_MetaTest extends TestCase {
 			)
 		);
 
-		$meta_id   = $wpdb->insert_id;
-		$updated   = $post_meta->update( $post_id, $meta_key, $meta_value );
-		$new_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_id = %d", $meta_id ) );
+		$updated = $post_meta->update( $post_id, $meta_key, $meta_value );
+		$meta    = $this->queryPostMeta( $post_id, $meta_key );
 
 		$this->assertTrue( $updated );
-		$this->assertEquals( $meta_value, $new_value );
+		$this->assertEquals( $meta_value, $meta['meta_value'] );
 	}
 
 	public function test_delete() {
@@ -99,12 +96,10 @@ class Post_MetaTest extends TestCase {
 			)
 		);
 
-		$meta_id = $wpdb->insert_id;
 		$deleted = $post_meta->delete( $post_id, $meta_key );
-		$meta    = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->postmeta} WHERE meta_id = %d", $meta_id ) );
 
 		$this->assertTrue( $deleted );
-		$this->assertNull( $meta );
+		$this->assertPostMetaNotExists( $post_id, $meta_key );
 	}
 
 }
