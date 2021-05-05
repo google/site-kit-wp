@@ -21,10 +21,20 @@
  */
 import { useKey } from 'react-use';
 
+/**
+ * Calls handler when event happens with a given keyCode inside a target ref.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array}    keyCodes Array of keyCodes.
+ * @param {Object}   ref      React ref to element containing target.
+ * @param {Function} handler  Callback function.
+ */
 export const useKeyCodesInside = ( keyCodes, ref, handler ) => {
 	useKey(
-		( event ) => keyCodes.includes( event.keyCode ) &&
-		ref.current.contains( event.target ),
+		( event ) => {
+			return keyCodes.includes( event.keyCode ) && ref.current.contains( event.target );
+		},
 		handler
 	);
 };
