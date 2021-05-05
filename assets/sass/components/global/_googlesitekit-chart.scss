@@ -18,29 +18,34 @@
 
 .googlesitekit-chart {
 
+	position: relative;
+
 	.googlesitekit-chart__source {
 		font-size: 0.75rem;
 		margin-top: $grid-gap-phone;
 	}
 }
 
-.googlesitekit-chart-v2 {
-	position: relative;
+.googlesitekit-chart--PieChart svg {
+	// Required to make sure annotations/labels on the PieChart don't get
+	// cut off in certain viewports.
+	// See: https://github.com/google/site-kit-wp/pull/2916#discussion_r619265174
+	overflow: visible !important;
 }
 
-.googlesitekit-chart-v2--PieChart svg > g > g {
+.googlesitekit-chart--PieChart svg > g > g {
 	pointer-events: none;
 }
 
-.googlesitekit-chart-v2--PieChart svg > g:last-child > g:last-child {
+.googlesitekit-chart--PieChart svg > g:last-child > g:last-child {
 	pointer-events: none;
 }
 
-.googlesitekit-chart-v2--PieChart div.google-visualization-tooltip {
+.googlesitekit-chart--PieChart div.google-visualization-tooltip {
 	pointer-events: none;
 }
 
-.googlesitekit-chart-v2-loading__forced {
+.googlesitekit-chart-loading__forced {
 	height: 100%;
 	width: 100%;
 }

@@ -68,7 +68,7 @@ const baseSelectors = {
 	/**
 	 * Gets account summaries.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Array.<Object>} Account summaries array.

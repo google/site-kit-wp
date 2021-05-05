@@ -184,7 +184,10 @@ DataBlock.propTypes = {
 		PropTypes.string,
 		PropTypes.number,
 	] ),
-	changeDataUnit: PropTypes.string,
+	changeDataUnit: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.bool,
+	] ),
 	context: PropTypes.string,
 	period: PropTypes.string,
 	selected: PropTypes.bool,
