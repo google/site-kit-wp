@@ -114,8 +114,6 @@ async function makeRelease() {
 		cp( 'google-site-kit.php' ),
 		cp( 'uninstall.php' ),
 		cp( 'dist/assets' ),
-		// this should change
-		// cp( 'dist/config.json' ),
 		cp( 'dist/config.php' ),
 		cp( 'includes' ),
 		cp( 'third-party' ),

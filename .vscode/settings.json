@@ -20,5 +20,4 @@
 	},
 	"phpcs.enable": true,
 	"phpcs.executablePath": "vendor/bin/phpcs"
-  }
-  
+}

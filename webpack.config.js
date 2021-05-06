@@ -204,20 +204,9 @@ const webpackConfig = ( env, argv ) => {
 					allowAsyncCycles: false,
 					cwd: process.cwd(),
 				} ),
-				// new CreateFileWebpack( {
-				// 	path: './dist',
-				// 	// this needs to change
-				// 	fileName: 'config.json',
-				// 	// but what to do here?
-				// 	content: JSON.stringify( {
-				// 		buildMode: flagMode,
-				// 		features,
-				// 	} ),
-				// } ),
 				new CreateFileWebpack( {
 					path: './dist',
 					fileName: 'config.php',
-					// but what to do here?
 					content: `				
 <?php
 return json_decode('${ JSON.stringify( {
