@@ -142,7 +142,10 @@ export default function DashboardPageSpeed() {
 
 	if ( ! referenceURL || isFetchingMobile || isFetchingDesktop || ! dataSrc ) {
 		return (
-			<div className="mdc-layout-grid">
+			<div
+				id="googlesitekit-pagespeed-header" // Used by jump link.
+				className="mdc-layout-grid"
+			>
 				<div className="mdc-layout-grid__inner">
 					<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 						<ProgressBar />
@@ -160,7 +163,11 @@ export default function DashboardPageSpeed() {
 
 	return (
 		<Fragment>
-			<header className="googlesitekit-pagespeed-widget__header" ref={ trackingRef }>
+			<header
+				id="googlesitekit-pagespeed-header" // Used by jump link.
+				className="googlesitekit-pagespeed-widget__header"
+				ref={ trackingRef }
+			>
 				<div className="googlesitekit-pagespeed-widget__data-src-tabs">
 					<TabBar
 						activeIndex={ [ DATA_SRC_LAB, DATA_SRC_FIELD ].indexOf( dataSrc ) }
