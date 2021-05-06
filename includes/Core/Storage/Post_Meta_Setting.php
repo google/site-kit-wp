@@ -111,12 +111,11 @@ abstract class Post_Meta_Setting {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param int    $post_id  Post ID.
-	 * @param string $meta_key Meta key.
+	 * @param int $post_id Post ID.
 	 * @return bool True if the meta key exists, otherwise false.
 	 */
-	public function has( $post_id, $meta_key ) {
-		return metadata_exists( 'post', $post_id, $meta_key );
+	public function has( $post_id ) {
+		return metadata_exists( 'post', $post_id, static::META_KEY );
 	}
 
 	/**
@@ -128,7 +127,7 @@ abstract class Post_Meta_Setting {
 	 * @return mixed Value set for the setting, or default if not set.
 	 */
 	public function get( $post_id ) {
-		if ( $this->has( $post_id, static::META_KEY ) ) {
+		if ( ! $this->has( $post_id ) ) {
 			return $this->get_default();
 		}
 

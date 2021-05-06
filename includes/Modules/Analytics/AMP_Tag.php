@@ -35,7 +35,7 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	/**
 	 * Ads conversion ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 * @var string
 	 */
 	private $ads_conversion_id;
@@ -54,7 +54,7 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	/**
 	 * Sets whether or not to anonymize IP addresses.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param bool $anonymize_ip Whether to anonymize IP addresses or not.
 	 */
@@ -66,7 +66,7 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	/**
 	 * Sets the ads conversion ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param string $ads_conversion_id Ads ID.
 	 */

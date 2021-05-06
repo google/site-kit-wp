@@ -19,7 +19,7 @@
 /**
  * Returns the absolute URL from a path including the siteURL.
  *
- * @since n.e.x.t
+ * @since 1.32.0
  *
  * @param {string} siteURL The siteURL fo the WordPress install.
  * @param {string} path    The path.

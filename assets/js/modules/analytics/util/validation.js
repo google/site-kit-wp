@@ -140,7 +140,7 @@ export { isValidNumericID as isValidInternalWebPropertyID };
 /**
  * Checks if the given ads conversion ID is valid.
  *
- * @since n.e.x.t
+ * @since 1.32.0
  *
  * @param {*} value Conversion ID to test.
  * @return {boolean} Whether or not the given ID is valid.

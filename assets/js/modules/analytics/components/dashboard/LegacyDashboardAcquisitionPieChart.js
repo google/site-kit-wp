@@ -90,11 +90,11 @@ const LegacyDashboardAcquisitionPieChart = ( { data, source } ) => {
 	return (
 		<div className="googlesitekit-chart googlesitekit-chart--pie">
 			<GoogleChart
+				chartType="PieChart"
 				data={ processedData }
+				loadingHeight="205px"
+				loadingWidth="205px"
 				options={ options }
-				chartType="pie"
-				id="overview-piechart"
-				loadHeight={ 205 }
 			/>
 			{ source &&
 				<div className="googlesitekit-chart__source">
