@@ -100,6 +100,7 @@ function ModulesList( { moduleSlugs } ) {
 					connected,
 					active,
 				} = module;
+				// so want this for all four basically...
 				const setupComplete = connected && active;
 
 				return (
