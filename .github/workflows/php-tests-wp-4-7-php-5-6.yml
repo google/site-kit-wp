@@ -73,6 +73,8 @@ jobs:
         run: npm ci
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
+      - name: npm build
+        run: npm run build
       - uses: shivammathur/setup-php@v2
         with:
           extensions: mysqli
