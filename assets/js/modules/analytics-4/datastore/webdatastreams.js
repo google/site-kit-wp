@@ -236,7 +236,7 @@ const baseSelectors = {
 	/**
 	 * Gets web data streams in batch for selected properties.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param {Object}         state       Data store's state.
 	 * @param {Array.<string>} propertyIDs GA4 property IDs.

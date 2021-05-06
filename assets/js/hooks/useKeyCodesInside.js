@@ -1,5 +1,5 @@
 /**
- * Line chart styles.
+ * `useKeyCodesInside` hook.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,19 +16,26 @@
  * limitations under the License.
  */
 
-.googlesitekit-line-chart {
+/**
+ * External dependencies
+ */
+import { useKey } from 'react-use';
 
-	// Attempting to prevent horizontal scroll on screen resize.
-	> div > div {
-		max-width: 100%;
+/**
+ * Calls handler when event happens with a given keyCode inside a target ref.
+ *
+ * @since 1.32.0
+ *
+ * @param {Array}    keyCodes Array of keyCodes.
+ * @param {Object}   ref      React ref to element containing target.
+ * @param {Function} handler  Callback function.
+ */
+export const useKeyCodesInside = ( keyCodes, ref, handler ) => {
+	useKey(
+		( event ) => {
+			return keyCodes.includes( event.keyCode ) && ref.current.contains( event.target );
+		},
+		handler
+	);
+};
 
-		> div > svg {
-			max-width: 100%;
-		}
-	}
-
-	// Pie Chart
-	.googlesitekit-chart--pie & > div > div > div > svg {
-		overflow: visible !important; // Accounts for hover border cutoff.
-	}
-}

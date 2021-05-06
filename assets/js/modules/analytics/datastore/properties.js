@@ -31,6 +31,7 @@ import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySe
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
@@ -179,21 +180,28 @@ const baseActions = {
 
 			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
-			// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
-			registry.dispatch( STORE_NAME ).setProfileID( '' );
+			const existingProfileID = registry.select( STORE_NAME ).getProfileID(); // eslint-disable-line @wordpress/no-unused-vars-before-return
+			const profiles = yield Data.commonActions.await(
+				registry.__experimentalResolveSelect( STORE_NAME ).getProfiles( accountID, propertyID )
+			);
 
-			const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
-			if ( property.defaultProfileId && profiles?.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/acronym-case
+			if ( ! Array.isArray( profiles ) ) {
+				return; // Something unexpected occurred and we want to avoid type errors.
+			}
+
+			// If there was an existing profile ID set and it belongs to the selected property, we're done.
+			if ( existingProfileID && profiles.some( ( profile ) => profile.id === existingProfileID ) ) {
+				return;
+			}
+
+			// If the property has a default profile that exists, use that.
+			if ( property.defaultProfileId && profiles.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/acronym-case
 				registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
 				return;
 			}
 
-			if ( profiles === undefined ) {
-				return; // Selection will happen in in getProfiles resolver.
-			}
-
-			const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // eslint-disable-line sitekit/acronym-case
-			registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
+			// Otherwise just select the first profile, or the option to create if none.
+			registry.dispatch( STORE_NAME ).setProfileID( profiles[ 0 ]?.id || PROFILE_CREATE );
 		}() );
 	},
 
@@ -226,7 +234,7 @@ const baseActions = {
 	/**
 	 * Sets the primary property type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param {string} primaryPropertyType Must be "ua" or "ga4".
 	 * @return {Object} Redux-style action.
@@ -380,7 +388,7 @@ const baseSelectors = {
 	/**
 	 * Gets the primary property type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} "ua" or "ga4".
@@ -450,6 +458,53 @@ const baseSelectors = {
 		}
 
 		return select( STORE_NAME ).isFetchingGetPropertiesProfiles( accountID );
+	} ),
+
+	/**
+	 * Gets all Analytic and GA4 properties this account can access.
+	 *
+	 * Returns an array of all UA + GA4 analytics properties.
+	 *
+	 * Returns `undefined` if accounts have not yet loaded.
+	 *
+	 * @since 1.32.0
+	 *
+	 * @param {Object} state     Data store's state.
+	 * @param {string} accountID The Analytics Account ID to fetch properties for.
+	 * @return {(Array.<Object>|undefined)} An array of Analytics properties; `undefined` if not loaded.
+	 */
+	getPropertiesIncludingGA4: createRegistrySelector( ( select ) => ( state, accountID ) => {
+		let properties = select( STORE_NAME ).getProperties( accountID );
+
+		if ( select( MODULES_ANALYTICS_4 ) ) {
+			const propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+			properties = properties.concat( propertiesGA4 );
+		}
+
+		const isGA4 = ( property ) => !! property._id;
+		const compare = ( a, b ) => {
+			if ( a < b ) {
+				return -1;
+			}
+			if ( a > b ) {
+				return 1;
+			}
+			return 0;
+		};
+
+		return properties.sort( ( a, b ) => {
+			const aName = isGA4( a ) ? a.displayName : a.name;
+			const bName = isGA4( b ) ? b.displayName : b.name;
+
+			if ( aName !== bName ) {
+				return compare( aName, bName );
+			}
+
+			const aID = isGA4( a ) ? a._id : a.id;
+			const bID = isGA4( b ) ? b._id : b.id;
+
+			return compare( aID, bID );
+		} );
 	} ),
 };
 

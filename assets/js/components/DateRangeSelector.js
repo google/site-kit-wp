@@ -17,10 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useClickAway } from 'react-use';
+
+/**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
-import { ESCAPE } from '@wordpress/keycodes';
+import { useCallback, useRef, useState } from '@wordpress/element';
+import { ESCAPE, TAB } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -30,6 +35,7 @@ import DateRangeIcon from '../../svg/date-range.svg';
 import Menu from './Menu';
 import { getAvailableDateRanges } from '../util/date-range';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
 import Button from './Button';
 
 const { useSelect, useDispatch } = Data;
@@ -40,32 +46,11 @@ function DateRangeSelector() {
 	const { setDateRange } = useDispatch( CORE_USER );
 
 	const [ menuOpen, setMenuOpen ] = useState( false );
-	const menuButtonRef = useRef();
-	const menuRef = useRef();
+	const menuWrapperRef = useRef();
 
-	useEffect( () => {
-		const handleMenuClose = ( event ) => {
-			if ( ( menuButtonRef && menuButtonRef.current ) && ( menuRef && menuRef.current ) ) {
-				// Close the menu if the user presses the Escape key
-				// or if they click outside of the menu.
-				if (
-					( ( 'keyup' === event.type && ESCAPE === event.keyCode ) || 'mouseup' === event.type ) &&
-					! menuButtonRef.current.contains( event.target ) &&
-					! menuRef.current.contains( event.target )
-				) {
-					setMenuOpen( false );
-				}
-			}
-		};
+	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 
-		global.addEventListener( 'mouseup', handleMenuClose );
-		global.addEventListener( 'keyup', handleMenuClose );
-
-		return () => {
-			global.removeEventListener( 'mouseup', handleMenuClose );
-			global.removeEventListener( 'keyup', handleMenuClose );
-		};
-	}, [] );
+	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () => setMenuOpen( false ) );
 
 	const handleMenu = useCallback( () => {
 		setMenuOpen( ! menuOpen );
@@ -80,9 +65,8 @@ function DateRangeSelector() {
 	const menuItems = Object.values( ranges ).map( ( range ) => range.label );
 
 	return (
-		<div className="googlesitekit-date-range-selector googlesitekit-dropdown-menu mdc-menu-surface--anchor">
+		<div ref={ menuWrapperRef } className="googlesitekit-date-range-selector googlesitekit-dropdown-menu mdc-menu-surface--anchor">
 			<Button
-				ref={ menuButtonRef }
 				className="googlesitekit-header__date-range-selector-menu mdc-button--dropdown googlesitekit-header__dropdown"
 				text
 				onClick={ handleMenu }
@@ -94,7 +78,6 @@ function DateRangeSelector() {
 				{ currentDateRangeLabel }
 			</Button>
 			<Menu
-				ref={ menuRef }
 				menuOpen={ menuOpen }
 				menuItems={ menuItems }
 				onSelected={ handleMenuItemSelect }

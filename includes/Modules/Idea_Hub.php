@@ -10,13 +10,17 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
+use Google\Site_Kit\Core\Modules\Module_With_Assets;
+use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
@@ -27,12 +31,13 @@ use WP_Error;
 /**
  * Class representing the Idea Hub module.
  *
- * @since n.e.x.t
+ * @since 1.32.0
  * @access private
  * @ignore
  */
 final class Idea_Hub extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets {
+	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
 
@@ -44,7 +49,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -53,7 +58,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array List of Google OAuth scopes.
 	 */
@@ -68,7 +73,7 @@ final class Idea_Hub extends Module
 	 *
 	 * A module being connected means that all steps required as part of its activation are completed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return bool True if module is connected, false otherwise.
 	 */
@@ -90,7 +95,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Cleans up when the module is deactivated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
@@ -99,7 +104,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array
 	 */
@@ -118,7 +123,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -136,7 +141,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Creates a request object for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
@@ -156,9 +161,65 @@ final class Idea_Hub extends Module
 					return null;
 				};
 			case 'GET:new-ideas':
-				// @TODO implementation
+				// @TODO: Implement this with the real API endpoint.
 				return function() {
-					return null;
+					return array(
+						array(
+							'name'   => 'ideas/17450692223393508734',
+							'text'   => 'Why Penguins are guanotelic?',
+							'topics' =>
+								array(
+									array(
+										'mid'          => '/m/05z6w',
+										'display_name' => 'Penguins',
+									),
+								),
+						),
+						array(
+							'name'   => 'ideas/14025103994557865535',
+							'text'   => 'When was sushi Kalam introduced?',
+							'topics' =>
+								array(
+									array(
+										'mid'          => '/m/07030',
+										'display_name' => 'Sushi',
+									),
+								),
+						),
+						array(
+							'name'   => 'ideas/7612031899179595408',
+							'text'   => 'How to speed up your WordPress site',
+							'topics' =>
+								array(
+									array(
+										'mid'          => '/m/09kqc',
+										'display_name' => 'Websites',
+									),
+								),
+						),
+						array(
+							'name'   => 'ideas/2285812891948871921',
+							'text'   => 'Using Site Kit to analyze your success',
+							'topics' =>
+								array(
+									array(
+										'mid'          => '/m/080ag',
+										'display_name' => 'Analytics',
+									),
+								),
+						),
+						array(
+							'name'   => 'ideas/68182298994557866271',
+							'text'   => 'How to make carne asada',
+							'topics' =>
+								array(
+									array(
+										'mid'          => '/m/07fhc',
+										'display_name' => 'Cooking',
+									),
+								),
+						),
+					);
 				};
 			case 'GET:published-post-ideas':
 				// @TODO implementation
@@ -166,9 +227,9 @@ final class Idea_Hub extends Module
 					return null;
 				};
 			case 'GET:saved-ideas':
-				// @TODO implementation
+				// @TODO: Implement this with the real API endpoint.
 				return function() {
-					return null;
+					return array();
 				};
 			case 'POST:update-idea-state':
 				// @TODO implementation
@@ -183,7 +244,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Sets up information about the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array Associative array of module info.
 	 */
@@ -202,11 +263,37 @@ final class Idea_Hub extends Module
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return Module_Settings
 	 */
 	protected function setup_settings() {
 		return new Settings( $this->options );
+	}
+
+	/**
+	 * Sets up the module's assets to register.
+	 *
+	 * @since 1.32.0
+	 *
+	 * @return Asset[] List of Asset objects.
+	 */
+	protected function setup_assets() {
+		$base_url = $this->context->url( 'dist/assets/' );
+
+		return array(
+			new Script(
+				'googlesitekit-modules-idea-hub',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-modules-idea-hub.js',
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+						'googlesitekit-data',
+						'googlesitekit-modules',
+					),
+				)
+			),
+		);
 	}
 }
