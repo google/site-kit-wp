@@ -255,22 +255,11 @@ final class Plugin {
 
 		$config = require GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.php';
 
-		// TODO - remove values and test! where used? what means?
-		// $config = require GOOGLESITEKIT_PLUGIN_DIR_PATH . 'config.php';
 		$config = (array) $config;
 
-
-		// $config = new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.json' );
-		// so this works
-		// $config = new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'config.json' );
-
 		Build_Mode::set_mode( $config['buildMode'] );
-		
-		// casting again... due to json_decode?
+
 		Feature_Flags::set_features( (array) $config['features'] );
-
-		// Feature_Flags::set_features( $config['features'] );
-
 
 		static::$instance = new static( $main_file );
 		static::$instance->register();
