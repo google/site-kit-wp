@@ -28,4 +28,15 @@ export function getURLPath( url ) {
 	return new URL( url ).pathname;
 }
 
-export default getURLPath;
+/**
+ * Returns the absolute URL from a path including the siteURL.
+ *
+ * @since 1.32.0
+ *
+ * @param {string} siteURL The siteURL fo the WordPress install.
+ * @param {string} path    The path.
+ * @return {string} The URL path.
+ */
+export function getFullURL( siteURL, path ) {
+	return new URL( path, siteURL ).href;
+}

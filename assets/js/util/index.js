@@ -47,6 +47,7 @@ export * from './markdown';
 export * from './convert-time';
 export * from './date-range';
 export * from './chart';
+export * from './urls';
 
 /**
  * Removes a parameter from a URL string.
