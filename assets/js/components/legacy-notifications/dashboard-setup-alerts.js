@@ -56,6 +56,7 @@ class DashboardSetupAlerts extends Component {
 		const { canManageOptions } = global._googlesitekitLegacyData.permissions;
 
 		switch ( notification ) {
+			// for this case
 			case 'authentication_success':
 				if ( ! canManageOptions ) {
 					return null;
@@ -68,22 +69,30 @@ class DashboardSetupAlerts extends Component {
 					return null;
 				}
 
+				let showModuleList = true;
+
+				// when this condition is true
 				if ( slug && modulesData[ slug ] ) {
-					winData.id = `${ winData.id }-${ slug }`;
-					winData.setupTitle = modulesData[ slug ].name;
-					// this is part of it
-					winData.description = __( 'Here are some other services you can connect to see even more stats:', 'google-site-kit' );
-
-					winData = applyFilters( `googlesitekit.SetupWinNotification-${ slug }`, winData );
-
-					// are all activated?
+					// get module for each module slug and check if activated. if all four are activated
 					const numberOfActivatedModules = MODULE_SLUGS
 						.map( ( moduleSlug ) => modulesData[ moduleSlug ].setupComplete )
 						.filter( ( x ) => !! x ).length;
 
-					if ( numberOfActivatedModules === MODULE_SLUGS.length ) {
-						return null;
+					showModuleList = numberOfActivatedModules !== MODULE_SLUGS.length;
+
+					winData.id = `${ winData.id }-${ slug }`;
+					winData.setupTitle = modulesData[ slug ].name;
+
+					// winData.description = __( 'Here are some other services you can connect to see even more stats:', 'google-site-kit' );
+
+					if ( showModuleList ) {
+						winData.description = __( 'Here are some other services you can connect to see even more stats:', 'google-site-kit' );
+					} else {
+						// need to reset this because of code above. just say "no description"
+						winData.description = null;
 					}
+
+					winData = applyFilters( `googlesitekit.SetupWinNotification-${ slug }`, winData );
 				}
 
 				return (
@@ -104,9 +113,10 @@ class DashboardSetupAlerts extends Component {
 							anchorLink={ 'pagespeed-insights' === slug ? '#googlesitekit-pagespeed-header' : '' }
 							anchorLinkLabel={ 'pagespeed-insights' === slug ? __( 'Jump to the bottom of the dashboard to see how fast your home page is.', 'google-site-kit' ) : '' }
 						>
-							<ModulesList
+							{ /* will end up with whitespace here! */ }
+							{ showModuleList && <ModulesList
 								moduleSlugs={ MODULE_SLUGS }
-							/>
+							/> }
 						</Notification>
 					</Fragment>
 				);
