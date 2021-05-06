@@ -204,15 +204,26 @@ const webpackConfig = ( env, argv ) => {
 					allowAsyncCycles: false,
 					cwd: process.cwd(),
 				} ),
+				// new CreateFileWebpack( {
+				// 	path: './dist',
+				// 	// this needs to change
+				// 	fileName: 'config.json',
+				// 	// but what to do here?
+				// 	content: JSON.stringify( {
+				// 		buildMode: flagMode,
+				// 		features,
+				// 	} ),
+				// } ),
 				new CreateFileWebpack( {
 					path: './dist',
-					// this needs to change
-					fileName: 'config.json',
+					fileName: 'config.php',
 					// but what to do here?
-					content: JSON.stringify( {
-						buildMode: flagMode,
-						features,
-					} ),
+					content: `				
+<?php
+return json_decode('${ JSON.stringify( {
+		buildMode: flagMode,
+		features,
+	} ) }');`,
 				} ),
 				new ManifestPlugin( {
 					fileName: path.resolve( __dirname, 'includes/Core/Assets/Manifest.php' ),

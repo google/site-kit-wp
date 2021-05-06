@@ -253,10 +253,10 @@ final class Plugin {
 			return false;
 		}
 
-		// $config = require GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.php';
+		$config = require GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.php';
 
 		// TODO - remove values and test! where used? what means?
-		$config = require GOOGLESITEKIT_PLUGIN_DIR_PATH . 'config.php';
+		// $config = require GOOGLESITEKIT_PLUGIN_DIR_PATH . 'config.php';
 		$config = (array) $config;
 
 
