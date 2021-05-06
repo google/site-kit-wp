@@ -199,6 +199,41 @@ const baseActions = {
 
 		return null;
 	},
+
+	/**
+	 * Matches a property by measurement ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array.<number>}        properties    Array of property IDs.
+	 * @param {Array.<string>|string} measurementID A list of measurement IDs or a signle measurement ID to match properties.
+	 * @return {Object} A property object if found.
+	 */
+	*matchPropertyByMeasurementID( properties, measurementID ) {
+		const registry = yield commonActions.getRegistry();
+		const measurementIDs = Array.isArray( measurementID ) ? measurementID : [ measurementID ];
+
+		for ( let i = 0; i < properties.length; i += MAX_WEBDATASTREAMS_PER_BATCH ) {
+			const chunk = properties.slice( i, i + MAX_WEBDATASTREAMS_PER_BATCH );
+			const webdatastreams = yield commonActions.await(
+				registry.__experimentalResolveSelect( STORE_NAME ).getWebDataStreamsBatch( chunk ),
+			);
+
+			for ( const propertyID in webdatastreams ) {
+				for ( const webdatastream of webdatastreams[ propertyID ] ) {
+					for ( const singleMeasurementID of measurementIDs ) {
+						if ( singleMeasurementID === webdatastream.measurementId ) { // eslint-disable-line sitekit/acronym-case
+							return yield commonActions.await(
+								registry.__experimentalResolveSelect( STORE_NAME ).getProperty( propertyID ),
+							);
+						}
+					}
+				}
+			}
+		}
+
+		return null;
+	},
 };
 
 const baseControls = {
