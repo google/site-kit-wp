@@ -26,10 +26,12 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, PROPERTY_CREATE } from './constants';
+import { STORE_NAME, PROPERTY_CREATE, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
+import { normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
+const { commonActions } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',
@@ -161,6 +163,41 @@ const baseActions = {
 				registry.dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
 			}
 		}() );
+	},
+
+	/**
+	 * Matches a property by URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array.<number>}        properties Array of property IDs.
+	 * @param {Array.<string>|string} url        A list of URLs or a signle URL to match properties.
+	 * @return {Object} A property object if found.
+	 */
+	*matchPropertyByURL( properties, url ) {
+		const registry = yield commonActions.getRegistry();
+		const urls = ( Array.isArray( url ) ? url : [ url ] ).map( normalizeURL );
+
+		for ( let i = 0; i < properties.length; i += MAX_WEBDATASTREAMS_PER_BATCH ) {
+			const chunk = properties.slice( i, i + MAX_WEBDATASTREAMS_PER_BATCH );
+			const webdatastreams = yield commonActions.await(
+				registry.__experimentalResolveSelect( STORE_NAME ).getWebDataStreamsBatch( chunk ),
+			);
+
+			for ( const propertyID in webdatastreams ) {
+				for ( const webdatastream of webdatastreams[ propertyID ] ) {
+					for ( const singleURL of urls ) {
+						if ( singleURL === normalizeURL( webdatastream.defaultUri ) ) {
+							return yield commonActions.await(
+								registry.__experimentalResolveSelect( STORE_NAME ).getProperty( propertyID ),
+							);
+						}
+					}
+				}
+			}
+		}
+
+		return null;
 	},
 };
 
