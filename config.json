@@ -1,0 +1,14 @@
+{
+  "buildMode": "production",
+  "features": [
+    "ga4setup",
+    "helpVisibility",
+    "ideaHubModule",
+    "serviceSetupV2",
+    "storeErrorNotifications",
+    "userInput",
+    "widgets.dashboard",
+    "widgets.pageDashboard",
+    "widgets.moduleScreens"
+  ]
+}

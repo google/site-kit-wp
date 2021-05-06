@@ -206,7 +206,9 @@ const webpackConfig = ( env, argv ) => {
 				} ),
 				new CreateFileWebpack( {
 					path: './dist',
+					// this needs to change
 					fileName: 'config.json',
+					// but what to do here?
 					content: JSON.stringify( {
 						buildMode: flagMode,
 						features,
