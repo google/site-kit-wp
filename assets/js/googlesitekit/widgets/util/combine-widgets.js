@@ -21,11 +21,6 @@
  */
 import isEqual from 'lodash/isEqual';
 
-/**
- * Internal dependencies
- */
-import { HIDDEN_CLASS } from './constants';
-
 function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
 	return rowA === rowB && isEqual( stateA, stateB );
 }
@@ -42,26 +37,21 @@ function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
  *                                             `null`).
  * @param {Object}         layout              Layout arguments from
  *                                             	`getWidgetLayout()`.
- * @param {Array.<Array>}  layout.classNames   List of class name arrays for
- *                                             each widget.
  * @param {Array.<number>} layout.columnWidths List of column widths for each
  *                                             widget.
  * @param {Array.<number>} layout.rowIndexes   List of row indexes for each
  *                                             widget.
- * @return {Object} Object with `gridClassNames` and `overrideComponents`
- *                  properties, both of which are a list with one item for each
- *                  widget. Every `gridClassNames` entry is an array of class
- *                  names, every `overrideComponents` entry is either an object
- *                  with `Component` and `metadata`, or `null` (similar to
- *                  the `widgetStates` parameter).
+ * @return {Object} Object with `overrideComponents` property, both of which are a
+ * 					list with one item for each widget. Every `overrideComponents`
+ * 					entry is either an object with `Component` and `metadata`, or
+ * 					`null` (similar to the `widgetStates` parameter).
  */
 export function combineWidgets( widgets, widgetStates, {
-	classNames,
 	columnWidths,
 	rowIndexes,
 } ) {
-	const gridClassNames = [ ...classNames ];
 	const overrideComponents = [];
+	const gridColumnWidths = [ ...columnWidths ];
 
 	let currentState = null;
 	let currentRowIndex = -1;
@@ -69,13 +59,6 @@ export function combineWidgets( widgets, widgetStates, {
 
 	widgets.forEach( ( widget, i ) => {
 		overrideComponents.push( null );
-
-		// Hide any widgets that have `null` as class names (which happens
-		// when the widget renders `null`).
-		if ( gridClassNames[ i ] === null ) {
-			gridClassNames[ i ] = [ HIDDEN_CLASS ];
-			return;
-		}
 
 		currentState = widgetStates[ widget.slug ];
 		currentRowIndex = rowIndexes[ i ];
@@ -86,8 +69,9 @@ export function combineWidgets( widgets, widgetStates, {
 				// If the current widget state and row index match the next
 				// state and row index, hide the widget entirely. Only the last
 				// similar instance will be rendered in this case.
-				gridClassNames[ i ] = [ HIDDEN_CLASS ];
 				columnWidthsBuffer.push( columnWidths[ i ] );
+				// Mark this column as width = 0, so we can hide it
+				gridColumnWidths[ i ] = 0;
 			} else if ( columnWidthsBuffer.length > 0 ) {
 				// If the state and row index do not match the next ones and
 				// there are already similar instances (from previous
@@ -97,17 +81,15 @@ export function combineWidgets( widgets, widgetStates, {
 				// and pass all common metadata as props.
 				columnWidthsBuffer.push( columnWidths[ i ] );
 
-				// Get total (desktop) column width and use corresponding grid
-				// classes. For tablet and phone, the component should span the
-				// full width as by definition it is at least a "half" widget
-				// wide (which has that behavior).
+				// Get total (desktop) column width. For tablet and phone,
+				// the component should span the full width as by definition
+				// it is at least a "half" widget wide (which has that behavior).
 				const combinedColumnWidth = columnWidthsBuffer.reduce( ( sum, columnWidth ) => sum + columnWidth, 0 );
 
-				gridClassNames[ i ] = [
-					'mdc-layout-grid__cell',
-					`mdc-layout-grid__cell--span-${ combinedColumnWidth }`,
-				];
 				overrideComponents[ i ] = currentState;
+
+				// This final column should have the combined width
+				gridColumnWidths[ i ] = combinedColumnWidth;
 
 				// Reset the columnWidthsBuffer variable.
 				columnWidthsBuffer = [];
@@ -116,7 +98,7 @@ export function combineWidgets( widgets, widgetStates, {
 	} );
 
 	return {
-		gridClassNames,
+		gridColumnWidths,
 		overrideComponents,
 	};
 }

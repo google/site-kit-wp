@@ -18,8 +18,8 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-widget.googlesitekit-widget--legacy-all-traffic-widget,
-	.googlesitekit-widget.googlesitekit-widget--analyticsAllTraffic {
+	.googlesitekit-widget__analytics--all-traffic,
+	.googlesitekit-widget.googlesitekit-widget--legacy-all-traffic-widget {
 
 		.mdc-tab-scroller__scroll-content {
 			justify-content: center;
@@ -60,20 +60,6 @@
 
 		@media (min-width: $bp-xlarge) {
 			top: 0;
-		}
-	}
-
-	.googlesitekit-widget--analyticsAllTraffic__user-count-chart,
-	.googlesitekit-widget--analyticsAllTraffic__dimensions {
-
-		.googlesitekit-line-chart {
-			align-items: center;
-			display: flex;
-			min-height: 350px;
-
-			& .googlesitekit-chart-loading {
-				padding: 0 15%;
-			}
 		}
 	}
 
@@ -134,14 +120,14 @@
 		width: 100%;
 	}
 
-	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart .googlesitekit-chart-v2-loading {
+	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart .googlesitekit-chart-loading {
 		padding-bottom: 32px;
 		padding-top: 32px;
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__selectable {
 		// Use pointer when hovering over chart slice or legend entry.
-		.googlesitekit-chart-v2__inner > div > div > div > svg {
+		.googlesitekit-chart__inner > div > div > div > svg {
 
 			& > g > path,
 			& > g > g {
@@ -153,7 +139,7 @@
 	.googlesitekit-widget--analyticsAllTraffic__slice-selected {
 		// Allow interacting with tooltip (e.g. to click links) when slice is
 		// selected.
-		.googlesitekit-chart-v2--PieChart div.google-visualization-tooltip {
+		.googlesitekit-chart--PieChart div.google-visualization-tooltip {
 			pointer-events: auto;
 		}
 	}
@@ -283,6 +269,13 @@
 			.googlesitekit-widget--analyticsAllTraffic__underlay {
 				opacity: 0;
 			}
+		}
+	}
+
+	.googlesitekit-widget--analyticsAllTraffic__legend--single {
+
+		.googlesitekit-widget--analyticsAllTraffic__legend-slice:not(:first-child) {
+			display: none;
 		}
 	}
 }

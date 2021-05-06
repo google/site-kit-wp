@@ -115,7 +115,7 @@ final class PageSpeed_Insights extends Module
 				return $service->pagespeedapi->runpagespeed(
 					$page_url,
 					array(
-						'locale'   => substr( get_locale(), 0, 2 ),
+						'locale'   => $this->context->get_locale( 'site', 'language-code' ),
 						'strategy' => $data['strategy'],
 					)
 				);
@@ -188,23 +188,6 @@ final class PageSpeed_Insights extends Module
 		return array(
 			'pagespeedonline' => new Google_Service_Pagespeedonline( $client ),
 		);
-	}
-
-	/**
-	 * Returns all module information data for passing it to JavaScript.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array Module information data.
-	 */
-	public function prepare_info_for_js() {
-		$info = parent::prepare_info_for_js();
-
-		$info['provides'] = array(
-			__( 'Website performance reports for mobile and desktop', 'google-site-kit' ),
-		);
-
-		return $info;
 	}
 
 	/**

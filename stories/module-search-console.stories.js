@@ -32,8 +32,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import Layout from '../assets/js/components/layout/Layout';
-import SearchConsoleDashboardWidgetOverview from '../assets/js/modules/search-console/components/dashboard/SearchConsoleDashboardWidgetOverview';
-import SearchConsoleDashboardWidgetSiteStats from '../assets/js/modules/search-console/components/dashboard/SearchConsoleDashboardWidgetSiteStats';
+import LegacySearchConsoleDashboardWidgetOverview from '../assets/js/modules/search-console/components/dashboard/LegacySearchConsoleDashboardWidgetOverview';
+import LegacySearchConsoleDashboardWidgetSiteStats from '../assets/js/modules/search-console/components/dashboard/LegacySearchConsoleDashboardWidgetSiteStats';
 import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Search Console Module', module )
@@ -79,13 +79,13 @@ storiesOf( 'Search Console Module', module )
 					headerCTALabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
 					headerCTALink="https://search.google.com/search-console"
 				>
-					<SearchConsoleDashboardWidgetOverview
+					<LegacySearchConsoleDashboardWidgetOverview
 						selectedStats={ selectedStats }
 						handleDataError={ () => {} } // Required prop.
 					/>
-					<SearchConsoleDashboardWidgetSiteStats selectedStats={ selectedStats } series={ series } vAxes={ vAxes } />
+					<LegacySearchConsoleDashboardWidgetSiteStats selectedStats={ selectedStats } series={ series } vAxes={ vAxes } />
 				</Layout>
 			</WithTestRegistry>
 		);
 	},
-	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } );
+	{ options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' } } );

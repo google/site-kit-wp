@@ -24,31 +24,32 @@ import DashboardAllTrafficWidget from '../assets/js/modules/analytics/components
 import DashboardPopularPagesWidget from '../assets/js/modules/analytics/components/dashboard/DashboardPopularPagesWidget';
 import DashboardBounceRateWidget from '../assets/js/modules/analytics/components/dashboard/DashboardBounceRateWidget';
 import DashboardGoalsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardGoalsWidget';
-import DashboardUniqueVisitorsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardUniqueVisitorsWidget';
+import DashboardSearchVisitorsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardSearchVisitorsWidget';
+import { ModulePopularPagesWidget, ModuleOverviewWidget, ModuleAcquisitionChannelsWidget } from '../assets/js/modules/analytics/components/module';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
 import { accountsPropertiesProfiles, goals } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 
-/**
- * Defines some additional setup for all stories.
- *
- * @since 1.19.0
- *
- * @param {wp.data.registry} registry Registry with all available stores registered.
- */
-const setup = ( registry ) => {
-	const [ property ] = accountsPropertiesProfiles.properties;
-	registry.dispatch( STORE_NAME ).receiveGetSettings( {
-		// eslint-disable-next-line sitekit/acronym-case
-		accountID: property.accountId,
-		// eslint-disable-next-line sitekit/acronym-case
-		internalWebPropertyID: property.internalWebPropertyId,
-		// eslint-disable-next-line sitekit/acronym-case
-		profileID: property.defaultProfileId,
-	} );
-};
-
 const generateData = makeReportDataGenerator( getAnalyticsMockResponse );
+
+function generateAnalyticsWidgetStories( args ) {
+	generateReportBasedWidgetStories( {
+		moduleSlugs: [ 'analytics' ],
+		datastore: STORE_NAME,
+		setup( registry ) {
+			const [ property ] = accountsPropertiesProfiles.properties;
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+				// eslint-disable-next-line sitekit/acronym-case
+				accountID: property.accountId,
+				// eslint-disable-next-line sitekit/acronym-case
+				internalWebPropertyID: property.internalWebPropertyId,
+				// eslint-disable-next-line sitekit/acronym-case
+				profileID: property.defaultProfileId,
+			} );
+		},
+		...args,
+	} );
+}
 
 const baseAllTrafficArgs = {
 	startDate: '2020-12-09',
@@ -127,9 +128,7 @@ function limitResponseToSingleRow( analyticsResponse ) {
 	];
 }
 
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'analytics' ],
-	datastore: STORE_NAME,
+generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Dashboard/All Traffic Widget',
 	referenceDate: '2021-01-06',
 	...allTrafficReports,
@@ -147,12 +146,9 @@ generateReportBasedWidgetStories( {
 		},
 	},
 	wrapWidget: false,
-	setup,
 } );
 
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'analytics' ],
-	datastore: STORE_NAME,
+generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Page Dashboard/All Traffic Widget',
 	referenceDate: '2021-01-06',
 	...generateData( [
@@ -212,12 +208,9 @@ generateReportBasedWidgetStories( {
 	] ),
 	Component: DashboardAllTrafficWidget,
 	wrapWidget: false,
-	setup,
 } );
 
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'analytics' ],
-	datastore: STORE_NAME,
+generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Page Dashboard/Bounce Rate Widget',
 	referenceDate: '2020-09-10',
 	...generateData( {
@@ -235,27 +228,39 @@ generateReportBasedWidgetStories( {
 		url: 'https://www.sitekit.com/',
 	} ),
 	Component: DashboardBounceRateWidget,
-	setup,
 } );
 
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'analytics' ],
-	datastore: STORE_NAME,
+generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Dashboard/Goals Widget',
 	referenceDate: '2020-12-30',
-	...generateData( {
-		compareStartDate: '2020-11-04',
-		compareEndDate: '2020-12-01',
-		startDate: '2020-12-02',
-		endDate: '2020-12-29',
-		dimensions: 'ga:date',
-		metrics: [
-			{
-				expression: 'ga:goalCompletionsAll',
-				alias: 'Goal Completions',
-			},
-		],
-	} ),
+	...generateData( [
+		{
+			compareStartDate: '2020-11-04',
+			compareEndDate: '2020-12-01',
+			startDate: '2020-12-02',
+			endDate: '2020-12-29',
+			dimensions: 'ga:date',
+			metrics: [
+				{
+					expression: 'ga:goalCompletionsAll',
+					alias: 'Goal Completions',
+				},
+			],
+		},
+		{
+			compareStartDate: '2020-11-04',
+			compareEndDate: '2020-12-01',
+			startDate: '2020-12-02',
+			endDate: '2020-12-29',
+			url: null,
+			metrics: [
+				{
+					expression: 'ga:users',
+					alias: 'Total Users',
+				},
+			],
+		},
+	] ),
 	Component: DashboardGoalsWidget,
 	additionalVariants: {
 		'No Goals':
@@ -279,14 +284,11 @@ generateReportBasedWidgetStories( {
 	},
 	additionalVariantCallbacks: {
 		Loaded: ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
-		'Data Unavailable': ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
+		DataUnavailable: ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
 	},
-	setup,
 } );
 
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'analytics' ],
-	datastore: STORE_NAME,
+generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Dashboard/Unique Visitors Widget',
 	referenceDate: '2020-09-08',
 	...generateData( [
@@ -295,6 +297,8 @@ generateReportBasedWidgetStories( {
 			compareEndDate: '2020-08-10',
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
+			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+			dimensions: [ 'ga:channelGrouping' ],
 			metrics: [
 				{
 					expression: 'ga:users',
@@ -305,23 +309,20 @@ generateReportBasedWidgetStories( {
 		{
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
-			dimensions: 'ga:date',
+			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+			dimensions: [ 'ga:date', 'ga:channelGrouping' ],
 			metrics: [
 				{
 					expression: 'ga:users',
 					alias: 'Users',
 				},
 			],
-
 		},
 	] ),
-	Component: DashboardUniqueVisitorsWidget,
-	setup,
+	Component: DashboardSearchVisitorsWidget,
 } );
 
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'analytics' ],
-	datastore: STORE_NAME,
+generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Page Dashboard/Unique Visitors Widget',
 	referenceDate: '2020-09-08',
 	...generateData( [
@@ -331,6 +332,8 @@ generateReportBasedWidgetStories( {
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
 			url: 'https://www.example.com/example-page/',
+			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+			dimensions: [ 'ga:channelGrouping' ],
 			metrics: [
 				{
 					expression: 'ga:users',
@@ -342,23 +345,20 @@ generateReportBasedWidgetStories( {
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
 			url: 'https://www.example.com/example-page/',
-			dimensions: 'ga:date',
+			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+			dimensions: [ 'ga:date', 'ga:channelGrouping' ],
 			metrics: [
 				{
 					expression: 'ga:users',
 					alias: 'Users',
 				},
 			],
-
 		},
 	] ),
-	Component: DashboardUniqueVisitorsWidget,
-	setup,
+	Component: DashboardSearchVisitorsWidget,
 } );
 
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'analytics' ],
-	datastore: STORE_NAME,
+generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Dashboard/Popular Pages Widget',
 	referenceDate: '2020-09-10',
 	...generateData( {
@@ -384,5 +384,108 @@ generateReportBasedWidgetStories( {
 	} ),
 	Component: DashboardPopularPagesWidget,
 	wrapWidget: false,
-	setup,
+} );
+
+generateAnalyticsWidgetStories( {
+	group: 'Analytics Module/Components/Module Page/Overview Widget',
+	referenceDate: '2021-01-06',
+	...generateData( [
+		{
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			compareStartDate: '2020-11-11',
+			compareEndDate: '2020-12-08',
+			metrics: [
+				'ga:users',
+				'ga:sessions',
+				'ga:bounceRate',
+				'ga:avgSessionDuration',
+			],
+		},
+		{
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			compareStartDate: '2020-11-11',
+			compareEndDate: '2020-12-08',
+			dimensions: 'ga:date',
+			metrics: [
+				'ga:users',
+				'ga:sessions',
+				'ga:bounceRate',
+				'ga:avgSessionDuration',
+			],
+		},
+	] ),
+	Component: ModuleOverviewWidget,
+	wrapWidget: false,
+} );
+
+generateAnalyticsWidgetStories( {
+	group: 'Analytics Module/Components/Module Page/Popular Pages Widget',
+	referenceDate: '2021-01-06',
+	...generateData( {
+		startDate: '2020-12-09',
+		endDate: '2021-01-05',
+		dimensions: [
+			'ga:pageTitle',
+			'ga:pagePath',
+		],
+		metrics: [
+			{
+				expression: 'ga:pageviews',
+				alias: 'Pageviews',
+			},
+			{
+				expression: 'ga:uniquePageviews',
+				alias: 'Unique Pageviews',
+			},
+			{
+				expression: 'ga:bounceRate',
+				alias: 'Bounce rate',
+			},
+		],
+		orderby: [
+			{
+				fieldName: 'ga:pageviews',
+				sortOrder: 'DESCENDING',
+			},
+		],
+		limit: 10,
+	} ),
+	Component: ModulePopularPagesWidget,
+	wrapWidget: false,
+} );
+generateAnalyticsWidgetStories( {
+	group: 'Analytics Module/Components/Module Page/Acquisition Channels Widget',
+	referenceDate: '2021-01-06',
+	...generateData(
+		{
+			dimensions: 'ga:channelGrouping',
+			metrics: [
+				{
+					expression: 'ga:sessions',
+					alias: 'Sessions',
+				},
+				{
+					expression: 'ga:users',
+					alias: 'Users',
+				},
+				{
+					expression: 'ga:newUsers',
+					alias: 'New Users',
+				},
+			],
+			orderby: [
+				{
+					fieldName: 'ga:users',
+					sortOrder: 'DESCENDING',
+				},
+			],
+			limit: 10,
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+		}
+	),
+	Component: ModuleAcquisitionChannelsWidget,
+	wrapWidget: false,
 } );

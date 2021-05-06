@@ -20,7 +20,6 @@
  * External dependencies
  */
 import {
-	isEqual,
 	isFinite,
 	get,
 	unescape,
@@ -29,10 +28,8 @@ import {
 /**
  * WordPress dependencies
  */
-import {
-	addFilter,
-} from '@wordpress/hooks';
-import { addQueryArgs, getQueryString } from '@wordpress/url';
+import { addFilter } from '@wordpress/hooks';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -48,6 +45,8 @@ export * from './i18n';
 export * from './helpers';
 export * from './markdown';
 export * from './convert-time';
+export * from './date-range';
+export * from './chart';
 
 /**
  * Removes a parameter from a URL string.
@@ -236,61 +235,6 @@ export const getModulesData = ( __googlesitekitLegacyData = global._googlesiteki
 };
 
 /**
- * Gets the URL needed to initiate a reAuth flow.
- *
- * @since 1.0.0
- *
- * @param {string}  slug                      The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
- * @param {boolean} status                    The module activation status.
- * @param {Object}  __googlesitekitLegacyData Legacy data global; can be replaced for testing.
- * @return {string} Authentication URL.
- */
-export const getReAuthURL = ( slug, status, __googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
-	const {
-		connectURL,
-		adminRoot,
-	} = __googlesitekitLegacyData.admin;
-
-	const { needReauthenticate } = __googlesitekitLegacyData.setup;
-
-	const { screenID } = getModulesData( __googlesitekitLegacyData )[ slug ];
-
-	// Special case handling for PageSpeed Insights.
-	// TODO: Refactor this out.
-	const pageSpeedQueryArgs = 'pagespeed-insights' === slug ? {
-		notification: 'authentication_success',
-		reAuth: undefined,
-	} : {};
-
-	let redirect = addQueryArgs(
-		adminRoot, {
-			// If the module has a submenu page, and is being activated, redirect back to the module page.
-			page: ( slug && status && screenID ) ? screenID : 'googlesitekit-dashboard',
-			slug,
-			reAuth: status,
-			...pageSpeedQueryArgs,
-		}
-	);
-
-	if ( ! needReauthenticate ) {
-		return redirect;
-	}
-
-	// Encodes the query string to ensure the redirect url is not messing up with the main url.
-	const queryString = encodeURIComponent( getQueryString( redirect ) );
-
-	// Rebuild the redirect url.
-	redirect = adminRoot + '?' + queryString;
-
-	return addQueryArgs(
-		connectURL, {
-			redirect,
-			status,
-		}
-	);
-};
-
-/**
  * Gets Site Kit Admin URL Helper.
  *
  * @since 1.0.0
@@ -336,69 +280,6 @@ export const validateJSON = ( stringToValidate ) => {
  */
 export const validateOptimizeID = ( stringToValidate ) => {
 	return ( stringToValidate.match( /^(GTM|OPT)-[a-zA-Z\d]{7}$/ ) );
-};
-
-/**
- * Activates/deactivates a Module.
- *
- * @since 1.0.0
- *
- * @param {Object}   restApiClient   Rest API client from data module, this needed so we don't need to import data module in helper.
- * @param {string}   moduleSlug      Module slug to activate or deactivate.
- * @param {boolean}  status          True if module should be activated, false if it should be deactivated.
- * @param {Function} _trackEvent     Track event function; can be replaced for testing.
- * @param {Function} _getModulesData Get modules function; can be replaced for testing.
- * @return {Promise} A promise for activating/deactivating a module.
- */
-export const activateOrDeactivateModule = async ( restApiClient, moduleSlug, status, _trackEvent = trackEvent, _getModulesData = getModulesData ) => {
-	const responseData = await restApiClient.setModuleActive( moduleSlug, status );
-	const modulesData = _getModulesData();
-
-	// We should really be using state management. This is terrible.
-	if ( modulesData[ moduleSlug ] ) {
-		modulesData[ moduleSlug ].active = status;
-	}
-
-	await _trackEvent(
-		`${ moduleSlug }_setup`,
-		! status ? 'module_deactivate' : 'module_activate',
-		moduleSlug,
-	);
-
-	return responseData;
-};
-
-/**
- * Toggles confirm changes button disable/enable depending on the module changed settings.
- *
- * @since 1.0.0
- *
- * @param {string} moduleSlug                The module slug being edited.
- * @param {Object} settingsMapping           The mapping between form settings names and saved settings.
- * @param {Object} settingsState             The changed settings component state to compare with.
- * @param {Object} skipDOM                   Skip DOm checks/modifications, used for testing.
- * @param {Object} __googlesitekitLegacyData `_googlesitekitLegacyData` global; can be replaced for testing.
- * @return {(void|boolean)} True if a module has been toggled.
- */
-export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, __googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
-	const { settings, setupComplete } = getModulesData( __googlesitekitLegacyData )[ moduleSlug ];
-	const confirm = skipDOM || document.getElementById( `confirm-changes-${ moduleSlug }` );
-
-	if ( ! setupComplete || ! confirm ) {
-		return;
-	}
-
-	// Check if any of the mapped settings differ from the current/saved settings.
-	const changed = !! Object.keys( settingsMapping ).find( ( stateKey ) => {
-		const settingsKey = settingsMapping[ stateKey ];
-		return ! isEqual( settingsState[ stateKey ], settings[ settingsKey ] );
-	} );
-
-	if ( ! skipDOM ) {
-		confirm.disabled = ! changed;
-	}
-
-	return changed;
 };
 
 /**

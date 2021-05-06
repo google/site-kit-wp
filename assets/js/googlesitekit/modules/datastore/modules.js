@@ -42,6 +42,7 @@ import { CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { listFormat } from '../../../util';
 import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
+import { createValidatedAction } from '../../data/utils';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -64,6 +65,7 @@ const moduleDefaults = {
 	dependencies: [],
 	dependants: [],
 	order: 10,
+	features: [],
 	Icon: null,
 	SettingsEditComponent: null,
 	SettingsViewComponent: null,
@@ -207,22 +209,25 @@ const baseActions = {
 	 * @param {boolean} active `true` to activate; `false` to deactivate.
 	 * @return {Object}         Object with `{response, error}`.
 	 */
-	*setModuleActivation( slug, active ) {
-		invariant( slug, 'slug is required.' );
-		invariant( active !== undefined, 'active is required.' );
+	setModuleActivation: createValidatedAction(
+		( slug, active ) => {
+			invariant( slug, 'slug is required.' );
+			invariant( active !== undefined, 'active is required.' );
+		},
+		function* ( slug, active ) {
+			const { response, error } = yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation( slug, active );
+			if ( response?.success === true ) {
+				// Fetch (or re-fetch) all modules, with their updated status.
+				yield fetchGetModulesStore.actions.fetchGetModules();
+				yield {
+					payload: {},
+					type: REFETCH_AUTHENTICATION,
+				};
+			}
 
-		const { response, error } = yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation( slug, active );
-		if ( response?.success === true ) {
-			// Fetch (or re-fetch) all modules, with their updated status.
-			yield fetchGetModulesStore.actions.fetchGetModules();
-			yield {
-				payload: {},
-				type: REFETCH_AUTHENTICATION,
-			};
+			return { response, error };
 		}
-
-		return { response, error };
-	},
+	),
 
 	/**
 	 * Registers a module.
@@ -233,41 +238,31 @@ const baseActions = {
 	 * @since 1.23.0 Introduced the ability to register an Icon component.
 	 * @since 1.24.0 Introduced the ability to explictly define a module store name.
 	 *
-	 * @param {string}      slug                                        Module slug.
-	 * @param {Object}      [settings]                                  Optional. Module settings.
-	 * @param {string}      [settings.storeName]                        Optional. Module storeName. If none is provided we assume no store exists for this module.
-	 * @param {string}      [settings.name]                             Optional. Module name. Default is the slug.
-	 * @param {string}      [settings.description]                      Optional. Module description. Default empty string.
-	 * @param {WPComponent} [settings.Icon]                             Optional. React component to render module icon. Default none.
-	 * @param {number}      [settings.order]                            Optional. Numeric indicator for module order. Default 10.
-	 * @param {string}      [settings.homepage]                         Optional. Module homepage URL. Default empty string.
-	 * @param {WPComponent} [settings.SettingsEditComponent]            Optional. React component to render the settings edit panel. Default none.
-	 * @param {WPComponent} [settings.SettingsViewComponent]            Optional. React component to render the settings view panel. Default none.
-	 * @param {WPComponent} [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
-	 * @param {WPComponent} [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
-	 * @param {Function}    [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
-	 * @param {Function}    [settings.screenWidgetContext]              Optional. Get the registered context name for a given module.
+	 * @param {string}         slug                                        Module slug.
+	 * @param {Object}         [settings]                                  Optional. Module settings.
+	 * @param {string}         [settings.storeName]                        Optional. Module storeName. If none is provided we assume no store exists for this module.
+	 * @param {string}         [settings.name]                             Optional. Module name. Default is the slug.
+	 * @param {string}         [settings.description]                      Optional. Module description. Default empty string.
+	 * @param {Array.<string>} [settings.features]                         Optional. Module features. Default empty array.
+	 * @param {WPComponent}    [settings.Icon]                             Optional. React component to render module icon. Default none.
+	 * @param {number}         [settings.order]                            Optional. Numeric indicator for module order. Default 10.
+	 * @param {string}         [settings.homepage]                         Optional. Module homepage URL. Default empty string.
+	 * @param {WPComponent}    [settings.SettingsEditComponent]            Optional. React component to render the settings edit panel. Default none.
+	 * @param {WPComponent}    [settings.SettingsViewComponent]            Optional. React component to render the settings view panel. Default none.
+	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
+	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
+	 * @param {Function}       [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
+	 * @param {Function}       [settings.screenWidgetContext]              Optional. Get the registered context name for a given module.
 	 */
-	*registerModule( slug, {
-		storeName,
-		name,
-		description,
-		Icon,
-		order,
-		homepage,
-		SettingsEditComponent,
-		SettingsViewComponent,
-		SetupComponent,
-		SettingsSetupIncompleteComponent,
-		checkRequirements = () => true,
-		screenWidgetContext,
-	} = {} ) {
-		invariant( slug, 'module slug is required' );
-
-		const settings = {
+	registerModule: createValidatedAction(
+		( slug ) => {
+			invariant( slug, 'module slug is required' );
+		},
+		function* ( slug, {
 			storeName,
 			name,
 			description,
+			features,
 			Icon,
 			order,
 			homepage,
@@ -275,24 +270,40 @@ const baseActions = {
 			SettingsViewComponent,
 			SetupComponent,
 			SettingsSetupIncompleteComponent,
-			checkRequirements,
+			checkRequirements = () => true,
 			screenWidgetContext,
-		};
+		} = {} ) {
+			const settings = {
+				storeName,
+				name,
+				description,
+				features,
+				Icon,
+				order,
+				homepage,
+				SettingsEditComponent,
+				SettingsViewComponent,
+				SetupComponent,
+				SettingsSetupIncompleteComponent,
+				checkRequirements,
+				screenWidgetContext,
+			};
 
-		yield {
-			payload: {
-				settings,
-				slug,
-			},
-			type: REGISTER_MODULE,
-		};
+			yield {
+				payload: {
+					settings,
+					slug,
+				},
+				type: REGISTER_MODULE,
+			};
 
-		const registry = yield Data.commonActions.getRegistry();
+			const registry = yield Data.commonActions.getRegistry();
 
-		// As we can specify a custom checkRequirements function here, we're invalidating the resolvers for activation checks.
-		yield registry.dispatch( STORE_NAME ).invalidateResolution( 'canActivateModule', [ slug ] );
-		yield registry.dispatch( STORE_NAME ).invalidateResolution( 'getCheckRequirementsError', [ slug ] );
-	},
+			// As we can specify a custom checkRequirements function here, we're invalidating the resolvers for activation checks.
+			yield registry.dispatch( STORE_NAME ).invalidateResolution( 'canActivateModule', [ slug ] );
+			yield registry.dispatch( STORE_NAME ).invalidateResolution( 'getCheckRequirementsError', [ slug ] );
+		}
+	),
 
 	/**
 	 * Receives the check requirements error map for specified modules modules.
@@ -820,6 +831,28 @@ const baseSelectors = {
 		const screenWidgetContext = modules[ moduleSlug ]?.screenWidgetContext;
 
 		return screenWidgetContext || null;
+	} ),
+
+	/**
+	 * Gets the module's list of features.
+	 *
+	 * Returns a list of features of this module.
+	 *
+	 * @since 1.30.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(Array|undefined)} An array of features for the module; `undefined` if state is still loading.
+	 */
+	getModuleFeatures: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const modules = select( STORE_NAME ).getModules();
+
+		// Return `undefined` if modules haven't been loaded yet.
+		if ( modules === undefined ) {
+			return undefined;
+		}
+
+		return Array.isArray( modules[ slug ]?.features ) ? modules[ slug ].features : [];
 	} ),
 };
 

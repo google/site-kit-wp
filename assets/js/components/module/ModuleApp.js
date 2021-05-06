@@ -59,7 +59,7 @@ function ModuleApp( { moduleSlug } ) {
 				{ helpVisibilityEnabled && (
 					<HelpMenu>
 						{ moduleSlug === 'adsense' && (
-							<HelpMenuLink href="https://support.google.com/adsense/">
+							<HelpMenuLink gaEventLabel="adsense_help" href="https://support.google.com/adsense/">
 								{ __( 'Get help with AdSense', 'google-site-kit' ) }
 							</HelpMenuLink>
 						) }
@@ -68,8 +68,8 @@ function ModuleApp( { moduleSlug } ) {
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
 			<Alert module={ moduleSlug } />
-			{ shouldRenderWidget &&
-				<Fragment>
+			{ shouldRenderWidget
+				? (
 					<WidgetContextRenderer
 						slug={ screenWidgetContext }
 						className={ classNames( [
@@ -79,9 +79,9 @@ function ModuleApp( { moduleSlug } ) {
 						Header={ getModuleHeader }
 						Footer={ ModuleFooter }
 					/>
-				</Fragment>
+				)
+				: <LegacyModuleApp />
 			}
-			<LegacyModuleApp />
 		</Fragment>
 	);
 }

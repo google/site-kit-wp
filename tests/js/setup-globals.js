@@ -20,8 +20,8 @@ global.React = React;
 
 global._googlesitekitLegacyData = {
 	admin: {
-		connectURL: 'http://sitekit.withgoogle.com/wp-admin/admin.php?googlesitekit_connect=1&nonce=12345&page=googlesitekit-splash',
-		adminRoot: 'http://sitekit.withgoogle.com/wp-admin/admin.php',
+		connectURL: 'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
+		adminRoot: 'http://example.com/wp-admin/admin.php',
 	},
 	modules: {
 		'search-console': {
@@ -35,6 +35,18 @@ global._googlesitekitLegacyData = {
 		analytics: {
 			slug: 'analytics',
 			name: 'Analytics',
+		},
+		adsense: {
+			slug: 'adsense',
+			name: 'AdSense',
+		},
+		optimize: {
+			slug: 'optimize',
+			name: 'Optimize',
+		},
+		tagmanager: {
+			slug: 'tagmanager',
+			name: 'Tag Manager',
 		},
 	},
 	setup: {

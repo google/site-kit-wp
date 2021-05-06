@@ -22,7 +22,7 @@
 import {
 	camelCaseToPascalCase,
 	camelCaseToConstantCase,
-	kebabCaseToPascalCase,
+	hyphenCaseToPascalCase,
 } from './transform-case';
 
 describe( 'camelCaseToPascalCase', () => {
@@ -68,7 +68,7 @@ describe( 'camelCaseToConstantCase', () => {
 	} );
 } );
 
-describe( 'kebab-caseToPascalCase', () => {
+describe( 'hyphen-caseToPascalCase', () => {
 	it.each( [
 		[
 			'test-setting',
@@ -87,6 +87,6 @@ describe( 'kebab-caseToPascalCase', () => {
 			'AmpExperimentJson',
 		],
 	] )( 'transforms "%s" names to "%s"', ( name, expected ) => {
-		expect( kebabCaseToPascalCase( name ) ).toEqual( expected );
+		expect( hyphenCaseToPascalCase( name ) ).toEqual( expected );
 	} );
 } );

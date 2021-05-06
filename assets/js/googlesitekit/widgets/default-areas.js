@@ -18,23 +18,23 @@
 
 export const AREA_DASHBOARD_ALL_TRAFFIC = 'dashboardAllTraffic';
 export const AREA_DASHBOARD_SEARCH_FUNNEL = 'dashboardSearchFunnel';
-export const AREA_DASHBOARD_POPULARITY = 'dashboardPopularity';
+export const AREA_DASHBOARD_ACQUISITION = 'dashboardAcquisition';
 export const AREA_DASHBOARD_SPEED = 'dashboardSpeed';
 export const AREA_DASHBOARD_EARNINGS = 'dashboardEarnings';
 
 export const AREA_PAGE_DASHBOARD_SEARCH_FUNNEL = 'pageDashboardSearchFunnel';
 export const AREA_PAGE_DASHBOARD_ALL_TRAFFIC = 'pageDashboardAllTraffic';
-export const AREA_PAGE_DASHBOARD_POPULARITY = 'pageDashboardPopularity';
+export const AREA_PAGE_DASHBOARD_ACQUISITION = 'pageDashboardAcquisition';
 export const AREA_PAGE_DASHBOARD_SPEED = 'pageDashboardSpeed';
 
 export default {
 	AREA_DASHBOARD_ALL_TRAFFIC,
 	AREA_DASHBOARD_SEARCH_FUNNEL,
-	AREA_DASHBOARD_POPULARITY,
+	AREA_DASHBOARD_ACQUISITION,
 	AREA_DASHBOARD_SPEED,
 	AREA_DASHBOARD_EARNINGS,
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
-	AREA_PAGE_DASHBOARD_POPULARITY,
+	AREA_PAGE_DASHBOARD_ACQUISITION,
 	AREA_PAGE_DASHBOARD_SPEED,
 };

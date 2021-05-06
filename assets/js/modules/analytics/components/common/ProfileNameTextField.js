@@ -17,9 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
@@ -42,13 +47,13 @@ export default function ProfileNameTextField() {
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback( ( { currentTarget } ) => {
 		setValues( FORM_SETUP, { profileName: currentTarget.value } );
-	}, [] );
+	}, [ setValues ] );
 
-	useEffect( () => {
+	useMount( () => {
 		if ( ! profileName ) {
 			setValues( FORM_SETUP, { profileName: _x( 'All Web Site Data', 'default Analytics view name', 'google-site-kit' ) } );
 		}
-	}, [] );
+	} );
 
 	// bounce if an existing profile is selected
 	if ( profileID !== PROFILE_CREATE ) {

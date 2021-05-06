@@ -33,7 +33,7 @@ import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function useExistingTagEffect() {
-	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
+	const { setAccountID, selectProperty, setUseSnippet } = useDispatch( STORE_NAME );
 	const gtmModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'tagmanager' ) );
 
 	const {
@@ -77,6 +77,8 @@ export default function useExistingTagEffect() {
 
 	useEffect( () => {
 		if ( existingTag ) {
+			// Disable the plugin snippet
+			setUseSnippet( false );
 			if ( existingTagPermission && existingTagAccountID ) {
 				// There is an existing Analytics tag, select it.
 				setAccountID( existingTagAccountID );
@@ -98,5 +100,8 @@ export default function useExistingTagEffect() {
 		gtmAnalyticsAccountID,
 		gtmAnalyticsPermission,
 		gtmModuleActive,
+		selectProperty,
+		setAccountID,
+		setUseSnippet,
 	] );
 }

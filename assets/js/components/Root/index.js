@@ -45,7 +45,7 @@ export default function Root( {
 	return (
 		<Data.RegistryProvider value={ registry }>
 			<FeaturesProvider value={ enabledFeatures }>
-				<ErrorHandler>
+				<ErrorHandler viewContext={ viewContext }>
 					<RestoreSnapshots>
 						<HashRouter>
 							{ children }

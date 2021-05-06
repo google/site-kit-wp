@@ -49,7 +49,7 @@ export default function SetupAccountApproved() {
 			return;
 		}
 		await completeAccountSetup();
-	}, [ isDoingSubmitChanges ] );
+	}, [ isDoingSubmitChanges, completeAccountSetup ] );
 
 	if ( undefined === existingTag || undefined === originalAccountStatus ) {
 		return null;
@@ -85,21 +85,21 @@ export default function SetupAccountApproved() {
 			__( 'Site Kit detected AdSense code for a different account %s on your site. For a better ads experience, you should remove AdSense code that’s not linked to this AdSense account.', 'google-site-kit' ),
 			parseAccountID( existingTag )
 		);
-		uncheckedMessage = __( 'By not placing the code, AdSense will not show ads on your website unless you’ve already got some AdSense code.', 'google-site-kit' );
+		uncheckedMessage = __( 'Please note that AdSense will not show ads on your website unless you’ve already placed the code.', 'google-site-kit' );
 	} else {
 		// No existing tag.
 		showProfile = false;
-		uncheckedMessage = __( 'By not placing the code, AdSense will not show ads on your website unless you’ve already got some AdSense code.', 'google-site-kit' );
+		uncheckedMessage = __( 'Please note that AdSense will not show ads on your website unless you’ve already placed the code.', 'google-site-kit' );
 	}
 
 	return (
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
 				{ isApprovedFromVeryBeginning &&
-					__( 'Looks like you’re already using AdSense', 'google-site-kit' )
+					<span>{ __( 'Looks like you’re already using AdSense', 'google-site-kit' ) }</span>
 				}
 				{ ! isApprovedFromVeryBeginning &&
-					__( 'Your account is ready to use AdSense', 'google-site-kit' )
+					<span>{ __( 'Your account is ready to use AdSense', 'google-site-kit' ) }</span>
 				}
 			</h3>
 
@@ -107,10 +107,10 @@ export default function SetupAccountApproved() {
 
 			<p>
 				{ isApprovedFromVeryBeginning &&
-					__( 'Site Kit will place AdSense code on your site to connect your site to AdSense and help you get the most out of ads. This means Google will automatically place ads for you in all the best places.', 'google-site-kit' )
+					<span>{ __( 'Site Kit will place AdSense code on your site to connect your site to AdSense and help you get the most out of ads. This means Google will automatically place ads for you in all the best places.', 'google-site-kit' ) }</span>
 				}
 				{ ! isApprovedFromVeryBeginning &&
-					__( 'Site Kit has placed AdSense code on your site to connect your site to AdSense and help you get the most out of ads. This means Google will automatically place ads for you in all the best places.', 'google-site-kit' )
+					<span>{ __( 'Site Kit has placed AdSense code on your site to connect your site to AdSense and help you get the most out of ads. This means Google will automatically place ads for you in all the best places.', 'google-site-kit' ) }</span>
 				}
 			</p>
 

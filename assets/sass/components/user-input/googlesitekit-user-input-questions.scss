@@ -22,12 +22,12 @@
 		background-color: $c-white;
 		border-bottom: 1px solid $c-mercury;
 		box-shadow: 0 -1px 5px rgba($c-jumbo, 0.09);
+		margin-left: -10px;
+		margin-right: -10px;
 		padding: 50px 24px;
 		position: relative;
 
-		@media (min-width: $bp-tablet) {
-			margin-left: -10px;
-			margin-right: -10px;
+		@media (min-width: $bp-desktop) {
 			padding: 50px 34px;
 		}
 	}
@@ -113,6 +113,15 @@
 			height: 24px;
 			margin-right: 8px;
 			width: 24px;
+		}
+	}
+
+	.googlesitekit-user-input__question--progress {
+		margin: 0 auto;
+		max-width: calc(100% - #{$grid-gap-phone * 2});
+
+		@media (min-width: $bp-desktop) {
+			max-width: calc(100% - #{$grid-gap-desktop * 2});
 		}
 	}
 }

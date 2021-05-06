@@ -41,6 +41,7 @@ import {
 	INVARIANT_INVALID_PROFILE_NAME,
 	INVARIANT_INVALID_PROFILE_SELECTION,
 	INVARIANT_INVALID_PROPERTY_SELECTION,
+	INVARIANT_INVALID_CONVERSION_ID,
 } from './settings';
 
 describe( 'modules/analytics settings', () => {
@@ -48,6 +49,7 @@ describe( 'modules/analytics settings', () => {
 
 	const validSettings = {
 		accountID: '12345',
+		adsConversionID: '',
 		propertyID: 'UA-12345-1',
 		internalWebPropertyID: '23245',
 		profileID: '54321',
@@ -392,6 +394,22 @@ describe( 'modules/analytics settings', () => {
 
 				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_PROFILE_SELECTION );
+			} );
+
+			it( 'requires a valid adsConversionID when provided', () => {
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( tagWithPermission.propertyID );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( tagWithPermission, { propertyID: tagWithPermission.propertyID } );
+
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+
+				registry.dispatch( STORE_NAME ).setAdsConversionID( '12345' );
+
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_CONVERSION_ID );
+
+				registry.dispatch( STORE_NAME ).setAdsConversionID( 'AW-12345' );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 			} );
 
 			it( 'requires permission for GTM Analytics tag if the tag is present', () => {

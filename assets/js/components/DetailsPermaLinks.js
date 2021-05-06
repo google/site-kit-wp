@@ -20,6 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -32,11 +33,12 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import Link from './Link';
+import getFullURL from '../util/getFullURL';
 const { useSelect } = Data;
 
-export default function DetailsPermaLinks( { title, path } ) {
+export default function DetailsPermaLinks( { title, path, serviceURL } ) {
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
-	const permaLink = new URL( path, siteURL ).href;
+	const permaLink = getFullURL( siteURL, path );
 	const detailsURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink } );
 	} );
@@ -44,9 +46,9 @@ export default function DetailsPermaLinks( { title, path } ) {
 	return (
 		<Fragment>
 			<Link
-				className="googlesitekit-display-block"
-				href={ detailsURL }
+				href={ serviceURL || detailsURL }
 				inherit
+				external={ !! serviceURL }
 			>
 				{ title }
 			</Link>
@@ -66,3 +68,9 @@ export default function DetailsPermaLinks( { title, path } ) {
 		</Fragment>
 	);
 }
+
+DetailsPermaLinks.propTypes = {
+	title: PropTypes.string,
+	path: PropTypes.string,
+	serviceURL: PropTypes.string,
+};

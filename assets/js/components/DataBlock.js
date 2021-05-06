@@ -84,25 +84,24 @@ class DataBlock extends Component {
 		}
 
 		let changeFormatted = change;
-		if ( change ) {
-			// If changeDataUnit is given, try using it as currency first, otherwise add it as suffix.
-			if ( changeDataUnit ) {
-				if ( changeDataUnit === '%' ) {
-					// Format percentage change with only 1 digit instead of the usual 2.
-					changeFormatted = numFmt( change, {
-						style: 'percent',
-						signDisplay: 'never',
-						maximumFractionDigits: 1,
-					} );
-				} else {
-					changeFormatted = numFmt( change, changeDataUnit );
-				}
-			}
 
-			// If period is given (requires %s placeholder), add it.
-			if ( period ) {
-				changeFormatted = sprintf( period, changeFormatted );
+		// If changeDataUnit is given, try using it as currency first, otherwise add it as suffix.
+		if ( changeDataUnit ) {
+			if ( changeDataUnit === '%' ) {
+				// Format percentage change with only 1 digit instead of the usual 2.
+				changeFormatted = numFmt( change, {
+					style: 'percent',
+					signDisplay: 'never',
+					maximumFractionDigits: 1,
+				} );
+			} else {
+				changeFormatted = numFmt( change, changeDataUnit );
 			}
+		}
+
+		// If period is given (requires %s placeholder), add it.
+		if ( period ) {
+			changeFormatted = sprintf( period, changeFormatted );
 		}
 
 		const datapointFormatted = datapoint && numFmt( datapoint, datapointUnit || undefined );
@@ -139,20 +138,23 @@ class DataBlock extends Component {
 					</div>
 				) }
 				<div className="googlesitekit-data-block__change-source-wrapper">
-					<div className="googlesitekit-data-block__change">
-						{ !! change && (
-							<Fragment>
+					<div className={ classnames(
+						'googlesitekit-data-block__change',
+						{ 'googlesitekit-data-block__change--no-change': ! change }
+					) }>
+						<Fragment>
+							{ !! change && (
 								<span className="googlesitekit-data-block__arrow">
 									<ChangeArrow
 										direction={ 0 < parseFloat( change ) ? 'up' : 'down' }
 										invertColor={ invertChangeColor }
 									/>
 								</span>
-								<span className="googlesitekit-data-block__value">
-									{ changeFormatted }
-								</span>
-							</Fragment>
-						) }
+							) }
+							<span className="googlesitekit-data-block__value">
+								{ changeFormatted }
+							</span>
+						</Fragment>
 					</div>
 					{ source && (
 						<SourceLink
@@ -182,7 +184,10 @@ DataBlock.propTypes = {
 		PropTypes.string,
 		PropTypes.number,
 	] ),
-	changeDataUnit: PropTypes.string,
+	changeDataUnit: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.bool,
+	] ),
 	context: PropTypes.string,
 	period: PropTypes.string,
 	selected: PropTypes.bool,
