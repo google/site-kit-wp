@@ -38,6 +38,7 @@
 		width: 100%;
 
 		@media (max-width: $bp-mobileOnly ) {
+			table-layout: auto;
 
 			&.googlesitekit-table__wrapper--mobile-2-col {
 
@@ -182,11 +183,19 @@
 			margin-left: $grid-gap-desktop;
 			position: relative;
 
+			@media (max-width: $bp-mobileOnly ) {
+				margin-left: $grid-gap-phone + 4px;
+			}
+
 			&::before {
 				content: counter(table) ".";
 				counter-increment: table;
 				left: -$grid-gap-desktop;
 				position: absolute;
+
+				@media (max-width: $bp-mobileOnly ) {
+					left: -$grid-gap-phone - 4px;
+				}
 			}
 		}
 	}

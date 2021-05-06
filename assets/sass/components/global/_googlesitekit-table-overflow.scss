@@ -44,11 +44,10 @@
 
 	.googlesitekit-table-overflow__container {
 		overflow-x: auto;
-		white-space: nowrap;
+		white-space: normal;
 
 		@media (min-width: $bp-tablet) {
 			overflow-x: visible;
-			white-space: normal;
 		}
 	}
 }
