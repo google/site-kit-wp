@@ -32,6 +32,8 @@ import ModulesList from '../ModulesList';
 import SuccessGreenSVG from '../../../svg/success-green.svg';
 import UserInputSuccessNotification from '../notifications/UserInputSuccessNotification';
 
+const MODULE_SLUGS = [ 'search-console', 'adsense', 'analytics', 'pagespeed-insights' ];
+
 class DashboardSetupAlerts extends Component {
 	render() {
 		// Only show the connected win when the user completes setup flow.
@@ -69,9 +71,19 @@ class DashboardSetupAlerts extends Component {
 				if ( slug && modulesData[ slug ] ) {
 					winData.id = `${ winData.id }-${ slug }`;
 					winData.setupTitle = modulesData[ slug ].name;
+					// this is part of it
 					winData.description = __( 'Here are some other services you can connect to see even more stats:', 'google-site-kit' );
 
 					winData = applyFilters( `googlesitekit.SetupWinNotification-${ slug }`, winData );
+
+					// are all activated?
+					const numberOfActivatedModules = MODULE_SLUGS
+						.map( ( moduleSlug ) => modulesData[ moduleSlug ].setupComplete )
+						.filter( ( x ) => !! x ).length;
+
+					if ( numberOfActivatedModules === MODULE_SLUGS.length ) {
+						return null;
+					}
 				}
 
 				return (
@@ -93,7 +105,7 @@ class DashboardSetupAlerts extends Component {
 							anchorLinkLabel={ 'pagespeed-insights' === slug ? __( 'Jump to the bottom of the dashboard to see how fast your home page is.', 'google-site-kit' ) : '' }
 						>
 							<ModulesList
-								moduleSlugs={ [ 'search-console', 'adsense', 'analytics', 'pagespeed-insights' ] }
+								moduleSlugs={ MODULE_SLUGS }
 							/>
 						</Notification>
 					</Fragment>
