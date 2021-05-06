@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { getURLPath, getFullURL } from './urls';
+import { getURLPath, getFullURL, normalizeURL } from './urls';
 
 describe( 'getURLPath', () => {
 	it.each( [
@@ -28,7 +28,7 @@ describe( 'getURLPath', () => {
 		[ '/', 'http://example.com' ],
 		[ '/foo/bar.html', 'http://example.com:3333/foo/bar.html?query=string&test#heading' ],
 	] )( 'should return %s for %s', ( expected, url ) => {
-		expect( getURLPath( url ) ).toEqual( expected );
+		expect( getURLPath( url ) ).toBe( expected );
 	} );
 
 	it.each( [
@@ -49,8 +49,8 @@ describe( 'getFullURL', () => {
 		[ 'https://www.example.com:444/slug/slug', '/path', 'https://www.example.com:444/path' ],
 		[ 'https://www.firstexample.com/slug', 'https://www.secondexample.com/path', 'https://www.secondexample.com/path' ],
 		[ 'https://www.firstexample.com/slug', 'https://www.secondexample.com:9000/path', 'https://www.secondexample.com:9000/path' ],
-	] )( 'shoudl return the correct URL when "%s" and "%s" are passed', ( siteURL, path, expected ) => {
-		expect( getFullURL( siteURL, path ) ).toEqual( expected );
+	] )( 'should return the correct URL when "%s" and "%s" are passed', ( siteURL, path, expected ) => {
+		expect( getFullURL( siteURL, path ) ).toBe( expected );
 	} );
 
 	it.each( [
@@ -59,5 +59,16 @@ describe( 'getFullURL', () => {
 		[ 'site URL is passed as path parameter', '', 'https://www.example.com' ],
 	] )( 'should throw an error if %s', ( _, siteURL, path ) => {
 		expect( () => getFullURL( siteURL, path ) ).toThrow();
+	} );
+} );
+
+describe( 'normalizeURL', () => {
+	it.each( [
+		[ 'https://example.com', 'example.com' ],
+		[ 'http://example.com/', 'example.com' ],
+		[ 'http://www.example.com/', 'example.com' ],
+		[ 'http://www.example.com/slug/', 'example.com/slug' ],
+	] )( 'should normalize %s to %s', ( url, expected ) => {
+		expect( normalizeURL( url ) ).toBe( expected );
 	} );
 } );

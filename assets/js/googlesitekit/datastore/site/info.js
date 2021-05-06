@@ -32,7 +32,7 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
-import { getLocale } from '../../../util/i18n';
+import { getLocale, normalizeURL } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
@@ -519,10 +519,6 @@ export const selectors = {
 	 */
 	isSiteURLMatch: createRegistrySelector( ( select ) => ( state, url ) => {
 		const referenceURL = select( STORE_NAME ).getReferenceSiteURL();
-		const normalizeURL = ( incomingURL ) => incomingURL
-			.replace( /^https?:\/\/(www\.)?/i, '' ) // Remove protocol and optional "www." prefix from the URL.
-			.replace( /\/$/, '' ); // Remove trailing slash.
-
 		return normalizeURL( referenceURL ) === normalizeURL( url );
 	} ),
 };

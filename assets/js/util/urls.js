@@ -40,3 +40,17 @@ export function getURLPath( url ) {
 export function getFullURL( siteURL, path ) {
 	return new URL( path, siteURL ).href;
 }
+
+/**
+ * Normalizes URL by removing protocol, www subdomain and trailing slash.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} incomingURL The original URL.
+ * @return {string} Normalized URL.
+ */
+export function normalizeURL( incomingURL ) {
+	return incomingURL
+		.replace( /^https?:\/\/(www\.)?/i, '' ) // Remove protocol and optional "www." prefix from the URL.
+		.replace( /\/$/, '' ); // Remove trailing slash.
+}

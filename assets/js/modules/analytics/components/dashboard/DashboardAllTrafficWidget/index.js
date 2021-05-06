@@ -37,7 +37,7 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
-import { getURLPath, generateDateRangeArgs } from '../../../../../util';
+import { getURLPath } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import SourceLink from '../../../../../components/SourceLink';
 import TotalUserCount from './TotalUserCount';
@@ -45,6 +45,7 @@ import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import { isZeroReport } from '../../../util';
+import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 
 const { useSelect, useDispatch } = Data;
 
