@@ -126,6 +126,8 @@ container chmod 767 /var/www/html/favicon.ico
 
 # Activate Google Site Kit plugin.
 status_message "Activating Google Site Kit plugin..."
+# HERE need to run npm run build
+npm run build
 wp plugin activate google-site-kit --quiet
 # Reset post-activate state.
 wp google-site-kit reset
