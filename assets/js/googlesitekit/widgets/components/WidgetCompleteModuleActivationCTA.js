@@ -37,6 +37,7 @@ export default function WidgetCompleteModuleActivationCTA( { widgetSlug, moduleS
 	const metadata = useMemo( () => ( { moduleSlug } ), [ moduleSlug ] );
 	useWidgetStateEffect( widgetSlug, CompleteModuleActivationCTA, metadata );
 
+	// another one that ends in a CTA> checked all instances and ok
 	return <CompleteModuleActivationCTA moduleSlug={ moduleSlug } { ...props } />;
 }
 

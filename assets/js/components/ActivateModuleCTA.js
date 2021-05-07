@@ -96,6 +96,7 @@ const ActivateModuleCTA = ( { moduleSlug, title, description } ) => {
 				)
 			}
 			description={
+				// Could be anything! Checked uses. looks ok
 				description || sprintf(
 					/* translators: %s: Module name */
 					__( '%s module needs to be configured', 'google-site-kit' ),

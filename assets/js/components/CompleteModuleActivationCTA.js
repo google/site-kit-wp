@@ -60,6 +60,7 @@ const CompleteModuleActivationCTA = ( { moduleSlug, title, description } ) => {
 				)
 			}
 			description={
+				// here -> this could be anything! Checked all uses. Looks ok
 				description || sprintf(
 					/* translators: %s: Module name */
 					__( '%s module setup needs to be completed', 'google-site-kit' ),
