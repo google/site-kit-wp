@@ -92,11 +92,19 @@ addDecorator( ( story ) => {
 } );
 
 // Global Decorator.
-addDecorator( ( story ) => (
-	<div className="googlesitekit-plugin-preview js">
-		<div className="googlesitekit-plugin">{ story() }</div>
-	</div>
-) );
+addDecorator( ( Story, { parameters } ) => {
+	const { padding = 50 } = parameters || {};
+	return (
+		<div
+			className="googlesitekit-plugin-preview js"
+			style={ { padding } }
+		>
+			<div className="googlesitekit-plugin">
+				<Story />
+			</div>
+		</div>
+	);
+} );
 
 // TODO Would be nice if this wrote to a file. This logs our Storybook data to the browser console. Currently it gets put in .storybook/storybook-data and used in tests/backstop/scenarios.js.
 // eslint-disable-next-line no-console
