@@ -32,11 +32,27 @@ import Data from 'googlesitekit-data';
 import ReportTable from '../../../../../components/ReportTable';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import Link from '../../../../../components/Link';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../../analytics/datastore/constants';
+import { STORE_NAME } from '../../../datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { getCurrencyFormat } from '../../../util/currency';
+import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
 import { numFmt } from '../../../../../util';
 const { useSelect } = Data;
 
 export default function Table( { report } ) {
+	const currencyFormat = useSelect( ( select ) => {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+		const adsenseData = select( STORE_NAME ).getReport( {
+			startDate,
+			endDate,
+			metrics: 'EARNINGS',
+		} );
+		return getCurrencyFormat( adsenseData );
+	} );
+
 	const tableColumns = [
 		{
 			title: __( 'Page Title', 'google-site-kit' ),
@@ -44,9 +60,14 @@ export default function Table( { report } ) {
 			primary: true,
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
-				const serviceURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceReportURL( 'content-pages', {
+				const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+					offsetDays: DATE_RANGE_OFFSET,
+				} ) );
+
+				const serviceURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'content-pages', {
 					'explorer-table.plotKeys': '[]',
 					'_r.drilldown': `analytics.pagePath:${ url }`,
+					...generateDateRangeArgs( dateRange ),
 				} ) );
 				return (
 					<Link
@@ -65,11 +86,7 @@ export default function Table( { report } ) {
 			field: 'metrics.0.values.0',
 			Component: ( { fieldValue } ) => numFmt(
 				fieldValue,
-				{
-					style: 'decimal',
-					minimumFractionDigits: 2,
-					maximumFractionDigits: 2,
-				}
+				currencyFormat,
 			),
 		},
 		{
@@ -78,11 +95,7 @@ export default function Table( { report } ) {
 			field: 'metrics.0.values.1',
 			Component: ( { fieldValue } ) => numFmt(
 				fieldValue,
-				{
-					style: 'decimal',
-					minimumFractionDigits: 2,
-					maximumFractionDigits: 2,
-				}
+				currencyFormat,
 			),
 		},
 		{

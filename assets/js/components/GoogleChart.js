@@ -15,209 +15,233 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* eslint-disable react-hooks/exhaustive-deps */
 
 /**
  * External dependencies
  */
-import debounce from 'lodash/debounce';
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
+import { Chart } from 'react-google-charts';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
-import { useEffect, useState, useRef } from '@wordpress/element';
+import { useEffect, useLayoutEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import ProgressBar from './ProgressBar';
+import PreviewBlock from './PreviewBlock';
 
 export default function GoogleChart( props ) {
 	const {
-		chartID,
+		chartEvents,
 		chartType,
+		children,
 		className,
 		data,
-		loadCompressed,
-		loadHeight,
-		loadSmall,
-		loadText,
+		getChartWrapper,
+		height,
+		loaded,
+		loadingHeight,
+		loadingWidth,
+		onMouseOver,
+		onMouseOut,
 		onReady,
-		options,
+		onSelect,
 		selectedStats,
-		singleStat,
+		width,
+		...otherProps
 	} = props;
 
-	const chartRef = useRef( null );
-	const [ chart, setChart ] = useState( null );
-	const [ loading, setLoading ] = useState( true );
-	const [ visualizationLoaded, setVisualizationLoaded ] = useState( false );
+	// Ensure we don't filter out columns that aren't data, but are things like
+	// tooltips or other content.
+	let nonDataColumns = [];
+	if ( data?.length ) {
+		nonDataColumns = data[ 0 ].reduce( ( acc, row, rowIndex ) => {
+			return row?.role ? [ ...acc, rowIndex ] : acc;
+		}, [] );
+	}
 
-	// Create a new chart when the library is loaded.
+	// If only certain columns should be displayed for the data set we have
+	// then filter out that data.
+	let modifiedData = data;
+	if ( selectedStats?.length > 0 ) {
+		modifiedData = data.map( ( row ) => {
+			return row.filter( ( _columnValue, columnIndex ) => {
+				return columnIndex === 0 || selectedStats.includes( columnIndex - 1 ) || nonDataColumns.includes( columnIndex - 1 );
+			} );
+		} );
+	}
+
+	let loadingHeightToUse = loadingHeight || height;
+	let loadingWidthToUse = loadingWidth || width;
+	// If a loading height is set but a width is not (or a loading width is set
+	// but not a height), change the "unset" value to 100% to avoid visual bugs.
+	// See: https://github.com/google/site-kit-wp/pull/2916#discussion_r623866269
+	if ( loadingHeightToUse && ! loadingWidthToUse ) {
+		loadingWidthToUse = '100%';
+	}
+	if ( loadingWidthToUse && ! loadingHeightToUse ) {
+		loadingHeightToUse = '100%';
+	}
+	const loadingShape = chartType === 'PieChart' ? 'circular' : 'square';
+
+	const loader = (
+		<div className="googlesitekit-chart-loading">
+			<PreviewBlock
+				className="googlesitekit-chart-loading__wrapper"
+				height={ loadingHeightToUse }
+				shape={ loadingShape }
+				width={ loadingWidthToUse }
+			/>
+		</div>
+	);
+
+	const chartWrapperRef = useRef();
+	const googleRef = useRef();
+
 	useEffect( () => {
-		if ( ! chart && ! loading && chartRef.current && visualizationLoaded ) {
-			let googleChart;
-
-			if ( ! chartID || ! GoogleChart.charts.has( chartID ) ) {
-				switch ( chartType ) {
-					case 'area':
-						googleChart = new global.google.visualization.AreaChart( chartRef.current );
-						break;
-					case 'line':
-						googleChart = new global.google.visualization.LineChart( chartRef.current );
-						break;
-					case 'pie':
-						googleChart = new global.google.visualization.PieChart( chartRef.current );
-						break;
-					default:
-						throw new Error( 'Unknown chart type' );
-				}
-
-				const chartData = { chart: googleChart };
-				if ( onReady ) {
-					chartData.onReady = global.google.visualization.events.addListener( googleChart, 'ready', onReady );
-				}
-
-				if ( chartID ) {
-					GoogleChart.charts.set( chartID, chartData );
-				}
-			} else {
-				googleChart = GoogleChart.charts.get( chartID ).chart;
-			}
-
-			setChart( googleChart );
-		}
-	}, [ loading, !! chartRef.current, visualizationLoaded, !! chart ] );
-
-	// Draw the chart whenever one of these properties has changed.
-	useEffect( () => {
-		const drawChart = () => {
-			let dataTable = global.google?.visualization?.arrayToDataTable?.( data );
-			if ( ! dataTable ) {
-				return;
-			}
-
-			if ( selectedStats.length > 0 ) {
-				const dataView = new global.google.visualization.DataView( dataTable );
-				if ( ! singleStat ) {
-					dataView.setColumns(
-						[ 0, ...selectedStats.map( ( stat ) => stat + 1 ) ]
-					);
-				}
-				dataTable = dataView;
-			}
-
-			if ( chart ) {
-				chart.draw( dataTable, options );
-				if ( chartID && GoogleChart.charts.has( chartID ) ) {
-					GoogleChart.charts.get( chartID ).dataTable = dataTable;
-				}
-			}
-		};
-
-		const resize = debounce( drawChart, 100 );
-		global.addEventListener( 'resize', resize );
-
-		drawChart();
-
+		// Remove all event listeners after the component has unmounted.
 		return () => {
-			global.removeEventListener( 'resize', resize );
-		};
-	}, [
-		chart,
-		JSON.stringify( data ),
-		JSON.stringify( options ),
-		selectedStats,
-		singleStat,
-	] );
-
-	useEffect( () => {
-		const interval = setInterval( () => {
-			if (
-				!! global.google?.visualization?.AreaChart &&
-				!! global.google?.visualization?.PieChart &&
-				!! global.google?.visualization?.LineChart
-			) {
-				clearInterval( interval );
-				setLoading( false );
-				setVisualizationLoaded( true );
+			// eslint-disable-next-line no-unused-expressions
+			if ( googleRef.current && chartWrapperRef.current ) {
+				const { events } = googleRef.current.visualization;
+				events.removeAllListeners( chartWrapperRef.current.getChart() );
+				events.removeAllListeners( chartWrapperRef.current );
 			}
-		}, 50 );
-
-		return () => {
-			if ( chartID && GoogleChart.charts.has( chartID ) ) {
-				const {
-					chart: googleChart,
-					onSelect: selectListener,
-					onReady: readyListener,
-					onMouseOver: mouseOverListener,
-					onMouseOut: mouseOutListener,
-				} = GoogleChart.charts.get( chartID );
-
-				if ( googleChart ) {
-					global.google.visualization.events.removeListener( selectListener );
-					global.google.visualization.events.removeListener( readyListener );
-					global.google.visualization.events.removeListener( mouseOverListener );
-					global.google.visualization.events.removeListener( mouseOutListener );
-
-					googleChart.clearChart();
-				}
-
-				GoogleChart.charts.delete( chartID );
-			}
-
-			clearInterval( interval );
 		};
 	}, [] );
 
-	return (
-		<div className="googlesitekit-graph-wrapper">
-			<div ref={ chartRef } className="googlesitekit-line-chart">
-				<div className="googlesitekit-chart-loading">
-					{ loading && (
-						<div className="googlesitekit-chart-loading__wrapper">
-							{ loadText && (
-								<p>{ __( 'Loading chart…', 'google-site-kit' ) }</p>
-							) }
+	// These event listeners are added manually to the current chart because
+	// `react-google-charts` doesn't support `mouseOver` or `mouseOut` events
+	// in its `chartEvents` prop.
+	// See: https://github.com/google/site-kit-wp/pull/2805#discussion_r579172660
+	useLayoutEffect( () => {
+		if ( onMouseOver ) {
+			// eslint-disable-next-line no-unused-expressions
+			googleRef.current?.visualization.events.addListener( chartWrapperRef.current.getChart(), 'onmouseover', ( event ) => {
+				onMouseOver( event, {
+					chartWrapper: chartWrapperRef.current,
+					google: googleRef.current,
+				} );
+			} );
+		}
 
-							<ProgressBar
-								className={ className }
-								small={ loadSmall }
-								compress={ loadCompressed }
-								height={ loadHeight }
-							/>
-						</div>
-					) }
-				</div>
+		if ( onMouseOut ) {
+			// eslint-disable-next-line no-unused-expressions
+			googleRef.current?.visualization.events.addListener( chartWrapperRef.current.getChart(), 'onmouseout', ( event ) => {
+				onMouseOut( event, {
+					chartWrapper: chartWrapperRef.current,
+					google: googleRef.current,
+				} );
+			} );
+		}
+	}, [ onMouseOver, onMouseOut ] );
+
+	if ( ! loaded ) {
+		return (
+			<div className={ classnames(
+				'googlesitekit-chart',
+				'googlesitekit-chart-loading__forced',
+				className
+			) }>
+				{ loader }
 			</div>
+		);
+	}
+
+	const combinedChartEvents = [ ...chartEvents || [] ];
+
+	if ( onReady ) {
+		combinedChartEvents.push( {
+			eventName: 'ready',
+			callback: onReady,
+		} );
+	}
+
+	if ( onSelect ) {
+		combinedChartEvents.push( {
+			eventName: 'select',
+			callback: onSelect,
+		} );
+	}
+
+	return (
+		<div
+			className={ classnames(
+				'googlesitekit-chart',
+				`googlesitekit-chart--${ chartType }`,
+				className
+			) }
+		>
+			<Chart
+				className="googlesitekit-chart__inner"
+				chartEvents={ combinedChartEvents }
+				chartType={ chartType }
+				chartVersion="49"
+				data={ modifiedData }
+				loader={ loader }
+				height={ height }
+				getChartWrapper={ ( chartWrapper, google ) => {
+					// Remove all the event listeners on the old chart before we draw
+					// a new one. Only run this if the old chart and the new chart aren't
+					// the same reference though, otherwise we'll remove existing `onReady`
+					// events and other event listeners, which will cause bugs.
+					if ( chartWrapper !== chartWrapperRef.current ) {
+						// eslint-disable-next-line no-unused-expressions
+						googleRef.current?.visualization.events.removeAllListeners( chartWrapperRef.current?.getChart() );
+						// eslint-disable-next-line no-unused-expressions
+						googleRef.current?.visualization.events.removeAllListeners( chartWrapperRef.current );
+					}
+
+					chartWrapperRef.current = chartWrapper;
+					googleRef.current = google;
+
+					if ( getChartWrapper ) {
+						getChartWrapper( chartWrapper, google );
+					}
+				} }
+				width={ width }
+				{ ...otherProps }
+			/>
+			{ children }
 		</div>
 	);
 }
 
 GoogleChart.propTypes = {
-	chartID: PropTypes.string,
-	chartType: PropTypes.oneOf( [ 'area', 'pie', 'line' ] ).isRequired,
 	className: PropTypes.string,
-	data: PropTypes.arrayOf( PropTypes.array ),
-	loadCompressed: PropTypes.bool,
-	loadSmall: PropTypes.bool,
-	loadHeight: PropTypes.number,
-	loadText: PropTypes.bool,
+	children: PropTypes.node,
+	chartEvents: PropTypes.arrayOf( PropTypes.shape( {
+		eventName: PropTypes.string,
+		callback: PropTypes.func,
+	} ) ),
+	// Note: technically we support all types of charts that `react-google-charts`
+	// supports, which is _all_ chart types from Google Charts. But we only list
+	// the charts currently used in our codebase here, and only ones that we have
+	// explicit support/styles/handling for.
+	// See: https://github.com/google/site-kit-wp/pull/2916#discussion_r626620601
+	chartType: PropTypes.oneOf( [
+		'LineChart',
+		'PieChart',
+	] ).isRequired,
+	data: PropTypes.array,
+	getChartWrapper: PropTypes.func,
+	height: PropTypes.string,
+	loaded: PropTypes.bool,
+	loadingHeight: PropTypes.string,
+	loadingWidth: PropTypes.string,
+	onMouseOut: PropTypes.func,
+	onMouseOver: PropTypes.func,
 	onReady: PropTypes.func,
+	onSelect: PropTypes.func,
 	selectedStats: PropTypes.arrayOf( PropTypes.number ),
-	singleStat: PropTypes.bool,
+	width: PropTypes.string,
 };
 
 GoogleChart.defaultProps = {
-	className: '',
-	data: [],
-	loadCompressed: false,
-	loadSmall: false,
-	loadHeight: null,
-	loadText: true,
-	selectedStats: [],
-	singleStat: true,
+	...Chart.defaultProps,
+	loaded: true,
 };
-
-GoogleChart.charts = new Map();

@@ -32,8 +32,7 @@ import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
-import { calculateChange } from '../../../../util';
-import { getURLPath } from '../../../../util/getURLPath';
+import { calculateChange, getURLPath } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
@@ -96,13 +95,18 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 			...commonArgs,
 		};
 
+		const drilldowns = [ 'analytics.trafficChannel:Organic Search' ];
+		if ( url ) {
+			drilldowns.push( `analytics.pagePath:${ getURLPath( url ) }` );
+		}
+
 		return {
 			loading: ! store.hasFinishedResolution( 'getReport', [ sparklineArgs ] ) || ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
 			// Due to the nature of these queries, we need to run them separately.
 			sparkData: store.getReport( sparklineArgs ),
 			serviceURL: store.getServiceReportURL( 'acquisition-channels', {
-				'_r.drilldown': url ? `analytics.trafficChannel:Organic Search,analytics.pagePath:${ getURLPath( url ) }` : undefined,
+				'_r.drilldown': drilldowns.join( ',' ),
 				...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
 			} ),
 			visitorsData: store.getReport( args ),

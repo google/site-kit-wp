@@ -28,23 +28,49 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
+import Grid from '../../../../material-components/layout/Grid';
+import Row from '../../../../material-components/layout/Row';
+import Cell from '../../../../material-components/layout/Cell';
 const { useSelect, useDispatch } = Data;
 
 const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
+const TRACKING_CONTENT_CREATORS = 'contentCreators';
 
 export const trackingExclusionLabels = {
-	[ TRACKING_LOGGED_IN_USERS ]: __( 'Logged-in users', 'google-site-kit' ),
+	[ TRACKING_LOGGED_IN_USERS ]: __( 'All logged-in users', 'google-site-kit' ),
+	[ TRACKING_CONTENT_CREATORS ]: __( 'Users that can write posts', 'google-site-kit' ),
 };
 
 export default function TrackingExclusionSwitches() {
 	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() );
-
 	const { setTrackingDisabled } = useDispatch( STORE_NAME );
-	const onChange = useCallback( ( event ) => {
-		const { checked } = event.target;
-		const exclusions = checked ? [ TRACKING_LOGGED_IN_USERS ] : [];
-		setTrackingDisabled( exclusions );
-	}, [ trackingDisabled ] );
+
+	let message;
+	if ( trackingDisabled && trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) ) {
+		message = __( 'All logged-in users will be excluded from Analytics tracking.', 'google-site-kit' );
+	} else if ( trackingDisabled && trackingDisabled.includes( TRACKING_CONTENT_CREATORS ) ) {
+		message = __( 'Users that can write posts will be excluded from Analytics tracking.', 'google-site-kit' );
+	} else {
+		message = __( 'All logged-in users will be included in Analytics tracking.', 'google-site-kit' );
+	}
+
+	const updateTrackingDisabled = useCallback( ( users, exclude ) => {
+		const trackingDisabledArray = exclude
+			? trackingDisabled.concat( users )
+			: trackingDisabled.filter( ( item ) => item !== users );
+
+		setTrackingDisabled( trackingDisabledArray );
+	}, [ trackingDisabled, setTrackingDisabled ] );
+
+	const onChangeTrackContentCreators = useCallback( ( event ) => {
+		const { checked: exclude } = event.target;
+		updateTrackingDisabled( TRACKING_CONTENT_CREATORS, exclude );
+	}, [ updateTrackingDisabled ] );
+
+	const onChangeTrackLoggedInUsers = useCallback( ( event ) => {
+		const { checked: exclude } = event.target;
+		updateTrackingDisabled( TRACKING_LOGGED_IN_USERS, exclude );
+	}, [ updateTrackingDisabled ] );
 
 	if ( ! Array.isArray( trackingDisabled ) ) {
 		return null;
@@ -55,19 +81,30 @@ export default function TrackingExclusionSwitches() {
 			<legend className="googlesitekit-setup-module__text">
 				{ __( 'Exclude from Analytics', 'google-site-kit' ) }
 			</legend>
+			<Grid>
+				<Row>
+					<Cell lgSize={ 6 } mdSize={ 4 } smSize={ 4 }>
+						<Switch
+							label={ trackingExclusionLabels[ TRACKING_LOGGED_IN_USERS ] }
+							checked={ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) }
+							onClick={ onChangeTrackLoggedInUsers }
+							hideLabel={ false }
+						/>
+					</Cell>
 
-			<div>
-				<Switch
-					label={ trackingExclusionLabels[ TRACKING_LOGGED_IN_USERS ] }
-					checked={ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) }
-					onClick={ onChange }
-					hideLabel={ false }
-				/>
-			</div>
-
-			<p>
-				{ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) ? __( 'Logged-in users will be excluded from Analytics tracking.', 'google-site-kit' ) : __( 'Logged-in users will be included in Analytics tracking.', 'google-site-kit' ) }
-			</p>
+					{ ! trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) && (
+						<Cell lgSize={ 6 } mdSize={ 4 } smSize={ 4 }>
+							<Switch
+								label={ trackingExclusionLabels[ TRACKING_CONTENT_CREATORS ] }
+								checked={ trackingDisabled.includes( TRACKING_CONTENT_CREATORS ) }
+								onClick={ onChangeTrackContentCreators }
+								hideLabel={ false }
+							/>
+						</Cell>
+					) }
+				</Row>
+			</Grid>
+			<p>{ message }</p>
 		</fieldset>
 	);
 }

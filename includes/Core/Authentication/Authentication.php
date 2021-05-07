@@ -40,6 +40,9 @@ final class Authentication {
 
 	use Method_Proxy_Trait;
 
+	const ACTION_CONNECT    = 'googlesitekit_connect';
+	const ACTION_DISCONNECT = 'googlesitekit_disconnect';
+
 	/**
 	 * Plugin context.
 	 *
@@ -280,6 +283,8 @@ final class Authentication {
 				}
 			}
 		);
+		add_action( 'admin_action_' . self::ACTION_CONNECT, $this->get_method_proxy( 'handle_connect' ) );
+		add_action( 'admin_action_' . self::ACTION_DISCONNECT, $this->get_method_proxy( 'handle_disconnect' ) );
 		// Google_Proxy::ACTION_SETUP is called from the proxy as an intermediate step.
 		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'verify_proxy_setup_nonce' ), -1 );
 		// Google_Proxy::ACTION_SETUP is called from Site Kit to redirect to the proxy initially.
@@ -524,16 +529,17 @@ final class Authentication {
 	 * Gets the URL for connecting to Site Kit.
 	 *
 	 * @since 1.0.0
+	 * @since 1.32.0 Updated to use dedicated action URL.
 	 *
 	 * @return string Connect URL.
 	 */
 	public function get_connect_url() {
-		return $this->context->admin_url(
-			'splash',
+		return add_query_arg(
 			array(
-				'googlesitekit_connect' => 1,
-				'nonce'                 => wp_create_nonce( 'connect' ),
-			)
+				'action' => self::ACTION_CONNECT,
+				'nonce'  => wp_create_nonce( self::ACTION_CONNECT ),
+			),
+			admin_url( 'index.php' )
 		);
 	}
 
@@ -541,16 +547,17 @@ final class Authentication {
 	 * Gets the URL for disconnecting from Site Kit.
 	 *
 	 * @since 1.0.0
+	 * @since 1.32.0 Updated to use dedicated action URL.
 	 *
 	 * @return string Disconnect URL.
 	 */
 	public function get_disconnect_url() {
-		return $this->context->admin_url(
-			'splash',
+		return add_query_arg(
 			array(
-				'googlesitekit_disconnect' => 1,
-				'nonce'                    => wp_create_nonce( 'disconnect' ),
-			)
+				'action' => self::ACTION_DISCONNECT,
+				'nonce'  => wp_create_nonce( self::ACTION_DISCONNECT ),
+			),
+			admin_url( 'index.php' )
 		);
 	}
 
@@ -618,71 +625,79 @@ final class Authentication {
 	 * Handles receiving a temporary OAuth code.
 	 *
 	 * @since 1.0.0
+	 * @since 1.32.0 Moved connect and disconnect actions to dedicated handlers.
 	 */
 	private function handle_oauth() {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			return;
 		}
 
-		$auth_client = $this->get_oauth_client();
-		$input       = $this->context->input();
-
 		// Handles Direct OAuth client request.
-		if ( $input->filter( INPUT_GET, 'oauth2callback' ) ) {
+		if ( $this->context->input()->filter( INPUT_GET, 'oauth2callback' ) ) {
 			if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
 				wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
 			}
 
-			$auth_client->authorize_user();
+			$this->get_oauth_client()->authorize_user();
+		}
+	}
+
+	/**
+	 * Handles request to connect via oAuth.
+	 *
+	 * @since 1.32.0
+	 */
+	private function handle_connect() {
+		$input = $this->context->input();
+		$nonce = $input->filter( INPUT_GET, 'nonce' );
+		if ( ! wp_verify_nonce( $nonce, self::ACTION_CONNECT ) ) {
+			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
 		}
 
-		if ( $input->filter( INPUT_GET, 'googlesitekit_disconnect' ) ) {
-			$nonce = $input->filter( INPUT_GET, 'nonce' );
-			if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'disconnect' ) ) {
-				wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
-			}
-
-			if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
-				wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
-			}
-
-			$this->disconnect();
-
-			$redirect_url = $this->context->admin_url(
-				'splash',
-				array(
-					'googlesitekit_reset_session' => 1,
-				)
-			);
-
-			wp_safe_redirect( $redirect_url );
-			exit();
+		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
+			wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
 		}
 
-		if ( $input->filter( INPUT_GET, 'googlesitekit_connect' ) ) {
-			$nonce = $input->filter( INPUT_GET, 'nonce' );
-			if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'connect' ) ) {
-				wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
-			}
-
-			if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
-				wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
-			}
-
-			$redirect_url = $input->filter( INPUT_GET, 'redirect', FILTER_VALIDATE_URL );
-			if ( $redirect_url ) {
-				$redirect_url = esc_url_raw( wp_unslash( $redirect_url ) );
-			}
-
-			// User is trying to authenticate, but access token hasn't been set.
-			$additional_scopes = $input->filter( INPUT_GET, 'additional_scopes', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
-			wp_safe_redirect(
-				esc_url_raw(
-					$auth_client->get_authentication_url( $redirect_url, $additional_scopes )
-				)
-			);
-			exit();
+		$redirect_url = $input->filter( INPUT_GET, 'redirect', FILTER_VALIDATE_URL );
+		if ( $redirect_url ) {
+			$redirect_url = esc_url_raw( wp_unslash( $redirect_url ) );
 		}
+
+		// User is trying to authenticate, but access token hasn't been set.
+		$additional_scopes = $input->filter( INPUT_GET, 'additional_scopes', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+
+		wp_safe_redirect(
+			$this->get_oauth_client()->get_authentication_url( $redirect_url, $additional_scopes )
+		);
+		exit();
+	}
+
+	/**
+	 * Handles request to disconnect via oAuth.
+	 *
+	 * @since 1.32.0
+	 */
+	private function handle_disconnect() {
+		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
+		if ( ! wp_verify_nonce( $nonce, self::ACTION_DISCONNECT ) ) {
+			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+		}
+
+		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
+			wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
+		}
+
+		$this->disconnect();
+
+		$redirect_url = $this->context->admin_url(
+			'splash',
+			array(
+				'googlesitekit_reset_session' => 1,
+			)
+		);
+
+		wp_safe_redirect( $redirect_url );
+		exit();
 	}
 
 	/**

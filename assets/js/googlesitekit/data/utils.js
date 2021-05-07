@@ -377,3 +377,27 @@ export function createValidationSelector( validate ) {
 		dangerousSelector,
 	};
 }
+
+/**
+ * Creates a validated action creator.
+ *
+ * @since 1.32.0
+ *
+ * @param {Function} validate      A function for validating action arguments.
+ * @param {Function} actionCreator A function for returning or yielding redux-style actions.
+ * @return {Function} An enhanced action creator.
+ */
+export function createValidatedAction( validate, actionCreator ) {
+	invariant( typeof validate === 'function', 'a validator function is required.' );
+	invariant( typeof actionCreator === 'function', 'an action creator function is required.' );
+	invariant(
+		validate[ Symbol.toStringTag ] !== 'Generator' && validate[ Symbol.toStringTag ] !== 'GeneratorFunction',
+		'an action’s validator function must not be a generator.'
+	);
+
+	return ( ...args ) => {
+		validate( ...args );
+
+		return actionCreator( ...args );
+	};
+}

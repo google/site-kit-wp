@@ -14,12 +14,12 @@ module.exports = [
 		},
 	},
 	{
-		id: 'global--buttons',
+		id: 'components-button--vrt-story',
 		kind: 'Global',
 		name: 'Buttons',
-		story: 'Buttons',
+		story: 'VRT Story',
 		parameters: {
-			fileName: './stories/buttons.stories.js',
+			fileName: './assets/js/components/Button.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
@@ -65,7 +65,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart-v2 .googlesitekit-chart-v2__inner',
+				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},
@@ -79,7 +79,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart-v2 .googlesitekit-chart-v2__inner',
+				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},
@@ -196,6 +196,20 @@ module.exports = [
 		},
 	},
 	{
+		id: 'adsense-module-components-module-overview-widget--loaded',
+		kind: 'AdSense Module',
+		name: 'Overview Widget',
+		story: 'Loaded',
+		parameters: {
+			fileName: './stories/module-adsense-components.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+			},
+		},
+	},
+	{
 		id: 'analytics-module--audience-overview-chart',
 		kind: 'Analytics Module',
 		name: 'Audience Overview Chart',
@@ -205,7 +219,21 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+			},
+		},
+	},
+	{
+		id: 'analytics-module-components-module-page-overview-widget--loaded',
+		kind: 'Analytics Module',
+		name: 'Overview Widget',
+		story: 'Loaded',
+		parameters: {
+			fileName: './stories/module-analytics-components.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},
@@ -219,7 +247,21 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+			},
+		},
+	},
+	{
+		id: 'search-console-module-components-module-page-overview-widget--loaded',
+		kind: 'Search Console Module',
+		name: 'Overview Widget',
+		story: 'Loaded',
+		parameters: {
+			fileName: './stories/module-search-console-components.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},
@@ -233,7 +275,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},

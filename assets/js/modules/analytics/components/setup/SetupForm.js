@@ -71,7 +71,7 @@ export default function SetupForm( { finishSetup } ) {
 			await trackEvent( 'analytics_setup', 'analytics_configured' );
 			finishSetup();
 		}
-	}, [ canSubmitChanges, finishSetup ] );
+	}, [ finishSetup, setValues, submitChanges ] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.

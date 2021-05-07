@@ -62,7 +62,7 @@ const ActivateModuleCTA = ( { moduleSlug, title, description } ) => {
 				type: 'win-error',
 			} );
 		}
-	}, [ activateModule ] );
+	}, [ activateModule, navigateTo, moduleSlug ] );
 
 	if ( ! module?.name || ! canManageOptions ) {
 		return null;

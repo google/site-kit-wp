@@ -17,10 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useClickAway } from 'react-use';
+
+/**
  * WordPress dependencies
  */
-import { useState, useRef, useEffect, useCallback } from '@wordpress/element';
-import { ESCAPE } from '@wordpress/keycodes';
+import { useState, useRef, useCallback } from '@wordpress/element';
+import { ESCAPE, TAB } from '@wordpress/keycodes';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -30,46 +35,25 @@ import Button from '../Button';
 import HelpIcon from '../../../svg/help.svg';
 import HelpMenuLink from './HelpMenuLink';
 import Menu from '../Menu';
+import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 
 function HelpMenu( { children } ) {
-	const [ menuOpen, toggleMenu ] = useState( false );
-	const menuButtonRef = useRef();
-	const menuRef = useRef();
+	const [ menuOpen, setMenuOpen ] = useState( false );
+	const menuWrapperRef = useRef();
 
-	useEffect( () => {
-		const handleMenuClose = ( event ) => {
-			if ( menuButtonRef?.current && menuRef?.current ) {
-				// Close the menu if the user presses the Escape key
-				// or if they click outside of the menu.
-				if (
-					( ( 'keyup' === event.type && ESCAPE === event.keyCode ) || 'mouseup' === event.type ) &&
-					! menuButtonRef.current.contains( event.target ) &&
-					! menuRef.current.contains( event.target )
-				) {
-					toggleMenu( false );
-				}
-			}
-		};
-
-		global.addEventListener( 'mouseup', handleMenuClose );
-		global.addEventListener( 'keyup', handleMenuClose );
-
-		return () => {
-			global.removeEventListener( 'mouseup', handleMenuClose );
-			global.removeEventListener( 'keyup', handleMenuClose );
-		};
-	}, [] );
+	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
+	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () => setMenuOpen( false ) );
 
 	const handleMenu = useCallback( () => {
-		toggleMenu( ! menuOpen );
+		setMenuOpen( ! menuOpen );
 	}, [ menuOpen ] );
 
 	const handleMenuSelected = useCallback( () => {
-		toggleMenu( false );
-	} );
+		setMenuOpen( false );
+	}, [] );
 
 	return (
-		<div className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu googlesitekit-help-menu mdc-menu-surface--anchor">
+		<div ref={ menuWrapperRef } className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu googlesitekit-help-menu mdc-menu-surface--anchor">
 			<Button
 				aria-controls="googlesitekit-help-menu"
 				aria-expanded={ menuOpen }
@@ -78,12 +62,10 @@ function HelpMenu( { children } ) {
 				className="googlesitekit-header__dropdown googlesitekit-help-menu__button googlesitekit-margin-right-0 mdc-button--dropdown"
 				icon={ <HelpIcon width="20" height="20" /> }
 				onClick={ handleMenu }
-				ref={ menuButtonRef }
 				text
 			/>
 			<Menu
 				className="googlesitekit-width-auto"
-				ref={ menuRef }
 				menuOpen={ menuOpen }
 				id="googlesitekit-help-menu"
 				onSelected={ handleMenuSelected }

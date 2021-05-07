@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-class AMP_Tag extends Module_AMP_Tag {
+class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 
 	use Method_Proxy_Trait;
 
@@ -33,6 +33,14 @@ class AMP_Tag extends Module_AMP_Tag {
 	private $home_domain;
 
 	/**
+	 * Ads conversion ID.
+	 *
+	 * @since 1.32.0
+	 * @var string
+	 */
+	private $ads_conversion_id;
+
+	/**
 	 * Sets the current home domain.
 	 *
 	 * @since 1.24.0
@@ -41,6 +49,29 @@ class AMP_Tag extends Module_AMP_Tag {
 	 */
 	public function set_home_domain( $domain ) {
 		$this->home_domain = $domain;
+	}
+
+	/**
+	 * Sets whether or not to anonymize IP addresses.
+	 *
+	 * @since 1.32.0
+	 *
+	 * @param bool $anonymize_ip Whether to anonymize IP addresses or not.
+	 */
+	public function set_anonymize_ip( $anonymize_ip ) {
+		// Data from AMP documents is always IP anonymized.
+		// See https://support.google.com/analytics/answer/6343176.
+	}
+
+	/**
+	 * Sets the ads conversion ID.
+	 *
+	 * @since 1.32.0
+	 *
+	 * @param string $ads_conversion_id Ads ID.
+	 */
+	public function set_ads_conversion_id( $ads_conversion_id ) {
+		$this->ads_conversion_id = $ads_conversion_id;
 	}
 
 	/**

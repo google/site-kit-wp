@@ -29,7 +29,7 @@ import {
  */
 import SourceLink from './SourceLink';
 import Link from './Link';
-import { getSiteKitAdminURL } from '../util';
+import { getFullURL, getSiteKitAdminURL } from '../util';
 
 // Construct a table component from a data object.
 export const getDataTableFromData = ( data, headers, options ) => {
@@ -50,7 +50,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 	each( data, ( row, j ) => {
 		const cells = [];
 		const link = links && links[ j ];
-		const permaLink = link && link[ 0 ] === '/' ? global._googlesitekitLegacyData.admin.siteURL + link : link;
+		const permaLink = link && link[ 0 ] === '/' ? getFullURL( global._googlesitekitLegacyData.admin.siteURL, link ) : link;
 
 		each( row, ( cell, i ) => {
 			// Replace (none) by direct.
@@ -156,4 +156,3 @@ export const getDataTableFromData = ( data, headers, options ) => {
 		</div>
 	);
 };
-

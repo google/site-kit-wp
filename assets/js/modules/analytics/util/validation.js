@@ -136,3 +136,15 @@ export function isValidProfileName( value ) {
  * @return {boolean} Whether or not the given account ID is valid.
  */
 export { isValidNumericID as isValidInternalWebPropertyID };
+
+/**
+ * Checks if the given ads conversion ID is valid.
+ *
+ * @since 1.32.0
+ *
+ * @param {*} value Conversion ID to test.
+ * @return {boolean} Whether or not the given ID is valid.
+ */
+export function isValidAdsConversionID( value ) {
+	return typeof value === 'string' && /^AW-[0-9]+$/.test( value );
+}
