@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Storage\User_Aware_Interface;
 use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit_Dependencies\Google\Task\Runner;
 use Google\Site_Kit_Dependencies\Google_Service_PeopleService;
@@ -34,7 +35,7 @@ use WP_HTTP_Proxy;
  * @access private
  * @ignore
  */
-final class OAuth_Client {
+final class OAuth_Client implements User_Aware_Interface {
 
 	const OPTION_ACCESS_TOKEN            = 'googlesitekit_access_token';
 	const OPTION_ACCESS_TOKEN_EXPIRES_IN = 'googlesitekit_access_token_expires_in';
@@ -192,6 +193,52 @@ final class OAuth_Client {
 		$this->profile                = $profile ?: new Profile( $this->user_options );
 		$this->http_proxy             = $http_proxy ?: new WP_HTTP_Proxy();
 		$this->owner_id               = new Owner_ID( $this->options );
+	}
+
+	/**
+	 * Gets the associated user ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return int User ID.
+	 */
+	public function get_user_id() {
+		return $this->user_options->get_user_id();
+	}
+
+	/**
+	 * Switches the current user to the one with the given ID.
+	 *
+	 * This method exists to exchange the user that is set as the current user in WordPress on the fly. In most cases
+	 * it is preferred to create a new instance of the class when dealing with multiple users. This method should only
+	 * be applied when the entire chain of class main instances need to be updated to rely on another user, i.e. when
+	 * the current WordPress user has changed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id User ID.
+	 * @return callable A closure to switch back to the original user.
+	 */
+	public function switch_user( $user_id ) {
+		$prev_access_token  = $this->access_token;
+		$prev_refresh_token = $this->refresh_token;
+		$restore_user       = $this->user_options->switch_user( $user_id );
+		$restore_token      = $this->get_client()->switchAccessToken(
+			array(
+				'access_token'  => $this->get_access_token(),
+				'expires_in'    => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
+				'created'       => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
+				'refresh_token' => $this->get_refresh_token(),
+			)
+		);
+
+		return function() use ( $prev_access_token, $prev_refresh_token ) {
+			$this->access_token  = $prev_access_token;
+			$this->refresh_token = $prev_refresh_token;
+
+			$restore_user();
+			$restore_token();
+		};
 	}
 
 	/**

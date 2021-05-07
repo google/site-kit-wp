@@ -66,6 +66,24 @@ class Google_Site_Kit_Client extends Google_Client {
 	}
 
 	/**
+	 * Switches the current access token (optionally including refresh token) to the given one.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $token Token array.
+	 * @return callable A closure to switch back to the original access token.
+	 */
+	public function switchAccessToken( array $token ) {
+		$prev_token = $this->getAccessToken();
+
+		$this->setAccessToken( $token );
+
+		return function() use ( $prev_token ) {
+			$this->setAccessToken( $prev_token );
+		};
+	}
+
+	/**
 	 * Sets whether or not to return raw requests and returns a callback to reset to the previous value.
 	 *
 	 * @since 1.2.0
