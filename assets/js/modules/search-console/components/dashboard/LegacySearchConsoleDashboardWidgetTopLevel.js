@@ -89,7 +89,6 @@ function LegacySearchConsoleDashboardWidgetTopLevel( { data } ) {
 				">
 				<CTA
 					title={ __( 'Something went wrong', 'google-site-kit' ) }
-					// Nothing can be done here? Another error example. WRITE ON TICKET!
 					description={ error.message }
 					error
 				/>

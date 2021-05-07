@@ -28,7 +28,6 @@ import ReportError from '../../../components/ReportError';
 
 // eslint-disable-next-line no-unused-vars
 export default function WidgetReportError( { widgetSlug, ...props } ) {
-	// and this becomes a CTA. and this is called in so many places!!
 	return <ReportError { ...props } />;
 }
 

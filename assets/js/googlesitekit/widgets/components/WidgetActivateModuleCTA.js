@@ -37,7 +37,6 @@ export default function WidgetActivateModuleCTA( { widgetSlug, moduleSlug, ...pr
 	const metadata = useMemo( () => ( { moduleSlug } ), [ moduleSlug ] );
 	useWidgetStateEffect( widgetSlug, ActivateModuleCTA, metadata );
 
-	// description could be anything here.
 	return <ActivateModuleCTA moduleSlug={ moduleSlug } { ...props } />;
 }
 

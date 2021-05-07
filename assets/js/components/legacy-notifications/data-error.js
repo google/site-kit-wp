@@ -56,13 +56,11 @@ function getDataErrorComponent( moduleSlug, errorMessage, inGrid = false, fullWi
 	if ( isInsufficientPermissionsError( errorObj ) ) {
 		/* translators: %s: module name */
 		title = sprintf( __( 'Insufficient permissions in %s', 'google-site-kit' ), module?.name );
-		// checked and fixed all instances here!
 		message = getInsufficientPermissionsErrorDescription( message, module );
 	}
 
 	const reconnectURL = errorObj?.data?.reconnectURL;
 	const description = reconnectURL ? <ErrorText message={ message } reconnectURL={ reconnectURL } /> : message;
-	// TODO - check where these props are coming from! Had a go. Some are coming back from network errors though. Outside this project
 	const cta = <CTA title={ title } description={ description } error />;
 
 	// This is to handle token expired error specifically.
