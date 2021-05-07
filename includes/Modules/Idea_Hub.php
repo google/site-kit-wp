@@ -24,6 +24,9 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
+use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
+use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -47,12 +50,42 @@ final class Idea_Hub extends Module
 	const MODULE_SLUG = 'idea-hub';
 
 	/**
+	 * Post_Idea_Name instance.
+	 *
+	 * @var Post_Idea_Name
+	 */
+	private $post_name_setting;
+
+	/**
+	 * Post_Idea_Text instance.
+	 *
+	 * @var Post_Idea_Text
+	 */
+	private $post_text_setting;
+
+	/**
+	 * Post_Idea_Topics instance.
+	 *
+	 * @var Post_Idea_Topics
+	 */
+	private $post_topic_setting;
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.32.0
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+
+		$this->post_name_setting = new Post_Idea_Name();
+		$this->post_name_setting->register();
+
+		$this->post_text_setting = new Post_Idea_Text();
+		$this->post_text_setting->register();
+
+		$this->post_topic_setting = new Post_Idea_Topics();
+		$this->post_topic_setting->register();
 	}
 
 	/**
