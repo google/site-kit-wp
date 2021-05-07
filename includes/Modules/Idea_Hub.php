@@ -23,6 +23,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Storage\Post_Meta;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
@@ -76,15 +77,17 @@ final class Idea_Hub extends Module
 	 * @since 1.32.0
 	 */
 	public function register() {
+		$post_meta = new Post_Meta();
+
 		$this->register_scopes_hook();
 
-		$this->post_name_setting = new Post_Idea_Name();
+		$this->post_name_setting = new Post_Idea_Name( $post_meta );
 		$this->post_name_setting->register();
 
-		$this->post_text_setting = new Post_Idea_Text();
+		$this->post_text_setting = new Post_Idea_Text( $post_meta );
 		$this->post_text_setting->register();
 
-		$this->post_topic_setting = new Post_Idea_Topics();
+		$this->post_topic_setting = new Post_Idea_Topics( $post_meta );
 		$this->post_topic_setting->register();
 	}
 
@@ -338,7 +341,7 @@ final class Idea_Hub extends Module
 	 * @param int   $post_id Post ID.
 	 * @param array $idea    Idea settings.
 	 */
-	protected function set_post_idea( $post_id, array $idea ) {
+	public function set_post_idea( $post_id, array $idea ) {
 		$idea = wp_parse_args(
 			$idea,
 			array(
@@ -350,7 +353,7 @@ final class Idea_Hub extends Module
 
 		$this->post_name_setting->set( $post_id, $idea['name'] );
 		$this->post_text_setting->set( $post_id, $idea['text'] );
-		$this->post_text_setting->set( $post_id, $idea['topics'] );
+		$this->post_topic_setting->set( $post_id, $idea['topics'] );
 	}
 
 	/**
@@ -361,7 +364,7 @@ final class Idea_Hub extends Module
 	 * @param int $post_id Post ID.
 	 * @return array Post idea settigns array.
 	 */
-	protected function get_post_idea( $post_id ) {
+	public function get_post_idea( $post_id ) {
 		return array(
 			'name'   => $this->post_name_setting->get( $post_id ),
 			'text'   => $this->post_text_setting->get( $post_id ),
