@@ -329,4 +329,44 @@ final class Idea_Hub extends Module
 			),
 		);
 	}
+
+	/**
+	 * Saves post idea settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int   $post_id Post ID.
+	 * @param array $idea    Idea settings.
+	 */
+	protected function set_post_idea( $post_id, array $idea ) {
+		$idea = wp_parse_args(
+			$idea,
+			array(
+				'name'   => '',
+				'text'   => '',
+				'topics' => array(),
+			)
+		);
+
+		$this->post_name_setting->set( $post_id, $idea['name'] );
+		$this->post_text_setting->set( $post_id, $idea['text'] );
+		$this->post_text_setting->set( $post_id, $idea['topics'] );
+	}
+
+	/**
+	 * Gets post idea settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $post_id Post ID.
+	 * @return array Post idea settigns array.
+	 */
+	protected function get_post_idea( $post_id ) {
+		return array(
+			'name'   => $this->post_name_setting->get( $post_id ),
+			'text'   => $this->post_text_setting->get( $post_id ),
+			'topics' => $this->post_topic_setting->get( $post_id ),
+		);
+	}
+
 }
