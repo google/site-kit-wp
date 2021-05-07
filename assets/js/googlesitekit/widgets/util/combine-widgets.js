@@ -57,6 +57,30 @@ export function combineWidgets( widgets, widgetStates, {
 	let currentRowIndex = -1;
 	let columnWidthsBuffer = [];
 
+	const states = [];
+
+	widgets.forEach( ( widget ) => {
+		const state = widgetStates?.[widget.slug]?.Component?.name;
+		if ( state && ! states.includes( state ) ) {
+			states.push( state );
+		}
+	} );
+
+	if ( states.length === 1 && widgets.length > 1 ) {
+		// All widgets have the same state, so we should only render one and hide the rest.
+		const hiddenRows = Array.from( { length: widgets.length - 1 } ).fill( 0 );
+		// All the components are the same, pick the first.
+		const overrideComponent = widgetStates[ widgets[ 0 ].slug ];
+
+		return {
+			overrideComponents: [ overrideComponent ],
+			gridColumnWidths: [
+				12, // full width row
+				...hiddenRows,
+			],
+		};
+	}
+
 	widgets.forEach( ( widget, i ) => {
 		overrideComponents.push( null );
 
