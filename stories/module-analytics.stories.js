@@ -63,7 +63,7 @@ function SetupWrap( { children } ) {
 
 storiesOf( 'Analytics Module', module )
 	/* eslint-disable sitekit/acronym-case */
-	.add( 'Account Property Profile Select (none selected)', () => {
+	.add( 'Account Property Profile Select', () => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetSettings( {} );
@@ -77,52 +77,14 @@ storiesOf( 'Analytics Module', module )
 					.map( ( p ) => ( { ...p, accountId: account.id } ) );
 
 				dispatch( STORE_NAME ).receiveGetProperties( propertiesForAccount, { accountID: account.id } );
-				dispatch( STORE_NAME ).receiveGetProfiles( profilesForAccount, {
 
-					// should dynamically change all properties to have this id?
-
-					accountID: account.id,
-
-					// can this be anything?
-					// eslint-disable-next-line sitekit/acronym-case
-					propertyID: profiles[ 0 ].webPropertyId,
-				} );
+				for ( const property of propertiesForAccount ) {
+					dispatch( STORE_NAME ).receiveGetProfiles( profilesForAccount, {
+						accountID: account.id,
+						propertyID: property.id,
+					} );
+				}
 			}
-		};
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<SetupWrap>
-					<div className="googlesitekit-setup-module__inputs">
-						<AccountSelect />
-						<PropertySelect />
-						<ProfileSelect />
-					</div>
-				</SetupWrap>
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Account Property Profile Select (all selected)', () => {
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/acronym-case
-				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/acronym-case
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				// eslint-disable-next-line sitekit/acronym-case
-				accountID: profiles[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/acronym-case
-				propertyID: profiles[ 0 ].webPropertyId,
-				// eslint-disable-next-line sitekit/acronym-case
-				internalWebPropertyID: profiles[ 0 ].internalWebPropertyId,
-				profileID: profiles[ 0 ].id,
-			} );
 		};
 
 		return (
