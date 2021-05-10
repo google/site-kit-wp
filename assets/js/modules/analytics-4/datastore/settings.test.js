@@ -23,9 +23,10 @@ import API from 'googlesitekit-api';
 import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { STORE_NAME, PROPERTY_CREATE } from './constants';
-import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
+import { STORE_NAME, PROPERTY_CREATE } from './constants';
+import { INVARIANT_INVALID_PROPERTY_SELECTION, INVARIANT_INVALID_WEBDATASTREAM_ID } from './settings';
+import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 settings', () => {
 	let registry;
@@ -187,5 +188,27 @@ describe( 'modules/analytics-4 settings', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'canSubmitChanges', () => {
+			beforeEach( () => {
+				registry.dispatch( STORE_NAME ).setSettings( {
+					propertyID: fixtures.createProperty._id,
+					webDataStreamID: fixtures.createWebDataStream._id,
+				} );
+			} );
+
+			it( 'should return TRUE when all settings are valid', () => {
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+			} );
+
+			it( 'should require a valid propertyID', () => {
+				registry.dispatch( STORE_NAME ).setPropertyID( '' );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() ).toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
+			} );
+
+			it( 'should require a valid webDataStreamID', () => {
+				registry.dispatch( STORE_NAME ).setWebDataStreamID( '' );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() ).toThrow( INVARIANT_INVALID_WEBDATASTREAM_ID );
+			} );
+		} );
 	} );
 } );

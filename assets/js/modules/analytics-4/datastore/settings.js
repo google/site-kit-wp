@@ -76,7 +76,7 @@ export async function submitChanges( { select, dispatch } ) {
 }
 
 export function validateCanSubmitChanges( select ) {
-	if ( ! select( STORE_NAME ).isAdminAPIWorking() ) {
+	if ( select( STORE_NAME ).isAdminAPIWorking() === false ) {
 		return;
 	}
 
