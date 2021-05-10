@@ -341,16 +341,38 @@ class Google_ProxyTest extends TestCase {
 		// Ensure the request was made with the proper URL and body parameters.
 		$this->assertEquals( $expected_url, $pre_url );
 		$this->assertEquals( 'POST', $pre_args['method'] );
-		$this->assertEqualSetsWithIndex(
-			array(
-				'platform'    => 'wordpress/google-site-kit',
-				'version'     => GOOGLESITEKIT_VERSION,
-				'site_id'     => $fake_creds['client_id'],
-				'site_secret' => $fake_creds['client_secret'],
-			),
-			$pre_args['body']
-		);
+		if ( is_multisite() ) {
+			$this->assertEqualSetsWithIndex(
+				array(
+					'platform'    => 'wordpress-multisite/google-site-kit',
+					'version'     => GOOGLESITEKIT_VERSION,
+					'site_id'     => $fake_creds['client_id'],
+					'site_secret' => $fake_creds['client_secret'],
+				),
+				$pre_args['body']
+			);
+		} else {
+			$this->assertEqualSetsWithIndex(
+				array(
+					'platform'    => 'wordpress/google-site-kit',
+					'version'     => GOOGLESITEKIT_VERSION,
+					'site_id'     => $fake_creds['client_id'],
+					'site_secret' => $fake_creds['client_secret'],
+				),
+				$pre_args['body']
+			);
+		}
 		$this->assertEqualSetsWithIndex( $expected_success_response, $features );
+	}
+
+	public function test_get_platform() {
+		$platform = $this->google_proxy->get_platform();
+
+		if ( is_multisite() ) {
+			$this->assertEquals( 'wordpress-multisite', $platform );
+		} else {
+			$this->assertEquals( 'wordpress', $platform ); // phpcs:ignore WordPress.WP.CapitalPDangit.Misspelled
+		}
 	}
 
 	/**
