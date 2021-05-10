@@ -17,9 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+import invariant from 'invariant';
+
+/**
  * WordPress dependencies
  */
-import { useEffect, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -31,11 +37,10 @@ const WithRegistrySetup = ( { func, children } ) => {
 	const registry = useRegistry();
 	const [ ready, setReady ] = useState( false );
 
-	useEffect( () => {
-		if ( func && typeof func === 'function' ) {
-			func( registry );
-		}
+	invariant( typeof func !== 'function', 'func must be a function.' );
 
+	useMount( () => {
+		func( registry );
 		setReady( true );
 	} );
 
