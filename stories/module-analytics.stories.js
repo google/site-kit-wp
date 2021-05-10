@@ -62,19 +62,32 @@ function SetupWrap( { children } ) {
 }
 
 storiesOf( 'Analytics Module', module )
+	/* eslint-disable sitekit/acronym-case */
 	.add( 'Account Property Profile Select (none selected)', () => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/acronym-case
-				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/acronym-case
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
+
+			for ( const account of accounts ) {
+				const propertiesForAccount = properties
+					.map( ( p ) => ( { ...p, accountId: account.id } ) );
+
+				const profilesForAccount = profiles
+					.map( ( p ) => ( { ...p, accountId: account.id } ) );
+
+				dispatch( STORE_NAME ).receiveGetProperties( propertiesForAccount, { accountID: account.id } );
+				dispatch( STORE_NAME ).receiveGetProfiles( profilesForAccount, {
+
+					// should dynamically change all properties to have this id?
+
+					accountID: account.id,
+
+					// can this be anything?
+					// eslint-disable-next-line sitekit/acronym-case
+					propertyID: profiles[ 0 ].webPropertyId,
+				} );
+			}
 		};
 
 		return (
