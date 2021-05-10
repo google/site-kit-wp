@@ -48,11 +48,12 @@ export async function submitChanges( { select, dispatch } ) {
 
 		propertyID = property._id;
 		await dispatch( STORE_NAME ).setPropertyID( propertyID );
+		await dispatch( STORE_NAME ).setWebDataStreamID( '' );
 	}
 
 	const webDataStreamID = select( STORE_NAME ).getWebDataStreamID();
 	if ( ! isValidWebDataStreamID( webDataStreamID ) ) {
-		const { response: webdatastream, error } = await dispatch( STORE_NAME ).createWebDataStream( webDataStreamID );
+		const { response: webdatastream, error } = await dispatch( STORE_NAME ).createWebDataStream( propertyID );
 		if ( error ) {
 			return { error };
 		}
