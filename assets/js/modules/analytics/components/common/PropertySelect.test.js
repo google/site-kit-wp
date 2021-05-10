@@ -95,6 +95,36 @@ describe( 'PropertySelect', () => {
 			.toHaveClass( 'mdc-select--disabled' );
 	} );
 
+	it( 'should not render if account ID is not set.', async () => {
+		const { container, registry } = render( <PropertySelect />, {
+			setupRegistry: ( { dispatch } ) => {
+				// TODO - helper createEmptyUninitialized?
+
+				const { properties } = fixtures.accountsPropertiesProfiles;
+				const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+
+				dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+				dispatch( STORE_NAME ).setSettings( {} );
+
+				// only difference from setupEmptyRegistry helper function!
+				// dispatch( STORE_NAME ).setAccountID( accountID );
+
+				dispatch( STORE_NAME ).receiveGetExistingTag( null );
+
+				dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+				dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+
+				dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
+				dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
+			},
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+
+		// in order to not get act errors need to do something as DOM is empty at the start and end of this test AND wp-data does lots of stuff
+		await act( () => registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE ) );
+	} );
+
 	it( 'should be disabled when in the absence of an valid account ID.', async () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry( { dispatch } ) {
