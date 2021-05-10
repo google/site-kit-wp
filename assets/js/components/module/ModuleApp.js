@@ -50,7 +50,7 @@ function ModuleApp( { moduleSlug } ) {
 	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const screenWidgetContext = useSelect( ( select ) => select( CORE_MODULES ).getScreenWidgetContext( moduleSlug ) );
 	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleSlug ) );
-	const shouldRenderWidget = useFeature( 'widgets.moduleScreens' ) && screenWidgetContext;
+	const shouldRenderWidget = useFeature( 'widgets.moduleScreens' );
 	const getModuleHeader = () => <ModuleHeader moduleSlug={ moduleSlug } />;
 
 	return (
@@ -68,8 +68,8 @@ function ModuleApp( { moduleSlug } ) {
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
 			<Alert module={ moduleSlug } />
-			{ shouldRenderWidget
-				? (
+			{ shouldRenderWidget && screenWidgetContext &&
+				(
 					<WidgetContextRenderer
 						slug={ screenWidgetContext }
 						className={ classNames( [
@@ -80,8 +80,8 @@ function ModuleApp( { moduleSlug } ) {
 						Footer={ ModuleFooter }
 					/>
 				)
-				: <LegacyModuleApp />
 			}
+			{ ! shouldRenderWidget && <LegacyModuleApp /> }
 		</Fragment>
 	);
 }

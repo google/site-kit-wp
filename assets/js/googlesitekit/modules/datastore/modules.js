@@ -824,8 +824,9 @@ const baseSelectors = {
 		invariant( moduleSlug, 'slug is required.' );
 		const modules = select( STORE_NAME ).getModules();
 
-		if ( ! modules ) {
-			return null;
+		// Return `undefined` if modules haven't been loaded yet.
+		if ( modules === undefined ) {
+			return undefined;
 		}
 
 		const screenWidgetContext = modules[ moduleSlug ]?.screenWidgetContext;
