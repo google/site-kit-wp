@@ -30,12 +30,36 @@ import Null from '../../../components/Null';
 describe( 'combineWidgets', () => {
 	const getQuarterWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.QUARTER } );
 	const getHalfWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.HALF } );
+	const getFullWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.FULL } );
 
 	const getRegularState = () => null;
 	const getReportZeroState = ( moduleSlug ) => ( { Component: ReportZero, metadata: { moduleSlug } } );
 	const getActivateModuleCTAState = ( moduleSlug ) => ( { Component: ActivateModuleCTA, metadata: { moduleSlug } } );
 	const getCompleteModuleActivationCTAState = ( moduleSlug ) => ( { Component: CompleteModuleActivationCTA, metadata: { moduleSlug } } );
 	const getNullState = () => ( { Component: Null, metadata: {} } );
+
+	it( 'Widgets in an area are combined beyond their row if all of them have the same special state', () => {
+		const widgets = [
+			getFullWidget( 'test1' ),
+			getFullWidget( 'test2' ),
+			getFullWidget( 'test3' ),
+			getFullWidget( 'test4' ),
+		];
+		const widgetStates = {
+			test1: getReportZeroState( 'analytics' ),
+			test2: getReportZeroState( 'analytics' ),
+			test3: getReportZeroState( 'analytics' ),
+			test4: getReportZeroState( 'analytics' ),
+		};
+
+		const expected = {
+			overrideComponents: [ getReportZeroState( 'analytics' ) ],
+			gridColumnWidths: [ 12, 0, 0, 0 ],
+		};
+
+		const layout = getWidgetLayout( widgets, widgetStates );
+		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
+	} );
 
 	// Every test case below corresponds to a matching story in `stories/widgets.stories.js` under
 	// "Global/Widgets/Widget Area/Special combination states".
@@ -72,7 +96,7 @@ describe( 'combineWidgets', () => {
 		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
 	} );
 
-	it( 'combines adjacent widgets of the same component per the same metadata', () => {
+	it.only( 'combines adjacent widgets of the same component per the same metadata', () => {
 		const widgets = [
 			getQuarterWidget( 'test1' ),
 			getQuarterWidget( 'test2' ),
