@@ -69,6 +69,7 @@ storiesOf( 'Analytics Module', module )
 			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 
+			// TODO - should instead have new static fixtures? is this too confusing? NOT tests though... could scramble names and generate fixtures dynamically?
 			for ( const account of accounts ) {
 				const propertiesForAccount = properties
 					.map( ( p ) => ( { ...p, accountId: account.id } ) );
