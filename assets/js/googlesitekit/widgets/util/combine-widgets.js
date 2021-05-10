@@ -21,6 +21,11 @@
  */
 import isEqual from 'lodash/isEqual';
 
+/**
+ * Internal dependencies
+ */
+import { SPECIAL_WIDGET_STATES } from './constants';
+
 function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
 	return rowA === rowB && isEqual( stateA, stateB );
 }
@@ -57,16 +62,35 @@ export function combineWidgets( widgets, widgetStates, {
 	let currentRowIndex = -1;
 	let columnWidthsBuffer = [];
 
-	const states = [];
+	const states = {};
+	/*
+	 * All the widgets here will be in the same area
+	 * We need to determine whether:
+	 * - They are all the same module
+	 * - They are all in the same special state
+	 */
 
 	widgets.forEach( ( widget ) => {
-		const state = widgetStates?.[widget.slug]?.Component?.name;
-		if ( state && ! states.includes( state ) ) {
-			states.push( state );
+		const widgetState = widgetStates?.[widget.slug];
+		const state = widgetState?.Component?.name;
+		const module = widgetState?.metadata?.moduleSlug;
+		const isSpecialState = SPECIAL_WIDGET_STATES.includes( state );
+
+		if ( ! state || ! module || ! isSpecialState ) {
+			// break;
+		}
+
+		if ( states[ module ] ) {
+			states[ module ].push( state );
+		} else {
+			states[ module ] = [ state ];
 		}
 	} );
 
-	if ( states.length === 1 && widgets.length > 1 ) {
+	const isMultipleModules = Object.keys( states ).length > 1;
+	const allStatesEqual = Object.entries( states ).every( ( [ module, states ] ) => state === states[ 0 ] );
+
+	if ( ! isMultipleModules && allStatesEqual && states.length === widgets.length ) {
 		// All widgets have the same state, so we should only render one and hide the rest.
 		const hiddenRows = Array.from( { length: widgets.length - 1 } ).fill( 0 );
 		// All the components are the same, pick the first.
