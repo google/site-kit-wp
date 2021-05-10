@@ -250,7 +250,7 @@ export default function UserInputQuestionnaire() {
 					isActive={ activeSlug === USER_INPUT_QUESTION_GOALS }
 					questionNumber={ 3 }
 					title={ __( 'What are the goals of this site?', 'google-site-kit' ) }
-					description={ __( 'The goals you pick will apply to the entire WordPress site: any other admins with access to Site Kit can see them and edit them in Settings.', 'google-site-kit' ) }
+					description={ __( 'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track how close you’re getting to your specific goals.', 'google-site-kit' ) }
 					next={ nextCallback }
 					nextLabel={ nextLabel }
 					back={ backCallback }
