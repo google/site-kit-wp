@@ -98,16 +98,11 @@ describe( 'PropertySelect', () => {
 	it( 'should not render if account ID is not set.', async () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry: ( { dispatch } ) => {
-				// TODO - helper createEmptyUninitialized?
-
 				const { properties } = fixtures.accountsPropertiesProfiles;
 				const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
 				dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 				dispatch( STORE_NAME ).setSettings( {} );
-
-				// only difference from setupEmptyRegistry helper function!
-				// dispatch( STORE_NAME ).setAccountID( accountID );
 
 				dispatch( STORE_NAME ).receiveGetExistingTag( null );
 

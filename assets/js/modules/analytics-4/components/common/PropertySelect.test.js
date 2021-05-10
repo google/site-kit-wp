@@ -75,6 +75,27 @@ describe( 'PropertySelect', () => {
 		expect( listItems ).toHaveLength( properties.length + 1 );
 	} );
 
+	it( 'should not render if account ID is not set.', async () => {
+		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/, [] );
+
+		const { container, registry } = render( <PropertySelect />, {
+			setupRegistry: ( { dispatch } ) => {
+				dispatch( MODULES_ANALYTICS ).setSettings( {} );
+
+				dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+				dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
+
+				dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
+				dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
+			},
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+
+		// in order to not get act errors need to do something as DOM is empty at the start and end of this test AND wp-data does lots of stuff
+		await act( () => registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE ) );
+	} );
+
 	it( 'should be disabled when in the absence of an valid account ID.', async () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry,
