@@ -85,6 +85,7 @@ function DateRangeSelector() {
 				className="googlesitekit-width-auto"
 			/>
 			<p>Typoz</p>
+			<Button>Typoz in children</Button>
 		</div>
 	);
 }
