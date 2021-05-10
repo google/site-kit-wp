@@ -1,6 +1,6 @@
 # Site Kit by Google
 
-Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
+Site Kit is a one-stop soluxxxxtion for WordPress users to use everything Google has to offer to make them successful on the web.
 
 Learn more: [https://sitekit.withgoogle.com](https://sitekit.withgoogle.com)
 

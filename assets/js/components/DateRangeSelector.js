@@ -84,6 +84,7 @@ function DateRangeSelector() {
 				id="date-range-selector-menu"
 				className="googlesitekit-width-auto"
 			/>
+			<p>Typoz</p>
 		</div>
 	);
 }

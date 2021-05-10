@@ -52,7 +52,7 @@ export default function UserInputSettings( { onCTAClick, onDismiss, isDismissabl
 			id={ `user-input-settings-notification-${ instanceID }` }
 			className="googlesitekit-user-input__notification"
 			title={ __( 'Customize Site Kit to match your goals', 'google-site-kit' ) }
-			description={ __( 'Answer 5 questions and Site Kit will customize your dashboard with specific metrics and opportunities that match your site’s goals', 'google-site-kit' ) }
+			description={ __( 'Answerz 5 questions and Site Kit will customize your dashboard with specific metricxxxs and opportunities that match your site’s goals', 'google-site-kit' ) }
 			format="large"
 			dismissExpires={ getTimeInSeconds( 'hour' ) * 3 }
 			ctaLink={ ctaLink }

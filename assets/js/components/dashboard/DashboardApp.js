@@ -74,6 +74,7 @@ export default function DashboardApp() {
 					</Grid>
 				</div>
 			) }
+			Foo
 		</Fragment>
 	);
 }
