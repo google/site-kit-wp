@@ -33,6 +33,7 @@ import { Fragment, useState, useEffect } from '@wordpress/element';
 import {
 	getTimeInSeconds,
 	calculateChange,
+	getURLPath,
 } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import {
@@ -45,7 +46,6 @@ import {
 	userReportDataDefaults,
 	parseTotalUsersData,
 } from '../../util';
-import { getURLPath } from '../../../../util/getURLPath';
 import Data from 'googlesitekit-data';
 import DataBlock from '../../../../components/DataBlock';
 import withData from '../../../../components/higherorder/withData';
