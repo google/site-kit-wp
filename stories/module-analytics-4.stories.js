@@ -1,5 +1,5 @@
 /**
- * PropertySelect Stories.
+ * Analytics-4 Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -24,11 +24,11 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
-import { STORE_NAME } from '../../datastore/constants';
-import * as fixtures from '../../datastore/__fixtures__';
-import { WithTestRegistry } from '../../../../../../tests/js/utils';
-import PropertySelect from './PropertySelect';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import { STORE_NAME } from '../assets/js/modules/analytics-4/datastore/constants';
+import * as fixtures from '../assets/js/modules/analytics-4/datastore/__fixtures__';
+import { WithTestRegistry } from '../tests/js/utils';
+import PropertySelect from '../assets/js/modules/analytics-4/components/common/PropertySelect';
 
 function SetupWrap( { children } ) {
 	return (
@@ -42,8 +42,8 @@ function SetupWrap( { children } ) {
 	);
 }
 
-storiesOf( 'GA4', module )
-	.add( 'PropertySelect', () => {
+storiesOf( 'Analytics-4 Module', module )
+	.add( 'Account Property Select', () => {
 		const {
 			createProperty,
 			createWebDataStream,
