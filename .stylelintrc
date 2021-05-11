@@ -1,6 +1,6 @@
 {
   "extends": [
-	  @wordpress/stylelint-config/scss
+	  "@wordpress/stylelint-config/scss"
   ],
   "plugins": [
     "stylelint-declaration-use-variable",
@@ -10,11 +10,12 @@
   "rules": {
     "string-quotes": "double",
     "at-rule-no-unknown": null,
-    "declaration-property-unit-whitelist": null,
     "function-url-quotes": "always",
     "selector-class-pattern": null,
+	"declaration-property-unit-allowed-list": null,
     "sh-waqar/declaration-use-variable": [["/color/", { "ignoreValues": ["/^rgba/", "transparent"] }]],
     "order/properties-alphabetical-order": true,
+	"scss/selector-no-redundant-nesting-selector": null,
     "scss/at-rule-no-unknown": true,
     "value-keyword-case": [ "lower", {
         "ignoreKeywords": ["/([A-Z])/"]
