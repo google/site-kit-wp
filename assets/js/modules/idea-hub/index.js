@@ -24,15 +24,15 @@ import { registerStore as registerDataStore } from './datastore';
 import IdeaHubIcon from '../../../svg/idea-hub.svg';
 import { isFeatureEnabled } from '../../features';
 
-const ifEnabled = ( func ) => ( ...args ) => {
+const ifIdeaHubIsEnabled = ( func ) => ( ...args ) => {
 	if ( isFeatureEnabled( 'ideaHubModule' ) ) {
 		func( ...args );
 	}
 };
 
-export const registerStore = ifEnabled( registerDataStore );
+export const registerStore = ifIdeaHubIsEnabled( registerDataStore );
 
-export const registerModule = ifEnabled( ( modules ) => {
+export const registerModule = ifIdeaHubIsEnabled( ( modules ) => {
 	modules.registerModule(
 		'idea-hub',
 		{
