@@ -73,15 +73,15 @@ const ActivateModuleCTA = ( { moduleSlug, title, description } ) => {
 	switch ( moduleSlug ) {
 		case 'analytics':
 			if ( ! title ) {
-				title = __( 'Learn more about what visitors do on your site.', 'google-site-kit' );
+				title = __( 'Learn more about what visitors do on your site', 'google-site-kit' );
 			}
 			if ( ! description ) {
-				description = __( 'Connect with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' );
+				description = __( 'Connect with Google Analytics to see unique visitors, goal completions, top pages and more', 'google-site-kit' );
 			}
 			break;
 		case 'pagespeed-insights':
 			if ( ! description ) {
-				description = __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA.', 'google-site-kit' );
+				description = __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA', 'google-site-kit' );
 			}
 			break;
 	}
