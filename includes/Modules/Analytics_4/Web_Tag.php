@@ -34,7 +34,7 @@ class Web_Tag extends Analytics_Web_Tag {
 	 * @param string $module_slug Module slug.
 	 */
 	public function __construct( $tag_id, $module_slug ) {
-		Module_Tag::__construct( 'G-' . $tag_id, $module_slug );
+		parent::__construct( 'G-' . $tag_id, $module_slug );
 	}
 
 	/**
@@ -55,6 +55,7 @@ class Web_Tag extends Analytics_Web_Tag {
 	 */
 	protected function enqueue_gtag_script() {
 		if ( did_action( 'googlesitekit_analytics_init_tag' ) ) {
+			// If the gtag script is already registered in the Analytics module, then we need to add <MEASUREMENT_ID> configuration only.
 			$config = sprintf( 'gtag("config", "%s");', esc_js( $this->tag_id ) );
 			wp_add_inline_script( 'google_gtagjs', $config );
 		} else {
