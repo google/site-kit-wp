@@ -78,8 +78,8 @@ export default function TrackingExclusionSwitches() {
 			<legend className="googlesitekit-setup-module__text">
 				{ __( 'Exclude from Analytics', 'google-site-kit' ) }
 			</legend>
-			<div>
-				<div className="googlesitekit-analytics-trackingdisabled__inlineswitch">
+			<div className="googlesitekit-settings-module__inline-items">
+				<div className="googlesitekit-settings-module__inline-item">
 					<Switch
 						label={ trackingExclusionLabels[ TRACKING_LOGGED_IN_USERS ] }
 						checked={ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) }
@@ -88,7 +88,7 @@ export default function TrackingExclusionSwitches() {
 					/>
 				</div>
 				{ ! trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) && (
-					<div className="googlesitekit-analytics-trackingdisabled__inlineswitch">
+					<div className="googlesitekit-settings-module__inline-item">
 						<Switch
 							label={ trackingExclusionLabels[ TRACKING_CONTENT_CREATORS ] }
 							checked={ trackingDisabled.includes( TRACKING_CONTENT_CREATORS ) }
@@ -98,7 +98,7 @@ export default function TrackingExclusionSwitches() {
 					</div>
 				) }
 			</div>
-			<p>{ message }</p>
+			<p className="googlesitekit-margin-top-0">{ message }</p>
 		</fieldset>
 	);
 }
