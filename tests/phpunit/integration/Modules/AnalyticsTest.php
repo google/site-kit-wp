@@ -422,21 +422,12 @@ class AnalyticsTest extends TestCase {
 			// Ensure transient was deleted by the method.
 			$this->assertFalse( get_transient( $account_ticked_id_transient ) );
 			// Ensure settings were set correctly.
-			$this->assertEqualSetsWithIndex(
-				array(
-					'accountID'             => $_GET['accountId'],
-					'propertyID'            => $_GET['webPropertyId'],
-					'profileID'             => $_GET['profileId'],
-					'internalWebPropertyID' => $expected_internal_id,
-					'useSnippet'            => true,
-					'canUseSnippet'         => true,
-					'anonymizeIP'           => true,
-					'adsenseLinked'         => false,
-					'trackingDisabled'      => array( 'loggedinUsers' ),
-					'ownerID'               => $admin_id,
-				),
-				$analytics->get_settings()->get()
-			);
+			$settings = $analytics->get_settings()->get();
+			$this->assertEquals( $_GET['accountId'], $settings['accountID'] );
+			$this->assertEquals( $_GET['webPropertyId'], $settings['propertyID'] );
+			$this->assertEquals( $expected_internal_id, $settings['internalWebPropertyID'] );
+			$this->assertEquals( $_GET['profileId'], $settings['profileID'] );
+			$this->assertEquals( $admin_id, $settings['ownerID'] );
 		}
 	}
 
@@ -446,8 +437,9 @@ class AnalyticsTest extends TestCase {
 	 * @param array $settings
 	 * @param bool $logged_in
 	 * @param \Closure $assert_opt_out_presence
+	 * @param bool $is_content_creator
 	 */
-	public function test_tracking_disabled( $settings, $logged_in, $assert_opt_out_presence ) {
+	public function test_tracking_disabled( $settings, $logged_in, $assert_opt_out_presence, $is_content_creator = false ) {
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
@@ -455,7 +447,11 @@ class AnalyticsTest extends TestCase {
 		// Remove irrelevant script from throwing errors in CI from readfile().
 		remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
 		// Set the current user (can be 0 for no user)
-		wp_set_current_user( $logged_in ? $this->factory()->user->create() : 0 );
+		$role = $is_content_creator ? 'administrator' : 'subscriber';
+		$user = $logged_in ?
+			$this->factory()->user->create( array( 'role' => $role ) )
+			: 0;
+		wp_set_current_user( $user );
 
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$analytics->get_settings()->set( $settings );
@@ -527,11 +523,25 @@ class AnalyticsTest extends TestCase {
 				true,
 				$assert_not_contains_opt_out,
 			),
+			// Tracking is not active for content creators if disabled via settings.
+			array(
+				array_merge( $base_settings, array( 'trackingDisabled' => array( 'contentCreators' ) ) ),
+				true,
+				$assert_contains_opt_out,
+				true,
+			),
 			// Tracking is still active for guests if disabled for logged in users.
 			array(
 				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
 				false,
 				$assert_not_contains_opt_out,
+			),
+			// Tracking is not active for content creators if disabled for logged-in users (logged-in users setting overrides content creators setting)
+			array(
+				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
+				true,
+				$assert_contains_opt_out,
+				true,
 			),
 		);
 	}

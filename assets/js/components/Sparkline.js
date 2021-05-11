@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import GoogleChartV2 from './GoogleChartV2';
+import GoogleChart from './GoogleChart';
 
 function Sparkline( {
 	change,
@@ -75,7 +75,7 @@ function Sparkline( {
 
 	return (
 		<div className="googlesitekit-analytics-sparkline-chart-wrap">
-			<GoogleChartV2
+			<GoogleChart
 				chartType="LineChart"
 				data={ data }
 				loadingHeight={ loadingHeight }

@@ -17,11 +17,16 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useClickAway } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { Fragment, useState, useRef, useEffect, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { ESCAPE } from '@wordpress/keycodes';
+import { ESCAPE, TAB } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -35,6 +40,7 @@ import Modal from './Modal';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
 const { useSelect, useDispatch } = Data;
 
 function UserMenu() {
@@ -44,52 +50,36 @@ function UserMenu() {
 	const postDisconnectURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { googlesitekit_context: 'revoked' } ) );
 
 	const [ dialogActive, toggleDialog ] = useState( false );
-	const [ menuOpen, toggleMenu ] = useState( false );
-	const menuButtonRef = useRef();
-	const menuRef = useRef();
+	const [ menuOpen, setMenuOpen ] = useState( false );
+	const menuWrapperRef = useRef();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	useEffect( () => {
-		const handleMenuClose = ( e ) => {
-			if ( menuButtonRef?.current && menuRef?.current ) {
-				// Close the menu if the user presses the Escape key
-				// or if they click outside of the menu.
-				if (
-					( ( 'keyup' === e.type && ESCAPE === e.keyCode ) || 'mouseup' === e.type ) &&
-					! menuButtonRef.current.contains( e.target ) &&
-					! menuRef.current.contains( e.target )
-				) {
-					toggleMenu( false );
-				}
-			}
-		};
+	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
+	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () => setMenuOpen( false ) );
 
+	useEffect( () => {
 		const handleDialogClose = ( e ) => {
 			// Close if Escape key is pressed.
 			if ( ESCAPE === e.keyCode ) {
 				toggleDialog( false );
-				toggleMenu( false );
+				setMenuOpen( false );
 			}
 		};
 
-		global.addEventListener( 'mouseup', handleMenuClose );
-		global.addEventListener( 'keyup', handleMenuClose );
 		global.addEventListener( 'keyup', handleDialogClose );
 
 		return () => {
-			global.removeEventListener( 'mouseup', handleMenuClose );
-			global.removeEventListener( 'keyup', handleMenuClose );
 			global.removeEventListener( 'keyup', handleDialogClose );
 		};
 	}, [] );
 
 	const handleMenu = useCallback( () => {
-		toggleMenu( ! menuOpen );
+		setMenuOpen( ! menuOpen );
 	}, [ menuOpen ] );
 
 	const handleDialog = useCallback( () => {
 		toggleDialog( ! dialogActive );
-		toggleMenu( false );
+		setMenuOpen( false );
 	}, [ dialogActive ] );
 
 	const handleMenuItemSelect = useCallback( ( index ) => {
@@ -125,9 +115,8 @@ function UserMenu() {
 
 	return (
 		<Fragment>
-			<div className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor">
+			<div ref={ menuWrapperRef } className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor">
 				<Button
-					ref={ menuButtonRef }
 					className="googlesitekit-header__dropdown mdc-button--dropdown"
 					text
 					onClick={ handleMenu }
@@ -150,7 +139,6 @@ function UserMenu() {
 				</Button>
 				<Menu
 					className="googlesitekit-width-auto"
-					ref={ menuRef }
 					menuOpen={ menuOpen }
 					menuItems={
 						[

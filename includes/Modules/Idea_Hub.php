@@ -31,7 +31,7 @@ use WP_Error;
 /**
  * Class representing the Idea Hub module.
  *
- * @since n.e.x.t
+ * @since 1.32.0
  * @access private
  * @ignore
  */
@@ -49,7 +49,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -58,7 +58,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array List of Google OAuth scopes.
 	 */
@@ -73,7 +73,7 @@ final class Idea_Hub extends Module
 	 *
 	 * A module being connected means that all steps required as part of its activation are completed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return bool True if module is connected, false otherwise.
 	 */
@@ -95,7 +95,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Cleans up when the module is deactivated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
@@ -104,7 +104,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array
 	 */
@@ -123,7 +123,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -141,7 +141,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Creates a request object for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
@@ -161,9 +161,65 @@ final class Idea_Hub extends Module
 					return null;
 				};
 			case 'GET:new-ideas':
-				// @TODO implementation
+				// @TODO: Implement this with the real API endpoint.
 				return function() {
-					return null;
+					return array(
+						array(
+							'name'   => 'ideas/17450692223393508734',
+							'text'   => 'Why Penguins are guanotelic?',
+							'topics' =>
+								array(
+									array(
+										'mid'          => '/m/05z6w',
+										'display_name' => 'Penguins',
+									),
+								),
+						),
+						array(
+							'name'   => 'ideas/14025103994557865535',
+							'text'   => 'When was sushi Kalam introduced?',
+							'topics' =>
+								array(
+									array(
+										'mid'          => '/m/07030',
+										'display_name' => 'Sushi',
+									),
+								),
+						),
+						array(
+							'name'   => 'ideas/7612031899179595408',
+							'text'   => 'How to speed up your WordPress site',
+							'topics' =>
+								array(
+									array(
+										'mid'          => '/m/09kqc',
+										'display_name' => 'Websites',
+									),
+								),
+						),
+						array(
+							'name'   => 'ideas/2285812891948871921',
+							'text'   => 'Using Site Kit to analyze your success',
+							'topics' =>
+								array(
+									array(
+										'mid'          => '/m/080ag',
+										'display_name' => 'Analytics',
+									),
+								),
+						),
+						array(
+							'name'   => 'ideas/68182298994557866271',
+							'text'   => 'How to make carne asada',
+							'topics' =>
+								array(
+									array(
+										'mid'          => '/m/07fhc',
+										'display_name' => 'Cooking',
+									),
+								),
+						),
+					);
 				};
 			case 'GET:published-post-ideas':
 				// @TODO implementation
@@ -171,9 +227,9 @@ final class Idea_Hub extends Module
 					return null;
 				};
 			case 'GET:saved-ideas':
-				// @TODO implementation
+				// @TODO: Implement this with the real API endpoint.
 				return function() {
-					return null;
+					return array();
 				};
 			case 'POST:update-idea-state':
 				// @TODO implementation
@@ -188,7 +244,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Sets up information about the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array Associative array of module info.
 	 */
@@ -207,7 +263,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return Module_Settings
 	 */
@@ -218,7 +274,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */

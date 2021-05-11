@@ -1,5 +1,5 @@
 /**
- * URL pathname getter utility function.
+ * Idea Hub Datastore Fixtures.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,15 +17,12 @@
  */
 
 /**
- * Returns the path from a URL, omitting its protocol, hostname, query params, and hash.
- *
- * @since 1.24.0
- *
- * @param {string} url The URL to get the path from.
- * @return {string} The URL path.
+ * Internal dependencies
  */
-export function getURLPath( url ) {
-	return new URL( url ).pathname;
-}
+import { default as newIdeas } from './new-ideas';
+import { default as savedIdeas } from './saved-ideas';
 
-export default getURLPath;
+export {
+	newIdeas,
+	savedIdeas,
+};

@@ -32,7 +32,7 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
-import { getLocale } from '../../../util/i18n';
+import { getLocale, normalizeURL } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
@@ -512,17 +512,13 @@ export const selectors = {
 	/**
 	 * Determines whether the provided URL matches reference site URL or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param {string} url The URL to compare with the reference site URL.
 	 * @return {boolean} TRUE if the URL matches reference site URL, otherwise FALSE.
 	 */
 	isSiteURLMatch: createRegistrySelector( ( select ) => ( state, url ) => {
 		const referenceURL = select( STORE_NAME ).getReferenceSiteURL();
-		const normalizeURL = ( incomingURL ) => incomingURL
-			.replace( /^https?:\/\/(www\.)?/i, '' ) // Remove protocol and optional "www." prefix from the URL.
-			.replace( /\/$/, '' ); // Remove trailing slash.
-
 		return normalizeURL( referenceURL ) === normalizeURL( url );
 	} ),
 };

@@ -68,8 +68,8 @@ function ModuleApp( { moduleSlug } ) {
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
 			<Alert module={ moduleSlug } />
-			{ shouldRenderWidget &&
-				<Fragment>
+			{ shouldRenderWidget
+				? (
 					<WidgetContextRenderer
 						slug={ screenWidgetContext }
 						className={ classNames( [
@@ -79,9 +79,9 @@ function ModuleApp( { moduleSlug } ) {
 						Header={ getModuleHeader }
 						Footer={ ModuleFooter }
 					/>
-				</Fragment>
+				)
+				: <LegacyModuleApp />
 			}
-			<LegacyModuleApp />
 		</Fragment>
 	);
 }

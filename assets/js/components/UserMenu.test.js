@@ -80,7 +80,8 @@ describe( 'UserMenu', () => {
 		} );
 
 		it( 'should close the menu when clicked outside', () => {
-			fireEvent.mouseUp( document.body );
+			fireEvent.mouseDown( document.body );
+
 			expect( menu ).toHaveAttribute( 'aria-hidden', 'true' );
 		} );
 

@@ -119,8 +119,12 @@ final class Analytics extends Module
 	 * @return bool
 	 */
 	protected function is_tracking_disabled() {
-		$option   = $this->get_settings()->get();
-		$disabled = in_array( 'loggedinUsers', $option['trackingDisabled'], true ) && is_user_logged_in();
+		$option = $this->get_settings()->get();
+
+		$disable_logged_in_users  = in_array( 'loggedinUsers', $option['trackingDisabled'], true ) && is_user_logged_in();
+		$disable_content_creators = in_array( 'contentCreators', $option['trackingDisabled'], true ) && current_user_can( 'edit_posts' );
+
+		$disabled = $disable_logged_in_users || $disable_content_creators;
 
 		/**
 		 * Filters whether or not the Analytics tracking snippet is output for the current request.
@@ -880,7 +884,7 @@ final class Analytics extends Module
 	 *     @type string                                              $start_date        Start date in 'Y-m-d' format. Default empty string.
 	 *     @type string                                              $end_date          End date in 'Y-m-d' format. Default empty string.
 	 *     @type string                                              $page              Specific page URL to filter by. Default empty string.
-	 *     @type int                                                 $row_limit         Limit of rows to return. Default 100.
+	 *     @type int                                                 $row_limit         Limit of rows to return. Default empty string.
 	 * }
 	 * @return Google_Service_AnalyticsReporting_ReportRequest|WP_Error Analytics site request instance.
 	 */
@@ -893,7 +897,7 @@ final class Analytics extends Module
 				'start_date'        => '',
 				'end_date'          => '',
 				'page'              => '',
-				'row_limit'         => 100,
+				'row_limit'         => '',
 			)
 		);
 
@@ -1249,30 +1253,29 @@ final class Analytics extends Module
 	 * @since 1.24.0
 	 */
 	private function register_tag() {
-		$tag             = null;
-		$module_settings = $this->get_settings();
-		$settings        = $module_settings->get();
+		$settings = $this->get_settings()->get();
 
 		if ( $this->context->is_amp() ) {
 			$tag = new AMP_Tag( $settings['propertyID'], self::MODULE_SLUG );
 		} else {
 			$tag = new Web_Tag( $settings['propertyID'], self::MODULE_SLUG );
-			$tag->set_anonymize_ip( ! empty( $settings['anonymizeIP'] ) );
 		}
 
-		if ( $tag && ! $tag->is_tag_blocked() ) {
-			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-			$tag->use_guard( new Tag_Guard( $module_settings ) );
+		if ( $tag->is_tag_blocked() ) {
+			return;
+		}
 
-			if ( $tag->can_register() ) {
-				if ( $this->context->get_amp_mode() ) {
-					$home = $this->context->get_canonical_home_url();
-					$home = wp_parse_url( $home, PHP_URL_HOST );
-					$tag->set_home_domain( $home );
-				}
+		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
 
-				$tag->register();
-			}
+		if ( $tag->can_register() ) {
+			$tag->set_anonymize_ip( $settings['anonymizeIP'] );
+			$tag->set_home_domain(
+				wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_HOST )
+			);
+			$tag->set_ads_conversion_id( $settings['adsConversionID'] );
+
+			$tag->register();
 		}
 	}
 

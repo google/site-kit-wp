@@ -33,7 +33,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { getTimeInSeconds } from '../../../../util';
+import { getTimeInSeconds, getURLPath } from '../../../../util';
 import GoogleChart from '../../../../components/GoogleChart';
 import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
@@ -45,7 +45,6 @@ import {
 	trafficSourcesReportDataDefaults,
 	isDataZeroForReporting,
 } from '../../util';
-import { getURLPath } from '../../../../util/getURLPath';
 
 const { useSelect } = Data;
 
@@ -90,11 +89,11 @@ const LegacyDashboardAcquisitionPieChart = ( { data, source } ) => {
 	return (
 		<div className="googlesitekit-chart googlesitekit-chart--pie">
 			<GoogleChart
+				chartType="PieChart"
 				data={ processedData }
+				loadingHeight="205px"
+				loadingWidth="205px"
 				options={ options }
-				chartType="pie"
-				id="overview-piechart"
-				loadHeight={ 205 }
 			/>
 			{ source &&
 				<div className="googlesitekit-chart__source">
