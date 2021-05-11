@@ -35,7 +35,7 @@ const Template = ( args ) => {
 	const widgetSlug = 'dashboardUniqueVisitorsWidget';
 
 	return (
-		<WithRegistrySetup func={ args?.setupRegistry }>
+		<WithRegistrySetup func={ args.setupRegistry }>
 			<div className="googlesitekit-widget">
 				<div className="googlesitekit-widget__body">
 					<DashboardUniqueVisitorsWidget
