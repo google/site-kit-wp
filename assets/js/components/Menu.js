@@ -34,6 +34,12 @@ import { forwardRef, useCallback, useEffect, useRef, useState } from '@wordpress
  */
 import { MDCMenu } from '../material-components';
 
+/* eslint-disable */
+const Colour = 1234;
+const Centre = 'centre';
+const licences = 'licences';
+/* eslint-enable */
+
 const Menu = forwardRef( ( {
 	children,
 	className,
