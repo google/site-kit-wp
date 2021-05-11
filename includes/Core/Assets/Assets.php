@@ -392,7 +392,7 @@ final class Assets {
 					'src'          => 'https://www.gstatic.com/charts/loader.js',
 					'in_footer'    => false,
 					'before_print' => function( $handle ) {
-						wp_add_inline_script( $handle, 'google.charts.load( "49", { packages: [ "corechart" ] } );' );
+						wp_add_inline_script( $handle, 'google.charts.load( "50", { packages: [ "corechart" ] } );' );
 					},
 				)
 			),
