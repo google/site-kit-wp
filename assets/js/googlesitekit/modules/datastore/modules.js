@@ -811,6 +811,7 @@ const baseSelectors = {
 	/**
 	 * Gets the module's screenWidgetContext.
 	 *
+	 * Returns `undefined` if dependencies are loading.
 	 * Returns `null` if there is no registered context string for the given module.
 	 * Returns `string` the registered context string, screenWidgetContext for the given module.
 	 *

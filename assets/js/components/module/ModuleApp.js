@@ -43,6 +43,7 @@ import HelpMenu from '../help/HelpMenu';
 import DateRangeSelector from '../DateRangeSelector';
 import HelpMenuLink from '../help/HelpMenuLink';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import ProgressBar from '../ProgressBar';
 
 const { useSelect } = Data;
 
@@ -68,6 +69,9 @@ function ModuleApp( { moduleSlug } ) {
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
 			<Alert module={ moduleSlug } />
+			{ shouldRenderWidget && ! screenWidgetContext && (
+				<ProgressBar />
+			) }
 			{ shouldRenderWidget && screenWidgetContext &&
 				(
 					<WidgetContextRenderer
