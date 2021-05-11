@@ -32,18 +32,30 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../../components/Button';
-import { STORE_NAME, FORM_SETUP, EDIT_SCOPE } from '../../datastore/constants';
+import {
+	SETUP_FLOW_MODE_LEGACY,
+	SETUP_FLOW_MODE_UA,
+	SETUP_FLOW_MODE_GA4,
+	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
+	STORE_NAME,
+	FORM_SETUP,
+	EDIT_SCOPE,
+} from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { trackEvent } from '../../../../util';
 import { isPermissionScopeError } from '../../../../util/errors';
-import SetupFormLegacy from './';
+import SetupFormLegacy from './SetupFormLegacy';
+import SetupFormUA from './SetupFormUA';
+import SetupFormGA4 from './SetupFormGA4';
+import SetupFormGA4Transitional from './SetupFormGA4Transitional';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
 	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ) );
+	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( STORE_NAME );
@@ -70,7 +82,10 @@ export default function SetupForm( { finishSetup } ) {
 
 	return (
 		<form className="googlesitekit-analytics-setup__form" onSubmit={ submitForm }>
-			<SetupFormLegacy />
+			{ setupFlowMode === SETUP_FLOW_MODE_LEGACY && <SetupFormLegacy /> }
+			{ setupFlowMode === SETUP_FLOW_MODE_UA && <SetupFormUA /> }
+			{ setupFlowMode === SETUP_FLOW_MODE_GA4 && <SetupFormGA4 /> }
+			{ setupFlowMode === SETUP_FLOW_MODE_GA4_TRANSITIONAL && <SetupFormGA4Transitional /> }
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitChanges }>
 					{ __( 'Configure Analytics', 'google-site-kit' ) }
