@@ -22,48 +22,14 @@
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../datastore/constants';
 import { provideModules, provideSiteInfo } from '../../../../../../tests/js/utils';
-import { getAnalyticsMockResponse } from '../../util/data-mock';
+import { provideAnalyticsMockReport } from '../../util/data-mock';
 import { withWidgetSlug } from '../../../../googlesitekit/widgets/util/';
 import WidgetReportError from '../../../../googlesitekit/widgets/components/WidgetReportError';
 import WidgetReportZero from '../../../../googlesitekit/widgets/components/WidgetReportZero';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import DashboardUniqueVisitorsWidget from './DashboardUniqueVisitorsWidget';
+import DashboardUniqueVisitorsWidget, { selectSparklineArgs, selectReportArgs } from './DashboardUniqueVisitorsWidget';
 
 const currentEntityURL = 'https://www.example.com/example-page/';
-const options = {
-	startDate: '2020-08-11',
-	endDate: '2020-09-07',
-	dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-	dimensions: [ 'ga:date', 'ga:channelGrouping' ],
-	metrics: [
-		{
-			expression: 'ga:users',
-			alias: 'Users',
-		},
-	],
-};
-const optionsEntityURL = {
-	...options,
-	url: currentEntityURL,
-};
-const optionsCompare = {
-	compareStartDate: '2020-07-14',
-	compareEndDate: '2020-08-10',
-	startDate: '2020-08-11',
-	endDate: '2020-09-07',
-	dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-	dimensions: [ 'ga:channelGrouping' ],
-	metrics: [
-		{
-			expression: 'ga:users',
-			alias: 'Total Users',
-		},
-	],
-};
-const optionsCompareEntityURL = {
-	...optionsCompare,
-	url: currentEntityURL,
-};
 
 const Template = ( args ) => {
 	const widgetSlug = 'dashboardUniqueVisitorsWidget';
@@ -86,8 +52,8 @@ export const Ready = Template.bind();
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsCompare ), { options: optionsCompare } );
-		registry.dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( options ), { options } );
+		provideAnalyticsMockReport( registry, selectReportArgs( registry.select ) );
+		provideAnalyticsMockReport( registry, selectSparklineArgs( registry.select ) );
 	},
 };
 
@@ -95,10 +61,10 @@ export const Loading = Template.bind();
 Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsCompare ), { options: optionsCompare } );
-		registry.dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( options ), { options } );
-		registry.dispatch( STORE_NAME ).startResolution( 'getReport', [ options ] );
-		registry.dispatch( STORE_NAME ).startResolution( 'getReport', [ optionsCompare ] );
+		provideAnalyticsMockReport( registry, selectReportArgs( registry.select ) );
+		provideAnalyticsMockReport( registry, selectSparklineArgs( registry.select ) );
+		registry.dispatch( STORE_NAME ).startResolution( 'getReport', [ selectReportArgs( registry.select ) ] );
+		registry.dispatch( STORE_NAME ).startResolution( 'getReport', [ selectSparklineArgs( registry.select ) ] );
 	},
 };
 
@@ -106,6 +72,7 @@ export const DataUnavailable = Template.bind();
 DataUnavailable.storyName = 'Data Unavailable';
 DataUnavailable.args = {
 	setupRegistry: ( registry ) => {
+		const options = selectReportArgs( registry.select );
 		registry.dispatch( STORE_NAME ).receiveGetReport( [], { options } );
 	},
 };
@@ -115,10 +82,11 @@ Error.storyName = 'Error';
 Error.args = {
 	setupRegistry: ( registry ) => {
 		const error = {
-			code: 'missing_required_param',
-			message: 'Request parameter is empty: metrics.',
+			code: 'test_error',
+			message: 'Error message.',
 			data: {},
 		};
+		const options = selectReportArgs( registry.select );
 		registry.dispatch( STORE_NAME ).receiveError( error, 'getReport', [ options ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ options ] );
 	},
@@ -129,12 +97,8 @@ LoadedEntityURL.storyName = 'Ready with entity URL set';
 LoadedEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
-		registry.dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsCompareEntityURL ), {
-			options: optionsCompareEntityURL,
-		} );
-		registry.dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsEntityURL ), {
-			options: optionsEntityURL,
-		} );
+		provideAnalyticsMockReport( registry, selectReportArgs( registry.select ) );
+		provideAnalyticsMockReport( registry, selectSparklineArgs( registry.select ) );
 	},
 };
 
@@ -143,14 +107,10 @@ LoadingEntityURL.storyName = 'Loading with entity URL set';
 LoadingEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
-		registry.dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsCompareEntityURL ), {
-			options: optionsCompareEntityURL,
-		} );
-		registry.dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsEntityURL ), {
-			options: optionsEntityURL,
-		} );
-		registry.dispatch( STORE_NAME ).startResolution( 'getReport', [ optionsEntityURL ] );
-		registry.dispatch( STORE_NAME ).startResolution( 'getReport', [ optionsCompareEntityURL ] );
+		provideAnalyticsMockReport( registry, selectReportArgs( registry.select ) );
+		provideAnalyticsMockReport( registry, selectSparklineArgs( registry.select ) );
+		registry.dispatch( STORE_NAME ).startResolution( 'getReport', [ selectReportArgs( registry.select ) ] );
+		registry.dispatch( STORE_NAME ).startResolution( 'getReport', [ selectSparklineArgs( registry.select ) ] );
 	},
 };
 
@@ -159,7 +119,9 @@ DataUnavailableEntityURL.storyName = 'Data Unavailable with entity URL set';
 DataUnavailableEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
-		registry.dispatch( STORE_NAME ).receiveGetReport( [], { options: optionsEntityURL } );
+
+		const options = selectReportArgs( registry.select );
+		registry.dispatch( STORE_NAME ).receiveGetReport( [], { options } );
 	},
 };
 
@@ -168,14 +130,16 @@ ErrorEntityURL.storyName = 'Error with entity URL set';
 ErrorEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		const error = {
-			code: 'missing_required_param',
-			message: 'Request parameter is empty: metrics.',
+			code: 'test_error',
+			message: 'Error with entity URL set.',
 			data: {},
 		};
 
 		provideSiteInfo( registry, { currentEntityURL } );
-		registry.dispatch( STORE_NAME ).receiveError( error, 'getReport', [ optionsEntityURL ] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ optionsEntityURL ] );
+
+		const options = selectReportArgs( registry.select );
+		registry.dispatch( STORE_NAME ).receiveError( error, 'getReport', [ options ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ options ] );
 	},
 };
 
