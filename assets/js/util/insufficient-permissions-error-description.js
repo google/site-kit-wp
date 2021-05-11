@@ -47,20 +47,20 @@ export function getInsufficientPermissionsErrorDescription( error, module ) {
 
 	if ( 'analytics' === slug ) {
 		if ( error.match( /account/i ) ) {
-			message = __( `Your Google account does not have sufficient permissions for this Analytics account, so you won't be able to see stats from it on the Site Kit dashboard.`, 'google-site-kit' );
+			message = __( `Your Google account does not have sufficient permissions for this Analytics account, so you won't be able to see stats from it on the Site Kit dashboard`, 'google-site-kit' );
 		} else if ( error.match( /property/i ) ) {
-			message = __( `Your Google account does not have sufficient permissions for this Analytics property, so you won't be able to see stats from it on the Site Kit dashboard.`, 'google-site-kit' );
+			message = __( `Your Google account does not have sufficient permissions for this Analytics property, so you won't be able to see stats from it on the Site Kit dashboard`, 'google-site-kit' );
 		} else if ( error.match( /view/i ) ) {
-			message = __( `Your Google account does not have sufficient permissions for this Analytics view, so you won't be able to see stats from it on the Site Kit dashboard.`, 'google-site-kit' );
+			message = __( `Your Google account does not have sufficient permissions for this Analytics view, so you won't be able to see stats from it on the Site Kit dashboard`, 'google-site-kit' );
 		}
 	} else if ( 'search-console' === slug ) {
-		message = __( `Your Google account does not have sufficient permissions for this Search Console property, so you won't be able to see stats from it on the Site Kit dashboard.`, 'google-site-kit' );
+		message = __( `Your Google account does not have sufficient permissions for this Search Console property, so you won't be able to see stats from it on the Site Kit dashboard`, 'google-site-kit' );
 	}
 
 	if ( ! message ) {
 		message = sprintf(
 			/* translators: %s: module name */
-			__( `Your Google account does not have sufficient permissions to access %s data, so you won't be able to see stats from it on the Site Kit dashboard.`, 'google-site-kit' ),
+			__( `Your Google account does not have sufficient permissions to access %s data, so you won't be able to see stats from it on the Site Kit dashboard`, 'google-site-kit' ),
 			name,
 		);
 	}
@@ -68,13 +68,13 @@ export function getInsufficientPermissionsErrorDescription( error, module ) {
 	if ( owner && owner.login ) {
 		userInfo = sprintf(
 			/* translators: %s: owner name */
-			__( 'This service was originally connected by the administrator "%s" — you can contact them for more information.', 'google-site-kit' ),
+			__( 'This service was originally connected by the administrator "%s" — you can contact them for more information', 'google-site-kit' ),
 			owner.login,
 		);
 	}
 
 	if ( ! userInfo ) {
-		userInfo = __( 'This service was originally connected by an administrator — you can contact them for more information.', 'google-site-kit' );
+		userInfo = __( 'This service was originally connected by an administrator — you can contact them for more information', 'google-site-kit' );
 	}
 
 	return `${ message } ${ userInfo }`.trim();
