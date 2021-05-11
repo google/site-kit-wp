@@ -234,6 +234,33 @@ class TestCase extends \WP_UnitTestCase {
 		$this->assertEquals( $expected_message, $actual->get_error_message() );
 	}
 
+	protected function assertPostMetaNotExists( $post_id, $meta_key ) {
+		$this->assertNull(
+			$this->queryPostMeta( $post_id, $meta_key ),
+			"Failed to assert that '$meta_key' does not exist for post ID: $post_id."
+		);
+	}
+
+	protected function assertPostMetaExists( $post_id, $meta_key ) {
+		$this->assertNotNull(
+			$this->queryPostMeta( $post_id, $meta_key ),
+			"Failed to assert that '$meta_key' exists for post ID: $post_id."
+		);
+	}
+
+	protected function queryPostMeta( $post_id, $meta_key ) {
+		global $wpdb;
+
+		return $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = %s",
+				$post_id,
+				$meta_key
+			),
+			ARRAY_A
+		);
+	}
+
 	protected function queryOption( $option ) {
 		global $wpdb;
 

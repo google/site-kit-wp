@@ -1,5 +1,5 @@
 /**
- * Absolute URL path getter utility function.
+ * URL pathname getter utility function.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,9 +17,21 @@
  */
 
 /**
+ * Returns the path from a URL, omitting its protocol, hostname, query params, and hash.
+ *
+ * @since 1.24.0
+ *
+ * @param {string} url The URL to get the path from.
+ * @return {string} The URL path.
+ */
+export function getURLPath( url ) {
+	return new URL( url ).pathname;
+}
+
+/**
  * Returns the absolute URL from a path including the siteURL.
  *
- * @since n.e.x.t
+ * @since 1.32.0
  *
  * @param {string} siteURL The siteURL fo the WordPress install.
  * @param {string} path    The path.
@@ -29,4 +41,16 @@ export function getFullURL( siteURL, path ) {
 	return new URL( path, siteURL ).href;
 }
 
-export default getFullURL;
+/**
+ * Normalizes URL by removing protocol, www subdomain and trailing slash.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} incomingURL The original URL.
+ * @return {string} Normalized URL.
+ */
+export function normalizeURL( incomingURL ) {
+	return incomingURL
+		.replace( /^https?:\/\/(www\.)?/i, '' ) // Remove protocol and optional "www." prefix from the URL.
+		.replace( /\/$/, '' ); // Remove trailing slash.
+}

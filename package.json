@@ -120,7 +120,7 @@
     "classnames": "^2.2.6",
     "clipboard-copy": "^3.1.0",
     "compare-versions": "^3.6.0",
-    "dompurify": "^2.0.12",
+    "dompurify": "^2.0.17",
     "element-closest": "^3.0.2",
     "focus-trap-react": "^6.0.0",
     "formdata-polyfill": "^3.0.20",
