@@ -75,7 +75,7 @@ const WidgetAreaTemplate = ( args ) => {
 };
 
 export const Loaded = WidgetAreaTemplate.bind();
-Loaded.storyName = 'Loaded';
+Loaded.storyName = 'Ready';
 Loaded.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsCompare ), { options: optionsCompare } );
@@ -117,7 +117,7 @@ Error.args = {
 };
 
 export const LoadedEntityURL = WidgetAreaTemplate.bind();
-LoadedEntityURL.storyName = 'Loaded with entity URL set';
+LoadedEntityURL.storyName = 'Ready with entity URL set';
 LoadedEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
