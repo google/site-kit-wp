@@ -35,28 +35,15 @@ import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
-	const {
-		accountID,
-		properties,
-		isResolvingProperties,
-	} = useSelect( ( select ) => {
-		const data = {
-			// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
-			accountID: select( MODULES_ANALYTICS ).getAccountID(),
-			properties: [],
-			isResolvingProperties: false,
-		};
-
-		if ( data.accountID ) {
-			data.properties = select( STORE_NAME ).getProperties( data.accountID );
-			data.isResolvingProperties = select( STORE_NAME ).isResolving( 'getProperties', [ data.accountID ] );
-		}
-
-		return data;
-	} );
-
+	// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
+	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
+	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const hasResolvedAccounts = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) );
+
+	const isLoading = useSelect( ( select ) => {
+		return ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) ||
+			select( STORE_NAME ).isResolving( 'getProperties', [ accountID ] );
+	} );
 
 	const { selectProperty } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -67,7 +54,7 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID, selectProperty ] );
 
-	if ( ! hasResolvedAccounts || isResolvingProperties ) {
+	if ( isLoading ) {
 		return <ProgressBar small />;
 	}
 
