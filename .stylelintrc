@@ -1,5 +1,7 @@
 {
-  "extends": "stylelint-config-wordpress",
+  "extends": [
+	  @wordpress/stylelint-config/scss
+  ],
   "plugins": [
     "stylelint-declaration-use-variable",
     "stylelint-order",
