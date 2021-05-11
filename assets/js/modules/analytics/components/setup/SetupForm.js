@@ -37,6 +37,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { trackEvent } from '../../../../util';
 import { isPermissionScopeError } from '../../../../util/errors';
+import SetupFormLegacy from './';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -69,7 +70,7 @@ export default function SetupForm( { finishSetup } ) {
 
 	return (
 		<form className="googlesitekit-analytics-setup__form" onSubmit={ submitForm }>
-			{ /* add SetupFormLegacy here */ }
+			<SetupFormLegacy />
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitChanges }>
 					{ __( 'Configure Analytics', 'google-site-kit' ) }
