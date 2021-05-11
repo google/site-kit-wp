@@ -26,14 +26,12 @@ import { Fragment } from '@wordpress/element';
  */
 import { AccountSelect } from '../common';
 
-export default function SetupFormGA4Transitional( { } ) {
+export default function SetupFormGA4Transitional( ) {
 	return (
 		<Fragment>
-
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
 			</div>
-
 			<div>SetupFormGA4Transitional</div>
 		</Fragment>
 	);

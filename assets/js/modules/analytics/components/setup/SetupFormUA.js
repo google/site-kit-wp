@@ -26,14 +26,12 @@ import { Fragment } from '@wordpress/element';
  */
 import { AccountSelect } from '../common';
 
-export default function SetupFormUA( { } ) {
+export default function SetupFormUA( ) {
 	return (
 		<Fragment>
-
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
 			</div>
-
 			<div>SetupFormUA</div>
 		</Fragment>
 	);

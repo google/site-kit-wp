@@ -40,7 +40,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
 const { useSelect } = Data;
 
-export default function SetupFormLegacy( { } ) {
+export default function SetupFormLegacy( ) {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 
