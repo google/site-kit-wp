@@ -19,18 +19,16 @@
 /**
  * Internal dependencies
  */
-import { CORE_WIDGETS, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from '../../../../googlesitekit/widgets/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { accountsPropertiesProfiles } from '../../datastore/__fixtures__';
 import { STORE_NAME } from '../../datastore/constants';
 import { provideModules, provideSiteInfo } from '../../../../../../tests/js/utils';
 import { getAnalyticsMockResponse } from '../../util/data-mock';
-import WidgetAreaRenderer from '../../../../googlesitekit/widgets/components/WidgetAreaRenderer';
+import { withWidgetSlug } from '../../../../googlesitekit/widgets/util/';
+import WidgetReportError from '../../../../googlesitekit/widgets/components/WidgetReportError';
+import WidgetReportZero from '../../../../googlesitekit/widgets/components/WidgetReportZero';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import DashboardUniqueVisitorsWidget from './DashboardUniqueVisitorsWidget';
 
-const areaName = 'moduleAnalyticsMain';
-const widgetSlug = 'analyticsUniqueVisitors';
 const currentEntityURL = 'https://www.example.com/example-page/';
 const options = {
 	startDate: '2020-08-11',
@@ -66,24 +64,34 @@ const optionsCompareEntityURL = {
 	...optionsCompare,
 	url: currentEntityURL,
 };
-const WidgetAreaTemplate = ( args ) => {
+
+const Template = ( args ) => {
+	const widgetSlug = 'dashboardUniqueVisitorsWidget';
+
 	return (
 		<WithRegistrySetup func={ args?.setupRegistry }>
-			<WidgetAreaRenderer slug={ areaName } />
+			<div className="googlesitekit-widget">
+				<div className="googlesitekit-widget__body">
+					<DashboardUniqueVisitorsWidget
+						WidgetReportError={ withWidgetSlug( widgetSlug )( WidgetReportError ) }
+						WidgetReportZero={ withWidgetSlug( widgetSlug )( WidgetReportZero ) }
+					/>
+				</div>
+			</div>
 		</WithRegistrySetup>
 	);
 };
 
-export const Loaded = WidgetAreaTemplate.bind();
-Loaded.storyName = 'Ready';
-Loaded.args = {
+export const Ready = Template.bind();
+Ready.storyName = 'Ready';
+Ready.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( optionsCompare ), { options: optionsCompare } );
 		registry.dispatch( STORE_NAME ).receiveGetReport( getAnalyticsMockResponse( options ), { options } );
 	},
 };
 
-export const Loading = WidgetAreaTemplate.bind();
+export const Loading = Template.bind();
 Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( registry ) => {
@@ -94,7 +102,7 @@ Loading.args = {
 	},
 };
 
-export const DataUnavailable = WidgetAreaTemplate.bind();
+export const DataUnavailable = Template.bind();
 DataUnavailable.storyName = 'Data Unavailable';
 DataUnavailable.args = {
 	setupRegistry: ( registry ) => {
@@ -102,7 +110,7 @@ DataUnavailable.args = {
 	},
 };
 
-export const Error = WidgetAreaTemplate.bind();
+export const Error = Template.bind();
 Error.storyName = 'Error';
 Error.args = {
 	setupRegistry: ( registry ) => {
@@ -116,7 +124,7 @@ Error.args = {
 	},
 };
 
-export const LoadedEntityURL = WidgetAreaTemplate.bind();
+export const LoadedEntityURL = Template.bind();
 LoadedEntityURL.storyName = 'Ready with entity URL set';
 LoadedEntityURL.args = {
 	setupRegistry: ( registry ) => {
@@ -130,7 +138,7 @@ LoadedEntityURL.args = {
 	},
 };
 
-export const LoadingEntityURL = WidgetAreaTemplate.bind();
+export const LoadingEntityURL = Template.bind();
 LoadingEntityURL.storyName = 'Loading with entity URL set';
 LoadingEntityURL.args = {
 	setupRegistry: ( registry ) => {
@@ -146,7 +154,7 @@ LoadingEntityURL.args = {
 	},
 };
 
-export const DataUnavailableEntityURL = WidgetAreaTemplate.bind();
+export const DataUnavailableEntityURL = Template.bind();
 DataUnavailableEntityURL.storyName = 'Data Unavailable with entity URL set';
 DataUnavailableEntityURL.args = {
 	setupRegistry: ( registry ) => {
@@ -155,7 +163,7 @@ DataUnavailableEntityURL.args = {
 	},
 };
 
-export const ErrorEntityURL = WidgetAreaTemplate.bind();
+export const ErrorEntityURL = Template.bind();
 ErrorEntityURL.storyName = 'Error with entity URL set';
 ErrorEntityURL.args = {
 	setupRegistry: ( registry ) => {
@@ -176,25 +184,6 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				const [ property ] = accountsPropertiesProfiles.properties;
-				registry.dispatch( STORE_NAME ).receiveGetSettings( {
-					// eslint-disable-next-line sitekit/acronym-case
-					accountID: property.accountId,
-					// eslint-disable-next-line sitekit/acronym-case
-					internalWebPropertyID: property.internalWebPropertyId,
-					// eslint-disable-next-line sitekit/acronym-case
-					profileID: property.defaultProfileId,
-				} );
-
-				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( areaName, {
-					title: 'Overview',
-					style: WIDGET_AREA_STYLES.BOXES,
-				} );
-				registry.dispatch( CORE_WIDGETS ).registerWidget( widgetSlug, {
-					Component: DashboardUniqueVisitorsWidget,
-					width: WIDGET_WIDTHS.FULL,
-				} );
-				registry.dispatch( CORE_WIDGETS ).assignWidget( widgetSlug, areaName );
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 
 				provideModules( registry, [ {
