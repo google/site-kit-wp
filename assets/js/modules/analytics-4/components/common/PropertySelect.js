@@ -54,6 +54,14 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID, selectProperty ] );
 
+	const getPropertyName = ( displayName, id ) => {
+		if ( id === PROPERTY_CREATE ) {
+			return displayName;
+		}
+		/* translators: 1: Property name. 2: Property ID. */
+		return	sprintf( __( '%1$s (%2$s)', 'google-site-kit' ), displayName, id );
+	};
+
 	if ( isLoading ) {
 		return <ProgressBar small />;
 	}
@@ -80,8 +88,7 @@ export default function PropertySelect() {
 						data-internal-id={ _id }
 					>
 						{
-							/* translators: 1: Property name. 2: Property ID. */
-							_id === PROPERTY_CREATE ? displayName : sprintf( __( '%1$s (%2$s)', 'google-site-kit' ), displayName, _id )
+							getPropertyName( displayName, _id )
 						}
 					</Option>
 				) ) }
