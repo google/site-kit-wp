@@ -20,11 +20,19 @@
  * Internal dependencies
  */
 import { STORE_NAME } from './datastore/constants';
+import { registerStore as registerDataStore } from './datastore';
 import IdeaHubIcon from '../../../svg/idea-hub.svg';
+import { isFeatureEnabled } from '../../features';
 
-export { registerStore } from './datastore';
+const ifEnabled = ( func ) => ( ...args ) => {
+	if ( isFeatureEnabled( 'ideaHubModule' ) ) {
+		func( ...args );
+	}
+};
 
-export const registerModule = ( modules ) => {
+export const registerStore = ifEnabled( registerDataStore );
+
+export const registerModule = ifEnabled( ( modules ) => {
 	modules.registerModule(
 		'idea-hub',
 		{
@@ -32,4 +40,4 @@ export const registerModule = ( modules ) => {
 			Icon: IdeaHubIcon,
 		}
 	);
-};
+} );
