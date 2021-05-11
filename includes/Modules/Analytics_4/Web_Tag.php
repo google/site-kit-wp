@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Modules\Analytics_4;
 
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Core\Modules\Tags\Module_Tag;
 use Google\Site_Kit\Modules\Analytics\Web_Tag as Analytics_Web_Tag;
 
 /**
