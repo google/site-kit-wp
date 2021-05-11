@@ -158,6 +158,14 @@
 		}
 	}
 
+	.googlesitekit-analytics-trackingdisabled__inlineswitch {
+		margin: 0 1rem 1rem 0;
+
+		@media (min-width: $bp-tablet) {
+			display: inline;
+		}
+	}
+
 	.googlesitekit-settings-module__meta-item-type {
 		color: $c-primary;
 		font-size: 0.75rem;
