@@ -16,4 +16,28 @@
  * limitations under the License.
  */
 
-export { registerStore } from './datastore';
+/**
+ * Internal dependencies
+ */
+import { STORE_NAME } from './datastore/constants';
+import { registerStore as registerDataStore } from './datastore';
+import IdeaHubIcon from '../../../svg/idea-hub.svg';
+import { isFeatureEnabled } from '../../features';
+
+const ifIdeaHubIsEnabled = ( func ) => ( ...args ) => {
+	if ( isFeatureEnabled( 'ideaHubModule' ) ) {
+		func( ...args );
+	}
+};
+
+export const registerStore = ifIdeaHubIsEnabled( registerDataStore );
+
+export const registerModule = ifIdeaHubIsEnabled( ( modules ) => {
+	modules.registerModule(
+		'idea-hub',
+		{
+			storeName: STORE_NAME,
+			Icon: IdeaHubIcon,
+		}
+	);
+} );

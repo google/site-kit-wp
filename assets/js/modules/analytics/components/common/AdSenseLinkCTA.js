@@ -37,7 +37,7 @@ export default function AdSenseLinkCTA() {
 	return (
 		<CTA
 			title={ __( 'Link Analytics and AdSense', 'google-site-kit' ) }
-			description={ __( 'Get reports for your top earning pages by linking your Analytics and AdSense accounts.', 'google-site-kit' ) }
+			description={ __( 'Get reports for your top earning pages by linking your Analytics and AdSense accounts', 'google-site-kit' ) }
 			ctaLink={ supportURL }
 			ctaLabel={ __( 'Learn more', 'google-site-kit' ) }
 		/>

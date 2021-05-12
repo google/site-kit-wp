@@ -27,6 +27,7 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { enabledFeatures } from '../../../features';
 
 describe( 'modules/idea-hub new-ideas', () => {
 	let registry;
@@ -36,6 +37,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 	} );
 
 	beforeEach( () => {
+		enabledFeatures.add( 'ideaHubModule' );
 		registry = createTestRegistry();
 	} );
 
