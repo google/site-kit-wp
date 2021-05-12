@@ -35,27 +35,17 @@ import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
-	const {
-		hasValidAccountID,
-		properties,
-		propertyID,
-		isLoading,
-	} = useSelect( ( select ) => {
-		// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
-		const accountID = select( MODULES_ANALYTICS ).getAccountID();
-
-		return {
-			hasValidAccountID: isValidAccountID( accountID ),
-			properties: accountID
-				? select( STORE_NAME ).getProperties( accountID )
-				: [],
-			propertyID: select( STORE_NAME ).getPropertyID(),
-			isLoading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) ||
-			! ( accountID && select( STORE_NAME ).hasFinishedResolution( 'getProperties' ), [ accountID ] ),
-		};
-	} );
+	// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
+	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
+	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) || [] );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const isLoading = useSelect( ( select ) => (
+		! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) ||
+		! select( STORE_NAME ).hasFinishedResolution( 'getProperties', [ accountID ] )
+	) );
 
 	const { selectProperty } = useDispatch( STORE_NAME );
+
 	const onChange = useCallback( ( index, item ) => {
 		const newPropertyID = item.dataset.value;
 		if ( propertyID !== newPropertyID ) {
@@ -74,7 +64,7 @@ export default function PropertySelect() {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ ! hasValidAccountID }
+			disabled={ ! isValidAccountID( accountID ) }
 			enhanced
 			outlined
 		>
