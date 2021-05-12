@@ -103,7 +103,7 @@ describe( 'modules/analytics setup-flow', () => {
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 
-		enabledFeatures.push( 'ga4setup' );
+		enabledFeatures.add( 'ga4setup' );
 	} );
 
 	afterAll( () => {
@@ -117,8 +117,7 @@ describe( 'modules/analytics setup-flow', () => {
 	describe( 'selectors', () => {
 		describe( 'getSetupFlowMode', () => {
 			it( 'returns "legacy" if the feature flag ga4setup is disabled ', async () => {
-				// disable flag ga4setup as this is on top of array
-				enabledFeatures.pop();
+				enabledFeatures.delete( 'ga4setup' );
 
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_LEGACY );
 			} );
