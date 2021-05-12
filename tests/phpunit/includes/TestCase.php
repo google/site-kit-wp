@@ -251,7 +251,7 @@ class TestCase extends \WP_UnitTestCase {
 	protected function assertPostMetaHasValue( $post_id, $meta_key, $meta_value ) {
 		$meta = $this->queryPostMeta( $post_id, $meta_key );
 		$this->assertNotNull( $meta );
-		$this->assertEquals( $meta_value, $meta['meta_value'], "Failted to assert that post $post_id has \"$meta_key\" meta with \"$meta_value\" value." );
+		$this->assertEquals( $meta_value, $meta['meta_value'], "Failed to assert that post $post_id has \"$meta_key\" meta with \"$meta_value\" value." );
 	}
 
 	protected function queryPostMeta( $post_id, $meta_key ) {
