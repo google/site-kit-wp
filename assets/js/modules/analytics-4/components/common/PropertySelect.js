@@ -77,7 +77,6 @@ export default function PropertySelect() {
 					<Option
 						key={ index }
 						value={ _id }
-						data-internal-id={ _id }
 					>
 						{ _id === PROPERTY_CREATE
 							? displayName
