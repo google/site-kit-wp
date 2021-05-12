@@ -19,8 +19,15 @@
 /**
  * Internal dependencies
  */
+import {
+	render,
+	fireEvent,
+	createTestRegistry,
+	provideModules,
+	WithTestRegistry,
+} from '../../../../../../../tests/js/test-utils';
+import { enabledFeatures } from '../../../../../features';
 import DashboardIdeasWidget from './index';
-import { render, fireEvent, createTestRegistry, provideModules, WithTestRegistry } from '../../../../../../../tests/js/test-utils';
 
 describe( 'Idea Hub', () => {
 	let registry;
@@ -34,6 +41,8 @@ describe( 'Idea Hub', () => {
 			active: true,
 			connected: true,
 		} ] );
+
+		enabledFeatures.add( 'ideaHubModule' );
 	} );
 
 	it.each( [
