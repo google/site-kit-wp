@@ -43,7 +43,25 @@ function SetupWrap( { children } ) {
 }
 
 storiesOf( 'Analytics-4 Module', module )
-	.add( 'Account Property Select', () => {
+	.add( 'PropertySelect (no account selected)', () => {
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
+			dispatch( STORE_NAME ).finishResolution( 'getProperties', [] );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<div className="googlesitekit-setup-module__inputs">
+						<PropertySelect />
+					</div>
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'PropertySelect', () => {
 		const {
 			createProperty,
 			createWebDataStream,

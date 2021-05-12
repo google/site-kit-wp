@@ -35,14 +35,24 @@ import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
-	// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
-	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
-	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const {
+		hasValidAccountID,
+		properties,
+		propertyID,
+		isLoading,
+	} = useSelect( ( select ) => {
+		// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
+		const accountID = select( MODULES_ANALYTICS ).getAccountID();
 
-	const isLoading = useSelect( ( select ) => {
-		return ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) ||
-			select( STORE_NAME ).isResolving( 'getProperties', [ accountID ] );
+		return {
+			hasValidAccountID: isValidAccountID( accountID ),
+			properties: accountID
+				? select( STORE_NAME ).getProperties( accountID )
+				: [],
+			propertyID: select( STORE_NAME ).getPropertyID(),
+			isLoading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) ||
+			! ( accountID && select( STORE_NAME ).hasFinishedResolution( 'getProperties' ), [ accountID ] ),
+		};
 	} );
 
 	const { selectProperty } = useDispatch( STORE_NAME );
@@ -54,14 +64,6 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID, selectProperty ] );
 
-	const getPropertyName = ( displayName, id ) => {
-		if ( id === PROPERTY_CREATE ) {
-			return displayName;
-		}
-		/* translators: 1: Property name. 2: Property ID. */
-		return	sprintf( __( '%1$s (%2$s)', 'google-site-kit' ), displayName, id );
-	};
-
 	if ( isLoading ) {
 		return <ProgressBar small />;
 	}
@@ -72,7 +74,7 @@ export default function PropertySelect() {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ ! isValidAccountID( accountID ) }
+			disabled={ ! hasValidAccountID }
 			enhanced
 			outlined
 		>
@@ -87,8 +89,14 @@ export default function PropertySelect() {
 						value={ _id }
 						data-internal-id={ _id }
 					>
-						{
-							getPropertyName( displayName, _id )
+						{ _id === PROPERTY_CREATE
+							? displayName
+							: sprintf(
+								/* translators: 1: Property name. 2: Property ID. */
+								__( '%1$s (%2$s)', 'google-site-kit' ),
+								displayName,
+								_id
+							)
 						}
 					</Option>
 				) ) }
