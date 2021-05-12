@@ -28,6 +28,7 @@ import {
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
 } from './constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import { isFeatureEnabled } from '../../../features';
 
 const { createRegistrySelector } = Data;
 
@@ -35,7 +36,7 @@ const baseSelectors = {
 	getSetupFlowMode: createRegistrySelector( ( select ) => () => {
 		// The Google Analytics 4 datastore hasn't been loaded, so we have
 		// to use the legacy implementation.
-		if ( ! select( MODULES_ANALYTICS_4 ) ) {
+		if ( ! isFeatureEnabled( 'ga4setup' ) ) {
 			return SETUP_FLOW_MODE_LEGACY;
 		}
 
