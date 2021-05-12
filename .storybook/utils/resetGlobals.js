@@ -1,5 +1,5 @@
 /**
- * Storybook utilities.
+ * Reset global variables for stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

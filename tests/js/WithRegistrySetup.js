@@ -39,8 +39,8 @@ const WithRegistrySetup = ( { func, children } ) => {
 
 	invariant( typeof func === 'function', 'func must be a function.' );
 
-	useMount( () => {
-		func( registry );
+	useMount( async () => {
+		await func( registry );
 		setReady( true );
 	} );
 

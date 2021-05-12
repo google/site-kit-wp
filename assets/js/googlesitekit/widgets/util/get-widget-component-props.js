@@ -54,7 +54,7 @@ export const getWidgetComponentProps = memize(
 	}
 );
 
-export const withWidgetSlug = ( widgetSlug ) => {
+function withWidgetSlug( widgetSlug ) {
 	return ( WrappedComponent ) => {
 		const WithWidgetSlug = ( props ) => <WrappedComponent { ...props } widgetSlug={ widgetSlug } />;
 		WithWidgetSlug.displayName = 'WithWidgetSlug';
@@ -63,7 +63,7 @@ export const withWidgetSlug = ( widgetSlug ) => {
 		}
 		return WithWidgetSlug;
 	};
-};
+}
 
 /**
  * Gets the props and passes them to the widget's component through a HOC.

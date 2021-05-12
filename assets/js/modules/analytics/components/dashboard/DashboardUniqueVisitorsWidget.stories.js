@@ -23,7 +23,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../datastore/constants';
 import { provideModules, provideSiteInfo } from '../../../../../../tests/js/utils';
 import { provideAnalyticsMockReport } from '../../util/data-mock';
-import { withWidgetSlug } from '../../../../googlesitekit/widgets/util/';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util/';
 import WidgetReportError from '../../../../googlesitekit/widgets/components/WidgetReportError';
 import WidgetReportZero from '../../../../googlesitekit/widgets/components/WidgetReportZero';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
@@ -39,8 +39,8 @@ const Template = ( args ) => {
 			<div className="googlesitekit-widget">
 				<div className="googlesitekit-widget__body">
 					<DashboardUniqueVisitorsWidget
-						WidgetReportError={ withWidgetSlug( widgetSlug )( WidgetReportError ) }
-						WidgetReportZero={ withWidgetSlug( widgetSlug )( WidgetReportZero ) }
+						WidgetReportError={ withWidgetComponentProps( widgetSlug )( WidgetReportError ) }
+						WidgetReportZero={ withWidgetComponentProps( widgetSlug )( WidgetReportZero ) }
 					/>
 				</div>
 			</div>
@@ -48,7 +48,7 @@ const Template = ( args ) => {
 	);
 };
 
-export const Ready = Template.bind();
+export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
@@ -57,7 +57,7 @@ Ready.args = {
 	},
 };
 
-export const Loading = Template.bind();
+export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( registry ) => {
@@ -68,7 +68,7 @@ Loading.args = {
 	},
 };
 
-export const DataUnavailable = Template.bind();
+export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
 DataUnavailable.args = {
 	setupRegistry: ( registry ) => {
@@ -77,7 +77,7 @@ DataUnavailable.args = {
 	},
 };
 
-export const Error = Template.bind();
+export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
 	setupRegistry: ( registry ) => {
@@ -92,7 +92,7 @@ Error.args = {
 	},
 };
 
-export const LoadedEntityURL = Template.bind();
+export const LoadedEntityURL = Template.bind( {} );
 LoadedEntityURL.storyName = 'Ready with entity URL set';
 LoadedEntityURL.args = {
 	setupRegistry: ( registry ) => {
@@ -102,7 +102,7 @@ LoadedEntityURL.args = {
 	},
 };
 
-export const LoadingEntityURL = Template.bind();
+export const LoadingEntityURL = Template.bind( {} );
 LoadingEntityURL.storyName = 'Loading with entity URL set';
 LoadingEntityURL.args = {
 	setupRegistry: ( registry ) => {
@@ -114,7 +114,7 @@ LoadingEntityURL.args = {
 	},
 };
 
-export const DataUnavailableEntityURL = Template.bind();
+export const DataUnavailableEntityURL = Template.bind( {} );
 DataUnavailableEntityURL.storyName = 'Data Unavailable with entity URL set';
 DataUnavailableEntityURL.args = {
 	setupRegistry: ( registry ) => {
@@ -125,7 +125,7 @@ DataUnavailableEntityURL.args = {
 	},
 };
 
-export const ErrorEntityURL = Template.bind();
+export const ErrorEntityURL = Template.bind( {} );
 ErrorEntityURL.storyName = 'Error with entity URL set';
 ErrorEntityURL.args = {
 	setupRegistry: ( registry ) => {
