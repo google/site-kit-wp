@@ -1,5 +1,5 @@
 /**
- * Idea Hub module entrypoint.
+ * NewIdeas component
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,12 +16,8 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
-import { registerStore, registerWidgets } from './modules/idea-hub';
+const NewIdeas = () => {
+	return <div className="googlesitekit-idea-hub__new-ideas" />;
+};
 
-registerStore( Data );
-registerWidgets( Widgets );
+export default NewIdeas;

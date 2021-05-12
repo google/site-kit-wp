@@ -16,4 +16,25 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { AREA_DASHBOARD_ACQUISITION } from '../../googlesitekit/widgets/default-areas';
+import DashboardIdeasWidget from './components/dashboard/DashboardIdeasWidget';
+
 export { registerStore } from './datastore';
+
+export const registerWidgets = ( widgets ) => {
+	widgets.registerWidget(
+		'ideaHubIdeas',
+		{
+			Component: DashboardIdeasWidget,
+			width: widgets.WIDGET_WIDTHS.HALF,
+			priority: 2,
+			wrapWidget: false,
+		},
+		[
+			AREA_DASHBOARD_ACQUISITION,
+		],
+	);
+};

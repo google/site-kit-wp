@@ -1,0 +1,70 @@
+/**
+ * Idea Hub widget styles.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-idea-hub {
+		background-color: $c-idea-hub-background;
+		height: 100%;
+	}
+
+	.googlesitekit-idea-hub__header {
+		padding: 24px 16px 0;
+	}
+
+	.googlesitekit-idea-hub__title {
+		font-size: 0.875rem;
+		font-weight: $fw-primary-medium;
+		line-height: 1.25;
+		margin: 0 0 20px;
+	}
+
+	.googlesitekit-idea-hub__tabs {
+
+		.mdc-tab {
+			flex: 0;
+			height: 40px;
+			padding: 0 20px;
+
+			@media (min-width: $bp-desktop) {
+				padding: 0 40px;
+			}
+		}
+
+		.mdc-tab__content {
+			color: rgba($c-black, 0.54);
+			font-size: 0.875rem;
+			font-weight: $fw-primary-medium;
+			letter-spacing: 0.25px;
+			line-height: 1.25;
+			text-transform: capitalize;
+		}
+
+		.mdc-tab-indicator__content--underline {
+			border-radius: 3px 3px 0 0;
+			height: 3px;
+		}
+
+		[aria-selected="true"] {
+
+			.mdc-tab__content {
+				color: $c-idea-hub-active-nav;
+			}
+		}
+	}
+}

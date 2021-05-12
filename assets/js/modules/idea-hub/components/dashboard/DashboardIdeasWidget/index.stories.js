@@ -1,5 +1,5 @@
 /**
- * Idea Hub module entrypoint.
+ * DashboardIdeasWidget Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,9 +19,12 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
-import { registerStore, registerWidgets } from './modules/idea-hub';
+import DashboardIdeasWidget from './index';
 
-registerStore( Data );
-registerWidgets( Widgets );
+export const Ready = () => <DashboardIdeasWidget />;
+Ready.storyName = 'Ready';
+
+export default {
+	title: 'Modules/Idea Hub/Widgets/DashboardIdeasWidget',
+	component: DashboardIdeasWidget,
+};

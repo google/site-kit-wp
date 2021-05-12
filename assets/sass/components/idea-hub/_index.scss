@@ -1,5 +1,5 @@
 /**
- * Idea Hub module entrypoint.
+ * Idea Hub styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,12 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
-import { registerStore, registerWidgets } from './modules/idea-hub';
-
-registerStore( Data );
-registerWidgets( Widgets );
+@import "googlesitekit-idea-hub-dashboard-ideas-widget";
