@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import DashboardIdeasWidget from './index';
+import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../../../../tests/js/utils';
 
 export const Ready = () => <DashboardIdeasWidget />;
 Ready.storyName = 'Ready';
@@ -27,4 +28,20 @@ Ready.storyName = 'Ready';
 export default {
 	title: 'Modules/Idea Hub/Widgets/DashboardIdeasWidget',
 	component: DashboardIdeasWidget,
+	decorators: [
+		( Story ) => {
+			const registry = createTestRegistry();
+			provideModules( registry, [ {
+				slug: 'idea-hub',
+				active: true,
+				connected: true,
+			} ] );
+
+			return (
+				<WithTestRegistry registry={ registry } features={ [ 'ideaHubModule' ] }>
+					<Story />
+				</WithTestRegistry>
+			);
+		},
+	],
 };
