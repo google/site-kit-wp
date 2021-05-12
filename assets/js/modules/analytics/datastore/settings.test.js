@@ -23,6 +23,7 @@ import API from 'googlesitekit-api';
 import { STORE_NAME, FORM_SETUP, ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import * as fixtures from './__fixtures__';
@@ -31,9 +32,11 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
+import { enabledFeatures } from '../../../features';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 import { createBuildAndReceivers } from '../../tagmanager/datastore/__factories__/utils';
+import { INVARIANT_INVALID_WEBDATASTREAM_ID } from '../../analytics-4/datastore/settings';
 import {
 	INVARIANT_INSUFFICIENT_TAG_PERMISSIONS,
 	INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS,
@@ -524,6 +527,38 @@ describe( 'modules/analytics settings', () => {
 
 				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
+			} );
+
+			describe( 'analytics-4', () => {
+				beforeEach( () => {
+					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+					registry.dispatch( STORE_NAME ).setSettings( validSettings );
+
+					enabledFeatures.add( 'ga4setup' );
+				} );
+
+				afterEach( () => {
+					enabledFeatures.delete( 'ga4setup' );
+				} );
+
+				it( 'should throw an error if analytics-4 settings are invalid', () => {
+					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+						propertyID: '123456',
+						webDataStreamID: '',
+					} );
+
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_WEBDATASTREAM_ID );
+				} );
+
+				it( 'should not throw if all settings are valid', () => {
+					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+						propertyID: '1000',
+						webDataStreamID: '2000',
+					} );
+
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() ).not.toThrow();
+				} );
 			} );
 		} );
 	} );
