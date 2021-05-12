@@ -34,7 +34,7 @@ const { createRegistrySelector } = Data;
 
 const baseSelectors = {
 	getSetupFlowMode: createRegistrySelector( ( select ) => () => {
-		// The Google Analytics 4 datastore hasn't been loaded, so we have
+		// The Google Analytics 4 is not enabled, so we have
 		// to use the legacy implementation.
 		if ( ! isFeatureEnabled( 'ga4setup' ) ) {
 			return SETUP_FLOW_MODE_LEGACY;

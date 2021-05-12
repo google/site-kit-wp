@@ -22,27 +22,8 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { createRegistry } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
-import * as coreForms from '../assets/js/googlesitekit/datastore/forms';
-import * as coreLocation from '../assets/js/googlesitekit/datastore/location';
-import * as coreModules from '../assets/js/googlesitekit/modules';
-import * as coreSite from '../assets/js/googlesitekit/datastore/site';
-import * as coreUi from '../assets/js/googlesitekit/datastore/ui';
-import * as coreUser from '../assets/js/googlesitekit/datastore/user';
-import * as coreWidgets from '../assets/js/googlesitekit/widgets';
-import * as modulesAdSense from '../assets/js/modules/adsense';
-import * as modulesAnalytics from '../assets/js/modules/analytics';
-import * as modulesIdeaHub from '../assets/js/modules/idea-hub';
-import * as modulesOptimize from '../assets/js/modules/optimize';
-import * as modulesPageSpeedInsights from '../assets/js/modules/pagespeed-insights';
-import * as modulesSearchConsole from '../assets/js/modules/search-console';
-import * as modulesTagManager from '../assets/js/modules/tagmanager';
 import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME, ACCOUNT_CREATE, PROFILE_CREATE, PROVISIONING_SCOPE } from '../assets/js/modules/analytics/datastore/constants';
@@ -50,33 +31,11 @@ import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import {
 	WithTestRegistry,
+	createTestRegistry,
 	provideModules,
 	provideModuleRegistrations,
 } from '../tests/js/utils';
 import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
-
-const createLegacyTestRegistry = () => {
-	const registry = createRegistry();
-
-	[
-		coreForms,
-		coreLocation,
-		coreModules,
-		coreSite,
-		coreUser,
-		coreUi,
-		coreWidgets,
-		modulesAdSense,
-		modulesAnalytics,
-		modulesIdeaHub,
-		modulesOptimize,
-		modulesPageSpeedInsights,
-		modulesSearchConsole,
-		modulesTagManager,
-	].forEach( ( { registerStore } ) => registerStore?.( registry ) );
-
-	return registry;
-};
 
 function Setup( props ) {
 	return (
@@ -99,7 +58,7 @@ function usingGenerateGTMAnalyticsPropertyStory( args ) {
 
 const withRegistry = ( Story ) => {
 	global._googlesitekitLegacyData.setup.moduleToSetup = 'analytics';
-	const registry = createLegacyTestRegistry();
+	const registry = createTestRegistry();
 	provideModules( registry, [ {
 		slug: 'analytics',
 		active: true,
