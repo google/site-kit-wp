@@ -1,5 +1,5 @@
 /**
- * `modules/analytics-4` base data store
+ * Validation function tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,23 +19,21 @@
 /**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './constants';
-import { submitChanges, validateCanSubmitChanges } from './settings';
+import { isValidWebDataStreamID } from './validation';
 
-const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
-	storeName: STORE_NAME,
-	settingSlugs: [
-		// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
-		// 'accountID',
-		// 'adsConversionID',
-		'propertyID',
-		'webDataStreamID',
-		'measurementID',
-		'useSnippet',
-	],
-	submitChanges,
-	validateCanSubmitChanges,
+describe( 'modules/analytics-4 validations', () => {
+	describe( 'isValidWebDataStreamID', () => {
+		it( 'should return TRUE when a valid webDataStreamID is passed', () => {
+			expect( isValidWebDataStreamID( '12345' ) ).toBe( true );
+		} );
+
+		it.each( [
+			[ 'undefined', undefined ],
+			[ 'null', null ],
+			[ 'false', false ],
+			[ 'a number', 12345 ],
+		] )( 'should return FALSE when %s is passed', ( _, webDataStreamID ) => {
+			expect( isValidWebDataStreamID( webDataStreamID ) ).toBe( false );
+		} );
+	} );
 } );
-
-export default baseModuleStore;
