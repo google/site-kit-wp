@@ -24,7 +24,6 @@ import {
 	fireEvent,
 	createTestRegistry,
 	provideModules,
-	WithTestRegistry,
 } from '../../../../../../../tests/js/test-utils';
 import { enabledFeatures } from '../../../../../features';
 import DashboardIdeasWidget from './index';
@@ -34,6 +33,9 @@ describe( 'Idea Hub', () => {
 
 	beforeEach( () => {
 		global.location.hash = '';
+
+		enabledFeatures.add( 'ideaHubModule' );
+
 		registry = createTestRegistry();
 
 		provideModules( registry, [ {
@@ -41,8 +43,6 @@ describe( 'Idea Hub', () => {
 			active: true,
 			connected: true,
 		} ] );
-
-		enabledFeatures.add( 'ideaHubModule' );
 	} );
 
 	it.each( [
@@ -63,9 +63,8 @@ describe( 'Idea Hub', () => {
 		],
 	] )( '%s', async ( _, args, expected ) => {
 		const { getByRole, findByRole } = render(
-			<WithTestRegistry registry={ registry } features={ [ 'ideaHubModule' ] }>
-				<DashboardIdeasWidget />
-			</WithTestRegistry>
+			<DashboardIdeasWidget />,
+			{ registry }
 		);
 
 		fireEvent.click( getByRole( 'tab', { name: args } ) );
