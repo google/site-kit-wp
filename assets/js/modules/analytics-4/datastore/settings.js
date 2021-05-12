@@ -48,6 +48,7 @@ export async function submitChanges( { select, dispatch } ) {
 
 		propertyID = property._id;
 		await dispatch( STORE_NAME ).setPropertyID( propertyID );
+		// We set an empty string for the webDataStreamID to make sure that a new web data stream will be created below.
 		await dispatch( STORE_NAME ).setWebDataStreamID( '' );
 	}
 
