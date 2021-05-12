@@ -63,6 +63,11 @@ const setupEmptyRegistry = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
 };
 
+const setupRegistryWithNoAccountID = ( registry ) => {
+	setupRegistry( registry );
+	registry.dispatch( STORE_NAME ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
+};
+
 describe( 'PropertySelect', () => {
 	it( 'should render an option for each analytics property of the currently selected account.', async () => {
 		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/, [] );
@@ -77,10 +82,7 @@ describe( 'PropertySelect', () => {
 	it( 'should be disabled when in the absence of an valid account ID.', async () => {
 		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/, [] );
 		const { container, registry } = render( <PropertySelect />, {
-			setupRegistry( { dispatch } ) {
-				setupRegistry( { dispatch } );
-				dispatch( STORE_NAME ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
-			},
+			setupRegistry: setupRegistryWithNoAccountID,
 		} );
 
 		// A valid accountID is provided, so ensure it is not currently disabled.
