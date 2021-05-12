@@ -19,12 +19,32 @@
 /**
  * Internal dependencies
  */
+import { STORE_NAME } from './datastore/constants';
+import { registerStore as registerDataStore } from './datastore';
+import { isFeatureEnabled } from '../../features';
 import { AREA_DASHBOARD_ACQUISITION } from '../../googlesitekit/widgets/default-areas';
 import DashboardIdeasWidget from './components/dashboard/DashboardIdeasWidget';
+import IdeaHubIcon from '../../../svg/idea-hub.svg';
 
-export { registerStore } from './datastore';
+const ifIdeaHubIsEnabled = ( func ) => ( ...args ) => {
+	if ( isFeatureEnabled( 'ideaHubModule' ) ) {
+		func( ...args );
+	}
+};
 
-export const registerWidgets = ( widgets ) => {
+export const registerStore = ifIdeaHubIsEnabled( registerDataStore );
+
+export const registerModule = ifIdeaHubIsEnabled( ( modules ) => {
+	modules.registerModule(
+		'idea-hub',
+		{
+			storeName: STORE_NAME,
+			Icon: IdeaHubIcon,
+		}
+	);
+} );
+
+export const registerWidgets = ifIdeaHubIsEnabled( ( widgets ) => {
 	widgets.registerWidget(
 		'ideaHubIdeas',
 		{
@@ -37,4 +57,4 @@ export const registerWidgets = ( widgets ) => {
 			AREA_DASHBOARD_ACQUISITION,
 		],
 	);
-};
+} );

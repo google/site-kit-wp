@@ -123,8 +123,8 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 	if ( ! goals || ! Array.isArray( goals.items ) || ! goals.items.length ) {
 		return (
 			<CTA
-				title={ __( 'Use goals to measure success.', 'google-site-kit' ) }
-				description={ __( 'Goals measure how well your site or app fulfills your target objectives.', 'google-site-kit' ) }
+				title={ __( 'Use goals to measure success', 'google-site-kit' ) }
+				description={ __( 'Goals measure how well your site or app fulfills your target objectives', 'google-site-kit' ) }
 				ctaLink={ supportURL }
 				ctaLabel={ __( 'Create a new goal', 'google-site-kit' ) }
 			/>

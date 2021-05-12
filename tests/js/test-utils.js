@@ -44,11 +44,12 @@ const customRender = ( ui, options = {} ) => {
 
 	invariant( typeof setupRegistry === 'function', 'options.setupRegistry must be a function.' );
 	setupRegistry( registry );
+	const enabledFeatures = new Set( features );
 
 	function Wrapper( { children } ) {
 		return (
 			<RegistryProvider value={ registry }>
-				<FeaturesProvider value={ features }>
+				<FeaturesProvider value={ enabledFeatures }>
 					{ children }
 				</FeaturesProvider>
 			</RegistryProvider>
@@ -98,9 +99,10 @@ const customRenderHook = (
 		...renderHookOptions
 	} = {}
 ) => {
+	const enabledFeatures = new Set( features );
 	const Wrapper = ( { children } ) => (
 		<RegistryProvider value={ registry }>
-			<FeaturesProvider value={ features }>
+			<FeaturesProvider value={ enabledFeatures }>
 				{ children }
 			</FeaturesProvider>
 		</RegistryProvider>
