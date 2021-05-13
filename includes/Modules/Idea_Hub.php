@@ -156,16 +156,25 @@ final class Idea_Hub extends Module
 					'text'   => 'string',
 					'topics' => 'array',
 				);
+				if ( ! isset( $data['idea'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'idea' ),
+						array( 'status' => 400 )
+					);
+				}
+				$idea = $data['idea'];
 				foreach ( $expected_parameters as $parameter_name => $expected_parameter_type ) {
-					if ( ! isset( $data[ $parameter_name ] ) ) {
+					if ( ! isset( $idea[ $parameter_name ] ) ) {
 						return new WP_Error(
 							'missing_required_param',
 							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), $parameter_name ),
+							sprintf( __( 'Request idea parameter is empty: %s.', 'google-site-kit' ), $parameter_name ),
 							array( 'status' => 400 )
 						);
 					}
-					$parameter_type = gettype( $data[ $parameter_name ] );
+					$parameter_type = gettype( $idea[ $parameter_name ] );
 					if ( $parameter_type !== $expected_parameter_type ) {
 						return new WP_Error(
 							'wrong_parameter_type',
@@ -181,12 +190,10 @@ final class Idea_Hub extends Module
 					}
 				}
 
-				$draft_post_data = array(
-					'post_type'   => 'post',
-					'post_status' => 'draft',
-				);
+				// Allows us to create a blank post.
 				add_filter( 'wp_insert_post_empty_content', '__return_false' );
-				$post_id = wp_insert_post( $draft_post_data );
+
+				$post_id = wp_insert_post( array(), false );
 				if ( 0 === $post_id ) {
 					return new WP_Error(
 						'unable_to_draft_post',
@@ -194,6 +201,8 @@ final class Idea_Hub extends Module
 						array( 'status' => 400 )
 					);
 				}
+
+				// @TODO: @set_post_idea
 				return function() use ( $post_id ) {
 					return $post_id;
 				};
@@ -281,6 +290,34 @@ final class Idea_Hub extends Module
 		}
 
 		return parent::create_data_request( $data );
+	}
+
+	/**
+	 * Parses a response for the given datapoint.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data     Data request object.
+	 * @param mixed        $response Request response.
+	 *
+	 * @return mixed Parsed response data on success, or WP_Error on failure.
+	 */
+	protected function parse_data_response( Data_Request $data, $response ) {
+		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'POST:create-idea-draft-post':
+				$idea = $data['idea'];
+				return array(
+					'idea' => array(
+						'name'        => $idea['name'],
+						'text'        => $idea['text'],
+						'topics'      => $idea['topics'],
+						'postID'      => $response,
+						'postEditURL' => get_edit_post_link( $response, '' ),
+					),
+				);
+		}
+
+		return parent::parse_data_response( $data, $response );
 	}
 
 	/**
