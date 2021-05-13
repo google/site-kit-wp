@@ -19,23 +19,62 @@
 /**
  * External dependencies
  */
-import { storiesOf } from '@storybook/react';
 
 /**
  * Internal dependencies
  */
+import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../../../../tests/js/utils';
 import DashboardCTA from './index';
 
-storiesOf( 'Idea Hub ', module )
-	.add( 'DashboardCTA testing', () => {
+const Wrapper = ( { children } ) => (
+	<div style={ {
+		// height: '437px',
+		// width: '588px',
+		display: 'flex',
+	} }>
+		{ children }
+	</div>
+);
+
+export const Basic = () => <Wrapper><DashboardCTA /></Wrapper>;
+Basic.storyName = 'Default';
+Basic.decorators = [
+	( Story ) => {
+		const registry = createTestRegistry();
+		provideModules( registry, [ {
+			slug: 'idea-hub',
+			active: false,
+			connected: false,
+		} ] );
+
 		return (
-			<div style={ {
-				// height: '437px',
-				// width: '588px',
-				border: '1px solid black',
-				display: 'flex',
-			} }>
-				<DashboardCTA />
-			</div>
+			<WithTestRegistry registry={ registry } features={ [ 'ideaHubModule' ] }>
+				<Story />
+			</WithTestRegistry>
 		);
-	} );
+	},
+];
+
+export const ActiveNotConnected = () => <Wrapper><DashboardCTA /></Wrapper>;
+ActiveNotConnected.storyName = 'Active, not connected';
+ActiveNotConnected.decorators = [
+	( Story ) => {
+		const registry = createTestRegistry();
+		provideModules( registry, [ {
+			slug: 'idea-hub',
+			active: true,
+			connected: false,
+		} ] );
+
+		return (
+			<WithTestRegistry registry={ registry } features={ [ 'ideaHubModule' ] }>
+				<Story />
+			</WithTestRegistry>
+		);
+	},
+];
+
+export default {
+	title: 'Modules/Idea Hub/components/dashboard/DashboardCTA',
+	component: DashboardCTA,
+};
