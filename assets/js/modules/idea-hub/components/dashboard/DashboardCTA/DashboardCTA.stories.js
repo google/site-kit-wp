@@ -1,5 +1,5 @@
 /**
- * DashboardCTA component.
+ * Idea Hub DashboardCTA component stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,3 +16,26 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
+import { storiesOf } from '@storybook/react';
+
+/**
+ * Internal dependencies
+ */
+import DashboardCTA from './index';
+
+storiesOf( 'Idea Hub ', module )
+	.add( 'DashboardCTA testing', () => {
+		return (
+			<div style={ {
+				// height: '437px',
+				// width: '588px',
+				border: '1px solid black',
+				display: 'flex',
+			} }>
+				<DashboardCTA />
+			</div>
+		);
+	} );
