@@ -348,10 +348,6 @@ describe( 'modules/analytics settings', () => {
 					enabledFeatures.add( 'ga4setup' );
 				} );
 
-				afterEach( () => {
-					enabledFeatures.delete( 'ga4setup' );
-				} );
-
 				it( 'should save analytics-4 settings as well', async () => {
 					const ga4Settings = {
 						propertyID: '1000',
@@ -602,10 +598,6 @@ describe( 'modules/analytics settings', () => {
 					registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
 					enabledFeatures.add( 'ga4setup' );
-				} );
-
-				afterEach( () => {
-					enabledFeatures.delete( 'ga4setup' );
 				} );
 
 				it( 'should throw an error if analytics-4 settings are invalid', () => {
