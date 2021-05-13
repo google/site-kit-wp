@@ -290,6 +290,7 @@ class AnalyticsTest extends TestCase {
 			array(
 				'create-account-ticket',
 				'goals',
+				'account-summaries',
 				'accounts-properties-profiles',
 				'properties-profiles',
 				'profiles',
