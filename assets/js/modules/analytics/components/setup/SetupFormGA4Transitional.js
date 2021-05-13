@@ -1,5 +1,5 @@
 /**
- * `modules/analytics-4` base data store
+ * Analytics GA4Transitional Setup form.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,25 +17,23 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './constants';
-import { submitChanges, validateCanSubmitChanges } from './settings';
+import { AccountSelect } from '../common';
 
-const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
-	storeName: STORE_NAME,
-	settingSlugs: [
-		// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
-		// 'accountID',
-		// 'adsConversionID',
-		'propertyID',
-		'webDataStreamID',
-		'measurementID',
-		'useSnippet',
-	],
-	submitChanges,
-	validateCanSubmitChanges,
-} );
+export default function SetupFormGA4Transitional() {
+	return (
+		<Fragment>
+			<div className="googlesitekit-setup-module__inputs">
+				<AccountSelect />
+			</div>
+			<div>SetupFormGA4Transitional</div>
+		</Fragment>
+	);
+}
 
-export default baseModuleStore;
