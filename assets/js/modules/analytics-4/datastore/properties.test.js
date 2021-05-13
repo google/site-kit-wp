@@ -299,6 +299,23 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 
+		describe( 'hasProperties', () => {
+			it( 'should return undefined if account summaries has not loaded yet', () => {
+				muteFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/account-summaries/, fixtures.accountSummaries );
+				expect( registry.select( STORE_NAME ).hasProperties() ).toBeUndefined();
+			} );
+
+			it( 'should return TRUE when at least one property available', () => {
+				registry.dispatch( STORE_NAME ).receiveGetAccountSummaries( fixtures.accountSummaries );
+				expect( registry.select( STORE_NAME ).hasProperties() ).toBe( true );
+			} );
+
+			it( 'should return FALSE when no properties available', () => {
+				registry.dispatch( STORE_NAME ).receiveGetAccountSummaries( [] );
+				expect( registry.select( STORE_NAME ).hasProperties() ).toBe( false );
+			} );
+		} );
+
 		describe( 'getProperty', () => {
 			it( 'should use a resolver to make a network request', async () => {
 				fetchMock.get( propertyEndpoint, {

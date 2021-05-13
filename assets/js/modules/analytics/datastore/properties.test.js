@@ -307,6 +307,23 @@ describe( 'modules/analytics properties', () => {
 			} );
 		} );
 
+		describe( 'hasProperties', () => {
+			it( 'should return undefined if account summaries has not loaded yet', () => {
+				muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/account-summaries/, fixtures.accountSummaries );
+				expect( registry.select( STORE_NAME ).hasProperties() ).toBeUndefined();
+			} );
+
+			it( 'should return TRUE when at least one property available', () => {
+				registry.dispatch( STORE_NAME ).receiveGetAccountSummaries( fixtures.accountSummaries );
+				expect( registry.select( STORE_NAME ).hasProperties() ).toBe( true );
+			} );
+
+			it( 'should return FALSE when no properties available', () => {
+				registry.dispatch( STORE_NAME ).receiveGetAccountSummaries( [] );
+				expect( registry.select( STORE_NAME ).hasProperties() ).toBe( false );
+			} );
+		} );
+
 		describe( 'getPropertiesIncludingGA4', () => {
 			it( 'returns a sorted list of ua and ga4 properties ', async () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
@@ -389,6 +406,7 @@ describe( 'modules/analytics properties', () => {
 				expect( foundProperty ).toEqual( undefined );
 			} );
 		} );
+
 		describe( 'getPrimaryPropertyType', () => {
 			it( 'should correctly return the default value', () => {
 				expect( registry.select( STORE_NAME ).getPrimaryPropertyType( ) ).toBe( 'ua' );
