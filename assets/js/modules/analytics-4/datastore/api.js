@@ -52,17 +52,7 @@ const baseSelectors = {
 			}
 		}
 
-		for ( const propertyList of Object.values( state.properties ) ) {
-			if ( propertyList && propertyList.length && propertyList.length > 0 ) {
-				for ( const webdatastreamList of Object.values( state.webdatastreams ) ) {
-					if ( webdatastreamList && webdatastreamList.length && webdatastreamList.length > 0 ) {
-						return true;
-					}
-				}
-			}
-		}
-
-		return undefined;
+		return true;
 	},
 };
 
