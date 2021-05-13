@@ -33,7 +33,7 @@ import { getSiteStatsDataForGoogleChart } from '../../../util';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import GoogleChart from '../../../../../components/GoogleChart';
 
-const Stats = ( { data, metrics, selectedStats } ) => {
+const Stats = ( { currentRange, compareRange, metrics, selectedStats } ) => {
 	const options = {
 		chart: {
 			title: __( 'Search Traffic Summary', 'google-site-kit' ),
@@ -105,14 +105,9 @@ const Stats = ( { data, metrics, selectedStats } ) => {
 		},
 	};
 
-	// Split the data in two chunks.
-	const half = Math.floor( data.length / 2 );
-	const latestData = data.slice( half );
-	const olderData = data.slice( 0, half );
-
 	const googleChartData = getSiteStatsDataForGoogleChart(
-		latestData,
-		olderData,
+		currentRange,
+		compareRange,
 		metrics[ selectedStats ].label,
 		metrics[ selectedStats ].metric,
 	);
@@ -135,7 +130,8 @@ const Stats = ( { data, metrics, selectedStats } ) => {
 };
 
 Stats.propTypes = {
-	data: PropTypes.arrayOf( PropTypes.object ),
+	currentRange: PropTypes.arrayOf( PropTypes.object ),
+	compareRange: PropTypes.arrayOf( PropTypes.object ),
 	metrics: PropTypes.arrayOf( PropTypes.object ),
 	selectedStats: PropTypes.number.isRequired,
 };

@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { isZeroReport } from '../../util';
+import { isZeroReport, partitionReport } from '../../util';
 import { calculateChange, untrailingslashit } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import { trackEvent } from '../../../../util/tracking';
@@ -76,6 +76,7 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 			serviceURL: store.getServiceURL( { path: '/performance/search-analytics', query: serviceBaseURLArgs } ),
 		};
 	} );
+	const dateRangeLength = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
 	if ( loading ) {
 		return <PreviewBlock width="100%" height="202px" />;
@@ -90,13 +91,9 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
-	// Split the data in two chunks.
-	const half = Math.floor( data.length / 2 );
-	const latestData = data.slice( half );
-	const olderData = data.slice( 0, half );
-
-	const totalImpressions = sumObjectListValue( latestData, 'impressions' );
-	const totalOlderImpressions = sumObjectListValue( olderData, 'impressions' );
+	const { compareRange, currentRange } = partitionReport( data, { rangeLength: dateRangeLength } );
+	const totalImpressions = sumObjectListValue( currentRange, 'impressions' );
+	const totalOlderImpressions = sumObjectListValue( compareRange, 'impressions' );
 	const totalImpressionsChange = calculateChange( totalOlderImpressions, totalImpressions );
 
 	const sparklineData = [
@@ -104,7 +101,7 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 			{ type: 'string', label: 'Day' },
 			{ type: 'number', label: 'Clicks' },
 		],
-		...extractForSparkline( latestData, 'impressions', 'keys.0' ).map( ( row ) => {
+		...extractForSparkline( currentRange, 'impressions', 'keys.0' ).map( ( row ) => {
 			const date = new Date( row[ 0 ] );
 			// Sparkline data needs headers and dates formatted as MM/DD
 			return [ `${ date.getMonth() + 1 }/${ date.getUTCDate() }`, row[ 1 ] ];

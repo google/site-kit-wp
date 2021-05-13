@@ -31,7 +31,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-console/datastore/constants';
 import { calculateChange } from '../../util';
-import { isZeroReport } from '../../modules/search-console/util/is-zero-report';
+import { isZeroReport, partitionReport } from '../../modules/search-console/util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 const { useSelect } = Data;
 
@@ -41,6 +41,7 @@ function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
+	const dateRangeLength = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 	const reportArgs = {
 		startDate: compareStartDate,
 		endDate,
@@ -64,13 +65,9 @@ function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
-	// Split the data in two chunks.
-	const half = Math.floor( searchConsoleData.length / 2 );
-	const latestData = searchConsoleData.slice( half );
-	const olderData = searchConsoleData.slice( 0, half );
-
-	const totalImpressions = sumObjectListValue( latestData, 'impressions' );
-	const totalOlderImpressions = sumObjectListValue( olderData, 'impressions' );
+	const { compareRange, currentRange } = partitionReport( searchConsoleData, { rangeLength: dateRangeLength } );
+	const totalImpressions = sumObjectListValue( currentRange, 'impressions' );
+	const totalOlderImpressions = sumObjectListValue( compareRange, 'impressions' );
 	const totalImpressionsChange = calculateChange( totalOlderImpressions, totalImpressions );
 
 	return (

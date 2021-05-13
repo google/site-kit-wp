@@ -31,7 +31,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import { untrailingslashit, calculateChange } from '../../../../util';
 import { trackEvent } from '../../../../util/tracking';
-import { isZeroReport } from '../../util';
+import { isZeroReport, partitionReport } from '../../util';
 import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
@@ -76,6 +76,7 @@ function DashboardClicksWidget( { WidgetReportZero, WidgetReportError } ) {
 			serviceURL: store.getServiceURL( { path: '/performance/search-analytics', query: serviceBaseURLArgs } ),
 		};
 	} );
+	const dateRangeLength = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
 	if ( loading ) {
 		return <PreviewBlock width="100%" height="202px" />;
@@ -89,13 +90,10 @@ function DashboardClicksWidget( { WidgetReportZero, WidgetReportError } ) {
 	if ( isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
-	// Split the data in two chunks.
-	const half = Math.floor( data.length / 2 );
-	const latestData = data.slice( half );
-	const olderData = data.slice( 0, half );
 
-	const totalClicks = sumObjectListValue( latestData, 'clicks' );
-	const totalOlderClicks = sumObjectListValue( olderData, 'clicks' );
+	const { compareRange, currentRange } = partitionReport( data, { rangeLength: dateRangeLength } );
+	const totalClicks = sumObjectListValue( currentRange, 'clicks' );
+	const totalOlderClicks = sumObjectListValue( compareRange, 'clicks' );
 	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
 
 	const sparklineData = [
@@ -103,7 +101,7 @@ function DashboardClicksWidget( { WidgetReportZero, WidgetReportError } ) {
 			{ type: 'string', label: 'Day' },
 			{ type: 'number', label: 'Clicks' },
 		],
-		...extractForSparkline( latestData, 'clicks', 'keys.0' ).map( ( row ) => {
+		...extractForSparkline( currentRange, 'clicks', 'keys.0' ).map( ( row ) => {
 			const date = new Date( row[ 0 ] );
 			// Sparkline data needs headers and dates formatted as MM/DD
 			return [ `${ date.getMonth() + 1 }/${ date.getUTCDate() }`, row[ 1 ] ];

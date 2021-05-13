@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { isZeroReport } from '../../../util';
+import { isZeroReport, partitionReport } from '../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
 import Overview from './Overview';
@@ -54,6 +54,7 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 	const data = useSelect( ( select ) => select( STORE_NAME ).getReport( reportArgs ) );
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
 	const loading = useSelect( ( select ) => ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
+	const dateRangeLength = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
 	const WidgetHeader = () => (
 		<Header
@@ -87,6 +88,8 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 		);
 	}
 
+	const { compareRange, currentRange } = partitionReport( data, { rangeLength: dateRangeLength } );
+
 	return (
 		<Widget
 			noPadding
@@ -102,6 +105,8 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 				data={ data }
 				selectedStats={ selectedStats }
 				metrics={ ModuleOverviewWidget.metrics }
+				compareRange={ compareRange }
+				currentRange={ currentRange }
 			/>
 		</Widget>
 	);
