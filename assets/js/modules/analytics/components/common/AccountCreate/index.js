@@ -43,6 +43,7 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { getAccountDefaults } from '../../../util/account';
+import { useFeature } from '../../../../../hooks/useFeature';
 import Data from 'googlesitekit-data';
 const { useDispatch, useSelect } = Data;
 
@@ -65,6 +66,7 @@ export default function AccountCreate() {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const isGA4enabled = useFeature( 'ga4setup' );
 
 	// Redirect if the accountTicketTermsOfServiceURL is set.
 	useEffect( () => {
@@ -137,7 +139,7 @@ export default function AccountCreate() {
 
 	return (
 		<div>
-			<GA4Notice />
+			{ ! isGA4enabled && <GA4Notice /> }
 			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
 
 			<h3 className="googlesitekit-heading-4">
