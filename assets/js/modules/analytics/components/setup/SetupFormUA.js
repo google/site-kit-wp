@@ -1,5 +1,5 @@
 /**
- * Analytics Setup components.
+ * Analytics UA Setup form.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,10 +16,24 @@
  * limitations under the License.
  */
 
-export { default as SetupForm } from './SetupForm';
-export { default as SetupMain } from './SetupMain';
-export { default as SetupFormLegacy } from './SetupFormLegacy';
-export { default as SetupFormUA } from './SetupFormUA';
-export { default as SetupFormGA4 } from './SetupFormGA4';
-export { default as SetupFormGA4Transitional } from './SetupFormGA4Transitional';
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { AccountSelect } from '../common';
+
+export default function SetupFormUA() {
+	return (
+		<Fragment>
+			<div className="googlesitekit-setup-module__inputs">
+				<AccountSelect />
+			</div>
+			<div>SetupFormUA</div>
+		</Fragment>
+	);
+}
 
