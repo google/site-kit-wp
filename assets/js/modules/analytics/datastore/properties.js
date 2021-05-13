@@ -461,6 +461,26 @@ const baseSelectors = {
 	} ),
 
 	/**
+	 * Checks whether the current user has Analytics properties or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {undefined|boolean} TRUE if the user has properties, FALSE if not. Return undefined if account summaries are still being loaded.
+	 */
+	hasProperties: createRegistrySelector( ( select ) => () => {
+		const summaries = select( STORE_NAME ).getAccountSummaries();
+		if ( summaries === undefined ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( summaries ) ) {
+			return false;
+		}
+
+		return summaries.some( ( summary ) => summary.webProperties?.length > 0 );
+	} ),
+
+	/**
 	 * Gets all Analytic and GA4 properties this account can access.
 	 *
 	 * Returns an array of all UA + GA4 analytics properties.

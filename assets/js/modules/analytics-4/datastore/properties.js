@@ -31,7 +31,7 @@ import { normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
-const { commonActions } = Data;
+const { commonActions, createRegistrySelector } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',
@@ -291,6 +291,26 @@ const baseSelectors = {
 	getProperty( state, propertyID ) {
 		return state.propertiesByID[ propertyID ];
 	},
+
+	/**
+	 * Checks whether the current user has GA4 properties or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {undefined|boolean} TRUE if the user has GA4 properties, FALSE if not. Return undefined if account summaries are still being loaded.
+	 */
+	hasProperties: createRegistrySelector( ( select ) => () => {
+		const summaries = select( STORE_NAME ).getAccountSummaries();
+		if ( summaries === undefined ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( summaries ) ) {
+			return false;
+		}
+
+		return summaries.some( ( summary ) => summary.propertySummaries?.length > 0 );
+	} ),
 };
 
 const store = Data.combineStores(
