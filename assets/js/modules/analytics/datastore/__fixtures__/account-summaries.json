@@ -1,0 +1,36 @@
+[
+  {
+    "id": "22334455",
+    "kind": "analytics#accountSummary",
+    "name": "Account A",
+    "starred": null,
+    "webProperties": [
+      {
+        "id": "UA-22334455-1",
+        "internalWebPropertyId": "123456789",
+        "kind": "analytics#webPropertySummary",
+        "level": "STANDARD",
+        "name": "Account A - Property A",
+        "starred": null,
+        "websiteUrl": "http://example.com",
+        "profiles": [
+          {
+            "id": "123456789",
+            "kind": "analytics#profileSummary",
+            "name": "All Web Site Data",
+            "starred": null,
+            "type": "WEB"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "33334444",
+    "kind": "analytics#accountSummary",
+    "name": "Account B",
+    "starred": null,
+    "webProperties": [
+    ]
+  }
+]

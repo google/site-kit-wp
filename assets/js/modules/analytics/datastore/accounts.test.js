@@ -368,6 +368,60 @@ describe( 'modules/analytics accounts', () => {
 			} );
 		} );
 
+		describe( 'getAccountSummaries', () => {
+			const accountSummariesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics\/data\/account-summaries/;
+
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.get( accountSummariesEndpoint, {
+					body: fixtures.accountSummaries,
+					status: 200,
+				} );
+
+				const initialAccountSummaries = registry.select( STORE_NAME ).getAccountSummaries();
+				expect( initialAccountSummaries ).toBeUndefined();
+
+				await untilResolved( registry, STORE_NAME ).getAccountSummaries();
+				expect( fetchMock ).toHaveFetched( accountSummariesEndpoint );
+
+				const accountSummaries = registry.select( STORE_NAME ).getAccountSummaries();
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( accountSummaries ).toEqual( fixtures.accountSummaries );
+				expect( accountSummaries ).toHaveLength( fixtures.accountSummaries.length );
+			} );
+
+			it( 'should not make a network request if properties for this account are already present', async () => {
+				registry.dispatch( STORE_NAME ).receiveGetAccountSummaries( fixtures.accountSummaries );
+
+				const accountSummaries = registry.select( STORE_NAME ).getAccountSummaries();
+				await untilResolved( registry, STORE_NAME ).getAccountSummaries();
+
+				expect( fetchMock ).not.toHaveFetched( accountSummariesEndpoint );
+				expect( accountSummaries ).toEqual( fixtures.accountSummaries );
+				expect( accountSummaries ).toHaveLength( fixtures.accountSummaries.length );
+			} );
+
+			it( 'should dispatch an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( accountSummariesEndpoint, {
+					body: response,
+					status: 500,
+				} );
+
+				registry.select( STORE_NAME ).getAccountSummaries();
+				await untilResolved( registry, STORE_NAME ).getAccountSummaries();
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				const accountSummaries = registry.select( STORE_NAME ).getAccountSummaries();
+				expect( accountSummaries ).toBeUndefined();
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
 		describe( 'getAccountTicketTermsOfServiceURL', () => {
 			it( 'requires the accountTicketID from createAccount', () => {
 				registry.dispatch( CORE_USER ).receiveUserInfo( { email: 'test@gmail.com' } );

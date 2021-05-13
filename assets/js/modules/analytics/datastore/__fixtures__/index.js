@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+export { default as accountSummaries } from './account-summaries.json';
 export { default as accountsPropertiesProfiles } from './accounts-properties-profiles';
 export { default as createProfile } from './create-profile';
 export { default as createProperty } from './create-property';
