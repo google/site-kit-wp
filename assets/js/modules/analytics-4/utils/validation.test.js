@@ -1,5 +1,5 @@
 /**
- * Idea Hub module initialization.
+ * Validation function tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,25 +19,21 @@
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from './datastore/constants';
-import { registerStore as registerDataStore } from './datastore';
-import IdeaHubIcon from '../../../svg/idea-hub.svg';
-import { isFeatureEnabled } from '../../features';
+import { isValidWebDataStreamID } from './validation';
 
-const ifIdeaHubIsEnabled = ( func ) => ( ...args ) => {
-	if ( isFeatureEnabled( 'ideaHubModule' ) ) {
-		func( ...args );
-	}
-};
+describe( 'modules/analytics-4 validations', () => {
+	describe( 'isValidWebDataStreamID', () => {
+		it( 'should return TRUE when a valid webDataStreamID is passed', () => {
+			expect( isValidWebDataStreamID( '12345' ) ).toBe( true );
+		} );
 
-export const registerStore = ifIdeaHubIsEnabled( registerDataStore );
-
-export const registerModule = ifIdeaHubIsEnabled( ( modules ) => {
-	modules.registerModule(
-		'idea-hub',
-		{
-			storeName: STORE_NAME,
-			Icon: IdeaHubIcon,
-		}
-	);
+		it.each( [
+			[ 'undefined', undefined ],
+			[ 'null', null ],
+			[ 'false', false ],
+			[ 'a number', 12345 ],
+		] )( 'should return FALSE when %s is passed', ( _, webDataStreamID ) => {
+			expect( isValidWebDataStreamID( webDataStreamID ) ).toBe( false );
+		} );
+	} );
 } );
