@@ -16,25 +16,45 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+// import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+// import Data from 'googlesitekit-data';
+// import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import Button from '../../../../../components/Button';
+import Link from '../../../../../components/Link';
 import IdeaHubIcon from '../../../../../../svg/idea-hub.svg';
+// const { useSelect, useDispatch } = Data;
 
 function DashboardCTA() {
+	// const { connected, active } = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'idea-hub' ) );
+	// const { activateModule } = useDispatch( CORE_MODULES );
+
+	// const onClick = useCallback( async () => { } );
+
 	return (
 		<div className="_googlesitekit-idea-hub-dashboardcta">
 			<div className="_googlesitekit-idea-hub-dashboardcta__icon">
 				<IdeaHubIcon width="45" height="84" />
 			</div>
-			<div className="_googlesitekit-idea-hub-dashboardcta__content">
 
-				<h5>Get new topics based on what people are searching for with Idea Hub</h5>
+			<div className="_googlesitekit-idea-hub-dashboardcta__content">
+				<h5>{ __( 'Get new topics based on what people are searching for with Idea Hub', 'google-site-kit' ) }</h5>
 				<p>
-					<a className="_googlesitekit-idea-hub-dashboardcta__learnmore" href="https://sitekit.withgoogle.com/documentation/idea-hub-module/">Learn more</a>
+					<Link
+						className="_googlesitekit-idea-hub-dashboardcta__learnmore"
+						href="https://sitekit.withgoogle.com/documentation/idea-hub-module/">
+						{ __( 'Learn more', 'google-site-kit' ) }
+					</Link>
 				</p>
 
-				<Button>
-					Set up
-				</Button>
+				<Button>{ __( 'Set up', 'google-site-kit' ) }</Button>
 			</div>
 		</div>
 	);
