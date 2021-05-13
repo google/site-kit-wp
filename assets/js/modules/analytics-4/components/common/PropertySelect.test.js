@@ -25,7 +25,7 @@ import { STORE_NAME } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as analyticsFixtures from '../../../analytics/datastore/__fixtures__';
-import { fireEvent, act, render, muteFetch } from '../../../../../../tests/js/test-utils';
+import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
 
 const {
 	createProperty,
@@ -40,6 +40,7 @@ const propertyID = createWebDataStream._propertyID;
 const setupRegistry = ( { dispatch } ) => {
 	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: 'http://example.com' } );
 	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+	dispatch( STORE_NAME ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 
 	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
@@ -53,7 +54,8 @@ const setupRegistry = ( { dispatch } ) => {
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
-	dispatch( MODULES_ANALYTICS ).setSettings( {} );
+	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+	dispatch( STORE_NAME ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 
 	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
@@ -65,7 +67,6 @@ const setupEmptyRegistry = ( { dispatch } ) => {
 
 describe( 'PropertySelect', () => {
 	it( 'should render an option for each analytics property of the currently selected account.', async () => {
-		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/ );
 		const { getAllByRole } = render( <PropertySelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
@@ -75,7 +76,6 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should be disabled when in the absence of an valid account ID.', async () => {
-		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/ );
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry,
 		} );
@@ -96,7 +96,6 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
-		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/ );
 		const { getAllByRole } = render( <PropertySelect />, { setupRegistry: setupEmptyRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
@@ -105,8 +104,6 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should update propertyID in the store when a new item is selected', async () => {
-		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/ );
-		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams/ );
 		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
 		const allProperties = registry.select( STORE_NAME ).getProperties( accountID );
 		const targetProperty = allProperties[ 0 ];
