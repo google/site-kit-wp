@@ -40,14 +40,9 @@ const baseSelectors = {
 			return SETUP_FLOW_MODE_LEGACY;
 		}
 
-		// Check to see if the Admin API is working—if it's `undefined` the request
-		// is loading, but if it's `false` we should also use the legacy analytics
-		// because the API isn't working properly.
+		// Check to see if the Admin API is working—if it's `false` we should
+		// use the legacy analytics because the API isn't working properly.
 		const isAdminAPIWorking = select( MODULES_ANALYTICS_4 ).isAdminAPIWorking();
-		if ( isAdminAPIWorking === undefined ) {
-			return undefined;
-		}
-
 		if ( isAdminAPIWorking === false ) {
 			return SETUP_FLOW_MODE_LEGACY;
 		}

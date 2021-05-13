@@ -29,13 +29,11 @@ const baseSelectors = {
 	 *
 	 * Returns true if getProperties or getWebDataStreams has fetched successfully.
 	 *
-	 * This selector returns undefined if either `getProperties` or `getWebDataStreams` selectors have not resolved.
-	 *
 	 * @since 1.32.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} True, false, or undefined.
+	 * @return {(boolean)} True if there are no GA4 errors, otherwise false.
 	 */
 	isAdminAPIWorking( state ) {
 		// This is against normal state access conventions.
