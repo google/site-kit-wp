@@ -35,8 +35,16 @@ const { useSelect } = Data;
 const WidgetContextRenderer = ( props ) => {
 	const { slug, className, Header, Footer } = props;
 
-	const widgetAreas = useSelect( ( select ) => select( STORE_NAME ).getWidgetAreas( slug ) );
+	const widgetAreas = useSelect( ( select ) => {
+		if ( slug ) {
+			return	select( STORE_NAME ).getWidgetAreas( slug );
+		}
+	} );
 	const widgetAreasLength = widgetAreas?.length;
+
+	if ( ! slug ) {
+		return null;
+	}
 
 	return (
 		<div className={ classnames( 'googlesitekit-widget-context', className ) }>
@@ -66,7 +74,7 @@ const WidgetContextRenderer = ( props ) => {
 };
 
 WidgetContextRenderer.propTypes = {
-	slug: PropTypes.string.isRequired,
+	slug: PropTypes.string,
 	className: PropTypes.string,
 	Header: PropTypes.elementType,
 	Footer: PropTypes.elementType,
