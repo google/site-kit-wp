@@ -41,7 +41,7 @@ import {
 } from '../common';
 import { STORE_NAME, PROFILE_CREATE, PROPERTY_CREATE } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import GA4Notice from '../common/GA4Notice';
+import GA4PropertyNotice from '../common/GA4PropertyNotice';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
 const { useSelect, useDispatch } = Data;
@@ -85,7 +85,7 @@ export default function SetupFormUA() {
 				</div>
 			) }
 
-			<GA4Notice />
+			<GA4PropertyNotice />
 		</Fragment>
 	);
 }

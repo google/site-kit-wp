@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
-import SetupForm from './SetupForm';
+import SetupFormUA from './SetupFormUA';
 import { STORE_NAME } from '../../datastore/constants';
 import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../../../tests/js/utils';
 import * as fixtures from '../../datastore/__fixtures__';
 
-export const SetupFormUA = () => (
+export const Ready = () => (
 	<div className="googlesitekit-setup">
 		<div className="mdc-layout-grid">
 			<div className="mdc-layout-grid__inner">
@@ -39,7 +39,9 @@ export const SetupFormUA = () => (
 									mdc-layout-grid__cell
 									mdc-layout-grid__cell--span-12
 								">
-									<SetupForm />
+									<div className="googlesitekit-setup-module">
+										<SetupFormUA />
+									</div>
 								</div>
 							</div>
 						</div>
@@ -49,8 +51,8 @@ export const SetupFormUA = () => (
 		</div>
 	</div>
 );
-SetupFormUA.storyName = 'SetupFormUA';
-SetupFormUA.decorators = [
+Ready.storyName = 'SetupFormUA';
+Ready.decorators = [
 	( Story ) => {
 		const registry = createTestRegistry();
 
@@ -67,7 +69,7 @@ SetupFormUA.decorators = [
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		return (
-			<WithTestRegistry registry={ registry } features={ [ 'ga4setup' ] }>
+			<WithTestRegistry registry={ registry }>
 				<Story />
 			</WithTestRegistry>
 		);
@@ -93,7 +95,9 @@ export default {
 			] );
 
 			return (
-				<Story />
+				<WithTestRegistry registry={ registry }>
+					<Story />
+				</WithTestRegistry>
 			);
 		},
 	],
