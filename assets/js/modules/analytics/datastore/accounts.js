@@ -60,6 +60,21 @@ const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 	},
 } );
 
+const fetchGetAccountSummaries = createFetchStore( {
+	baseName: 'getAccountSummaries',
+	controlCallback() {
+		return API.get( 'modules', 'analytics', 'account-summaries', {}, {
+			useCache: false,
+		} );
+	},
+	reducerCallback( state, accountSummaries ) {
+		return {
+			...state,
+			accountSummaries,
+		};
+	},
+} );
+
 const fetchCreateAccountStore = createFetchStore( {
 	baseName: 'createAccount',
 	controlCallback: ( { data } ) => {
@@ -87,6 +102,7 @@ const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
 const baseInitialState = {
 	accounts: undefined,
+	accountSummaries: undefined,
 	isAwaitingAccountsPropertiesProfilesCompletion: false,
 	accountTicketID: undefined,
 };
@@ -273,6 +289,16 @@ const baseResolvers = {
 			registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 		}
 	},
+
+	*getAccountSummaries() {
+		const registry = yield Data.commonActions.getRegistry();
+		yield clearError( 'getAccountSummaries', [] );
+
+		const existingAccountSummaries = registry.select( STORE_NAME ).getAccountSummaries();
+		if ( existingAccountSummaries === undefined ) {
+			yield fetchGetAccountSummaries.actions.fetchGetAccountSummaries();
+		}
+	},
 };
 
 const baseSelectors = {
@@ -292,6 +318,18 @@ const baseSelectors = {
 		const { accounts } = state;
 
 		return accounts;
+	},
+
+	/**
+	 * Gets account summaries.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array.<Object>|undefined)} An array of Analytics account summaries; `undefined` if not loaded.
+	 */
+	getAccountSummaries( state ) {
+		return state?.accountSummaries;
 	},
 
 	/**
@@ -379,6 +417,7 @@ const baseSelectors = {
 
 const store = Data.combineStores(
 	fetchGetAccountsPropertiesProfilesStore,
+	fetchGetAccountSummaries,
 	fetchCreateAccountStore,
 	{
 		initialState: baseInitialState,

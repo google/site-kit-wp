@@ -312,6 +312,7 @@ final class Analytics extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
+			'GET:account-summaries'            => array( 'service' => 'analytics' ),
 			'GET:accounts-properties-profiles' => array( 'service' => 'analytics' ),
 			'POST:create-account-ticket'       => array(
 				'service'                => 'analyticsprovisioning',
@@ -348,6 +349,10 @@ final class Analytics extends Module
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:account-summaries':
+				return function() {
+					return $this->get_service( 'analytics' )->management_accountSummaries->listManagementAccountSummaries();
+				};
 			case 'GET:accounts-properties-profiles':
 				return function () use ( $data ) {
 					$restore_defer = $this->with_client_defer( false );
@@ -731,6 +736,8 @@ final class Analytics extends Module
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:account-summaries':
+				return $response->getItems();
 			case 'GET:accounts-properties-profiles':
 				/* @var Google_Service_Analytics_Accounts $response listManagementAccounts response. */
 				$accounts            = (array) $response->getItems();
