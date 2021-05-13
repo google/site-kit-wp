@@ -21,42 +21,33 @@
  */
 import SetupFormUA from './SetupFormUA';
 import { STORE_NAME } from '../../datastore/constants';
-import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../../../tests/js/utils';
+import { createTestRegistry, WithTestRegistry } from '../../../../../../tests/js/utils';
+import { Grid, Cell, Row } from '../../../../material-components';
 import * as fixtures from '../../datastore/__fixtures__';
 
 export const Ready = () => (
 	<div className="googlesitekit-setup">
-		<div className="mdc-layout-grid">
-			<div className="mdc-layout-grid__inner">
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-				">
-					<section className="googlesitekit-setup__wrapper">
-						<div className="mdc-layout-grid">
-							<div className="mdc-layout-grid__inner">
-								<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-12
-								">
-									<div className="googlesitekit-setup-module">
-										<SetupFormUA />
-									</div>
-								</div>
-							</div>
-						</div>
-					</section>
-				</div>
-			</div>
-		</div>
+		<Grid>
+			<Row>
+				<Cell size={ 12 } className="googlesitekit-setup__wrapper">
+					<Grid>
+						<Row>
+							<Cell size={ 12 } className="googlesitekit-setup-module">
+								<SetupFormUA />
+							</Cell>
+						</Row>
+					</Grid>
+				</Cell>
+			</Row>
+		</Grid>
 	</div>
 );
 Ready.storyName = 'SetupFormUA';
 Ready.decorators = [
 	( Story ) => {
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const registry = createTestRegistry();
 
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 		// eslint-disable-next-line sitekit/acronym-case
@@ -68,6 +59,7 @@ Ready.decorators = [
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+
 		return (
 			<WithTestRegistry registry={ registry }>
 				<Story />
@@ -78,27 +70,4 @@ Ready.decorators = [
 
 export default {
 	title: 'Modules/Analytics/Setup/SetupFormUA',
-	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
-			provideModules( registry, [
-				{
-					slug: 'analytics',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: true,
-				},
-			] );
-
-			return (
-				<WithTestRegistry registry={ registry }>
-					<Story />
-				</WithTestRegistry>
-			);
-		},
-	],
 };
