@@ -44,7 +44,6 @@ const baseSelectors = {
 		// is loading, but if it's `false` we should also use the legacy analytics
 		// because the API isn't working properly.
 		const isAdminAPIWorking = select( MODULES_ANALYTICS_4 ).isAdminAPIWorking();
-
 		if ( isAdminAPIWorking === undefined ) {
 			return undefined;
 		}
@@ -53,44 +52,24 @@ const baseSelectors = {
 			return SETUP_FLOW_MODE_LEGACY;
 		}
 
-		// Ensure the Analytics settings have loaded. If we check
-		// `select( MODULES_ANALYTICS ).getAccountID();` directly, it
-		// could return `undefined` because the settings are loading OR
-		// because accountID is not set. Ensuring the settings are loaded
-		// means an `undefined` accountID is legitimate.
-		// See: https://github.com/google/site-kit-wp/pull/3260#discussion_r623924928
-		if ( select( MODULES_ANALYTICS ).getSettings() === undefined ) {
-			return undefined;
-		}
-
-		const accountID = select( MODULES_ANALYTICS ).getAccountID();
-
-		// If no accountID exists then no account is selected. This means we should
-		// use the UA setup flow.
-		if ( ! accountID ) {
-			return SETUP_FLOW_MODE_UA;
-		}
-
-		const ga4Properties = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
-
-		if ( ga4Properties === undefined ) {
+		const hasGA4Properties = select( MODULES_ANALYTICS_4 ).hasProperties();
+		if ( hasGA4Properties === undefined ) {
 			return undefined;
 		}
 
 		// If there are no GA4 properties available for this account, don't use
 		// GA4 and use the UA version.
-		if ( ga4Properties.length === 0 ) {
+		if ( hasGA4Properties === false ) {
 			return SETUP_FLOW_MODE_UA;
 		}
 
-		const uaProperties = select( MODULES_ANALYTICS ).getProperties( accountID );
-
-		if ( uaProperties === undefined ) {
+		const hasUAProperties = select( MODULES_ANALYTICS ).hasProperties();
+		if ( hasUAProperties === undefined ) {
 			return undefined;
 		}
 
 		// If no UA properties exist and there are GA4 properties, use GA4-only.
-		if ( uaProperties.length === 0 ) {
+		if ( hasUAProperties === false ) {
 			return SETUP_FLOW_MODE_GA4;
 		}
 
