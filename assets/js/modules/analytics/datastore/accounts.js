@@ -154,9 +154,10 @@ const baseActions = {
 
 			const uaProperties = registry.select( STORE_NAME ).getProperties( accountID );
 			registry.dispatch( STORE_NAME ).selectProperty( uaProperties[ 0 ]?.id || PROPERTY_CREATE );
-			registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_UA );
 
 			if ( isFeatureEnabled( 'ga4setup' ) ) {
+				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_UA );
+
 				yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).waitForProperties( accountID ) );
 
 				const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
@@ -297,6 +298,33 @@ const baseResolvers = {
 		if ( matchedProperty && ! accountID ) {
 			registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId ); // eslint-disable-line sitekit/acronym-case
 			registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
+		}
+
+		if ( isFeatureEnabled( 'ga4setup' ) ) {
+			registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_UA );
+
+			let ga4Property;
+			const ga4PropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
+			if ( ga4PropertyID ) {
+				ga4Property = yield Data.commonActions.await( registry.__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty( ga4PropertyID ) );
+			}
+
+			if ( ! ga4Property || ga4Property._accountID !== accountID ) {
+				yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).waitForProperties( accountID ) );
+
+				const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
+				const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+
+				ga4Property = registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL( ga4Properties, referenceURL );
+				registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property?._id || GA4_PROPERTY_CREATE );
+
+				if ( ga4Property?._id ) {
+					const matchedUAProperty = registry.select( STORE_NAME ).getMatchedProperty();
+					if ( ! matchedUAProperty ) {
+						registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
+					}
+				}
+			}
 		}
 	},
 };
