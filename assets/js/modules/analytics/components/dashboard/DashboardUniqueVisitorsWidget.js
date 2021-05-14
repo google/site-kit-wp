@@ -54,7 +54,7 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 	const visitorsData = useSelect( ( select ) => select( STORE_NAME ).getReport( args ), [ args ] );
 	const serviceURL = useSelect(
 		( select ) => {
-			const dates = select( CORE_USER ).getDateRangeDates( {
+			const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
 				offsetDays: DATE_RANGE_OFFSET,
 				compare: true,
 			} );
@@ -65,7 +65,7 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 			}
 			return select( STORE_NAME ).getServiceReportURL( 'acquisition-channels', {
 				'_r.drilldown': drilldowns.join( ',' ),
-				...generateDateRangeArgs( dates ),
+				...generateDateRangeArgs( dateRangeDates ),
 			} );
 		},
 		[ args ]
