@@ -51,7 +51,7 @@ export const registerWidgets = ifIdeaHubIsEnabled( ( widgets ) => {
 		{
 			Component: DashboardIdeasWidget,
 			width: widgets.WIDGET_WIDTHS.HALF,
-			priority: 1,
+			priority: 2,
 			wrapWidget: false,
 		},
 		[
