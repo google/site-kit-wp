@@ -116,7 +116,8 @@ describe( 'modules/analytics-4 settings', () => {
 				expect( fetchMock ).not.toHaveFetched( createWebDataStreamsEndpoint );
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
-				expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
+				// @TODO: uncomment the following line once GA4 API is stabilized
+				// expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
 				expect( console ).toHaveErrored();
 			} );
 
@@ -162,7 +163,8 @@ describe( 'modules/analytics-4 settings', () => {
 				expect( fetchMock ).toHaveFetched( createWebDataStreamsEndpoint, { body: { data: { propertyID: fixtures.createProperty._id } } } );
 
 				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( '' );
-				expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
+				// @TODO: uncomment the following line once GA4 API is stabilized
+				// expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
 				expect( console ).toHaveErrored();
 			} );
 
