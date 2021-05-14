@@ -24,29 +24,17 @@ import { STORE_NAME } from '../../datastore/constants';
 import { provideModules, provideSiteInfo } from '../../../../../../tests/js/utils';
 import { provideAnalyticsMockReport } from '../../util/data-mock';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util/';
-import WidgetReportError from '../../../../googlesitekit/widgets/components/WidgetReportError';
-import WidgetReportZero from '../../../../googlesitekit/widgets/components/WidgetReportZero';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import DashboardUniqueVisitorsWidget, { selectSparklineArgs, selectReportArgs } from './DashboardUniqueVisitorsWidget';
 
 const currentEntityURL = 'https://www.example.com/example-page/';
+const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )( DashboardUniqueVisitorsWidget );
 
-const Template = ( args ) => {
-	const widgetSlug = 'dashboardUniqueVisitorsWidget';
-
-	return (
-		<WithRegistrySetup func={ args.setupRegistry }>
-			<div className="googlesitekit-widget">
-				<div className="googlesitekit-widget__body">
-					<DashboardUniqueVisitorsWidget
-						WidgetReportError={ withWidgetComponentProps( widgetSlug )( WidgetReportError ) }
-						WidgetReportZero={ withWidgetComponentProps( widgetSlug )( WidgetReportZero ) }
-					/>
-				</div>
-			</div>
-		</WithRegistrySetup>
-	);
-};
+const Template = ( { setupRegistry, ...args } ) => (
+	<WithRegistrySetup func={ setupRegistry }>
+		<WidgetWithComponentProps { ...args } />
+	</WithRegistrySetup>
+);
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
@@ -146,6 +134,13 @@ ErrorEntityURL.args = {
 export default {
 	title: 'Modules/Analytics/Widgets/DashboardUniqueVisitorsWidget',
 	decorators: [
+		( Story ) => (
+			<div className="googlesitekit-widget">
+				<div className="googlesitekit-widget__body">
+					<Story />
+				</div>
+			</div>
+		),
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
