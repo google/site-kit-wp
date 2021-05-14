@@ -327,8 +327,6 @@ final class Idea_Hub extends Module
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
-		$this->register();
-
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:draft-post-ideas':
 				return array_map(
