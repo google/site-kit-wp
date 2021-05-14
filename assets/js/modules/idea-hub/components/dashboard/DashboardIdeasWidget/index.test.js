@@ -26,10 +26,12 @@ import {
 	provideModules,
 } from '../../../../../../../tests/js/test-utils';
 import { enabledFeatures } from '../../../../../features';
+import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util/';
 import DashboardIdeasWidget from './index';
 
 describe( 'Idea Hub', () => {
 	let registry;
+	const widgetComponentProps = getWidgetComponentProps( 'ideaHubIdeas' );
 
 	beforeEach( () => {
 		global.location.hash = '';
@@ -51,7 +53,7 @@ describe( 'Idea Hub', () => {
 		[ 'Drafts', '#draft-ideas' ],
 	] )( 'should change location hash & DOM correctly when the %s tab is clicked', async ( args, expected ) => {
 		const { getByRole, findByRole } = render(
-			<DashboardIdeasWidget />,
+			<DashboardIdeasWidget { ...widgetComponentProps } />,
 			{ registry }
 		);
 

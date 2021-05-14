@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
 import { useHash, useMount } from 'react-use';
@@ -127,5 +128,9 @@ DashboardIdeasWidget.tabToIndex = {
 };
 
 DashboardIdeasWidget.tabIDsByIndex = Object.keys( DashboardIdeasWidget.tabToIndex );
+
+DashboardIdeasWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+};
 
 export default whenActive( { moduleName: 'idea-hub' } )( DashboardIdeasWidget );

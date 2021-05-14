@@ -20,9 +20,11 @@
  * Internal dependencies
  */
 import DashboardIdeasWidget from './index';
+import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util/';
 import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../../../../tests/js/utils';
 
-export const Ready = () => <DashboardIdeasWidget />;
+const widgetComponentProps = getWidgetComponentProps( 'ideaHubIdeas' );
+export const Ready = () => <DashboardIdeasWidget { ...widgetComponentProps } />;
 Ready.storyName = 'Ready';
 
 export default {
