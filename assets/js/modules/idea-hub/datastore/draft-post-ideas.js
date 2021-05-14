@@ -1,5 +1,5 @@
 /**
- * `modules/idea-hub` data store: published-ideas.
+ * `modules/idea-hub` data store: draft-post-ideas.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -24,59 +24,59 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
-const fetchGetPublishedIdeasStore = createFetchStore( {
-	baseName: 'getPublishedIdeas',
+const fetchGetDraftPostIdeasStore = createFetchStore( {
+	baseName: 'getDraftPostIdeas',
 	controlCallback: () => {
-		return API.get( 'modules', 'idea-hub', 'published-post-ideas' );
+		return API.get( 'modules', 'idea-hub', 'draft-post-ideas' );
 	},
-	reducerCallback: ( state, publishedIdeas ) => {
+	reducerCallback: ( state, draftPostIdeas ) => {
 		return {
 			...state,
-			publishedIdeas,
+			draftPostIdeas,
 		};
 	},
 } );
 
 const baseInitialState = {
-	publishedIdeas: [],
+	draftPostIdeas: [],
 };
 
 const baseResolvers = {
-	*getPublishedIdeas( options = {} ) {
+	*getDraftPostIdeas( options = {} ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const publishedIdeas = registry.select( STORE_NAME ).getPublishedIdeas( options );
+		const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
 
-		// If there are already published ideas in state, don't make an API request.
-		if ( publishedIdeas.length ) {
+		// If there are already draft ideas in state, don't make an API request.
+		if ( draftPostIdeas.length ) {
 			return;
 		}
 
-		yield fetchGetPublishedIdeasStore.actions.fetchGetPublishedIdeas();
+		yield fetchGetDraftPostIdeasStore.actions.fetchGetDraftPostIdeas();
 	},
 };
 
 const baseSelectors = {
 	/**
-	 * Gets Published Ideas from the Idea Hub.
+	 * Gets Draft Post Ideas from the Idea Hub.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state            Data store's state.
-	 * @param {Object} options          Options for getting published ideas.
+	 * @param {Object} options          Options for getting draft post ideas.
 	 * @param {number} [options.offset] Optional. From which array index to get ideas.
-	 * @param {number} [options.length] Optional. Amount of published ideas to return.
+	 * @param {number} [options.length] Optional. Amount of draft post ideas to return.
 	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
 	 */
-	getPublishedIdeas( state, options = {} ) {
-		const { publishedIdeas } = state;
+	getDraftPostIdeas( state, options = {} ) {
+		const { draftPostIdeas } = state;
 		const offset = options?.offset || 0;
-		const length = options.length ? offset + options.length : publishedIdeas.length;
-		return ( 'offset' in options || 'length' in options ) ? publishedIdeas.slice( offset, length ) : publishedIdeas;
+		const length = options.length ? offset + options.length : draftPostIdeas.length;
+		return ( 'offset' in options || 'length' in options ) ? draftPostIdeas.slice( offset, length ) : draftPostIdeas;
 	},
 };
 
 const store = Data.combineStores(
-	fetchGetPublishedIdeasStore,
+	fetchGetDraftPostIdeasStore,
 	{
 		initialState: baseInitialState,
 		resolvers: baseResolvers,

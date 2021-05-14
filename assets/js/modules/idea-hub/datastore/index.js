@@ -24,15 +24,15 @@ import { STORE_NAME } from './constants';
 import baseModuleStore from './base';
 import newIdeas from './new-ideas';
 import savedIdeas from './saved-ideas';
-import draftIdeas from './draft-ideas';
-import publishedIdeas from './published-ideas';
+import draftPostIdeas from './draft-post-ideas';
+import publishedPostIdeas from './published-post-ideas';
 
 const store = Data.combineStores(
 	baseModuleStore,
 	newIdeas,
 	savedIdeas,
-	draftIdeas,
-	publishedIdeas,
+	draftPostIdeas,
+	publishedPostIdeas,
 );
 
 export const initialState = store.initialState;

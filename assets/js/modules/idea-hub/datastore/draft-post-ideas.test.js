@@ -1,5 +1,5 @@
 /**
- * `modules/idea-hub` data store: draft-ideas tests.
+ * `modules/idea-hub` data store: draft-post-ideas tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -50,7 +50,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'getDraftIdeas', () => {
+		describe( 'getDraftPostIdeas', () => {
 			const options = {
 				offset: 0,
 				length: 5,
@@ -59,18 +59,18 @@ describe( 'modules/idea-hub draft-ideas', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftIdeas, status: 200 }
+					{ body: fixtures.draftPostIdeas, status: 200 }
 				);
 
-				const pendingDraftIdeas = registry.select( STORE_NAME ).getDraftIdeas( options );
+				const pendingDraftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
 
-				expect( pendingDraftIdeas ).toEqual( [] );
-				await untilResolved( registry, STORE_NAME ).getDraftIdeas( options );
+				expect( pendingDraftPostIdeas ).toEqual( [] );
+				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( options );
 
-				const draftIdeas = registry.select( STORE_NAME ).getDraftIdeas( options );
+				const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( draftIdeas ).toEqual( fixtures.draftIdeas );
+				expect( draftPostIdeas ).toEqual( fixtures.draftPostIdeas );
 			} );
 
 			it( 'uses offset and length parameters to adjust/limit the ideas returned by the selector', async () => {
@@ -80,31 +80,31 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftIdeas, status: 200 }
+					{ body: fixtures.draftPostIdeas, status: 200 }
 				);
 
-				registry.select( STORE_NAME ).getDraftIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getDraftIdeas( customOptions );
+				registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
+				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( customOptions );
 
-				const draftIdeas = registry.select( STORE_NAME ).getDraftIdeas( customOptions );
+				const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( draftIdeas ).toEqual( fixtures.draftIdeas.slice( 2, 4 ) );
+				expect( draftPostIdeas ).toEqual( fixtures.draftPostIdeas.slice( 2, 4 ) );
 			} );
 
 			it( 'treats all options as optional', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftIdeas, status: 200 }
+					{ body: fixtures.draftPostIdeas, status: 200 }
 				);
 
-				registry.select( STORE_NAME ).getDraftIdeas( {} );
-				await untilResolved( registry, STORE_NAME ).getDraftIdeas( {} );
+				registry.select( STORE_NAME ).getDraftPostIdeas( {} );
+				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( {} );
 
-				const draftIdeas = registry.select( STORE_NAME ).getDraftIdeas( {} );
+				const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( {} );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( draftIdeas ).toEqual( fixtures.draftIdeas );
+				expect( draftPostIdeas ).toEqual( fixtures.draftPostIdeas );
 			} );
 
 			it( 'adjusts idea results when only offset parameter is supplied', async () => {
@@ -113,16 +113,16 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftIdeas, status: 200 }
+					{ body: fixtures.draftPostIdeas, status: 200 }
 				);
 
-				registry.select( STORE_NAME ).getDraftIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getDraftIdeas( customOptions );
+				registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
+				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( customOptions );
 
-				const draftIdeas = registry.select( STORE_NAME ).getDraftIdeas( customOptions );
+				const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( draftIdeas ).toEqual( fixtures.draftIdeas.slice( 2 ) );
+				expect( draftPostIdeas ).toEqual( fixtures.draftPostIdeas.slice( 2 ) );
 			} );
 
 			it( 'adjusts idea results when only limit parameter is supplied', async () => {
@@ -131,16 +131,16 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftIdeas, status: 200 }
+					{ body: fixtures.draftPostIdeas, status: 200 }
 				);
 
-				registry.select( STORE_NAME ).getDraftIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getDraftIdeas( customOptions );
+				registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
+				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( customOptions );
 
-				const draftIdeas = registry.select( STORE_NAME ).getDraftIdeas( customOptions );
+				const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( draftIdeas ).toEqual( fixtures.draftIdeas.slice( 0, 3 ) );
+				expect( draftPostIdeas ).toEqual( fixtures.draftPostIdeas.slice( 0, 3 ) );
 			} );
 
 			it( 'only fetches once even with different options are passed', async () => {
@@ -150,14 +150,14 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftIdeas, status: 200 }
+					{ body: fixtures.draftPostIdeas, status: 200 }
 				);
 
-				registry.select( STORE_NAME ).getDraftIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getDraftIdeas( customOptions );
+				registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
+				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( customOptions );
 
-				registry.select( STORE_NAME ).getDraftIdeas( customOptions );
-				registry.select( STORE_NAME ).getDraftIdeas( options );
+				registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
+				registry.select( STORE_NAME ).getDraftPostIdeas( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -165,14 +165,14 @@ describe( 'modules/idea-hub draft-ideas', () => {
 			it( 'does not make a network request if report for given options is already present', async () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetDraftIdeas( fixtures.draftIdeas, { options } );
+				registry.dispatch( STORE_NAME ).receiveGetDraftPostIdeas( fixtures.draftPostIdeas, { options } );
 
-				const report = registry.select( STORE_NAME ).getDraftIdeas( options );
+				const report = registry.select( STORE_NAME ).getDraftPostIdeas( options );
 
-				await untilResolved( registry, STORE_NAME ).getDraftIdeas( options );
+				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( options );
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( report ).toEqual( fixtures.draftIdeas );
+				expect( report ).toEqual( fixtures.draftPostIdeas );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -187,13 +187,13 @@ describe( 'modules/idea-hub draft-ideas', () => {
 					{ body: response, status: 500 }
 				);
 
-				registry.select( STORE_NAME ).getDraftIdeas( options );
-				await untilResolved( registry, STORE_NAME ).getDraftIdeas( options );
+				registry.select( STORE_NAME ).getDraftPostIdeas( options );
+				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const draftIdeas = registry.select( STORE_NAME ).getDraftIdeas( options );
-				expect( draftIdeas ).toEqual( [] );
+				const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
+				expect( draftPostIdeas ).toEqual( [] );
 				expect( console ).toHaveErrored();
 			} );
 		} );
