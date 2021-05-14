@@ -153,7 +153,8 @@ const baseActions = {
 			yield Data.commonActions.await( registry.dispatch( STORE_NAME ).waitForProperties( accountID ) );
 
 			const uaProperties = registry.select( STORE_NAME ).getProperties( accountID );
-			registry.dispatch( STORE_NAME ).selectProperty( uaProperties[ 0 ]?.id || PROPERTY_CREATE );
+			const uaProperty = uaProperties[ 0 ] || { id: PROPERTY_CREATE, internalWebPropertyId: '' }; // eslint-disable-line sitekit/acronym-case
+			yield Data.commonActions.await( registry.dispatch( STORE_NAME ).selectProperty( uaProperty?.id, uaProperty?.internalWebPropertyId ) ); // eslint-disable-line sitekit/acronym-case
 
 			if ( isFeatureEnabled( 'ga4setup' ) ) {
 				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_UA );
@@ -162,8 +163,8 @@ const baseActions = {
 
 				const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
 				const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
-				const ga4Property = registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL( ga4Properties, referenceURL );
-				registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property?._id || GA4_PROPERTY_CREATE );
+				const ga4Property = yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL( ga4Properties, referenceURL ) );
+				yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property?._id || GA4_PROPERTY_CREATE ) );
 
 				if ( ga4Property?._id ) {
 					const matchedUAProperty = registry.select( STORE_NAME ).getMatchedProperty();
@@ -297,7 +298,7 @@ const baseResolvers = {
 		// Pre-select values from the matched property if no account is selected.
 		if ( matchedProperty && ! accountID ) {
 			registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId ); // eslint-disable-line sitekit/acronym-case
-			registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
+			yield Data.commonActions.await( registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ) ); // eslint-disable-line sitekit/acronym-case
 		}
 
 		if ( isFeatureEnabled( 'ga4setup' ) ) {
@@ -313,8 +314,8 @@ const baseResolvers = {
 				const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
 				const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
 
-				ga4Property = registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL( ga4Properties, referenceURL );
-				registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property?._id || GA4_PROPERTY_CREATE );
+				ga4Property = yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL( ga4Properties, referenceURL ) );
+				yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property?._id || GA4_PROPERTY_CREATE ) );
 			}
 		}
 	},
