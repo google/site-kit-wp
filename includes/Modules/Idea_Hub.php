@@ -362,13 +362,20 @@ final class Idea_Hub extends Module
 	 * @since n.e.x.t
 	 *
 	 * @param int $post_id Post ID.
-	 * @return array Post idea settigns array.
+	 * @return array|null Post idea settings array. Returns NULL if a post doesn't have an associated idea.
 	 */
 	public function get_post_idea( $post_id ) {
+		$name   = $this->post_name_setting->get( $post_id );
+		$text   = $this->post_text_setting->get( $post_id );
+		$topics = $this->post_topic_setting->get( $post_id );
+		if ( empty( $name ) || empty( $text ) || empty( $topics ) ) {
+			return null;
+		}
+
 		return array(
-			'name'   => $this->post_name_setting->get( $post_id ),
-			'text'   => $this->post_text_setting->get( $post_id ),
-			'topics' => $this->post_topic_setting->get( $post_id ),
+			'name'   => $name,
+			'text'   => $text,
+			'topics' => $topics,
 		);
 	}
 
