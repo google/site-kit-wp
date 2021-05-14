@@ -39,32 +39,19 @@ import DraftIdeas from './DraftIdeas';
 
 const getHash = ( hash ) => hash ? hash.replace( '#', '' ) : false;
 const isValidHash = ( hash ) => getHash( hash ) in DashboardIdeasWidget.tabToIndex;
+const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
+	const siteHeaderHeight = document.querySelector( '.googlesitekit-header' )?.offsetHeight || 0;
+	const adminBarHeight = document.getElementById( 'wpadminbar' )?.offsetHeight || 0;
+	const marginBottom = 24;
+	const headerOffset = ( siteHeaderHeight + adminBarHeight + marginBottom ) * -1;
+	return ideaHubWidgetOffsetTop + global.window.pageYOffset + headerOffset;
+};
 
-const DashboardIdeasWidget = () => {
+const DashboardIdeasWidget = ( { Widget } ) => {
 	const ideaHubContainer = useRef();
 	const [ hash, setHash ] = useHash();
-	const [ activeTabIndex, setActiveTabIndex ] = useState( DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] );
+	const [ activeTabIndex, setActiveTabIndex ] = useState( DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] || 0 );
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
-
-	const getIdeaHubContainerOffset = () => {
-		const tabletBreakpoint = global.window.matchMedia( '(min-width: 600px)' );
-		const desktopBreakpoint = global.window.matchMedia( '(min-width: 960px)' );
-		let adminBarHeight = 0;
-		let siteHeaderHeight = 68;
-		let marginBottom = 16;
-
-		if ( tabletBreakpoint.matches ) {
-			adminBarHeight = 46;
-		}
-
-		if ( desktopBreakpoint.matches ) {
-			siteHeaderHeight = 84;
-			marginBottom = 24;
-			adminBarHeight = 32;
-		}
-		const headerOffset = ( siteHeaderHeight + adminBarHeight + marginBottom ) * -1;
-		return ideaHubContainer.current.getBoundingClientRect().top + global.window.pageYOffset + headerOffset;
-	};
 
 	useMount( () => {
 		if ( ! ideaHubContainer?.current || ! isValidHash( hash ) ) {
@@ -72,7 +59,10 @@ const DashboardIdeasWidget = () => {
 		}
 
 		setTimeout( () => {
-			global.window.scrollTo( { top: getIdeaHubContainerOffset(), behavior: 'smooth' } );
+			global.window.scrollTo( {
+				top: getIdeaHubContainerOffset( ideaHubContainer.current.getBoundingClientRect().top ),
+				behavior: 'smooth',
+			} );
 		}, 1000 );
 	} );
 
@@ -82,7 +72,7 @@ const DashboardIdeasWidget = () => {
 	}, [ setHash, setActiveTabIndex ] );
 
 	return (
-		<div className="googlesitekit-widget">
+		<Widget noPadding>
 			<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
 				<div className="googlesitekit-idea-hub__header">
 					<h3 className="googlesitekit-idea-hub__title">
@@ -126,7 +116,7 @@ const DashboardIdeasWidget = () => {
 					) }
 				</div>
 			</div>
-		</div>
+		</Widget>
 	);
 };
 

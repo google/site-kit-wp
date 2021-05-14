@@ -46,22 +46,10 @@ describe( 'Idea Hub', () => {
 	} );
 
 	it.each( [
-		[
-			'should change location hash & DOM correctly when the New ideas tab is clicked',
-			'New',
-			'#new-ideas',
-		],
-		[
-			'should change location hash & DOM correctly when the Saved ideas tab is clicked',
-			'Saved',
-			'#saved-ideas',
-		],
-		[
-			'should change location hash & DOM correctly when the Draft ideas tab is clicked',
-			'Drafts',
-			'#draft-ideas',
-		],
-	] )( '%s', async ( _, args, expected ) => {
+		[ 'New', '#new-ideas' ],
+		[ 'Saved', '#saved-ideas' ],
+		[ 'Drafts', '#draft-ideas' ],
+	] )( 'should change location hash & DOM correctly when the %s tab is clicked', async ( args, expected ) => {
 		const { getByRole, findByRole } = render(
 			<DashboardIdeasWidget />,
 			{ registry }
