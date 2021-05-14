@@ -1,5 +1,5 @@
 /**
- * Idea Hub dashboard components.
+ * Analytics GA4Transitional Setup form.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,5 +16,24 @@
  * limitations under the License.
  */
 
-export { default as DashboardIdeasWidget } from './DashboardIdeasWidget';
-export { default as DashboardCTA } from './DashboardCTA';
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { AccountSelect } from '../common';
+
+export default function SetupFormGA4Transitional() {
+	return (
+		<Fragment>
+			<div className="googlesitekit-setup-module__inputs">
+				<AccountSelect />
+			</div>
+			<div>SetupFormGA4Transitional</div>
+		</Fragment>
+	);
+}
+

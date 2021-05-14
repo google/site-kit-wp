@@ -1,5 +1,5 @@
 /**
- * Idea Hub dashboard components.
+ * SavedIdeas component
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,5 +16,8 @@
  * limitations under the License.
  */
 
-export { default as DashboardIdeasWidget } from './DashboardIdeasWidget';
-export { default as DashboardCTA } from './DashboardCTA';
+const SavedIdeas = () => {
+	return <div className="googlesitekit-idea-hub__saved-ideas" />;
+};
+
+export default SavedIdeas;
