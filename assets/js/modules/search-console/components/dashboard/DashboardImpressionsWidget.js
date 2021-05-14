@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { isZeroReport, partitionReport } from '../../util';
+import { isZeroReport } from '../../util';
 import { calculateChange, untrailingslashit } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import { trackEvent } from '../../../../util/tracking';
@@ -38,6 +38,7 @@ import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import sumObjectListValue from '../../../../util/sum-object-list-value';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import { partitionReport } from '../../../../util/partition-report';
 
 const { useSelect } = Data;
 

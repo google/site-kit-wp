@@ -31,8 +31,9 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-console/datastore/constants';
 import { calculateChange } from '../../util';
-import { isZeroReport, partitionReport } from '../../modules/search-console/util';
+import { isZeroReport } from '../../modules/search-console/util';
 import sumObjectListValue from '../../util/sum-object-list-value';
+import { partitionReport } from '../../util/partition-report';
 const { useSelect } = Data;
 
 function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {

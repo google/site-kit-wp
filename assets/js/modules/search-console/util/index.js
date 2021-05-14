@@ -28,7 +28,6 @@ import round from 'lodash/round';
 import { calculateChange } from '../../../util';
 export * from './is-zero-report';
 export * from './site-stats-data';
-export * from './partition-report';
 export * from './report-date-range-args';
 export * from './validation';
 

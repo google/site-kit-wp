@@ -30,14 +30,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { isZeroReport, partitionReport } from '../../../util';
+import { partitionReport } from '../../../../../util/partition-report';
+import { isZeroReport } from '../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
 import Overview from './Overview';
 import Stats from './Stats';
-import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
 const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } ) => {

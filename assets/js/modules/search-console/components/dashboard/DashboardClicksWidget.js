@@ -31,13 +31,14 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import { untrailingslashit, calculateChange } from '../../../../util';
 import { trackEvent } from '../../../../util/tracking';
-import { isZeroReport, partitionReport } from '../../util';
+import { isZeroReport } from '../../util';
 import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import sumObjectListValue from '../../../../util/sum-object-list-value';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import { partitionReport } from '../../../../util/partition-report';
 
 const { useSelect } = Data;
 
