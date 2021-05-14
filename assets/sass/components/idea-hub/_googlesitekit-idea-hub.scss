@@ -28,7 +28,7 @@
 	._googlesitekit-idea-hub-dashboardcta__content {
 		display: inline-block;
 		max-width: 300px;
-		padding: 24px;
+		padding: $grid-gap-desktop;
 
 		h5 {
 			font-family: $f-secondary;
@@ -42,12 +42,12 @@
 	._googlesitekit-idea-hub-dashboardcta__icon {
 		display: inline-flex;
 		justify-content: center;
-		margin: 24px 0 24px 24px;
+		margin: $grid-gap-desktop 0 $grid-gap-desktop $grid-gap-desktop;
 		width: 144px;
 	}
 
 	._googlesitekit-idea-hub-dashboardcta__icon svg {
-		background-color: rgba(247, 143, 1, 0.2);
+		background-color: $c-idea-hub-orange;
 		background-size: 144px 144px;
 		border-radius: 50%;
 		height: 144px;
