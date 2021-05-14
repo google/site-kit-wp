@@ -192,9 +192,29 @@ final class Idea_Hub extends Module
 					return null;
 				};
 			case 'GET:draft-post-ideas':
-				// @TODO implementation
 				return function() {
-					return null;
+					$wp_query = new \WP_Query();
+
+					return $wp_query->query(
+						array(
+							'fields'         => 'ids',
+							'no_found_rows'  => true,
+							'post_status'    => 'draft',
+							'posts_per_page' => -1,
+							'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+								'relation' => 'AND',
+								array(
+									'key' => Post_Idea_Name::META_KEY,
+								),
+								array(
+									'key' => Post_Idea_Text::META_KEY,
+								),
+								array(
+									'key' => Post_Idea_Topics::META_KEY,
+								),
+							),
+						)
+					);
 				};
 			case 'GET:new-ideas':
 				// @TODO: Implement this with the real API endpoint.
@@ -258,9 +278,28 @@ final class Idea_Hub extends Module
 					);
 				};
 			case 'GET:published-post-ideas':
-				// @TODO implementation
 				return function() {
-					return null;
+					$wp_query = new \WP_Query();
+
+					return $wp_query->query(
+						array(
+							'fields'         => 'ids',
+							'no_found_rows'  => true,
+							'posts_per_page' => -1,
+							'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+								'relation' => 'AND',
+								array(
+									'key' => Post_Idea_Name::META_KEY,
+								),
+								array(
+									'key' => Post_Idea_Text::META_KEY,
+								),
+								array(
+									'key' => Post_Idea_Topics::META_KEY,
+								),
+							),
+						)
+					);
 				};
 			case 'GET:saved-ideas':
 				// @TODO: Implement this with the real API endpoint.
@@ -275,6 +314,52 @@ final class Idea_Hub extends Module
 		}
 
 		return parent::create_data_request( $data );
+	}
+
+	/**
+	 * Parses a response for the given datapoint.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data     Data request object.
+	 * @param mixed        $response Request response.
+	 *
+	 * @return mixed Parsed response data on success, or WP_Error on failure.
+	 */
+	protected function parse_data_response( Data_Request $data, $response ) {
+		$this->register();
+
+		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:draft-post-ideas':
+				return array_map(
+					function( $post_id ) {
+						return array_merge(
+							array(
+								'postID'      => $post_id,
+								'postEditURL' => get_edit_post_link( $post_id ),
+							),
+							$this->get_post_idea( $post_id )
+						);
+					},
+					$response
+				);
+			case 'GET:published-post-ideas':
+				return array_map(
+					function( $post_id ) {
+						return array_merge(
+							array(
+								'postID'      => $post_id,
+								'postEditURL' => get_edit_post_link( $post_id ),
+								'postURL'     => get_permalink( $post_id ),
+							),
+							$this->get_post_idea( $post_id )
+						);
+					},
+					$response
+				);
+		}
+
+		return parent::parse_data_response( $data, $response );
 	}
 
 	/**
@@ -362,7 +447,7 @@ final class Idea_Hub extends Module
 	 * @since n.e.x.t
 	 *
 	 * @param int $post_id Post ID.
-	 * @return array Post idea settigns array.
+	 * @return array Post idea settings array.
 	 */
 	public function get_post_idea( $post_id ) {
 		return array(
@@ -371,5 +456,4 @@ final class Idea_Hub extends Module
 			'topics' => $this->post_topic_setting->get( $post_id ),
 		);
 	}
-
 }
