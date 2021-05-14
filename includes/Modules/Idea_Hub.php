@@ -456,4 +456,5 @@ final class Idea_Hub extends Module
 			'topics' => $this->post_topic_setting->get( $post_id ),
 		);
 	}
+
 }
