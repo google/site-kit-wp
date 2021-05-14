@@ -301,8 +301,6 @@ const baseResolvers = {
 		}
 
 		if ( isFeatureEnabled( 'ga4setup' ) ) {
-			registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_UA );
-
 			let ga4Property;
 			const ga4PropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
 			if ( ga4PropertyID ) {
@@ -317,13 +315,6 @@ const baseResolvers = {
 
 				ga4Property = registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL( ga4Properties, referenceURL );
 				registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property?._id || GA4_PROPERTY_CREATE );
-
-				if ( ga4Property?._id ) {
-					const matchedUAProperty = registry.select( STORE_NAME ).getMatchedProperty();
-					if ( ! matchedUAProperty ) {
-						registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
-					}
-				}
 			}
 		}
 	},
