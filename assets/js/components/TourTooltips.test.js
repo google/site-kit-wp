@@ -110,6 +110,7 @@ describe( 'TourTooltips', () => {
 	it( 'should display step title & content correctly', async () => {
 		const { findByRole } = renderTourTooltipsWithMockUI( registry );
 
+		// RTL thinks everything is hidden
 		const tourTooltip = await findByRole( 'alertdialog', { hidden: true } );
 
 		expect( tourTooltip ).toHaveTextContent( 'Title for step 1' );
@@ -121,7 +122,8 @@ describe( 'TourTooltips', () => {
 
 		fireEvent.click( getByLabelText( /next/i ) );
 
-		getByRole( 'heading', { name: /title for step 2/i } );
+		// something has changed with use of name.  to investigate in execution?  This seems a better way anyway. explicit assertion
+		expect( getByRole( 'heading', { level: 2, hidden: true } ) ).toHaveTextContent( /title for step 2/i );
 	} );
 
 	it( 'should not render next step button if on last step', async () => {
@@ -139,7 +141,7 @@ describe( 'TourTooltips', () => {
 
 		fireEvent.click( getByLabelText( /back/i ) );
 
-		getByRole( 'heading', { name: /title for step 1/i } );
+		expect( getByRole( 'heading', { level: 2, hidden: true } ) ).toHaveTextContent( /title for step 1/i );
 	} );
 
 	it( 'should not render previous step button if on first step', async () => {
