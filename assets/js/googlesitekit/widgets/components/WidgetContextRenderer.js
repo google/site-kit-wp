@@ -37,12 +37,12 @@ const WidgetContextRenderer = ( props ) => {
 
 	const widgetAreas = useSelect( ( select ) => {
 		if ( slug ) {
-			return	select( STORE_NAME ).getWidgetAreas( slug );
+			return select( STORE_NAME ).getWidgetAreas( slug );
 		}
+		return null;
 	} );
-	const widgetAreasLength = widgetAreas?.length;
 
-	if ( ! slug ) {
+	if ( ! widgetAreas?.length ) {
 		return null;
 	}
 
@@ -58,7 +58,7 @@ const WidgetContextRenderer = ( props ) => {
 				</Grid>
 			) }
 			{ widgetAreas.map( ( area ) => {
-				return <WidgetAreaRenderer slug={ area.slug } key={ area.slug } totalAreas={ widgetAreasLength } />;
+				return <WidgetAreaRenderer slug={ area.slug } key={ area.slug } totalAreas={ widgetAreas.length } />;
 			} ) }
 			{ Footer && (
 				<Grid>
