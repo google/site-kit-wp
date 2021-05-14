@@ -31,7 +31,7 @@ import { normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
-const { commonActions } = Data;
+const { commonActions, createRegistryControl } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',
@@ -109,6 +109,9 @@ const fetchCreatePropertyStore = createFetchStore( {
 		invariant( accountID, 'accountID is required.' );
 	},
 } );
+
+// Actions
+const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
 
 const baseInitialState = {
 	properties: {},
@@ -234,9 +237,29 @@ const baseActions = {
 
 		return null;
 	},
+
+	/**
+	 * Waits for properties to be loaded for an account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} accountID GA4 account ID.
+	 */
+	*waitForProperties( accountID ) {
+		yield {
+			payload: { accountID },
+			type: WAIT_FOR_PROPERTIES,
+		};
+	},
 };
 
 const baseControls = {
+	[ WAIT_FOR_PROPERTIES ]: createRegistryControl( ( { __experimentalResolveSelect } ) => {
+		return async ( { payload } ) => {
+			const { accountID } = payload;
+			await __experimentalResolveSelect( STORE_NAME ).getProperties( accountID );
+		};
+	} ),
 };
 
 const baseReducer = ( state, { type } ) => {
