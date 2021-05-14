@@ -130,6 +130,15 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 	);
 }
 
+/**
+ * Selects args used for sparkline report from the store.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {Function} select Registry select.
+ * @return {Object} Sparkline args.
+ */
 export const selectSparklineArgs = ( select ) => {
 	return {
 		metrics: [
@@ -147,6 +156,15 @@ export const selectSparklineArgs = ( select ) => {
 	};
 };
 
+/**
+ * Selects report args from the store.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {Function} select Registry select.
+ * @return {Object} Report args.
+ */
 export const selectReportArgs = ( select ) => {
 	return {
 		metrics: [
