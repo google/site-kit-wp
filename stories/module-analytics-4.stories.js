@@ -74,6 +74,8 @@ storiesOf( 'Analytics-4 Module', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 				accountID,
+			} );
+			dispatch( STORE_NAME ).receiveGetSettings( {
 				propertyID,
 			} );
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [ {
