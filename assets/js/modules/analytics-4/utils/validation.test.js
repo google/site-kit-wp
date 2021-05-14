@@ -1,5 +1,5 @@
 /**
- * Idea Hub module entrypoint.
+ * Validation function tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,11 +19,21 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
-import Modules from 'googlesitekit-modules';
-import { registerStore, registerWidgets, registerModule } from './modules/idea-hub';
+import { isValidWebDataStreamID } from './validation';
 
-registerStore( Data );
-registerWidgets( Widgets );
-registerModule( Modules );
+describe( 'modules/analytics-4 validations', () => {
+	describe( 'isValidWebDataStreamID', () => {
+		it( 'should return TRUE when a valid webDataStreamID is passed', () => {
+			expect( isValidWebDataStreamID( '12345' ) ).toBe( true );
+		} );
+
+		it.each( [
+			[ 'undefined', undefined ],
+			[ 'null', null ],
+			[ 'false', false ],
+			[ 'a number', 12345 ],
+		] )( 'should return FALSE when %s is passed', ( _, webDataStreamID ) => {
+			expect( isValidWebDataStreamID( webDataStreamID ) ).toBe( false );
+		} );
+	} );
+} );

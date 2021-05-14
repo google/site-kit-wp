@@ -67,7 +67,7 @@ const DashboardDetailsWidgetKeywordsTable = () => {
 				">
 				<DashboardModuleHeader
 					title={ __( 'Top Queries', 'google-site-kit' ) }
-					description={ __( 'What people searched for to find your page.', 'google-site-kit' ) }
+					description={ __( 'What people searched for to find your page', 'google-site-kit' ) }
 				/>
 			</div>
 			<div className="

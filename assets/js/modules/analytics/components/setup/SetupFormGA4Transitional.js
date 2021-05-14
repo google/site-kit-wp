@@ -1,5 +1,5 @@
 /**
- * Idea Hub module entrypoint.
+ * Analytics GA4Transitional Setup form.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,13 +17,23 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
-import Modules from 'googlesitekit-modules';
-import { registerStore, registerWidgets, registerModule } from './modules/idea-hub';
+import { AccountSelect } from '../common';
 
-registerStore( Data );
-registerWidgets( Widgets );
-registerModule( Modules );
+export default function SetupFormGA4Transitional() {
+	return (
+		<Fragment>
+			<div className="googlesitekit-setup-module__inputs">
+				<AccountSelect />
+			</div>
+			<div>SetupFormGA4Transitional</div>
+		</Fragment>
+	);
+}
+
