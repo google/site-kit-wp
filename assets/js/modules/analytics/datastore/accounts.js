@@ -29,11 +29,23 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../util';
-import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
+import {
+	STORE_NAME,
+	ACCOUNT_CREATE,
+	PROPERTY_CREATE,
+	FORM_ACCOUNT_CREATE,
+	PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4,
+} from './constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { actions as tagActions } from './tags';
+import {
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE as GA4_PROPERTY_CREATE,
+} from '../../analytics-4/datastore/constants';
+import { isFeatureEnabled } from '../../../features';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 const { createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
 
@@ -138,13 +150,27 @@ const baseActions = {
 				return;
 			}
 
-			// Trigger cascading selections.
-			const properties = registry.select( STORE_NAME ).getProperties( accountID );
-			if ( properties === undefined ) {
-				return; // Selection will happen in resolver.
+			yield Data.commonActions.await( registry.dispatch( STORE_NAME ).waitForProperties( accountID ) );
+
+			const uaProperties = registry.select( STORE_NAME ).getProperties( accountID );
+			registry.dispatch( STORE_NAME ).selectProperty( uaProperties[ 0 ]?.id || PROPERTY_CREATE );
+			registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_UA );
+
+			if ( isFeatureEnabled( 'ga4setup' ) ) {
+				yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).waitForProperties( accountID ) );
+
+				const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
+				const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+				const ga4Property = registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL( ga4Properties, referenceURL );
+				registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property?._id || GA4_PROPERTY_CREATE );
+
+				if ( ga4Property?._id ) {
+					const matchedUAProperty = registry.select( STORE_NAME ).getMatchedProperty();
+					if ( ! matchedUAProperty ) {
+						registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
+					}
+				}
 			}
-			const property = properties[ 0 ] || { id: PROPERTY_CREATE };
-			registry.dispatch( STORE_NAME ).selectProperty( property.id );
 		}
 	),
 

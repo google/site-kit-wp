@@ -30,7 +30,7 @@ import { STORE_NAME, PROPERTY_CREATE, MAX_WEBDATASTREAMS_PER_BATCH } from './con
 import { normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
-import { actions as webDataStreamActions } from './webdatastreams';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 const { commonActions, createRegistryControl } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
@@ -144,10 +144,11 @@ const baseActions = {
 	 * @param {string} propertyID GA4 property ID.
 	 * @return {Object} A Generator function.
 	 */
-	selectProperty( propertyID ) {
-		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
-
-		return ( function* () {
+	selectProperty: createValidatedAction(
+		( propertyID ) => {
+			invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
+		},
+		function* ( propertyID ) {
 			const registry = yield Data.commonActions.getRegistry();
 
 			registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
@@ -158,15 +159,15 @@ const baseActions = {
 				return;
 			}
 
-			yield webDataStreamActions.waitForWebDataStreams( propertyID );
+			yield Data.commonActions.await( registry.dispatch( STORE_NAME ).waitForWebDataStreams( propertyID ) );
 
 			const webdatastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
 			if ( webdatastream ) {
 				registry.dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._id );
 				registry.dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
 			}
-		}() );
-	},
+		}
+	),
 
 	/**
 	 * Matches a property by URL.
