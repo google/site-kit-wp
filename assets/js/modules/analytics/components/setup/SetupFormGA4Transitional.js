@@ -1,5 +1,5 @@
 /**
- * Margin utility styles.
+ * Analytics GA4Transitional Setup form.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,25 +16,24 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
 
-	.googlesitekit-margin-top-0 {
-		margin-top: 0 !important;
-	}
+/**
+ * Internal dependencies
+ */
+import { AccountSelect } from '../common';
 
-	.googlesitekit-margin-bottom-0 {
-		margin-bottom: 0 !important;
-	}
-
-	.googlesitekit-margin-left-1rem {
-		margin-left: 1rem;
-	}
-
-	.googlesitekit-margin-left-auto {
-		margin-left: auto;
-	}
-
-	.googlesitekit-margin-right-0 {
-		margin-right: 0;
-	}
+export default function SetupFormGA4Transitional() {
+	return (
+		<Fragment>
+			<div className="googlesitekit-setup-module__inputs">
+				<AccountSelect />
+			</div>
+			<div>SetupFormGA4Transitional</div>
+		</Fragment>
+	);
 }
+

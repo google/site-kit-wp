@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { createRegistry } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -33,8 +28,8 @@ import {
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
 } from './constants';
 import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
-import * as modulesAnalytics from '../';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import { enabledFeatures } from '../../../features';
 
 const accountID = 'pub-12345678';
 
@@ -107,6 +102,8 @@ describe( 'modules/analytics setup-flow', () => {
 		registry = createTestRegistry();
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+
+		enabledFeatures.add( 'ga4setup' );
 	} );
 
 	afterAll( () => {
@@ -119,14 +116,8 @@ describe( 'modules/analytics setup-flow', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getSetupFlowMode', () => {
-			it( 'returns "legacy" if the modules/analytics-4 store is not available ', async () => {
-				// Create a new registry with only the Analytics Module enabled;
-				// the GA4 datastore won't be loaded at all.
-				registry = createRegistry();
-
-				modulesAnalytics.registerStore( registry );
-				// Receive empty settings to prevent unexpected fetch by resolver.
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			it( 'returns "legacy" if the feature flag ga4setup is disabled ', async () => {
+				enabledFeatures.delete( 'ga4setup' );
 
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_LEGACY );
 			} );

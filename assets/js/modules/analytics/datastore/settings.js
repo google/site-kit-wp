@@ -28,6 +28,7 @@ import API from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import { TYPE_MODULES } from '../../../components/data/constants';
 import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
@@ -42,6 +43,7 @@ import {
 } from '../util';
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE, FORM_SETUP } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
+import { isFeatureEnabled } from '../../../features';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID = 'a valid accountID is required to submit changes';
@@ -95,6 +97,12 @@ export async function submitChanges( { select, dispatch } ) {
 	// TODO: Remove once legacy dataAPI is no longer used.
 	invalidateCacheGroup( TYPE_MODULES, 'analytics' );
 
+	if ( isFeatureEnabled( 'ga4setup' ) ) {
+		if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
+			await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+		}
+	}
+
 	return {};
 }
 
@@ -146,4 +154,8 @@ export function validateCanSubmitChanges( select ) {
 
 	// Do existing tag check last.
 	invariant( hasExistingTagPermission() !== false, INVARIANT_INSUFFICIENT_TAG_PERMISSIONS );
+
+	if ( isFeatureEnabled( 'ga4setup' ) ) {
+		select( MODULES_ANALYTICS_4 ).__dangerousCanSubmitChanges();
+	}
 }
