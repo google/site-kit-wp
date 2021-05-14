@@ -25,7 +25,6 @@
 
 	.googlesitekit-idea-hub-dashboardcta__content {
 		display: inline-block;
-		max-width: 300px;
 		padding: $grid-gap-desktop;
 
 		h5 {
@@ -38,9 +37,8 @@
 	}
 
 	.googlesitekit-idea-hub-dashboardcta__icon {
-		display: inline-flex;
-		justify-content: center;
-		margin: $grid-gap-desktop 0 $grid-gap-desktop $grid-gap-desktop;
+		display: inline-block;
+		padding: $grid-gap-desktop 0 $grid-gap-desktop $grid-gap-desktop;
 	}
 
 	.googlesitekit-idea-hub-dashboardcta__icon svg {

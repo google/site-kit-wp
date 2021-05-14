@@ -26,19 +26,11 @@
 import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../../../../tests/js/utils';
 import DashboardCTA from './index';
 
-const Wrapper = ( { children } ) => (
-	<div style={ {
-		// height: '437px',
-		// width: '588px',
-		display: 'flex',
-	} }>
-		{ children }
-	</div>
-);
+const Template = ( args ) => <DashboardCTA { ...args } />;
 
-export const Basic = () => <Wrapper><DashboardCTA /></Wrapper>;
-Basic.storyName = 'Default';
-Basic.decorators = [
+export const DefaultDashboardCTA = Template.bind( {} );
+DefaultDashboardCTA.storyName = 'Default';
+DefaultDashboardCTA.decorators = [
 	( Story ) => {
 		const registry = createTestRegistry();
 		provideModules( registry, [ {
@@ -55,7 +47,7 @@ Basic.decorators = [
 	},
 ];
 
-export const ActiveNotConnected = () => <Wrapper><DashboardCTA /></Wrapper>;
+export const ActiveNotConnected = Template.bind( {} );
 ActiveNotConnected.storyName = 'Active, not connected';
 ActiveNotConnected.decorators = [
 	( Story ) => {
