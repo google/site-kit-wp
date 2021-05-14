@@ -35,6 +35,7 @@ import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/c
 import Button from '../../../../../components/Button';
 import Link from '../../../../../components/Link';
 import IdeaHubIcon from '../../../../../../svg/idea-hub.svg';
+import BulbIcon from '../../../../../../svg/bulb.svg';
 const { useSelect, useDispatch } = Data;
 
 const MODULE_SLUG = 'idea-hub';
@@ -69,6 +70,7 @@ function DashboardCTA() {
 			<div className="googlesitekit-idea-hub-dashboardcta__content">
 				<h5>{ __( 'Get new topics based on what people are searching for with Idea Hub', 'google-site-kit' ) }</h5>
 				<p>
+					<BulbIcon className="googlesitekit-idea-hub-dashboardcta__learnmore-bulb" width="10" height="10" />
 					<Link
 						className="googlesitekit-idea-hub-dashboardcta__learnmore"
 						href="https://sitekit.withgoogle.com/documentation/idea-hub-module/">
