@@ -42,6 +42,6 @@ export const partitionReport = ( report, { rangeLength } ) => {
 
 	return {
 		compareRange: compareRange.slice( 0, minLength ),
-		currentRange: compareRange.slice( 0, minLength ),
+		currentRange: currentRange.slice( 0, minLength ),
 	};
 };
