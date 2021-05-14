@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useFirstMountState, useUnmount } from 'react-use';
+
+/**
  * Internal dependencies
  */
 import '../assets/sass/wpdashboard.scss';
@@ -28,20 +33,36 @@ import './polyfill-globals';
 import { resetGlobals } from './utils/resetGlobals';
 import { bootstrapFetchMocks } from './fetch-mocks';
 import { WithTestRegistry } from '../tests/js/utils';
+import { enabledFeatures } from '../assets/js/features';
 
 bootstrapFetchMocks();
 
+// Decorators run from last added to first.
 export const decorators = [
 	( Story ) => (
-		<WithTestRegistry>
-			<div className="googlesitekit-plugin-preview js">
-				<div className="googlesitekit-plugin">
-					<Story />
-				</div>
+		<div className="googlesitekit-plugin-preview js">
+			<div className="googlesitekit-plugin">
+				<Story />
 			</div>
-		</WithTestRegistry>
+		</div>
 	),
-	// Decorators run from last added to first
+	// Features must be set up before test registry is initialized.
+	( Story, { parameters } ) => {
+		const { features = [] } = parameters;
+		const isFirstMount = useFirstMountState();
+		useUnmount( () => enabledFeatures.clear() );
+
+		if ( isFirstMount ) {
+			enabledFeatures.clear();
+			features.forEach( ( feature ) => enabledFeatures.add( feature ) );
+		}
+
+		return (
+			<WithTestRegistry features={ features }>
+				<Story />
+			</WithTestRegistry>
+		);
+	},
 	( Story ) => {
 		resetGlobals();
 
