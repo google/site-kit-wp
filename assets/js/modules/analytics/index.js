@@ -125,7 +125,7 @@ export const registerWidgets = ( widgets ) => {
 		{
 			Component: DashboardPopularPagesWidget,
 			width: widgets.WIDGET_WIDTHS.HALF,
-			priority: 2,
+			priority: 3,
 			wrapWidget: false,
 		},
 		[
