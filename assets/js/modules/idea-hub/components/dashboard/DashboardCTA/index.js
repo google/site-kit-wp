@@ -61,16 +61,16 @@ function DashboardCTA() {
 	}, [ activateModule, navigateTo ] );
 
 	return (
-		<div className="_googlesitekit-idea-hub-dashboardcta">
-			<div className="_googlesitekit-idea-hub-dashboardcta__icon">
+		<div className="googlesitekit-idea-hub-dashboardcta">
+			<div className="googlesitekit-idea-hub-dashboardcta__icon">
 				<IdeaHubIcon width="45" height="84" />
 			</div>
 
-			<div className="_googlesitekit-idea-hub-dashboardcta__content">
+			<div className="googlesitekit-idea-hub-dashboardcta__content">
 				<h5>{ __( 'Get new topics based on what people are searching for with Idea Hub', 'google-site-kit' ) }</h5>
 				<p>
 					<Link
-						className="_googlesitekit-idea-hub-dashboardcta__learnmore"
+						className="googlesitekit-idea-hub-dashboardcta__learnmore"
 						href="https://sitekit.withgoogle.com/documentation/idea-hub-module/">
 						{ __( 'Learn more', 'google-site-kit' ) }
 					</Link>

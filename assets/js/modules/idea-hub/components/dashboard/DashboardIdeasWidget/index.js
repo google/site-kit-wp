@@ -33,6 +33,7 @@ import { useState, useRef, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import DashboardCTA from '../DashboardCTA';
 import whenActive from '../../../../../util/when-active';
 import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
@@ -133,4 +134,7 @@ DashboardIdeasWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: 'idea-hub' } )( DashboardIdeasWidget );
+export default whenActive( {
+	moduleName: 'idea-hub',
+	FallbackComponent: DashboardCTA,
+} )( DashboardIdeasWidget );

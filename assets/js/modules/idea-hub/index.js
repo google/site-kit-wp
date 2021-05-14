@@ -22,7 +22,8 @@
 import { STORE_NAME } from './datastore/constants';
 import { registerStore as registerDataStore } from './datastore';
 import { isFeatureEnabled } from '../../features';
-import { AREA_DASHBOARD_ACQUISITION } from '../../googlesitekit/widgets/default-areas';
+import { AREA_DASHBOARD_SPEED, AREA_DASHBOARD_ACQUISITION } from '../../googlesitekit/widgets/default-areas';
+
 import DashboardIdeasWidget from './components/dashboard/DashboardIdeasWidget';
 import IdeaHubIcon from '../../../svg/idea-hub.svg';
 
@@ -50,11 +51,12 @@ export const registerWidgets = ifIdeaHubIsEnabled( ( widgets ) => {
 		{
 			Component: DashboardIdeasWidget,
 			width: widgets.WIDGET_WIDTHS.HALF,
-			priority: 2,
+			priority: 1,
 			wrapWidget: false,
 		},
 		[
 			AREA_DASHBOARD_ACQUISITION,
+			AREA_DASHBOARD_SPEED,
 		],
 	);
 } );
