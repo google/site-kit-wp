@@ -238,7 +238,8 @@ final class Idea_Hub extends Module
 					);
 				}
 
-				// @TODO: @set_post_idea
+				$this->set_post_idea( $post_id, $idea );
+
 				return function() use ( $post_id ) {
 					return $post_id;
 				};
