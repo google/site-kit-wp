@@ -99,8 +99,9 @@ class Idea_HubTest extends TestCase {
 		);
 
 		// Create the post
-		$post = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
-		$idea = array(
+		$post  = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
+		$post2 = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
+		$idea  = array(
 			'name'   => 'ideas/17450692223393508734',
 			'text'   => 'Why Penguins are guanotelic?',
 			'topics' => array(
@@ -111,9 +112,13 @@ class Idea_HubTest extends TestCase {
 		$this->idea_hub->register();
 		$this->idea_hub->set_post_idea( $post->ID, $idea );
 
+		// With an IdeaHub post
 		$post_states = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post );
+		// With a regular draft post
+		$post_states2 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post2 );
 
 		$this->assertEquals( $post_states, array( 'draft' => 'Idea Hub Draft “Why Penguins are guanotelic?”' ) );
+		$this->assertEquals( $post_states2, array( 'draft' => 'Draft' ) );
 	}
 
 	public function test_on_deactivation() {
