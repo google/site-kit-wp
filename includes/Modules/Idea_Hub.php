@@ -84,7 +84,7 @@ final class Idea_Hub extends Module
 			/**
 			 * Changes the posts view to have a custom label in place of Draft for Idea Hub Drafts.
 			 */
-			add_action(
+			add_filter(
 				'display_post_states',
 				function( $post_states, $post ) {
 					if ( 'draft' !== $post->post_status ) {

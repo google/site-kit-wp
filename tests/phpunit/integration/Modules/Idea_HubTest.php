@@ -86,6 +86,36 @@ class Idea_HubTest extends TestCase {
 		$this->assertTrue( $idea_hub->is_connected() );
 	}
 
+	public function test_draft_labels() {
+		// Connect the module
+		$options  = new Options( $this->context );
+		$idea_hub = new Idea_Hub( $this->context, $options );
+
+		$options->set(
+			Settings::OPTION,
+			array(
+				'ideaLocale' => 'en_US',
+			)
+		);
+
+		// Create the post
+		$post_id = $this->factory()->post->create();
+		$idea    = array(
+			'name'   => 'ideas/17450692223393508734',
+			'text'   => 'Why Penguins are guanotelic?',
+			'topics' => array(
+				'/m/05z6w' => 'Penguins',
+			),
+		);
+
+		$this->idea_hub->register();
+		$this->idea_hub->set_post_idea( $post_id, $idea );
+
+		$post_states = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ) );
+
+		$this->assertEquals( $post_states, array( 'draft' => 'Idea Hub Draft “Why Penguins are guanotelic?”' ) );
+	}
+
 	public function test_on_deactivation() {
 		$options = new Options( $this->context );
 		$options->set( Settings::OPTION, 'test-value' );
