@@ -99,8 +99,8 @@ class Idea_HubTest extends TestCase {
 		);
 
 		// Create the post
-		$post_id = $this->factory()->post->create();
-		$idea    = array(
+		$post = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
+		$idea = array(
 			'name'   => 'ideas/17450692223393508734',
 			'text'   => 'Why Penguins are guanotelic?',
 			'topics' => array(
@@ -109,9 +109,9 @@ class Idea_HubTest extends TestCase {
 		);
 
 		$this->idea_hub->register();
-		$this->idea_hub->set_post_idea( $post_id, $idea );
+		$this->idea_hub->set_post_idea( $post->ID, $idea );
 
-		$post_states = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ) );
+		$post_states = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post );
 
 		$this->assertEquals( $post_states, array( 'draft' => 'Idea Hub Draft “Why Penguins are guanotelic?”' ) );
 	}
