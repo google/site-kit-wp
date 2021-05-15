@@ -80,6 +80,28 @@ final class Idea_Hub extends Module
 		$post_meta = new Post_Meta();
 
 		$this->register_scopes_hook();
+		if ( $this->is_connected() ) {
+			/**
+			 * Changes the posts view to have a custom label in place of Draft for Idea Hub Drafts.
+			 */
+			add_action(
+				'display_post_states',
+				function( $post_states, $post ) {
+					if ( 'draft' !== $post->post_status ) {
+						return $post_states;
+					}
+					$idea = $this->get_post_idea( $post->ID );
+					if ( is_null( $idea ) ) {
+						return $post_states;
+					}
+					/* translators: %s: Idea Hub Idea Title */
+					$post_states['draft'] = sprintf( __( 'Idea Hub Draft “%s”', 'google-site-kit' ), $idea['text'] );
+					return $post_states;
+				},
+				10,
+				2
+			);
+		}
 
 		$this->post_name_setting = new Post_Idea_Name( $post_meta );
 		$this->post_name_setting->register();
