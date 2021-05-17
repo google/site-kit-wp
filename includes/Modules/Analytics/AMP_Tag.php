@@ -106,18 +106,26 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 	 * @since 1.24.0
 	 */
 	protected function render() {
+		$config = array(
+			$this->tag_id => array(
+				'groups' => 'default',
+				'linker' => array(
+					'domains' => array( $this->home_domain ),
+				),
+			),
+		);
+
+		if ( ! empty( $this->ads_conversion_id ) ) {
+			$config[ $this->ads_conversion_id ] = array(
+				'groups' => 'default',
+			);
+		}
+
 		$gtag_amp_opt = array(
 			'optoutElementId' => '__gaOptOutExtension',
 			'vars'            => array(
 				'gtag_id' => $this->tag_id,
-				'config'  => array(
-					$this->tag_id => array(
-						'groups' => 'default',
-						'linker' => array(
-							'domains' => array( $this->home_domain ),
-						),
-					),
-				),
+				'config'  => $config,
 			),
 		);
 
