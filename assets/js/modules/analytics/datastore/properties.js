@@ -474,7 +474,7 @@ const baseSelectors = {
 	 * @return {(Array.<Object>|undefined)} An array of Analytics properties; `undefined` if not loaded.
 	 */
 	getPropertiesIncludingGA4: createRegistrySelector( ( select ) => ( state, accountID ) => {
-		let properties = select( STORE_NAME ).getProperties( accountID );
+		let properties = select( STORE_NAME ).getProperties( accountID ) || [];
 
 		if ( select( MODULES_ANALYTICS_4 ) ) {
 			const propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
