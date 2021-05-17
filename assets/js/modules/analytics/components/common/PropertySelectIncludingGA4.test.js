@@ -31,27 +31,38 @@ import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
 const {
 	createProperty,
 	createWebDataStream,
-	properties,
+	properties: propertiesGA4,
 	webDataStreams,
 } = analytics4Fixtures;
-const { accounts } = fixtures.accountsPropertiesProfiles;
+const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+// is this ok for UA?
 const accountID = createProperty._accountID;
-const propertyID = createWebDataStream._propertyID;
+const propertyIDga4 = createWebDataStream._propertyID;
 
+// Doing first
 const setupRegistry = ( { dispatch } ) => {
 	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: 'http://example.com' } );
 	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+	// To add?
+	// dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
 	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( properties, { accountID } );
+	dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID } );
+	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ accountID ] );
+
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( propertiesGA4, { accountID } );
 	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [ accountID ] );
 
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( webDataStreams, { propertyID } );
-	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'receiveGetWebDataStreams', { propertyID } );
+	const propertyID = properties[ 0 ].id;
+	dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, { accountID, propertyID } );
+	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ accountID, propertyID ] );
+
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( webDataStreams, { propertyID: propertyIDga4 } );
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'receiveGetWebDataStreams', { propertyID: propertyIDga4 } );
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
@@ -61,6 +72,9 @@ const setupEmptyRegistry = ( { dispatch } ) => {
 
 	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
+
+	dispatch( MODULES_ANALYTICS ).receiveGetProperties( [], { accountID } );
+	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ accountID ] );
 
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], { accountID } );
 	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [ accountID ] );
@@ -73,7 +87,7 @@ describe( 'PropertySelectIncludingGA4', () => {
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		// Note: we do length + 1 here because there should also be an item for
 		// "Set up a new property".
-		expect( listItems ).toHaveLength( properties.length + 1 );
+		expect( listItems ).toHaveLength( properties.length + propertiesGA4.length + 1 );
 	} );
 
 	it( 'should be disabled when in the absence of an valid account ID.', async () => {
@@ -89,6 +103,7 @@ describe( 'PropertySelectIncludingGA4', () => {
 
 		act( () => {
 			registry.dispatch( MODULES_ANALYTICS ).setAccountID( ACCOUNT_CREATE );
+			registry.dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
 			registry.dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
 		} );
 		// ACCOUNT_CREATE is an invalid accountID (but valid selection), so ensure the select IS currently disabled.
@@ -104,17 +119,28 @@ describe( 'PropertySelectIncludingGA4', () => {
 		expect( listItems[ 0 ].textContent ).toMatch( /set up a new property/i );
 	} );
 
-	it( 'should update propertyID in the store when a new item is selected', async () => {
+	// TODO - write .todo more tests here for new functionality!
+	// * select UA
+	// * display UA
+	// * display GA4
+	// * some other selectors need to be set
+
+	it( 'should update propertyID in the GA4 store when a new GA4 item is selected', async () => {
 		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
 		const allProperties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+		// NOTE -> due to sorting this is rendered second in the select
 		const targetProperty = allProperties[ 0 ];
+
+		// debug();
 
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.
-		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 0 ] );
+		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
 
+		// TODO -> Will want to assert on extra selectors I imagine?
 		const newPropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
+		// expect( targetProperty._id ).toEqual( newPropertyID );
 		expect( targetProperty._id ).toEqual( newPropertyID );
 	} );
 } );
