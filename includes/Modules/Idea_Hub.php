@@ -23,7 +23,11 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Storage\Post_Meta;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
+use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
+use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -31,7 +35,7 @@ use WP_Error;
 /**
  * Class representing the Idea Hub module.
  *
- * @since n.e.x.t
+ * @since 1.32.0
  * @access private
  * @ignore
  */
@@ -47,18 +51,50 @@ final class Idea_Hub extends Module
 	const MODULE_SLUG = 'idea-hub';
 
 	/**
+	 * Post_Idea_Name instance.
+	 *
+	 * @var Post_Idea_Name
+	 */
+	private $post_name_setting;
+
+	/**
+	 * Post_Idea_Text instance.
+	 *
+	 * @var Post_Idea_Text
+	 */
+	private $post_text_setting;
+
+	/**
+	 * Post_Idea_Topics instance.
+	 *
+	 * @var Post_Idea_Topics
+	 */
+	private $post_topic_setting;
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 */
 	public function register() {
+		$post_meta = new Post_Meta();
+
 		$this->register_scopes_hook();
+
+		$this->post_name_setting = new Post_Idea_Name( $post_meta );
+		$this->post_name_setting->register();
+
+		$this->post_text_setting = new Post_Idea_Text( $post_meta );
+		$this->post_text_setting->register();
+
+		$this->post_topic_setting = new Post_Idea_Topics( $post_meta );
+		$this->post_topic_setting->register();
 	}
 
 	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array List of Google OAuth scopes.
 	 */
@@ -73,7 +109,7 @@ final class Idea_Hub extends Module
 	 *
 	 * A module being connected means that all steps required as part of its activation are completed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return bool True if module is connected, false otherwise.
 	 */
@@ -95,7 +131,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Cleans up when the module is deactivated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
@@ -104,7 +140,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array
 	 */
@@ -123,7 +159,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -141,7 +177,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Creates a request object for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
@@ -244,7 +280,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Sets up information about the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array Associative array of module info.
 	 */
@@ -263,7 +299,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return Module_Settings
 	 */
@@ -274,7 +310,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
@@ -296,4 +332,51 @@ final class Idea_Hub extends Module
 			),
 		);
 	}
+
+	/**
+	 * Saves post idea settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int   $post_id Post ID.
+	 * @param array $idea    Idea settings.
+	 */
+	public function set_post_idea( $post_id, array $idea ) {
+		$idea = wp_parse_args(
+			$idea,
+			array(
+				'name'   => '',
+				'text'   => '',
+				'topics' => array(),
+			)
+		);
+
+		$this->post_name_setting->set( $post_id, $idea['name'] );
+		$this->post_text_setting->set( $post_id, $idea['text'] );
+		$this->post_topic_setting->set( $post_id, $idea['topics'] );
+	}
+
+	/**
+	 * Gets post idea settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $post_id Post ID.
+	 * @return array|null Post idea settings array. Returns NULL if a post doesn't have an associated idea.
+	 */
+	public function get_post_idea( $post_id ) {
+		$name   = $this->post_name_setting->get( $post_id );
+		$text   = $this->post_text_setting->get( $post_id );
+		$topics = $this->post_topic_setting->get( $post_id );
+		if ( empty( $name ) || empty( $text ) || empty( $topics ) ) {
+			return null;
+		}
+
+		return array(
+			'name'   => $name,
+			'text'   => $text,
+			'topics' => $topics,
+		);
+	}
+
 }

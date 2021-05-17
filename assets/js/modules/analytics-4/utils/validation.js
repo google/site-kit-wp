@@ -48,3 +48,15 @@ export function isValidPropertySelection( value ) {
 
 	return isValidPropertyID( value );
 }
+
+/**
+ * Checks whether the given web data stream ID appears to be valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} webDataStreamID Web data stream ID to check.
+ * @return {boolean} TRUE if the web data stream ID is valid, otherwise FALSE.
+ */
+export function isValidWebDataStreamID( webDataStreamID ) {
+	return typeof webDataStreamID === 'string' && /\d+/.test( webDataStreamID );
+}

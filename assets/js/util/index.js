@@ -19,11 +19,8 @@
 /**
  * External dependencies
  */
-import {
-	isFinite,
-	get,
-	unescape,
-} from 'lodash';
+import isFinite from 'lodash/isFinite';
+import unescape from 'lodash/unescape';
 
 /**
  * WordPress dependencies
@@ -47,6 +44,7 @@ export * from './markdown';
 export * from './convert-time';
 export * from './date-range';
 export * from './chart';
+export * from './urls';
 
 /**
  * Removes a parameter from a URL string.
@@ -97,27 +95,6 @@ export const removeURLParameter = ( url, parameter ) => {
 	}
 	parsedURL.searchParams.delete( parameter );
 	return parsedURL.href;
-};
-
-/**
- * Gets the current locale for use with browser APIs.
- *
- * @since 1.6.0
- *
- * @param {Object} _global The global window object.
- * @return {string} Current Site Kit locale if set, otherwise the current language set by the browser.
- *                  E.g. `en-US` or `de-DE`
- */
-export const getLocale = ( _global = global ) => {
-	const siteKitLocale = get( _global, [ '_googlesitekitLegacyData', 'locale', '', 'lang' ] );
-	if ( siteKitLocale ) {
-		const matches = siteKitLocale.match( /^(\w{2})?(_)?(\w{2})/ );
-		if ( matches && matches[ 0 ] ) {
-			return matches[ 0 ].replace( /_/g, '-' );
-		}
-	}
-
-	return _global.navigator.language;
 };
 
 /**

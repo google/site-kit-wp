@@ -234,7 +234,7 @@ const baseActions = {
 	/**
 	 * Sets the primary property type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param {string} primaryPropertyType Must be "ua" or "ga4".
 	 * @return {Object} Redux-style action.
@@ -388,7 +388,7 @@ const baseSelectors = {
 	/**
 	 * Gets the primary property type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} "ua" or "ga4".
@@ -467,7 +467,7 @@ const baseSelectors = {
 	 *
 	 * Returns `undefined` if accounts have not yet loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The Analytics Account ID to fetch properties for.

@@ -20,3 +20,5 @@ export const STORE_NAME = 'modules/analytics-4';
 export { STORE_NAME as MODULES_ANALYTICS_4 };
 
 export const PROPERTY_CREATE = 'property_create';
+
+export const MAX_WEBDATASTREAMS_PER_BATCH = 10;

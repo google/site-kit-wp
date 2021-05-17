@@ -29,13 +29,11 @@ import difference from 'lodash/difference';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { STORE_NAME } from './constants';
+import { STORE_NAME, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../utils/validation';
 const { createRegistryControl, createRegistrySelector } = Data;
-
-const MAX_WEBDATASTREAMS_PER_BATCH = 10;
 
 const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',
@@ -236,7 +234,7 @@ const baseSelectors = {
 	/**
 	 * Gets web data streams in batch for selected properties.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @param {Object}         state       Data store's state.
 	 * @param {Array.<string>} propertyIDs GA4 property IDs.

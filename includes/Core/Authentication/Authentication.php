@@ -529,7 +529,7 @@ final class Authentication {
 	 * Gets the URL for connecting to Site Kit.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Updated to use dedicated action URL.
+	 * @since 1.32.0 Updated to use dedicated action URL.
 	 *
 	 * @return string Connect URL.
 	 */
@@ -547,7 +547,7 @@ final class Authentication {
 	 * Gets the URL for disconnecting from Site Kit.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Updated to use dedicated action URL.
+	 * @since 1.32.0 Updated to use dedicated action URL.
 	 *
 	 * @return string Disconnect URL.
 	 */
@@ -625,7 +625,7 @@ final class Authentication {
 	 * Handles receiving a temporary OAuth code.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Moved connect and disconnect actions to dedicated handlers.
+	 * @since 1.32.0 Moved connect and disconnect actions to dedicated handlers.
 	 */
 	private function handle_oauth() {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -645,7 +645,7 @@ final class Authentication {
 	/**
 	 * Handles request to connect via oAuth.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 */
 	private function handle_connect() {
 		$input = $this->context->input();
@@ -675,7 +675,7 @@ final class Authentication {
 	/**
 	 * Handles request to disconnect via oAuth.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 */
 	private function handle_disconnect() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );

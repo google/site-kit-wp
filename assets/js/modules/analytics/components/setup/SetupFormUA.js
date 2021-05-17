@@ -1,5 +1,5 @@
 /**
- * URL pathname getter utility function.
+ * Analytics UA Setup form.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,15 +17,23 @@
  */
 
 /**
- * Returns the path from a URL, omitting its protocol, hostname, query params, and hash.
- *
- * @since 1.24.0
- *
- * @param {string} url The URL to get the path from.
- * @return {string} The URL path.
+ * WordPress dependencies
  */
-export function getURLPath( url ) {
-	return new URL( url ).pathname;
+import { Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { AccountSelect } from '../common';
+
+export default function SetupFormUA() {
+	return (
+		<Fragment>
+			<div className="googlesitekit-setup-module__inputs">
+				<AccountSelect />
+			</div>
+			<div>SetupFormUA</div>
+		</Fragment>
+	);
 }
 
-export default getURLPath;

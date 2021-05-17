@@ -50,7 +50,7 @@ function ModuleApp( { moduleSlug } ) {
 	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const screenWidgetContext = useSelect( ( select ) => select( CORE_MODULES ).getScreenWidgetContext( moduleSlug ) );
 	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleSlug ) );
-	const shouldRenderWidget = useFeature( 'widgets.moduleScreens' ) && screenWidgetContext;
+	const moduleScreensWidgetsEnabled = useFeature( 'widgets.moduleScreens' );
 	const getModuleHeader = () => <ModuleHeader moduleSlug={ moduleSlug } />;
 
 	return (
@@ -68,20 +68,19 @@ function ModuleApp( { moduleSlug } ) {
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
 			<Alert module={ moduleSlug } />
-			{ shouldRenderWidget &&
-				<Fragment>
-					<WidgetContextRenderer
-						slug={ screenWidgetContext }
-						className={ classNames( [
-							'googlesitekit-module-page',
-							`googlesitekit-module-page--${ moduleSlug }`,
-						] ) }
-						Header={ getModuleHeader }
-						Footer={ ModuleFooter }
-					/>
-				</Fragment>
+			{ moduleScreensWidgetsEnabled && (
+				<WidgetContextRenderer
+					slug={ screenWidgetContext }
+					className={ classNames( [
+						'googlesitekit-module-page',
+						`googlesitekit-module-page--${ moduleSlug }`,
+					] ) }
+					Header={ getModuleHeader }
+					Footer={ ModuleFooter }
+				/>
+			)
 			}
-			<LegacyModuleApp />
+			{ ! moduleScreensWidgetsEnabled && <LegacyModuleApp /> }
 		</Fragment>
 	);
 }

@@ -21,7 +21,7 @@
  * and returns the appropriate Intl formatting options for the currency.
  * Falls back to decimal formatting if no currency is available.
  *
- * @since n.e.x.t
+ * @since 1.32.0
  *
  * @param {Object} adsenseReport AdSense Report.
  * @return {Intl.NumberFormatOptions} Formatting options.

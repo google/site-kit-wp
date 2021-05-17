@@ -381,7 +381,7 @@ export function createValidationSelector( validate ) {
 /**
  * Creates a validated action creator.
  *
- * @since n.e.x.t
+ * @since 1.32.0
  *
  * @param {Function} validate      A function for validating action arguments.
  * @param {Function} actionCreator A function for returning or yielding redux-style actions.

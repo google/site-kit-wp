@@ -1,5 +1,5 @@
 /**
- * Line chart styles.
+ * Analytics GA4Transitional Setup form.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,19 +16,24 @@
  * limitations under the License.
  */
 
-.googlesitekit-line-chart {
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
 
-	// Attempting to prevent horizontal scroll on screen resize.
-	> div > div {
-		max-width: 100%;
+/**
+ * Internal dependencies
+ */
+import { AccountSelect } from '../common';
 
-		> div > svg {
-			max-width: 100%;
-		}
-	}
-
-	// Pie Chart
-	.googlesitekit-chart--pie & > div > div > div > svg {
-		overflow: visible !important; // Accounts for hover border cutoff.
-	}
+export default function SetupFormGA4Transitional() {
+	return (
+		<Fragment>
+			<div className="googlesitekit-setup-module__inputs">
+				<AccountSelect />
+			</div>
+			<div>SetupFormGA4Transitional</div>
+		</Fragment>
+	);
 }
+

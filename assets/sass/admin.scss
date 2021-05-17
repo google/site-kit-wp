@@ -88,7 +88,6 @@
 @import "components/global/googlesitekit-header";
 @import "components/global/googlesitekit-help-menu-link";
 @import "components/global/googlesitekit-layout";
-@import "components/global/googlesitekit-line-chart";
 @import "components/global/googlesitekit-logo";
 @import "components/global/googlesitekit-mini-chart";
 @import "components/global/googlesitekit-module-outro";
@@ -150,6 +149,9 @@
 
 // Tour Tooltip
 @import "components/tour-tooltip/googlesitekit-tour-tooltip";
+
+// Idea Hub
+@import "components/idea-hub";
 
 // Widget Styles
 @import "widgets/widget-area";

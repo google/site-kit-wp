@@ -21,17 +21,21 @@
  */
 import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
+import { submitChanges, validateCanSubmitChanges } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	storeName: STORE_NAME,
 	settingSlugs: [
-		// TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
+		// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
 		// 'accountID',
+		// 'adsConversionID',
 		'propertyID',
 		'webDataStreamID',
 		'measurementID',
 		'useSnippet',
 	],
+	submitChanges,
+	validateCanSubmitChanges,
 } );
 
 export default baseModuleStore;

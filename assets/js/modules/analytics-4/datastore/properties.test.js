@@ -191,6 +191,52 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( fixtures.webDataStreams[ 1 ].measurementId ); // eslint-disable-line sitekit/acronym-case
 			} );
 		} );
+
+		describe( 'matchPropertyByURL', () => {
+			const property = fixtures.properties[ 0 ];
+			const propertyID = property._id;
+			const propertyIDs = [ propertyID ];
+
+			beforeEach( () => {
+				registry.dispatch( STORE_NAME ).receiveGetProperty( property, { propertyID } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreamsBatch( fixtures.webDataStreamsBatch, { propertyIDs } );
+			} );
+
+			it( 'should return a property object when a property is found', async () => {
+				const url = 'https://www.example.org/';
+				const matchedProperty = await registry.dispatch( STORE_NAME ).matchPropertyByURL( propertyIDs, url );
+				expect( matchedProperty ).toEqual( property );
+			} );
+
+			it( 'should return NULL when a property is not found', async () => {
+				const url = 'https://www.example.io/';
+				const matchedProperty = await registry.dispatch( STORE_NAME ).matchPropertyByURL( propertyIDs, url );
+				expect( matchedProperty ).toBeNull();
+			} );
+		} );
+
+		describe( 'matchPropertyByMeasurementID', () => {
+			const property = fixtures.properties[ 0 ];
+			const propertyID = property._id;
+			const propertyIDs = [ propertyID ];
+
+			beforeEach( () => {
+				registry.dispatch( STORE_NAME ).receiveGetProperty( property, { propertyID } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreamsBatch( fixtures.webDataStreamsBatch, { propertyIDs } );
+			} );
+
+			it( 'should return a property object when a property is found', async () => {
+				const measurementID = '1A2BCD346E';
+				const matchedProperty = await registry.dispatch( STORE_NAME ).matchPropertyByMeasurementID( propertyIDs, measurementID );
+				expect( matchedProperty ).toEqual( property );
+			} );
+
+			it( 'should return NULL when a property is not found', async () => {
+				const measurementID = '0000000000';
+				const matchedProperty = await registry.dispatch( STORE_NAME ).matchPropertyByMeasurementID( propertyIDs, measurementID );
+				expect( matchedProperty ).toBeNull();
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {

@@ -1,5 +1,5 @@
 /**
- * Absolute URL path getter utility function.
+ * Idea Hub styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,17 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Returns the absolute URL from a path including the siteURL.
- *
- * @since n.e.x.t
- *
- * @param {string} siteURL The siteURL fo the WordPress install.
- * @param {string} path    The path.
- * @return {string} The URL path.
- */
-export function getFullURL( siteURL, path ) {
-	return new URL( path, siteURL ).href;
-}
-
-export default getFullURL;
+@import "googlesitekit-idea-hub-dashboard-ideas-widget";
