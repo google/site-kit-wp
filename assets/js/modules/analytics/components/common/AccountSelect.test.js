@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import AccountSelect from './AccountSelect';
-import { fireEvent, freezeFetch, render, waitFor } from '../../../../../../tests/js/test-utils';
+import { fireEvent, freezeFetch, render, waitFor, act } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
@@ -101,7 +101,7 @@ describe( 'AccountSelect', () => {
 		expect( newAccountID ).toEqual( ACCOUNT_CREATE );
 	} );
 
-	it( 'should pre-select the property and profile IDs when changed', () => {
+	it( 'should pre-select the property and profile IDs when changed', async () => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
 		const propertyID = properties[ 0 ].id;
@@ -111,12 +111,14 @@ describe( 'AccountSelect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
 
-		// Click the label to expose the elements in the menu.
-		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-		// Click this element to select it and fire the onChange event.
-		// eslint-disable-next-line sitekit/acronym-case
-		const account = accounts.find( ( acct ) => acct.id === properties[ 0 ].accountId );
-		fireEvent.click( getByText( account.name ) );
+		await act( async () => {
+			// Click the label to expose the elements in the menu.
+			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
+			// Click this element to select it and fire the onChange event.
+			// eslint-disable-next-line sitekit/acronym-case
+			const account = accounts.find( ( acct ) => acct.id === properties[ 0 ].accountId );
+			fireEvent.click( getByText( account.name ) );
+		} );
 
 		const newPropertyID = registry.select( STORE_NAME ).getPropertyID();
 		const newWebPropertyID = registry.select( STORE_NAME ).getInternalWebPropertyID();

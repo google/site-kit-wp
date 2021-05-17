@@ -251,11 +251,21 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ WAIT_FOR_PROPERTIES ]: createRegistryControl( ( { __experimentalResolveSelect } ) => {
-		return async ( { payload } ) => {
-			const { accountID } = payload;
-			await __experimentalResolveSelect( STORE_NAME ).getProperties( accountID );
-		};
+	[ WAIT_FOR_PROPERTIES ]: createRegistryControl( ( registry ) => ( { payload: { accountID } } ) => {
+		const arePropertiesLoaded = () => registry.select( STORE_NAME ).getProperties( accountID ) !== undefined;
+
+		if ( arePropertiesLoaded() ) {
+			return true;
+		}
+
+		return new Promise( ( resolve ) => {
+			const unsubscribe = registry.subscribe( () => {
+				if ( arePropertiesLoaded() ) {
+					unsubscribe();
+					resolve();
+				}
+			} );
+		} );
 	} ),
 };
 
