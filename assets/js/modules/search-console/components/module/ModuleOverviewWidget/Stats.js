@@ -106,7 +106,7 @@ const Stats = ( { data, metrics, selectedStats, dateRangeLength } ) => {
 		},
 	};
 
-	const { compareRange, currentRange } = partitionReport( data, { rangeLength: dateRangeLength } );
+	const { compareRange, currentRange } = partitionReport( data, { dateRangeLength } );
 	const googleChartData = getSiteStatsDataForGoogleChart(
 		currentRange,
 		compareRange,

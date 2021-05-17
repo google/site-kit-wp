@@ -92,7 +92,7 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
-	const { compareRange, currentRange } = partitionReport( data, { rangeLength: dateRangeLength } );
+	const { compareRange, currentRange } = partitionReport( data, { dateRangeLength } );
 	const totalImpressions = sumObjectListValue( currentRange, 'impressions' );
 	const totalOlderImpressions = sumObjectListValue( compareRange, 'impressions' );
 	const totalImpressionsChange = calculateChange( totalOlderImpressions, totalImpressions );

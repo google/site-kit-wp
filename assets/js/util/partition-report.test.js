@@ -23,17 +23,17 @@ import { partitionReport } from './partition-report';
 
 describe( 'partitionReport', () => {
 	it( 'it requires an array', () => {
-		expect( () => partitionReport( {}, { rangeLength: 1 } ) ).toThrow( 'report must be an array' );
-		expect( () => partitionReport( [], { rangeLength: 1 } ) ).not.toThrow();
+		expect( () => partitionReport( {}, { dateRangeLength: 1 } ) ).toThrow( 'report must be an array' );
+		expect( () => partitionReport( [], { dateRangeLength: 1 } ) ).not.toThrow();
 	} );
 
-	it( 'requires rangeLength to be a positive integer', () => {
-		expect( () => partitionReport( [], {} ) ).toThrow( 'rangeLength must be a positive integer' );
-		expect( () => partitionReport( [], { rangeLength: 0 } ) ).toThrow( 'rangeLength must be a positive integer' );
-		expect( () => partitionReport( [], { rangeLength: 1 } ) ).not.toThrow();
+	it( 'requires dateRangeLength to be a positive integer', () => {
+		expect( () => partitionReport( [], {} ) ).toThrow( 'dateRangeLength must be a positive integer' );
+		expect( () => partitionReport( [], { dateRangeLength: 0 } ) ).toThrow( 'dateRangeLength must be a positive integer' );
+		expect( () => partitionReport( [], { dateRangeLength: 1 } ) ).not.toThrow();
 	} );
 
-	describe( 'partitions the given report into a currentRange and compareRange based on the rangeLength', () => {
+	describe( 'partitions the given report into a currentRange and compareRange based on the dateRangeLength', () => {
 		const genItems = ( { batch, length } ) => Array.from( { length } ).map( ( _, i ) => ( { batch, index: i } ) );
 
 		it( 'partitions first items into compareRange and second items into currentRange', () => {
@@ -41,7 +41,7 @@ describe( 'partitionReport', () => {
 			const secondThree = genItems( { batch: 2, length: 3 } );
 			const report = [].concat( firstThree, secondThree );
 
-			const partitionedReport = partitionReport( report, { rangeLength: 3 } );
+			const partitionedReport = partitionReport( report, { dateRangeLength: 3 } );
 
 			expect( partitionedReport ).toEqual( {
 				compareRange: firstThree,
@@ -55,7 +55,7 @@ describe( 'partitionReport', () => {
 			const report = [].concat( firstThree, secondThree );
 			report.pop(); // Drop the last item.
 
-			const { compareRange, currentRange } = partitionReport( report, { rangeLength: 3 } );
+			const { compareRange, currentRange } = partitionReport( report, { dateRangeLength: 3 } );
 
 			expect( compareRange.length ).toEqual( currentRange.length );
 			expect( compareRange ).toEqual( firstThree.slice( 0, 2 ) );

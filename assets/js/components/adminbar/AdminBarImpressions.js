@@ -66,7 +66,7 @@ function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
-	const { compareRange, currentRange } = partitionReport( searchConsoleData, { rangeLength: dateRangeLength } );
+	const { compareRange, currentRange } = partitionReport( searchConsoleData, { dateRangeLength } );
 	const totalImpressions = sumObjectListValue( currentRange, 'impressions' );
 	const totalOlderImpressions = sumObjectListValue( compareRange, 'impressions' );
 	const totalImpressionsChange = calculateChange( totalOlderImpressions, totalImpressions );

@@ -228,7 +228,7 @@ export function extractAnalyticsDashboardData( reports, selectedStats, days, cur
 		],
 	];
 
-	const { compareRange, currentRange } = partitionReport( rows, { rangeLength: days } );
+	const { compareRange, currentRange } = partitionReport( rows, { dateRangeLength: days } );
 	const lastMonthData = reduceAnalyticsRowsData( currentRange, currentMonthMetricIndex, selectedStats );
 	const previousMonthData = reduceAnalyticsRowsData( compareRange, previousMonthMetricIndex, selectedStats );
 

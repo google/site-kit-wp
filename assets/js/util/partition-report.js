@@ -26,17 +26,17 @@ import invariant from 'invariant';
  *
  * @since n.e.x.t
  *
- * @param {Array}  report           Report rows.
- * @param {Object} args             Additional arguments.
- * @param {number} args.rangeLength Length of an individual range.
+ * @param {Array}  report               Report rows.
+ * @param {Object} args                 Additional arguments.
+ * @param {number} args.dateRangeLength Date range length of report segments.
  * @return {Object} Object with keys for `compareRange` and `currentRange`.
  */
-export const partitionReport = ( report, { rangeLength } ) => {
+export const partitionReport = ( report, { dateRangeLength } ) => {
 	invariant( Array.isArray( report ), 'report must be an array to partition.' );
-	invariant( Number.isInteger( rangeLength ) && rangeLength > 0, 'rangeLength must be a positive integer.' );
+	invariant( Number.isInteger( dateRangeLength ) && dateRangeLength > 0, 'dateRangeLength must be a positive integer.' );
 
-	const compareRange = report.slice( 0, rangeLength );
-	const currentRange = report.slice( rangeLength, rangeLength * 2 );
+	const compareRange = report.slice( 0, dateRangeLength );
+	const currentRange = report.slice( dateRangeLength, dateRangeLength * 2 );
 	// Normalize the length of both ranges to be the same.
 	const minLength = Math.min( compareRange.length, currentRange.length );
 

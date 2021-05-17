@@ -66,7 +66,7 @@ function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
-	const { compareRange, currentRange } = partitionReport( searchConsoleData, { rangeLength: dateRangeLength } );
+	const { compareRange, currentRange } = partitionReport( searchConsoleData, { dateRangeLength } );
 	const totalClicks = sumObjectListValue( currentRange, 'clicks' );
 	const totalOlderClicks = sumObjectListValue( compareRange, 'clicks' );
 	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
