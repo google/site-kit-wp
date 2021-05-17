@@ -23,9 +23,9 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	subscribeUntil,
+	untilResolved,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics goals', () => {
@@ -58,10 +58,7 @@ describe( 'modules/analytics goals', () => {
 				const initialGoals = registry.select( STORE_NAME ).getGoals();
 
 				expect( initialGoals ).toBeUndefined();
-				await subscribeUntil(
-					registry,
-					() => registry.select( STORE_NAME ).isFetchingGetGoals() === false,
-				);
+				await untilResolved( registry, STORE_NAME ).getGoals();
 
 				const goals = registry.select( STORE_NAME ).getGoals();
 
@@ -76,10 +73,7 @@ describe( 'modules/analytics goals', () => {
 
 				const goals = registry.select( STORE_NAME ).getGoals();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getGoals', [] )
-				);
+				await untilResolved( registry, STORE_NAME ).getGoals();
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( goals ).toEqual( fixtures.goals );
@@ -98,10 +92,7 @@ describe( 'modules/analytics goals', () => {
 				);
 
 				registry.select( STORE_NAME ).getGoals();
-				await subscribeUntil(
-					registry,
-					() => registry.select( STORE_NAME ).isFetchingGetGoals() === false,
-				);
+				await untilResolved( registry, STORE_NAME ).getGoals();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 

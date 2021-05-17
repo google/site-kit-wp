@@ -23,10 +23,9 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	// muteConsole,
 	unsubscribeFromAll,
 	untilResolved,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import fetchMock from 'fetch-mock';
 
 describe( 'modules/analytics adsense', () => {
@@ -89,6 +88,8 @@ describe( 'modules/analytics adsense', () => {
 				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBeUndefined();
 
 				await untilResolved( registry, STORE_NAME ).getSettings();
+
+				expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ );
 
 				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( true );
 			} );
