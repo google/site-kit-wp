@@ -30,6 +30,7 @@ import { STORE_NAME, PROPERTY_CREATE, MAX_WEBDATASTREAMS_PER_BATCH } from './con
 import { normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
+import { actions as webDataStreamActions } from './webdatastreams';
 import { isValidAccountID } from '../../analytics/util';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 const { commonActions, createRegistryControl } = Data;
@@ -160,7 +161,7 @@ const baseActions = {
 				return;
 			}
 
-			yield Data.commonActions.await( registry.dispatch( STORE_NAME ).waitForWebDataStreams( propertyID ) );
+			yield webDataStreamActions.waitForWebDataStreams( propertyID );
 
 			const webdatastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
 			if ( webdatastream ) {

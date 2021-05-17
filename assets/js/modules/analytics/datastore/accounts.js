@@ -40,6 +40,7 @@ import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { actions as tagActions } from './tags';
+import { actions as propertyActions } from './properties';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE as GA4_PROPERTY_CREATE,
@@ -150,7 +151,7 @@ const baseActions = {
 				return;
 			}
 
-			yield Data.commonActions.await( registry.dispatch( STORE_NAME ).waitForProperties( accountID ) );
+			yield propertyActions.waitForProperties( accountID );
 
 			const uaProperties = registry.select( STORE_NAME ).getProperties( accountID );
 			const uaProperty = uaProperties[ 0 ] || { id: PROPERTY_CREATE, internalWebPropertyId: '' }; // eslint-disable-line sitekit/acronym-case
