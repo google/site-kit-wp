@@ -45,7 +45,7 @@ function LegacyDashboardPageSpeedCTA() {
 		return null;
 	}
 
-	const description = __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA.', 'google-site-kit' );
+	const description = __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA', 'google-site-kit' );
 
 	return (
 		<div className="

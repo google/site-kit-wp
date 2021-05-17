@@ -25,6 +25,7 @@ import { useContext } from '@wordpress/element';
  * Internal dependencies
  */
 import FeaturesContext from '../components/FeaturesProvider/FeaturesContext';
+import { isFeatureEnabled } from '../features';
 
 /**
  * Returns the enabled state of a feature flag.
@@ -37,9 +38,5 @@ import FeaturesContext from '../components/FeaturesProvider/FeaturesContext';
 export const useFeature = ( feature ) => {
 	const enabledFeatures = useContext( FeaturesContext );
 
-	if ( ! Array.isArray( enabledFeatures ) ) {
-		return false;
-	}
-
-	return enabledFeatures.includes( feature );
+	return isFeatureEnabled( feature, enabledFeatures );
 };

@@ -1,5 +1,5 @@
 /**
- * Absolute URL path getter utility function.
+ * Analytics GA4Transitional Setup form.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,16 +17,23 @@
  */
 
 /**
- * Returns the absolute URL from a path including the siteURL.
- *
- * @since 1.32.0
- *
- * @param {string} siteURL The siteURL fo the WordPress install.
- * @param {string} path    The path.
- * @return {string} The URL path.
+ * WordPress dependencies
  */
-export function getFullURL( siteURL, path ) {
-	return new URL( path, siteURL ).href;
+import { Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { AccountSelect } from '../common';
+
+export default function SetupFormGA4Transitional() {
+	return (
+		<Fragment>
+			<div className="googlesitekit-setup-module__inputs">
+				<AccountSelect />
+			</div>
+			<div>SetupFormGA4Transitional</div>
+		</Fragment>
+	);
 }
 
-export default getFullURL;

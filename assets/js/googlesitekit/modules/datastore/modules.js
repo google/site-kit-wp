@@ -811,21 +811,21 @@ const baseSelectors = {
 	/**
 	 * Gets the module's screenWidgetContext.
 	 *
-	 * Returns `null` if there is no registered context string for the given module.
-	 * Returns `string` the registered context string, screenWidgetContext for the given module.
+	 * Returns the registered context string, screenWidgetContext for the given module.
 	 *
 	 * @since 1.28.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} moduleSlug Module slug.
-	 * @return {(null|string)}    The module's registered context string, or null.
+	 * @return {(string|null|undefined)} The module's registered context string, null if there is
+	 *                                   none, undefined if not loaded yet.
 	 */
 	getScreenWidgetContext: createRegistrySelector( ( select ) => ( state, moduleSlug ) => {
 		invariant( moduleSlug, 'slug is required.' );
 		const modules = select( STORE_NAME ).getModules();
 
-		if ( ! modules ) {
-			return null;
+		if ( modules === undefined ) {
+			return undefined;
 		}
 
 		const screenWidgetContext = modules[ moduleSlug ]?.screenWidgetContext;

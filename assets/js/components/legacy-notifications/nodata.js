@@ -45,7 +45,7 @@ const getNoDataComponent = ( moduleName, inGrid = false, fullWidth = false, crea
 		title={ sprintf( __( '%s Gathering Data', 'google-site-kit' ), moduleName ) }
 
 		/* translators: %s: Module name */
-		description={ sprintf( __( '%s data is not yet available, please check back later.', 'google-site-kit' ), moduleName ) }
+		description={ sprintf( __( '%s data is not yet available, please check back later', 'google-site-kit' ), moduleName ) }
 	/>;
 
 	return ctaWrapper( cta, inGrid, fullWidth, createGrid );

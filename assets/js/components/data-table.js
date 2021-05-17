@@ -29,8 +29,7 @@ import {
  */
 import SourceLink from './SourceLink';
 import Link from './Link';
-import getFullURL from '../util/getFullURL';
-import { getSiteKitAdminURL } from '../util';
+import { getFullURL, getSiteKitAdminURL } from '../util';
 
 // Construct a table component from a data object.
 export const getDataTableFromData = ( data, headers, options ) => {
@@ -157,4 +156,3 @@ export const getDataTableFromData = ( data, headers, options ) => {
 		</div>
 	);
 };
-

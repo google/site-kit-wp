@@ -124,7 +124,7 @@ const withData = (
 
 			// Catch RateLimitExceeded specifically.
 			if ( errors[ 0 ] && 'RateLimitExceeded' === errors[ 0 ].reason ) {
-				return __( 'Too many requests have been sent within a given time span. Please reload this page again in a few seconds', 'google-site-kit' );
+				return __( 'Too many requests have been sent within a given time span. Please reload this page again in a few seconds.', 'google-site-kit' );
 			}
 		}
 

@@ -57,6 +57,7 @@ export default function SetupMain( { finishSetup } ) {
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
+	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
 
 	const { hasGTMAnalyticsPropertyID, hasGTMAnalyticsPropertyIDPermission } = useSelect( ( select ) => {
 		const gtmPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
@@ -78,7 +79,7 @@ export default function SetupMain( { finishSetup } ) {
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
-	if ( isDoingSubmitChanges || ! hasResolvedAccounts || isNavigating ) {
+	if ( isDoingSubmitChanges || ! hasResolvedAccounts || isNavigating || setupFlowMode === undefined ) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;

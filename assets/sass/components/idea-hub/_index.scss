@@ -1,5 +1,5 @@
 /**
- * URL pathname getter utility function.
+ * Idea Hub styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,16 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Returns the path from a URL, omitting its protocol, hostname, query params, and hash.
- *
- * @since 1.24.0
- *
- * @param {string} url The URL to get the path from.
- * @return {string} The URL path.
- */
-export function getURLPath( url ) {
-	return new URL( url ).pathname;
-}
-
-export default getURLPath;
+@import "googlesitekit-idea-hub-dashboard-ideas-widget";
