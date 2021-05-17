@@ -22,7 +22,7 @@
 import invariant from 'invariant';
 
 /**
- * Splits report data into segments for current and comparison ranges.
+ * Splits report data into segments of equal length for current and comparison ranges.
  *
  * @since n.e.x.t
  *
@@ -37,11 +37,10 @@ export const partitionReport = ( report, { dateRangeLength } ) => {
 
 	const compareRange = report.slice( 0, dateRangeLength );
 	const currentRange = report.slice( dateRangeLength, dateRangeLength * 2 );
-	// Normalize the length of both ranges to be the same.
-	const minLength = Math.min( compareRange.length, currentRange.length );
+	// The current range will always be shorter here if the two segments are not of equal length.
 
 	return {
-		compareRange: compareRange.slice( 0, minLength ),
-		currentRange: currentRange.slice( 0, minLength ),
+		compareRange: compareRange.slice( 0, currentRange.length ),
+		currentRange,
 	};
 };
