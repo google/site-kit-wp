@@ -1,5 +1,5 @@
 /**
- * Line chart styles.
+ * Idea Hub styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,19 +16,4 @@
  * limitations under the License.
  */
 
-.googlesitekit-line-chart {
-
-	// Attempting to prevent horizontal scroll on screen resize.
-	> div > div {
-		max-width: 100%;
-
-		> div > svg {
-			max-width: 100%;
-		}
-	}
-
-	// Pie Chart
-	.googlesitekit-chart--pie & > div > div > div > svg {
-		overflow: visible !important; // Accounts for hover border cutoff.
-	}
-}
+@import "googlesitekit-idea-hub-dashboard-ideas-widget";

@@ -38,7 +38,7 @@ function LegacyDashboardAllTraffic() {
 			<Cell size={ 12 }>
 				<DashboardModuleHeader
 					title={ __( 'Your Traffic at a Glance', 'google-site-kit' ) }
-					description={ __( 'How people found your site.', 'google-site-kit' ) }
+					description={ __( 'How people found your site', 'google-site-kit' ) }
 				/>
 			</Cell>
 			<Cell size={ 12 }>
