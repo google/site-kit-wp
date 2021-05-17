@@ -47,7 +47,7 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 		invariant( isPlainObject( idea ), 'idea must be an object.' );
 		invariant( typeof idea.name === 'string', 'idea.name must be a string.' );
 		invariant( typeof idea.text === 'string', 'idea.text must be a string.' );
-		invariant( Array.isArray( idea.topics ), 'idea.topics must be a string.' );
+		invariant( Array.isArray( idea.topics ), 'idea.topics must be an array.' );
 		idea.topics.forEach( ( topic ) => {
 			invariant( typeof topic.mid === 'string', 'topic.mid must be a string.' );
 			invariant( typeof topic.display_name === 'string', 'topic.display_name must be a string.' );
