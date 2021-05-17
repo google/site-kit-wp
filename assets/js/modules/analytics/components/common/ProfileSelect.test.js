@@ -130,30 +130,6 @@ describe( 'ProfileSelect', () => {
 		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'should not render if account ID is not valid.', async () => {
-		const { container, registry } = render( <ProfileSelect />, {
-			setupRegistry: ( { dispatch } ) => {
-				const accountID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
-				const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/acronym-case
-
-				dispatch( STORE_NAME ).setSettings( {} );
-
-				dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-				dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-
-				dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
-				dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
-
-				dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID, propertyID } );
-				dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ accountID, propertyID ] );
-			},
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-
-		await act( () => registry.dispatch( STORE_NAME ).setAccountID( 'pub-12345678' ) );
-	} );
-
 	it( 'should not render when in the absence of an valid account ID.', async () => {
 		const { container, registry } = render( <ProfileSelect />, {
 			setupRegistry( { dispatch } ) {
@@ -170,32 +146,12 @@ describe( 'ProfileSelect', () => {
 
 		// An empty accountID is invalid, so ensure the select is not rendered.
 		expect( container ).toBeEmptyDOMElement();
-	} );
 
-	it( 'should not render if property ID is not valid.', async () => {
-		const { container, registry } = render( <ProfileSelect />, {
-			setupRegistry: ( { dispatch } ) => {
-				const accountID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
-				const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/acronym-case
+		// eslint-disable-next-line sitekit/acronym-case
+		await act( () => registry.dispatch( STORE_NAME ).setAccountID( fixtures.propertiesProfiles.profiles[ 0 ].accountId ) );
 
-				dispatch( STORE_NAME ).setSettings( {} );
-				dispatch( STORE_NAME ).setAccountID( accountID );
-
-				dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-				dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-
-				dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
-				dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
-
-				dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID, propertyID } );
-				dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ accountID, propertyID ] );
-			},
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-
-		// in order to not get act errors need to do something as DOM is empty at the start and end of this test AND wp-data does lots of stuff
-		await act( () => registry.dispatch( STORE_NAME ).setAccountID( 'pub-12345678' ) );
+		// now select should be visible again
+		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should not render when in the absence of an valid account or property ID.', async () => {
@@ -207,6 +163,7 @@ describe( 'ProfileSelect', () => {
 		} );
 
 		const validAccountID = registry.select( STORE_NAME ).getAccountID();
+		const validPropertyID = registry.select( STORE_NAME ).getPropertyID();
 
 		// A valid accountID is provided, so ensure it is not currently disabled.
 		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) )
@@ -217,6 +174,11 @@ describe( 'ProfileSelect', () => {
 
 		// The accountID is valid, but an empty propertyID is invalid, so ensure the select is not rendered.
 		expect( container ).toBeEmptyDOMElement();
+
+		await act( () => registry.dispatch( STORE_NAME ).setPropertyID( validPropertyID ) );
+
+		// now select should be visible again
+		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {

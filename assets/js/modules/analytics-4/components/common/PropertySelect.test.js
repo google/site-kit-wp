@@ -93,6 +93,14 @@ describe( 'PropertySelect', () => {
 
 		// ACCOUNT_CREATE is an invalid (but valid selection), so ensure the select is not rendered
 		expect( container ).toBeEmptyDOMElement();
+
+		act( () => {
+			registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		} );
+
+		// now select should be visible again
+		expect( container.querySelector( '.googlesitekit-analytics__select-property' ) ).toBeInTheDocument();
+		expect( container.querySelector( '.mdc-select__selected-text' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {

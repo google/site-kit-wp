@@ -103,6 +103,8 @@ describe( 'PropertySelect', () => {
 			},
 		} );
 
+		const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+
 		// A valid accountID is provided, so ensure it is not currently disabled.
 		const selectWrapper = container.querySelector( '.googlesitekit-analytics__select-property' );
 		const selectedText = container.querySelector( '.mdc-select__selected-text' );
@@ -113,6 +115,11 @@ describe( 'PropertySelect', () => {
 
 		// ACCOUNT_CREATE is an invalid (but valid selection), so ensure the select is not rendered
 		expect( container ).toBeEmptyDOMElement();
+
+		await act( () => registry.dispatch( STORE_NAME ).setAccountID( accountID ) );
+
+		// now select should be visible again
+		expect( container.querySelector( '.googlesitekit-analytics__select-property' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
