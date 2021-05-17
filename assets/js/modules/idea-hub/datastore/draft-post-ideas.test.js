@@ -64,7 +64,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 
 				const pendingDraftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
 
-				expect( pendingDraftPostIdeas ).toEqual( [] );
+				expect( pendingDraftPostIdeas ).toEqual( undefined );
 				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( options );
 
 				const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
@@ -193,7 +193,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
-				expect( draftPostIdeas ).toEqual( [] );
+				expect( draftPostIdeas ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );
 		} );

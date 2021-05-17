@@ -38,7 +38,7 @@ const fetchGetPublishedPostIdeasStore = createFetchStore( {
 } );
 
 const baseInitialState = {
-	publishedPostIdeas: [],
+	publishedPostIdeas: undefined,
 };
 
 const baseResolvers = {
@@ -47,7 +47,7 @@ const baseResolvers = {
 		const publishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( options );
 
 		// If there are already published ideas in state, don't make an API request.
-		if ( publishedPostIdeas.length ) {
+		if ( publishedPostIdeas?.length ) {
 			return;
 		}
 
@@ -69,6 +69,11 @@ const baseSelectors = {
 	 */
 	getPublishedPostIdeas( state, options = {} ) {
 		const { publishedPostIdeas } = state;
+
+		if ( publishedPostIdeas === undefined ) {
+			return;
+		}
+
 		const offset = options?.offset || 0;
 		const length = options.length ? offset + options.length : publishedPostIdeas.length;
 		return ( 'offset' in options || 'length' in options ) ? publishedPostIdeas.slice( offset, length ) : publishedPostIdeas;

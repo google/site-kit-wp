@@ -38,7 +38,7 @@ const fetchGetDraftPostIdeasStore = createFetchStore( {
 } );
 
 const baseInitialState = {
-	draftPostIdeas: [],
+	draftPostIdeas: undefined,
 };
 
 const baseResolvers = {
@@ -47,7 +47,7 @@ const baseResolvers = {
 		const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
 
 		// If there are already draft ideas in state, don't make an API request.
-		if ( draftPostIdeas.length ) {
+		if ( draftPostIdeas?.length ) {
 			return;
 		}
 
@@ -69,6 +69,11 @@ const baseSelectors = {
 	 */
 	getDraftPostIdeas( state, options = {} ) {
 		const { draftPostIdeas } = state;
+
+		if ( draftPostIdeas === undefined ) {
+			return;
+		}
+
 		const offset = options?.offset || 0;
 		const length = options.length ? offset + options.length : draftPostIdeas.length;
 		return ( 'offset' in options || 'length' in options ) ? draftPostIdeas.slice( offset, length ) : draftPostIdeas;

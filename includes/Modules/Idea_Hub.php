@@ -329,31 +329,35 @@ final class Idea_Hub extends Module
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:draft-post-ideas':
-				return array_map(
-					function( $post_id ) {
-						return array_merge(
-							array(
-								'postID'      => $post_id,
-								'postEditURL' => get_edit_post_link( $post_id ),
-							),
-							$this->get_post_idea( $post_id )
-						);
-					},
-					$response
+				return array_filter(
+					array_map(
+						function( $post_id ) {
+							return array_merge(
+								array(
+									'postID'      => $post_id,
+									'postEditURL' => get_edit_post_link( $post_id ),
+								),
+								$this->get_post_idea( $post_id )
+							);
+						},
+						is_array( $response ) ? $response : array( $response )
+					)
 				);
 			case 'GET:published-post-ideas':
-				return array_map(
-					function( $post_id ) {
-						return array_merge(
-							array(
-								'postID'      => $post_id,
-								'postEditURL' => get_edit_post_link( $post_id ),
-								'postURL'     => get_permalink( $post_id ),
-							),
-							$this->get_post_idea( $post_id )
-						);
-					},
-					$response
+				return array_filter(
+					array_map(
+						function( $post_id ) {
+							return array_merge(
+								array(
+									'postID'      => $post_id,
+									'postEditURL' => get_edit_post_link( $post_id ),
+									'postURL'     => get_permalink( $post_id ),
+								),
+								$this->get_post_idea( $post_id )
+							);
+						},
+						is_array( $response ) ? $response : array( $response )
+					)
 				);
 		}
 
