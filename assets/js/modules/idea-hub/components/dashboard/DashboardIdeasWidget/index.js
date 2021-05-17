@@ -33,10 +33,13 @@ import { useState, useRef, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../../../datastore/constants';
 import whenActive from '../../../../../util/when-active';
 import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
+const { useSelect } = Data;
 
 const getHash = ( hash ) => hash ? hash.replace( '#', '' ) : false;
 const isValidHash = ( hash ) => getHash( hash ) in DashboardIdeasWidget.tabToIndex;
@@ -50,6 +53,10 @@ const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 
 const DashboardIdeasWidget = ( { Widget } ) => {
 	const ideaHubContainer = useRef();
+	const newIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeas() );
+	const savedIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeas() );
+	const draftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas() );
+
 	const [ hash, setHash ] = useHash();
 	const [ activeTabIndex, setActiveTabIndex ] = useState( DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] || 0 );
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
@@ -89,16 +96,19 @@ const DashboardIdeasWidget = ( { Widget } ) => {
 							focusOnActivate={ false }
 						>
 							{ __( 'New', 'google-site-kit' ) }
+							{ newIdeas?.length >= 0 && <span>({ newIdeas.length })</span> }
 						</Tab>
 						<Tab
 							focusOnActivate={ false }
 						>
 							{ __( 'Saved', 'google-site-kit' ) }
+							{ savedIdeas?.length >= 0 && <span>({ savedIdeas.length })</span> }
 						</Tab>
 						<Tab
 							focusOnActivate={ false }
 						>
 							{ __( 'Drafts', 'google-site-kit' ) }
+							{ draftIdeas?.length >= 0 && <span>({ draftIdeas.length })</span> }
 						</Tab>
 					</TabBar>
 				</div>
@@ -133,4 +143,5 @@ DashboardIdeasWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: 'idea-hub' } )( DashboardIdeasWidget );
+// export default whenActive( { moduleName: 'idea-hub' } )( DashboardIdeasWidget );
+export default DashboardIdeasWidget;
