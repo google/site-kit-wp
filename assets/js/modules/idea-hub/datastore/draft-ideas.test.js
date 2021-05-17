@@ -60,6 +60,25 @@ describe( 'modules/idea-hub draft-ideas', () => {
 
 				expect( response ).toEqual( fixtures.draftIdeas.response );
 			} );
+
+			it( 'dispatches an error if the request fails', async () => {
+				const errorResponse = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/create-idea-draft-post/,
+					{ body: errorResponse, status: 500 }
+				);
+
+				const { response, error } = await registry.dispatch( STORE_NAME ).createIdeaDraftPost( fixtures.draftIdeas.idea );
+
+				expect( console ).toHaveErrored();
+				expect( error ).toEqual( errorResponse );
+				expect( response ).toEqual( undefined );
+				expect( registry.stores[ STORE_NAME ].store.getState().data ).toEqual( undefined );
+			} );
 		} );
 	} );
 } );
