@@ -151,7 +151,6 @@ describe( 'ProfileSelect', () => {
 
 		expect( container ).toBeEmptyDOMElement();
 
-		// in order to not get act errors need to do something as DOM is empty at the start and end of this test AND wp-data does lots of stuff
 		await act( () => registry.dispatch( STORE_NAME ).setAccountID( 'pub-12345678' ) );
 	} );
 

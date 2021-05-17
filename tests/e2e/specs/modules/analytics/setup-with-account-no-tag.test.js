@@ -158,7 +158,6 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			// See the selects populate
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account a/i } );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test property x/i } );
-			// NOTE - according to spec this should be hidden. Same in storybook. Displays when account is selected. TO INVESTIGATE
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test profile x/i } );
 
 			await expect( page ).toClick( '.mdc-select', { text: /test property x/i } );
