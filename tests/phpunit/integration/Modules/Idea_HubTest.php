@@ -86,6 +86,59 @@ class Idea_HubTest extends TestCase {
 		$this->assertTrue( $idea_hub->is_connected() );
 	}
 
+	public function test_draft_labels() {
+		$post1  = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
+		$topics = array(
+			array(
+				'mid'          => '/m/05z6w',
+				'display_name' => 'Penguins',
+			),
+		);
+		add_post_meta( $post1->ID, 'googlesitekitpersistent_idea_name', 'ideas/2285812891948871921' );
+		add_post_meta( $post1->ID, 'googlesitekitpersistent_idea_text', 'Using Site Kit to analyze your success' );
+		add_post_meta( $post1->ID, 'googlesitekitpersistent_idea_topics', $topics );
+		$post_states1 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post1 );
+
+		// Idea Hub module is not enabled yet.
+		$this->assertEquals( $post_states1, array( 'draft' => 'Draft' ) );
+
+		// Connect the module
+		$options  = new Options( $this->context );
+		$idea_hub = new Idea_Hub( $this->context, $options );
+
+		$options->set(
+			Settings::OPTION,
+			array(
+				'ideaLocale' => 'en_US',
+			)
+		);
+
+		// Create the post
+		$post2 = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
+		$post3 = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
+		$idea  = array(
+			'name'   => 'ideas/17450692223393508734',
+			'text'   => 'Why Penguins are guanotelic?',
+			'topics' => array(
+				'/m/05z6w' => 'Penguins',
+			),
+		);
+
+		$this->idea_hub->register();
+		$this->idea_hub->set_post_idea( $post2->ID, $idea );
+
+		// With an IdeaHub post
+		$post_states2 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post2 );
+		// With a regular draft post
+		$post_states3 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post3 );
+
+		$post_states1 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post1 );
+
+		$this->assertEquals( $post_states1, array( 'draft' => 'Idea Hub Draft “Using Site Kit to analyze your success”' ) );
+		$this->assertEquals( $post_states2, array( 'draft' => 'Idea Hub Draft “Why Penguins are guanotelic?”' ) );
+		$this->assertEquals( $post_states3, array( 'draft' => 'Draft' ) );
+	}
+
 	public function test_on_deactivation() {
 		$options = new Options( $this->context );
 		$options->set( Settings::OPTION, 'test-value' );
