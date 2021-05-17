@@ -19,12 +19,13 @@
 /**
  * Internal dependencies
  */
-import PropertySelect from './PropertySelect';
-import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../../analytics/datastore/constants';
-import { STORE_NAME } from '../../datastore/constants';
+import PropertySelect from './PropertySelectIncludingGA4';
+import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../datastore/__fixtures__';
-import * as analyticsFixtures from '../../../analytics/datastore/__fixtures__';
+import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
+
 import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
 
 const {
@@ -32,37 +33,37 @@ const {
 	createWebDataStream,
 	properties,
 	webDataStreams,
-} = fixtures;
-const { accounts } = analyticsFixtures.accountsPropertiesProfiles;
+} = analytics4Fixtures;
+const { accounts } = fixtures.accountsPropertiesProfiles;
 const accountID = createProperty._accountID;
 const propertyID = createWebDataStream._propertyID;
 
 const setupRegistry = ( { dispatch } ) => {
 	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: 'http://example.com' } );
 	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
-	dispatch( STORE_NAME ).receiveGetSettings( {} );
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 
 	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 
-	dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
-	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( properties, { accountID } );
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [ accountID ] );
 
-	dispatch( STORE_NAME ).receiveGetWebDataStreams( webDataStreams, { propertyID } );
-	dispatch( STORE_NAME ).finishResolution( 'receiveGetWebDataStreams', { propertyID } );
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( webDataStreams, { propertyID } );
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'receiveGetWebDataStreams', { propertyID } );
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
 	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
-	dispatch( STORE_NAME ).receiveGetSettings( {} );
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 
 	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 
-	dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
-	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], { accountID } );
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [ accountID ] );
 };
 
 describe( 'PropertySelectIncludingGA4', () => {
@@ -88,7 +89,7 @@ describe( 'PropertySelectIncludingGA4', () => {
 
 		act( () => {
 			registry.dispatch( MODULES_ANALYTICS ).setAccountID( ACCOUNT_CREATE );
-			registry.dispatch( STORE_NAME ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
+			registry.dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
 		} );
 		// ACCOUNT_CREATE is an invalid accountID (but valid selection), so ensure the select IS currently disabled.
 		expect( selectWrapper ).toHaveClass( 'mdc-select--disabled' );
@@ -105,7 +106,7 @@ describe( 'PropertySelectIncludingGA4', () => {
 
 	it( 'should update propertyID in the store when a new item is selected', async () => {
 		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
-		const allProperties = registry.select( STORE_NAME ).getProperties( accountID );
+		const allProperties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
 		const targetProperty = allProperties[ 0 ];
 
 		// Click the label to expose the elements in the menu.
@@ -113,7 +114,7 @@ describe( 'PropertySelectIncludingGA4', () => {
 		// Click this element to select it and fire the onChange event.
 		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 0 ] );
 
-		const newPropertyID = registry.select( STORE_NAME ).getPropertyID();
+		const newPropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
 		expect( targetProperty._id ).toEqual( newPropertyID );
 	} );
 } );

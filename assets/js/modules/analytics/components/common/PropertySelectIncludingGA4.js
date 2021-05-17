@@ -28,23 +28,23 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME, PROPERTY_CREATE } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
-import { isValidAccountID } from '../../../analytics/util';
+import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from '../../../analytics-4/datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
+import { isValidAccountID } from '../../util';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelectIncludingGA4() {
 // TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
 	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
-	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) || [] );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const properties = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || [] );
+	const propertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 	const isLoading = useSelect( ( select ) => (
 		! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) ||
-	! select( STORE_NAME ).hasFinishedResolution( 'getProperties', [ accountID ] )
+	! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ accountID ] )
 	) );
 
-	const { selectProperty } = useDispatch( STORE_NAME );
+	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
 
 	const onChange = useCallback( ( index, item ) => {
 		const newPropertyID = item.dataset.value;
