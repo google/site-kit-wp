@@ -33,7 +33,6 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { partitionReport } from '../../../../../util/partition-report';
 import { isZeroReport } from '../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
@@ -89,8 +88,6 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 		);
 	}
 
-	const { compareRange, currentRange } = partitionReport( data, { rangeLength: dateRangeLength } );
-
 	return (
 		<Widget
 			noPadding
@@ -104,10 +101,9 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 
 			<Stats
 				data={ data }
+				dateRangeLength={ dateRangeLength }
 				selectedStats={ selectedStats }
 				metrics={ ModuleOverviewWidget.metrics }
-				compareRange={ compareRange }
-				currentRange={ currentRange }
 			/>
 		</Widget>
 	);

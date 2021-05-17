@@ -32,8 +32,9 @@ import { __ } from '@wordpress/i18n';
 import { getSiteStatsDataForGoogleChart } from '../../../util';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import GoogleChart from '../../../../../components/GoogleChart';
+import { partitionReport } from '../../../../../util/partition-report';
 
-const Stats = ( { currentRange, compareRange, metrics, selectedStats } ) => {
+const Stats = ( { data, metrics, selectedStats, dateRangeLength } ) => {
 	const options = {
 		chart: {
 			title: __( 'Search Traffic Summary', 'google-site-kit' ),
@@ -105,6 +106,7 @@ const Stats = ( { currentRange, compareRange, metrics, selectedStats } ) => {
 		},
 	};
 
+	const { compareRange, currentRange } = partitionReport( data, { rangeLength: dateRangeLength } );
 	const googleChartData = getSiteStatsDataForGoogleChart(
 		currentRange,
 		compareRange,
@@ -130,9 +132,9 @@ const Stats = ( { currentRange, compareRange, metrics, selectedStats } ) => {
 };
 
 Stats.propTypes = {
-	currentRange: PropTypes.arrayOf( PropTypes.object ),
-	compareRange: PropTypes.arrayOf( PropTypes.object ),
-	metrics: PropTypes.arrayOf( PropTypes.object ),
+	data: PropTypes.arrayOf( PropTypes.object ).isRequired,
+	dateRangeLength: PropTypes.number.isRequired,
+	metrics: PropTypes.arrayOf( PropTypes.object ).isRequired,
 	selectedStats: PropTypes.number.isRequired,
 };
 
