@@ -26,6 +26,7 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as analyticsFixtures from '../../../analytics/datastore/__fixtures__';
 import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
+import { muteFetch } from '../../../../../../tests/js/utils';
 
 const {
 	createProperty,
