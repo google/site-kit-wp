@@ -203,8 +203,6 @@ const baseActions = {
 
 			// Otherwise just select the first profile, or the option to create if none.
 			registry.dispatch( STORE_NAME ).setProfileID( profiles[ 0 ]?.id || PROFILE_CREATE );
-
-			global.console.debug( registry.select( STORE_NAME ).getSettings() );
 		}
 	),
 
