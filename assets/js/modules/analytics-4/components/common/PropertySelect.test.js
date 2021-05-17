@@ -26,7 +26,6 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as analyticsFixtures from '../../../analytics/datastore/__fixtures__';
 import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
-import { muteFetch } from '../../../../../../tests/js/utils';
 
 const {
 	createProperty,
@@ -76,27 +75,7 @@ describe( 'PropertySelect', () => {
 		expect( listItems ).toHaveLength( properties.length + 1 );
 	} );
 
-	it( 'should not render if account ID is not set.', async () => {
-		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/, [] );
-
-		const { container, registry } = render( <PropertySelect />, {
-			setupRegistry: ( { dispatch } ) => {
-				dispatch( MODULES_ANALYTICS ).setSettings( {} );
-
-				dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
-				dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
-
-				dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
-				dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
-			},
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-
-		await act( () => registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID ) );
-	} );
-
-	it( 'should be disabled when in the absence of an valid account ID.', async () => {
+	it( 'should not render in the absence of an valid account ID.', async () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry,
 		} );
@@ -111,9 +90,9 @@ describe( 'PropertySelect', () => {
 			registry.dispatch( MODULES_ANALYTICS ).setAccountID( ACCOUNT_CREATE );
 			registry.dispatch( STORE_NAME ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
 		} );
-		// ACCOUNT_CREATE is an invalid accountID (but valid selection), so ensure the select IS currently disabled.
-		expect( selectWrapper ).toHaveClass( 'mdc-select--disabled' );
-		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'true' );
+
+		// ACCOUNT_CREATE is an invalid (but valid selection), so ensure the select is not rendered
+		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {

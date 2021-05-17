@@ -95,31 +95,7 @@ describe( 'PropertySelect', () => {
 			.toHaveClass( 'mdc-select--disabled' );
 	} );
 
-	it( 'should not render if account ID is not set.', async () => {
-		const { container, registry } = render( <PropertySelect />, {
-			setupRegistry: ( { dispatch } ) => {
-				const { properties } = fixtures.accountsPropertiesProfiles;
-				const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
-
-				dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-				dispatch( STORE_NAME ).setSettings( {} );
-
-				dispatch( STORE_NAME ).receiveGetExistingTag( null );
-
-				dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-				dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-
-				dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
-				dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
-			},
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-
-		await act( () => registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE ) );
-	} );
-
-	it( 'should be disabled when in the absence of an valid account ID.', async () => {
+	it( 'should not render in the absence of an valid account ID.', async () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry( { dispatch } ) {
 				setupRegistry( { dispatch } );
@@ -135,9 +111,8 @@ describe( 'PropertySelect', () => {
 
 		await act( () => registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE ) );
 
-		// ACCOUNT_CREATE is an invalid (but valid selection), so ensure the select IS currently disabled.
-		expect( selectWrapper ).toHaveClass( 'mdc-select--disabled' );
-		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'true' );
+		// ACCOUNT_CREATE is an invalid (but valid selection), so ensure the select is not rendered
+		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {

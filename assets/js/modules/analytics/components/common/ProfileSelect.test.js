@@ -130,7 +130,7 @@ describe( 'ProfileSelect', () => {
 		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'should not render if account ID is not set.', async () => {
+	it( 'should not render if account ID is not valid.', async () => {
 		const { container, registry } = render( <ProfileSelect />, {
 			setupRegistry: ( { dispatch } ) => {
 				const accountID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
@@ -154,7 +154,25 @@ describe( 'ProfileSelect', () => {
 		await act( () => registry.dispatch( STORE_NAME ).setAccountID( 'pub-12345678' ) );
 	} );
 
-	it( 'should not render if property ID is not set.', async () => {
+	it( 'should not render when in the absence of an valid account ID.', async () => {
+		const { container, registry } = render( <ProfileSelect />, {
+			setupRegistry( { dispatch } ) {
+				setupRegistry( { dispatch } );
+				dispatch( STORE_NAME ).finishResolution( 'getProperties', [ '0' ] );
+			},
+		} );
+
+		// A valid accountID is provided, so ensure it is not currently disabled.
+		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) )
+			.not.toHaveClass( 'mdc-select--disabled' );
+
+		await act( () => registry.dispatch( STORE_NAME ).setAccountID( '0' ) );
+
+		// An empty accountID is invalid, so ensure the select is not rendered.
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should not render if property ID is not valid.', async () => {
 		const { container, registry } = render( <ProfileSelect />, {
 			setupRegistry: ( { dispatch } ) => {
 				const accountID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
@@ -180,7 +198,7 @@ describe( 'ProfileSelect', () => {
 		await act( () => registry.dispatch( STORE_NAME ).setAccountID( 'pub-12345678' ) );
 	} );
 
-	it( 'should be disabled when in the absence of an valid account or property ID.', async () => {
+	it( 'should not render when in the absence of an valid account or property ID.', async () => {
 		const { container, registry } = render( <ProfileSelect />, {
 			setupRegistry( { dispatch } ) {
 				setupRegistry( { dispatch } );
@@ -194,18 +212,11 @@ describe( 'ProfileSelect', () => {
 		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) )
 			.not.toHaveClass( 'mdc-select--disabled' );
 
-		await act( () => registry.dispatch( STORE_NAME ).setAccountID( '0' ) );
-
-		// An empty accountID is invalid, so ensure the select IS currently disabled.
-		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) )
-			.toHaveClass( 'mdc-select--disabled' );
-
 		await act( () => registry.dispatch( STORE_NAME ).setAccountID( validAccountID ) );
 		await act( () => registry.dispatch( STORE_NAME ).setPropertyID( '0' ) );
 
-		// The accountID is valid, but an empty propertyID is invalid, so ensure the select IS currently disabled.
-		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) )
-			.toHaveClass( 'mdc-select--disabled' );
+		// The accountID is valid, but an empty propertyID is invalid, so ensure the select is not rendered.
+		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {

@@ -68,7 +68,7 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID, selectProperty ] );
 
-	if ( ! accountID ) {
+	if ( ! isValidAccountID( accountID ) ) {
 		return null;
 	}
 
@@ -82,7 +82,7 @@ export default function PropertySelect() {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || hasGTMPropertyID || ! isValidAccountID( accountID ) }
+			disabled={ hasExistingTag || hasGTMPropertyID }
 			enhanced
 			outlined
 		>

@@ -54,7 +54,7 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID, selectProperty ] );
 
-	if ( ! accountID ) {
+	if ( ! isValidAccountID( accountID ) ) {
 		return null;
 	}
 

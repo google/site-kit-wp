@@ -53,7 +53,7 @@ export default function ProfileSelect() {
 		}
 	}, [ profileID, setProfileID ] );
 
-	if ( ! accountID || ! propertyID ) {
+	if ( ! isValidAccountID( accountID ) || ! isValidPropertyID( propertyID ) ) {
 		return null;
 	}
 
