@@ -187,6 +187,40 @@ class Idea_HubTest extends TestCase {
 		$this->assertEquals( $topics[ $mid ], $idea['topics'][ $mid ] );
 	}
 
+	public function test_get_post_idea__insufficient_data() {
+		global $wpdb;
+
+		$post_id = $this->factory()->post->create();
+		$name    = 'ideas/14025103994557865535';
+		$mid     = '/m/07030';
+		$topics  = array(
+			$mid => 'Sushi',
+		);
+
+		$wpdb->insert(
+			$wpdb->postmeta,
+			array(
+				'post_id'    => $post_id,
+				'meta_key'   => Post_Idea_Name::META_KEY,
+				'meta_value' => $name,
+			)
+		);
+
+		$wpdb->insert(
+			$wpdb->postmeta,
+			array(
+				'post_id'    => $post_id,
+				'meta_key'   => Post_Idea_Topics::META_KEY,
+				'meta_value' => serialize( $topics ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+			)
+		);
+
+		$this->idea_hub->register();
+
+		$idea = $this->idea_hub->get_post_idea( $post_id );
+		$this->assertNull( $idea );
+	}
+
 	/**
 	 * @return Module_With_Scopes
 	 */

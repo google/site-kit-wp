@@ -1,5 +1,5 @@
 /**
- * Idea Hub module entrypoint.
+ * Idea Hub dashboard components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,14 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import Widgets from 'googlesitekit-widgets';
-import Modules from 'googlesitekit-modules';
-import { registerStore, registerWidgets, registerModule } from './modules/idea-hub';
-
-registerStore( Data );
-registerWidgets( Widgets );
-registerModule( Modules );
+export { default as DashboardIdeasWidget } from './DashboardIdeasWidget';
