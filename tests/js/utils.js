@@ -388,11 +388,8 @@ export const subscribeWithUnsubscribe = ( registry, ...args ) => {
 export const untilResolved = ( registry, storeName ) => {
 	return mapValues(
 		registry.stores[ storeName ].resolvers || {},
-		( resolverFn, resolverName ) => ( ...args ) => {
-			return subscribeUntil(
-				registry,
-				() => registry.select( storeName ).hasFinishedResolution( resolverName, args ),
-			);
+		( resolverFn, resolverName ) => async ( ...args ) => {
+			await registry.resolveSelect( storeName )[ resolverName ]( ...args );
 		},
 	);
 };
