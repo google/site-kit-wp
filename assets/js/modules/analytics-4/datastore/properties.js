@@ -30,6 +30,7 @@ import { STORE_NAME, PROPERTY_CREATE, MAX_WEBDATASTREAMS_PER_BATCH } from './con
 import { normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
+import { isValidAccountID } from '../../analytics/util';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 const { commonActions, createRegistryControl } = Data;
 
@@ -273,6 +274,10 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getProperties( accountID ) {
+		if ( ! isValidAccountID( accountID ) ) {
+			return;
+		}
+
 		const registry = yield Data.commonActions.getRegistry();
 		// Only fetch properties if there are none in the store for the given account.
 		const properties = registry.select( STORE_NAME ).getProperties( accountID );
