@@ -1,7 +1,8 @@
 const path = require( 'path' );
 
 module.exports = {
-	preset: 'jest-puppeteer',
+	// taken from https://github.com/WordPress/gutenberg/blob/trunk/packages/e2e-tests/jest.config.js#L2
+	...require( '@wordpress/scripts/config/jest-e2e.config' ),
 	setupFilesAfterEnv: [
 		'<rootDir>/config/bootstrap.js',
 		'@wordpress/jest-console',
