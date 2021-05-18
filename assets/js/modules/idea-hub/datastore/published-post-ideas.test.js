@@ -64,7 +64,7 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 
 				const pendingPublishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( options );
 
-				expect( pendingPublishedPostIdeas ).toEqual( undefined );
+				expect( pendingPublishedPostIdeas ).toBeUndefined();
 				await untilResolved( registry, STORE_NAME ).getPublishedPostIdeas( options );
 
 				const publishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( options );
