@@ -45,21 +45,26 @@ export default function PropertySelectIncludingGA4() {
 	) );
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
+	const { setPrimaryPropertyType } = useDispatch( MODULES_ANALYTICS );
 
 	const onChange = useCallback( ( index, item ) => {
 		const newPropertyID = item.dataset.value;
 		// TODO - see AC
 		if ( propertyID !== newPropertyID ) {
+			// this should only happen if property is ga4
 			selectProperty( newPropertyID );
 			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
+			// this should only happen if property is ga4
+			setPrimaryPropertyType( 'ga4' );
 		}
-	}, [ propertyID, selectProperty ] );
+	}, [ propertyID, selectProperty, setPrimaryPropertyType ] );
 
 	if ( isLoading ) {
 		return <ProgressBar small />;
 	}
 
 	// TEMP FIX SO TESTS PASS
+	// not sure if should even map! better to instead support this in the component? how will know which is which when clicked?
 	const properties = unmappedProperties.map( ( p ) => {
 		// console.log( p );
 		// no idea why nullish... seems like mistake
