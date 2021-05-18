@@ -114,17 +114,17 @@ const DashboardIdeasWidget = ( { Widget, WidgetError } ) => {
 				</div>
 
 				<div className="googlesitekit-idea-hub__body">
-					{ activeTab === 'new-ideas' && (
-						<NewIdeas WidgetError={ WidgetError } />
-					) }
+					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'new-ideas' }>
+						<NewIdeas WidgetError={ WidgetError } active={ activeTab === 'new-ideas' } />
+					</div>
 
-					{ activeTab === 'saved-ideas' && (
-						<SavedIdeas />
-					) }
+					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'saved-ideas' }>
+						<SavedIdeas WidgetError={ WidgetError } active={ activeTab === 'saved-ideas' } />
+					</div>
 
-					{ activeTab === 'draft-ideas' && (
-						<DraftIdeas />
-					) }
+					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'draft-ideas' }>
+						<DraftIdeas WidgetError={ WidgetError } active={ activeTab === 'draft-ideas' } />
+					</div>
 				</div>
 			</div>
 		</Widget>
@@ -143,5 +143,4 @@ DashboardIdeasWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
 
-// export default whenActive( { moduleName: 'idea-hub' } )( DashboardIdeasWidget );
-export default DashboardIdeasWidget;
+export default whenActive( { moduleName: 'idea-hub' } )( DashboardIdeasWidget );

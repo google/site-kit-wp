@@ -16,8 +16,110 @@
  * limitations under the License.
  */
 
-const SavedIdeas = () => {
-	return <div className="googlesitekit-idea-hub__saved-ideas" />;
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Fragment, useCallback, useState } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import {
+	IDEA_HUB_BUTTON_CREATE,
+	IDEA_HUB_BUTTON_UNPIN,
+	IDEA_HUB_IDEAS_PER_PAGE,
+	STORE_NAME,
+} from '../../../datastore/constants';
+import EmptyIcon from '../../../../../../svg/idea-hub-empty-saved-ideas.svg';
+import PreviewTable from '../../../../../components/PreviewTable';
+import Idea from './Idea';
+import Empty from './Empty';
+import Footer from './Footer';
+const { useSelect } = Data;
+
+const SavedIdeas = ( { WidgetError } ) => {
+	const [ page, setPage ] = useState( 1 );
+	const args = {
+		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
+		length: IDEA_HUB_IDEAS_PER_PAGE,
+	};
+	const totalNewIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeas()?.length );
+	const newIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeas( args ) );
+	const hasFinishedResolution = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getSavedIdeas', [ args ] ) );
+	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getSavedIdeas', [ args ] ) );
+
+	const handlePrev = useCallback( () => {
+		if ( page === 1 ) {
+			return;
+		}
+
+		setPage( page - 1 );
+	}, [ page, setPage ] );
+
+	const handleNext = useCallback( () => {
+		if ( ( page * IDEA_HUB_IDEAS_PER_PAGE ) > totalNewIdeas ) {
+			return;
+		}
+
+		setPage( page + 1 );
+	}, [ page, setPage, totalNewIdeas ] );
+
+	if ( ! hasFinishedResolution ) {
+		return (
+			<PreviewTable rows={ 5 } rowHeight={ 100 } />
+		);
+	}
+
+	if ( error ) {
+		return <WidgetError slug="idea-hub" error={ error } />;
+	}
+
+	if ( ! totalNewIdeas ) {
+		return (
+			<Empty
+				sideLayout={ false }
+				Icon={ <EmptyIcon /> }
+				title={ __( 'No saved ideas', 'google-site-kit' ) }
+				subtitle={ __( 'Ideas you saved from the New tab will appear here', 'google-site-kit' ) }
+			/>
+		);
+	}
+
+	return (
+		<Fragment>
+			<div className="googlesitekit-idea-hub__saved-ideas">
+				{ newIdeas.map( ( idea, key ) => {
+					return (
+						<Idea
+							key={ key }
+							name={ idea.name }
+							text={ idea.text }
+							topics={ idea.topics }
+							buttons={ [ IDEA_HUB_BUTTON_UNPIN, IDEA_HUB_BUTTON_CREATE ] }
+						/>
+					);
+				} ) }
+			</div>
+
+			<Footer
+				page={ page }
+				totalIdeas={ totalNewIdeas }
+				handlePrev={ handlePrev }
+				handleNext={ handleNext }
+			/>
+		</Fragment>
+	);
+};
+
+SavedIdeas.propTypes = {
+	WidgetError: PropTypes.elementType.isRequired,
 };
 
 export default SavedIdeas;

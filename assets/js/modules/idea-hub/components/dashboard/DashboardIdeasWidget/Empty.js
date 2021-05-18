@@ -26,16 +26,16 @@ import PropTypes from 'prop-types';
  */
 import { Grid, Cell, Row } from '../../../../../material-components';
 
-const Empty = ( { layout, Icon, title, subtitle } ) => {
+const Empty = ( { sideLayout, Icon, title, subtitle } ) => {
 	return (
-		<div className={ `googlesitekit-idea-hub__empty googlesitekit-idea-hub__empty--layout-${ layout }` }>
+		<div className={ `googlesitekit-idea-hub__empty googlesitekit-idea-hub__empty--layout-${ sideLayout ? 'side' : 'stacked' }` }>
 			<Grid>
 				<Row>
-					<Cell size={ 4 } className="googlesitekit-idea-hub__empty--icon">
+					<Cell size={ sideLayout ? 4 : 12 } className="googlesitekit-idea-hub__empty--icon">
 						{ Icon }
 					</Cell>
 
-					<Cell size={ 8 } className="googlesitekit-idea-hub__empty--details">
+					<Cell size={ sideLayout ? 8 : 12 } className="googlesitekit-idea-hub__empty--details">
 						<h4 className="googlesitekit-idea-hub__empty--title">{ title }</h4>
 
 						{ subtitle && <p className="googlesitekit-idea-hub__empty--subtitle">{ subtitle }</p> }
@@ -47,14 +47,14 @@ const Empty = ( { layout, Icon, title, subtitle } ) => {
 };
 
 Empty.propTypes = {
-	layout: PropTypes.oneOf( [ 'column', 'row' ] ),
+	sideLayout: PropTypes.bool,
 	Icon: PropTypes.element.isRequired,
 	title: PropTypes.string.isRequired,
 	subtitle: PropTypes.string,
 };
 
 Empty.defaultProps = {
-	layout: 'row',
+	sideLayout: true,
 };
 
 export default Empty;

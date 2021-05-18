@@ -22,6 +22,12 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Button from '../../../../../components/Button';
@@ -29,13 +35,32 @@ import { Grid, Cell, Row } from '../../../../../material-components';
 import {
 	IDEA_HUB_BUTTON_CREATE,
 	IDEA_HUB_BUTTON_PIN,
+	IDEA_HUB_BUTTON_UNPIN,
 	IDEA_HUB_BUTTON_DELETE,
+	IDEA_HUB_BUTTON_VIEW,
 } from '../../../datastore/constants';
 import DeleteIcon from '../../../../../../svg/idea-hub-delete.svg';
 import CreateIcon from '../../../../../../svg/idea-hub-create.svg';
 import PinIcon from '../../../../../../svg/idea-hub-pin.svg';
+import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
 
-const Idea = ( { name, text, topics, buttons } ) => {
+const Idea = ( { postURL, name, text, topics, buttons } ) => {
+	const handleDelete = useCallback( () => {
+		global.console.log( `Deleted: ${ name }` );
+	}, [ name ] );
+
+	const handlePin = useCallback( () => {
+		global.console.log( `Pinned: ${ name }` );
+	}, [ name ] );
+
+	const handleUnpin = useCallback( () => {
+		global.console.log( `Unpinned: ${ name }` );
+	}, [ name ] );
+
+	const handleCreate = useCallback( () => {
+		global.console.log( `Created: ${ name }` );
+	}, [ name ] );
+
 	return (
 		<Grid className="googlesitekit-idea-hub__idea--single">
 			<Row>
@@ -52,15 +77,40 @@ const Idea = ( { name, text, topics, buttons } ) => {
 				</Cell>
 				<Cell size={ 3 } className="googlesitekit-idea-hub__idea--actions">
 					{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
-						<Button icon={ <DeleteIcon /> } className="googlesitekit-idea-hub__actions--delete" />
+						<Button
+							onClick={ handleDelete }
+							icon={ <DeleteIcon /> }
+							className="googlesitekit-idea-hub__actions--delete"
+						/>
 					) }
 
 					{ buttons.includes( IDEA_HUB_BUTTON_PIN ) && (
-						<Button icon={ <PinIcon /> } className="googlesitekit-idea-hub__actions--pin" />
+						<Button
+							onClick={ handlePin }
+							icon={ <PinIcon /> }
+							className="googlesitekit-idea-hub__actions--pin"
+						/>
+					) }
+
+					{ buttons.includes( IDEA_HUB_BUTTON_UNPIN ) && (
+						<Button
+							onClick={ handleUnpin }
+							icon={ <UnpinIcon /> }
+							className="googlesitekit-idea-hub__actions--unpin"
+						/>
 					) }
 
 					{ buttons.includes( IDEA_HUB_BUTTON_CREATE ) && (
-						<Button icon={ <CreateIcon /> } />
+						<Button
+							onClick={ handleCreate }
+							icon={ <CreateIcon /> }
+						/>
+					) }
+
+					{ buttons.includes( IDEA_HUB_BUTTON_VIEW ) && postURL && (
+						<Button href={ postURL } className="googlesitekit-idea-hub__actions--view">
+							{ __( 'View draft', 'google-site-kit' ) }
+						</Button>
 					) }
 				</Cell>
 			</Row>
@@ -69,6 +119,9 @@ const Idea = ( { name, text, topics, buttons } ) => {
 };
 
 Idea.propTypes = {
+	postID: PropTypes.number,
+	postEditURL: PropTypes.string,
+	postURL: PropTypes.string,
 	name: PropTypes.string.isRequired,
 	text: PropTypes.string.isRequired,
 	topics: PropTypes.arrayOf(
