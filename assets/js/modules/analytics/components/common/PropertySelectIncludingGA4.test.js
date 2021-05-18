@@ -90,6 +90,11 @@ describe( 'PropertySelectIncludingGA4', () => {
 		expect( listItems ).toHaveLength( properties.length + propertiesGA4.length + 1 );
 	} );
 
+	// currently selected property
+	it.todo( 'If the getPrimaryPropertyType selector returns "ga4", the selected property has to come from the modules/analytics-4 store\'s getPropertyID selector.' );
+	it.todo( 'Otherwise or if the getPrimaryPropertyType selector returns "ua", the selected property has to come from the modules/analytics store\'s getPropertyID selector.' );
+
+	// TODO - should actually be empty! Copy test from other task when merged
 	it( 'should be disabled when in the absence of an valid account ID.', async () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry,
@@ -110,6 +115,10 @@ describe( 'PropertySelectIncludingGA4', () => {
 		expect( selectWrapper ).toHaveClass( 'mdc-select--disabled' );
 		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'true' );
 	} );
+
+	// TO TEST?
+	// * If properties are still loading, the component should return a loading bar.
+	// * Every property should show up as its name with its ID in parentheses.
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
 		const { getAllByRole } = render( <PropertySelect />, { setupRegistry: setupEmptyRegistry } );
@@ -142,6 +151,21 @@ describe( 'PropertySelectIncludingGA4', () => {
 		const newPropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
 		// expect( targetProperty._id ).toEqual( newPropertyID );
 		expect( targetProperty._id ).toEqual( newPropertyID );
+
+		// ALSO NOTE -> need to test and assert this
+		// If the selected property is a GA4 property, the setPrimaryPropertyType action should be called to indicate "ga4".
+		expect( registry.select( MODULES_ANALYTICS ).getPrimaryPropertyType() ).toBe( 'ga4' );
+
+		// Then, the modules/analytics-4 store's selectProperty action should be used to set the GA4 property
+
+		// while the modules/analytics store's selectProperty action should be used to empty/reset the UA property (since that then needs to later be chosen in another dropdown based on the GA4 property).
+
+		// BEST WAY? assert that can now see selected option?
+		// TODO - no other tests for Selects assert this? to copy the test
 	} );
+
+	// TO TEST
+	// and then next...
+	// Otherwise or if the selected property is a UA property, the setPrimaryPropertyType action should be called to indicate "ua". Then, the modules/analytics store's selectProperty action should be used to set the UA property, while the modules/analytics-4 store's selectProperty action should be used to empty/reset the GA4 property (since that then needs to later be chosen in another dropdown based on the GA4 property).
 } );
 
