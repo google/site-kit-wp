@@ -157,29 +157,33 @@ const baseActions = {
 			const uaProperty = uaProperties[ 0 ] || { id: PROPERTY_CREATE, internalWebPropertyId: '' }; // eslint-disable-line sitekit/acronym-case
 			yield Data.commonActions.await( registry.dispatch( STORE_NAME ).selectProperty( uaProperty?.id, uaProperty?.internalWebPropertyId ) ); // eslint-disable-line sitekit/acronym-case
 
-			if ( isFeatureEnabled( 'ga4setup' ) ) {
-				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_UA );
+			if ( ! isFeatureEnabled( 'ga4setup' ) ) {
+				return;
+			}
 
-				yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).waitForProperties( accountID ) );
+			registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_UA );
 
-				const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
-				const ga4Property = yield Data.commonActions.await(
-					registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL(
-						ga4Properties.map( ( property ) => property._id ),
-						registry.select( CORE_SITE ).getReferenceSiteURL(),
-					)
-				);
+			yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).waitForProperties( accountID ) );
 
-				yield Data.commonActions.await(
-					registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property?._id || GA4_PROPERTY_CREATE ),
-				);
+			const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+			const ga4Property = yield Data.commonActions.await(
+				registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL(
+					ga4Properties.map( ( property ) => property._id ),
+					registry.select( CORE_SITE ).getReferenceSiteURL(),
+				)
+			);
 
-				if ( ga4Property?._id ) {
-					const matchedUAProperty = registry.select( STORE_NAME ).getMatchedProperty();
-					if ( ! matchedUAProperty ) {
-						registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
-					}
-				}
+			yield Data.commonActions.await(
+				registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property?._id || GA4_PROPERTY_CREATE ),
+			);
+
+			if ( ! ga4Property?._id ) {
+				return;
+			}
+
+			const matchedUAProperty = registry.select( STORE_NAME ).getMatchedProperty();
+			if ( ! matchedUAProperty ) {
+				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
 			}
 		}
 	),
@@ -309,30 +313,36 @@ const baseResolvers = {
 			yield Data.commonActions.await( registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ) ); // eslint-disable-line sitekit/acronym-case
 		}
 
-		if ( isFeatureEnabled( 'ga4setup' ) ) {
-			let ga4Property;
-			const ga4PropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
-			if ( ga4PropertyID ) {
-				ga4Property = yield Data.commonActions.await(
-					registry.__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty( ga4PropertyID )
-				);
-			}
+		// Bail out if the analytics-4 module is not enabled.
+		if ( ! isFeatureEnabled( 'ga4setup' ) ) {
+			return;
+		}
 
-			if ( ! ga4Property || ga4Property._accountID !== accountID ) {
-				yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).waitForProperties( accountID ) );
+		let ga4Property;
+		const ga4PropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
+		if ( ga4PropertyID ) {
+			ga4Property = yield Data.commonActions.await(
+				registry.__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty( ga4PropertyID )
+			);
+		}
 
-				const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
-				ga4Property = yield Data.commonActions.await(
-					registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL(
-						ga4Properties.map( ( property ) => property._id ),
-						registry.select( CORE_SITE ).getReferenceSiteURL(),
-					)
-				);
+		// Bail out if the correct ga4 property is already selected.
+		if ( ga4Property?._accountID === accountID ) {
+			return;
+		}
 
-				yield Data.commonActions.await(
-					registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property?._id || GA4_PROPERTY_CREATE ),
-				);
-			}
+		yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).waitForProperties( accountID ) );
+
+		const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+		ga4Property = yield Data.commonActions.await(
+			registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL(
+				ga4Properties.map( ( property ) => property._id ),
+				registry.select( CORE_SITE ).getReferenceSiteURL(),
+			)
+		);
+
+		if ( ga4Property?._id ) {
+			yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property._id ) );
 		}
 	},
 };

@@ -457,6 +457,33 @@ describe( 'modules/analytics accounts', () => {
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( matchedProperty.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
 			} );
+
+			describe( 'analytics-4', () => {
+				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+
+				beforeEach( () => {
+					enabledFeatures.add( 'ga4setup' );
+
+					[
+						[ /^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/, fixtures.accountsPropertiesProfiles ],
+						[ /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, fixtures.propertiesProfiles ],
+						[ /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/, ga4Fixtures.properties ],
+						[ /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/, ga4Fixtures.webDataStreamsBatch ],
+					].forEach( ( mock ) => {
+						fetchMock.get( ...mock );
+					} );
+
+					provideSiteInfo( registry );
+
+					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+					registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+				} );
+
+				it( 'should select correct ga4 property', async () => {
+					await registry.__experimentalResolveSelect( STORE_NAME ).getAccounts( accountID );
+					expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( ga4Fixtures.properties[ 0 ]._id );
+				} );
+			} );
 		} );
 
 		describe( 'getAccountTicketTermsOfServiceURL', () => {
