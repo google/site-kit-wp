@@ -162,10 +162,17 @@ const baseActions = {
 
 				yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).waitForProperties( accountID ) );
 
-				const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
 				const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
-				const ga4Property = yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL( ga4Properties, referenceURL ) );
-				yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property?._id || GA4_PROPERTY_CREATE ) );
+				const ga4Property = yield Data.commonActions.await(
+					registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL(
+						ga4Properties.map( ( property ) => property._id ),
+						registry.select( CORE_SITE ).getReferenceSiteURL(),
+					)
+				);
+
+				yield Data.commonActions.await(
+					registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property?._id || GA4_PROPERTY_CREATE ),
+				);
 
 				if ( ga4Property?._id ) {
 					const matchedUAProperty = registry.select( STORE_NAME ).getMatchedProperty();
@@ -306,17 +313,25 @@ const baseResolvers = {
 			let ga4Property;
 			const ga4PropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
 			if ( ga4PropertyID ) {
-				ga4Property = yield Data.commonActions.await( registry.__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty( ga4PropertyID ) );
+				ga4Property = yield Data.commonActions.await(
+					registry.__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty( ga4PropertyID )
+				);
 			}
 
 			if ( ! ga4Property || ga4Property._accountID !== accountID ) {
 				yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).waitForProperties( accountID ) );
 
-				const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
 				const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+				ga4Property = yield Data.commonActions.await(
+					registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL(
+						ga4Properties.map( ( property ) => property._id ),
+						registry.select( CORE_SITE ).getReferenceSiteURL(),
+					)
+				);
 
-				ga4Property = yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL( ga4Properties, referenceURL ) );
-				yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property?._id || GA4_PROPERTY_CREATE ) );
+				yield Data.commonActions.await(
+					registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property?._id || GA4_PROPERTY_CREATE ),
+				);
 			}
 		}
 	},

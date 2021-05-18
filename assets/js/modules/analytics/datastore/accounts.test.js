@@ -20,7 +20,14 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME, FORM_ACCOUNT_CREATE, ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
+import {
+	STORE_NAME,
+	FORM_ACCOUNT_CREATE,
+	ACCOUNT_CREATE,
+	PROPERTY_CREATE,
+	PROFILE_CREATE,
+	PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4,
+} from './constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -29,9 +36,13 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
-} from 'tests/js/utils';
+	provideSiteInfo,
+} from '../../../../../tests/js/utils';
+import { enabledFeatures } from '../../../features';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
+import * as ga4Fixtures from '../../analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 describe( 'modules/analytics accounts', () => {
 	let registry;
@@ -216,6 +227,40 @@ describe( 'modules/analytics accounts', () => {
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( PROFILE_CREATE );
+			} );
+
+			describe( 'analytics-4', () => {
+				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+
+				beforeEach( () => {
+					enabledFeatures.add( 'ga4setup' );
+
+					[
+						[ /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, fixtures.propertiesProfiles ],
+						[ /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/, ga4Fixtures.properties ],
+						[ /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/, ga4Fixtures.webDataStreamsBatch ],
+					].forEach( ( mock ) => {
+						fetchMock.get( ...mock );
+					} );
+
+					provideSiteInfo( registry );
+				} );
+
+				it( 'should select correct ga4 property', async () => {
+					await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+					expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( ga4Fixtures.properties[ 0 ]._id );
+				} );
+
+				it( 'should set primary property type to UA when there is a matching UA property', async () => {
+					registry.dispatch( STORE_NAME ).receiveMatchedProperty( fixtures.propertiesProfiles.properties[ 0 ] );
+					await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+					expect( registry.select( STORE_NAME ).getPrimaryPropertyType() ).toBe( PROPERTY_TYPE_UA );
+				} );
+
+				it( 'should set primary property type to GA4 when there is no matching UA property', async () => {
+					await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+					expect( registry.select( STORE_NAME ).getPrimaryPropertyType() ).toBe( PROPERTY_TYPE_GA4 );
+				} );
 			} );
 		} );
 	} );
