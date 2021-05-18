@@ -19,10 +19,12 @@
 /**
  * Internal dependencies
  */
+import { default as draftIdeas } from './draft-ideas';
 import { default as newIdeas } from './new-ideas';
 import { default as savedIdeas } from './saved-ideas';
 
 export {
+	draftIdeas,
 	newIdeas,
 	savedIdeas,
 };
