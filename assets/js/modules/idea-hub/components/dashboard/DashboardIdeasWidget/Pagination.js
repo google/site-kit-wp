@@ -26,21 +26,15 @@ import { Icon, chevronLeft, chevronRight } from '@wordpress/icons';
  * Internal dependencies
  */
 import Button from '../../../../../components/Button';
-import { Grid, Cell, Row } from '../../../../../material-components';
-import {
-	IDEA_HUB_BUTTON_CREATE,
-	IDEA_HUB_BUTTON_PIN,
-	IDEA_HUB_BUTTON_DELETE,
-} from '../../../datastore/constants';
-import DeleteIcon from '../../../../../../svg/idea-hub-delete.svg';
-import CreateIcon from '../../../../../../svg/idea-hub-create.svg';
-import PinIcon from '../../../../../../svg/idea-hub-pin.svg';
+import { IDEA_HUB_IDEAS_PER_PAGE } from '../../../datastore/constants';
 
-const Pagination = ( { setPage, totalOnPage, total, page, ideasPerPage, handlePrev, handleNext } ) => {
+const Pagination = ( { total, page, ideasPerPage, handlePrev, handleNext } ) => {
 	return (
 		<div className="googlesitekit-idea-hub__pagination">
 			<span className="googlesitekit-idea-hub__pagination--legend">
-				{ ( ( page - 1 ) * ideasPerPage ) + 1 } - { totalOnPage < ideasPerPage ? ideasPerPage * page : totalOnPage } of { total }
+				{ page === 1 ? page : ( ( ( page - 1 ) * ideasPerPage ) + 1 ) }
+				{ ' - ' }
+				{ total < ( page * ideasPerPage ) ? total : ( page * ideasPerPage ) } of { total }
 			</span>
 
 			<div className="googlesitekit-idea-hub__pagination--buttons">
@@ -52,8 +46,6 @@ const Pagination = ( { setPage, totalOnPage, total, page, ideasPerPage, handlePr
 };
 
 Pagination.propTypes = {
-	setPage: PropTypes.func.isRequired,
-	totalOnPage: PropTypes.number.isRequired,
 	total: PropTypes.number.isRequired,
 	page: PropTypes.number.isRequired,
 	ideasPerPage: PropTypes.number,
@@ -62,10 +54,9 @@ Pagination.propTypes = {
 };
 
 Pagination.defaultProps = {
-	ideasPerPage: 4,
+	ideasPerPage: IDEA_HUB_IDEAS_PER_PAGE,
 	handlePrev: () => {},
 	handleNext: () => {},
 };
 
 export default Pagination;
-

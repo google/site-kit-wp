@@ -217,4 +217,43 @@
 			width: 36px;
 		}
 	}
+
+	.googlesitekit-idea-hub__empty {
+		padding: $grid-gap-phone;
+
+		@media (min-width: $bp-desktop) {
+			padding: $grid-gap-desktop;
+		}
+
+		.mdc-layout-grid__inner {
+			align-items: center;
+			min-height: 120px;
+			
+			@media (min-width: $bp-desktop) {
+				min-height: 385px;
+			}
+		}
+	}
+
+	.googlesitekit-idea-hub__empty--icon {
+		text-align: center;
+
+		svg {
+			max-width: 140px;
+		}
+	}
+
+	.googlesitekit-idea-hub__empty--title {
+		color: $c-shark;
+		font-family: $f-secondary;
+		font-size: 22px;
+		font-weight: $fw-secondary-normal;
+		line-height: 28px;
+		margin: 0;
+	}
+
+	.googlesitekit-idea-hub__empty--subtitle {
+		color: $c-oslo-gray;
+		margin: 4px 0 0;
+	}
 }

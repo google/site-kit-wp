@@ -51,7 +51,7 @@ const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 	return ideaHubWidgetOffsetTop + global.window.pageYOffset + headerOffset;
 };
 
-const DashboardIdeasWidget = ( { Widget } ) => {
+const DashboardIdeasWidget = ( { Widget, WidgetError } ) => {
 	const ideaHubContainer = useRef();
 	const newIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeas() );
 	const savedIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeas() );
@@ -115,7 +115,7 @@ const DashboardIdeasWidget = ( { Widget } ) => {
 
 				<div className="googlesitekit-idea-hub__body">
 					{ activeTab === 'new-ideas' && (
-						<NewIdeas />
+						<NewIdeas WidgetError={ WidgetError } />
 					) }
 
 					{ activeTab === 'saved-ideas' && (
