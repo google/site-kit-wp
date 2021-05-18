@@ -63,30 +63,26 @@ function SetupWrap( { children } ) {
 
 storiesOf( 'Analytics Module', module )
 	.add( 'Account Property Profile Select', () => {
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 
-			// TODO - should instead have new static fixtures? is this too confusing? NOT tests though... could scramble names and generate fixtures dynamically?
-			for ( const account of accounts ) {
-				const propertiesForAccount = properties
-				// eslint-disable-next-line sitekit/acronym-case
-					.map( ( p ) => ( { ...p, accountId: account.id } ) );
+			const { accounts: allAccounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+			const accounts = allAccounts.slice( 0, 3 );
 
-				const profilesForAccount = profiles
-				// eslint-disable-next-line sitekit/acronym-case
-					.map( ( p ) => ( { ...p, accountId: account.id } ) );
+			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 
-				dispatch( STORE_NAME ).receiveGetProperties( propertiesForAccount, { accountID: account.id } );
+			// 	eslint-disable-next-line sitekit/acronym-case
+			dispatch( STORE_NAME ).receiveGetProperties( properties.map( ( property ) => ( { ...property, accountId: accounts[ 0 ].id } ) ), { accountID: accounts[ 0 ].id } );
+			// 	eslint-disable-next-line sitekit/acronym-case
+			dispatch( STORE_NAME ).receiveGetProfiles( profiles.map( ( profile ) => ( { ...profile, accountId: accounts[ 0 ].id } ) ), { accountID: accounts[ 0 ].id, propertyID: properties[ 0 ].id } );
 
-				for ( const property of propertiesForAccount ) {
-					dispatch( STORE_NAME ).receiveGetProfiles( profilesForAccount, {
-						accountID: account.id,
-						propertyID: property.id,
-					} );
-				}
-			}
+			// 	eslint-disable-next-line sitekit/acronym-case
+			dispatch( STORE_NAME ).receiveGetProperties( properties.map( ( property ) => ( { ...property, accountId: accounts[ 1 ].id } ) ), { accountID: accounts[ 1 ].id } );
+			dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID: accounts[ 1 ].id, propertyID: properties[ 0 ].id } );
+
+			dispatch( STORE_NAME ).receiveGetProperties( [], { accountID: accounts[ 2 ].id } );
+			dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID: accounts[ 2 ].id, propertyID: properties[ 0 ].id } );
 		};
 
 		return (
