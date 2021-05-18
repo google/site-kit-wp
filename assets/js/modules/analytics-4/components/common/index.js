@@ -1,5 +1,5 @@
 /**
- * Idea Hub Datastore Fixtures.
+ * GA4 common components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,19 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { default as draftIdeas } from './draft-ideas';
-import { default as newIdeas } from './new-ideas';
-import { default as savedIdeas } from './saved-ideas';
-import { default as draftPostIdeas } from './draft-post-ideas';
-import { default as publishedPostIdeas } from './published-post-ideas';
-
-export {
-	draftIdeas,
-	newIdeas,
-	savedIdeas,
-	draftPostIdeas,
-	publishedPostIdeas,
-};
+export { default as PropertySelect } from './PropertySelect';
