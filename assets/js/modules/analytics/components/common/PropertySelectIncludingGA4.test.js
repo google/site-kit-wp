@@ -89,10 +89,6 @@ describe( 'PropertySelectIncludingGA4', () => {
 		expect( listItems ).toHaveLength( properties.length + propertiesGA4.length + 1 );
 	} );
 
-	// currently selected property
-	it.todo( 'If the getPrimaryPropertyType selector returns "ga4", the selected property has to come from the modules/analytics-4 store\'s getPropertyID selector.' );
-	it.todo( 'Otherwise or if the getPrimaryPropertyType selector returns "ua", the selected property has to come from the modules/analytics store\'s getPropertyID selector.' );
-
 	// TODO - should actually be empty! Copy test from other task when merged
 	it( 'should be disabled when in the absence of an valid account ID.', async () => {
 		const { container, registry } = render( <PropertySelect />, {
@@ -127,21 +123,23 @@ describe( 'PropertySelectIncludingGA4', () => {
 		expect( listItems[ 0 ].textContent ).toMatch( /set up a new property/i );
 	} );
 
-	// TODO - write .todo more tests here for new functionality!
-	// * select UA
+	// TODO
 	// * display UA
-	// * display GA4
-	// * some other selectors need to be set
 
+	// currently selected property
+	it.todo( 'If the getPrimaryPropertyType selector returns "ga4", the selected property has to come from the modules/analytics-4 store\'s getPropertyID selector.' );
+	it.todo( 'Otherwise or if the getPrimaryPropertyType selector returns "ua", the selected property has to come from the modules/analytics store\'s getPropertyID selector.' );
+
+	// make this a toggle between both
 	it( 'should update propertyID in the GA4 store when a new GA4 item is selected', async () => {
 		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
 		const allProperties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
 		// NOTE -> due to the selector getPropertiesIncludingGA4 sorting this is rendered second in the select
 		const targetProperty = allProperties[ 0 ];
 
-		// Click the label to expose the elements in the menu.
+		expect( container.querySelector( '.mdc-select__selected-text' ) ).toHaveTextContent( '' );
+
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-		// Click this element to select it and fire the onChange event.
 		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
 
 		// If the selected property is a GA4 property, the setPrimaryPropertyType action should be called to indicate "ga4".
@@ -152,13 +150,13 @@ describe( 'PropertySelectIncludingGA4', () => {
 		expect( targetProperty._id ).toEqual( newPropertyID );
 
 		// while the modules/analytics store's selectProperty action should be used to empty/reset the UA property (since that then needs to later be chosen in another dropdown based on the GA4 property).
-		// TODO - confirm on ticket
 		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe( '' );
 
-		// TO TEST -> assert that can now see selected option?
-		// TODO - no other tests for Selects assert this? to copy the test
+		// this should show selected surely?
+		expect( container.querySelector( '.mdc-select__selected-text' ) )
+			.toHaveTextContent( `${ targetProperty.displayName } (${ targetProperty._id })` );
 
-		// TODO -> should change between two and then assert that changes correctly?
+		// TODO -> change between two and then assert that changes correctly
 	} );
 
 	it( 'should update propertyID in the UA store when a new UA item is selected', async () => {
