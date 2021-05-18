@@ -47,11 +47,9 @@ const baseResolvers = {
 		const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
 
 		// If there are already draft ideas in state, don't make an API request.
-		if ( draftPostIdeas?.length || draftPostIdeas !== undefined ) {
-			return;
+		if ( draftPostIdeas === undefined ) {
+			yield fetchGetDraftPostIdeasStore.actions.fetchGetDraftPostIdeas();
 		}
-
-		yield fetchGetDraftPostIdeasStore.actions.fetchGetDraftPostIdeas();
 	},
 };
 

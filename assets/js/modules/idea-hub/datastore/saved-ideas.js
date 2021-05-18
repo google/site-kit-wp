@@ -47,11 +47,9 @@ const baseResolvers = {
 		const savedIdeas = registry.select( STORE_NAME ).getSavedIdeas( options );
 
 		// If there are already saved ideas in state, don't make an API request.
-		if ( savedIdeas?.length || savedIdeas !== undefined ) {
-			return;
+		if ( savedIdeas === undefined ) {
+			yield fetchGetSavedIdeasStore.actions.fetchGetSavedIdeas();
 		}
-
-		yield fetchGetSavedIdeasStore.actions.fetchGetSavedIdeas();
 	},
 };
 

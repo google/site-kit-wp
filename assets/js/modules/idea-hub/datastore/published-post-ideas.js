@@ -47,11 +47,9 @@ const baseResolvers = {
 		const publishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( options );
 
 		// If there are already published ideas in state, don't make an API request.
-		if ( publishedPostIdeas?.length || publishedPostIdeas !== undefined ) {
-			return;
+		if ( publishedPostIdeas === undefined ) {
+			yield fetchGetPublishedPostIdeasStore.actions.fetchGetPublishedPostIdeas();
 		}
-
-		yield fetchGetPublishedPostIdeasStore.actions.fetchGetPublishedPostIdeas();
 	},
 };
 
