@@ -80,6 +80,28 @@ final class Idea_Hub extends Module
 		$post_meta = new Post_Meta();
 
 		$this->register_scopes_hook();
+		if ( $this->is_connected() ) {
+			/**
+			 * Changes the posts view to have a custom label in place of Draft for Idea Hub Drafts.
+			 */
+			add_filter(
+				'display_post_states',
+				function( $post_states, $post ) {
+					if ( 'draft' !== $post->post_status ) {
+						return $post_states;
+					}
+					$idea = $this->get_post_idea( $post->ID );
+					if ( is_null( $idea ) ) {
+						return $post_states;
+					}
+					/* translators: %s: Idea Hub Idea Title */
+					$post_states['draft'] = sprintf( __( 'Idea Hub Draft “%s”', 'google-site-kit' ), $idea['text'] );
+					return $post_states;
+				},
+				10,
+				2
+			);
+		}
 
 		$this->post_name_setting = new Post_Idea_Name( $post_meta );
 		$this->post_name_setting->register();
@@ -187,9 +209,61 @@ final class Idea_Hub extends Module
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'POST:create-idea-draft-post':
-				// @TODO implementation
-				return function() {
-					return null;
+				$expected_parameters = array(
+					'name'   => 'string',
+					'text'   => 'string',
+					'topics' => 'array',
+				);
+				if ( ! isset( $data['idea'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'idea' ),
+						array( 'status' => 400 )
+					);
+				}
+				$idea = $data['idea'];
+				foreach ( $expected_parameters as $parameter_name => $expected_parameter_type ) {
+					if ( ! isset( $idea[ $parameter_name ] ) ) {
+						return new WP_Error(
+							'missing_required_param',
+							/* translators: %s: Missing parameter name */
+							sprintf( __( 'Request idea parameter is empty: %s.', 'google-site-kit' ), $parameter_name ),
+							array( 'status' => 400 )
+						);
+					}
+					$parameter_type = gettype( $idea[ $parameter_name ] );
+					if ( $parameter_type !== $expected_parameter_type ) {
+						return new WP_Error(
+							'wrong_parameter_type',
+							sprintf(
+								/* translators: %1$s: parameter name, %2$s expected type, %3$s received type */
+								__( 'Wrong parameter type for %1$s, expected %2$s, received %3$s', 'google-site-kit' ),
+								$parameter_name,
+								$expected_parameter_type,
+								$parameter_type
+							),
+							array( 'status' => 400 )
+						);
+					}
+				}
+
+				// Allows us to create a blank post.
+				add_filter( 'wp_insert_post_empty_content', '__return_false' );
+
+				$post_id = wp_insert_post( array(), false );
+				if ( 0 === $post_id ) {
+					return new WP_Error(
+						'unable_to_draft_post',
+						__( 'Unable to draft post.', 'google-site-kit' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$this->set_post_idea( $post_id, $idea );
+
+				return function() use ( $post_id ) {
+					return $post_id;
 				};
 			case 'GET:draft-post-ideas':
 				return function() {
@@ -358,6 +432,17 @@ final class Idea_Hub extends Module
 						},
 						is_array( $response ) ? $response : array( $response )
 					)
+				);
+			case 'POST:create-idea-draft-post':
+				$idea = $data['idea'];
+				return array(
+					'idea' => array(
+						'name'        => $idea['name'],
+						'text'        => $idea['text'],
+						'topics'      => $idea['topics'],
+						'postID'      => $response,
+						'postEditURL' => get_edit_post_link( $response, '' ),
+					),
 				);
 		}
 
