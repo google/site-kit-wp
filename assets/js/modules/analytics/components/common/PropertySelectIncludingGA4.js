@@ -44,20 +44,31 @@ export default function PropertySelectIncludingGA4() {
 	! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ accountID ] )
 	) );
 
-	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
-	const { setPrimaryPropertyType } = useDispatch( MODULES_ANALYTICS );
+	const { selectProperty: selectPropertyGA4 } = useDispatch( MODULES_ANALYTICS_4 );
+	const { selectProperty: selectPropertyUA, setPrimaryPropertyType } = useDispatch( MODULES_ANALYTICS );
 
 	const onChange = useCallback( ( index, item ) => {
+		// TODO - check this with ua properties
+		// console.debug( 'CLICK property ID ', item.dataset.value );
+
 		const newPropertyID = item.dataset.value;
-		// TODO - see AC
 		if ( propertyID !== newPropertyID ) {
-			// this should only happen if property is ga4
-			selectProperty( newPropertyID );
 			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
-			// this should only happen if property is ga4
-			setPrimaryPropertyType( 'ga4' );
+			if ( newPropertyID.startsWith( 'UA-' ) ) {
+				selectPropertyUA( newPropertyID );
+				setPrimaryPropertyType( 'ua' );
+
+				// TODO - this requires lots of changes BUT AC mentions it...
+				// selectPropertyGA4( null );
+			} else {
+				selectPropertyGA4( newPropertyID );
+				setPrimaryPropertyType( 'ga4' );
+
+				// TODO - this requires lots of changes BUT AC mentions it...
+				// selectPropertyUA( null );
+			}
 		}
-	}, [ propertyID, selectProperty, setPrimaryPropertyType ] );
+	}, [ propertyID, selectPropertyGA4, selectPropertyUA, setPrimaryPropertyType ] );
 
 	if ( isLoading ) {
 		return <ProgressBar small />;
