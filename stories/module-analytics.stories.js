@@ -62,7 +62,6 @@ function SetupWrap( { children } ) {
 }
 
 storiesOf( 'Analytics Module', module )
-	/* eslint-disable sitekit/acronym-case */
 	.add( 'Account Property Profile Select', () => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
@@ -72,9 +71,11 @@ storiesOf( 'Analytics Module', module )
 			// TODO - should instead have new static fixtures? is this too confusing? NOT tests though... could scramble names and generate fixtures dynamically?
 			for ( const account of accounts ) {
 				const propertiesForAccount = properties
+				// eslint-disable-next-line sitekit/acronym-case
 					.map( ( p ) => ( { ...p, accountId: account.id } ) );
 
 				const profilesForAccount = profiles
+				// eslint-disable-next-line sitekit/acronym-case
 					.map( ( p ) => ( { ...p, accountId: account.id } ) );
 
 				dispatch( STORE_NAME ).receiveGetProperties( propertiesForAccount, { accountID: account.id } );
