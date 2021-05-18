@@ -38,28 +38,33 @@ export default function PropertySelectIncludingGA4() {
 // TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
 	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
 	const unmappedProperties = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertiesIncludingGA4( accountID ) || [] );
-	const propertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
+	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
+	const uaPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
 	const isLoading = useSelect( ( select ) => (
 		! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) ||
 	! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ accountID ] )
 	) );
 
+	const primaryPropertyType = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPrimaryPropertyType() );
+
 	const ga4Dispatch = useDispatch( MODULES_ANALYTICS_4 );
 	const uaDispatch = useDispatch( MODULES_ANALYTICS );
 
+	const propertyID = primaryPropertyType === 'ga4' ? ga4PropertyID : uaPropertyID;
+
 	const onChange = useCallback( ( index, item ) => {
 		// TODO - check this with ua properties
-		// console.debug( 'CLICK property ID ', item.dataset.value );
+		// console.debug( 'item.dataset.value', item.dataset.value );
 
 		const newPropertyID = item.dataset.value;
+		const internalID = item.dataset.internalId; // eslint-disable-line sitekit/acronym-case
 		if ( propertyID !== newPropertyID ) {
 			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
 			if ( newPropertyID.startsWith( 'UA-' ) ) {
-				uaDispatch.selectProperty( newPropertyID );
+				// console.debug( 'selecting UA newPropertyID: ', newPropertyID, internalID );
+				uaDispatch.selectProperty( newPropertyID, internalID );
 				uaDispatch.setPrimaryPropertyType( 'ua' );
 
-				// TODO - this requires lots of changes BUT AC mentions it...
-				// selectPropertyGA4( null );
 				ga4Dispatch.setPropertyID( '' );
 				ga4Dispatch.setWebDataStreamID( '' );
 				ga4Dispatch.setMeasurementID( '' );
@@ -67,8 +72,6 @@ export default function PropertySelectIncludingGA4() {
 				ga4Dispatch.selectProperty( newPropertyID );
 				uaDispatch.setPrimaryPropertyType( 'ga4' );
 
-				// TODO - this requires lots of changes BUT AC mentions it...
-				// selectPropertyUA( null );
 				uaDispatch.setPropertyID( '' );
 				uaDispatch.setInternalWebPropertyID( '' );
 				uaDispatch.setProfileID( '' );
@@ -99,7 +102,9 @@ export default function PropertySelectIncludingGA4() {
 		.filter( Boolean );
 
 	// TODO - fix undefineds at end
-	// console.debug( properties );
+	// console.debug( 'propertyID ', propertyID );
+
+	// console.debug( 'properties ', properties );
 
 	return (
 		<Select
@@ -116,10 +121,11 @@ export default function PropertySelectIncludingGA4() {
 					id: PROPERTY_CREATE,
 					name: __( 'Set up a new property', 'google-site-kit' ),
 				} )
-				.map( ( { id, name }, index ) => (
+				.map( ( { id, name, internalWebPropertyId }, index ) => ( // eslint-disable-line sitekit/acronym-case
 					<Option
 						key={ index }
 						value={ id }
+						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
 					>
 						{ id === PROPERTY_CREATE
 							? name
