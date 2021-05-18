@@ -44,8 +44,8 @@ export default function PropertySelectIncludingGA4() {
 	! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ accountID ] )
 	) );
 
-	const { selectProperty: selectPropertyGA4 } = useDispatch( MODULES_ANALYTICS_4 );
-	const { selectProperty: selectPropertyUA, setPrimaryPropertyType } = useDispatch( MODULES_ANALYTICS );
+	const ga4Dispatch = useDispatch( MODULES_ANALYTICS_4 );
+	const uaDispatch = useDispatch( MODULES_ANALYTICS );
 
 	const onChange = useCallback( ( index, item ) => {
 		// TODO - check this with ua properties
@@ -55,20 +55,20 @@ export default function PropertySelectIncludingGA4() {
 		if ( propertyID !== newPropertyID ) {
 			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
 			if ( newPropertyID.startsWith( 'UA-' ) ) {
-				selectPropertyUA( newPropertyID );
-				setPrimaryPropertyType( 'ua' );
+				uaDispatch.selectPropertyUA( newPropertyID );
+				uaDispatch.setPrimaryPropertyType( 'ua' );
 
 				// TODO - this requires lots of changes BUT AC mentions it...
 				// selectPropertyGA4( null );
 			} else {
-				selectPropertyGA4( newPropertyID );
-				setPrimaryPropertyType( 'ga4' );
+				ga4Dispatch.selectProperty( newPropertyID );
+				uaDispatch.setPrimaryPropertyType( 'ga4' );
 
 				// TODO - this requires lots of changes BUT AC mentions it...
 				// selectPropertyUA( null );
 			}
 		}
-	}, [ propertyID, selectPropertyGA4, selectPropertyUA, setPrimaryPropertyType ] );
+	}, [ propertyID, ga4Dispatch, uaDispatch ] );
 
 	if ( isLoading ) {
 		return <ProgressBar small />;
