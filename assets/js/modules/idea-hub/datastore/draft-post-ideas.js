@@ -47,7 +47,7 @@ const baseResolvers = {
 		const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
 
 		// If there are already draft ideas in state, don't make an API request.
-		if ( draftPostIdeas?.length ) {
+		if ( draftPostIdeas?.length || draftPostIdeas !== undefined ) {
 			return;
 		}
 
@@ -71,7 +71,7 @@ const baseSelectors = {
 		const { draftPostIdeas } = state;
 
 		if ( draftPostIdeas === undefined ) {
-			return;
+			return undefined;
 		}
 
 		const offset = options?.offset || 0;

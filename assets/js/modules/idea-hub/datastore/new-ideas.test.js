@@ -64,7 +64,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 
 				const pendingNewIdeas = registry.select( STORE_NAME ).getNewIdeas( options );
 
-				expect( pendingNewIdeas ).toEqual( [] );
+				expect( pendingNewIdeas ).toEqual( undefined );
 				await untilResolved( registry, STORE_NAME ).getNewIdeas( options );
 
 				const newIdeas = registry.select( STORE_NAME ).getNewIdeas( options );
@@ -193,7 +193,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const newIdeas = registry.select( STORE_NAME ).getNewIdeas( options );
-				expect( newIdeas ).toEqual( [] );
+				expect( newIdeas ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );
 		} );
