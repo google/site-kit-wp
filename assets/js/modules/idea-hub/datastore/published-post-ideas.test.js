@@ -64,7 +64,7 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 
 				const pendingPublishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( options );
 
-				expect( pendingPublishedPostIdeas ).toEqual( [] );
+				expect( pendingPublishedPostIdeas ).toEqual( undefined );
 				await untilResolved( registry, STORE_NAME ).getPublishedPostIdeas( options );
 
 				const publishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( options );
@@ -193,7 +193,7 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const publishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( options );
-				expect( publishedPostIdeas ).toEqual( [] );
+				expect( publishedPostIdeas ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );
 		} );

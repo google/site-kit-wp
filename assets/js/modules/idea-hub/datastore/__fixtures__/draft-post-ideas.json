@@ -1,5 +1,7 @@
 [
   {
+    "postID": 1,
+    "postEditURL": "http://sitekit.10uplabs.com/wp-admin/post.php?post=1&action=edit",
     "name": "ideas/17450692223393508734",
     "text": "Why Penguins are guanotelic?",
     "topics": [
@@ -10,6 +12,8 @@
     ]
   },
   {
+    "postID": 2,
+    "postEditURL": "http://sitekit.10uplabs.com/wp-admin/post.php?post=2&action=edit",
     "name": "ideas/14025103994557865535",
     "text": "When was sushi Kalam introduced?",
     "topics": [
@@ -20,6 +24,8 @@
     ]
   },
   {
+    "postID": 3,
+    "postEditURL": "http://sitekit.10uplabs.com/wp-admin/post.php?post=3&action=edit",
     "name": "ideas/7612031899179595408",
     "text": "How to speed up your WordPress site",
     "topics": [
@@ -30,6 +36,8 @@
     ]
   },
   {
+    "postID": 4,
+    "postEditURL": "http://sitekit.10uplabs.com/wp-admin/post.php?post=4&action=edit",
     "name": "ideas/2285812891948871921",
     "text": "Using Site Kit to analyze your success",
     "topics": [
@@ -40,6 +48,8 @@
     ]
   },
   {
+    "postID": 5,
+    "postEditURL": "http://sitekit.10uplabs.com/wp-admin/post.php?post=5&action=edit",
     "name": "ideas/68182298994557866271",
     "text": "How to make carne asada",
     "topics": [
