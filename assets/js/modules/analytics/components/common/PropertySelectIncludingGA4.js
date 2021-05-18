@@ -55,17 +55,23 @@ export default function PropertySelectIncludingGA4() {
 		if ( propertyID !== newPropertyID ) {
 			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
 			if ( newPropertyID.startsWith( 'UA-' ) ) {
-				uaDispatch.selectPropertyUA( newPropertyID );
+				uaDispatch.selectProperty( newPropertyID );
 				uaDispatch.setPrimaryPropertyType( 'ua' );
 
 				// TODO - this requires lots of changes BUT AC mentions it...
 				// selectPropertyGA4( null );
+				ga4Dispatch.setPropertyID( '' );
+				ga4Dispatch.setWebDataStreamID( '' );
+				ga4Dispatch.setMeasurementID( '' );
 			} else {
 				ga4Dispatch.selectProperty( newPropertyID );
 				uaDispatch.setPrimaryPropertyType( 'ga4' );
 
 				// TODO - this requires lots of changes BUT AC mentions it...
 				// selectPropertyUA( null );
+				uaDispatch.setPropertyID( '' );
+				uaDispatch.setInternalWebPropertyID( '' );
+				uaDispatch.setProfileID( '' );
 			}
 		}
 	}, [ propertyID, ga4Dispatch, uaDispatch ] );

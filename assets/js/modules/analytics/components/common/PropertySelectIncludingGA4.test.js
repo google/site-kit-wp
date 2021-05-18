@@ -153,7 +153,7 @@ describe( 'PropertySelectIncludingGA4', () => {
 
 		// while the modules/analytics store's selectProperty action should be used to empty/reset the UA property (since that then needs to later be chosen in another dropdown based on the GA4 property).
 		// TODO - confirm on ticket
-		// expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBeNull();
+		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe( '' );
 
 		// TO TEST -> assert that can now see selected option?
 		// TODO - no other tests for Selects assert this? to copy the test
@@ -179,7 +179,7 @@ describe( 'PropertySelectIncludingGA4', () => {
 		expect( targetProperty.id ).toEqual( newPropertyID );
 
 		// NEXT
-		// expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBeUndefined();
+		expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( '' );
 
 		// COPY ANY MORE TESTS FROM PREVIOUS TEST
 	} );
