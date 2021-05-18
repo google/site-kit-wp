@@ -46,12 +46,10 @@ const baseResolvers = {
 		const registry = yield Data.commonActions.getRegistry();
 		const newIdeas = registry.select( STORE_NAME ).getNewIdeas( options );
 
-		// If there are already new ideas in state, don't make an API request.
-		if ( newIdeas?.length || newIdeas !== undefined ) {
-			return;
+		// If there are already ideas in state, don't make an API request.
+		if ( newIdeas === undefined ) {
+			yield fetchGetNewIdeasStore.actions.fetchGetNewIdeas();
 		}
-
-		yield fetchGetNewIdeasStore.actions.fetchGetNewIdeas();
 	},
 };
 
