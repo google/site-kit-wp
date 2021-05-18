@@ -266,9 +266,29 @@ final class Idea_Hub extends Module
 					return $post_id;
 				};
 			case 'GET:draft-post-ideas':
-				// @TODO implementation
 				return function() {
-					return null;
+					$wp_query = new \WP_Query();
+
+					return $wp_query->query(
+						array(
+							'fields'         => 'ids',
+							'no_found_rows'  => true,
+							'post_status'    => 'draft',
+							'posts_per_page' => -1,
+							'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+								'relation' => 'AND',
+								array(
+									'key' => Post_Idea_Name::META_KEY,
+								),
+								array(
+									'key' => Post_Idea_Text::META_KEY,
+								),
+								array(
+									'key' => Post_Idea_Topics::META_KEY,
+								),
+							),
+						)
+					);
 				};
 			case 'GET:new-ideas':
 				// @TODO: Implement this with the real API endpoint.
@@ -332,9 +352,28 @@ final class Idea_Hub extends Module
 					);
 				};
 			case 'GET:published-post-ideas':
-				// @TODO implementation
 				return function() {
-					return null;
+					$wp_query = new \WP_Query();
+
+					return $wp_query->query(
+						array(
+							'fields'         => 'ids',
+							'no_found_rows'  => true,
+							'posts_per_page' => -1,
+							'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+								'relation' => 'AND',
+								array(
+									'key' => Post_Idea_Name::META_KEY,
+								),
+								array(
+									'key' => Post_Idea_Text::META_KEY,
+								),
+								array(
+									'key' => Post_Idea_Topics::META_KEY,
+								),
+							),
+						)
+					);
 				};
 			case 'GET:saved-ideas':
 				// @TODO: Implement this with the real API endpoint.
@@ -363,6 +402,37 @@ final class Idea_Hub extends Module
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:draft-post-ideas':
+				return array_filter(
+					array_map(
+						function( $post_id ) {
+							return array_merge(
+								array(
+									'postID'      => $post_id,
+									'postEditURL' => get_edit_post_link( $post_id ),
+								),
+								$this->get_post_idea( $post_id )
+							);
+						},
+						is_array( $response ) ? $response : array( $response )
+					)
+				);
+			case 'GET:published-post-ideas':
+				return array_filter(
+					array_map(
+						function( $post_id ) {
+							return array_merge(
+								array(
+									'postID'      => $post_id,
+									'postEditURL' => get_edit_post_link( $post_id ),
+									'postURL'     => get_permalink( $post_id ),
+								),
+								$this->get_post_idea( $post_id )
+							);
+						},
+						is_array( $response ) ? $response : array( $response )
+					)
+				);
 			case 'POST:create-idea-draft-post':
 				$idea = $data['idea'];
 				return array(
