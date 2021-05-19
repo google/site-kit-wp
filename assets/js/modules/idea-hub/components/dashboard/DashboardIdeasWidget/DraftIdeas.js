@@ -43,7 +43,7 @@ import Empty from './Empty';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-const DraftIdeas = ( { WidgetError } ) => {
+const DraftIdeas = ( { WidgetReportError } ) => {
 	const [ page, setPage ] = useState( 1 );
 	const args = {
 		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
@@ -77,7 +77,7 @@ const DraftIdeas = ( { WidgetError } ) => {
 	}
 
 	if ( error ) {
-		return <WidgetError slug="idea-hub" error={ error } />;
+		return <WidgetReportError slug="idea-hub" error={ error } />;
 	}
 
 	if ( ! totalNewIdeas ) {
@@ -102,6 +102,7 @@ const DraftIdeas = ( { WidgetError } ) => {
 							text={ idea.text }
 							topics={ idea.topics }
 							buttons={ [ IDEA_HUB_BUTTON_VIEW ] }
+							postEditURL={ idea.postEditURL }
 						/>
 					);
 				} ) }
@@ -118,7 +119,7 @@ const DraftIdeas = ( { WidgetError } ) => {
 };
 
 DraftIdeas.propTypes = {
-	WidgetError: PropTypes.elementType.isRequired,
+	WidgetReportError: PropTypes.elementType.isRequired,
 };
 
 export default DraftIdeas;

@@ -108,26 +108,21 @@
 	.googlesitekit-idea-hub__actions--delete,
 	.googlesitekit-idea-hub__actions--pin,
 	.googlesitekit-idea-hub__actions--unpin {
-		display: none;
-	}
 
-	.googlesitekit-idea-hub__actions--unpin {
-
-		svg {
-			color: $c-idea-hub-active-nav;
+		@media (min-width: $bp-tablet) {
+			display: none;
 		}
 	}
 
 	.googlesitekit-idea-hub__idea--single {
 		box-shadow: 0 -1px 0 rgba($c-black, 0.12);
+		padding-bottom: 12px;
+		padding-top: 12px;
 		transition: background $t-default ease-in-out;
 
 		+ .googlesitekit-idea-hub__idea--single {
-			padding-top: $grid-gap-phone;
-
-			@media (min-width: $bp-desktop) {
-				padding-top: $grid-gap-desktop;
-			}
+			padding-bottom: 12px;
+			padding-top: 12px;
 		}
 
 		&:hover,
@@ -151,7 +146,9 @@
 		}
 
 		.googlesitekit-idea-hub__idea--actions {
+			align-self: flex-start;
 			display: flex;
+			min-height: 48px;
 
 			@media (min-width: $bp-tablet) {
 				justify-content: flex-end;
@@ -161,6 +158,13 @@
 				color: $c-idea-hub-icon-color;
 				height: 24px;
 				width: 24px;
+			}
+
+			.googlesitekit-idea-hub__actions--unpin {
+
+				svg {
+					color: $c-idea-hub-active-nav;
+				}
 			}
 
 			button,

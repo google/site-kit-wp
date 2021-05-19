@@ -44,7 +44,7 @@ import Empty from './Empty';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-const SavedIdeas = ( { WidgetError } ) => {
+const SavedIdeas = ( { WidgetReportError } ) => {
 	const [ page, setPage ] = useState( 1 );
 	const args = {
 		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
@@ -78,7 +78,7 @@ const SavedIdeas = ( { WidgetError } ) => {
 	}
 
 	if ( error ) {
-		return <WidgetError slug="idea-hub" error={ error } />;
+		return <WidgetReportError slug="idea-hub" error={ error } />;
 	}
 
 	if ( ! totalNewIdeas ) {
@@ -119,7 +119,7 @@ const SavedIdeas = ( { WidgetError } ) => {
 };
 
 SavedIdeas.propTypes = {
-	WidgetError: PropTypes.elementType.isRequired,
+	WidgetReportError: PropTypes.elementType.isRequired,
 };
 
 export default SavedIdeas;

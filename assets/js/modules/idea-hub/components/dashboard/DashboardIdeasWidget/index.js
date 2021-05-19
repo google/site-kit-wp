@@ -51,14 +51,14 @@ const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 	return ideaHubWidgetOffsetTop + global.window.pageYOffset + headerOffset;
 };
 
-const DashboardIdeasWidget = ( { Widget, WidgetError } ) => {
+const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportError } ) => {
 	const ideaHubContainer = useRef();
 	const newIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeas() );
 	const savedIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeas() );
 	const draftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas() );
 
 	const [ hash, setHash ] = useHash();
-	const [ activeTabIndex, setActiveTabIndex ] = useState( DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] || 0 );
+	const [ activeTabIndex, setActiveTabIndex ] = useState( DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] || defaultActiveTabIndex );
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
 
 	useMount( () => {
@@ -115,15 +115,15 @@ const DashboardIdeasWidget = ( { Widget, WidgetError } ) => {
 
 				<div className="googlesitekit-idea-hub__body">
 					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'new-ideas' }>
-						<NewIdeas WidgetError={ WidgetError } active={ activeTab === 'new-ideas' } />
+						<NewIdeas WidgetReportError={ WidgetReportError } active={ activeTab === 'new-ideas' } />
 					</div>
 
 					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'saved-ideas' }>
-						<SavedIdeas WidgetError={ WidgetError } active={ activeTab === 'saved-ideas' } />
+						<SavedIdeas WidgetReportError={ WidgetReportError } active={ activeTab === 'saved-ideas' } />
 					</div>
 
 					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'draft-ideas' }>
-						<DraftIdeas WidgetError={ WidgetError } active={ activeTab === 'draft-ideas' } />
+						<DraftIdeas WidgetReportError={ WidgetReportError } active={ activeTab === 'draft-ideas' } />
 					</div>
 				</div>
 			</div>
@@ -141,6 +141,11 @@ DashboardIdeasWidget.tabIDsByIndex = Object.keys( DashboardIdeasWidget.tabToInde
 
 DashboardIdeasWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
+	defaultActiveTabIndex: PropTypes.number,
+};
+
+DashboardIdeasWidget.defaultProps = {
+	defaultActiveTabIndex: 0,
 };
 
 export default whenActive( { moduleName: 'idea-hub' } )( DashboardIdeasWidget );

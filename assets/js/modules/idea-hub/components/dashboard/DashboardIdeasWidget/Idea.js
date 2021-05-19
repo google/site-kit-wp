@@ -44,7 +44,7 @@ import CreateIcon from '../../../../../../svg/idea-hub-create.svg';
 import PinIcon from '../../../../../../svg/idea-hub-pin.svg';
 import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
 
-const Idea = ( { postURL, name, text, topics, buttons } ) => {
+const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 	const handleDelete = useCallback( () => {
 		global.console.log( `Deleted: ${ name }` );
 	}, [ name ] );
@@ -64,7 +64,7 @@ const Idea = ( { postURL, name, text, topics, buttons } ) => {
 	return (
 		<Grid className="googlesitekit-idea-hub__idea--single">
 			<Row>
-				<Cell size={ 9 } className="googlesitekit-idea-hub__idea--details">
+				<Cell smSize={ 4 } mdSize={ 5 } lgSize={ 9 } className="googlesitekit-idea-hub__idea--details">
 					<div className="googlesitekit-idea-hub__idea--topics">
 						{ topics.map( ( topic, key ) => {
 							return (
@@ -75,7 +75,7 @@ const Idea = ( { postURL, name, text, topics, buttons } ) => {
 
 					<p className="googlesitekit-idea-hub__idea--text">{ text }</p>
 				</Cell>
-				<Cell size={ 3 } className="googlesitekit-idea-hub__idea--actions">
+				<Cell smSize={ 4 } mdSize={ 3 } lgSize={ 3 } className="googlesitekit-idea-hub__idea--actions">
 					{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
 						<Button
 							onClick={ handleDelete }
@@ -107,8 +107,8 @@ const Idea = ( { postURL, name, text, topics, buttons } ) => {
 						/>
 					) }
 
-					{ buttons.includes( IDEA_HUB_BUTTON_VIEW ) && postURL && (
-						<Button href={ postURL } className="googlesitekit-idea-hub__actions--view">
+					{ buttons.includes( IDEA_HUB_BUTTON_VIEW ) && postEditURL && (
+						<Button href={ postEditURL } className="googlesitekit-idea-hub__actions--view">
 							{ __( 'View draft', 'google-site-kit' ) }
 						</Button>
 					) }
