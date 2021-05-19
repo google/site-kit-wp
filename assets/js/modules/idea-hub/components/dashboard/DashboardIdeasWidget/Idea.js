@@ -46,18 +46,22 @@ import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
 
 const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 	const handleDelete = useCallback( () => {
+		// @TODO: Implement callback.
 		global.console.log( `Deleted: ${ name }` );
 	}, [ name ] );
 
 	const handlePin = useCallback( () => {
+		// @TODO: Implement callback.
 		global.console.log( `Pinned: ${ name }` );
 	}, [ name ] );
 
 	const handleUnpin = useCallback( () => {
+		// @TODO: Implement callback.
 		global.console.log( `Unpinned: ${ name }` );
 	}, [ name ] );
 
 	const handleCreate = useCallback( () => {
+		// @TODO: Implement callback.
 		global.console.log( `Created: ${ name }` );
 	}, [ name ] );
 

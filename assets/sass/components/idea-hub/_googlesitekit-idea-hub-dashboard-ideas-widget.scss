@@ -213,6 +213,11 @@
 		color: $c-idea-hub-topic;
 		display: inline-flex;
 		font-size: 0.75rem;
+		justify-content: center;
 		line-height: 1.33;
+
+		@media (min-width: $bp-tablet) {
+			justify-content: flex-start;
+		}
 	}
 }

@@ -31,7 +31,7 @@
 			min-height: 120px;
 
 			@media (min-width: $bp-desktop) {
-				min-height: 385px;
+				min-height: 270px;
 			}
 		}
 	}
@@ -63,10 +63,6 @@
 		.mdc-layout-grid__inner {
 			min-height: auto;
 			padding: 40px 0;
-
-			@media (min-width: $bp-desktop) {
-				padding: 80px 0;
-			}
 		}
 
 		.googlesitekit-idea-hub__empty--details {

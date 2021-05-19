@@ -74,7 +74,7 @@ const NewIdeas = ( { WidgetReportError } ) => {
 
 	if ( ! hasFinishedResolution ) {
 		return (
-			<PreviewTable rows={ 5 } rowHeight={ 100 } />
+			<PreviewTable rows={ 5 } rowHeight={ 70 } />
 		);
 	}
 

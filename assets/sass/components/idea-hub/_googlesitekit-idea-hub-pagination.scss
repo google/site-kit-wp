@@ -21,7 +21,11 @@
 	.googlesitekit-idea-hub__pagination {
 		align-items: center;
 		display: flex;
-		justify-content: flex-end;
+		justify-content: center;
+
+		@media (min-width: $bp-tablet) {
+			justify-content: flex-end;
+		}
 	}
 
 	.googlesitekit-idea-hub__pagination--legend {
