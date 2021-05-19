@@ -28,7 +28,7 @@ import '../assets/sass/wpdashboard.scss';
 import '../assets/sass/adminbar.scss';
 import '../assets/sass/admin.scss';
 import './assets/sass/wp-admin.scss';
-// Ensure all globals are setup before any other imports are run.
+// Ensure all globals are set up before any other imports are run.
 import './polyfill-globals';
 import { resetGlobals } from './utils/resetGlobals';
 import { bootstrapFetchMocks } from './fetch-mocks';
@@ -37,7 +37,7 @@ import { enabledFeatures } from '../assets/js/features';
 
 bootstrapFetchMocks();
 
-// Decorators run from last added to first.
+// Decorators run from last added to first. (Eg. In reverse order as listed.)
 export const decorators = [
 	( Story ) => (
 		<div className="googlesitekit-plugin-preview js">
