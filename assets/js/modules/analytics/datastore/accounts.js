@@ -34,6 +34,8 @@ import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { actions as tagActions } from './tags';
+import { actions as propertyActions } from './properties';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 const { createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
 
@@ -138,13 +140,25 @@ const baseActions = {
 				return;
 			}
 
-			// Trigger cascading selections.
-			const properties = registry.select( STORE_NAME ).getProperties( accountID );
-			if ( properties === undefined ) {
-				return; // Selection will happen in resolver.
+			yield propertyActions.waitForProperties( accountID );
+
+			const urls = registry.select( CORE_SITE ).getSiteURLPermutations();
+			const uaProperties = registry.select( STORE_NAME ).getProperties( accountID );
+
+			let uaProperty = yield Data.commonActions.await( registry.dispatch( STORE_NAME ).matchPropertyByURL( uaProperties, urls ) );
+			if ( ! uaProperty ) {
+				uaProperty = {
+					id: PROPERTY_CREATE,
+					internalWebPropertyId: '', // eslint-disable-line sitekit/acronym-case
+				};
 			}
-			const property = properties[ 0 ] || { id: PROPERTY_CREATE };
-			registry.dispatch( STORE_NAME ).selectProperty( property.id );
+
+			yield Data.commonActions.await(
+				registry.dispatch( STORE_NAME ).selectProperty(
+					uaProperty?.id,
+					uaProperty?.internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
+				),
+			);
 		}
 	),
 
