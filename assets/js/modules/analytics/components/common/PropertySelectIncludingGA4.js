@@ -35,14 +35,14 @@ import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelectIncludingGA4() {
-// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
 	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
 	const unmappedProperties = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertiesIncludingGA4( accountID ) || [] );
 	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 	const uaPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
 	const isLoading = useSelect( ( select ) => (
 		! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) ||
-	! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ accountID ] )
+	! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ accountID ] ) ||
+	! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getProperties', [ accountID ] )
 	) );
 
 	const primaryPropertyType = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPrimaryPropertyType() );
