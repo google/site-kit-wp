@@ -175,19 +175,19 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await expect( page ).toMatchElement( 'button[disabled]', { text: /configure analytics/i } );
 
 			// Select Test Account A
-			await expect( page ).toClick( '.googlesitekit-analytics__select-account .mdc-select__selected-text' );
-			await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account a/i } );
+			await step(
+				'select account A',
+				async () => {
+					await expect( page ).toClick( '.googlesitekit-analytics__select-account .mdc-select__selected-text' );
+					await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account a/i } );
 
-			// See the selects populate
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account a/i } );
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test property x/i } );
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test profile x/i } );
-
-			await expect( page ).toClick( '.mdc-select', { text: /test property x/i } );
-			await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /set up a new property/i } );
-
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new property/i } );
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new view/i } );
+					// See the selects populate
+					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account a/i } );
+					// Property and profile dropdowns should select "Set up a new property/view" options because there is no property associated with the current reference URL.
+					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new property/i } );
+					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new view/i } );
+				},
+			);
 
 			// Intentionally does not submit to trigger property & profile creation requests.
 		} );
