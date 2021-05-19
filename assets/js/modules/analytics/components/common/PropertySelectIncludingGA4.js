@@ -53,15 +53,11 @@ export default function PropertySelectIncludingGA4() {
 	const propertyID = primaryPropertyType === 'ga4' ? ga4PropertyID : uaPropertyID;
 
 	const onChange = useCallback( ( index, item ) => {
-		// TODO - check this with ua properties
-		// console.debug( 'item.dataset.value', item.dataset.value );
-
 		const newPropertyID = item.dataset.value;
 		const internalID = item.dataset.internalId; // eslint-disable-line sitekit/acronym-case
 		if ( propertyID !== newPropertyID ) {
 			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
 			if ( newPropertyID.startsWith( 'UA-' ) ) {
-				// console.debug( 'selecting UA newPropertyID: ', newPropertyID, internalID );
 				uaDispatch.selectProperty( newPropertyID, internalID );
 				uaDispatch.setPrimaryPropertyType( 'ua' );
 
@@ -83,28 +79,17 @@ export default function PropertySelectIncludingGA4() {
 		return <ProgressBar small />;
 	}
 
-	// TEMP FIX SO TESTS PASS
-	// not sure if should even map! better to instead support this in the component? how will know which is which when clicked?
 	const properties = unmappedProperties.map( ( p ) => {
-		// console.log( p );
-		// no idea why nullish... seems like mistake
 		if ( p?._id ) {
 			return {
 				...p,
-				// mapping to be like UA...
+				// map GA4 properties to have fields like UA
 				id: p._id,
 				name: p.displayName,
 			};
 		}
 		return p;
-	} )
-	// undefineds are leaking in somehow
-		.filter( Boolean );
-
-	// TODO - fix undefineds at end
-	// console.debug( 'propertyID ', propertyID );
-
-	// console.debug( 'properties ', properties );
+	} );
 
 	return (
 		<Select
