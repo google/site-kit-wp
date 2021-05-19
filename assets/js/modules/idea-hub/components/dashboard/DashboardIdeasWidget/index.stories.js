@@ -22,6 +22,7 @@
 import DashboardIdeasWidget from './index';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util/';
 import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../../../../tests/js/utils';
+import { enabledFeatures } from '../../../../../features';
 
 const widgetComponentProps = getWidgetComponentProps( 'ideaHubIdeas' );
 export const Ready = () => <DashboardIdeasWidget { ...widgetComponentProps } />;
@@ -32,6 +33,9 @@ export default {
 	component: DashboardIdeasWidget,
 	decorators: [
 		( Story ) => {
+			enabledFeatures.clear();
+			enabledFeatures.add( 'ideaHubModule' );
+
 			const registry = createTestRegistry();
 			provideModules( registry, [ {
 				slug: 'idea-hub',
