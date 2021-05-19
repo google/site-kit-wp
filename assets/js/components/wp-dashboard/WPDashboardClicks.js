@@ -31,6 +31,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../modules/search-console/util';
 import { calculateChange, trackEvent } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
+import { partitionReport } from '../../util/partition-report';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 const { useSelect } = Data;
@@ -40,6 +41,7 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
+	const dateRangeLength = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
 	const reportArgs = {
 		startDate: compareStartDate,
@@ -69,12 +71,9 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
-	const half = Math.floor( data.length / 2 );
-	const latestData = data.slice( half );
-	const olderData = data.slice( 0, half );
-
-	const totalClicks = sumObjectListValue( latestData, 'clicks' );
-	const totalOlderClicks = sumObjectListValue( olderData, 'clicks' );
+	const { compareRange, currentRange } = partitionReport( data, { dateRangeLength } );
+	const totalClicks = sumObjectListValue( currentRange, 'clicks' );
+	const totalOlderClicks = sumObjectListValue( compareRange, 'clicks' );
 	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
 
 	return (
