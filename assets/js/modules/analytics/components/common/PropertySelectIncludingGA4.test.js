@@ -87,7 +87,7 @@ describe( 'PropertySelectIncludingGA4', () => {
 		expect( listItems ).toHaveLength( propertiesUA.length + propertiesGA4.length + 1 );
 	} );
 
-	it( 'should be disabled when in the absence of an valid account ID.', async () => {
+	it( 'should not render in the absence of an valid account ID.', async () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry,
 		} );
@@ -103,9 +103,8 @@ describe( 'PropertySelectIncludingGA4', () => {
 			registry.dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
 			registry.dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
 		} );
-		// ACCOUNT_CREATE is an invalid accountID (but valid selection), so ensure the select IS currently disabled.
-		expect( selectWrapper ).toHaveClass( 'mdc-select--disabled' );
-		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'true' );
+		// ACCOUNT_CREATE is an invalid accountID (but valid selection), so ensure the select is not rendered
+		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {

@@ -75,6 +75,10 @@ export default function PropertySelectIncludingGA4() {
 		}
 	}, [ propertyID, ga4Dispatch, uaDispatch ] );
 
+	if ( ! isValidAccountID( accountID ) ) {
+		return null;
+	}
+
 	if ( isLoading ) {
 		return <ProgressBar small />;
 	}
