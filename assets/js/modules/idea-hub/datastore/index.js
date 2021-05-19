@@ -23,12 +23,18 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import baseModuleStore from './base';
 import newIdeas from './new-ideas';
+import draftIdeas from './draft-ideas';
 import savedIdeas from './saved-ideas';
+import draftPostIdeas from './draft-post-ideas';
+import publishedPostIdeas from './published-post-ideas';
 
 const store = Data.combineStores(
 	baseModuleStore,
+	draftIdeas,
 	newIdeas,
 	savedIdeas,
+	draftPostIdeas,
+	publishedPostIdeas,
 );
 
 export const initialState = store.initialState;
