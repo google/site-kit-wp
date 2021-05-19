@@ -308,6 +308,8 @@ describe( 'modules/analytics properties', () => {
 		} );
 
 		describe( 'getPropertiesIncludingGA4', () => {
+			it.todo( 'returns undefined if UA or GA properties are loading' );
+
 			it( 'returns a sorted list of ua and ga4 properties ', async () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const accountID = testAccountID;
