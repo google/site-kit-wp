@@ -34,31 +34,29 @@ const {
 	properties: propertiesGA4,
 	webDataStreams,
 } = analytics4Fixtures;
-const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-// is this ok for UA?
+const { accounts, properties: propertiesUA, profiles } = fixtures.accountsPropertiesProfiles;
 const accountID = createProperty._accountID;
 const propertyIDga4 = createWebDataStream._propertyID;
+const propertyIDua = propertiesUA[ 0 ].id;
 
 const setupRegistry = ( { dispatch } ) => {
 	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: 'http://example.com' } );
 	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
-	// Not sure what does but copied from elsewhere
 	dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
 	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 
-	dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID } );
+	dispatch( MODULES_ANALYTICS ).receiveGetProperties( propertiesUA, { accountID } );
 	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ accountID ] );
 
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( propertiesGA4, { accountID } );
 	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [ accountID ] );
 
-	const propertyID = properties[ 0 ].id;
-	dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, { accountID, propertyID } );
-	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ accountID, propertyID ] );
+	dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, { accountID, propertyID: propertyIDua } );
+	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ accountID, propertyIDua ] );
 
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( webDataStreams, { propertyID: propertyIDga4 } );
 	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'receiveGetWebDataStreams', { propertyID: propertyIDga4 } );
@@ -86,10 +84,9 @@ describe( 'PropertySelectIncludingGA4', () => {
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		// Note: we do length + 1 here because there should also be an item for
 		// "Set up a new property".
-		expect( listItems ).toHaveLength( properties.length + propertiesGA4.length + 1 );
+		expect( listItems ).toHaveLength( propertiesUA.length + propertiesGA4.length + 1 );
 	} );
 
-	// TODO - should actually be empty! Copy test from other task when merged
 	it( 'should be disabled when in the absence of an valid account ID.', async () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry,
@@ -111,10 +108,6 @@ describe( 'PropertySelectIncludingGA4', () => {
 		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'true' );
 	} );
 
-	// TO TEST?
-	// * If properties are still loading, the component should return a loading bar.
-	// * Every property should show up as its name with its ID in parentheses.
-
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
 		const { getAllByRole } = render( <PropertySelect />, { setupRegistry: setupEmptyRegistry } );
 
@@ -126,7 +119,7 @@ describe( 'PropertySelectIncludingGA4', () => {
 	it( 'should change between UA and GA4 properties', async () => {
 		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
 		const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
-		// NOTE -> due to the selector getPropertiesIncludingGA4 sorting this is rendered second in the select
+		// the selector getPropertiesIncludingGA4 sorts so this is rendered second in the select
 		const ga4TargetProperty = ga4Properties[ 0 ];
 
 		expect( container.querySelector( '.mdc-select__selected-text' ) ).toHaveTextContent( '' );
@@ -134,10 +127,8 @@ describe( 'PropertySelectIncludingGA4', () => {
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
 
-		// If the selected property is a GA4 property, the setPrimaryPropertyType action should be called to indicate "ga4".
+		// The selected property is a GA4 property
 		expect( registry.select( MODULES_ANALYTICS ).getPrimaryPropertyType() ).toBe( 'ga4' );
-
-		// Then, the modules/analytics-4 store's selectProperty action should be used to set the GA4 property
 		const newGA4PropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
 		expect( ga4TargetProperty._id ).toEqual( newGA4PropertyID );
 
@@ -146,11 +137,10 @@ describe( 'PropertySelectIncludingGA4', () => {
 		expect( container.querySelector( '.mdc-select__selected-text' ) )
 			.toHaveTextContent( 'Test GA4 Property (1000)' );
 
-		// while the modules/analytics store's selectProperty action should be used to empty/reset the UA property (since that then needs to later be chosen in another dropdown based on the GA4 property).
+		// the modules/analytics store's getPropertyID action should be reset
 		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe( '' );
 
 		// Select a UA property
-
 		const uaProperties = registry.select( MODULES_ANALYTICS ).getProperties( accountID );
 
 		const uaTargetProperty = uaProperties[ 0 ];
@@ -168,7 +158,6 @@ describe( 'PropertySelectIncludingGA4', () => {
 			.toHaveTextContent( `${ uaTargetProperty.name } (${ uaTargetProperty.id })` );
 		expect( container.querySelector( '.mdc-select__selected-text' ) ).toHaveTextContent( 'wegweg (UA-152925174-1)' );
 
-		//  while the modules/analytics-4 store's selectProperty action should be used to empty/reset the GA4 property (since that then needs to later be chosen in another dropdown based on the GA4 property).
 		expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( '' );
 
 		// Select a GA4 property again
