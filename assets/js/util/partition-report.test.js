@@ -61,5 +61,46 @@ describe( 'partitionReport', () => {
 			expect( compareRange ).toEqual( firstThree.slice( 0, 2 ) );
 			expect( currentRange ).toEqual( secondThree.slice( 0, 2 ) );
 		} );
+
+		it( 'ensures weekdays still line up as expected when last day is missing (if week(s) are requested)', () => {
+			// Use somewhat realistic example data (yesterday here is 2020-11-09).
+			const last7DaysWithoutYesterday = [
+				{ date: '2020-11-03', weekday: 'MON' },
+				{ date: '2020-11-04', weekday: 'TUE' },
+				{ date: '2020-11-05', weekday: 'WED' },
+				{ date: '2020-11-06', weekday: 'THU' },
+				{ date: '2020-11-07', weekday: 'FRI' },
+				{ date: '2020-11-08', weekday: 'SAT' },
+			];
+			const previous7Days = [
+				{ date: '2020-10-27', weekday: 'MON' },
+				{ date: '2020-10-28', weekday: 'TUE' },
+				{ date: '2020-10-29', weekday: 'WED' },
+				{ date: '2020-10-30', weekday: 'THU' },
+				{ date: '2020-10-31', weekday: 'FRI' },
+				{ date: '2020-11-01', weekday: 'SAT' },
+				{ date: '2020-11-02', weekday: 'SUN' },
+			];
+			const report = [].concat( previous7Days, last7DaysWithoutYesterday );
+
+			const partitionedReport = partitionReport( report, { dateRangeLength: 7 } );
+
+			// The expected result here is that one day in between is missing,
+			// which is acceptable as it is more important for the weekdays
+			// between the two data sets to still line up.
+			const previous7DaysWithoutAWeekAgo = previous7Days.slice( 0, 6 );
+
+			expect( partitionedReport ).toEqual( {
+				compareRange: previous7DaysWithoutAWeekAgo,
+				currentRange: last7DaysWithoutYesterday,
+			} );
+
+			// Ensure specifically that weekdays between each entry in both
+			// arrays align.
+			const mapToWeekday = ( dataset ) => {
+				return dataset.weekday;
+			};
+			expect( mapToWeekday( partitionedReport.compareRange ) ).toEqual( mapToWeekday( partitionedReport.currentRange ) );
+		} );
 	} );
 } );
