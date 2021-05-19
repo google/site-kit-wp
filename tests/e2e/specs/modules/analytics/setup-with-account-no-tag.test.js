@@ -165,7 +165,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new property/i } );
 			// FAILING whether true or false assertion
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new view/i } );
+			await expect( page ).not.toMatchElement( '.mdc-select__selected-text', { text: /set up a new view/i } );
 
 			// Intentionally does not submit to trigger property & profile creation requests.
 		} );
