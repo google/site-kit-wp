@@ -153,9 +153,23 @@ const baseActions = {
 
 			yield propertyActions.waitForProperties( accountID );
 
+			const urls = registry.select( CORE_SITE ).getSiteURLPermutations();
 			const uaProperties = registry.select( STORE_NAME ).getProperties( accountID );
-			const uaProperty = uaProperties[ 0 ] || { id: PROPERTY_CREATE, internalWebPropertyId: '' }; // eslint-disable-line sitekit/acronym-case
-			yield Data.commonActions.await( registry.dispatch( STORE_NAME ).selectProperty( uaProperty?.id, uaProperty?.internalWebPropertyId ) ); // eslint-disable-line sitekit/acronym-case
+
+			let uaProperty = yield Data.commonActions.await( registry.dispatch( STORE_NAME ).matchPropertyByURL( uaProperties, urls ) );
+			if ( ! uaProperty ) {
+				uaProperty = {
+					id: PROPERTY_CREATE,
+					internalWebPropertyId: '', // eslint-disable-line sitekit/acronym-case
+				};
+			}
+
+			yield Data.commonActions.await(
+				registry.dispatch( STORE_NAME ).selectProperty(
+					uaProperty?.id,
+					uaProperty?.internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
+				),
+			);
 
 			if ( ! isFeatureEnabled( 'ga4setup' ) ) {
 				return;

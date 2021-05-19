@@ -26,7 +26,8 @@ import {
 	ACCOUNT_CREATE,
 	PROPERTY_CREATE,
 	PROFILE_CREATE,
-	PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4,
+	PROPERTY_TYPE_UA,
+	PROPERTY_TYPE_GA4,
 } from './constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -185,6 +186,12 @@ describe( 'modules/analytics accounts', () => {
 		} );
 
 		describe( 'selectAccount', () => {
+			beforeEach( () => {
+				provideSiteInfo( registry, {
+					referenceSiteURL: fixtures.propertiesProfiles.properties[ 0 ].websiteUrl, // eslint-disable-line sitekit/acronym-case
+				} );
+			} );
+
 			it( 'should throw an error if accountID is invalid', () => {
 				expect( () => registry.dispatch( STORE_NAME ).selectAccount( false ) ).toThrow();
 			} );

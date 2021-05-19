@@ -23,9 +23,14 @@ import AccountSelect from './AccountSelect';
 import { fireEvent, freezeFetch, render, waitFor, act } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { provideSiteInfo } from '../../../../../../tests/js/utils';
 import * as fixtures from '../../datastore/__fixtures__';
 
 const setupRegistry = ( registry ) => {
+	provideSiteInfo( registry, {
+		referenceSiteURL: fixtures.accountsPropertiesProfiles.properties[ 0 ].websiteUrl, // eslint-disable-line sitekit/acronym-case
+	} );
+
 	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	registry.dispatch( STORE_NAME ).setSettings( {} );
 	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );

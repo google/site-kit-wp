@@ -32,6 +32,7 @@ import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import { normalizeURL } from '../../../util';
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
@@ -248,6 +249,34 @@ const baseActions = {
 			type: SET_PRIMARY_PROPERTY_TYPE,
 		};
 	},
+
+	/**
+	 * Matches a property by URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array.<Object>}        properties Array of properties.
+	 * @param {Array.<string>|string} url        A list of URLs or a signle URL to match properties.
+	 * @return {Object|null} A property object if found. NULL if nothing is found.
+	 */
+	*matchPropertyByURL( properties, url ) {
+		const urls = ( Array.isArray( url ) ? url : [ url ] ).map( normalizeURL );
+
+		for ( const property of properties ) {
+			const websiteURL = property.websiteUrl; // eslint-disable-line sitekit/acronym-case
+			if ( ! websiteURL ) {
+				continue;
+			}
+
+			for ( const singleURL of urls ) {
+				if ( singleURL === normalizeURL( websiteURL ) ) {
+					return property;
+				}
+			}
+		}
+
+		return null;
+	},
 };
 
 const baseControls = {
@@ -354,14 +383,7 @@ const baseResolvers = {
 			if ( error ) {
 				// Store error manually since getProperties signature differs from fetchGetPropertiesProfiles.
 				yield receiveError( error, 'getProperties', [ accountID ] );
-				return;
 			}
-		}
-
-		const propertyID = registry.select( STORE_NAME ).getPropertyID();
-		if ( ! propertyID ) {
-			const property = properties[ 0 ] || { id: PROPERTY_CREATE };
-			yield baseActions.selectProperty( property.id, property.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 		}
 	},
 };

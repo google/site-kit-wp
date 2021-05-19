@@ -1,5 +1,5 @@
 /**
- * `modules/idea-hub` data store: saved-ideas.
+ * `modules/idea-hub` data store: draft-post-ideas.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -24,62 +24,62 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
-const fetchGetSavedIdeasStore = createFetchStore( {
-	baseName: 'getSavedIdeas',
+const fetchGetDraftPostIdeasStore = createFetchStore( {
+	baseName: 'getDraftPostIdeas',
 	controlCallback: () => {
-		return API.get( 'modules', 'idea-hub', 'saved-ideas' );
+		return API.get( 'modules', 'idea-hub', 'draft-post-ideas' );
 	},
-	reducerCallback: ( state, savedIdeas ) => {
+	reducerCallback: ( state, draftPostIdeas ) => {
 		return {
 			...state,
-			savedIdeas,
+			draftPostIdeas,
 		};
 	},
 } );
 
 const baseInitialState = {
-	savedIdeas: undefined,
+	draftPostIdeas: undefined,
 };
 
 const baseResolvers = {
-	*getSavedIdeas( options = {} ) {
+	*getDraftPostIdeas( options = {} ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const savedIdeas = registry.select( STORE_NAME ).getSavedIdeas( options );
+		const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
 
-		// If there are already saved ideas in state, don't make an API request.
-		if ( savedIdeas === undefined ) {
-			yield fetchGetSavedIdeasStore.actions.fetchGetSavedIdeas();
+		// If there are already draft ideas in state, don't make an API request.
+		if ( draftPostIdeas === undefined ) {
+			yield fetchGetDraftPostIdeasStore.actions.fetchGetDraftPostIdeas();
 		}
 	},
 };
 
 const baseSelectors = {
 	/**
-	 * Gets Saved Ideas from the Idea Hub.
+	 * Gets Draft Post Ideas from the Idea Hub.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state            Data store's state.
-	 * @param {Object} options          Options for getting saved ideas.
+	 * @param {Object} options          Options for getting draft post ideas.
 	 * @param {number} [options.offset] Optional. From which array index to get ideas.
-	 * @param {number} [options.length] Optional. Amount of saved ideas to return.
+	 * @param {number} [options.length] Optional. Amount of draft post ideas to return.
 	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
 	 */
-	getSavedIdeas( state, options = {} ) {
-		const { savedIdeas } = state;
+	getDraftPostIdeas( state, options = {} ) {
+		const { draftPostIdeas } = state;
 
-		if ( savedIdeas === undefined ) {
+		if ( draftPostIdeas === undefined ) {
 			return undefined;
 		}
 
 		const offset = options?.offset || 0;
-		const length = options.length ? offset + options.length : savedIdeas.length;
-		return ( 'offset' in options || 'length' in options ) ? savedIdeas.slice( offset, length ) : savedIdeas;
+		const length = options.length ? offset + options.length : draftPostIdeas.length;
+		return ( 'offset' in options || 'length' in options ) ? draftPostIdeas.slice( offset, length ) : draftPostIdeas;
 	},
 };
 
 const store = Data.combineStores(
-	fetchGetSavedIdeasStore,
+	fetchGetDraftPostIdeasStore,
 	{
 		initialState: baseInitialState,
 		resolvers: baseResolvers,

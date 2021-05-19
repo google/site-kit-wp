@@ -22,9 +22,13 @@
 import { default as draftIdeas } from './draft-ideas';
 import { default as newIdeas } from './new-ideas';
 import { default as savedIdeas } from './saved-ideas';
+import { default as draftPostIdeas } from './draft-post-ideas';
+import { default as publishedPostIdeas } from './published-post-ideas';
 
 export {
 	draftIdeas,
 	newIdeas,
 	savedIdeas,
+	draftPostIdeas,
+	publishedPostIdeas,
 };

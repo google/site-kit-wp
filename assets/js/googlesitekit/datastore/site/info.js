@@ -521,6 +521,37 @@ export const selectors = {
 		const referenceURL = select( STORE_NAME ).getReferenceSiteURL();
 		return normalizeURL( referenceURL ) === normalizeURL( url );
 	} ),
+
+	/**
+	 * Gets an array with site URL permutations.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array.<string>} An array with permutations.
+	 */
+	getSiteURLPermutations: createRegistrySelector( ( select ) => () => {
+		const untrailingslashit = ( originalURL ) => originalURL.toString().replace( /\/$/, '' );
+
+		const referenceURL = select( STORE_NAME ).getReferenceSiteURL();
+		const permutations = [];
+
+		const url = new URL( referenceURL );
+		url.hostname = url.hostname.replace( /^www\./i, '' );
+
+		url.protocol = 'http';
+		permutations.push( untrailingslashit( url ) );
+
+		url.protocol = 'https';
+		permutations.push( untrailingslashit( url ) );
+
+		url.hostname = 'www.' + url.hostname;
+		permutations.push( untrailingslashit( url ) );
+
+		url.protocol = 'http';
+		permutations.push( untrailingslashit( url ) );
+
+		return permutations;
+	} ),
 };
 
 export default {
