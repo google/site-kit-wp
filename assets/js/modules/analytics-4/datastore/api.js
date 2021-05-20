@@ -46,20 +46,17 @@ const baseSelectors = {
 		for ( const errorKey in state.errors ) {
 			if (
 				errorKey.startsWith( 'getProperties::' ) ||
-				errorKey.startsWith( 'getWebDataStreams::' )
+				errorKey.startsWith( 'getWebDataStreams::' ) ||
+				errorKey.startsWith( 'getAccountSummaries::' )
 			) {
 				return false;
 			}
 		}
 
-		for ( const propertyList of Object.values( state.properties ) ) {
-			if ( propertyList && propertyList.length && propertyList.length > 0 ) {
-				for ( const webdatastreamList of Object.values( state.webdatastreams ) ) {
-					if ( webdatastreamList && webdatastreamList.length && webdatastreamList.length > 0 ) {
-						return true;
-					}
-				}
-			}
+		// We expect that properties have been already pulled for one of the accounts.
+		// Make sure to call `getProperties` selector before relying on this one.
+		if ( Object.keys( state.properties ).length > 0 ) {
+			return true;
 		}
 
 		return undefined;

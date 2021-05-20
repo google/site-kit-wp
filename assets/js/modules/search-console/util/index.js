@@ -26,6 +26,7 @@ import round from 'lodash/round';
  * Internal dependencies
  */
 import { calculateChange } from '../../../util';
+import { partitionReport } from '../../../util/partition-report';
 export * from './is-zero-report';
 export * from './site-stats-data';
 export * from './report-date-range-args';
@@ -77,11 +78,11 @@ function reduceSearchConsoleData( rows ) {
 }
 
 export const extractSearchConsoleDashboardData = ( rows ) => {
-	// Split the results in two chunks.
-	const half = Math.floor( rows.length / 2 );
-	// Rows are from oldest to newest.
-	const latestData = reduceSearchConsoleData( rows.slice( half ) );
-	const olderData = reduceSearchConsoleData( rows.slice( 0, half ) );
+	// Infer range length from total number of rows.
+	const dateRangeLength = Math.floor( rows.length / 2 );
+	const { compareRange, currentRange } = partitionReport( rows, { dateRangeLength } );
+	const latestData = reduceSearchConsoleData( currentRange );
+	const olderData = reduceSearchConsoleData( compareRange );
 
 	return {
 		dataMap: latestData.dataMap,

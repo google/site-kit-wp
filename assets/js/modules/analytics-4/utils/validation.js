@@ -52,7 +52,7 @@ export function isValidPropertySelection( value ) {
 /**
  * Checks whether the given web data stream ID appears to be valid.
  *
- * @since n.e.x.t
+ * @since 1.33.0
  *
  * @param {*} webDataStreamID Web data stream ID to check.
  * @return {boolean} TRUE if the web data stream ID is valid, otherwise FALSE.
