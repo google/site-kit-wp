@@ -15,7 +15,10 @@ export const sanitizeHTML = ( unsafeHTML, domPurifyConfig = {} ) => {
  * @since 1.20.0
  * @private
  *
- * @param {Object|string} string A string with or without trailing slash or an URL object.
+ * @param {Object|string} url A string with or without trailing slash or an URL object.
  * @return {string|undefined} The URL string after removing the trailing slash.
  */
-export const untrailingslashit = ( string ) => string?.toString()?.replace?.( /\/+$/, '' );
+export function untrailingslashit( url ) {
+	const originalURL = typeof url === 'object' ? url.toString() : url;
+	return originalURL?.replace?.( /\/+$/, '' );
+}
