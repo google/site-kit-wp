@@ -19,35 +19,32 @@
 /**
  * Internal dependencies
  */
-import SetupFormUA from './SetupFormUA';
+import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import { STORE_NAME } from '../../datastore/constants';
-import { createTestRegistry, WithTestRegistry } from '../../../../../../tests/js/utils';
-import { Grid, Cell, Row } from '../../../../material-components';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { createTestRegistry, provideModules, provideModuleRegistrations, WithTestRegistry } from '../../../../../../tests/js/utils';
 import * as fixtures from '../../datastore/__fixtures__';
+import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
+import { enabledFeatures } from '../../../../features';
 
-export const Ready = () => (
-	<div className="googlesitekit-setup">
-		<Grid>
-			<Row>
-				<Cell size={ 12 } className="googlesitekit-setup__wrapper">
-					<Grid>
-						<Row>
-							<Cell size={ 12 } className="googlesitekit-setup-module">
-								<SetupFormUA />
-							</Cell>
-						</Row>
-					</Grid>
-				</Cell>
-			</Row>
-		</Grid>
-	</div>
-);
+export const Ready = () => <ModuleSetup moduleSlug="analytics" />;
 Ready.storyName = 'SetupFormUA';
 Ready.decorators = [
 	( Story ) => {
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		const registry = createTestRegistry();
+		enabledFeatures.clear();
+		enabledFeatures.add( 'ga4setup' );
 
+		const registry = createTestRegistry();
+		provideModules( registry, [ {
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		} ] );
+		provideModuleRegistrations( registry );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).createProperty( ga4Fixtures.createProperty.parent );
+
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 		// eslint-disable-next-line sitekit/acronym-case
