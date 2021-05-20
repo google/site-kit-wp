@@ -46,7 +46,6 @@ import {
 	GA4Notice,
 } from '../assets/js/modules/analytics/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
-import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
 
 function SetupWrap( { children } ) {
@@ -64,25 +63,40 @@ function SetupWrap( { children } ) {
 storiesOf( 'Analytics Module', module )
 	.add( 'Account Property Profile Select', () => {
 		const setupRegistry = ( { dispatch } ) => {
+			const accountA = {
+				id: '1000',
+				name: 'Account A',
+			};
+
+			const propertyA = {
+				id: 'UA-2000-1',
+				name: 'Property A',
+			};
+
+			const propertyB = {
+				id: 'UA-2001-1',
+				name: 'Property B',
+			};
+
+			const profileA = {
+				id: '3000',
+				name: 'Profile A',
+			};
+
 			dispatch( STORE_NAME ).receiveGetSettings( {} );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
-			const { accounts: allAccounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-			const accounts = allAccounts.slice( 0, 3 );
+			dispatch( STORE_NAME ).receiveGetAccounts( [ accountA ] );
+			dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			dispatch( STORE_NAME ).receiveGetProperties( [ propertyA, propertyB ], { accountID: accountA.id } );
+			dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountA.id ] );
 
-			// 	eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).receiveGetProperties( properties.map( ( property ) => ( { ...property, accountId: accounts[ 0 ].id } ) ), { accountID: accounts[ 0 ].id } );
-			// 	eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles.map( ( profile ) => ( { ...profile, accountId: accounts[ 0 ].id } ) ), { accountID: accounts[ 0 ].id, propertyID: properties[ 0 ].id } );
+			dispatch( STORE_NAME ).receiveGetProfiles( [ profileA ], { accountID: accountA.id, propertyID: propertyA.id } );
+			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ accountA.id, propertyA.id ] );
 
-			// 	eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).receiveGetProperties( properties.map( ( property ) => ( { ...property, accountId: accounts[ 1 ].id } ) ), { accountID: accounts[ 1 ].id } );
-			dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID: accounts[ 1 ].id, propertyID: properties[ 0 ].id } );
-
-			dispatch( STORE_NAME ).receiveGetProperties( [], { accountID: accounts[ 2 ].id } );
-			dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID: accounts[ 2 ].id, propertyID: properties[ 0 ].id } );
+			dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID: accountA.id, propertyID: propertyB.id } );
+			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ accountA.id, propertyB.id ] );
 		};
 
 		return (
