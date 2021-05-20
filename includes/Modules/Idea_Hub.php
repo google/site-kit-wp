@@ -508,7 +508,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Saves post idea settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param int   $post_id Post ID.
 	 * @param array $idea    Idea settings.
@@ -531,7 +531,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Gets post idea settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param int $post_id Post ID.
 	 * @return array|null Post idea settings array. Returns NULL if a post doesn't have an associated idea.

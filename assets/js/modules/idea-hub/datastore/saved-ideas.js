@@ -57,7 +57,7 @@ const baseSelectors = {
 	/**
 	 * Gets Saved Ideas from the Idea Hub.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param {Object} state            Data store's state.
 	 * @param {Object} options          Options for getting saved ideas.
