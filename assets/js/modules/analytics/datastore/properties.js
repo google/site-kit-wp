@@ -155,22 +155,16 @@ const baseActions = {
 	 */
 	selectProperty( propertyID, internalPropertyID = '' ) {
 		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
-		// console.debug( 'selectProperty action: ', propertyID );
 
 		return ( function* () {
-			// console.debug( 'inside generator' );
-
 			const registry = yield Data.commonActions.getRegistry();
-			// console.debug( 'getRegistry' );
 
 			const accountID = registry.select( STORE_NAME ).getAccountID();
 			if ( ! isValidAccountID( accountID ) ) {
 				return;
 			}
-			// console.debug( 'isValidAccountID' );
 
 			registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
-			// console.debug( 'setPropertyID' );
 
 			if ( PROPERTY_CREATE === propertyID ) {
 				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
@@ -185,13 +179,11 @@ const baseActions = {
 			}
 
 			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
-			// console.debug( 'setInternalWebPropertyID' );
 
 			const existingProfileID = registry.select( STORE_NAME ).getProfileID(); // eslint-disable-line @wordpress/no-unused-vars-before-return
 			const profiles = yield Data.commonActions.await(
 				registry.__experimentalResolveSelect( STORE_NAME ).getProfiles( accountID, propertyID )
 			);
-			// console.debug( '__experimentalResolveSelect' );
 
 			if ( ! Array.isArray( profiles ) ) {
 				return; // Something unexpected occurred and we want to avoid type errors.
