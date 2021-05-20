@@ -29,7 +29,6 @@ import DisplaySetting from '../../../../components/DisplaySetting';
 import { STORE_NAME } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { isFeatureEnabled } from '../../../../features';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { ExistingTagError, ExistingTagNotice } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -37,12 +36,9 @@ import Link from '../../../../components/Link';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const propertyID4 = useSelect( ( select ) =>
-		isFeatureEnabled( 'ga4setup' ) ? select( MODULES_ANALYTICS_4 ).getPropertyID() : null );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	// Show GA4 property if it exists, fallback to the UA property.
-	const propertyIDValue = propertyID4 ? propertyID4 : propertyID;
+	// Select GA4 propertyID if it exists, fallback to the UA propertyID.
+	const propertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() || select( STORE_NAME ).getPropertyID() );
 	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
@@ -81,7 +77,7 @@ export default function SettingsView() {
 						{ __( 'Property', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ propertyIDValue } />
+						<DisplaySetting value={ propertyID } />
 					</p>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
