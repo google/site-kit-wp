@@ -255,7 +255,7 @@ const baseActions = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Array.<Object>}        properties Array of properties.
-	 * @param {Array.<string>|string} url        A list of URLs or a signle URL to match properties.
+	 * @param {Array.<string>|string} url        A list of URLs or a single URL to match properties.
 	 * @return {Object|null} A property object if found. NULL if nothing is found.
 	 */
 	*matchPropertyByURL( properties, url ) {
