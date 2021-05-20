@@ -36,9 +36,11 @@ import Link from '../../../../components/Link';
 const { useSelect } = Data;
 
 export default function SettingsView() {
+	// @TODO remove me before CR
+	// global.googlesitekit.data.stores[ 'modules/analytics-4' ].actions.setPropertyID( 12345 );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	// Select GA4 propertyID if it exists, fallback to the UA propertyID.
-	const propertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() || select( STORE_NAME ).getPropertyID() );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const propertyID4 = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
@@ -89,7 +91,20 @@ export default function SettingsView() {
 					</p>
 				</div>
 			</div>
-
+			{
+				propertyID4 && (
+					<div className="googlesitekit-settings-module__meta-items">
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
+								{ __( 'GA4 Property', 'google-site-kit' ) }
+							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								<DisplaySetting value={ propertyID4 } />
+							</p>
+						</div>
+					</div>
+				)
+			}
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
 					<Link
