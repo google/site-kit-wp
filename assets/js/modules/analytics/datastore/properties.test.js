@@ -216,25 +216,6 @@ describe( 'modules/analytics properties', () => {
 				expect( registry.stores[ STORE_NAME ].store.getState().primaryPropertyType ).toBe( type );
 			} );
 		} );
-
-		describe( 'matchPropertyByURL', () => {
-			const properties = [
-				/* eslint-disable sitekit/acronym-case */
-				{ websiteUrl: 'http://example.com' },
-				{ websiteUrl: 'http://www.example.org/' },
-				/* eslint-enable */
-			];
-
-			it( 'should return a correct property that has matching website URL', async () => {
-				const property = await registry.dispatch( STORE_NAME ).matchPropertyByURL( properties, 'https://www.example.com' );
-				expect( property ).toEqual( properties[ 0 ] );
-			} );
-
-			it( 'should return NULL when URL does not match', async () => {
-				const property = await registry.dispatch( STORE_NAME ).matchPropertyByURL( properties, 'http://wrongsite.com' );
-				expect( property ).toBeNull();
-			} );
-		} );
 	} );
 
 	describe( 'selectors', () => {
