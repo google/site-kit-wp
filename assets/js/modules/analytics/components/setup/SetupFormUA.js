@@ -39,8 +39,8 @@ import {
 	PropertySelect,
 	ProfileNameTextField,
 } from '../common';
-import { STORE_NAME, PROFILE_CREATE, PROPERTY_CREATE } from '../../datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from '../../../analytics-4/datastore/constants';
 import GA4PropertyNotice from '../common/GA4PropertyNotice';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { isValidPropertyID } from '../../util';

@@ -35,14 +35,23 @@ Ready.decorators = [
 		enabledFeatures.add( 'ga4setup' );
 
 		const registry = createTestRegistry();
-		provideModules( registry, [ {
-			slug: 'analytics',
-			active: true,
-			connected: true,
-		} ] );
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
 		provideModuleRegistrations( registry );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).createProperty( ga4Fixtures.createProperty.parent );
+		const testAccountID = ga4Fixtures.properties[ 0 ]._accountID;
+		const accountID = testAccountID;
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( ga4Fixtures.properties, { accountID } );
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
@@ -55,7 +64,6 @@ Ready.decorators = [
 			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
 		return (
 			<WithTestRegistry registry={ registry }>
