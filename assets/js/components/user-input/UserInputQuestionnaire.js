@@ -209,7 +209,7 @@ export default function UserInputQuestionnaire() {
 					isActive={ activeSlug === USER_INPUT_QUESTION_ROLE }
 					questionNumber={ 1 }
 					title={ __( 'Which best describes your team/role in relation to this site?', 'google-site-kit' ) }
-					description={ __( 'This will help Site Kit show tips that help you specifically in your role.', 'google-site-kit' ) }
+					description={ __( 'This will help Site Kit show tips that help you specifically in your role', 'google-site-kit' ) }
 					next={ nextCallback }
 					nextLabel={ nextLabel }
 					error={ error }
@@ -229,7 +229,7 @@ export default function UserInputQuestionnaire() {
 					isActive={ activeSlug === USER_INPUT_QUESTION_POST_FREQUENCY }
 					questionNumber={ 2 }
 					title={ __( 'How often do you create new posts for this site?', 'google-site-kit' ) }
-					description={ __( 'Based on your answer, Site Kit will suggest new features for your dashboard related to content creation.', 'google-site-kit' ) }
+					description={ __( 'Based on your answer, Site Kit will suggest new features for your dashboard related to content creation', 'google-site-kit' ) }
 					next={ nextCallback }
 					nextLabel={ nextLabel }
 					back={ backCallback }
@@ -250,7 +250,7 @@ export default function UserInputQuestionnaire() {
 					isActive={ activeSlug === USER_INPUT_QUESTION_GOALS }
 					questionNumber={ 3 }
 					title={ __( 'What are the goals of this site?', 'google-site-kit' ) }
-					description={ __( 'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track how close you’re getting to your specific goals.', 'google-site-kit' ) }
+					description={ __( 'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track how close you’re getting to your specific goals', 'google-site-kit' ) }
 					next={ nextCallback }
 					nextLabel={ nextLabel }
 					back={ backCallback }
@@ -272,7 +272,7 @@ export default function UserInputQuestionnaire() {
 					isActive={ activeSlug === USER_INPUT_QUESTION_HELP_NEEDED }
 					questionNumber={ 4 }
 					title={ __( 'What do you need help most with for this site?', 'google-site-kit' ) }
-					description={ __( 'Based on your answers, Site Kit will tailor the metrics and advice you see on your dashboard to help you make progress in these areas.', 'google-site-kit' ) }
+					description={ __( 'Based on your answers, Site Kit will tailor the metrics and advice you see on your dashboard to help you make progress in these areas', 'google-site-kit' ) }
 					next={ nextCallback }
 					nextLabel={ nextLabel }
 					back={ backCallback }
@@ -293,8 +293,8 @@ export default function UserInputQuestionnaire() {
 					slug={ USER_INPUT_QUESTION_SEARCH_TERMS }
 					isActive={ activeSlug === USER_INPUT_QUESTION_SEARCH_TERMS }
 					questionNumber={ 5 }
-					title={ __( 'To help us identify opportunities for your site, enter the top three search terms that best describe your site’s content.', 'google-site-kit' ) }
-					description={ __( 'Site Kit will keep you informed if people start finding you in Search for these terms.', 'google-site-kit' ) }
+					title={ __( 'To help us identify opportunities for your site, enter the top three search terms that best describe your site’s content', 'google-site-kit' ) }
+					description={ __( 'Site Kit will keep you informed if people start finding you in Search for these terms', 'google-site-kit' ) }
 					next={ nextCallback }
 					nextLabel={ nextLabel === undefined ? __( 'Preview', 'google-site-kit' ) : nextLabel }
 					back={ backCallback }

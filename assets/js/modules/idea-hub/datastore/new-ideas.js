@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -41,19 +35,10 @@ const fetchGetNewIdeasStore = createFetchStore( {
 			newIdeas,
 		};
 	},
-	validateParams: ( { options = {} } ) => {
-		invariant( isPlainObject( options ), 'options must be an object.' );
-		if ( options.length ) {
-			invariant( typeof options.length === 'number', 'options.length must be a number.' );
-		}
-		if ( options.offset ) {
-			invariant( typeof options.offset === 'number', 'options.offset must be a number.' );
-		}
-	},
 } );
 
 const baseInitialState = {
-	newIdeas: [],
+	newIdeas: undefined,
 };
 
 const baseResolvers = {
@@ -61,12 +46,10 @@ const baseResolvers = {
 		const registry = yield Data.commonActions.getRegistry();
 		const newIdeas = registry.select( STORE_NAME ).getNewIdeas( options );
 
-		// If there are already new ideas in state, don't make an API request.
-		if ( newIdeas.length ) {
-			return;
+		// If there are already ideas in state, don't make an API request.
+		if ( newIdeas === undefined ) {
+			yield fetchGetNewIdeasStore.actions.fetchGetNewIdeas();
 		}
-
-		yield fetchGetNewIdeasStore.actions.fetchGetNewIdeas();
 	},
 };
 
@@ -84,6 +67,11 @@ const baseSelectors = {
 	 */
 	getNewIdeas( state, options = {} ) {
 		const { newIdeas } = state;
+
+		if ( newIdeas === undefined ) {
+			return undefined;
+		}
+
 		const offset = options?.offset || 0;
 		const length = options.length ? offset + options.length : newIdeas.length;
 		return ( 'offset' in options || 'length' in options ) ? newIdeas.slice( offset, length ) : newIdeas;

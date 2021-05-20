@@ -31,6 +31,7 @@ import { normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
+import { isValidAccountID } from '../../analytics/util';
 const { commonActions } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
@@ -168,7 +169,7 @@ const baseActions = {
 	/**
 	 * Matches a property by URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param {Array.<number>}        properties Array of property IDs.
 	 * @param {Array.<string>|string} url        A list of URLs or a signle URL to match properties.
@@ -203,7 +204,7 @@ const baseActions = {
 	/**
 	 * Matches a property by measurement ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param {Array.<number>}        properties    Array of property IDs.
 	 * @param {Array.<string>|string} measurementID A list of measurement IDs or a signle measurement ID to match properties.
@@ -249,6 +250,10 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getProperties( accountID ) {
+		if ( ! isValidAccountID( accountID ) ) {
+			return;
+		}
+
 		const registry = yield Data.commonActions.getRegistry();
 		// Only fetch properties if there are none in the store for the given account.
 		const properties = registry.select( STORE_NAME ).getProperties( accountID );
