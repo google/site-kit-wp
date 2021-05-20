@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -32,13 +37,29 @@ import {
 	ProfileNameTextField,
 	ExistingGTMPropertyNotice,
 } from '../common';
+import {
+	PropertySelect as PropertySelect4,
+} from '../../../analytics-4/components/common';
+import { isFeatureEnabled } from '../../../../features';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4Notice from '../common/GA4Notice';
-import { STORE_NAME } from '../../datastore/constants';
-const { useSelect } = Data;
+import { SETUP_FLOW_MODE_GA4_TRANSITIONAL, SETUP_FLOW_MODE_UA, STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from '../../../analytics-4/datastore/constants';
+import SettingsNotice, { TYPE_INFO } from '../../../../components/SettingsNotice';
+import Link from '../../../../components/Link';
+const { useSelect, useDispatch } = Data;
 
 export default function SettingsForm() {
+	const ga4Enabled = isFeatureEnabled( 'ga4setup' );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
+	// const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
+	// @TODO remove these, only for dev.
+	const setupFlowMode = SETUP_FLOW_MODE_UA;
+	// const setupFlowMode = SETUP_FLOW_MODE_GA4_TRANSITIONAL
+	if ( ga4Enabled && SETUP_FLOW_MODE_UA === setupFlowMode ) {
+		selectProperty( PROPERTY_CREATE );
+	}
 
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
@@ -54,7 +75,39 @@ export default function SettingsForm() {
 
 				<ProfileSelect />
 			</div>
-
+			{
+				ga4Enabled && SETUP_FLOW_MODE_GA4_TRANSITIONAL === setupFlowMode && (
+					<SettingsNotice type={ TYPE_INFO }>
+						<div>
+							{ __( 'You\'ll need to connect the Google Analytics 4 property that\'s associated with this Universal Analytics property', 'google-site-kit' ) }
+						</div>
+						<div>
+							<PropertySelect4 />
+						</div>
+						<Link
+							href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
+							external
+							inherit
+						>
+							{ __( 'Learn more here.', 'google-site-kit' ) }
+						</Link>
+					</SettingsNotice>
+				)
+			}
+			{
+				ga4Enabled && SETUP_FLOW_MODE_UA === setupFlowMode && (
+					<SettingsNotice type={ TYPE_INFO }>
+						{ __( 'A Google Analytics 4 property will also be created.', 'google-site-kit' ) }
+						<Link
+							href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
+							external
+							inherit
+						>
+							{ __( 'Learn more here.', 'google-site-kit' ) }
+						</Link>
+					</SettingsNotice>
+				)
+			}
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
 				<ProfileNameTextField />
 
