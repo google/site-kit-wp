@@ -129,10 +129,10 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Property Select including GA4 properties', () => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		// eslint-disable-next-line sitekit/acronym-case
+		/* eslint-disable sitekit/acronym-case */
 		const accountID = properties[ 0 ].accountId;
-		// eslint-disable-next-line sitekit/acronym-case
 		const propertyID = profiles[ 0 ].webPropertyId;
+		/* eslint-enable */
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
