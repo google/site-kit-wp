@@ -469,8 +469,15 @@ const baseSelectors = {
 	getPropertiesIncludingGA4: createRegistrySelector( ( select ) => ( state, accountID ) => {
 		let properties = select( STORE_NAME ).getProperties( accountID );
 
+		if ( ! properties ) {
+			return undefined;
+		}
+
 		if ( select( MODULES_ANALYTICS_4 ) ) {
 			const propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+			if ( ! propertiesGA4 ) {
+				return undefined;
+			}
 			properties = properties.concat( propertiesGA4 );
 		}
 
