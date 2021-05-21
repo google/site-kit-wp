@@ -26,6 +26,7 @@ import * as fixtures from '../../datastore/__fixtures__';
 import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 import { provideSiteInfo } from '../../../../../../tests/js/utils';
 import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
+import { enabledFeatures } from '../../../../features';
 
 const {
 	createProperty,
@@ -78,6 +79,10 @@ const setupEmptyRegistry = ( { dispatch } ) => {
 };
 
 describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
+	beforeEach( () => {
+		enabledFeatures.add( 'ga4setup' );
+	} );
+
 	it( 'should render an option for each analytics property of the currently selected account.', () => {
 		const { getAllByRole } = render( <PropertySelectIncludingGA4 />, { setupRegistry } );
 

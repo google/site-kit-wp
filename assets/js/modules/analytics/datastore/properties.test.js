@@ -30,6 +30,7 @@ import {
 import * as fixtures from './__fixtures__';
 import * as ga4Fixtures from '../../analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics properties', () => {
 	let registry;
@@ -39,6 +40,8 @@ describe( 'modules/analytics properties', () => {
 	} );
 
 	beforeEach( () => {
+		enabledFeatures.add( 'ga4setup' );
+
 		registry = createTestRegistry();
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
