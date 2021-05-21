@@ -139,7 +139,7 @@ describe( 'PropertySelect', () => {
 		expect( newPropertyID ).toEqual( fixtures.accountsPropertiesProfiles.properties[ 1 ].id );
 	} );
 
-	it( 'should update internalWebPropertyID in the store when an item is selected', async () => {
+	it( 'should update internalWebPropertyID in the store when an item is selected', () => {
 		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
 		const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 		const originalID = registry.select( STORE_NAME ).getInternalWebPropertyID();
@@ -148,7 +148,7 @@ describe( 'PropertySelect', () => {
 
 		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, [] );
 
-		await act( async () => {
+		act( () => {
 			// Click the label to expose the elements in the menu.
 			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 			// Click this element to select it and fire the onChange event.
