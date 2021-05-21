@@ -23,7 +23,8 @@ import {
 	createTestRegistry,
 	untilResolved,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+	provideSiteInfo,
+} from '../../../../../tests/js/utils';
 import { initialState } from './index';
 import { STORE_NAME } from './constants';
 
@@ -382,6 +383,52 @@ describe( 'core/site site info', () => {
 
 			it( 'should return FALSE when URL does not match the reference site URL', () => {
 				expect( registry.select( STORE_NAME ).isSiteURLMatch( 'http://example.org/' ) ).toBe( false );
+			} );
+		} );
+
+		describe( 'getSiteURLPermutations', () => {
+			it( 'should correctly process regular URL', () => {
+				provideSiteInfo( registry, { referenceSiteURL: 'http://www.example.com' } );
+
+				expect( registry.select( STORE_NAME ).getSiteURLPermutations() ).toEqual( [
+					'http://example.com',
+					'https://example.com',
+					'https://www.example.com',
+					'http://www.example.com',
+				] );
+			} );
+
+			it( 'should correctly process URL with a port number', () => {
+				provideSiteInfo( registry, { referenceSiteURL: 'http://example.com:9000/' } );
+
+				expect( registry.select( STORE_NAME ).getSiteURLPermutations() ).toEqual( [
+					'http://example.com:9000',
+					'https://example.com:9000',
+					'https://www.example.com:9000',
+					'http://www.example.com:9000',
+				] );
+			} );
+
+			it( 'should correctly process URL with basic authentication', () => {
+				provideSiteInfo( registry, { referenceSiteURL: 'http://admin:password@example.com:9000/' } );
+
+				expect( registry.select( STORE_NAME ).getSiteURLPermutations() ).toEqual( [
+					'http://admin:password@example.com:9000',
+					'https://admin:password@example.com:9000',
+					'https://admin:password@www.example.com:9000',
+					'http://admin:password@www.example.com:9000',
+				] );
+			} );
+
+			it( 'should correctly process URL with subdirectory install', () => {
+				provideSiteInfo( registry, { referenceSiteURL: 'http://www.example.com/subsite/' } );
+
+				expect( registry.select( STORE_NAME ).getSiteURLPermutations() ).toEqual( [
+					'http://example.com/subsite',
+					'https://example.com/subsite',
+					'https://www.example.com/subsite',
+					'http://www.example.com/subsite',
+				] );
 			} );
 		} );
 	} );

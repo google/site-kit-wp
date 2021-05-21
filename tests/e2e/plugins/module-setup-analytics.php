@@ -122,7 +122,7 @@ add_action(
 				'kind'                  => 'analytics#webproperty',
 				'level'                 => 'STANDARD',
 				'name'                  => 'Test Property Y',
-				'websiteUrl'            => 'https://y.example.com',
+				'websiteUrl'            => get_reference_url(),
 				'permissions'           => array(
 					'effective' => array( 'READ_AND_ANALYZE' ),
 				),

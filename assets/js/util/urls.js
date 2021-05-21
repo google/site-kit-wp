@@ -44,7 +44,7 @@ export function getFullURL( siteURL, path ) {
 /**
  * Normalizes URL by removing protocol, www subdomain and trailing slash.
  *
- * @since n.e.x.t
+ * @since 1.33.0
  *
  * @param {string} incomingURL The original URL.
  * @return {string} Normalized URL.

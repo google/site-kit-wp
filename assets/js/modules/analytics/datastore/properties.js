@@ -353,14 +353,7 @@ const baseResolvers = {
 			if ( error ) {
 				// Store error manually since getProperties signature differs from fetchGetPropertiesProfiles.
 				yield receiveError( error, 'getProperties', [ accountID ] );
-				return;
 			}
-		}
-
-		const propertyID = registry.select( STORE_NAME ).getPropertyID();
-		if ( ! propertyID ) {
-			const property = properties[ 0 ] || { id: PROPERTY_CREATE };
-			yield baseActions.selectProperty( property.id, property.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 		}
 	},
 };
