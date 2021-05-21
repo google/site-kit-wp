@@ -38,8 +38,8 @@ const Pagination = ( { total, page, ideasPerPage, handlePrev, handleNext } ) => 
 		<div className="googlesitekit-idea-hub__pagination">
 			<span className="googlesitekit-idea-hub__pagination--legend">
 				{ sprintf(
-					/* translators: 1: offset of first item, 2: offset of last item, 3: total number of items */
-					_x( '%1$s - %2$s of %3$s', '%1$s - %2$s of %3$s', 'google-site-kit' ),
+					/* translators: 1: from, 2: to, 3: total items */
+					_x( '%1$s - %2$s of %3$s', '{from} - {to} of {total}', 'google-site-kit' ),
 					page === 1 ? page : ( ( ( page - 1 ) * ideasPerPage ) + 1 ),
 					total < ( page * ideasPerPage ) ? total : ( page * ideasPerPage ),
 					total,

@@ -29,29 +29,107 @@ import DashboardIdeasWidget from './index';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util/';
 import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../../../../tests/js/utils';
 import { enabledFeatures } from '../../../../../features';
-import * as fixtures from '../../../datastore/__fixtures__';
+import { STORE_NAME } from '../../../datastore/constants';
+import {
+	newIdeas,
+	savedIdeas,
+	draftPostIdeas,
+} from '../../../datastore/__fixtures__';
 
 const widgetComponentProps = getWidgetComponentProps( 'ideaHubIdeas' );
+const mockEndpoints = ( args ) => {
+	fetchMock.reset();
+
+	fetchMock.get(
+		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
+		{ body: args?.newIdeas || newIdeas, status: 200 }
+	);
+	fetchMock.get(
+		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
+		{ body: args?.savedIdeas || savedIdeas, status: 200 }
+	);
+	fetchMock.get(
+		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
+		{ body: args?.draftPostIdeas || draftPostIdeas, status: 200 }
+	);
+};
+const bootstrapRegistry = () => {
+	const registry = createTestRegistry();
+	provideModules( registry, [ {
+		slug: 'idea-hub',
+		active: true,
+		connected: true,
+	} ] );
+
+	return registry;
+};
 const Template = ( { ...args } ) => <DashboardIdeasWidget { ...widgetComponentProps } { ...args } />;
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.decorators = [
 	( Story ) => {
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-			{ body: fixtures.newIdeas, status: 200 }
-		);
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-			{ body: fixtures.savedIdeas, status: 200 }
-		);
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-			{ body: fixtures.draftPostIdeas, status: 200 }
-		);
+		mockEndpoints();
 
 		return <Story />;
+	},
+];
+
+export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading';
+Loading.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const option = {
+				offset: 0,
+				length: 4,
+			};
+			registry.dispatch( STORE_NAME ).receiveGetNewIdeas( [], { options: option } );
+			registry.dispatch( STORE_NAME ).startResolution( 'getNewIdeas', [ option ] );
+		};
+
+		mockEndpoints();
+		enabledFeatures.clear();
+		enabledFeatures.add( 'ideaHubModule' );
+
+		const registry = bootstrapRegistry();
+		return (
+			<WithTestRegistry registry={ registry } callback={ setupRegistry }>
+				<Story />
+			</WithTestRegistry>
+		);
+	},
+];
+
+export const Error = Template.bind( {} );
+Error.storyName = 'Error';
+Error.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const error = {
+				code: 'missing_required_param',
+				message: 'Request parameter is empty: offset.',
+				data: {},
+			};
+			const option = {
+				offset: 0,
+				length: 4,
+			};
+
+			registry.dispatch( STORE_NAME ).receiveError( error, 'getNewIdeas', [ option ] );
+			registry.dispatch( STORE_NAME ).finishResolution( 'getNewIdeas', [ option ] );
+		};
+
+		enabledFeatures.clear();
+		enabledFeatures.add( 'ideaHubModule' );
+		mockEndpoints();
+
+		const registry = bootstrapRegistry();
+		return (
+			<WithTestRegistry registry={ registry } callback={ setupRegistry }>
+				<Story />
+			</WithTestRegistry>
+		);
 	},
 ];
 
@@ -59,18 +137,7 @@ export const DataUnavailableNew = Template.bind( {} );
 DataUnavailableNew.storyName = 'Data Unavailable: New';
 DataUnavailableNew.decorators = [
 	( Story ) => {
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-			{ body: [], status: 200 }
-		);
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-			{ body: fixtures.savedIdeas, status: 200 }
-		);
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-			{ body: fixtures.draftPostIdeas, status: 200 }
-		);
+		mockEndpoints( { newIdeas: [] } );
 
 		return <Story />;
 	},
@@ -80,18 +147,7 @@ export const DataUnavailableSaved = Template.bind( {} );
 DataUnavailableSaved.storyName = 'Data Unavailable: Saved';
 DataUnavailableSaved.decorators = [
 	( Story ) => {
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-			{ body: fixtures.newIdeas, status: 200 }
-		);
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-			{ body: [], status: 200 }
-		);
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-			{ body: fixtures.draftPostIdeas, status: 200 }
-		);
+		mockEndpoints( { savedIdeas: [] } );
 
 		return <Story />;
 	},
@@ -104,18 +160,7 @@ export const DataUnavailableDrafts = Template.bind( {} );
 DataUnavailableDrafts.storyName = 'Data Unavailable: Drafts';
 DataUnavailableDrafts.decorators = [
 	( Story ) => {
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-			{ body: fixtures.newIdeas, status: 200 }
-		);
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-			{ body: fixtures.savedIdeas, status: 200 }
-		);
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-			{ body: [], status: 200 }
-		);
+		mockEndpoints( { draftPostIdeas: [] } );
 
 		return <Story />;
 	},
@@ -130,17 +175,11 @@ export default {
 	decorators: [
 		( Story ) => {
 			API.setUsingCache( false );
-			fetchMock.reset();
 
 			enabledFeatures.clear();
 			enabledFeatures.add( 'ideaHubModule' );
 
-			const registry = createTestRegistry();
-			provideModules( registry, [ {
-				slug: 'idea-hub',
-				active: true,
-				connected: true,
-			} ] );
+			const registry = bootstrapRegistry();
 
 			return (
 				<WithTestRegistry registry={ registry } features={ [ 'ideaHubModule' ] }>

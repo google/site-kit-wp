@@ -53,7 +53,6 @@ const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 
 const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportError } ) => {
 	const ideaHubContainer = useRef();
-	const newIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeas() );
 	const savedIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeas() );
 	const draftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas() );
 
@@ -96,7 +95,6 @@ const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportErro
 							focusOnActivate={ false }
 						>
 							{ __( 'New', 'google-site-kit' ) }
-							{ newIdeas?.length >= 0 && <span>({ newIdeas.length })</span> }
 						</Tab>
 						<Tab
 							focusOnActivate={ false }
