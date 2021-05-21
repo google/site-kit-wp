@@ -24,6 +24,7 @@ import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	muteFetch,
+	freezeFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
@@ -315,10 +316,7 @@ describe( 'modules/analytics properties', () => {
 			it( 'returns undefined if UA properties are loading', () => {
 				const accountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-					{ body: fixtures.propertiesProfiles, status: 200 }
-				);
+				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/ );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
 					[
