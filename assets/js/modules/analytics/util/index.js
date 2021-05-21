@@ -34,6 +34,7 @@ import { getLocale } from '../../../util/i18n';
 import calculateOverviewData from './calculateOverviewData';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
 import { convertSecondsToArray, numFmt, getChartDifferenceArrow } from '../../../util';
+import { partitionReport } from '../../../util/partition-report';
 
 export { calculateOverviewData };
 
@@ -227,11 +228,9 @@ export function extractAnalyticsDashboardData( reports, selectedStats, days, cur
 		],
 	];
 
-	// Split the results in two chunks of days, and process.
-	const lastMonthRows = rows.slice( rows.length - days, rows.length );
-	const previousMonthRows = rows.slice( 0, rows.length - days );
-	const lastMonthData = reduceAnalyticsRowsData( lastMonthRows, currentMonthMetricIndex, selectedStats );
-	const previousMonthData = reduceAnalyticsRowsData( previousMonthRows, previousMonthMetricIndex, selectedStats );
+	const { compareRange, currentRange } = partitionReport( rows, { dateRangeLength: days } );
+	const lastMonthData = reduceAnalyticsRowsData( currentRange, currentMonthMetricIndex, selectedStats );
+	const previousMonthData = reduceAnalyticsRowsData( compareRange, previousMonthMetricIndex, selectedStats );
 
 	const locale = getLocale();
 	const localeDateOptions = {
