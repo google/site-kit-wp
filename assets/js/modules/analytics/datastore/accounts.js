@@ -174,20 +174,8 @@ const baseActions = {
 
 			registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_UA );
 
-			yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).waitForProperties( accountID ) );
-
-			const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
-			const ga4Property = yield Data.commonActions.await(
-				registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL(
-					ga4Properties.map( ( property ) => property._id ),
-					registry.select( CORE_SITE ).getReferenceSiteURL(),
-				)
-			);
-
-			yield Data.commonActions.await(
-				registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property?._id || GA4_PROPERTY_CREATE ),
-			);
-
+			const ga4MatchProperty = registry.dispatch( MODULES_ANALYTICS_4 ).matchAndSelectProperty( accountID, GA4_PROPERTY_CREATE );
+			const ga4Property = yield Data.commonActions.await( ga4MatchProperty );
 			if ( ! ga4Property?._id ) {
 				return;
 			}
@@ -340,23 +328,9 @@ const baseResolvers = {
 			);
 		}
 
-		// Bail out if the correct ga4 property is already selected.
-		if ( ga4Property?._accountID === accountID ) {
-			return;
-		}
-
-		yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).waitForProperties( accountID ) );
-
-		const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
-		ga4Property = yield Data.commonActions.await(
-			registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL(
-				ga4Properties.map( ( property ) => property._id ),
-				registry.select( CORE_SITE ).getReferenceSiteURL(),
-			)
-		);
-
-		if ( ga4Property?._id ) {
-			yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( ga4Property._id ) );
+		// Try to find a new matched ga4 property if the current one has a different accountID.
+		if ( ga4Property?._accountID !== accountID ) {
+			yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).matchAndSelectProperty( accountID ) );
 		}
 	},
 };

@@ -466,8 +466,6 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			describe( 'analytics-4', () => {
-				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
-
 				beforeEach( () => {
 					enabledFeatures.add( 'ga4setup' );
 
@@ -487,7 +485,7 @@ describe( 'modules/analytics accounts', () => {
 				} );
 
 				it( 'should select correct ga4 property', async () => {
-					await registry.__experimentalResolveSelect( STORE_NAME ).getAccounts( accountID );
+					await registry.__experimentalResolveSelect( STORE_NAME ).getAccounts();
 					expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( ga4Fixtures.properties[ 0 ]._id );
 				} );
 			} );
