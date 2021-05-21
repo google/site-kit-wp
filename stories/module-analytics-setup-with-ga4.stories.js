@@ -44,7 +44,6 @@ function Setup( props ) {
 			features={ [ 'ga4setup' ] }
 			{ ...props }
 		>
-			<h1>live reload</h1>
 			<ModuleSetup moduleSlug="analytics" />
 		</WithTestRegistry>
 	);
