@@ -1,5 +1,5 @@
 /**
- * DashboardUniqueVisitorsWidget Component Stories.
+ * DashboardSearchVisitorsWidget Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -23,12 +23,12 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../datastore/constants';
 import { provideModules, provideSiteInfo } from '../../../../../../tests/js/utils';
 import { provideAnalyticsMockReport } from '../../util/data-mock';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util/';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import DashboardUniqueVisitorsWidget, { selectSparklineArgs, selectReportArgs } from './DashboardUniqueVisitorsWidget';
+import DashboardSearchVisitorsWidget, { selectSparklineArgs, selectReportArgs } from './DashboardSearchVisitorsWidget';
 
 const currentEntityURL = 'https://www.example.com/example-page/';
-const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )( DashboardUniqueVisitorsWidget );
+const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )( DashboardSearchVisitorsWidget );
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -132,7 +132,7 @@ ErrorEntityURL.args = {
 };
 
 export default {
-	title: 'Modules/Analytics/Widgets/DashboardUniqueVisitorsWidget',
+	title: 'Modules/Analytics/Widgets/DashboardSearchVisitorsWidget',
 	decorators: [
 		( Story ) => (
 			<div className="googlesitekit-widget">
