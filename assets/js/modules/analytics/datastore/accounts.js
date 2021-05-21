@@ -47,6 +47,7 @@ import {
 } from '../../analytics-4/datastore/constants';
 import { isFeatureEnabled } from '../../../features';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { matchPropertyByURL } from '../util/property';
 const { createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
 
@@ -156,7 +157,7 @@ const baseActions = {
 			const urls = registry.select( CORE_SITE ).getSiteURLPermutations();
 			const uaProperties = registry.select( STORE_NAME ).getProperties( accountID );
 
-			let uaProperty = yield Data.commonActions.await( registry.dispatch( STORE_NAME ).matchPropertyByURL( uaProperties, urls ) );
+			let uaProperty = matchPropertyByURL( uaProperties, urls );
 			if ( ! uaProperty ) {
 				uaProperty = {
 					id: PROPERTY_CREATE,
@@ -164,12 +165,7 @@ const baseActions = {
 				};
 			}
 
-			yield Data.commonActions.await(
-				registry.dispatch( STORE_NAME ).selectProperty(
-					uaProperty?.id,
-					uaProperty?.internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
-				),
-			);
+			yield propertyActions.selectProperty( uaProperty?.id, uaProperty?.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 
 			if ( ! isFeatureEnabled( 'ga4setup' ) ) {
 				return;

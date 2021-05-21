@@ -106,7 +106,7 @@ describe( 'AccountSelect', () => {
 		expect( newAccountID ).toEqual( ACCOUNT_CREATE );
 	} );
 
-	it( 'should pre-select the property and profile IDs when changed', async () => {
+	it( 'should pre-select the property and profile IDs when changed', () => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
 		const propertyID = properties[ 0 ].id;
@@ -116,7 +116,7 @@ describe( 'AccountSelect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
 		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
 
-		await act( async () => {
+		act( () => {
 			// Click the label to expose the elements in the menu.
 			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 			// Click this element to select it and fire the onChange event.

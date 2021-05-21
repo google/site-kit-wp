@@ -174,7 +174,7 @@ const baseActions = {
 	/**
 	 * Matches a property by URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param {Array.<number>}        properties Array of property IDs.
 	 * @param {Array.<string>|string} url        A list of URLs or a signle URL to match properties.
@@ -209,7 +209,7 @@ const baseActions = {
 	/**
 	 * Matches a property by measurement ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param {Array.<number>}        properties    Array of property IDs.
 	 * @param {Array.<string>|string} measurementID A list of measurement IDs or a signle measurement ID to match properties.

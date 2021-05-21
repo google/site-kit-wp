@@ -32,7 +32,7 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
-import { getLocale, normalizeURL } from '../../../util';
+import { getLocale, normalizeURL, untrailingslashit } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
@@ -530,8 +530,6 @@ export const selectors = {
 	 * @return {Array.<string>} An array with permutations.
 	 */
 	getSiteURLPermutations: createRegistrySelector( ( select ) => () => {
-		const untrailingslashit = ( originalURL ) => originalURL.toString().replace( /\/$/, '' );
-
 		const referenceURL = select( STORE_NAME ).getReferenceSiteURL();
 		const permutations = [];
 
