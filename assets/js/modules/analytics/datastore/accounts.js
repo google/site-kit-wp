@@ -316,11 +316,14 @@ const baseResolvers = {
 			dispatch( STORE_NAME ).receiveAccountsPropertiesProfilesCompletion();
 		}
 
-		const accountID = registry.select( STORE_NAME ).getAccountID();
+		let accountID = registry.select( STORE_NAME ).getAccountID();
 		// Pre-select values from the matched property if no account is selected.
 		if ( matchedProperty && ! accountID ) {
-			registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId ); // eslint-disable-line sitekit/acronym-case
-			yield Data.commonActions.await( registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ) ); // eslint-disable-line sitekit/acronym-case
+			/* eslint-disable sitekit/acronym-case */
+			accountID = matchedProperty.accountId;
+			registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId );
+			yield Data.commonActions.await( registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ) );
+			/* eslint-enable */
 		}
 
 		// Bail out if the analytics-4 module is not enabled.
