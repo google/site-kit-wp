@@ -1,5 +1,5 @@
 /**
- * GA4 Property Select component tests.
+ * PropertySelectIncludingGA4 component tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

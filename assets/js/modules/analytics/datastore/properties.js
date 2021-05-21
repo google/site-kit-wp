@@ -480,7 +480,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		if ( select( MODULES_ANALYTICS_4 ) ) {
+		if ( isFeatureEnabled( 'ga4setup' ) ) {
 			const propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
 			if ( propertiesGA4 === undefined ) {
 				return undefined;

@@ -1,5 +1,5 @@
 /**
- * GA4 Property Select component.
+ * PropertySelectIncludingGA4 component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -83,17 +83,11 @@ export default function PropertySelectIncludingGA4() {
 		return <ProgressBar small />;
 	}
 
-	const properties = unmappedProperties.map( ( p ) => {
-		if ( p?._id ) {
-			return {
-				...p,
-				// map GA4 properties to have fields like UA
-				id: p._id,
-				name: p.displayName,
-			};
-		}
-		return p;
-	} );
+	const properties = unmappedProperties.map( ( p ) => ( {
+		...p,
+		id: p._id || p.id,
+		name: p.displayName || p.name,
+	} ) );
 
 	return (
 		<Select
@@ -118,8 +112,8 @@ export default function PropertySelectIncludingGA4() {
 						{ id === PROPERTY_CREATE
 							? name
 							: sprintf(
-							/* translators: 1: Property name. 2: Property ID. */
-								__( '%1$s (%2$s)', 'google-site-kit' ),
+								/* translators: 1: Property name. 2: Property ID. */
+								_x( '%1$s (%2$s)', '{property name} ({property id})', 'google-site-kit' ),
 								name,
 								id
 							)

@@ -310,8 +310,7 @@ describe( 'modules/analytics properties', () => {
 
 		describe( 'getPropertiesIncludingGA4', () => {
 			it( 'returns undefined if UA properties are loading', () => {
-				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
-				const accountID = testAccountID;
+				const accountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
