@@ -37,7 +37,7 @@ function SettingsConnectedServices( { modules } ) {
 			{ modules.map( ( module ) => (
 				<SettingsModule
 					module={ module }
-					key={ module.slug + '-module-wrapper' }
+					key={ module.slug }
 				/>
 			) ) }
 		</Layout>
