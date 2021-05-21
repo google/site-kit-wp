@@ -39,11 +39,13 @@ export default function PropertySelectIncludingGA4() {
 	const unmappedProperties = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertiesIncludingGA4( accountID ) || [] );
 	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 	const uaPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
-	const isLoading = useSelect( ( select ) => (
-		! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) ||
-		! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ accountID ] ) ||
-		! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getProperties', [ accountID ] )
-	) );
+	const isLoading = useSelect( ( select ) => {
+		const isLoadingAccounts =	! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' );
+		const isLoadingPropertiesGA4 =	! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ accountID ] );
+		const isLoadingProperties =	! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getProperties', [ accountID ] );
+
+		return isLoadingAccounts || isLoadingProperties || isLoadingPropertiesGA4;
+	} );
 
 	const primaryPropertyType = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPrimaryPropertyType() );
 
