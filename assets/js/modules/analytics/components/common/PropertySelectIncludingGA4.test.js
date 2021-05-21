@@ -78,7 +78,7 @@ const setupEmptyRegistry = ( { dispatch } ) => {
 };
 
 describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
-	it( 'should render an option for each analytics property of the currently selected account.', async () => {
+	it( 'should render an option for each analytics property of the currently selected account.', () => {
 		const { getAllByRole } = render( <PropertySelectIncludingGA4 />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
@@ -87,7 +87,7 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 		expect( listItems ).toHaveLength( propertiesUA.length + propertiesGA4.length + 1 );
 	} );
 
-	it( 'should not render in the absence of an valid account ID.', async () => {
+	it( 'should not render in the absence of an valid account ID.', () => {
 		const { container, registry } = render( <PropertySelectIncludingGA4 />, {
 			setupRegistry,
 		} );
@@ -107,7 +107,7 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
+	it( 'should render a select box with only an option to create a new property if no properties are available.', () => {
 		const { getAllByRole } = render( <PropertySelectIncludingGA4 />, { setupRegistry: setupEmptyRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
@@ -115,7 +115,7 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 		expect( listItems[ 0 ].textContent ).toMatch( /set up a new property/i );
 	} );
 
-	it( 'should change between UA and GA4 properties', async () => {
+	it( 'should change between UA and GA4 properties', () => {
 		const { getAllByRole, container, registry } = render( <PropertySelectIncludingGA4 />, { setupRegistry } );
 		const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
 		// the selector getPropertiesIncludingGA4 sorts so this is rendered second in the select
