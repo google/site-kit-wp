@@ -28,6 +28,7 @@ import {
 	unsubscribeFromAll,
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
+import * as ga4Fixtures from '../../analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 describe( 'modules/analytics properties', () => {
@@ -308,7 +309,80 @@ describe( 'modules/analytics properties', () => {
 		} );
 
 		describe( 'getPropertiesIncludingGA4', () => {
-			it.todo( 'returns undefined if UA or GA properties are loading' );
+			it( 'returns undefined if UA properties are loading', async () => {
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+				const accountID = testAccountID;
+
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+					{ body: fixtures.propertiesProfiles, status: 200 }
+				);
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+					[
+						{
+							_id: '151753095-3',
+							_accountID: '151753095',
+							displayName: 'www.elasticpress.io',
+						},
+						{
+							_id: '151753095-4',
+							_accountID: '151753095',
+							displayName: 'troubled-tipped.example.com',
+						},
+					],
+					{ accountID }
+				);
+
+				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
+			} );
+
+			it( 'returns undefined if GA4 properties are loading', async () => {
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+				const accountID = testAccountID;
+
+				registry.dispatch( STORE_NAME ).receiveGetProperties(
+					[
+						{
+							// eslint-disable-next-line sitekit/acronym-case
+							accountId: '151753095',
+							id: 'UA-151753095-1',
+							name: 'rwh',
+						},
+						{
+							// eslint-disable-next-line sitekit/acronym-case
+							accountId: '151753095',
+							id: 'UA-151753095-1',
+							name: 'troubled-tipped.example.com',
+						},
+
+					],
+					{ accountID }
+				);
+
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+					{ body: ga4Fixtures.properties, status: 200 }
+				);
+
+				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
+			} );
+
+			it( 'returns undefined if both UA and GA4 properties are loading', async () => {
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+					{ body: fixtures.propertiesProfiles, status: 200 }
+				);
+
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+					{ body: ga4Fixtures.properties, status: 200 }
+				);
+
+				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
+			} );
 
 			it( 'returns a sorted list of ua and ga4 properties ', async () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
