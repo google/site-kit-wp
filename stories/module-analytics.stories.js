@@ -129,7 +129,6 @@ storiesOf( 'Analytics Module', module )
 		);
 	} )
 	.add( 'Property Select including GA4 properties', () => {
-		// Have to import like with tests
 		enabledFeatures.add( 'ga4setup' );
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
@@ -143,7 +142,6 @@ storiesOf( 'Analytics Module', module )
 
 			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			// I believe we don't need profiles for this story, do we? Let's get rid of it if we don't need it
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
 				accountID,
 				propertyID,
@@ -161,11 +159,9 @@ storiesOf( 'Analytics Module', module )
 		return (
 			<WithTestRegistry
 				callback={ setupRegistry }
-				// This does not work
 				features={ [ 'ga4setup' ] }
 			>
 				<SetupWrap>
-					<h1>fooooz</h1>
 					<div className="googlesitekit-setup-module__inputs">
 						<PropertySelectIncludingGA4 />
 					</div>
