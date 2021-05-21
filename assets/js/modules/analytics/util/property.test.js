@@ -29,13 +29,13 @@ describe( 'matchPropertyByURL', () => {
 		/* eslint-enable */
 	];
 
-	it( 'should return a correct property that has matching website URL', async () => {
-		const property = await matchPropertyByURL( properties, 'https://www.example.com' );
+	it( 'should return a correct property that has matching website URL', () => {
+		const property = matchPropertyByURL( properties, 'https://www.example.com' );
 		expect( property ).toEqual( properties[ 0 ] );
 	} );
 
-	it( 'should return NULL when URL does not match', async () => {
-		const property = await matchPropertyByURL( properties, 'http://wrongsite.com' );
+	it( 'should return NULL when URL does not match', () => {
+		const property = matchPropertyByURL( properties, 'http://wrongsite.com' );
 		expect( property ).toBeNull();
 	} );
 } );
