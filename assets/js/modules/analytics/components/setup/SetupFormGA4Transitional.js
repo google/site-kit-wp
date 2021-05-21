@@ -28,10 +28,11 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import SettingsNotice from '../../../../components/SettingsNotice';
 import {
 	AccountSelect,
 	ProfileSelect,
-	PropertySelect,
+	PropertySelectIncludingGA4,
 	ProfileNameTextField,
 	GA4Notice,
 } from '../common';
@@ -40,6 +41,7 @@ const { useSelect } = Data;
 export default function SetupFormGA4Transitional() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const propertyType = useSelect( ( select ) => select( STORE_NAME ).getPrimaryPropertyType() );
 
 	// Needed to conditionally show the profile name field and surrounding container.
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
@@ -58,16 +60,22 @@ export default function SetupFormGA4Transitional() {
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
 
-				<PropertySelect />
+				<PropertySelectIncludingGA4 />
 
-				<ProfileSelect />
+				{ propertyType === 'ua' && (
+					<ProfileSelect />
+				) }
 			</div>
 
-			{ profileID === PROFILE_CREATE && (
+			{ ( profileID === PROFILE_CREATE && propertyType === 'ua' ) && (
 				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
 					<ProfileNameTextField />
 				</div>
 			) }
+
+			<SettingsNotice>
+				test
+			</SettingsNotice>
 		</Fragment>
 	);
 }
