@@ -39,7 +39,9 @@ import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
+import { isFeatureEnabled } from '../../../../features';
 import {
 	AccountCreate,
 	AccountCreateLegacy,
@@ -57,7 +59,19 @@ export default function SetupMain( { finishSetup } ) {
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
-	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
+	const setupFlowMode = useSelect( ( select ) => {
+		// If the ga4setup feature is enabled we need to try to pull ga4 properties to see whether Admin API works or not.
+		// This will affect the isAdminAPIWorking selector behavior which is used in the getSetupFlowMode.
+		if ( isFeatureEnabled( 'ga4setup' ) && ( accountID || accounts ) ) {
+			if ( accountID ) {
+				select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+			} else if ( Array.isArray( accounts ) && accounts.length > 0 ) {
+				select( MODULES_ANALYTICS_4 ).getProperties( accounts[ 0 ].id );
+			}
+		}
+
+		return select( STORE_NAME ).getSetupFlowMode();
+	} );
 
 	const { hasGTMAnalyticsPropertyID, hasGTMAnalyticsPropertyIDPermission } = useSelect( ( select ) => {
 		const gtmPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
