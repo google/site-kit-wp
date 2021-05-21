@@ -49,7 +49,7 @@ describe( 'modules/analytics-4 properties', () => {
 			test.each`
 			property   | webData    | errorProperty | errorWebData | expected
 			${ true }  | ${ true }  |  ${ false }   | ${ false }   | ${ true }
-			${ true }  | ${ false } |  ${ false }   | ${ false }   | ${ undefined }
+			${ true }  | ${ false } |  ${ false }   | ${ false }   | ${ true }
 			${ false } | ${ true }  |  ${ false }   | ${ false }   | ${ undefined }
 			${ false } | ${ false } |  ${ false }   | ${ false }   | ${ undefined }
 			${ true }  | ${ true }  |  ${ true }    | ${ false }   | ${ false }

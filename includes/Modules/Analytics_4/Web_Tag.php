@@ -27,7 +27,7 @@ class Web_Tag extends Analytics_Web_Tag {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param string $tag_id Tag ID.
 	 * @param string $module_slug Module slug.

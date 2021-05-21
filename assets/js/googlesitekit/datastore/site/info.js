@@ -32,7 +32,7 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
-import { getLocale, normalizeURL } from '../../../util';
+import { getLocale, normalizeURL, untrailingslashit } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
@@ -520,6 +520,35 @@ export const selectors = {
 	isSiteURLMatch: createRegistrySelector( ( select ) => ( state, url ) => {
 		const referenceURL = select( STORE_NAME ).getReferenceSiteURL();
 		return normalizeURL( referenceURL ) === normalizeURL( url );
+	} ),
+
+	/**
+	 * Gets an array with site URL permutations.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array.<string>} An array with permutations.
+	 */
+	getSiteURLPermutations: createRegistrySelector( ( select ) => () => {
+		const referenceURL = select( STORE_NAME ).getReferenceSiteURL();
+		const permutations = [];
+
+		const url = new URL( referenceURL );
+		url.hostname = url.hostname.replace( /^www\./i, '' );
+
+		url.protocol = 'http';
+		permutations.push( untrailingslashit( url ) );
+
+		url.protocol = 'https';
+		permutations.push( untrailingslashit( url ) );
+
+		url.hostname = 'www.' + url.hostname;
+		permutations.push( untrailingslashit( url ) );
+
+		url.protocol = 'http';
+		permutations.push( untrailingslashit( url ) );
+
+		return permutations;
 	} ),
 };
 
