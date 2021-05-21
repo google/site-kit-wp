@@ -26,6 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME, PROPERTY_CREATE, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
 import { normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -170,6 +171,35 @@ const baseActions = {
 			}
 		}
 	),
+
+	/**
+	 * Matches and selects a property for provided accountID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} accountID          GA4 account ID.
+	 * @param {string} fallbackPropertyID A fallback propertyID to use if a matched property is not found.
+	 * @return {Object|null} Matched property object on success, otherwise NULL.
+	 */
+	*matchAndSelectProperty( accountID, fallbackPropertyID = '' ) {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield baseActions.waitForProperties( accountID );
+
+		const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
+		const properties = registry.select( STORE_NAME ).getProperties( accountID );
+		const property = yield baseActions.matchPropertyByURL(
+			( properties || [] ).map( ( { _id } ) => _id ),
+			referenceURL,
+		);
+
+		const propertyID = property?._id || fallbackPropertyID;
+		if ( propertyID ) {
+			yield baseActions.selectProperty( propertyID );
+		}
+
+		return property;
+	},
 
 	/**
 	 * Matches a property by URL.

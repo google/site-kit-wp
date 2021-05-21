@@ -241,7 +241,10 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setPrimaryPropertyType( primaryPropertyType ) {
-		invariant( [ PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 ].includes( primaryPropertyType ), 'type must be "ua" or "ga4"' );
+		invariant(
+			[ PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 ].includes( primaryPropertyType ),
+			'type must be "ua" or "ga4"',
+		);
 
 		return {
 			payload: { primaryPropertyType },
