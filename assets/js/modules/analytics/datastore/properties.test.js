@@ -309,7 +309,7 @@ describe( 'modules/analytics properties', () => {
 		} );
 
 		describe( 'getPropertiesIncludingGA4', () => {
-			it( 'returns undefined if UA properties are loading', async () => {
+			it( 'returns undefined if UA properties are loading', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const accountID = testAccountID;
 
@@ -337,7 +337,7 @@ describe( 'modules/analytics properties', () => {
 				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
 			} );
 
-			it( 'returns undefined if GA4 properties are loading', async () => {
+			it( 'returns undefined if GA4 properties are loading', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const accountID = testAccountID;
 
@@ -368,7 +368,7 @@ describe( 'modules/analytics properties', () => {
 				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
 			} );
 
-			it( 'returns undefined if both UA and GA4 properties are loading', async () => {
+			it( 'returns undefined if both UA and GA4 properties are loading', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
 				fetchMock.get(
@@ -384,7 +384,7 @@ describe( 'modules/analytics properties', () => {
 				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
 			} );
 
-			it( 'returns a sorted list of ua and ga4 properties ', async () => {
+			it( 'returns a sorted list of ua and ga4 properties ', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const accountID = testAccountID;
 
