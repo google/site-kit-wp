@@ -41,9 +41,8 @@ const propertyIDua = propertiesUA[ 0 ].id;
 
 const setupRegistry = ( { dispatch } ) => {
 	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: 'http://example.com' } );
-	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+	dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 	dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
 	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
@@ -171,4 +170,3 @@ describe( 'PropertySelectIncludingGA4', () => {
 		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe( '' );
 	} );
 } );
-

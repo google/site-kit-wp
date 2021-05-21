@@ -41,8 +41,8 @@ export default function PropertySelectIncludingGA4() {
 	const uaPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
 	const isLoading = useSelect( ( select ) => (
 		! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) ||
-	! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ accountID ] ) ||
-	! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getProperties', [ accountID ] )
+		! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ accountID ] ) ||
+		! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getProperties', [ accountID ] )
 	) );
 
 	const primaryPropertyType = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPrimaryPropertyType() );
@@ -57,7 +57,7 @@ export default function PropertySelectIncludingGA4() {
 		const internalID = item.dataset.internalId; // eslint-disable-line sitekit/acronym-case
 		if ( propertyID !== newPropertyID ) {
 			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
-			if ( newPropertyID.startsWith( 'UA-' ) ) {
+			if ( !! internalID ) {
 				uaDispatch.selectProperty( newPropertyID, internalID );
 				uaDispatch.setPrimaryPropertyType( 'ua' );
 
@@ -101,7 +101,6 @@ export default function PropertySelectIncludingGA4() {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ ! isValidAccountID( accountID ) }
 			enhanced
 			outlined
 		>
@@ -130,4 +129,3 @@ export default function PropertySelectIncludingGA4() {
 		</Select>
 	);
 }
-
