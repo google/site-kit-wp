@@ -36,6 +36,7 @@ const BUTTON_DISABLED = 'BUTTON_DISABLED';
 const EXTERNAL_LINK = 'EXTERNAL_LINK';
 const LINK = 'LINK';
 const ROUTER_LINK = 'ROUTER_LINK';
+
 function Link( {
 	'aria-label': ariaLabelProp,
 	arrow,
