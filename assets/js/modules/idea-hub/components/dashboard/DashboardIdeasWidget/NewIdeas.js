@@ -45,7 +45,7 @@ import Empty from './Empty';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-const NewIdeas = ( { WidgetReportError } ) => {
+const NewIdeas = ( { active, WidgetReportError } ) => {
 	const [ page, setPage ] = useState( 1 );
 	const args = {
 		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
@@ -57,20 +57,20 @@ const NewIdeas = ( { WidgetReportError } ) => {
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getNewIdeas', [ args ] ) );
 
 	const handlePrev = useCallback( () => {
-		if ( page === 1 ) {
-			return;
+		if ( page > 1 ) {
+			setPage( page - 1 );
 		}
-
-		setPage( page - 1 );
 	}, [ page, setPage ] );
 
 	const handleNext = useCallback( () => {
-		if ( ( page * IDEA_HUB_IDEAS_PER_PAGE ) > totalNewIdeas ) {
-			return;
+		if ( page < Math.ceil( totalNewIdeas / IDEA_HUB_IDEAS_PER_PAGE ) ) {
+			setPage( page + 1 );
 		}
-
-		setPage( page + 1 );
 	}, [ page, setPage, totalNewIdeas ] );
+
+	if ( ! active ) {
+		return null;
+	}
 
 	if ( ! hasFinishedResolution ) {
 		return (
@@ -95,17 +95,15 @@ const NewIdeas = ( { WidgetReportError } ) => {
 	return (
 		<Fragment>
 			<div className="googlesitekit-idea-hub__new-ideas">
-				{ newIdeas.map( ( idea, key ) => {
-					return (
-						<Idea
-							key={ key }
-							name={ idea.name }
-							text={ idea.text }
-							topics={ idea.topics }
-							buttons={ [ IDEA_HUB_BUTTON_DELETE, IDEA_HUB_BUTTON_PIN, IDEA_HUB_BUTTON_CREATE ] }
-						/>
-					);
-				} ) }
+				{ newIdeas.map( ( idea, key ) => (
+					<Idea
+						key={ key }
+						name={ idea.name }
+						text={ idea.text }
+						topics={ idea.topics }
+						buttons={ [ IDEA_HUB_BUTTON_DELETE, IDEA_HUB_BUTTON_PIN, IDEA_HUB_BUTTON_CREATE ] }
+					/>
+				) ) }
 			</div>
 
 			<Footer
@@ -119,6 +117,7 @@ const NewIdeas = ( { WidgetReportError } ) => {
 };
 
 NewIdeas.propTypes = {
+	active: PropTypes.bool.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
 

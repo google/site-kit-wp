@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { _x, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -37,12 +37,7 @@ const Footer = ( { page, totalIdeas, handlePrev, handleNext } ) => {
 		<Grid className="googlesitekit-idea-hub__footer">
 			<Row>
 				<Cell smSize={ 4 } mdSize={ 4 } lgSize={ 6 } className="googlesitekit-idea-hub__footer--updated">
-					{ sprintf(
-						/* translators: 1: start day range, 2: end day range */
-						_x( 'Updated every %1$s-%2$s days', 'Updated every %1$s-%2$s day', 'google-site-kit' ),
-						2,
-						3
-					) }
+					{ __( 'Updated every 2-3 days', 'google-site-kit' ) }
 				</Cell>
 
 				<Cell smSize={ 4 } mdSize={ 4 } lgSize={ 6 }>

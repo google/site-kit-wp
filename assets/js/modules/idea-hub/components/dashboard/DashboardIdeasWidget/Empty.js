@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * Internal dependencies
@@ -28,7 +29,10 @@ import { Grid, Cell, Row } from '../../../../../material-components';
 
 const Empty = ( { sideLayout, Icon, title, subtitle } ) => {
 	return (
-		<div className={ `googlesitekit-idea-hub__empty googlesitekit-idea-hub__empty--layout-${ sideLayout ? 'side' : 'stacked' }` }>
+		<div className={ classnames( 'googlesitekit-idea-hub__empty', {
+			'googlesitekit-idea-hub__empty--layout-side': sideLayout,
+			'googlesitekit-idea-hub__empty--layout-stacked': ! sideLayout,
+		} ) }>
 			<Grid>
 				<Row>
 					<Cell size={ sideLayout ? 4 : 12 } className="googlesitekit-idea-hub__empty--icon">

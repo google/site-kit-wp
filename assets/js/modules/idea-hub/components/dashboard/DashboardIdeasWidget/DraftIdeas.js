@@ -43,32 +43,32 @@ import Empty from './Empty';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-const DraftIdeas = ( { WidgetReportError } ) => {
+const DraftIdeas = ( { active, WidgetReportError } ) => {
 	const [ page, setPage ] = useState( 1 );
 	const args = {
 		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
 		length: IDEA_HUB_IDEAS_PER_PAGE,
 	};
-	const totalNewIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas()?.length );
-	const newIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas( args ) );
+	const totalDraftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas()?.length );
+	const draftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas( args ) );
 	const hasFinishedResolution = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getDraftPostIdeas', [ args ] ) );
 	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getDraftPostIdeas', [ args ] ) );
 
 	const handlePrev = useCallback( () => {
-		if ( page === 1 ) {
-			return;
+		if ( page > 1 ) {
+			setPage( page - 1 );
 		}
-
-		setPage( page - 1 );
 	}, [ page, setPage ] );
 
 	const handleNext = useCallback( () => {
-		if ( ( page * IDEA_HUB_IDEAS_PER_PAGE ) > totalNewIdeas ) {
-			return;
+		if ( page < Math.ceil( totalDraftIdeas / IDEA_HUB_IDEAS_PER_PAGE ) ) {
+			setPage( page + 1 );
 		}
+	}, [ page, setPage, totalDraftIdeas ] );
 
-		setPage( page + 1 );
-	}, [ page, setPage, totalNewIdeas ] );
+	if ( ! active ) {
+		return null;
+	}
 
 	if ( ! hasFinishedResolution ) {
 		return (
@@ -80,7 +80,7 @@ const DraftIdeas = ( { WidgetReportError } ) => {
 		return <WidgetReportError slug="idea-hub" error={ error } />;
 	}
 
-	if ( ! totalNewIdeas ) {
+	if ( ! totalDraftIdeas ) {
 		return (
 			<Empty
 				sideLayout={ false }
@@ -94,23 +94,21 @@ const DraftIdeas = ( { WidgetReportError } ) => {
 	return (
 		<Fragment>
 			<div className="googlesitekit-idea-hub__draft-ideas">
-				{ newIdeas.map( ( idea, key ) => {
-					return (
-						<Idea
-							key={ key }
-							name={ idea.name }
-							text={ idea.text }
-							topics={ idea.topics }
-							buttons={ [ IDEA_HUB_BUTTON_VIEW ] }
-							postEditURL={ idea.postEditURL }
-						/>
-					);
-				} ) }
+				{ draftIdeas.map( ( idea, key ) => (
+					<Idea
+						key={ key }
+						name={ idea.name }
+						text={ idea.text }
+						topics={ idea.topics }
+						buttons={ [ IDEA_HUB_BUTTON_VIEW ] }
+						postEditURL={ idea.postEditURL }
+					/>
+				) ) }
 			</div>
 
 			<Footer
 				page={ page }
-				totalIdeas={ totalNewIdeas }
+				totalIdeas={ totalDraftIdeas }
 				handlePrev={ handlePrev }
 				handleNext={ handleNext }
 			/>
@@ -119,6 +117,7 @@ const DraftIdeas = ( { WidgetReportError } ) => {
 };
 
 DraftIdeas.propTypes = {
+	active: PropTypes.bool.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
 

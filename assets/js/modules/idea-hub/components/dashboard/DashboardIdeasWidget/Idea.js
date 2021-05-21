@@ -70,11 +70,9 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 			<Row>
 				<Cell smSize={ 4 } mdSize={ 5 } lgSize={ 9 } className="googlesitekit-idea-hub__idea--details">
 					<div className="googlesitekit-idea-hub__idea--topics">
-						{ topics.map( ( topic, key ) => {
-							return (
-								<span className="googlesitekit-idea-hub__idea--topic" key={ key }>{ topic.display_name }</span>
-							);
-						} ) }
+						{ topics.map( ( topic, key ) => (
+							<span className="googlesitekit-idea-hub__idea--topic" key={ key }>{ topic.display_name }</span>
+						) ) }
 					</div>
 
 					<p className="googlesitekit-idea-hub__idea--text">{ text }</p>

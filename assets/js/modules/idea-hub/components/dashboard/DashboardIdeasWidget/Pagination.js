@@ -23,6 +23,11 @@ import PropTypes from 'prop-types';
 import { Icon, chevronLeft, chevronRight } from '@wordpress/icons';
 
 /**
+ * WordPress dependencies
+ */
+import { _x, sprintf } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Button from '../../../../../components/Button';
@@ -32,9 +37,13 @@ const Pagination = ( { total, page, ideasPerPage, handlePrev, handleNext } ) => 
 	return (
 		<div className="googlesitekit-idea-hub__pagination">
 			<span className="googlesitekit-idea-hub__pagination--legend">
-				{ page === 1 ? page : ( ( ( page - 1 ) * ideasPerPage ) + 1 ) }
-				{ ' - ' }
-				{ total < ( page * ideasPerPage ) ? total : ( page * ideasPerPage ) } of { total }
+				{ sprintf(
+					/* translators: 1: offset of first item, 2: offset of last item, 3: total number of items */
+					_x( '%1$s - %2$s of %3$s', '%1$s - %2$s of %3$s', 'google-site-kit' ),
+					page === 1 ? page : ( ( ( page - 1 ) * ideasPerPage ) + 1 ),
+					total < ( page * ideasPerPage ) ? total : ( page * ideasPerPage ),
+					total,
+				) }
 			</span>
 
 			<div className="googlesitekit-idea-hub__pagination--buttons">
