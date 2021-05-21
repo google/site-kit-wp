@@ -35,6 +35,7 @@ import AccountField from './AccountField';
 import PropertyField from './PropertyField';
 import ProfileField from './ProfileField';
 import CountrySelect from './CountrySelect';
+import GA4PropertyNotice from './GA4PropertyNotice';
 import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
 import GA4Notice from '../GA4Notice';
 import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../../../datastore/constants';
@@ -141,6 +142,7 @@ export default function AccountCreate() {
 		<div>
 			{ ! isGA4enabled && <GA4Notice /> }
 			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
+			<h1>AccountCreate -&gt; this is the component</h1>
 
 			<h3 className="googlesitekit-heading-4">
 				{ __( 'Create your Analytics account', 'google-site-kit' ) }
@@ -172,6 +174,8 @@ export default function AccountCreate() {
 				{ hasProvisioningScope && <span>{ __( 'You will be redirected to Google Analytics to accept the terms of service.', 'google-site-kit' ) }</span> }
 				{ ! hasProvisioningScope && <span>{ __( 'You will need to give Site Kit permission to create an Analytics account on your behalf and also accept the Google Analytics terms of service.', 'google-site-kit' ) }</span> }
 			</p>
+
+			{ isGA4enabled && <GA4PropertyNotice /> }
 
 			<div className="googlesitekit-setup-module__action">
 				<Button

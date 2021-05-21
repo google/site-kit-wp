@@ -26,7 +26,11 @@ import { storiesOf } from '@storybook/react';
  */
 import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
-import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
+import AccountCreate from '../assets/js/modules/analytics/components/common/AccountCreate';
+import { MODULES_ANALYTICS, ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../assets/js/modules/analytics/datastore/constants';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import {
 	WithTestRegistry,
 	createTestRegistry,
@@ -41,7 +45,7 @@ function Setup( props ) {
 
 	return (
 		<WithTestRegistry { ...props }>
-			<h1>!!!live reload!!!</h1>
+			<h1>live reload</h1>
 			<ModuleSetup moduleSlug="analytics" />
 		</WithTestRegistry>
 	);
@@ -64,22 +68,82 @@ const withRegistry = ( Story ) => {
 
 storiesOf( 'Analytics Module/Setup - UA and GA4', module )
 	.add( 'Start', ( args, { registry } ) => {
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		const { properties, profiles } = fixtures.accountsPropertiesProfiles;
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		// registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID: ACCOUNT_CREATE } );
+		// registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
+
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
 			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
-		// return <p>w000t</p>;
+		// TODO - not ga4 properties but ah well
+		// eslint-disable-next-line sitekit/acronym-case
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 
 		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
+	} )
+	.add( 'Create Account (scope granted)', ( args, { registry } ) => {
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			usingProxy: true,
+			referenceSiteURL: 'http://example.com',
+			timezone: 'America/Detroit',
+			siteName: 'My Site Name',
+		} );
+		registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+			authenticated: true,
+			requiredScopes: [],
+			grantedScopes: [ PROVISIONING_SCOPE ],
+		} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+		// eslint-disable-next-line sitekit/acronym-case
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
+			// eslint-disable-next-line sitekit/acronym-case
+			accountID: properties[ 0 ].accountId,
+			// eslint-disable-next-line sitekit/acronym-case
+			propertyID: profiles[ 0 ].webPropertyId,
+		} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+			accountID: ACCOUNT_CREATE,
+		} );
+
+		// TODO - not ga4 properties but ah well
+		// eslint-disable-next-line sitekit/acronym-case
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+
+		return <Setup registry={ registry } />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
+	} )
+	.add( 'Account Create', ( args, { registry } ) => {
+		enabledFeatures.clear();
+		enabledFeatures.add( 'ga4setup' );
+
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
+
+		return (
+			<WithTestRegistry registry={ registry }>
+				<h1>AccountCreatecxxxx</h1>
+				<AccountCreate />
+			</WithTestRegistry>
+		);
 	}, {
 		decorators: [
 			withRegistry,

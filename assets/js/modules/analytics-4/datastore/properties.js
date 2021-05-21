@@ -74,7 +74,10 @@ const fetchGetPropertiesStore = createFetchStore( {
 				...state.properties,
 				[ accountID ]: properties,
 			},
+			// NOTE - this line fixes storybook. otherwise shows error and is stuck in loading state
 			propertiesByID: state.properties[ accountID ]?.reduce(
+			// BUT tests only pass with this line
+			// propertiesByID: properties.reduce(
 				( accum, property ) => ( { ...accum, [ property._id ]: property } ),
 				state.propertiesByID || {},
 			),
