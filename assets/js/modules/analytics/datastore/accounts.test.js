@@ -20,7 +20,13 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME, FORM_ACCOUNT_CREATE } from './constants';
+import {
+	STORE_NAME,
+	FORM_ACCOUNT_CREATE,
+	ACCOUNT_CREATE,
+	PROPERTY_CREATE,
+	PROFILE_CREATE,
+} from './constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -32,6 +38,7 @@ import {
 } from 'tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
+import { provideSiteInfo } from '../../../../../tests/js/utils';
 
 describe( 'modules/analytics accounts', () => {
 	let registry;
@@ -170,6 +177,58 @@ describe( 'modules/analytics accounts', () => {
 				registry.dispatch( STORE_NAME ).resetAccounts();
 
 				expect( registry.select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) ).toStrictEqual( false );
+			} );
+		} );
+
+		describe( 'selectAccount', () => {
+			beforeEach( () => {
+				provideSiteInfo( registry, {
+					referenceSiteURL: fixtures.propertiesProfiles.properties[ 0 ].websiteUrl, // eslint-disable-line sitekit/acronym-case
+				} );
+			} );
+
+			it( 'should throw an error if accountID is invalid', () => {
+				expect( () => registry.dispatch( STORE_NAME ).selectAccount( false ) ).toThrow();
+			} );
+
+			it( 'should property reset propertyID and profileID when selecting ACCOUNT_CREATE option', () => {
+				registry.dispatch( STORE_NAME ).selectAccount( ACCOUNT_CREATE );
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( ACCOUNT_CREATE );
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( '' );
+			} );
+
+			it( 'should correctly select property and profile IDs', async () => {
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+					{ body: fixtures.propertiesProfiles, status: 200 }
+				);
+
+				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+
+				await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( accountID );
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( fixtures.propertiesProfiles.profiles[ 0 ].webPropertyId ); // eslint-disable-line sitekit/acronym-case
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( fixtures.propertiesProfiles.profiles[ 0 ].internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( fixtures.propertiesProfiles.profiles[ 0 ].id );
+			} );
+
+			it( 'should correctly select PROPERTY_CREATE and PROFILE_CREATE when account has no properties', async () => {
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+					{ body: { properties: [], profiles: [] }, status: 200 }
+				);
+
+				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+
+				await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( accountID );
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( PROFILE_CREATE );
 			} );
 		} );
 	} );
