@@ -33,10 +33,13 @@ import { useState, useRef, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../../../datastore/constants';
 import whenActive from '../../../../../util/when-active';
 import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
+const { useSelect } = Data;
 
 const getHash = ( hash ) => hash ? hash.replace( '#', '' ) : false;
 const isValidHash = ( hash ) => getHash( hash ) in DashboardIdeasWidget.tabToIndex;
@@ -48,10 +51,13 @@ const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 	return ideaHubWidgetOffsetTop + global.window.pageYOffset + headerOffset;
 };
 
-const DashboardIdeasWidget = ( { Widget } ) => {
+const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportError } ) => {
 	const ideaHubContainer = useRef();
+	const savedIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeas() );
+	const draftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas() );
+
 	const [ hash, setHash ] = useHash();
-	const [ activeTabIndex, setActiveTabIndex ] = useState( DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] || 0 );
+	const [ activeTabIndex, setActiveTabIndex ] = useState( DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] || defaultActiveTabIndex );
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
 
 	useMount( () => {
@@ -94,27 +100,29 @@ const DashboardIdeasWidget = ( { Widget } ) => {
 							focusOnActivate={ false }
 						>
 							{ __( 'Saved', 'google-site-kit' ) }
+							{ savedIdeas?.length >= 0 && <span>({ savedIdeas.length })</span> }
 						</Tab>
 						<Tab
 							focusOnActivate={ false }
 						>
 							{ __( 'Drafts', 'google-site-kit' ) }
+							{ draftIdeas?.length >= 0 && <span>({ draftIdeas.length })</span> }
 						</Tab>
 					</TabBar>
 				</div>
 
 				<div className="googlesitekit-idea-hub__body">
-					{ activeTab === 'new-ideas' && (
-						<NewIdeas />
-					) }
+					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'new-ideas' }>
+						<NewIdeas WidgetReportError={ WidgetReportError } active={ activeTab === 'new-ideas' } />
+					</div>
 
-					{ activeTab === 'saved-ideas' && (
-						<SavedIdeas />
-					) }
+					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'saved-ideas' }>
+						<SavedIdeas WidgetReportError={ WidgetReportError } active={ activeTab === 'saved-ideas' } />
+					</div>
 
-					{ activeTab === 'draft-ideas' && (
-						<DraftIdeas />
-					) }
+					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'draft-ideas' }>
+						<DraftIdeas WidgetReportError={ WidgetReportError } active={ activeTab === 'draft-ideas' } />
+					</div>
 				</div>
 			</div>
 		</Widget>
@@ -131,6 +139,11 @@ DashboardIdeasWidget.tabIDsByIndex = Object.keys( DashboardIdeasWidget.tabToInde
 
 DashboardIdeasWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
+	defaultActiveTabIndex: PropTypes.number,
+};
+
+DashboardIdeasWidget.defaultProps = {
+	defaultActiveTabIndex: 0,
 };
 
 export default whenActive( { moduleName: 'idea-hub' } )( DashboardIdeasWidget );
