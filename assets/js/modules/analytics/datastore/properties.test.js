@@ -333,7 +333,7 @@ describe( 'modules/analytics properties', () => {
 					{ accountID }
 				);
 
-				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
+				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( accountID ) ).toBeUndefined();
 			} );
 
 			it( 'returns undefined if GA4 properties are loading', () => {

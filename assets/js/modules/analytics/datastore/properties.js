@@ -32,6 +32,7 @@ import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import { isFeatureEnabled } from '../../../features';
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
