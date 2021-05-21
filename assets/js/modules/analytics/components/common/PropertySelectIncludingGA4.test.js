@@ -19,13 +19,12 @@
 /**
  * Internal dependencies
  */
-import PropertySelect from './PropertySelectIncludingGA4';
+import PropertySelectIncludingGA4 from './PropertySelectIncludingGA4';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
-
+import { provideSiteInfo } from '../../../../../../tests/js/utils';
 import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
 
 const {
@@ -39,8 +38,11 @@ const accountID = createProperty._accountID;
 const propertyIDga4 = createWebDataStream._propertyID;
 const propertyIDua = propertiesUA[ 0 ].id;
 
-const setupRegistry = ( { dispatch } ) => {
-	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: 'http://example.com' } );
+const setupRegistry = ( registry ) => {
+	provideSiteInfo( registry );
+
+	const { dispatch } = registry;
+
 	dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
@@ -76,9 +78,9 @@ const setupEmptyRegistry = ( { dispatch } ) => {
 	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [ accountID ] );
 };
 
-describe( 'PropertySelectIncludingGA4', () => {
+describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 	it( 'should render an option for each analytics property of the currently selected account.', async () => {
-		const { getAllByRole } = render( <PropertySelect />, { setupRegistry } );
+		const { getAllByRole } = render( <PropertySelectIncludingGA4 />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		// Note: we do length + 1 here because there should also be an item for
@@ -87,7 +89,7 @@ describe( 'PropertySelectIncludingGA4', () => {
 	} );
 
 	it( 'should not render in the absence of an valid account ID.', async () => {
-		const { container, registry } = render( <PropertySelect />, {
+		const { container, registry } = render( <PropertySelectIncludingGA4 />, {
 			setupRegistry,
 		} );
 
@@ -107,7 +109,7 @@ describe( 'PropertySelectIncludingGA4', () => {
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
-		const { getAllByRole } = render( <PropertySelect />, { setupRegistry: setupEmptyRegistry } );
+		const { getAllByRole } = render( <PropertySelectIncludingGA4 />, { setupRegistry: setupEmptyRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( 1 );
@@ -115,7 +117,7 @@ describe( 'PropertySelectIncludingGA4', () => {
 	} );
 
 	it( 'should change between UA and GA4 properties', async () => {
-		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
+		const { getAllByRole, container, registry } = render( <PropertySelectIncludingGA4 />, { setupRegistry } );
 		const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
 		// the selector getPropertiesIncludingGA4 sorts so this is rendered second in the select
 		const ga4TargetProperty = ga4Properties[ 0 ];

@@ -141,14 +141,12 @@ storiesOf( 'Analytics Module', module )
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
 				accountID,
-				// eslint-disable-next-line sitekit/acronym-case
 				propertyID,
 			} );
 
 			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID,
 			} );
-			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
 				propertiesGA4,
 				{ accountID }
