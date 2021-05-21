@@ -27,6 +27,7 @@ import {
 } from '../../../../../../../tests/js/test-utils';
 import { enabledFeatures } from '../../../../../features';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util/';
+import * as fixtures from '../../../datastore/__fixtures__';
 import DashboardIdeasWidget from './index';
 
 describe( 'Idea Hub', () => {
@@ -45,6 +46,21 @@ describe( 'Idea Hub', () => {
 			active: true,
 			connected: true,
 		} ] );
+
+		fetchMock.get(
+			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
+			{ body: fixtures.draftPostIdeas, status: 200 }
+		);
+
+		fetchMock.get(
+			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
+			{ body: fixtures.savedIdeas, status: 200 }
+		);
+
+		fetchMock.get(
+			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
+			{ body: fixtures.newIdeas, status: 200 }
+		);
 	} );
 
 	it.each( [
