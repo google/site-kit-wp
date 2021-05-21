@@ -39,8 +39,6 @@ import Data from 'googlesitekit-data';
 import PencilIcon from '../../../svg/pencil.svg';
 import TrashIcon from '../../../svg/trash.svg';
 import {
-	activateOrDeactivateModule,
-	getReAuthURL,
 	showErrorNotification,
 	clearWebStorage,
 } from '../../util';
@@ -110,12 +108,6 @@ class SettingsModule extends Component {
 			const { active } = this.state;
 			const newActiveState = ! active;
 
-			await activateOrDeactivateModule(
-				data,
-				this.props.module.slug,
-				newActiveState
-			);
-
 			await refreshAuthentication();
 
 			if ( false === newActiveState ) {
@@ -123,8 +115,6 @@ class SettingsModule extends Component {
 			}
 
 			this.setState( { active: newActiveState } );
-
-			global.location = getReAuthURL( this.props.module.slug, false );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'activate-module-error',
@@ -365,9 +355,9 @@ class SettingsModule extends Component {
 													{ /* Edit `Cancel` link */ }
 													{ hasSettings &&
 														<Link
-															to={ `/connected-services/${ slug }` }
 															className="googlesitekit-settings-module__footer-cancel"
 															inherit
+															to={ `/connected-services/${ slug }` }
 														>
 															{ __( 'Cancel', 'google-site-kit' ) }
 														</Link>
@@ -375,9 +365,9 @@ class SettingsModule extends Component {
 												</Fragment>
 											) : ( ( hasSettings || ! autoActivate ) &&
 											<Link
-												to={ `/connected-services/${ slug }/edit` }
 												className="googlesitekit-settings-module__edit-button"
 												inherit
+												to={ `/connected-services/${ slug }/edit` }
 											>
 												{ __( 'Edit', 'google-site-kit' ) }
 												<PencilIcon

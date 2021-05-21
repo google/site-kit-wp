@@ -19,10 +19,9 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { withRouter, Link as NavLink } from 'react-router-dom';
+import { withRouter, Link, useLocation } from 'react-router-dom';
 
 /**
  * WordPress dependencies
@@ -42,11 +41,13 @@ import { Cell, Grid, Row } from '../../material-components';
 import HelpMenu from '../help/HelpMenu';
 import { useFeature } from '../../hooks/useFeature';
 
-function SettingsApp( { location: { pathname } } ) {
+function SettingsApp() {
 	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
-	// Prevent pushing to hash history if it would send you to the same URL, prevents a warning.
+	const location = useLocation();
+	// Prevent pushing to hash history if it would send you to the same URL.
+	// (Without this React Router will trigger a warning.)
 	const shouldReplaceHistory = ( path ) => false && basePath === path;
-	const [ , basePath ] = pathname.split( '/' );
+	const [ , basePath ] = location?.pathname.split( '/' );
 	const activeTab = SettingsApp.basePathToTabIndex[ basePath ];
 
 	return (
@@ -64,13 +65,13 @@ function SettingsApp( { location: { pathname } } ) {
 						<Cell size={ 12 }>
 							<Layout>
 								<TabBar activeIndex={ activeTab }>
-									<Tab tag={ NavLink } to="/connected-services" replace={ shouldReplaceHistory( 'connected-services' ) } >
+									<Tab tag={ Link } to="/connected-services" replace={ shouldReplaceHistory( 'connected-services' ) }>
 										<span className="mdc-tab__text-label">{ __( 'Connected Services', 'google-site-kit' ) }</span>
 									</Tab>
-									<Tab tag={ NavLink } to="/connect-more-services" replace={ shouldReplaceHistory( 'connect-more-services' ) } >
+									<Tab tag={ Link } to="/connect-more-services" replace={ shouldReplaceHistory( 'connect-more-services' ) }>
 										<span className="mdc-tab__text-label">{ __( 'Connect More Services', 'google-site-kit' ) }</span>
 									</Tab>
-									<Tab tag={ NavLink } to="/admin-settings" replace={ shouldReplaceHistory( 'admin-settings' ) } >
+									<Tab tag={ Link } to="/admin-settings" replace={ shouldReplaceHistory( 'admin-settings' ) }>
 										<span className="mdc-tab__text-label">{ __( 'Admin Settings', 'google-site-kit' ) }</span>
 									</Tab>
 								</TabBar>
@@ -91,11 +92,7 @@ function SettingsApp( { location: { pathname } } ) {
 	);
 }
 
-SettingsApp.propTypes = {
-	location: PropTypes.shape( {
-		pathname: PropTypes.string.isRequired,
-	} ).isRequired,
-};
+SettingsApp.propTypes = {};
 
 // Necessary to set `TabBar.activeIndex`
 SettingsApp.basePathToTabIndex = {

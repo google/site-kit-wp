@@ -39,7 +39,7 @@ function SettingsModules() {
 		if ( global._googlesitekitLegacyData.editmodule && modulesData[ global._googlesitekitLegacyData.editmodule ].active ) {
 			history.push( `/connected-services/${ global._googlesitekitLegacyData.editmodule }/edit` );
 		}
-	}, [] );
+	}, [ history, modulesData ] );
 
 	if ( ! Object.values( modulesData ).length ) {
 		return null;
