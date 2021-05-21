@@ -32,7 +32,8 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
 import { isValidAccountID } from '../../analytics/util';
-const { commonActions } = Data;
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
+const { commonActions, createRegistryControl } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',
@@ -111,6 +112,9 @@ const fetchCreatePropertyStore = createFetchStore( {
 	},
 } );
 
+// Actions
+const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
+
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
@@ -142,10 +146,11 @@ const baseActions = {
 	 * @param {string} propertyID GA4 property ID.
 	 * @return {Object} A Generator function.
 	 */
-	selectProperty( propertyID ) {
-		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
-
-		return ( function* () {
+	selectProperty: createValidatedAction(
+		( propertyID ) => {
+			invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
+		},
+		function* ( propertyID ) {
 			const registry = yield Data.commonActions.getRegistry();
 
 			registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
@@ -163,8 +168,8 @@ const baseActions = {
 				registry.dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._id );
 				registry.dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
 			}
-		}() );
-	},
+		}
+	),
 
 	/**
 	 * Matches a property by URL.
@@ -235,9 +240,29 @@ const baseActions = {
 
 		return null;
 	},
+
+	/**
+	 * Waits for properties to be loaded for an account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} accountID GA4 account ID.
+	 */
+	*waitForProperties( accountID ) {
+		yield {
+			payload: { accountID },
+			type: WAIT_FOR_PROPERTIES,
+		};
+	},
 };
 
 const baseControls = {
+	[ WAIT_FOR_PROPERTIES ]: createRegistryControl( ( { __experimentalResolveSelect } ) => {
+		return async ( { payload } ) => {
+			const { accountID } = payload;
+			await __experimentalResolveSelect( STORE_NAME ).getProperties( accountID );
+		};
+	} ),
 };
 
 const baseReducer = ( state, { type } ) => {
