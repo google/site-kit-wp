@@ -79,7 +79,7 @@ const NewIdeas = ( { active, WidgetReportError } ) => {
 	}
 
 	if ( error ) {
-		return <WidgetReportError slug="idea-hub" error={ error } />;
+		return <WidgetReportError moduleSlug="idea-hub" error={ error } />;
 	}
 
 	if ( ! totalNewIdeas ) {

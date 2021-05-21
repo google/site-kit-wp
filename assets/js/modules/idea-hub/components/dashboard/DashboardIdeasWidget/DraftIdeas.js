@@ -77,7 +77,7 @@ const DraftIdeas = ( { active, WidgetReportError } ) => {
 	}
 
 	if ( error ) {
-		return <WidgetReportError slug="idea-hub" error={ error } />;
+		return <WidgetReportError moduleSlug="idea-hub" error={ error } />;
 	}
 
 	if ( ! totalDraftIdeas ) {
