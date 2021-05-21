@@ -34,7 +34,8 @@ import {
 	ACCOUNT_CREATE,
 	PROPERTY_CREATE,
 	FORM_ACCOUNT_CREATE,
-	PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4,
+	PROPERTY_TYPE_UA,
+	PROPERTY_TYPE_GA4,
 } from './constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -322,7 +323,7 @@ const baseResolvers = {
 			/* eslint-disable sitekit/acronym-case */
 			accountID = matchedProperty.accountId;
 			registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId );
-			yield Data.commonActions.await( registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ) );
+			yield propertyActions.selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId );
 			/* eslint-enable */
 		}
 
