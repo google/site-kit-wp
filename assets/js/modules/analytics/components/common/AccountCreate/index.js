@@ -142,7 +142,6 @@ export default function AccountCreate() {
 		<div>
 			{ ! isGA4enabled && <GA4Notice /> }
 			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
-			<h1>AccountCreate -&gt; this is the component</h1>
 
 			<h3 className="googlesitekit-heading-4">
 				{ __( 'Create your Analytics account', 'google-site-kit' ) }
