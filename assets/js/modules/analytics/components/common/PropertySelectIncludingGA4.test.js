@@ -64,9 +64,8 @@ const setupRegistry = ( registry ) => {
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
-	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+	dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 
 	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
