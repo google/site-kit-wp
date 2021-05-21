@@ -87,11 +87,8 @@ function SettingsModules() {
 				<SettingsConnectedServices modules={ activeModules } />
 			</Route>
 			<Route path="/connect-more-services">
-				{ inactiveModules.length === 0 ? (
-					<SettingsAllServicesConnected />
-				) : (
-					<SettingsConnectMoreServices modules={ inactiveModules } />
-				) }
+				{ ! inactiveModules.length && <SettingsAllServicesConnected /> }
+				{ !! inactiveModules.length && <SettingsConnectMoreServices modules={ inactiveModules } /> }
 			</Route>
 			<Route path="/admin-settings">
 				<SettingsAdmin />
