@@ -21,17 +21,14 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-
-/**
- * WordPress dependencies
- */
-import { useCallback, useState } from '@wordpress/element';
+import { useParams } from 'react-router-dom';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import SettingsOverlay from '../SettingsOverlay';
 import SettingsRenderer from '../SettingsRenderer';
@@ -41,25 +38,17 @@ import ConfirmDisconnect from './ConfirmDisconnect';
 const { useSelect } = Data;
 
 export default function SettingsActiveModule( props ) {
-	const {
-		slug,
-		onEdit,
-		onConfirm,
-		onCancel,
-		onToggle,
-		isEditing,
-		isOpen,
-		isSaving,
-		isLocked,
-		error,
-	} = props;
+	const { slug } = props;
 
-	const [ dialogActive, setDialogActive ] = useState( false );
+	const { action, moduleSlug } = useParams();
+	const isEditing = action === 'edit';
+	const isOpen = moduleSlug === slug;
+	const isLocked = moduleSlug !== slug && isEditing;
+
+	const errorKey = `module-${ slug }-error`;
+
 	const deactivationError = useSelect( ( select ) => select( CORE_MODULES ).getErrorForAction( 'deactivateModule', [ slug ] ) );
-
-	const handleDialog = useCallback( () => {
-		setDialogActive( ! dialogActive );
-	}, [ dialogActive ] );
+	const error = useSelect( ( select ) => select( CORE_UI ).getValue( errorKey ) );
 
 	return (
 		<div
@@ -76,8 +65,6 @@ export default function SettingsActiveModule( props ) {
 
 			<Header
 				slug={ slug }
-				isOpen={ isOpen }
-				onToggle={ onToggle }
 			/>
 
 			{ isOpen && (
@@ -90,46 +77,20 @@ export default function SettingsActiveModule( props ) {
 					<Grid>
 						<Row>
 							<Cell size={ 12 }>
-								<SettingsRenderer
-									slug={ slug }
-									isEditing={ isEditing }
-									isOpen
-								/>
+								<SettingsRenderer slug={ slug } />
 							</Cell>
 						</Row>
 					</Grid>
 
-					<Footer
-						slug={ slug }
-						isSaving={ isSaving }
-						isEditing={ isEditing }
-						onEdit={ onEdit }
-						onConfirm={ onConfirm }
-						onCancel={ onCancel }
-						handleDialog={ handleDialog }
-					/>
+					<Footer slug={ slug } />
 				</div>
 			) }
 
-			{ dialogActive && (
-				<ConfirmDisconnect
-					slug={ slug }
-					handleDialog={ handleDialog }
-				/>
-			) }
+			<ConfirmDisconnect slug={ slug } />
 		</div>
 	);
 }
 
 SettingsActiveModule.propTypes = {
 	slug: PropTypes.string.isRequired,
-	onEdit: PropTypes.func.isRequired,
-	onConfirm: PropTypes.func.isRequired,
-	onCancel: PropTypes.func.isRequired,
-	onToggle: PropTypes.func.isRequired,
-	isEditing: PropTypes.bool.isRequired,
-	isOpen: PropTypes.bool.isRequired,
-	isSaving: PropTypes.bool.isRequired,
-	isLocked: PropTypes.bool.isRequired,
-	error: PropTypes.shape( {} ),
 };

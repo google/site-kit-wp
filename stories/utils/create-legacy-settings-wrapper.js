@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import SettingsModule from '../../assets/js/components/settings/SettingsModule';
+import SettingsActiveModule from '../../assets/js/components/settings/SettingsActiveModule';
 import { WithTestRegistry } from '../../tests/js/utils';
 
 /**
@@ -38,26 +38,13 @@ export default function createLegacySettingsWrapper( moduleSlug ) {
 		const {
 			registry,
 			callback,
-			isEditing = false,
-			isOpen = true,
-			isSaving = false,
-			error = undefined,
 		} = props;
 
 		return (
 			<WithTestRegistry registry={ registry } callback={ callback }>
 				<div style={ { background: 'white' } }>
-					<SettingsModule
+					<SettingsActiveModule
 						slug={ moduleSlug }
-						onEdit={ () => {} }
-						onConfirm={ () => {} }
-						onCancel={ () => {} }
-						onToggle={ () => {} }
-						isEditing={ isEditing }
-						isOpen={ isOpen }
-						isSaving={ isSaving }
-						isLocked={ false }
-						error={ error }
 					/>
 				</div>
 			</WithTestRegistry>

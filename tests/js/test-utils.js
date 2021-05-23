@@ -42,12 +42,17 @@ const customRender = ( ui, options = {} ) => {
 		setupRegistry = ( r ) => r,
 		registry = createTestRegistry(),
 		history = createMemoryHistory(),
+		route = undefined,
 		...renderOptions
 	} = options;
 
 	invariant( typeof setupRegistry === 'function', 'options.setupRegistry must be a function.' );
 	setupRegistry( registry );
 	const enabledFeatures = new Set( features );
+
+	if ( route ) {
+		history.push( route );
+	}
 
 	function Wrapper( { children } ) {
 		return (
@@ -80,6 +85,7 @@ const customRender = ( ui, options = {} ) => {
 		queryAllByTestID,
 		queryByTestID,
 		registry,
+		history,
 	};
 };
 

@@ -27,8 +27,8 @@ import { useHistory, Redirect, Route, Switch } from 'react-router-dom';
  */
 import { getModulesData, listFormat } from '../../util';
 import SettingsAdmin from './SettingsAdmin';
-import SettingsConnectedServices from './SettingsConnectedServices';
-import SettingsConnectMoreServices from './SettingsConnectMoreServices';
+import SettingsActiveModules from './SettingsActiveModules';
+import SettingsInactiveModules from './SettingsInactiveModules';
 import SettingsAllServicesConnected from './SettingsAllServicesConnected';
 
 function SettingsModules() {
@@ -71,24 +71,23 @@ function SettingsModules() {
 			.sort( ( a, b ) => a.sort - b.sort )
 			.map( withDependantModulesText );
 
-	const activeModules = getModulesByStatus( { active: true } );
 	const inactiveModules = getModulesByStatus( { active: false } );
 
 	return (
 		<Switch>
 			{ /* Settings Module Routes */ }
 			<Route path="/connected-services/:moduleSlug/:action">
-				<SettingsConnectedServices modules={ activeModules } />
+				<SettingsActiveModules />
 			</Route>
 			<Route path="/connected-services/:moduleSlug">
-				<SettingsConnectedServices modules={ activeModules } />
+				<SettingsActiveModules />
 			</Route>
 			<Route path="/connected-services">
-				<SettingsConnectedServices modules={ activeModules } />
+				<SettingsActiveModules />
 			</Route>
 			<Route path="/connect-more-services">
 				{ ! inactiveModules.length && <SettingsAllServicesConnected /> }
-				{ !! inactiveModules.length && <SettingsConnectMoreServices modules={ inactiveModules } /> }
+				{ !! inactiveModules.length && <SettingsInactiveModules /> }
 			</Route>
 			<Route path="/admin-settings">
 				<SettingsAdmin />
