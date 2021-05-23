@@ -55,7 +55,7 @@ describe( 'SettingsModules', () => {
 	it( 'should redirect from #connect to #/connect-more-services', async () => {
 		history.push( '/connect' );
 
-		render( <SettingsModules />, { history } );
+		render( <SettingsModules />, { history, registry } );
 
 		expect( global.location.hash ).toEqual( '#/connect-more-services' );
 	} );
