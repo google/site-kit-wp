@@ -33,7 +33,8 @@ import { createTestRegistry } from './utils';
  * @param {string[]} [options.features]      Feature flags to enable for this hook render.
  * @param {Function} [options.setupRegistry] A function which accepts the registry instance to configure it.
  * @param {Object}   [options.registry]      A specific registry instance to use. Defaults to a fresh test registry with all stores.
- * @param {boolean}  [options.history]       History object for React Router. Defaults to MemoryHistory.
+ * @param {History}  [options.history]       History object for React Router. Defaults to MemoryHistory.
+ * @param {string}   [options.route]         Route to pass to history as starting route.
  * @return {Object} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result} as well as the `registry`.
  */
 const customRender = ( ui, options = {} ) => {
@@ -99,6 +100,8 @@ const customRender = ( ui, options = {} ) => {
  * @param {Function} callback           The function that is called each render of the test component. This function should call one or more hooks for testing. The props passed into the callback will be the initialProps provided in the options to renderHook, unless new props are provided by a subsequent rerender call.
  * @param {Object}   [options]          Optional. An options object to modify the execution of the callback function. See the [renderHook Options](@link https://react-hooks-testing-library.com/reference/api#renderhook-options) section for more details.
  * @param {string[]} [options.features] Feature flags to enable for this hook render.
+ * @param {History}  [options.history]  History object for React Router. Defaults to MemoryHistory.
+ * @param {string}   [options.route]    Route to pass to history as starting route.
  * @param {Object}   [options.registry] Registry to use with the RegistryProvider. Default is a new test registry.
  * @return {Object} Object with `result`, `rerender`, `unmount`, and async utilities. @link https://react-hooks-testing-library.com/reference/api#renderhook-result.
  */
@@ -107,14 +110,22 @@ const customRenderHook = (
 	{
 		features = [],
 		registry = createTestRegistry(),
+		history = createMemoryHistory(),
+		route = undefined,
 		...renderHookOptions
 	} = {}
 ) => {
+	if ( route ) {
+		history.push( route );
+	}
+
 	const enabledFeatures = new Set( features );
 	const Wrapper = ( { children } ) => (
 		<RegistryProvider value={ registry }>
 			<FeaturesProvider value={ enabledFeatures }>
-				{ children }
+				<Router history={ history }>
+					{ children }
+				</Router>
 			</FeaturesProvider>
 		</RegistryProvider>
 	);

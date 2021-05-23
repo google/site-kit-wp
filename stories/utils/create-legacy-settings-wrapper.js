@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import SettingsActiveModule from '../../assets/js/components/settings/SettingsActiveModule';
+import SettingsModules from '../../assets/js/components/settings/SettingsModules';
 import { WithTestRegistry } from '../../tests/js/utils';
 
 /**
@@ -38,14 +39,15 @@ export default function createLegacySettingsWrapper( moduleSlug ) {
 		const {
 			registry,
 			callback,
+			route,
 		} = props;
 
 		return (
-			<WithTestRegistry registry={ registry } callback={ callback }>
+			<WithTestRegistry registry={ registry } callback={ callback } route={ route }>
 				<div style={ { background: 'white' } }>
-					<SettingsActiveModule
-						slug={ moduleSlug }
-					/>
+					<SettingsModules _hideExcept={ [ moduleSlug ] }>
+						<SettingsActiveModule slug={ moduleSlug } />
+					</SettingsModules>
 				</div>
 			</WithTestRegistry>
 		);
