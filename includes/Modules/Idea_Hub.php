@@ -248,21 +248,21 @@ final class Idea_Hub extends Module
 					}
 				}
 
-				// Allows us to create a blank post.
-				add_filter( 'wp_insert_post_empty_content', '__return_false' );
+				return function() use ( $idea ) {
+					// Allows us to create a blank post.
+					add_filter( 'wp_insert_post_empty_content', '__return_false' );
 
-				$post_id = wp_insert_post( array(), false );
-				if ( 0 === $post_id ) {
-					return new WP_Error(
-						'unable_to_draft_post',
-						__( 'Unable to draft post.', 'google-site-kit' ),
-						array( 'status' => 400 )
-					);
-				}
+					$post_id = wp_insert_post( array(), false );
+					if ( 0 === $post_id ) {
+						return new WP_Error(
+							'unable_to_draft_post',
+							__( 'Unable to draft post.', 'google-site-kit' ),
+							array( 'status' => 400 )
+						);
+					}
 
-				$this->set_post_idea( $post_id, $idea );
+					$this->set_post_idea( $post_id, $idea );
 
-				return function() use ( $post_id ) {
 					return $post_id;
 				};
 			case 'GET:draft-post-ideas':
