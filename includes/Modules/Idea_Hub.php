@@ -434,7 +434,7 @@ final class Idea_Hub extends Module
 					)
 				);
 			case 'POST:create-idea-draft-post':
-				$idea = $data['idea'];
+				$idea = $this->get_post_idea( $response );
 				return array(
 					'idea' => array(
 						'name'        => $idea['name'],
