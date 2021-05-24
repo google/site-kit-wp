@@ -404,6 +404,7 @@ final class Idea_Hub extends Module
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:draft-post-ideas':
+			case 'POST:create-idea-draft-post':
 				return array_filter(
 					array_map(
 						function( $post_id ) {
@@ -433,17 +434,6 @@ final class Idea_Hub extends Module
 						},
 						is_array( $response ) ? $response : array( $response )
 					)
-				);
-			case 'POST:create-idea-draft-post':
-				$idea = $this->get_post_idea( $response );
-				return array(
-					'idea' => array(
-						'name'        => $idea['name'],
-						'text'        => $idea['text'],
-						'topics'      => $idea['topics'],
-						'postID'      => $response,
-						'postEditURL' => get_edit_post_link( $response, '' ),
-					),
 				);
 		}
 
