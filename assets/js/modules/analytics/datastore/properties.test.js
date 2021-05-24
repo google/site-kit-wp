@@ -24,11 +24,13 @@ import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	muteFetch,
+	freezeFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics properties', () => {
 	let registry;
@@ -308,7 +310,73 @@ describe( 'modules/analytics properties', () => {
 		} );
 
 		describe( 'getPropertiesIncludingGA4', () => {
-			it( 'returns a sorted list of ua and ga4 properties ', async () => {
+			beforeEach( () => {
+				enabledFeatures.add( 'ga4setup' );
+			} );
+
+			it( 'returns undefined if UA properties are loading', () => {
+				const accountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+
+				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/ );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+					[
+						{
+							_id: '151753095-3',
+							_accountID: '151753095',
+							displayName: 'www.elasticpress.io',
+						},
+						{
+							_id: '151753095-4',
+							_accountID: '151753095',
+							displayName: 'troubled-tipped.example.com',
+						},
+					],
+					{ accountID }
+				);
+
+				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( accountID ) ).toBeUndefined();
+			} );
+
+			it( 'returns undefined if GA4 properties are loading', () => {
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+				const accountID = testAccountID;
+
+				registry.dispatch( STORE_NAME ).receiveGetProperties(
+					[
+						{
+							// eslint-disable-next-line sitekit/acronym-case
+							accountId: '151753095',
+							id: 'UA-151753095-1',
+							name: 'rwh',
+						},
+						{
+							// eslint-disable-next-line sitekit/acronym-case
+							accountId: '151753095',
+							id: 'UA-151753095-1',
+							name: 'troubled-tipped.example.com',
+						},
+
+					],
+					{ accountID }
+				);
+
+				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/ );
+
+				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
+			} );
+
+			it( 'returns undefined if both UA and GA4 properties are loading', () => {
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+
+				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/ );
+
+				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/ );
+
+				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
+			} );
+
+			it( 'returns a sorted list of ua and ga4 properties ', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const accountID = testAccountID;
 
