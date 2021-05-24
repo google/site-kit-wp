@@ -68,7 +68,9 @@ function DashboardCTA() {
 			</div>
 
 			<div className="googlesitekit-idea-hub-dashboardcta__content">
-				<h5>{ __( 'Get new topics based on what people are searching for with Idea Hub', 'google-site-kit' ) }</h5>
+				<h5>
+					{ __( 'Get new topics based on what people are searching for with Idea Hub', 'google-site-kit' ) }
+				</h5>
 				<p>
 					<BulbIcon className="googlesitekit-idea-hub-dashboardcta__learnmore-bulb" width="10" height="10" />
 					<Link
@@ -78,11 +80,13 @@ function DashboardCTA() {
 					</Link>
 				</p>
 
-				<Button onClick={ onClick }>{
-					active && ! connected
-						? __( 'Complete set up', 'google-site-kit' )
-						: __( 'Set up', 'google-site-kit' )
-				}</Button>
+				<Button onClick={ onClick }>
+					{
+						active && ! connected
+							? __( 'Complete set up', 'google-site-kit' )
+							: __( 'Set up', 'google-site-kit' )
+					}
+				</Button>
 
 			</div>
 		</div>

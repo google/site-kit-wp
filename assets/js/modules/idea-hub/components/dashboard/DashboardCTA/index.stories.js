@@ -17,14 +17,24 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * Internal dependencies
  */
 import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../../../../tests/js/utils';
+import { enabledFeatures } from '../../../../../features';
 import DashboardCTA from './index';
+
+const bootstrapRegistry = ( overrides = {} ) => {
+	enabledFeatures.clear();
+	const registry = createTestRegistry();
+	provideModules( registry, [ {
+		slug: 'idea-hub',
+		active: false,
+		connected: false,
+		...overrides,
+	} ] );
+
+	return registry;
+};
 
 const Template = ( args ) => <DashboardCTA { ...args } />;
 
@@ -32,15 +42,9 @@ export const DefaultDashboardCTA = Template.bind( {} );
 DefaultDashboardCTA.storyName = 'Default';
 DefaultDashboardCTA.decorators = [
 	( Story ) => {
-		const registry = createTestRegistry();
-		provideModules( registry, [ {
-			slug: 'idea-hub',
-			active: false,
-			connected: false,
-		} ] );
-
+		const registry = bootstrapRegistry();
 		return (
-			<WithTestRegistry registry={ registry } features={ [ 'ideaHubModule' ] }>
+			<WithTestRegistry registry={ registry }>
 				<Story />
 			</WithTestRegistry>
 		);
@@ -51,15 +55,13 @@ export const ActiveNotConnected = Template.bind( {} );
 ActiveNotConnected.storyName = 'Active, not connected';
 ActiveNotConnected.decorators = [
 	( Story ) => {
-		const registry = createTestRegistry();
-		provideModules( registry, [ {
-			slug: 'idea-hub',
+		const registry = bootstrapRegistry( {
 			active: true,
 			connected: false,
-		} ] );
+		} );
 
 		return (
-			<WithTestRegistry registry={ registry } features={ [ 'ideaHubModule' ] }>
+			<WithTestRegistry registry={ registry }>
 				<Story />
 			</WithTestRegistry>
 		);
