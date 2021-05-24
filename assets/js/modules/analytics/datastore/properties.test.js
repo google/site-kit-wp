@@ -41,8 +41,6 @@ describe( 'modules/analytics properties', () => {
 	} );
 
 	beforeEach( () => {
-		enabledFeatures.add( 'ga4setup' );
-
 		registry = createTestRegistry();
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
@@ -313,6 +311,10 @@ describe( 'modules/analytics properties', () => {
 		} );
 
 		describe( 'getPropertiesIncludingGA4', () => {
+			beforeEach( () => {
+				enabledFeatures.add( 'ga4setup' );
+			} );
+
 			it( 'returns undefined if UA properties are loading', () => {
 				const accountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
