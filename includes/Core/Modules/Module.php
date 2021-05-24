@@ -785,7 +785,7 @@ abstract class Module {
 				'name'         => '',
 				'description'  => '',
 				'order'        => 10,
-				'homepage'     => __( 'https://www.google.com', 'google-site-kit' ),
+				'homepage'     => '',
 				'feature'      => '',
 				'depends_on'   => array(),
 				'force_active' => false,
