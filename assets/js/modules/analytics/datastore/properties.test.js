@@ -29,7 +29,6 @@ import {
 	unsubscribeFromAll,
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
-import * as ga4Fixtures from '../../analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { enabledFeatures } from '../../../features';
 
@@ -362,10 +361,7 @@ describe( 'modules/analytics properties', () => {
 					{ accountID }
 				);
 
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
-					{ body: ga4Fixtures.properties, status: 200 }
-				);
+				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/ );
 
 				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
 			} );
@@ -373,15 +369,9 @@ describe( 'modules/analytics properties', () => {
 			it( 'returns undefined if both UA and GA4 properties are loading', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-					{ body: fixtures.propertiesProfiles, status: 200 }
-				);
+				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/ );
 
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
-					{ body: ga4Fixtures.properties, status: 200 }
-				);
+				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/ );
 
 				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
 			} );
