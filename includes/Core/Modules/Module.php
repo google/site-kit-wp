@@ -787,7 +787,6 @@ abstract class Module {
 				'order'        => 10,
 				'homepage'     => __( 'https://www.google.com', 'google-site-kit' ),
 				'feature'      => '',
-				'tags'         => array(),
 				'depends_on'   => array(),
 				'force_active' => false,
 				'internal'     => false,
@@ -798,7 +797,6 @@ abstract class Module {
 			$info['name'] = $info['slug'];
 		}
 
-		$info['tags']       = (array) $info['tags'];
 		$info['depends_on'] = (array) $info['depends_on'];
 
 		return $info;
