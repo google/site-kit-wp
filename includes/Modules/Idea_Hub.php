@@ -463,7 +463,6 @@ final class Idea_Hub extends Module
 			'description' => 'TODO.',
 			'order'       => 7,
 			'homepage'    => 'https://www.google.com',
-			'learn_more'  => 'https://www.google.com',
 		);
 	}
 

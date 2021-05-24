@@ -534,7 +534,6 @@ final class Tag_Manager extends Module
 			'description' => __( 'Tag Manager creates an easy to manage way to create tags on your site without updating code', 'google-site-kit' ),
 			'order'       => 6,
 			'homepage'    => __( 'https://tagmanager.google.com/', 'google-site-kit' ),
-			'learn_more'  => __( 'https://marketingplatform.google.com/about/tag-manager/', 'google-site-kit' ),
 			'group'       => __( 'Marketing Platform', 'google-site-kit' ),
 			'tags'        => array( 'marketing' ),
 		);

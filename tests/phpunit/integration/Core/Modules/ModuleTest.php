@@ -69,7 +69,6 @@ class ModuleTest extends TestCase {
 			'description',
 			'sort',
 			'homepage',
-			'learnMore',
 			'required',
 			'autoActivate',
 			'internal',

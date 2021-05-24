@@ -41,7 +41,6 @@ use Exception;
  * @property-read string $description  Module description.
  * @property-read int    $order        Module order within module lists.
  * @property-read string $homepage     External module homepage URL.
- * @property-read string $learn_more   External URL to learn more about the module.
  * @property-read array  $depends_on   List of other module slugs the module depends on.
  * @property-read bool   $force_active Whether the module cannot be disabled.
  * @property-read bool   $internal     Whether the module is internal, thus without any UI.
@@ -181,7 +180,6 @@ abstract class Module {
 			'description'  => $this->description,
 			'sort'         => $this->order,
 			'homepage'     => $this->homepage,
-			'learnMore'    => $this->learn_more,
 			'required'     => $this->depends_on,
 			'autoActivate' => $this->force_active,
 			'internal'     => $this->internal,
@@ -788,7 +786,6 @@ abstract class Module {
 				'description'  => '',
 				'order'        => 10,
 				'homepage'     => __( 'https://www.google.com', 'google-site-kit' ),
-				'learn_more'   => __( 'https://about.google/intl/en/', 'google-site-kit' ),
 				'group'        => '',
 				'feature'      => '',
 				'tags'         => array(),

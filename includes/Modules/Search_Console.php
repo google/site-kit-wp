@@ -479,7 +479,6 @@ final class Search_Console extends Module
 			'description'  => __( 'Google Search Console and helps you understand how Google views your site and optimize its performance in search results.', 'google-site-kit' ),
 			'order'        => 1,
 			'homepage'     => __( 'https://search.google.com/search-console', 'google-site-kit' ),
-			'learn_more'   => __( 'https://search.google.com/search-console/about', 'google-site-kit' ),
 			'force_active' => true,
 		);
 	}
