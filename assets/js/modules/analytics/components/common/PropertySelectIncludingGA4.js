@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -115,7 +115,7 @@ export default function PropertySelectIncludingGA4() {
 							? name
 							: sprintf(
 								/* translators: 1: Property name. 2: Property ID. */
-								__( '%1$s (%2$s)', '{property name} ({property id})', 'google-site-kit' ),
+								_x( '%1$s (%2$s)', '{property name} ({property id})', 'google-site-kit' ),
 								name,
 								id
 							)
