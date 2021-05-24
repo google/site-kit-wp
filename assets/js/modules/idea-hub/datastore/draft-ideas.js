@@ -34,6 +34,12 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 	controlCallback: ( { idea } ) => {
 		return API.set( 'modules', 'idea-hub', 'create-idea-draft-post', { idea } );
 	},
+	reducerCallback: ( state, ideaDraftPost ) => {
+		return {
+			...state,
+			draftPostIdeas: [ ...( state.draftPostIdeas || [] ), ideaDraftPost ],
+		};
+	},
 	argsToParams: ( idea ) => {
 		return { idea };
 	},
