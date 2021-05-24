@@ -115,7 +115,7 @@ export default function PropertySelectIncludingGA4() {
 							? name
 							: sprintf(
 								/* translators: 1: Property name. 2: Property ID. */
-								__( '%1$s (%2$s)', 'google-site-kit', 'google-site-kit' ),
+								__( '%1$s (%2$s)', '{property name} ({property id})', 'google-site-kit' ),
 								name,
 								id
 							)
