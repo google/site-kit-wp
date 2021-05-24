@@ -31,6 +31,52 @@ function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
 }
 
 /**
+ * Determines whether all the widgets in a given area should be combined.
+ *
+ * The given widgets in an area can all be combined if they are
+ * all from the same module and they are all in the same special
+ * state (see #3225).
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<Object>} widgets      List of widgets.
+ * @param {Object}         widgetStates Map of widget slug and their
+ *                                             state (either an object with
+ *                                             `Component` and `metadata`, or
+ *                                             `null`).
+ * @return {boolean} 			Whether all the widgets should be combined.
+ */
+function shouldCombineAllWidgets( widgets, widgetStates ) {
+	const states = {};
+
+	for ( let i = 0; i < widgets.length; i++ ) {
+		const widget = widgets[ i ];
+		const widgetState = widgetStates?.[widget.slug];
+
+		const state = widgetState?.Component?.name;
+		const module = widgetState?.metadata?.moduleSlug;
+		const isSpecialState = SPECIAL_WIDGET_STATES.includes( state );
+		const isMultipleModules = Object.keys( states ).length > 1;
+
+		if ( ! state || ! module || ! isSpecialState || isMultipleModules ) {
+			return false;
+		}
+
+		if ( states[ module ] ) {
+			if ( states[ module ].includes( state ) === false ) {
+				// We have a widget from a given module in a different state from the others.
+				return false;
+			}
+
+			states[ module ].push( state );
+		} else {
+			states[ module ] = [ state ];
+		}
+	}
+	return true;
+}
+
+/*
  * Combines consecutive widgets with similar states within the same row.
  *
  * @since 1.25.0
@@ -62,44 +108,16 @@ export function combineWidgets( widgets, widgetStates, {
 	let currentRowIndex = -1;
 	let columnWidthsBuffer = [];
 
-	const states = {};
-	/*
-	 * All the widgets here will be in the same area
-	 * We need to determine whether:
-	 * - They are all the same module
-	 * - They are all in the same special state
-	 */
-
-	widgets.forEach( ( widget ) => {
-		const widgetState = widgetStates?.[widget.slug];
-		const state = widgetState?.Component?.name;
-		const module = widgetState?.metadata?.moduleSlug;
-		const isSpecialState = SPECIAL_WIDGET_STATES.includes( state );
-
-		if ( ! state || ! module || ! isSpecialState ) {
-			// break;
-		}
-
-		if ( states[ module ] ) {
-			states[ module ].push( state );
-		} else {
-			states[ module ] = [ state ];
-		}
-	} );
-
-	const isMultipleModules = Object.keys( states ).length > 1;
-	const allStatesEqual = Object.entries( states ).every( ( [ module, states ] ) => state === states[ 0 ] );
-
-	if ( ! isMultipleModules && allStatesEqual && states.length === widgets.length ) {
-		// All widgets have the same state, so we should only render one and hide the rest.
+	if ( shouldCombineAllWidgets( widgets, widgetStates ) ) {
+		// All the widgets have the same state, so we should only render one and hide the rest.
 		const hiddenRows = Array.from( { length: widgets.length - 1 } ).fill( 0 );
-		// All the components are the same, pick the first.
+		// Since all the components are the same, we can just pick the first.
 		const overrideComponent = widgetStates[ widgets[ 0 ].slug ];
 
 		return {
 			overrideComponents: [ overrideComponent ],
 			gridColumnWidths: [
-				12, // full width row
+				12, // Full width row.
 				...hiddenRows,
 			],
 		};

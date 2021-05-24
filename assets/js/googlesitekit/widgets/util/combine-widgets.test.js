@@ -61,6 +61,33 @@ describe( 'combineWidgets', () => {
 		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
 	} );
 
+	it( 'Widgets in an area from different modules are not combined if all of them have the same special state', () => {
+		const widgets = [
+			getQuarterWidget( 'test1' ),
+			getQuarterWidget( 'test2' ),
+			getQuarterWidget( 'test3' ),
+			getQuarterWidget( 'test4' ),
+		];
+		const widgetStates = {
+			// This widget should not be combined even though it is in the same
+			// special state as the others.
+			test1: getReportZeroState( 'search-console' ),
+			// The following widgets should be combined as they are all from the same
+			// module and in the same state.
+			test2: getReportZeroState( 'analytics' ),
+			test3: getReportZeroState( 'analytics' ),
+			test4: getReportZeroState( 'analytics' ),
+		};
+
+		const expected = {
+			overrideComponents: [ null, null, null, getReportZeroState( 'analytics' ) ],
+			gridColumnWidths: [ 3, 0, 0, 9 ],
+		};
+
+		const layout = getWidgetLayout( widgets, widgetStates );
+		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
+	} );
+
 	// Every test case below corresponds to a matching story in `stories/widgets.stories.js` under
 	// "Global/Widgets/Widget Area/Special combination states".
 	it( 'does not combine adjacent widgets of different component and metadata', () => {
@@ -96,7 +123,7 @@ describe( 'combineWidgets', () => {
 		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
 	} );
 
-	it.only( 'combines adjacent widgets of the same component per the same metadata', () => {
+	it( 'combines adjacent widgets of the same component per the same metadata', () => {
 		const widgets = [
 			getQuarterWidget( 'test1' ),
 			getQuarterWidget( 'test2' ),
