@@ -86,6 +86,59 @@ class Idea_HubTest extends TestCase {
 		$this->assertTrue( $idea_hub->is_connected() );
 	}
 
+	public function test_draft_labels() {
+		$post1  = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
+		$topics = array(
+			array(
+				'mid'          => '/m/05z6w',
+				'display_name' => 'Penguins',
+			),
+		);
+		add_post_meta( $post1->ID, 'googlesitekitpersistent_idea_name', 'ideas/2285812891948871921' );
+		add_post_meta( $post1->ID, 'googlesitekitpersistent_idea_text', 'Using Site Kit to analyze your success' );
+		add_post_meta( $post1->ID, 'googlesitekitpersistent_idea_topics', $topics );
+		$post_states1 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post1 );
+
+		// Idea Hub module is not enabled yet.
+		$this->assertEquals( $post_states1, array( 'draft' => 'Draft' ) );
+
+		// Connect the module
+		$options  = new Options( $this->context );
+		$idea_hub = new Idea_Hub( $this->context, $options );
+
+		$options->set(
+			Settings::OPTION,
+			array(
+				'ideaLocale' => 'en_US',
+			)
+		);
+
+		// Create the post
+		$post2 = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
+		$post3 = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
+		$idea  = array(
+			'name'   => 'ideas/17450692223393508734',
+			'text'   => 'Why Penguins are guanotelic?',
+			'topics' => array(
+				'/m/05z6w' => 'Penguins',
+			),
+		);
+
+		$this->idea_hub->register();
+		$this->idea_hub->set_post_idea( $post2->ID, $idea );
+
+		// With an IdeaHub post
+		$post_states2 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post2 );
+		// With a regular draft post
+		$post_states3 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post3 );
+
+		$post_states1 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post1 );
+
+		$this->assertEquals( $post_states1, array( 'draft' => 'Idea Hub Draft “Using Site Kit to analyze your success”' ) );
+		$this->assertEquals( $post_states2, array( 'draft' => 'Idea Hub Draft “Why Penguins are guanotelic?”' ) );
+		$this->assertEquals( $post_states3, array( 'draft' => 'Draft' ) );
+	}
+
 	public function test_on_deactivation() {
 		$options = new Options( $this->context );
 		$options->set( Settings::OPTION, 'test-value' );
@@ -185,6 +238,40 @@ class Idea_HubTest extends TestCase {
 		$this->assertTrue( is_array( $idea['topics'] ) );
 		$this->assertArrayHasKey( $mid, $idea['topics'] );
 		$this->assertEquals( $topics[ $mid ], $idea['topics'][ $mid ] );
+	}
+
+	public function test_get_post_idea__insufficient_data() {
+		global $wpdb;
+
+		$post_id = $this->factory()->post->create();
+		$name    = 'ideas/14025103994557865535';
+		$mid     = '/m/07030';
+		$topics  = array(
+			$mid => 'Sushi',
+		);
+
+		$wpdb->insert(
+			$wpdb->postmeta,
+			array(
+				'post_id'    => $post_id,
+				'meta_key'   => Post_Idea_Name::META_KEY,
+				'meta_value' => $name,
+			)
+		);
+
+		$wpdb->insert(
+			$wpdb->postmeta,
+			array(
+				'post_id'    => $post_id,
+				'meta_key'   => Post_Idea_Topics::META_KEY,
+				'meta_value' => serialize( $topics ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+			)
+		);
+
+		$this->idea_hub->register();
+
+		$idea = $this->idea_hub->get_post_idea( $post_id );
+		$this->assertNull( $idea );
 	}
 
 	/**

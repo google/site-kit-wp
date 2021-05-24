@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Post_Meta_Setting;
 /**
  * Class for Idea Hub topics setting.
  *
- * @since n.e.x.t
+ * @since 1.33.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Post_Idea_Topics extends Post_Meta_Setting {
 	/**
 	 * Gets the setting type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @return string The array type.
 	 */
@@ -37,7 +37,7 @@ class Post_Idea_Topics extends Post_Meta_Setting {
 	/**
 	 * Returns a sanitize callback.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @return callable Sanitize callback function.
 	 */
