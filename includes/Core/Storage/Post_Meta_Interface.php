@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Storage;
 /**
  * Interface for Post_Meta implementations.
  *
- * @since n.e.x.t
+ * @since 1.33.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ interface Post_Meta_Interface {
 	/**
 	 * Gets post meta.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param int    $post_id Post ID.
 	 * @param string $key     Metadata key.
@@ -34,7 +34,7 @@ interface Post_Meta_Interface {
 	/**
 	 * Updates a post meta field based on the given post ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param int    $post_id    Post ID.
 	 * @param string $key        Metadata key.
@@ -47,7 +47,7 @@ interface Post_Meta_Interface {
 	/**
 	 * Adds a meta field to the given post.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param int    $post_id Post ID.
 	 * @param string $key     Metadata key.
@@ -60,7 +60,7 @@ interface Post_Meta_Interface {
 	/**
 	 * Deletes a post meta field for the given post ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param int    $post_id Post ID.
 	 * @param string $key     Metadata key.

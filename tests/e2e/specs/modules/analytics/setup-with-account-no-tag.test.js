@@ -31,14 +31,18 @@ import {
 	wpApiFetch,
 	useRequestInterception,
 	pageWait,
+	step,
 } from '../../../utils';
 
 async function proceedToSetUpAnalytics() {
-	await Promise.all( [
-		expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } ),
-		page.waitForSelector( '.googlesitekit-setup-module__inputs' ),
-		page.waitForRequest( ( req ) => req.url().match( 'analytics/data' ) ),
-	] );
+	await step(
+		'proceed to setup analytics page',
+		Promise.all( [
+			expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } ),
+			page.waitForSelector( '.googlesitekit-setup-module__inputs' ),
+			page.waitForRequest( ( req ) => req.url().match( 'analytics/data' ) ),
+		] )
+	);
 }
 
 const setReferenceURL = async () => {
@@ -110,34 +114,54 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test profile x/i } );
 
 			// Select Test Account B
-			await expect( page ).toClick( '.mdc-select', { text: /test account a/i } );
-			await Promise.all( [
-				expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account b/i } ),
-				page.waitForResponse( ( res ) => res.url().match( 'modules/analytics/data' ) ),
-			] );
+			await step(
+				'select test account B',
+				async () => {
+					await expect( page ).toClick( '.mdc-select', { text: /test account a/i } );
+					await Promise.all( [
+						expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account b/i } ),
+						page.waitForResponse( ( res ) => res.url().match( 'modules/analytics/data' ) ),
+					] );
 
-			// Selects reload with properties and profiles for Test Account B
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account b/i } );
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test property y/i } );
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test profile y/i } );
+					// Selects reload with properties and profiles for Test Account B
+					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account b/i } );
+					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test property y/i } );
+					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test profile y/i } );
+				},
+			);
 
 			// Select Property Z
-			await expect( page ).toClick( '.mdc-select', { text: /test property y/i } );
-			await Promise.all( [
-				expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test property z/i } ),
-				page.waitForResponse( ( res ) => res.url().match( 'modules/analytics/data' ) ),
-			] );
+			await step(
+				'select property Z',
+				async () => {
+					await expect( page ).toClick( '.mdc-select', { text: /test property y/i } );
+					await Promise.all( [
+						expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test property z/i } ),
+						page.waitForResponse( ( res ) => res.url().match( 'modules/analytics/data' ) ),
+					] );
 
-			// Selects reload with properties and profiles for Test Profile Z
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account b/i } );
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test property z/i } );
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test profile z/i } );
+					// Selects reload with properties and profiles for Test Profile Z
+					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account b/i } );
+					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test property z/i } );
+					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test profile z/i } );
+				},
+			);
 
-			await pageWait( 500 );
-			await expect( page ).toClick( 'button', { text: /configure analytics/i } );
+			await step(
+				'wait and click configure button',
+				async () => {
+					await pageWait( 500 );
+					await expect( page ).toClick( 'button', { text: /configure analytics/i } );
+				},
+			);
 
-			await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
-			await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
+			await step(
+				'redirect and check notification bar',
+				async () => {
+					await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
+					await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
+				},
+			);
 		} );
 
 		it( 'prompts for account and property if the site URL does not match a property belonging to the user', async () => {
@@ -151,19 +175,19 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await expect( page ).toMatchElement( 'button[disabled]', { text: /configure analytics/i } );
 
 			// Select Test Account A
-			await expect( page ).toClick( '.googlesitekit-analytics__select-account .mdc-select__selected-text' );
-			await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account a/i } );
+			await step(
+				'select account A',
+				async () => {
+					await expect( page ).toClick( '.googlesitekit-analytics__select-account .mdc-select__selected-text' );
+					await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account a/i } );
 
-			// See the selects populate
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account a/i } );
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test property x/i } );
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test profile x/i } );
-
-			await expect( page ).toClick( '.mdc-select', { text: /test property x/i } );
-			await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /set up a new property/i } );
-
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new property/i } );
-			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new view/i } );
+					// See the selects populate
+					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account a/i } );
+					// Property and profile dropdowns should select "Set up a new property/view" options because there is no property associated with the current reference URL.
+					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new property/i } );
+					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new view/i } );
+				},
+			);
 
 			// Intentionally does not submit to trigger property & profile creation requests.
 		} );

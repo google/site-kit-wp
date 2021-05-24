@@ -32,6 +32,7 @@ import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import { isFeatureEnabled } from '../../../features';
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
@@ -353,14 +354,7 @@ const baseResolvers = {
 			if ( error ) {
 				// Store error manually since getProperties signature differs from fetchGetPropertiesProfiles.
 				yield receiveError( error, 'getProperties', [ accountID ] );
-				return;
 			}
-		}
-
-		const propertyID = registry.select( STORE_NAME ).getPropertyID();
-		if ( ! propertyID ) {
-			const property = properties[ 0 ] || { id: PROPERTY_CREATE };
-			yield baseActions.selectProperty( property.id, property.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 		}
 	},
 };
@@ -476,8 +470,15 @@ const baseSelectors = {
 	getPropertiesIncludingGA4: createRegistrySelector( ( select ) => ( state, accountID ) => {
 		let properties = select( STORE_NAME ).getProperties( accountID );
 
-		if ( select( MODULES_ANALYTICS_4 ) ) {
+		if ( properties === undefined ) {
+			return undefined;
+		}
+
+		if ( isFeatureEnabled( 'ga4setup' ) ) {
 			const propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+			if ( propertiesGA4 === undefined ) {
+				return undefined;
+			}
 			properties = properties.concat( propertiesGA4 );
 		}
 

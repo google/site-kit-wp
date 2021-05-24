@@ -37,7 +37,7 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 	reducerCallback: ( state, ideaDraftPost ) => {
 		return {
 			...state,
-			ideaDraftPost,
+			draftPostIdeas: [ ...( state.draftPostIdeas || [] ), ideaDraftPost ],
 		};
 	},
 	argsToParams: ( idea ) => {
@@ -54,10 +54,6 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 		} );
 	},
 } );
-
-const baseInitialState = {
-	ideaDraftPost: null,
-};
 
 const baseActions = {
 	/**
@@ -79,7 +75,6 @@ const baseActions = {
 const store = Data.combineStores(
 	fetchCreateIdeaDraftPostStore,
 	{
-		initialState: baseInitialState,
 		actions: baseActions,
 	}
 );
