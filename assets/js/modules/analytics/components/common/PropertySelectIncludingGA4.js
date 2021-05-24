@@ -1,5 +1,5 @@
 /**
- * GA4 Property Select component.
+ * PropertySelectIncludingGA4 component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -39,11 +39,13 @@ export default function PropertySelectIncludingGA4() {
 	const unmappedProperties = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertiesIncludingGA4( accountID ) || [] );
 	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 	const uaPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
-	const isLoading = useSelect( ( select ) => (
-		! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) ||
-		! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ accountID ] ) ||
-		! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getProperties', [ accountID ] )
-	) );
+	const isLoading = useSelect( ( select ) => {
+		const isLoadingAccounts = ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' );
+		const isLoadingPropertiesGA4 = ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ accountID ] );
+		const isLoadingProperties = ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getProperties', [ accountID ] );
+
+		return isLoadingAccounts || isLoadingProperties || isLoadingPropertiesGA4;
+	} );
 
 	const primaryPropertyType = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPrimaryPropertyType() );
 
@@ -83,17 +85,11 @@ export default function PropertySelectIncludingGA4() {
 		return <ProgressBar small />;
 	}
 
-	const properties = unmappedProperties.map( ( p ) => {
-		if ( p?._id ) {
-			return {
-				...p,
-				// map GA4 properties to have fields like UA
-				id: p._id,
-				name: p.displayName,
-			};
-		}
-		return p;
-	} );
+	const properties = unmappedProperties.map( ( p ) => ( {
+		...p,
+		id: p._id || p.id,
+		name: p.displayName || p.name,
+	} ) );
 
 	return (
 		<Select
@@ -118,8 +114,8 @@ export default function PropertySelectIncludingGA4() {
 						{ id === PROPERTY_CREATE
 							? name
 							: sprintf(
-							/* translators: 1: Property name. 2: Property ID. */
-								__( '%1$s (%2$s)', 'google-site-kit' ),
+								/* translators: 1: Property name. 2: Property ID. */
+								_x( '%1$s (%2$s)', '{property name} ({property id})', 'google-site-kit' ),
 								name,
 								id
 							)

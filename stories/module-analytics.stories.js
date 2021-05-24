@@ -51,6 +51,7 @@ import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__
 import { properties as propertiesGA4 } from '../assets/js/modules/analytics-4/datastore/__fixtures__';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
+import { enabledFeatures } from '../assets/js/features';
 
 function SetupWrap( { children } ) {
 	return (
@@ -128,6 +129,8 @@ storiesOf( 'Analytics Module', module )
 		);
 	} )
 	.add( 'Property Select including GA4 properties', () => {
+		enabledFeatures.add( 'ga4setup' );
+
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		/* eslint-disable sitekit/acronym-case */
 		const accountID = properties[ 0 ].accountId;
@@ -154,7 +157,10 @@ storiesOf( 'Analytics Module', module )
 		};
 
 		return (
-			<WithTestRegistry callback={ setupRegistry }>
+			<WithTestRegistry
+				callback={ setupRegistry }
+				features={ [ 'ga4setup' ] }
+			>
 				<SetupWrap>
 					<div className="googlesitekit-setup-module__inputs">
 						<PropertySelectIncludingGA4 />
