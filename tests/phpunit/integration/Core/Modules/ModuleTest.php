@@ -67,7 +67,6 @@ class ModuleTest extends TestCase {
 			'slug',
 			'name',
 			'description',
-			'cta',
 			'sort',
 			'homepage',
 			'learnMore',

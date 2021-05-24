@@ -461,7 +461,6 @@ final class Idea_Hub extends Module
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Idea Hub', 'Service name', 'google-site-kit' ),
 			'description' => 'TODO.',
-			'cta'         => 'TODO.',
 			'order'       => 7,
 			'homepage'    => 'https://www.google.com',
 			'learn_more'  => 'https://www.google.com',

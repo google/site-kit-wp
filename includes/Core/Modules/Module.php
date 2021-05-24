@@ -39,7 +39,6 @@ use Exception;
  * @property-read string $slug         Unique module identifier.
  * @property-read string $name         Module name.
  * @property-read string $description  Module description.
- * @property-read string $cta          Call to action to activate module.
  * @property-read int    $order        Module order within module lists.
  * @property-read string $homepage     External module homepage URL.
  * @property-read string $learn_more   External URL to learn more about the module.
@@ -180,7 +179,6 @@ abstract class Module {
 			'slug'         => $this->slug,
 			'name'         => $this->name,
 			'description'  => $this->description,
-			'cta'          => $this->cta,
 			'sort'         => $this->order,
 			'homepage'     => $this->homepage,
 			'learnMore'    => $this->learn_more,
@@ -788,7 +786,6 @@ abstract class Module {
 				'slug'         => '',
 				'name'         => '',
 				'description'  => '',
-				'cta'          => '',
 				'order'        => 10,
 				'homepage'     => __( 'https://www.google.com', 'google-site-kit' ),
 				'learn_more'   => __( 'https://about.google/intl/en/', 'google-site-kit' ),
@@ -803,10 +800,6 @@ abstract class Module {
 
 		if ( empty( $info['name'] ) && ! empty( $info['slug'] ) ) {
 			$info['name'] = $info['slug'];
-		}
-		if ( empty( $info['cta'] ) && ! empty( $info['name'] ) ) {
-			/* translators: %s: module name */
-			$info['cta'] = sprintf( __( 'Activate %s', 'google-site-kit' ), $info['name'] );
 		}
 
 		$info['tags']       = (array) $info['tags'];
