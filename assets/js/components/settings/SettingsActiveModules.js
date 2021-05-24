@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useState, useEffect } from '@wordpress/element';
@@ -81,4 +86,6 @@ export default function SettingsActiveModules( props ) {
 	);
 }
 
-SettingsActiveModules.propTypes = {};
+SettingsActiveModules.propTypes = {
+	_hideExcept: PropTypes.arrayOf( PropTypes.string ),
+};
