@@ -159,6 +159,8 @@ const baseActions = {
 			const uaProperties = registry.select( STORE_NAME ).getProperties( accountID );
 
 			let uaProperty = matchPropertyByURL( uaProperties, urls );
+			const uaPropertyID = uaProperty?.id;
+
 			if ( ! uaProperty ) {
 				uaProperty = {
 					id: PROPERTY_CREATE,
@@ -176,12 +178,9 @@ const baseActions = {
 
 			const ga4MatchProperty = registry.dispatch( MODULES_ANALYTICS_4 ).matchAndSelectProperty( accountID, GA4_PROPERTY_CREATE );
 			const ga4Property = yield Data.commonActions.await( ga4MatchProperty );
-			if ( ! ga4Property?._id ) {
-				return;
-			}
+			const ga4PropertyID = ga4Property?._id;
 
-			const matchedUAProperty = registry.select( STORE_NAME ).getMatchedProperty();
-			if ( ! matchedUAProperty ) {
+			if ( !! ga4PropertyID && ! uaPropertyID ) {
 				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
 			}
 		}
