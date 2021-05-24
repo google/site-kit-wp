@@ -72,7 +72,7 @@ const fetchGetPropertiesStore = createFetchStore( {
 				...state.properties,
 				[ accountID ]: properties,
 			},
-			propertiesByID: accountID && state.properties[ accountID ]?.reduce(
+			propertiesByID: properties.reduce(
 				( accum, property ) => ( { ...accum, [ property._id ]: property } ),
 				state.propertiesByID || {},
 			),
