@@ -53,7 +53,12 @@ const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 
 const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportError } ) => {
 	const ideaHubContainer = useRef();
+	// ADD getNewIdeas?
+	const newIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeas() );
+
+	// THIS
 	const savedIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeas() );
+	// THIS
 	const draftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas() );
 
 	const [ hash, setHash ] = useHash();
@@ -77,6 +82,10 @@ const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportErro
 		setActiveTabIndex( tabIndex );
 		setHash( DashboardIdeasWidget.tabIDsByIndex[ tabIndex ] );
 	}, [ setHash, setActiveTabIndex ] );
+
+	if ( ! ( newIdeas?.length > 0 ) && ! ( savedIdeas?.length > 0 ) && ! ( draftIdeas?.length > 0 ) ) {
+		return <p>Add here</p>;
+	}
 
 	return (
 		<Widget noPadding>
