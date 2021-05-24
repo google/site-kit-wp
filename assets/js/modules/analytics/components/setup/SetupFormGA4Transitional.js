@@ -26,12 +26,14 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
+import { STORE_NAME, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import SettingsNotice from '../../../../components/SettingsNotice';
+import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import {
 	AccountSelect,
 	ProfileSelect,
+	PropertySelect,
 	PropertySelectIncludingGA4,
 	ProfileNameTextField,
 	GA4Notice,
@@ -62,19 +64,43 @@ export default function SetupFormGA4Transitional() {
 
 				<PropertySelectIncludingGA4 />
 
-				{ propertyType === 'ua' && (
+				{ propertyType === PROPERTY_TYPE_UA && (
 					<ProfileSelect />
 				) }
 			</div>
 
-			{ ( profileID === PROFILE_CREATE && propertyType === 'ua' ) && (
+			{ ( profileID === PROFILE_CREATE && propertyType === PROPERTY_TYPE_UA ) && (
 				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
 					<ProfileNameTextField />
 				</div>
 			) }
 
 			<SettingsNotice>
-				test
+				{ propertyType === PROPERTY_TYPE_GA4 && (
+					<Fragment>
+						<div>
+							<p>
+								{ __( 'You’ll need to connect the Universal Analytics property that’s associated with this Google Analytics 4 property', 'google-site-kit' ) }
+							</p>
+							<PropertySelect />
+							<ProfileSelect />
+						</div>
+
+						{ profileID === PROFILE_CREATE && (
+							<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+								<ProfileNameTextField />
+							</div>
+						) }
+					</Fragment>
+				) }
+				{ propertyType === PROPERTY_TYPE_UA && (
+					<div>
+						<p>
+							{ __( 'You’ll need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property', 'google-site-kit' ) }
+						</p>
+						<GA4PropertySelect />
+					</div>
+				) }
 			</SettingsNotice>
 		</Fragment>
 	);
