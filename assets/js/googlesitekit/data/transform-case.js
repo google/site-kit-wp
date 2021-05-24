@@ -45,7 +45,7 @@ export const camelCaseToConstantCase = ( name ) => {
 /**
  * Transforms a hyphen-case name into its PascalCase name.
  *
- * @since n.e.x.t
+ * @since 1.30.0
  * @private
  *
  * @param {string} name "hyphen-case" name to transform.

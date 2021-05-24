@@ -184,7 +184,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertFalse( has_action( 'googlesitekit_reauthorize_user' ) );
 
 		// Response is not used here, so just pass an array.
-		do_action( 'googlesitekit_authorize_user', array() );
+		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		do_action( 'googlesitekit_reauthorize_user', array() );
 		$this->assertEquals( '1.1.0', $initial_version->get() );
 	}
@@ -347,8 +347,48 @@ class AuthenticationTest extends TestCase {
 		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
 
 		$this->assertEmpty( $user_input_state->get() );
-		do_action( 'googlesitekit_authorize_user', array() );
+		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		$this->assertEquals( User_Input_State::VALUE_REQUIRED, $user_input_state->get() );
+	}
+
+	public function test_user_input_not_triggered() {
+		$this->enable_feature( 'userInput' );
+		remove_all_actions( 'googlesitekit_authorize_user' );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$auth->register();
+
+		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
+		// Mocking User_Input_Settings here to avoid adding a ton of complexity
+		// from intercepting a request to the proxy, returning, settings etc.
+		$mock_user_input_settings = $this->getMockBuilder( User_Input_Settings::class )
+			->disableOriginalConstructor()
+			->disableProxyingToOriginalMethods()
+			->setMethods( array( 'set_settings' ) )
+			->getMock();
+		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
+
+		$this->assertEmpty( $user_input_state->get() );
+
+		$mock_scopes = array(
+			'openid',
+			'https://www.googleapis.com/auth/userinfo.profile',
+			'https://www.googleapis.com/auth/userinfo.email',
+			'https://www.googleapis.com/auth/siteverification',
+			'https://www.googleapis.com/auth/webmasters',
+			'https://www.googleapis.com/auth/analytics.readonly',
+		);
+
+		$mock_previous_scopes = array(
+			'openid',
+			'https://www.googleapis.com/auth/userinfo.profile',
+			'https://www.googleapis.com/auth/userinfo.email',
+			'https://www.googleapis.com/auth/siteverification',
+			'https://www.googleapis.com/auth/webmasters',
+		);
+		do_action( 'googlesitekit_authorize_user', array(), $mock_scopes, $mock_previous_scopes );
+		$this->assertEmpty( $user_input_state->get() );
 	}
 
 	public function test_require_user_input__without_feature() {
@@ -369,7 +409,7 @@ class AuthenticationTest extends TestCase {
 		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
 
 		$this->assertEmpty( $user_input_state->get() );
-		do_action( 'googlesitekit_authorize_user', array() );
+		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		$this->assertEmpty( $user_input_state->get() );
 	}
 
@@ -478,16 +518,10 @@ class AuthenticationTest extends TestCase {
 
 		$connect_url = $auth->get_connect_url();
 
-		$this->assertStringStartsWith( admin_url(), $connect_url );
+		$this->assertStringStartsWith( admin_url( 'index.php' ), $connect_url );
 		wp_parse_str( parse_url( $connect_url, PHP_URL_QUERY ), $params );
-		$this->assertEquals( 1, wp_verify_nonce( $params['nonce'], 'connect' ) );
-		$this->assertArraySubset(
-			array(
-				'googlesitekit_connect' => 1,
-				'page'                  => 'googlesitekit-splash',
-			),
-			$params
-		);
+		$this->assertEquals( 1, wp_verify_nonce( $params['nonce'], Authentication::ACTION_CONNECT ) );
+		$this->assertEquals( Authentication::ACTION_CONNECT, $params['action'] );
 	}
 
 	public function test_get_disconnect_url() {
@@ -495,52 +529,33 @@ class AuthenticationTest extends TestCase {
 
 		$disconnect_url = $auth->get_disconnect_url();
 
-		$this->assertStringStartsWith( admin_url(), $disconnect_url );
+		$this->assertStringStartsWith( admin_url( 'index.php' ), $disconnect_url );
 		wp_parse_str( parse_url( $disconnect_url, PHP_URL_QUERY ), $params );
-		$this->assertEquals( 1, wp_verify_nonce( $params['nonce'], 'disconnect' ) );
-		$this->assertArraySubset(
-			array(
-				'googlesitekit_disconnect' => 1,
-				'page'                     => 'googlesitekit-splash',
-			),
-			$params
-		);
+		$this->assertEquals( 1, wp_verify_nonce( $params['nonce'], Authentication::ACTION_DISCONNECT ) );
+		$this->assertEquals( Authentication::ACTION_DISCONNECT, $params['action'] );
 	}
 
-	public function test_googlesitekit_connect() {
-		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
-		remove_all_actions( 'init' );
-		remove_all_actions( 'admin_init' );
+	public function test_handle_connect() {
+		$auth           = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
+		$connect_action = 'admin_action_' . Authentication::ACTION_CONNECT;
+		remove_all_actions( $connect_action );
 		$this->fake_proxy_site_connection();
 		$auth->register();
 
-		// Does nothing if query parameter is not set, and not is_admin.
-		$this->assertTrue( empty( $_GET['googlesitekit_connect'] ) );
-		$this->assertFalse( is_admin() );
-		do_action( 'admin_init' );
-
-		$_GET['googlesitekit_connect'] = 1;
-		// Does nothing if not is_admin.
-		$this->assertFalse( is_admin() );
-		do_action( 'init' );
-
-		set_current_screen( 'dashboard' );
-		$this->assertTrue( is_admin() );
-
 		// Requires 'connect' nonce.
 		try {
-			do_action( 'admin_init' );
+			do_action( $connect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
 			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
 		}
 
-		$_GET['nonce'] = wp_create_nonce( 'connect' );
+		$_GET['nonce'] = wp_create_nonce( Authentication::ACTION_CONNECT );
 
 		// Requires authenticate permissions.
 		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
 		try {
-			do_action( 'admin_init' );
+			do_action( $connect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
 			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
@@ -548,10 +563,10 @@ class AuthenticationTest extends TestCase {
 
 		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $editor_id );
-		$_GET['nonce'] = wp_create_nonce( 'connect' );
+		$_GET['nonce'] = wp_create_nonce( Authentication::ACTION_CONNECT );
 		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
 		try {
-			do_action( 'admin_init' );
+			do_action( $connect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
 			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
@@ -560,10 +575,10 @@ class AuthenticationTest extends TestCase {
 		// Administrators can authenticate.
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
-		$_GET['nonce'] = wp_create_nonce( 'connect' );
+		$_GET['nonce'] = wp_create_nonce( Authentication::ACTION_CONNECT );
 		$this->assertTrue( current_user_can( Permissions::AUTHENTICATE ) );
 		try {
-			do_action( 'admin_init' );
+			do_action( $connect_action );
 			$this->fail( 'Expected redirection to connect URL' );
 		} catch ( RedirectException $e ) {
 			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/o/oauth2/auth/', $e->get_location() );
@@ -573,7 +588,7 @@ class AuthenticationTest extends TestCase {
 		$extra_scopes              = array( 'http://example.com/test/scope/a', 'http://example.com/test/scope/b' );
 		$_GET['additional_scopes'] = $extra_scopes;
 		try {
-			do_action( 'admin_init' );
+			do_action( $connect_action );
 			$this->fail( 'Expected redirection to connect URL' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
@@ -582,6 +597,59 @@ class AuthenticationTest extends TestCase {
 			$requested_scopes = explode( ' ', $query_args['scope'] );
 			$this->assertContains( $extra_scopes[0], $requested_scopes );
 			$this->assertContains( $extra_scopes[1], $requested_scopes );
+		}
+	}
+
+	public function test_handle_disconnect() {
+		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$auth              = new Authentication( $context );
+		$disconnect_action = 'admin_action_' . Authentication::ACTION_DISCONNECT;
+		remove_all_actions( $disconnect_action );
+		$auth->register();
+
+		// Requires 'disconnect' nonce.
+		try {
+			do_action( $disconnect_action );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( WPDieException $e ) {
+			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
+		}
+
+		$_GET['nonce'] = wp_create_nonce( Authentication::ACTION_DISCONNECT );
+
+		// Requires authenticate permissions.
+		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
+		try {
+			do_action( $disconnect_action );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( WPDieException $e ) {
+			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
+		}
+
+		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $editor_id );
+		$_GET['nonce'] = wp_create_nonce( Authentication::ACTION_DISCONNECT );
+		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
+		try {
+			do_action( $disconnect_action );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( WPDieException $e ) {
+			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
+		}
+
+		// Administrators can authenticate.
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$_GET['nonce'] = wp_create_nonce( Authentication::ACTION_DISCONNECT );
+		$this->assertTrue( current_user_can( Permissions::AUTHENTICATE ) );
+		try {
+			do_action( $disconnect_action );
+			$this->fail( 'Expected redirection to splash URL' );
+		} catch ( RedirectException $e ) {
+			$redirect_url = $e->get_location();
+			$this->assertStringStartsWith( $context->admin_url( 'splash' ), $redirect_url );
+			wp_parse_str( parse_url( $redirect_url, PHP_URL_QUERY ), $params );
+			$this->assertEquals( 1, $params['googlesitekit_reset_session'] );
 		}
 	}
 
@@ -621,7 +689,7 @@ class AuthenticationTest extends TestCase {
 		};
 
 		add_filter( 'home_url', $home_url_hook );
-		do_action( 'googlesitekit_authorize_user' );
+		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		remove_filter( 'home_url', $home_url_hook );
 
 		$this->assertEquals( 'https://example.com/subsite/', $options->get( Connected_Proxy_URL::OPTION ) );

@@ -67,9 +67,9 @@ export default function ReportMetric( {
 						{ displayValue }
 					</div>
 					<div className="googlesitekit-pagespeed-report-metric-value__rating">
-						{ category === CATEGORY_FAST && _x( 'Good', 'Performance rating', 'google-site-kit' ) }
-						{ category === CATEGORY_AVERAGE && _x( 'Needs improvement', 'Performance rating', 'google-site-kit' ) }
-						{ category === CATEGORY_SLOW && _x( 'Poor', 'Performance rating', 'google-site-kit' ) }
+						{ category === CATEGORY_FAST && <span>{ _x( 'Good', 'Performance rating', 'google-site-kit' ) }</span> }
+						{ category === CATEGORY_AVERAGE && <span>{ _x( 'Needs improvement', 'Performance rating', 'google-site-kit' ) }</span> }
+						{ category === CATEGORY_SLOW && <span>{ _x( 'Poor', 'Performance rating', 'google-site-kit' ) }</span> }
 					</div>
 				</div>
 			</td>

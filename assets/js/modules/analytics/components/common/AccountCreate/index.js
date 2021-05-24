@@ -71,7 +71,7 @@ export default function AccountCreate() {
 		if ( accountTicketTermsOfServiceURL ) {
 			navigateTo( accountTicketTermsOfServiceURL );
 		}
-	}, [ accountTicketTermsOfServiceURL ] );
+	}, [ accountTicketTermsOfServiceURL, navigateTo ] );
 
 	// Set form defaults on initial render.
 	useEffect( () => {
@@ -84,7 +84,7 @@ export default function AccountCreate() {
 				timezone,
 			} ) );
 		}
-	}, [ hasAccountCreateForm, siteName, siteURL, timezone ] );
+	}, [ hasAccountCreateForm, siteName, siteURL, timezone, setValues ] );
 
 	const { createAccount } = useDispatch( STORE_NAME );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
@@ -116,7 +116,7 @@ export default function AccountCreate() {
 				setIsNavigating( true );
 			}
 		},
-		[ createAccount, setIsNavigating, hasProvisioningScope, setPermissionScopeError ]
+		[ createAccount, setIsNavigating, hasProvisioningScope, setPermissionScopeError, setValues ]
 	);
 
 	// If the user ends up back on this component with the provisioning scope granted,
@@ -129,7 +129,7 @@ export default function AccountCreate() {
 
 	// If the user clicks "Back", rollback settings to restore saved values, if any.
 	const { rollbackSettings } = useDispatch( STORE_NAME );
-	const handleBack = useCallback( () => rollbackSettings() );
+	const handleBack = useCallback( () => rollbackSettings(), [ rollbackSettings ] );
 
 	if ( isDoingCreateAccount || isNavigating || ! hasResolvedAccounts || hasProvisioningScope === undefined ) {
 		return <ProgressBar />;
@@ -167,8 +167,8 @@ export default function AccountCreate() {
 			</div>
 
 			<p>
-				{ hasProvisioningScope && __( 'You will be redirected to Google Analytics to accept the terms of service.', 'google-site-kit' ) }
-				{ ! hasProvisioningScope && __( 'You will need to give Site Kit permission to create an Analytics account on your behalf and also accept the Google Analytics terms of service.', 'google-site-kit' ) }
+				{ hasProvisioningScope && <span>{ __( 'You will be redirected to Google Analytics to accept the terms of service.', 'google-site-kit' ) }</span> }
+				{ ! hasProvisioningScope && <span>{ __( 'You will need to give Site Kit permission to create an Analytics account on your behalf and also accept the Google Analytics terms of service.', 'google-site-kit' ) }</span> }
 			</p>
 
 			<div className="googlesitekit-setup-module__action">

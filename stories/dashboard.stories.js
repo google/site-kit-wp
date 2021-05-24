@@ -123,8 +123,8 @@ storiesOf( 'Dashboard', module )
 								mdc-layout-grid__cell--span-6-desktop
 							">
 								<CTA
-									title={ __( 'Learn more about what visitors do on your site.', 'google-site-kit' ) }
-									description={ __( 'Connecting with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' ) }
+									title={ __( 'Learn more about what visitors do on your site', 'google-site-kit' ) }
+									description={ __( 'Connecting with Google Analytics to see unique visitors, goal completions, top pages and more', 'google-site-kit' ) }
 									ctaLink="#"
 									ctaLabel={ __( 'Set up analytics', 'google-site-kit' ) }
 								/>
@@ -135,7 +135,7 @@ storiesOf( 'Dashboard', module )
 			</WithTestRegistry>
 		);
 	},
-	{ options: { readySelector: '.googlesitekit-chart-v2 > div[style="position: relative;"]' } } )
+	{ options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' } } )
 	.add( 'Search Funnel', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
@@ -192,6 +192,6 @@ storiesOf( 'Dashboard', module )
 		);
 	}, {
 		options: {
-			readySelector: '.googlesitekit-chart-v2 > div[style="position: relative;"]',
+			readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
 		},
 	} );

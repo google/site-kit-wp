@@ -198,8 +198,7 @@ class Migration_1_8_1 {
 		$backup_user_id = $this->user_options->get_user_id();
 
 		// Iterate through all users verified via Site Kit.
-		foreach ( $this->get_verified_users() as $user ) {
-			$user_id = (int) $user->ID;
+		foreach ( $this->get_verified_user_ids() as $user_id ) {
 			$this->user_options->switch_user( $user_id );
 
 			// If the user has setup access, there is no problem.
@@ -211,6 +210,7 @@ class Migration_1_8_1 {
 			if ( $this->authentication->profile()->has() ) {
 				$unauthorized_identifiers[] = $this->authentication->profile()->get()['email'];
 			} else {
+				$user                       = get_user_by( 'id', $user_id );
 				$unauthorized_identifiers[] = $user->user_email;
 			}
 
@@ -229,27 +229,20 @@ class Migration_1_8_1 {
 	}
 
 	/**
-	 * Gets all users that are verified via Site Kit.
+	 * Gets all user IDs that are verified via Site Kit.
 	 *
-	 * @since 1.8.1
+	 * @since @1.31.0
 	 *
-	 * @return WP_User[] User objects of verified users. Maximum of 20.
+	 * @return array List of user ids of verified users. Maximum of 20.
 	 */
-	private function get_verified_users() {
-		return get_users(
-			array(
-				'number'     => 20,
-				'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery
-					'relation' => 'OR',
-					array(
-						'key'     => $this->user_options->get_meta_key( Verification_File::OPTION ),
-						'compare' => 'EXISTS',
-					),
-					array(
-						'key'     => $this->user_options->get_meta_key( Verification_Meta::OPTION ),
-						'compare' => 'EXISTS',
-					),
-				),
+	private function get_verified_user_ids() {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		return $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT user_id FROM $wpdb->usermeta WHERE meta_key IN (%s, %s) LIMIT 20",
+				$this->user_options->get_meta_key( Verification_File::OPTION ),
+				$this->user_options->get_meta_key( Verification_Meta::OPTION )
 			)
 		);
 	}

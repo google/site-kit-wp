@@ -20,6 +20,7 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
+import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils';
 
 /**
  * Internal dependencies
@@ -61,6 +62,7 @@ const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
 };
 
 describe( 'DashboardPageSpeed', () => {
+	beforeAll( () => mockAllIsIntersecting( true ) );
 	afterEach( fetchMock.mockClear );
 
 	it( 'renders a progress bar while reports are requested', async () => {

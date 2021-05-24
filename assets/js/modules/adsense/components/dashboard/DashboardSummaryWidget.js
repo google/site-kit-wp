@@ -34,6 +34,7 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import AdBlockerWarning from '../common/AdBlockerWarning';
 
 const { useSelect } = Data;
 
@@ -41,28 +42,29 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 	const {
 		error,
 		loading,
-		today,
 		period,
+		previousPeriod,
 		daily,
 		rpmReportURL,
 		earningsURL,
 		impressionsURL,
+		isAdblockerActive,
 	} = useSelect( ( select ) => {
-		const referenceDate = select( CORE_USER ).getReferenceDate();
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+		const { startDate, endDate, compareStartDate, compareEndDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
 		} );
+
+		const previousPeriodArgs = {
+			startDate: compareStartDate,
+			endDate: compareEndDate,
+			metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
+		};
 
 		const periodArgs = {
 			startDate,
 			endDate,
 			metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
-		};
-
-		const todayArgs = {
-			...periodArgs,
-			startDate: referenceDate,
-			endDate: referenceDate,
 		};
 
 		const dailyArgs = {
@@ -73,14 +75,14 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 		const dateRangeArgs = generateDateRangeArgs( { startDate, endDate } );
 
 		return {
-			today: select( STORE_NAME ).getReport( todayArgs ),
 			period: select( STORE_NAME ).getReport( periodArgs ),
+			previousPeriod: select( STORE_NAME ).getReport( previousPeriodArgs ),
 			daily: select( STORE_NAME ).getReport( dailyArgs ),
-			loading: ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ todayArgs ] ) ||
-				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ periodArgs ] ) ||
+			loading: ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ periodArgs ] ) ||
+				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousPeriodArgs ] ) ||
 				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ dailyArgs ] ),
-			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ todayArgs ] ) ||
-				select( STORE_NAME ).getErrorForSelector( 'getReport', [ periodArgs ] ) ||
+			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ periodArgs ] ) ||
+				select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousPeriodArgs ] ) ||
 				select( STORE_NAME ).getErrorForSelector( 'getReport', [ dailyArgs ] ),
 			rpmReportURL: select( STORE_NAME ).getServiceReportURL( {
 				...dateRangeArgs,
@@ -94,19 +96,40 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 				...dateRangeArgs,
 				gm: 'monetizableImpressions',
 			} ),
+			isAdblockerActive: select( STORE_NAME ).isAdBlockerActive(),
 		};
 	} );
 
+	if ( isAdblockerActive ) {
+		return (
+			<Widget>
+				<AdBlockerWarning />
+			</Widget>
+		);
+	}
+
 	if ( loading ) {
-		return <PreviewBlock width="100%" height="276px" />;
+		return (
+			<Widget>
+				<PreviewBlock width="100%" height="276px" />
+			</Widget>
+		);
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="adsense" error={ error } />;
+		return (
+			<Widget>
+				<WidgetReportError moduleSlug="adsense" error={ error } />
+			</Widget>
+		);
 	}
 
-	if ( isZeroReport( today ) && isZeroReport( period ) && isZeroReport( daily ) ) {
-		return <WidgetReportZero moduleSlug="adsense" />;
+	if ( isZeroReport( previousPeriod ) && isZeroReport( period ) && isZeroReport( daily ) ) {
+		return (
+			<Widget>
+				<WidgetReportZero moduleSlug="adsense" />
+			</Widget>
+		);
 	}
 
 	const processedData = reduceAdSenseData( daily.rows );
@@ -120,9 +143,11 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 					<DataBlock
 						className="overview-adsense-rpm"
-						title={ __( 'RPM', 'google-site-kit' ) }
+						title={ __( 'Page RPM', 'google-site-kit' ) }
 						datapoint={ period.totals[ 1 ] }
 						datapointUnit={ currencyCode }
+						change={ period.totals[ 1 ] - previousPeriod.totals[ 1 ] }
+						changeDataUnit={ currencyCode }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 							link: rpmReportURL,
@@ -149,7 +174,7 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 							link: earningsURL,
 							external: true,
 						} }
-						change={ today.totals[ 0 ] }
+						change={ period.totals[ 0 ] - previousPeriod.totals[ 0 ] }
 						changeDataUnit={ currencyCode }
 						sparkline={ daily &&
 							<Sparkline
@@ -166,6 +191,8 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 						className="overview-adsense-impressions"
 						title={ __( 'Ad Impressions', 'google-site-kit' ) }
 						datapoint={ period.totals[ 2 ] }
+						change={ period.totals[ 2 ] - previousPeriod.totals[ 2 ] }
+						changeDataUnit
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 							link: impressionsURL,

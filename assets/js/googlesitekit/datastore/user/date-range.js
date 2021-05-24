@@ -32,7 +32,7 @@ import {
 	isValidDateString,
 	INVALID_DATE_RANGE_ERROR,
 	INVALID_DATE_STRING_ERROR,
-} from './utils';
+} from '../../../util/date-range';
 
 export const initialState = {
 	dateRange: 'last-28-days',

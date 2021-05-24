@@ -33,8 +33,7 @@
 			background-color: $c-alabaster;
 			color: $c-cape-cod;
 			display: block;
-			margin-left: auto;
-			width: 85%;
+			width: 100%;
 
 			@include responsive-text("body1", "body3");
 

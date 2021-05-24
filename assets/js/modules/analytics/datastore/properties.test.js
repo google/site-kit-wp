@@ -24,10 +24,13 @@ import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	muteFetch,
+	freezeFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics properties', () => {
 	let registry;
@@ -129,6 +132,30 @@ describe( 'modules/analytics properties', () => {
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBeUndefined();
 			} );
 
+			it( 'preserves the current profile ID when selecting the current property', async () => {
+				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+				const propertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
+				const internalWebPropertyID = fixtures.propertiesProfiles.properties[ 0 ].internalWebPropertyId; // eslint-disable-line sitekit/acronym-case
+				// Note: we're using the second profile in the list to differentiate between the default of selecting the first.
+				const profileID = fixtures.propertiesProfiles.profiles[ 1 ].id;
+				registry.dispatch( STORE_NAME ).receiveGetSettings( {
+					accountID,
+					propertyID,
+					internalWebPropertyID,
+					profileID,
+				} );
+				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID, propertyID } );
+
+				expect( registry.select( STORE_NAME ).getProfileID() ).toEqual( profileID );
+
+				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
+
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toMatch( propertyID );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toEqual( internalWebPropertyID );
+				expect( registry.select( STORE_NAME ).getProfileID() ).toEqual( profileID );
+			} );
+
 			it( 'selects the property and its default profile when set', async () => {
 				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const propertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
@@ -163,6 +190,32 @@ describe( 'modules/analytics properties', () => {
 
 				expect( registry.select( STORE_NAME ).getProfiles( accountID, propertyID ).some( ( { id } ) => id === nonExistentProfileID ) ).toBe( false );
 				expect( registry.select( STORE_NAME ).getProfileID() ).not.toBe( nonExistentProfileID );
+			} );
+		} );
+
+		describe( 'setPrimaryPropertyType', () => {
+			it.each( [
+				[ 'ua' ],
+				[ 'ga4' ],
+			] )( 'should not throw when %s is passed', ( type ) => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).setPrimaryPropertyType( type );
+				} ).not.toThrow();
+			} );
+
+			it( 'should throw an error when invalid type is passed', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).setPrimaryPropertyType( 'foo-bar' );
+				} ).toThrow( 'type must be "ua" or "ga4"' );
+			} );
+
+			it.each( [
+				[ 'ua' ],
+				[ 'ga4' ],
+			] )( 'should set and read when %s is passed', ( type ) => {
+				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( type );
+
+				expect( registry.stores[ STORE_NAME ].store.getState().primaryPropertyType ).toBe( type );
 			} );
 		} );
 	} );
@@ -255,6 +308,129 @@ describe( 'modules/analytics properties', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
+
+		describe( 'getPropertiesIncludingGA4', () => {
+			beforeEach( () => {
+				enabledFeatures.add( 'ga4setup' );
+			} );
+
+			it( 'returns undefined if UA properties are loading', () => {
+				const accountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+
+				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/ );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+					[
+						{
+							_id: '151753095-3',
+							_accountID: '151753095',
+							displayName: 'www.elasticpress.io',
+						},
+						{
+							_id: '151753095-4',
+							_accountID: '151753095',
+							displayName: 'troubled-tipped.example.com',
+						},
+					],
+					{ accountID }
+				);
+
+				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( accountID ) ).toBeUndefined();
+			} );
+
+			it( 'returns undefined if GA4 properties are loading', () => {
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+				const accountID = testAccountID;
+
+				registry.dispatch( STORE_NAME ).receiveGetProperties(
+					[
+						{
+							// eslint-disable-next-line sitekit/acronym-case
+							accountId: '151753095',
+							id: 'UA-151753095-1',
+							name: 'rwh',
+						},
+						{
+							// eslint-disable-next-line sitekit/acronym-case
+							accountId: '151753095',
+							id: 'UA-151753095-1',
+							name: 'troubled-tipped.example.com',
+						},
+
+					],
+					{ accountID }
+				);
+
+				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/ );
+
+				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
+			} );
+
+			it( 'returns undefined if both UA and GA4 properties are loading', () => {
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+
+				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/ );
+
+				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/ );
+
+				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
+			} );
+
+			it( 'returns a sorted list of ua and ga4 properties ', () => {
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+				const accountID = testAccountID;
+
+				registry.dispatch( STORE_NAME ).receiveGetProperties(
+					[
+						{
+							// eslint-disable-next-line sitekit/acronym-case
+							accountId: '151753095',
+							id: 'UA-151753095-1',
+							name: 'rwh',
+						},
+						{
+							// eslint-disable-next-line sitekit/acronym-case
+							accountId: '151753095',
+							id: 'UA-151753095-1',
+							name: 'troubled-tipped.example.com',
+						},
+
+					],
+					{ accountID }
+				);
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+					[
+						{
+							_id: '151753095-3',
+							_accountID: '151753095',
+							displayName: 'www.elasticpress.io',
+						},
+						{
+							_id: '151753095-4',
+							_accountID: '151753095',
+							displayName: 'troubled-tipped.example.com',
+						},
+					],
+					{ accountID }
+				);
+
+				const properties = registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID );
+
+				expect( properties ).toHaveLength( 4 );
+
+				expect( properties[ 0 ].id ).toBe( 'UA-151753095-1' );
+				expect( properties[ 1 ]._id ).toBe( '151753095-4' );
+				expect( properties[ 2 ].id ).toBe( 'UA-151753095-1' );
+				expect( properties[ 3 ]._id ).toBe( '151753095-3' );
+
+				expect( properties[ 0 ].name ).toBe( 'rwh' );
+				expect( properties[ 1 ].displayName ).toBe( 'troubled-tipped.example.com' );
+				expect( properties[ 2 ].name ).toBe( 'troubled-tipped.example.com' );
+				expect( properties[ 3 ].displayName ).toBe( 'www.elasticpress.io' );
+			} );
+		} );
+
 		describe( 'getPropertyByID', () => {
 			it( 'returns the property object by its ID when present in the store', () => {
 				const { properties } = fixtures.propertiesProfiles;
@@ -279,6 +455,17 @@ describe( 'modules/analytics properties', () => {
 				const foundProperty = registry.select( STORE_NAME ).getPropertyByID( findProperty.id );
 
 				expect( foundProperty ).toEqual( undefined );
+			} );
+		} );
+		describe( 'getPrimaryPropertyType', () => {
+			it( 'should correctly return the default value', () => {
+				expect( registry.select( STORE_NAME ).getPrimaryPropertyType( ) ).toBe( 'ua' );
+			} );
+
+			it( 'should return the new state when it has been changed', () => {
+				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( 'ga4' );
+
+				expect( registry.select( STORE_NAME ).getPrimaryPropertyType( ) ).toBe( 'ga4' );
 			} );
 		} );
 	} );

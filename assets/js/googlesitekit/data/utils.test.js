@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import noop from 'lodash/noop';
+
+/**
  * WordPress dependencies
  */
 import { createRegistry } from '@wordpress/data';
@@ -30,6 +35,7 @@ import {
 	collectName,
 	combineStores,
 	createStrictSelect,
+	createValidatedAction,
 } from './utils';
 
 describe( 'data utils', () => {
@@ -785,6 +791,82 @@ describe( 'data utils', () => {
 				expect( strictSelect( STORE_NAME ) ).toStrictEqual( strictSelect( STORE_NAME ) );
 				expect( createStrictSelect( registry.select )( STORE_NAME ) ).toStrictEqual( strictSelect( STORE_NAME ) );
 			} );
+		} );
+	} );
+
+	describe( 'createValidatedAction', () => {
+		it( 'should throw an error if a validator function is not provided', () => {
+			const actionCreator = noop;
+
+			return expect( () => createValidatedAction( null, actionCreator ) )
+				.toThrow( 'a validator function is required.' );
+		} );
+
+		it( 'should throw an error if an action creator function is not provided', () => {
+			const validator = noop;
+
+			return expect( () => createValidatedAction( validator ) )
+				.toThrow( 'an action creator function is required.' );
+		} );
+
+		it( 'should throw an error if validator function is a generator object', () => {
+			function* validator() { }
+			const actionCreator = noop;
+
+			return expect( () => createValidatedAction(
+				validator,
+				actionCreator
+			) )
+				.toThrow( 'an action’s validator function must not be a generator.' );
+		} );
+
+		it( 'should call validation function', () => {
+			const args = { foo: 'bar' };
+			const validator = jest.fn();
+			const actionCreator = noop;
+
+			const validatedAction = createValidatedAction(
+				validator,
+				actionCreator
+			);
+
+			validatedAction( args );
+
+			expect( validator ).toHaveBeenCalledTimes( 1 );
+			expect( validator ).toHaveBeenCalledWith( args );
+		} );
+
+		it( 'should call action creator', () => {
+			const args = { foo: 'bar' };
+			const validator = noop;
+			const actionCreator = jest.fn();
+
+			const validatedAction = createValidatedAction(
+				validator,
+				actionCreator
+			);
+
+			validatedAction( args );
+
+			expect( actionCreator ).toHaveBeenCalledTimes( 1 );
+			expect( actionCreator ).toHaveBeenCalledWith( args );
+		} );
+
+		it( 'should not call action creator if validator throws an exception ', () => {
+			const args = { foo: 'bar' };
+			const validator = () => {
+				throw new Error( 'foo' );
+			};
+			const actionCreator = jest.fn();
+
+			const validatedAction = createValidatedAction(
+				validator,
+				actionCreator
+			);
+
+			expect( () => validatedAction( args ) ).toThrow( 'foo' );
+
+			expect( actionCreator ).toHaveBeenCalledTimes( 0 );
 		} );
 	} );
 } );

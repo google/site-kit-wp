@@ -73,7 +73,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 		}
 
 		navigateTo( redirectURL );
-	}, [ moduleSlug ] );
+	}, [ moduleSlug, navigateTo ] );
 
 	if ( ! module?.SetupComponent ) {
 		return null;

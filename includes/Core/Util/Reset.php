@@ -38,12 +38,34 @@ class Reset {
 	const REST_ROUTE = 'core/site/data/reset';
 
 	/**
+	 * Action for triggering a reset.
+	 */
+	const ACTION = 'googlesitekit_reset';
+
+	/**
 	 * Plugin context.
 	 *
 	 * @since 1.0.0
 	 * @var Context
 	 */
 	private $context;
+
+	/**
+	 * Gets the URL to handle a reset action.
+	 *
+	 * @since 1.30.0
+	 *
+	 * @return string
+	 */
+	public static function url() {
+		return add_query_arg(
+			array(
+				'action' => static::ACTION,
+				'nonce'  => wp_create_nonce( static::ACTION ),
+			),
+			admin_url( 'index.php' )
+		);
+	}
 
 	/**
 	 * Constructor.
@@ -69,6 +91,15 @@ class Reset {
 				return array_merge( $routes, $this->get_rest_routes() );
 			}
 		);
+
+		add_action(
+			'admin_action_' . static::ACTION,
+			function () {
+				$this->handle_reset_action(
+					$this->context->input()->filter( INPUT_GET, 'nonce' )
+				);
+			}
+		);
 	}
 
 	/**
@@ -79,10 +110,12 @@ class Reset {
 	public function all() {
 		$this->delete_options( 'site' );
 		$this->delete_user_options( 'site' );
+		$this->delete_post_meta( 'site' );
 
 		if ( $this->context->is_network_mode() ) {
 			$this->delete_options( 'network' );
 			$this->delete_user_options( 'network' );
+			$this->delete_post_meta( 'network' );
 		}
 
 		wp_cache_flush();
@@ -151,6 +184,41 @@ class Reset {
 	}
 
 	/**
+	 * Deletes all Site Kit post meta settings.
+	 *
+	 * @since 1.33.0
+	 *
+	 * @param string $scope Scope of the deletion ('site' or 'network').
+	 */
+	private function delete_post_meta( $scope ) {
+		global $wpdb;
+
+		$sites = array();
+		if ( 'network' === $scope ) {
+			$sites = get_sites(
+				array(
+					'fields' => 'ids',
+					'number' => 9999999,
+				)
+			);
+		} else {
+			$sites[] = get_current_blog_id();
+		}
+
+		foreach ( $sites as $site_id ) {
+			$prefix = $wpdb->get_blog_prefix( $site_id );
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$prefix}postmeta WHERE `meta_key` LIKE %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					static::KEY_PATTERN
+				)
+			);
+		}
+	}
+
+	/**
 	 * Gets related REST routes.
 	 *
 	 * @since 1.3.0
@@ -177,5 +245,36 @@ class Reset {
 				)
 			),
 		);
+	}
+
+	/**
+	 * Handles the reset admin action.
+	 *
+	 * @since 1.30.0
+	 *
+	 * @param string $nonce WP nonce for action.
+	 */
+	private function handle_reset_action( $nonce ) {
+		if ( ! wp_verify_nonce( $nonce, static::ACTION ) ) {
+			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+		}
+		if ( ! current_user_can( Permissions::SETUP ) ) {
+			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
+		}
+
+		$this->all();
+
+		wp_safe_redirect(
+			$this->context->admin_url(
+				'splash',
+				array(
+					// Trigger client-side storage reset.
+					'googlesitekit_reset_session' => 1,
+					// Show reset-success notification.
+					'notification'                => 'reset_success',
+				)
+			)
+		);
+		exit;
 	}
 }

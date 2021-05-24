@@ -46,7 +46,7 @@ export default function AccountSelect() {
 		if ( accountID !== newAccountID ) {
 			selectAccount( newAccountID );
 		}
-	}, [ accountID ] );
+	}, [ accountID, selectAccount ] );
 
 	if ( ! hasResolvedAccounts ) {
 		return <ProgressBar small />;

@@ -22,11 +22,23 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { useCallback } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Link from '../Link';
+import { trackEvent } from '../../util';
 
-function HelpMenuLink( { children, href } ) {
+function HelpMenuLink( { children, href, gaEventLabel } ) {
+	const onClick = useCallback( async () => {
+		if ( gaEventLabel ) {
+			await trackEvent( 'global_help_menu', 'click_outgoing_link', gaEventLabel );
+		}
+	}, [ gaEventLabel ] );
+
 	return (
 		<li className="googlesitekit-help-menu-link mdc-list-item" role="none">
 			<Link
@@ -36,6 +48,7 @@ function HelpMenuLink( { children, href } ) {
 				hideExternalIndicator
 				inherit
 				role="menuitem"
+				onClick={ onClick }
 			>
 				{ children }
 			</Link>
@@ -46,6 +59,7 @@ function HelpMenuLink( { children, href } ) {
 HelpMenuLink.propTypes = {
 	children: PropTypes.node.isRequired,
 	href: PropTypes.string.isRequired,
+	gaEventLabel: PropTypes.string,
 };
 
 export default HelpMenuLink;

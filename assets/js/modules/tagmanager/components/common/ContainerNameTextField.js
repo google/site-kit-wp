@@ -48,7 +48,7 @@ export default function ContainerNameTextField( { label, name } ) {
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback( ( { currentTarget } ) => {
 		setValues( FORM_SETUP, { [ name ]: currentTarget.value } );
-	}, [ name ] );
+	}, [ name, setValues ] );
 
 	const isUniqueName = isUniqueContainerName( containerName, containers );
 

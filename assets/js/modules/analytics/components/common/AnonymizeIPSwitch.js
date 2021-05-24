@@ -43,7 +43,7 @@ export default function AnonymizeIPSwitch() {
 	const { setAnonymizeIP } = useDispatch( STORE_NAME );
 	const onChange = useCallback( () => {
 		setAnonymizeIP( ! anonymizeIP );
-	}, [ anonymizeIP ] );
+	}, [ anonymizeIP, setAnonymizeIP ] );
 
 	if ( ! useSnippet || ampMode === 'primary' || anonymizeIP === undefined ) {
 		return null;

@@ -23,4 +23,4 @@ export { default as wpDashboardClicksArgs } from './wp-dashboard-clicks-args.jso
 export { default as wpDashboardClicksData } from './wp-dashboard-clicks-data.json';
 export { default as wpDashboardImpressionsArgs } from './wp-dashboard-impressions-args.json';
 export { default as wpDashboardImpressionsData } from './wp-dashboard-impressions-data.json';
-
+export { default as matchedProperties } from './matched-properties.json';

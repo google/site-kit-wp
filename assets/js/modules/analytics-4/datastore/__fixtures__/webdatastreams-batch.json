@@ -1,0 +1,39 @@
+{
+  "1000": [
+    {
+      "_id": "2000",
+      "_propertyID": "1000",
+      "name": "properties/1000/webDataStreams/2000",
+      "measurementId": "1A2BCD345E",
+      "firebaseAppId": "",
+      "createTime": "2014-10-02T15:01:23Z",
+      "updateTime": "2014-10-02T15:01:23Z",
+      "defaultUri": "http://example.com",
+      "displayName": "Test GA4 WebDataStream"
+    },
+    {
+      "_id": "2001",
+      "_propertyID": "1000",
+      "name": "properties/1000/webDataStreams/2001",
+      "measurementId": "1A2BCD346E",
+      "firebaseAppId": "",
+      "createTime": "2014-10-03T15:01:23Z",
+      "updateTime": "2014-10-03T15:01:23Z",
+      "defaultUri": "http://example.org",
+      "displayName": "Another datastream"
+    }
+  ],
+  "1001": [
+    {
+      "_id": "4000",
+      "_propertyID": "1001",
+      "name": "properties/1001/webDataStreams/4000",
+      "measurementId": "155BC2366E",
+      "firebaseAppId": "",
+      "createTime": "2015-05-12T12:31:07Z",
+      "updateTime": "2015-05-12T12:31:07Z",
+      "defaultUri": "http://example.net",
+      "displayName": "Main datastream"
+    }
+  ]
+}

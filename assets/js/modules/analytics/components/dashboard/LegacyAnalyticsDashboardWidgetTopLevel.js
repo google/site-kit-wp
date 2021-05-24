@@ -33,6 +33,7 @@ import { Fragment, useState, useEffect } from '@wordpress/element';
 import {
 	getTimeInSeconds,
 	calculateChange,
+	getURLPath,
 } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import {
@@ -45,7 +46,6 @@ import {
 	userReportDataDefaults,
 	parseTotalUsersData,
 } from '../../util';
-import { getURLPath } from '../../../../util/getURLPath';
 import Data from 'googlesitekit-data';
 import DataBlock from '../../../../components/DataBlock';
 import withData from '../../../../components/higherorder/withData';
@@ -193,8 +193,8 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 					) }
 				{ ! permaLink && goals && isEmpty( goals.items ) && (
 					<CTA
-						title={ __( 'Use goals to measure success.', 'google-site-kit' ) }
-						description={ __( 'Goals measure how well your site or app fulfills your target objectives.', 'google-site-kit' ) }
+						title={ __( 'Use goals to measure success', 'google-site-kit' ) }
+						description={ __( 'Goals measure how well your site or app fulfills your target objectives', 'google-site-kit' ) }
 						ctaLink={ goalURL }
 						ctaLabel={ __( 'Create a new goal', 'google-site-kit' ) }
 					/>

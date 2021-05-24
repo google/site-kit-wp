@@ -52,7 +52,7 @@ export default function SetupSiteAdded( { finishSetup } ) {
 			await trackEvent( 'adsense_setup', 'complete_adsense_setup' );
 			finishSetup();
 		}
-	}, [ isDoingSubmitChanges, finishSetup ] );
+	}, [ isDoingSubmitChanges, finishSetup, completeSiteSetup ] );
 
 	return (
 		<Fragment>
@@ -63,7 +63,7 @@ export default function SetupSiteAdded( { finishSetup } ) {
 			<ErrorNotices />
 
 			<p>
-				{ __( 'In order for your site to display ads, make sure you’ve completed these steps in AdSense.', 'google-site-kit' ) }
+				{ __( 'In order for your site to display ads, make sure you’ve completed these steps in AdSense', 'google-site-kit' ) }
 			</p>
 
 			<SiteSteps />

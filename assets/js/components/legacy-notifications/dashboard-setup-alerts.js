@@ -29,7 +29,7 @@ import { applyFilters } from '@wordpress/hooks';
 import { getQueryParameter, getModulesData } from '../../util';
 import Notification from './notification';
 import ModulesList from '../ModulesList';
-import RocketImageSVG from '../../../svg/rocket.svg';
+import SuccessGreenSVG from '../../../svg/success-green.svg';
 import UserInputSuccessNotification from '../notifications/UserInputSuccessNotification';
 
 class DashboardSetupAlerts extends Component {
@@ -82,7 +82,7 @@ class DashboardSetupAlerts extends Component {
 							title={ sprintf( __( 'Congrats on completing the setup for %s!', 'google-site-kit' ), winData.setupTitle ) }
 							description={ winData.description }
 							handleDismiss={ () => {} }
-							WinImageSVG={ RocketImageSVG }
+							WinImageSVG={ SuccessGreenSVG }
 							dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 							format="large"
 							type="win-success"
@@ -90,7 +90,7 @@ class DashboardSetupAlerts extends Component {
 							learnMoreDescription={ winData.learnMore.description }
 							learnMoreURL={ winData.learnMore.url }
 							anchorLink={ 'pagespeed-insights' === slug ? '#googlesitekit-pagespeed-header' : '' }
-							anchorLinkLabel={ 'pagespeed-insights' === slug ? __( 'Jump to the bottom of the dashboard to see how fast your home page is.', 'google-site-kit' ) : '' }
+							anchorLinkLabel={ 'pagespeed-insights' === slug ? __( 'Jump to the bottom of the dashboard to see how fast your home page is', 'google-site-kit' ) : '' }
 						>
 							<ModulesList
 								moduleSlugs={ [ 'search-console', 'adsense', 'analytics', 'pagespeed-insights' ] }

@@ -14,11 +14,11 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
-use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
@@ -51,7 +51,7 @@ use WP_Error;
  */
 final class Search_Console extends Module
 	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner {
-	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Google_URL_Matcher_Trait, Module_With_Assets_Trait;
+	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Google_URL_Matcher_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -276,8 +276,15 @@ final class Search_Console extends Module
 			case 'GET:matched-sites':
 				/* @var Google_Service_SearchConsole_SitesListResponse $response Response object. */
 				$entries = $this->map_sites( (array) $response->getSiteEntry() );
+				$strict  = filter_var( $data['strict'], FILTER_VALIDATE_BOOLEAN );
 
-				$current_url                  = $this->context->get_reference_site_url();
+				$current_url = $this->context->get_reference_site_url();
+				if ( ! $strict ) {
+					$current_url = untrailingslashit( $current_url );
+					$current_url = $this->strip_url_scheme( $current_url );
+					$current_url = $this->strip_domain_www( $current_url );
+				}
+
 				$sufficient_permission_levels = array(
 					'siteRestrictedUser',
 					'siteOwner',
@@ -287,11 +294,17 @@ final class Search_Console extends Module
 				return array_values(
 					array_filter(
 						$entries,
-						function ( array $entry ) use ( $current_url, $sufficient_permission_levels ) {
+						function ( array $entry ) use ( $current_url, $sufficient_permission_levels, $strict ) {
 							if ( 0 === strpos( $entry['siteURL'], 'sc-domain:' ) ) {
 								$match = $this->is_domain_match( substr( $entry['siteURL'], strlen( 'sc-domain:' ) ), $current_url );
 							} else {
-								$match = $this->is_url_match( $entry['siteURL'], $current_url );
+								$site_url = untrailingslashit( $entry['siteURL'] );
+								if ( ! $strict ) {
+									$site_url = $this->strip_url_scheme( $site_url );
+									$site_url = $this->strip_domain_www( $site_url );
+								}
+
+								$match = $this->is_url_match( $site_url, $current_url );
 							}
 							return $match && in_array( $entry['permissionLevel'], $sufficient_permission_levels, true );
 						}
@@ -430,7 +443,7 @@ final class Search_Console extends Module
 	 * @return string Property ID, or empty string if none found.
 	 */
 	protected function detect_property_id() {
-		$properties = $this->get_data( 'matched-sites' );
+		$properties = $this->get_data( 'matched-sites', array( 'strict' => 'yes' ) );
 		if ( is_wp_error( $properties ) || ! $properties ) {
 			return '';
 		}
@@ -538,18 +551,6 @@ final class Search_Console extends Module
 				)
 			),
 		);
-	}
-
-	/**
-	 * Gets an owner ID for the module.
-	 *
-	 * @since 1.16.0
-	 *
-	 * @return int Owner ID.
-	 */
-	public function get_owner_id() {
-		$owner = new Owner_ID( $this->options );
-		return $owner->get();
 	}
 
 }

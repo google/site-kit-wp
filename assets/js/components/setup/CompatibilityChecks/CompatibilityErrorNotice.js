@@ -31,11 +31,12 @@ const { useSelect } = Data;
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	ERROR_AMP_CDN_RESTRICTED,
+	ERROR_API_UNAVAILABLE,
 	ERROR_FETCH_FAIL,
 	ERROR_GOOGLE_API_CONNECTION_FAIL,
 	ERROR_INVALID_HOSTNAME,
-	ERROR_WP_PRE_V5,
 	ERROR_TOKEN_MISMATCH,
+	ERROR_WP_PRE_V5,
 } from './constants';
 
 const helperCTA = ( developerPlugin ) => {
@@ -78,12 +79,18 @@ export default function CompatibilityErrorNotice( { error } ) {
 	const { installed } = developerPlugin;
 
 	switch ( error ) {
+		case ERROR_API_UNAVAILABLE:
+			return (
+				<p>
+					{ __( 'Site Kit cannot access the WordPress REST API. Please ensure it is enabled on your site.', 'google-site-kit' ) }
+				</p>
+			);
 		case ERROR_INVALID_HOSTNAME:
 		case ERROR_FETCH_FAIL:
 			return (
 				<p>
-					{ ! installed && __( 'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console.', 'google-site-kit' ) }
-					{ installed && __( 'Looks like this may be a staging environment and you already have the helper plugin. Before you can use Site Kit, please make sure you’ve provided the necessary credentials in the Authentication section and verified your production site in Search Console.', 'google-site-kit' ) }
+					{ ! installed && <span>{ __( 'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console.', 'google-site-kit' ) }</span> }
+					{ installed && <span>{ __( 'Looks like this may be a staging environment and you already have the helper plugin. Before you can use Site Kit, please make sure you’ve provided the necessary credentials in the Authentication section and verified your production site in Search Console.', 'google-site-kit' ) }</span> }
 					{ ' ' }
 					<Link
 						{ ...helperCTA( developerPlugin ) }

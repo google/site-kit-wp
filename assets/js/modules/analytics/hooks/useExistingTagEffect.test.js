@@ -77,6 +77,7 @@ describe( 'useExistingTagEffect', () => {
 
 		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( existingTag.accountID );
 		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( existingTag.propertyID );
+		expect( registry.select( STORE_NAME ).getUseSnippet() ).toBe( false );
 	} );
 
 	it( 'should not select GTM tag if user doesn\'t have permissions for existing tag', async () => {

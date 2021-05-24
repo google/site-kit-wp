@@ -22,6 +22,7 @@
 import Data from 'googlesitekit-data';
 import {
 	AccountSelect,
+	AdsConversionIDTextField,
 	AnonymizeIPSwitch,
 	ExistingTagNotice,
 	ProfileSelect,
@@ -62,6 +63,8 @@ export default function SettingsForm() {
 				<AnonymizeIPSwitch />
 
 				<TrackingExclusionSwitches />
+
+				<AdsConversionIDTextField />
 			</div>
 		</div>
 	);

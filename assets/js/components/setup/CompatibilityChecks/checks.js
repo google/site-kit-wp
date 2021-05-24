@@ -21,6 +21,7 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	AMP_PROJECT_TEST_URL,
 	ERROR_AMP_CDN_RESTRICTED,
+	ERROR_API_UNAVAILABLE,
 	ERROR_FETCH_FAIL,
 	ERROR_GOOGLE_API_CONNECTION_FAIL,
 	ERROR_INVALID_HOSTNAME,
@@ -47,8 +48,11 @@ export const registryCheckSetupTag = ( registry ) => async () => {
 export const checkHealthChecks = async () => {
 	const response = await API.get( 'core', 'site', 'health-checks', undefined, {
 		useCache: false,
-	} ).catch( () => {
-		throw ERROR_FETCH_FAIL;
+	} ).catch( ( error ) => {
+		if ( error.code === 'fetch_error' ) {
+			throw ERROR_FETCH_FAIL;
+		}
+		throw ERROR_API_UNAVAILABLE;
 	} );
 
 	if ( ! response?.checks?.googleAPI?.pass ) {

@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { SetupMain } from './components/setup';
@@ -35,6 +40,11 @@ export const registerModule = ( modules ) => {
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
 			Icon: OptimizeIcon,
+			features: [
+				__( 'A/B or multivariate testing', 'google-site-kit' ),
+				__( 'Improvement tracking', 'google-site-kit' ),
+				__( 'Probability and confidence calculations', 'google-site-kit' ),
+			],
 		}
 	);
 };

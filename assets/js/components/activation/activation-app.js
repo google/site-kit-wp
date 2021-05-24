@@ -54,7 +54,7 @@ export function ActivationApp() {
 		event.preventDefault();
 		await trackEvent( 'plugin_setup', proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
 		navigateTo( buttonURL );
-	}, [ proxySetupURL, buttonURL ] );
+	}, [ proxySetupURL, buttonURL, navigateTo ] );
 
 	if ( ! buttonURL ) {
 		return null;

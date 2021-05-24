@@ -43,7 +43,7 @@ function URLSearchWidget( { Widget } ) {
 		if ( match?.permalink ) {
 			navigateTo( detailsURL );
 		}
-	}, [ detailsURL, match ] );
+	}, [ detailsURL, match, navigateTo ] );
 
 	return (
 		<div className="mdc-layout-grid__cell">

@@ -23,6 +23,7 @@ import API from 'googlesitekit-api';
 import { STORE_NAME, FORM_SETUP, ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import * as fixtures from './__fixtures__';
@@ -31,9 +32,11 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
+import { enabledFeatures } from '../../../features';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 import { createBuildAndReceivers } from '../../tagmanager/datastore/__factories__/utils';
+import { INVARIANT_INVALID_WEBDATASTREAM_ID } from '../../analytics-4/datastore/settings';
 import {
 	INVARIANT_INSUFFICIENT_TAG_PERMISSIONS,
 	INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS,
@@ -41,13 +44,18 @@ import {
 	INVARIANT_INVALID_PROFILE_NAME,
 	INVARIANT_INVALID_PROFILE_SELECTION,
 	INVARIANT_INVALID_PROPERTY_SELECTION,
+	INVARIANT_INVALID_CONVERSION_ID,
 } from './settings';
 
 describe( 'modules/analytics settings', () => {
 	let registry;
 
+	const gaSettingsEndpoint = /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/;
+	const ga4SettingsEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/;
+
 	const validSettings = {
 		accountID: '12345',
+		adsConversionID: '',
 		propertyID: 'UA-12345-1',
 		internalWebPropertyID: '23245',
 		profileID: '54321',
@@ -108,7 +116,7 @@ describe( 'modules/analytics settings', () => {
 					{ body: createdProperty, status: 200 }
 				);
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					gaSettingsEndpoint,
 					( url, opts ) => {
 						const { data } = JSON.parse( opts.body );
 						// Return the same settings passed to the API.
@@ -172,7 +180,7 @@ describe( 'modules/analytics settings', () => {
 					{ body: createdProfile, status: 200 }
 				);
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					gaSettingsEndpoint,
 					( url, opts ) => {
 						const { data } = JSON.parse( opts.body );
 						// Return the same settings passed to the API.
@@ -266,7 +274,7 @@ describe( 'modules/analytics settings', () => {
 					{ body: createdProfile, status: 200 }
 				);
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					gaSettingsEndpoint,
 					( url, opts ) => {
 						const { data } = JSON.parse( opts.body );
 						// Return the same settings passed to the API.
@@ -284,14 +292,14 @@ describe( 'modules/analytics settings', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					gaSettingsEndpoint,
 					{ body: validSettings, status: 200 }
 				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					gaSettingsEndpoint,
 					{ body: { data: validSettings } },
 				);
 				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
@@ -301,14 +309,14 @@ describe( 'modules/analytics settings', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					gaSettingsEndpoint,
 					{ body: error, status: 500 }
 				);
 
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					gaSettingsEndpoint,
 					{ body: { data: validSettings } },
 				);
 				expect( result.error ).toEqual( error );
@@ -319,7 +327,7 @@ describe( 'modules/analytics settings', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					gaSettingsEndpoint,
 					{ body: validSettings, status: 200 }
 				);
 
@@ -330,6 +338,67 @@ describe( 'modules/analytics settings', () => {
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( ( await getItem( cacheKey ) ).value ).toBeFalsy();
+			} );
+
+			describe( 'analytics-4', () => {
+				beforeEach( () => {
+					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+					registry.dispatch( STORE_NAME ).setSettings( validSettings );
+
+					enabledFeatures.add( 'ga4setup' );
+				} );
+
+				it( 'should save analytics-4 settings as well', async () => {
+					const ga4Settings = {
+						propertyID: '1000',
+						webDataStreamID: '2000',
+					};
+
+					fetchMock.postOnce( gaSettingsEndpoint, { body: validSettings, status: 200 } );
+					fetchMock.postOnce( ga4SettingsEndpoint, { body: ga4Settings, status: 200 } );
+
+					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( ga4Settings );
+
+					expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( true );
+					expect( registry.select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ).toBe( true );
+
+					const { error: saveChangesError } = await registry.dispatch( STORE_NAME ).submitChanges();
+					expect( saveChangesError ).toBeUndefined();
+
+					expect( fetchMock ).toHaveFetched( gaSettingsEndpoint, { body: { data: validSettings } } );
+					expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, { body: { data: ga4Settings } } );
+
+					expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+					expect( registry.select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ).toBe( false );
+				} );
+
+				it( 'should ignore analytics-4 errors if it fails', async () => {
+					const ga4Settings = {
+						propertyID: '1000',
+						webDataStreamID: '2000',
+					};
+
+					fetchMock.postOnce( gaSettingsEndpoint, { body: validSettings, status: 200 } );
+					fetchMock.postOnce( ga4SettingsEndpoint, { body: error, status: 500 } );
+
+					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( ga4Settings );
+
+					expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( true );
+					expect( registry.select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ).toBe( true );
+
+					const { error: saveChangesError } = await registry.dispatch( STORE_NAME ).submitChanges();
+					expect( saveChangesError ).toBeUndefined();
+
+					expect( fetchMock ).toHaveFetched( gaSettingsEndpoint, { body: { data: validSettings } } );
+					expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, { body: { data: ga4Settings } } );
+
+					expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+					expect( registry.select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ).toBe( true );
+
+					// @TODO: uncomment the following line once GA4 API is stabilized
+					// expect( registry.select( MODULES_ANALYTICS_4 ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
+					expect( console ).toHaveErrored();
+				} );
 			} );
 		} );
 	} );
@@ -392,6 +461,22 @@ describe( 'modules/analytics settings', () => {
 
 				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_PROFILE_SELECTION );
+			} );
+
+			it( 'requires a valid adsConversionID when provided', () => {
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( tagWithPermission.propertyID );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( tagWithPermission, { propertyID: tagWithPermission.propertyID } );
+
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+
+				registry.dispatch( STORE_NAME ).setAdsConversionID( '12345' );
+
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_CONVERSION_ID );
+
+				registry.dispatch( STORE_NAME ).setAdsConversionID( 'AW-12345' );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 			} );
 
 			it( 'requires permission for GTM Analytics tag if the tag is present', () => {
@@ -506,6 +591,34 @@ describe( 'modules/analytics settings', () => {
 
 				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
+			} );
+
+			describe( 'analytics-4', () => {
+				beforeEach( () => {
+					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+					registry.dispatch( STORE_NAME ).setSettings( validSettings );
+
+					enabledFeatures.add( 'ga4setup' );
+				} );
+
+				it( 'should throw an error if analytics-4 settings are invalid', () => {
+					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+						propertyID: '123456',
+						webDataStreamID: '',
+					} );
+
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_WEBDATASTREAM_ID );
+				} );
+
+				it( 'should not throw if all settings are valid', () => {
+					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+						propertyID: '1000',
+						webDataStreamID: '2000',
+					} );
+
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() ).not.toThrow();
+				} );
 			} );
 		} );
 	} );

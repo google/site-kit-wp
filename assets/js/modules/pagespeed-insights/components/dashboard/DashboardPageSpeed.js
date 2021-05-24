@@ -22,6 +22,7 @@
 import classnames from 'classnames';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
+import { useInView } from 'react-intersection-observer';
 
 /**
  * WordPress dependencies
@@ -41,6 +42,7 @@ import LabReportMetrics from '../common/LabReportMetrics';
 import FieldReportMetrics from '../common/FieldReportMetrics';
 import Recommendations from '../common/Recommendations';
 import ReportDetailsLink from '../common/ReportDetailsLink';
+import { trackEvent } from '../../../../util/tracking';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
@@ -83,19 +85,34 @@ export default function DashboardPageSpeed() {
 	const { setValues } = useDispatch( CORE_UI );
 	const { invalidateResolution } = useDispatch( STORE_NAME );
 
-	const setStrategyMobile = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_MOBILE } ), [] );
-	const setStrategyDesktop = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_DESKTOP } ), [] );
-	const setDataSrcField = useCallback( () => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_FIELD } ), [] );
-	const setDataSrcLab = useCallback( () => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_LAB } ), [] );
+	const setStrategyMobile = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_MOBILE } ), [ setValues ] );
+	const setStrategyDesktop = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_DESKTOP } ), [ setValues ] );
+	const setDataSrcField = useCallback( () => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_FIELD } ), [ setValues ] );
+	const setDataSrcLab = useCallback( () => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_LAB } ), [ setValues ] );
+	const [ trackingRef, inView ] = useInView( { triggerOnce: true, threshold: 0.25 } );
+
+	useEffect( () => {
+		if ( inView ) {
+			trackEvent( 'pagespeed_widget', 'widget_view' );
+			trackEvent( 'pagespeed_widget', 'default_tab_view', dataSrc.replace( 'data_', '' ) );
+		}
+	}, [ inView, dataSrc ] );
 
 	// Update the active tab for "In the Lab" or "In The Field".
 	const updateActiveTab = useCallback( ( dataSrcIndex ) => {
+		let eventLabel;
+
 		if ( dataSrcIndex === 0 ) {
 			setDataSrcLab();
+			eventLabel = 'lab';
 		} else {
 			setDataSrcField();
+			eventLabel = 'field';
 		}
-	}, [] );
+
+		trackEvent( 'pagespeed_widget', 'tab_select', eventLabel );
+	}, [ setDataSrcField, setDataSrcLab ] );
+
 	// Update the active tab for "mobile" or "desktop".
 	const updateActiveDeviceSize = useCallback( ( { slug } ) => {
 		if ( slug === STRATEGY_DESKTOP ) {
@@ -103,7 +120,7 @@ export default function DashboardPageSpeed() {
 		} else {
 			setStrategyMobile();
 		}
-	}, [] );
+	}, [ setStrategyDesktop, setStrategyMobile ] );
 
 	const updateReport = useCallback( async ( event ) => {
 		event.preventDefault();
@@ -121,11 +138,14 @@ export default function DashboardPageSpeed() {
 		if ( reportMobile?.loadingExperience?.metrics && reportDesktop?.loadingExperience?.metrics ) {
 			setDataSrcField();
 		}
-	}, [ reportMobile, reportDesktop ] );
+	}, [ reportMobile, reportDesktop, setDataSrcField ] );
 
 	if ( ! referenceURL || isFetchingMobile || isFetchingDesktop || ! dataSrc ) {
 		return (
-			<div className="mdc-layout-grid">
+			<div
+				id="googlesitekit-pagespeed-header" // Used by jump link.
+				className="mdc-layout-grid"
+			>
 				<div className="mdc-layout-grid__inner">
 					<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 						<ProgressBar />
@@ -143,7 +163,11 @@ export default function DashboardPageSpeed() {
 
 	return (
 		<Fragment>
-			<header className="googlesitekit-pagespeed-widget__header">
+			<header
+				id="googlesitekit-pagespeed-header" // Used by jump link.
+				className="googlesitekit-pagespeed-widget__header"
+				ref={ trackingRef }
+			>
 				<div className="googlesitekit-pagespeed-widget__data-src-tabs">
 					<TabBar
 						activeIndex={ [ DATA_SRC_LAB, DATA_SRC_FIELD ].indexOf( dataSrc ) }

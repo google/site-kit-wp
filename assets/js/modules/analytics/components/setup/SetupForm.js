@@ -32,31 +32,30 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../../components/Button';
-import { STORE_NAME, PROFILE_CREATE, FORM_SETUP, EDIT_SCOPE } from '../../datastore/constants';
+import {
+	SETUP_FLOW_MODE_LEGACY,
+	SETUP_FLOW_MODE_UA,
+	SETUP_FLOW_MODE_GA4,
+	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
+	STORE_NAME,
+	FORM_SETUP,
+	EDIT_SCOPE,
+} from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import {
-	AccountSelect,
-	ExistingGTMPropertyNotice,
-	ExistingTagNotice,
-	ProfileSelect,
-	PropertySelect,
-	ProfileNameTextField,
-} from '../common';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import GA4Notice from '../common/GA4Notice';
 import { trackEvent } from '../../../../util';
 import { isPermissionScopeError } from '../../../../util/errors';
+import SetupFormLegacy from './SetupFormLegacy';
+import SetupFormUA from './SetupFormUA';
+import SetupFormGA4 from './SetupFormGA4';
+import SetupFormGA4Transitional from './SetupFormGA4Transitional';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
 	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ) );
-	// Needed to conditionally show the profile name field and surrounding container.
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( STORE_NAME );
@@ -71,7 +70,7 @@ export default function SetupForm( { finishSetup } ) {
 			await trackEvent( 'analytics_setup', 'analytics_configured' );
 			finishSetup();
 		}
-	}, [ canSubmitChanges, finishSetup ] );
+	}, [ finishSetup, setValues, submitChanges ] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
@@ -83,31 +82,10 @@ export default function SetupForm( { finishSetup } ) {
 
 	return (
 		<form className="googlesitekit-analytics-setup__form" onSubmit={ submitForm }>
-			<GA4Notice />
-			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
-			<ExistingTagNotice />
-			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
-
-			{ ( !! accounts.length && ! hasExistingTag ) && (
-				<p className="googlesitekit-margin-bottom-0">
-					{ __( 'Please select the account information below. You can change this view later in your settings.', 'google-site-kit' ) }
-				</p>
-			) }
-
-			<div className="googlesitekit-setup-module__inputs">
-				<AccountSelect />
-
-				<PropertySelect />
-
-				<ProfileSelect />
-			</div>
-
-			{ profileID === PROFILE_CREATE && (
-				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-					<ProfileNameTextField />
-				</div>
-			) }
-
+			{ setupFlowMode === SETUP_FLOW_MODE_LEGACY && <SetupFormLegacy /> }
+			{ setupFlowMode === SETUP_FLOW_MODE_UA && <SetupFormUA /> }
+			{ setupFlowMode === SETUP_FLOW_MODE_GA4 && <SetupFormGA4 /> }
+			{ setupFlowMode === SETUP_FLOW_MODE_GA4_TRANSITIONAL && <SetupFormGA4Transitional /> }
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitChanges }>
 					{ __( 'Configure Analytics', 'google-site-kit' ) }

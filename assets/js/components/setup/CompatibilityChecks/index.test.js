@@ -96,9 +96,6 @@ describe( 'CompatibilityChecks', () => {
 
 		// Expect neither error nor incomplete text to be displayed.
 		expect( container ).toHaveTextContent( 'Your site may not be ready for Site Kit' );
-
-		// Expect a Google Site Kit API Error.
-		expect( console ).toHaveErrored();
 	} );
 
 	it( 'should make API requests to "setup-checks, health-checks and AMP Project test URL', async () => {

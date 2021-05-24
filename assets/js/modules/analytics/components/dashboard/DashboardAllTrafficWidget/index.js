@@ -37,7 +37,7 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
-import { getURLPath } from '../../../../../util/getURLPath';
+import { getURLPath } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import SourceLink from '../../../../../components/SourceLink';
 import TotalUserCount from './TotalUserCount';
@@ -45,7 +45,7 @@ import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import { isZeroReport } from '../../../util';
-import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
+import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 
 const { useSelect, useDispatch } = Data;
 
@@ -166,19 +166,27 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 		if ( firstLoad && pieChartLoaded && totalUsersLoaded && userCountGraphLoaded ) {
 			setValue( UI_ALL_TRAFFIC_LOADED, true );
 		}
-	}, [ firstLoad, pieChartLoaded, totalUsersLoaded, userCountGraphLoaded ] );
+	}, [ firstLoad, pieChartLoaded, totalUsersLoaded, userCountGraphLoaded, setValue ] );
 
 	if ( pieChartError ) {
-		return <WidgetReportError moduleSlug="analytics" error={ pieChartError } />;
+		return (
+			<Widget>
+				<WidgetReportError moduleSlug="analytics" error={ pieChartError } />
+			</Widget>
+		);
 	}
 
 	if ( isZeroReport( pieChartReport ) ) {
-		return <WidgetReportZero moduleSlug="analytics" />;
+		return (
+			<Widget>
+				<WidgetReportZero moduleSlug="analytics" />
+			</Widget>
+		);
 	}
 
 	return (
 		<Widget
-			className="googlesitekit-widget--footer-v2"
+			className="googlesitekit-widget--footer-v2 googlesitekit-widget__analytics--all-traffic"
 			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"

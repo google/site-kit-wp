@@ -180,6 +180,11 @@
 		}
 	}
 
+	.googlesitekit-data-block__change--no-change {
+		visibility: hidden;
+	}
+
+
 	.googlesitekit-data-block__sparkline {
 		margin-top: $grid-gap-phone / 2;
 		max-width: 150px;

@@ -27,12 +27,16 @@ import isPlainObject from 'lodash/isPlainObject';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../util';
 import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { actions as tagActions } from './tags';
+import { actions as propertyActions } from './properties';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { matchPropertyByURL } from '../util/property';
 const { createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
 
@@ -119,30 +123,40 @@ const baseActions = {
 			.invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
 
-	*selectAccount( accountID ) {
-		invariant( isValidAccountSelection( accountID ), 'A valid accountID is required to select.' );
+	selectAccount: createValidatedAction(
+		( accountID ) => {
+			invariant( isValidAccountSelection( accountID ), 'A valid accountID is required to select.' );
+		},
+		function* ( accountID ) {
+			const registry = yield Data.commonActions.getRegistry();
 
-		const registry = yield Data.commonActions.getRegistry();
+			registry.dispatch( STORE_NAME ).setSettings( {
+				accountID,
+				internalWebPropertyID: '',
+				propertyID: '',
+				profileID: '',
+			} );
 
-		registry.dispatch( STORE_NAME ).setSettings( {
-			accountID,
-			internalWebPropertyID: '',
-			propertyID: '',
-			profileID: '',
-		} );
+			if ( ACCOUNT_CREATE === accountID ) {
+				return;
+			}
 
-		if ( ACCOUNT_CREATE === accountID ) {
-			return;
+			yield propertyActions.waitForProperties( accountID );
+
+			const urls = registry.select( CORE_SITE ).getSiteURLPermutations();
+			const uaProperties = registry.select( STORE_NAME ).getProperties( accountID );
+
+			let uaProperty = matchPropertyByURL( uaProperties, urls );
+			if ( ! uaProperty ) {
+				uaProperty = {
+					id: PROPERTY_CREATE,
+					internalWebPropertyId: '', // eslint-disable-line sitekit/acronym-case
+				};
+			}
+
+			yield propertyActions.selectProperty( uaProperty?.id, uaProperty?.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 		}
-
-		// Trigger cascading selections.
-		const properties = registry.select( STORE_NAME ).getProperties( accountID );
-		if ( properties === undefined ) {
-			return; // Selection will happen in resolver.
-		}
-		const property = properties[ 0 ] || { id: PROPERTY_CREATE };
-		registry.dispatch( STORE_NAME ).selectProperty( property.id );
-	},
+	),
 
 	/**
 	 * Creates a new Analytics account.

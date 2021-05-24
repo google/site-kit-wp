@@ -28,7 +28,7 @@ import {
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
 
-describe( 'modules/adsense report', () => {
+describe( 'modules/search-console report', () => {
 	let registry;
 
 	beforeAll( () => {

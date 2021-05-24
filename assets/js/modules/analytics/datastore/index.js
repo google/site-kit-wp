@@ -30,6 +30,8 @@ import profiles from './profiles';
 import report from './report';
 import tags from './tags';
 import service from './service';
+import setupFlow from './setup-flow';
+
 import { STORE_NAME } from './constants';
 
 const store = Data.combineStores(
@@ -42,7 +44,8 @@ const store = Data.combineStores(
 	report,
 	createSnapshotStore( STORE_NAME ),
 	tags,
-	service
+	service,
+	setupFlow
 );
 
 export const initialState = store.initialState;

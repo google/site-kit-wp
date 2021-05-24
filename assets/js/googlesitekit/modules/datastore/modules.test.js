@@ -779,7 +779,8 @@ describe( 'core/modules modules', () => {
 					},
 				);
 
-				// The modules will be undefined whilst loading, so this will return `undefined`.
+				// The modules will be undefined whilst loading, so this will
+				// return `undefined`.
 				const isConnected = registry.select( STORE_NAME ).isModuleConnected( slug );
 				expect( isConnected ).toBeUndefined();
 
@@ -797,6 +798,32 @@ describe( 'core/modules modules', () => {
 				const isConnected = registry.select( STORE_NAME ).isModuleConnected( 'analytics' );
 
 				expect( isConnected ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'getModuleFeatures', () => {
+			it( 'returns undefined when no modules are loaded', async () => {
+				muteFetch( /^\/google-site-kit\/v1\/core\/modules\/data\/list/, [] );
+				const featuresLoaded = registry.select( STORE_NAME ).getModuleFeatures( 'analytics' );
+
+				// The modules will be undefined whilst loading.
+				expect( featuresLoaded ).toBeUndefined();
+			} );
+
+			it( 'returns features when modules are loaded', async () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( FIXTURES );
+
+				const featuresLoaded = registry.select( STORE_NAME ).getModuleFeatures( 'analytics' );
+
+				expect( featuresLoaded ).toMatchObject( fixturesKeyValue.analytics.features );
+			} );
+
+			it( 'returns an empty object when requesting features for a non-existent module', async () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( FIXTURES );
+
+				const featuresLoaded = registry.select( STORE_NAME ).getModuleFeatures( 'non-existent-slug' );
+
+				expect( featuresLoaded ).toMatchObject( {} );
 			} );
 		} );
 	} );

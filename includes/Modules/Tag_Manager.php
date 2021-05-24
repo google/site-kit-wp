@@ -111,23 +111,6 @@ final class Tag_Manager extends Module
 	}
 
 	/**
-	 * Returns all module information data for passing it to JavaScript.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array Module information data.
-	 */
-	public function prepare_info_for_js() {
-		$info = parent::prepare_info_for_js();
-
-		$info['provides'] = array(
-			__( 'Create tags without updating code', 'google-site-kit' ),
-		);
-
-		return $info;
-	}
-
-	/**
 	 * Checks whether the module is connected.
 	 *
 	 * A module being connected means that all steps required as part of its activation are completed.
@@ -548,7 +531,7 @@ final class Tag_Manager extends Module
 		return array(
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Tag Manager', 'Service name', 'google-site-kit' ),
-			'description' => __( 'Tag Manager creates an easy to manage way to create tags on your site without updating code.', 'google-site-kit' ),
+			'description' => __( 'Tag Manager creates an easy to manage way to create tags on your site without updating code', 'google-site-kit' ),
 			'cta'         => __( 'Tag management made simple.', 'google-site-kit' ),
 			'order'       => 6,
 			'homepage'    => __( 'https://tagmanager.google.com/', 'google-site-kit' ),

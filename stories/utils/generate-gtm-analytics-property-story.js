@@ -49,7 +49,7 @@ export function generateGTMAnalyticsPropertyStory( {
 	gtmPermission = false,
 	setUp = () => {},
 } ) {
-	return () => {
+	return ( args, decorators ) => {
 		const setupRegistry = ( registry ) => {
 			setUp( registry );
 
@@ -140,6 +140,6 @@ export function generateGTMAnalyticsPropertyStory( {
 			} );
 		};
 
-		return <Component callback={ setupRegistry } />;
+		return <Component callback={ setupRegistry } registry={ decorators.registry } />;
 	};
 }

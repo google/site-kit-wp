@@ -26,6 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME, CONTAINER_CREATE } from './constants';
 import { actions as containerActions } from './containers';
@@ -80,53 +81,56 @@ export const baseActions = {
 	 *
 	 * @param {string} accountID Tag Manager account ID to select.
 	 */
-	*selectAccount( accountID ) {
-		invariant( isValidAccountSelection( accountID ), 'A valid accountID selection is required to select.' );
+	selectAccount: createValidatedAction(
+		( accountID ) => {
+			invariant( isValidAccountSelection( accountID ), 'A valid accountID selection is required to select.' );
+		},
+		function* ( accountID ) {
+			const { select, dispatch } = yield Data.commonActions.getRegistry();
 
-		const { select, dispatch } = yield Data.commonActions.getRegistry();
+			// Do nothing if the accountID to select is the same as the current.
+			if ( accountID === select( STORE_NAME ).getAccountID() ) {
+				return;
+			}
 
-		// Do nothing if the accountID to select is the same as the current.
-		if ( accountID === select( STORE_NAME ).getAccountID() ) {
-			return;
+			dispatch( STORE_NAME ).setAccountID( accountID );
+			dispatch( STORE_NAME ).setContainerID( '' );
+			dispatch( STORE_NAME ).setInternalContainerID( '' );
+			dispatch( STORE_NAME ).setAMPContainerID( '' );
+			dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+
+			if ( ACCOUNT_CREATE === accountID || select( STORE_NAME ).hasExistingTag() ) {
+				return;
+			}
+
+			// Containers may not be loaded yet for this account,
+			// and no selections are done in the getContainers resolver, so we wait here.
+			// This will not guarantee that containers exist, as an account may also have no containers
+			// it will simply wait for `getContainers` to be resolved for this account ID.
+			yield containerActions.waitForContainers( accountID );
+			// Trigger cascading selections.
+			const { isAMP, isSecondaryAMP } = select( CORE_SITE );
+			if ( ! isAMP() || isSecondaryAMP() ) {
+				const webContainers = select( STORE_NAME ).getWebContainers( accountID );
+				// eslint-disable-next-line sitekit/acronym-case
+				const webContainer = webContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
+				// eslint-disable-next-line sitekit/acronym-case
+				dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
+				// eslint-disable-next-line sitekit/acronym-case
+				dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
+			}
+
+			if ( isAMP() ) {
+				const ampContainers = select( STORE_NAME ).getAMPContainers( accountID );
+				// eslint-disable-next-line sitekit/acronym-case
+				const ampContainer = ampContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
+				// eslint-disable-next-line sitekit/acronym-case
+				dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
+				// eslint-disable-next-line sitekit/acronym-case
+				dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
+			}
 		}
-
-		dispatch( STORE_NAME ).setAccountID( accountID );
-		dispatch( STORE_NAME ).setContainerID( '' );
-		dispatch( STORE_NAME ).setInternalContainerID( '' );
-		dispatch( STORE_NAME ).setAMPContainerID( '' );
-		dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
-
-		if ( ACCOUNT_CREATE === accountID || select( STORE_NAME ).hasExistingTag() ) {
-			return;
-		}
-
-		// Containers may not be loaded yet for this account,
-		// and no selections are done in the getContainers resolver, so we wait here.
-		// This will not guarantee that containers exist, as an account may also have no containers
-		// it will simply wait for `getContainers` to be resolved for this account ID.
-		yield containerActions.waitForContainers( accountID );
-		// Trigger cascading selections.
-		const { isAMP, isSecondaryAMP } = select( CORE_SITE );
-		if ( ! isAMP() || isSecondaryAMP() ) {
-			const webContainers = select( STORE_NAME ).getWebContainers( accountID );
-			// eslint-disable-next-line sitekit/acronym-case
-			const webContainer = webContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
-		}
-
-		if ( isAMP() ) {
-			const ampContainers = select( STORE_NAME ).getAMPContainers( accountID );
-			// eslint-disable-next-line sitekit/acronym-case
-			const ampContainer = ampContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
-		}
-	},
+	),
 };
 
 export const baseReducer = ( state, { type } ) => {

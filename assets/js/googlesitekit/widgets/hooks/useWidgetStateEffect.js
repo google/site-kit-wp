@@ -36,5 +36,5 @@ export default function useWidgetStateEffect( widgetSlug, Component, metadata ) 
 		return () => {
 			unsetWidgetState( widgetSlug, Component, metadata );
 		};
-	}, [ widgetSlug, Component, metadata ] );
+	}, [ widgetSlug, Component, metadata, setWidgetState, unsetWidgetState ] );
 }

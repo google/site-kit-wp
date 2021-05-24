@@ -68,7 +68,7 @@ export default function SetupModule( {
 			} );
 			setIsSaving( false );
 		}
-	} );
+	}, [ activateModule, navigateTo, slug ] );
 
 	const canActivateModule = useSelect( ( select ) => select( CORE_MODULES ).canActivateModule( slug ) );
 

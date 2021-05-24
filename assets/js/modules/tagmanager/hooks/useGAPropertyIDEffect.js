@@ -36,5 +36,5 @@ export default function useGAPropertyIDEffect() {
 		if ( singleAnalyticsPropertyID !== undefined ) {
 			setGAPropertyID( singleAnalyticsPropertyID || '' );
 		}
-	}, [ singleAnalyticsPropertyID ] );
+	}, [ singleAnalyticsPropertyID, setGAPropertyID ] );
 }

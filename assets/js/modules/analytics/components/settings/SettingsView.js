@@ -44,6 +44,7 @@ export default function SettingsView() {
 	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
 	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const adsConversionID = useSelect( ( select ) => select( STORE_NAME ).getAdsConversionID() );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 	const editViewSettingsURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
@@ -104,10 +105,10 @@ export default function SettingsView() {
 						{ __( 'Analytics Code Snippet', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ canUseSnippet === false && __( 'The code is controlled by the Tag Manager module.', 'google-site-kit' ) }
-						{ canUseSnippet && useSnippet && __( 'Snippet is inserted', 'google-site-kit' ) }
-						{ canUseSnippet && ! useSnippet && ! hasExistingTag && __( 'Snippet is not inserted', 'google-site-kit' ) }
-						{ canUseSnippet && ! useSnippet && hasExistingTag && __( 'Inserted by another plugin or theme', 'google-site-kit' ) }
+						{ canUseSnippet === false && <span>{ __( 'The code is controlled by the Tag Manager module.', 'google-site-kit' ) }</span> }
+						{ canUseSnippet && useSnippet && <span>{ __( 'Snippet is inserted', 'google-site-kit' ) }</span> }
+						{ canUseSnippet && ! useSnippet && ! hasExistingTag && <span>{ __( 'Snippet is not inserted', 'google-site-kit' ) }</span> }
+						{ canUseSnippet && ! useSnippet && hasExistingTag && <span>{ __( 'Inserted by another plugin or theme', 'google-site-kit' ) }</span> }
 					</p>
 				</div>
 			</div>
@@ -119,8 +120,8 @@ export default function SettingsView() {
 							{ __( 'IP Address Anonymization', 'google-site-kit' ) }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
-							{ anonymizeIP && __( 'IP addresses are being anonymized', 'google-site-kit' ) }
-							{ ! anonymizeIP && __( 'IP addresses are not being anonymized', 'google-site-kit' ) }
+							{ anonymizeIP && <span>{ __( 'IP addresses are being anonymized', 'google-site-kit' ) }</span> }
+							{ ! anonymizeIP && <span>{ __( 'IP addresses are not being anonymized', 'google-site-kit' ) }</span> }
 						</p>
 					</div>
 				</div>
@@ -141,6 +142,24 @@ export default function SettingsView() {
 					</p>
 				</div>
 			</div>
+
+			{ canUseSnippet && useSnippet && (
+				<div className="googlesitekit-settings-module__meta-items">
+					<div className="googlesitekit-settings-module__meta-item">
+						<h5 className="googlesitekit-settings-module__meta-item-type">
+							{ __( 'Ads Conversion ID', 'google-site-kit' ) }
+						</h5>
+						<p className="googlesitekit-settings-module__meta-item-data">
+							{
+								adsConversionID
+									? <DisplaySetting value={ adsConversionID } />
+									: __( 'None', 'google-site-kit' )
+							}
+						</p>
+					</div>
+				</div>
+			) }
+
 		</div>
 	);
 }

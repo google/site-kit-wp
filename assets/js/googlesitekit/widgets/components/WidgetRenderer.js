@@ -37,7 +37,7 @@ import { HIDDEN_CLASS } from '../util/constants';
 
 const { useSelect } = Data;
 
-const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
+const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 	const widget = useSelect( ( select ) => select( STORE_NAME ).getWidget( slug ) );
 	const widgetComponentProps = getWidgetComponentProps( slug );
 	const { Widget, WidgetNull } = widgetComponentProps;
@@ -72,21 +72,11 @@ const WidgetRenderer = ( { slug, gridClassName, OverrideComponent } ) => {
 		widgetElement = <Widget>{ widgetElement }</Widget>;
 	}
 
-	// Wrap the widget into a grid class.
-	if ( gridClassName ) {
-		return (
-			<div className={ gridClassName }>
-				{ widgetElement }
-			</div>
-		);
-	}
-
 	return widgetElement;
 };
 
 WidgetRenderer.propTypes = {
 	slug: PropTypes.string.isRequired,
-	gridClassName: PropTypes.string,
 	OverrideComponent: PropTypes.elementType,
 };
 

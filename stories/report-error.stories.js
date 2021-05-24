@@ -29,7 +29,7 @@ import ReportError from '../assets/js/components/ReportError';
 
 const error = {
 	code: 'test-error-code',
-	message: 'Test error message.',
+	message: 'Test error message',
 	data: {},
 };
 

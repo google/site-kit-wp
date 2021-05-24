@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -27,7 +28,7 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
 import Accordion from '../../../../components/Accordion';
-import { sanitizeHTML, markdownToHTML } from '../../../../util';
+import { sanitizeHTML, markdownToHTML, trackEvent } from '../../../../util';
 const { useSelect } = Data;
 
 export default function Recommendation( props ) {
@@ -37,6 +38,10 @@ export default function Recommendation( props ) {
 		referenceURL,
 		strategy,
 	} = props;
+
+	const onOpen = useCallback( () => {
+		trackEvent( 'pagespeed_widget', 'stack_pack_expand', auditID );
+	}, [ auditID ] );
 
 	const stackPack = useSelect( ( select ) => select( STORE_NAME ).getStackPackDescription( referenceURL, strategy, auditID, 'wordpress' ) );
 	if ( ! stackPack ) {
@@ -50,7 +55,7 @@ export default function Recommendation( props ) {
 	};
 
 	return (
-		<Accordion id={ auditID } title={ title }>
+		<Accordion id={ auditID } title={ title } onOpen={ onOpen }>
 			<div dangerouslySetInnerHTML={ sanitizeHTML( content, sanitizeArgs ) } />
 		</Accordion>
 	);

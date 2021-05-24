@@ -22,25 +22,37 @@
 import fs from 'fs';
 import path from 'path';
 
-const directories = ( relativePath ) => fs.readdirSync( path.join( __dirname, relativePath ) )
-	.filter( ( name ) => fs.lstatSync( path.join( __dirname, relativePath, name ) ).isDirectory() );
+function directories( relativePath ) {
+	const dir = path.join( __dirname, relativePath );
+	if ( ! fs.existsSync( dir ) ) {
+		return [];
+	}
 
-const getComponentNames = ( componentPath ) => fs.readdirSync( componentPath )
-	.filter( ( name ) => ! /^index|\.test\.js$/.test( name ) )
-	.map( ( name ) => name.replace( /\..*/, '' ) );
+	return fs.readdirSync( dir, { withFileTypes: true } )
+		.filter( ( file ) => file.isDirectory() )
+		.map( ( file ) => file.name );
+}
+
+function getComponentNames( componentPath ) {
+	return fs.readdirSync( componentPath )
+		.filter( ( name ) => ! /^index|\.(stories|test)\.js$/.test( name ) )
+		.map( ( name ) => name.replace( /\..*/, '' ) );
+}
 
 describe( 'all modules', () => {
-	describe.each( directories( '.' ) )( `%s`, ( moduleSlug ) => {
-		describe.each( directories( `${ moduleSlug }/components` ) )( `components/%s`, ( componentDir ) => {
-			const componentDirPath = path.join( __dirname, moduleSlug, 'components', componentDir );
+	describe.each( directories( '.' ) )( '%s', ( moduleSlug ) => {
+		const components = directories( `${ moduleSlug }/components` );
+		if ( ! components.length ) {
+			return;
+		}
 
-			it( 'has an index module with all components exported', () => {
-				// eslint-disable-next-line no-unused-vars
-				const { default: _, ...indexExports } = require( `${ componentDirPath }/index.js` );
-				const indexExportNames = Object.keys( indexExports ).sort();
-				const componentNames = getComponentNames( componentDirPath ).sort();
-				expect( indexExportNames ).toEqual( componentNames );
-			} );
+		it.each( components )( 'components/%s has an index module with all components exported', ( componentDir ) => {
+			const componentDirPath = path.join( __dirname, moduleSlug, 'components', componentDir );
+			const { default: _, ...indexExports } = require( `${ componentDirPath }/index.js` ); // eslint-disable-line no-unused-vars
+			const indexExportNames = Object.keys( indexExports ).sort();
+			const componentNames = getComponentNames( componentDirPath ).sort();
+
+			expect( indexExportNames ).toEqual( componentNames );
 		} );
 	} );
 } );

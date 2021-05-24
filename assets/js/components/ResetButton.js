@@ -49,11 +49,14 @@ function ResetButton( { children } ) {
 	 * the navigate call starting, we will just set a debounce to keep the spinner for 3 seconds.
 	 */
 	const debouncedSetInProgress = useDebounce( setInProgress, 3000 );
-	const mediatedSetInProgress = ( bool ) => bool ? setInProgress( true ) : debouncedSetInProgress( false );
 
 	useEffect( () => {
-		mediatedSetInProgress( isDoingReset || isNavigatingToPostResetURL );
-	}, [ isDoingReset, isNavigatingToPostResetURL ] );
+		if ( isDoingReset || isNavigatingToPostResetURL ) {
+			setInProgress( true );
+		} else {
+			debouncedSetInProgress( false );
+		}
+	}, [ isDoingReset, isNavigatingToPostResetURL, debouncedSetInProgress ] );
 
 	useEffect( () => {
 		const handleCloseModal = ( event ) => {
@@ -84,7 +87,7 @@ function ResetButton( { children } ) {
 		await reset();
 		clearWebStorage();
 		navigateTo( postResetURL );
-	}, [ reset, postResetURL ] );
+	}, [ reset, postResetURL, navigateTo ] );
 
 	const toggleDialogActive = useCallback( () => {
 		setDialogActive( ! dialogActive );

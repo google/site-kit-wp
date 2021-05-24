@@ -90,10 +90,11 @@ export const createInfoStore = ( slug, {
 				return undefined;
 			}
 
-			const noSetupQueryArgs = ! requiresSetup ? {
-				notification: 'authentication_success',
-				reAuth: undefined,
-			} : {};
+			const noSetupQueryArgs = {};
+			if ( ! requiresSetup && reAuth === true ) {
+				noSetupQueryArgs.notification = 'authentication_success';
+				noSetupQueryArgs.reAuth = undefined;
+			}
 
 			const redirectURL = select( storeName ).getAdminScreenURL( { slug, reAuth, ...noSetupQueryArgs } );
 			if ( redirectURL === undefined ) {

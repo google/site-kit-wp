@@ -132,7 +132,7 @@ export default function SettingsView() {
 								{ __( 'Web Stories Ad Unit', 'google-site-kit' ) }
 							</h5>
 							<p className="googlesitekit-settings-module__meta-item-data">
-								{ ! webStoriesAdUnit && __( 'None', 'google-site-kit' ) }
+								{ ! webStoriesAdUnit && <span>{ __( 'None', 'google-site-kit' ) }</span> }
 								{ webStoriesAdUnit && <DisplaySetting value={ webStoriesAdUnit } /> }
 							</p>
 						</div>

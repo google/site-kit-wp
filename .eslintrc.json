@@ -2,7 +2,8 @@
   "extends": [
     "plugin:@wordpress/eslint-plugin/recommended-with-formatting",
     "plugin:jest/recommended",
-    "plugin:sitekit/main"
+    "plugin:sitekit/main",
+    "plugin:react-hooks/recommended"
   ],
   "env": {
     "browser": true,
@@ -52,7 +53,8 @@
       {
         "allowedTextDomain": "google-site-kit"
       }
-    ]
+    ],
+    "quotes": ["error", "single", { "allowTemplateLiterals": true, "avoidEscape": true }]
   },
   "overrides": [
     {
@@ -98,6 +100,7 @@
   "plugins": [
     "filenames",
     "sitekit",
-    "jsdoc"
+    "jsdoc",
+    "react-hooks"
   ]
 }

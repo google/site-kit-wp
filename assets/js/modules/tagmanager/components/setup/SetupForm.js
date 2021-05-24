@@ -32,7 +32,6 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, FORM_SETUP, EDIT_SCOPE, SETUP_MODE_WITH_ANALYTICS } from '../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
@@ -61,7 +60,6 @@ export default function SetupForm( { finishSetup } ) {
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { submitChanges } = useDispatch( STORE_NAME );
-	const dispatchAnalytics = useDispatch( MODULES_ANALYTICS );
 	const submitForm = useCallback( async ( { submitMode } = {} ) => {
 		const throwOnError = async ( func ) => {
 			const { error } = await func() || {};
@@ -100,7 +98,7 @@ export default function SetupForm( { finishSetup } ) {
 		}
 		// Mark the submit as no longer in progress in all cases.
 		setValues( FORM_SETUP, { submitInProgress: false } );
-	}, [ finishSetup, dispatchAnalytics, singleAnalyticsPropertyID, analyticsModuleActive ] );
+	}, [ finishSetup, analyticsModuleActive, activateModule, submitChanges, setValues ] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.

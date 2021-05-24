@@ -72,7 +72,7 @@ function ModulesList( { moduleSlugs } ) {
 
 		// Redirect to ReAuthentication URL
 		navigateTo( response.moduleReauthURL );
-	}, [ activateModule ] );
+	}, [ activateModule, navigateTo ] );
 
 	if ( ! modulesData ) {
 		return null;
@@ -88,7 +88,8 @@ function ModulesList( { moduleSlugs } ) {
 	// Filter out internal modules and remove modules with dependencies.
 	const modules = Object.values( moduleObjects )
 		.filter( ( module ) => ! module.internal && 0 === module.dependencies.length )
-		.sort( ( module1, module2 ) => module1.sort - module2.sort );
+		.sort( ( a, b ) => a.order - b.order )
+	;
 
 	return (
 		<div className="googlesitekit-modules-list">

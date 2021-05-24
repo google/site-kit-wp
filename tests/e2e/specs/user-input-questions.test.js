@@ -33,6 +33,7 @@ import {
 	enableFeature,
 	pageWait,
 	step,
+	setSearchConsoleProperty,
 } from '../utils';
 
 describe( 'User Input Settings', () => {
@@ -111,7 +112,11 @@ describe( 'User Input Settings', () => {
 				request.respond( {
 					status: 302,
 					headers: {
-						location: createURL( '/wp-admin/index.php', 'oauth2callback=1&code=valid-test-code' ),
+						location: createURL( '/wp-admin/index.php', [
+							'oauth2callback=1',
+							'code=valid-test-code',
+							'e2e-site-verification=1',
+						].join( '&' ) ),
 					},
 				} );
 			} else if ( url.match( '/google-site-kit/v1/core/user/data/user-input-settings' ) ) {
@@ -126,13 +131,11 @@ describe( 'User Input Settings', () => {
 
 	beforeEach( async () => {
 		await enableFeature( 'userInput' );
-		await setupSiteKit();
 		await activatePlugins(
 			'e2e-tests-oauth-callback-plugin',
-			'e2e-tests-site-verification-plugin',
-			'e2e-tests-proxy-credentials-plugin',
 			'e2e-tests-user-input-settings-api-mock',
 		);
+		await setSearchConsoleProperty();
 	} );
 
 	afterEach( async () => {
@@ -145,7 +148,6 @@ describe( 'User Input Settings', () => {
 			'visit splash screen',
 			visitAdminPage( 'admin.php', 'page=googlesitekit-splash' ),
 		);
-
 		await step(
 			'click on start setup button and wait for navigation',
 			Promise.all( [
@@ -158,6 +160,8 @@ describe( 'User Input Settings', () => {
 	} );
 
 	it( 'should offer to enter input settings for existing users', async () => {
+		await setupSiteKit();
+
 		await step(
 			'visit admin dashboard',
 			visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' ),
@@ -178,6 +182,8 @@ describe( 'User Input Settings', () => {
 	} );
 
 	it( 'should let existing users enter input settings from the settings page', async () => {
+		await setupSiteKit();
+
 		await step(
 			'visit admin settings',
 			async () => {

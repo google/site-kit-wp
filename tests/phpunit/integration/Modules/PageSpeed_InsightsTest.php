@@ -30,32 +30,6 @@ class PageSpeed_InsightsTest extends TestCase {
 		$this->assertTrue( $pagespeed->is_connected() );
 	}
 
-	public function test_prepare_info_for_js() {
-		$pagespeed = new PageSpeed_Insights( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$info = $pagespeed->prepare_info_for_js();
-
-		$this->assertEqualSets(
-			array(
-				'slug',
-				'name',
-				'description',
-				'cta',
-				'sort',
-				'homepage',
-				'learnMore',
-				'required',
-				'autoActivate',
-				'internal',
-				'screenID',
-				'settings',
-				'provides',
-			),
-			array_keys( $info )
-		);
-		$this->assertEquals( 'pagespeed-insights', $info['slug'] );
-	}
-
 	public function test_get_datapoints() {
 		$pagespeed = new PageSpeed_Insights( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 

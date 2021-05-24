@@ -22,9 +22,22 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Tag_GuardTest extends TestCase {
 
-	public function test_can_activate() {
-		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$guard    = new Tag_Guard( $settings );
+	/**
+	 * Settings object.
+	 *
+	 * @var Settings
+	 */
+	private $settings;
+
+	/**
+	 * Tag_Guard object.
+	 *
+	 * @var Tag_Guard
+	 */
+	private $guard;
+
+	public function setUp() {
+		parent::setUp();
 
 		update_option(
 			Settings::OPTION,
@@ -34,32 +47,29 @@ class Tag_GuardTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( $guard->can_activate() );
+		$this->settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$this->guard    = new Tag_Guard( $this->settings );
 	}
 
-	public function test_cant_activate() {
-		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$guard    = new Tag_Guard( $settings );
+	public function test_can_activate() {
+		$this->assertTrue( $this->guard->can_activate() );
+	}
 
-		update_option(
-			Settings::OPTION,
-			array(
-				'clientID'   => 'test-client-id',
-				'useSnippet' => false,
-			)
-		);
+	public function test_cant_activate_when_usesnippet_is_falsy() {
+		$this->settings->merge( array( 'useSnippet' => false ) );
+		$this->assertFalse( $this->guard->can_activate(), 'Should return FALSE when useSnippet has negative value.' );
+	}
 
-		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when useSnippet has negative value.' );
+	public function test_cant_activate_when_clientid_is_invalid() {
+		$this->settings->merge( array( 'clientID' => '' ) );
+		$this->assertFalse( $this->guard->can_activate(), 'Should return FALSE when clientID is empty.' );
+	}
 
-		update_option(
-			Settings::OPTION,
-			array(
-				'clientID'   => '',
-				'useSnippet' => true,
-			)
-		);
+	public function test_cant_activate_on_404() {
+		$this->go_to( '/?p=123456789' );
 
-		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when clientID is empty.' );
+		$this->assertQueryTrue( 'is_404' );
+		$this->assertFalse( $this->guard->can_activate(), 'Should return FALSE when the current page doesnt exist (is_404).' );
 	}
 
 }

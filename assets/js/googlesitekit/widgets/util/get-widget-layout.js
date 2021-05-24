@@ -19,65 +19,49 @@
 /**
  * Internal dependencies
  */
-import { WIDTH_GRID_COUNTER_MAP, WIDTH_GRID_CLASS_MAP } from './constants';
+import { WIDTH_GRID_COUNTER_MAP } from './constants';
 import { isInactiveWidgetState } from './is-inactive-widget-state';
 
 /**
- * Adjusts class names to better fit into the current row knowing that the default sizes don't fill the row completely.
+ * Adjusts column widths to better fit into the current row knowing that the default sizes don't fill the row completely.
  *
  * @since 1.21.0
  *
- * @param {Array.<string>} classNames   Current class names.
  * @param {Array.<number>} columnWidths Current column widths.
  * @param {number}         counter      Current counter.
- * @return {Array} Array where the first element is the updated list of class
- *                 names, the second element is the updated list of column
- *                 widths, and the third element is the resulting counter
+ * @return {Array} Array where the first element is the updated list of column
+ *                 widths, and the second element is the resulting counter
  *                 after the update.
  */
-function resizeClasses( classNames, columnWidths, counter ) {
+function resizeColumns( columnWidths, counter ) {
 	// Safeguard: counter must always be 9 for this to work.
 	if ( counter !== 9 ) {
-		return [ classNames, columnWidths, counter ];
+		return [ columnWidths, counter ];
 	}
-
-	classNames = [ ...classNames ];
 	columnWidths = [ ...columnWidths ];
 
 	// Start counting backwards from the last item.
-	let i = classNames.length - 1;
+	let i = columnWidths.length - 1;
 
 	// Go back until counter is 0. The i >= 0 check is an extra safeguard that, with
 	// correct usage should never apply, but is still useful to avoid infinite loops
 	// if the function was used incorrectly.
 	while ( counter !== 0 && i >= 0 ) {
-		// Skip any classNames that are `null`; this happens when the component itself
-		// renders `null`.
-		if ( ! classNames[ i ] || ! Array.isArray( classNames[ i ] ) ) {
-			i--;
-			continue;
-		}
-
-		const singleWidgetClassNames = [ ...classNames[ i ] ];
-
-		// Replace the 3-column class with a 4-column class, or the 6-column
-		// class with an 8-column class so that the overall row expands from
+		// Replace the 3-column width with a 4-column width, or the 6-column
+		// width with an 8-column width so that the overall row expands from
 		// 9 to the full 12 columns.
-		if ( singleWidgetClassNames.includes( 'mdc-layout-grid__cell--span-3-desktop' ) ) {
-			singleWidgetClassNames[ singleWidgetClassNames.indexOf( 'mdc-layout-grid__cell--span-3-desktop' ) ] = 'mdc-layout-grid__cell--span-4-desktop';
+		if ( columnWidths[ i ] === 3 ) {
 			counter -= 3;
 			columnWidths[ i ] = 4; // Correct the column width.
-		} else if ( singleWidgetClassNames.includes( 'mdc-layout-grid__cell--span-6-desktop' ) ) {
-			singleWidgetClassNames[ singleWidgetClassNames.indexOf( 'mdc-layout-grid__cell--span-6-desktop' ) ] = 'mdc-layout-grid__cell--span-8-desktop';
+		} else if ( columnWidths[ i ] === 6 ) {
 			counter -= 6;
 			columnWidths[ i ] = 8; // Correct the column width.
 		}
 
-		classNames[ i ] = singleWidgetClassNames; // Correct the class names.
 		i--;
 	}
 
-	return [ classNames, columnWidths, counter ];
+	return [ columnWidths, counter ];
 }
 
 /**
@@ -126,7 +110,7 @@ function getNextActiveWidget( offset, widgets, widgetStates ) {
  *
  * @param {Array.<Object>} widgets      List of widgets.
  * @param {Array.<Object>} widgetStates List of widget states.
- * @return {Object} Object with `classNames`, `columnWidths` and `rowIndexes`
+ * @return {Object} Object with `columnWidths` and `rowIndexes`
  *                  properties, each of which is an array with one item for
  *                  each active widget.
  */
@@ -134,7 +118,6 @@ export function getWidgetLayout( widgets, widgetStates ) {
 	let counter = 0;
 	let rowIndex = 0;
 
-	let classNames = [].fill( null, 0, widgets.length );
 	let columnWidths = [];
 	const rowIndexes = [];
 
@@ -144,9 +127,9 @@ export function getWidgetLayout( widgets, widgetStates ) {
 
 	widgets.forEach( ( widget, i ) => {
 		// If a widget is inactive, we set null / 0 values and don't need to calculate a layout.
+
 		if ( isInactiveWidgetState( widgetStates[ widget.slug ] ) ) {
 			columnWidths.push( 0 );
-			classNames[ i ] = null;
 			rowIndexes.push( rowIndex );
 			return;
 		}
@@ -176,9 +159,7 @@ export function getWidgetLayout( widgets, widgetStates ) {
 		// Grab the width of the first size in the sizes list, it's either the default one or the best suiting to the current row.
 		const width = sizes[ 0 ].width;
 
-		// Populate initial column width and row index for the widget.
-		// These may be corrected below in certain situations.
-		columnWidths.push( WIDTH_GRID_COUNTER_MAP[ width ] );
+		// Populate row index for the widget. The value may be corrected further below.
 		rowIndexes.push( rowIndex );
 
 		// Increase column counter based on width.
@@ -196,7 +177,7 @@ export function getWidgetLayout( widgets, widgetStates ) {
 			// If the column count without the overflowing widget is exactly 9, expand
 			// the widths of these widgets slightly to fill the entire 12 columns.
 			if ( counter === 9 ) {
-				[ classNames, columnWidths, counter ] = resizeClasses( classNames, columnWidths, counter );
+				[ columnWidths, counter ] = resizeColumns( columnWidths, counter );
 			}
 
 			// See above, initial counter for the next row of widgets.
@@ -208,15 +189,15 @@ export function getWidgetLayout( widgets, widgetStates ) {
 			rowIndex++;
 		}
 
-		// Actually set the class for the current widget. This must be set after
-		// potentially resizing classes, since in that case this will be the overflowing
+		// Actually set the columnWidth for the current widget. This must be set after
+		// potentially resizing, since in that case this will be the overflowing
 		// widget which should NOT be adjusted because it will be in the next row.
-		classNames[ i ] = WIDTH_GRID_CLASS_MAP[ width ];
+		columnWidths.push( WIDTH_GRID_COUNTER_MAP[ width ] );
 	} );
 
 	if ( counter === 9 ) {
-		[ classNames, columnWidths, counter ] = resizeClasses( classNames, columnWidths, counter );
+		[ columnWidths, counter ] = resizeColumns( columnWidths, counter );
 	}
 
-	return { classNames, columnWidths, rowIndexes };
+	return { columnWidths, rowIndexes };
 }

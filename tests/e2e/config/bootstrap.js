@@ -184,6 +184,14 @@ function observeConsoleLogging() {
 			return;
 		}
 
+		// WordPress 5.3 logs when a block is saved and causes console logs
+		// that should not cause failures.
+		if (
+			text.startsWith( 'Block successfully updated for' )
+		) {
+			return;
+		}
+
 		// As of WordPress 5.3.2 in Chrome 79, navigating to the block editor
 		// (Posts > Add New) will display a console warning about
 		// non - unique IDs.

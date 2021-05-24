@@ -101,13 +101,13 @@ describe( 'ProfileSelect', () => {
 	afterEach( () => apiFetchMock.mockClear() );
 	afterAll( () => jest.restoreAllMocks() );
 
-	it( 'should render an option for each analytics profile of the currently selected account and property.', async () => {
+	it( 'should render an option for each profile of the currently selected account and property.', async () => {
 		const { getAllByRole } = render( <ProfileSelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		// Note: we do length + 1 here because there should also be an item for
 		// "Set up a new property".
-		expect( listItems ).toHaveLength( fixtures.accountsPropertiesProfiles.profiles.length + 1 );
+		expect( listItems ).toHaveLength( fixtures.propertiesProfiles.profiles.length + 1 );
 	} );
 
 	it( 'should display profile options of an existing account when present, and not be disabled.', async () => {

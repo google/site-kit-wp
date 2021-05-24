@@ -1,0 +1,22 @@
+[
+  {
+    "account": "accounts/123456789",
+    "displayName": "Example Org",
+    "name": "accountSummaries/123456789",
+    "_id": "123456789",
+    "propertySummaries": []
+  },
+  {
+    "account": "accounts/987654321",
+    "displayName": "Example Com",
+    "name": "accountSummaries/987654321",
+    "propertySummaries": [
+      {
+        "displayName": "Example Property",
+        "property": "properties/1122334455",
+        "_id": "1122334455"
+      }
+    ],
+    "_id": "987654321"
+  }
+]

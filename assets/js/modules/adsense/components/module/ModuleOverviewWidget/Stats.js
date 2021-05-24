@@ -130,9 +130,10 @@ const Stats = ( {
 			<Row>
 				<Cell size={ 12 }>
 					<GoogleChart
-						chartType="line"
-						selectedStats={ [ selectedStats ] }
+						chartType="LineChart"
 						data={ dataMap }
+						loadingHeight="270px"
+						loadingWidth="100%"
 						options={ options }
 					/>
 				</Cell>

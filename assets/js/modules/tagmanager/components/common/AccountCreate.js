@@ -42,7 +42,7 @@ export default function AccountCreate() {
 	const { resetAccounts } = useDispatch( STORE_NAME );
 	const refetchAccountsHandler = useCallback( () => {
 		resetAccounts();
-	} );
+	}, [ resetAccounts ] );
 
 	const createAccountHandler = useCallback( () => {
 		// Need to use window.open for this to allow for stubbing in E2E.

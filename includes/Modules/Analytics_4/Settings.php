@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 /**
  * Class for Analytics 4 settings.
  *
- * @since n.e.x.t
+ * @since 1.30.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 */
 	public function register() {
 		parent::register();
@@ -40,13 +40,15 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Returns keys for owned settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return array An array of keys for owned settings.
 	 */
 	public function get_owned_keys() {
 		return array(
-			'accountID',
+			// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
+			/* 'accountID', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+			/* 'adsConversionID', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 			'propertyID',
 			'webDataStreamID',
 			'measurementID',
@@ -56,14 +58,16 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return array
 	 */
 	protected function get_default() {
 		return array(
 			'ownerID'         => 0,
-			'accountID'       => '',
+			// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
+			/* 'accountID'       => '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+			/* 'adsConversionID' => '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 			'propertyID'      => '',
 			'webDataStreamID' => '',
 			'measurementID'   => '',
@@ -74,7 +78,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.30.0
 	 *
 	 * @return callable|null
 	 */

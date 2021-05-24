@@ -16,10 +16,11 @@
  * limitations under the License.
  */
 
-export const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
+export const AMP_PROJECT_TEST_URL = 'https://cdn.ampproject.org/v0.js';
+export const ERROR_AMP_CDN_RESTRICTED = 'amp_cdn_restricted';
+export const ERROR_API_UNAVAILABLE = 'check_api_unavailable';
 export const ERROR_FETCH_FAIL = 'check_fetch_failed';
 export const ERROR_GOOGLE_API_CONNECTION_FAIL = 'google_api_connection_fail';
-export const ERROR_AMP_CDN_RESTRICTED = 'amp_cdn_restricted';
-export const ERROR_WP_PRE_V5 = 'wp_pre_v5';
+export const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
 export const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
-export const AMP_PROJECT_TEST_URL = 'https://cdn.ampproject.org/v0.js';
+export const ERROR_WP_PRE_V5 = 'wp_pre_v5';

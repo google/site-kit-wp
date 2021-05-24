@@ -136,7 +136,7 @@ class Google_Proxy {
 		$params      = array_merge( $params, $user_fields );
 
 		$params['application_name'] = rawurlencode( self::get_application_name() );
-		$params['hl']               = get_user_locale();
+		$params['hl']               = $this->context->get_locale( 'user' );
 
 		return add_query_arg( $params, $this->url( self::SETUP_URI ) );
 	}
@@ -159,7 +159,7 @@ class Google_Proxy {
 		}
 
 		$query_args['application_name'] = rawurlencode( self::get_application_name() );
-		$query_args['hl']               = get_user_locale();
+		$query_args['hl']               = $this->context->get_locale( 'user' );
 
 		return add_query_arg( $query_args, $this->url( self::PERMISSIONS_URI ) );
 	}

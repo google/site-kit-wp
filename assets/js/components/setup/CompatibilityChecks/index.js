@@ -45,8 +45,8 @@ const createCompatibilityChecks = ( registry ) => {
 
 	return [
 		checkHostname,
-		registryCheckSetupTag( registry ),
 		checkHealthChecks,
+		registryCheckSetupTag( registry ),
 		checkAMPConnectivity,
 		checkWPVersion,
 	];

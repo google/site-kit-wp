@@ -21,7 +21,7 @@
  */
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
-import { getDateString } from './utils';
+import { getDateString } from '../../../util/date-range';
 
 describe( 'core/user date-range', () => {
 	let registry;

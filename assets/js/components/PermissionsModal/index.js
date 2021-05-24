@@ -55,7 +55,7 @@ const PermissionsModal = () => {
 		// authorization page, do that first.
 		await snapshotAllStores( registry );
 		navigateTo( connectURL );
-	}, [ registry, connectURL ] );
+	}, [ registry, connectURL, navigateTo ] );
 
 	useEffect( () => {
 		// If error has flag to skip the modal, redirect to the authorization

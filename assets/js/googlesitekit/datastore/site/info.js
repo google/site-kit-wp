@@ -32,7 +32,7 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
-import { getLocale } from '../../../util/i18n';
+import { getLocale, normalizeURL, untrailingslashit } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
@@ -508,6 +508,48 @@ export const selectors = {
 	 * @return {(boolean|undefined)} `true` if the Web Stories plugin is enabled, `false` if not. Returns `undefined` if not loaded.
 	 */
 	isWebStoriesActive: getSiteInfoProperty( 'webStoriesActive' ),
+
+	/**
+	 * Determines whether the provided URL matches reference site URL or not.
+	 *
+	 * @since 1.32.0
+	 *
+	 * @param {string} url The URL to compare with the reference site URL.
+	 * @return {boolean} TRUE if the URL matches reference site URL, otherwise FALSE.
+	 */
+	isSiteURLMatch: createRegistrySelector( ( select ) => ( state, url ) => {
+		const referenceURL = select( STORE_NAME ).getReferenceSiteURL();
+		return normalizeURL( referenceURL ) === normalizeURL( url );
+	} ),
+
+	/**
+	 * Gets an array with site URL permutations.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array.<string>} An array with permutations.
+	 */
+	getSiteURLPermutations: createRegistrySelector( ( select ) => () => {
+		const referenceURL = select( STORE_NAME ).getReferenceSiteURL();
+		const permutations = [];
+
+		const url = new URL( referenceURL );
+		url.hostname = url.hostname.replace( /^www\./i, '' );
+
+		url.protocol = 'http';
+		permutations.push( untrailingslashit( url ) );
+
+		url.protocol = 'https';
+		permutations.push( untrailingslashit( url ) );
+
+		url.hostname = 'www.' + url.hostname;
+		permutations.push( untrailingslashit( url ) );
+
+		url.protocol = 'http';
+		permutations.push( untrailingslashit( url ) );
+
+		return permutations;
+	} ),
 };
 
 export default {

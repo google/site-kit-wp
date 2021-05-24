@@ -62,10 +62,10 @@ export default function SettingsForm() {
 			__( 'Site Kit detected AdSense code for a different account %s on your site. For a better ads experience, you should remove AdSense code that’s not linked to this AdSense account.', 'google-site-kit' ),
 			parseAccountID( existingTag )
 		);
-		uncheckedMessage = __( 'By not placing the code, AdSense will not show ads on your website unless you’ve already got some AdSense code.', 'google-site-kit' );
+		uncheckedMessage = __( 'Please note that AdSense will not show ads on your website unless you’ve already placed the code.', 'google-site-kit' );
 	} else {
 		// No existing tag.
-		uncheckedMessage = __( 'By not placing the code, AdSense will not show ads on your website unless you’ve already got some AdSense code.', 'google-site-kit' );
+		uncheckedMessage = __( 'Please note that AdSense will not show ads on your website unless you’ve already placed the code.', 'google-site-kit' );
 	}
 
 	const supportURL = 'https://support.google.com/adsense/answer/10175505#create-an-ad-unit-for-web-stories';
