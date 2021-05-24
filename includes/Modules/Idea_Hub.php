@@ -253,6 +253,7 @@ final class Idea_Hub extends Module
 					add_filter( 'wp_insert_post_empty_content', '__return_false' );
 
 					$post_id = wp_insert_post( array(), false );
+					remove_filter( 'wp_insert_post_empty_content', '__return_false' );
 					if ( 0 === $post_id ) {
 						return new WP_Error(
 							'unable_to_draft_post',
