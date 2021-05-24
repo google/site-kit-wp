@@ -19,21 +19,25 @@
 /**
  * External dependencies
  */
-import { useEffect } from 'react';
-import { useHistory, Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
+
+/**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { getModulesData, listFormat } from '../../util';
+import { getModulesData } from '../../util';
 import SettingsAdmin from './SettingsAdmin';
 import SettingsActiveModules from './SettingsActiveModules';
 import SettingsInactiveModules from './SettingsInactiveModules';
-import SettingsAllServicesConnected from './SettingsAllServicesConnected';
 
 function SettingsModules( props ) {
 	const { _hideExcept } = props;
 	const modulesData = getModulesData();
+
 	const history = useHistory();
 
 	useEffect( () => {
@@ -45,34 +49,6 @@ function SettingsModules( props ) {
 	if ( ! Object.values( modulesData ).length ) {
 		return null;
 	}
-
-	const toDependantModules = ( dependantModules, dependantSlug ) => {
-		const dependantModule = modulesData[ dependantSlug ];
-		return dependantModule
-			?	[ ...dependantModules, dependantModule.name ]
-			: dependantModules;
-	};
-
-	const getDependantModulesText = ( { dependants } ) =>
-		dependants && dependants.length > 0
-			? listFormat( dependants.reduce( toDependantModules, [] ) )
-			: '';
-
-	const withDependantModulesText = ( module ) => ( {
-		...module,
-		dependantModulesText: getDependantModulesText( module ),
-	} );
-
-	const byActiveNoInternals = ( active ) => ( module ) =>
-		! module.internal && active === module.active;
-
-	const getModulesByStatus = ( { active } = {} ) =>
-		Object.values( modulesData )
-			.filter( byActiveNoInternals( active ) )
-			.sort( ( a, b ) => a.sort - b.sort )
-			.map( withDependantModulesText );
-
-	const inactiveModules = getModulesByStatus( { active: false } );
 
 	return (
 		<Switch>
@@ -87,8 +63,7 @@ function SettingsModules( props ) {
 				<SettingsActiveModules _hideExcept={ _hideExcept } />
 			</Route>
 			<Route path="/connect-more-services">
-				{ ! inactiveModules.length && <SettingsAllServicesConnected /> }
-				{ !! inactiveModules.length && <SettingsInactiveModules /> }
+				<SettingsInactiveModules />
 			</Route>
 			<Route path="/admin-settings">
 				<SettingsAdmin />

@@ -53,6 +53,11 @@ describe( 'SettingsModules', () => {
 	} );
 
 	it( 'should redirect from #connect to #/connect-more-services', async () => {
+		// Receive empty modules to prevent having to manage dependencies, etc. for
+		// the "connect more" screen, as we're only testing the routing behaviour
+		// here.
+		registry = createTestRegistry();
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
 		history.push( '/connect' );
 
 		render( <SettingsModules />, { history, registry } );
