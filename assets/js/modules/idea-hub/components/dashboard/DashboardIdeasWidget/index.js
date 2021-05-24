@@ -85,7 +85,7 @@ const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportErro
 		setHash( DashboardIdeasWidget.tabIDsByIndex[ tabIndex ] );
 	}, [ setHash, setActiveTabIndex ] );
 
-	if ( ! ( newIdeas?.length > 0 ) && ! ( savedIdeas?.length > 0 ) && ! ( draftIdeas?.length > 0 ) ) {
+	if ( newIdeas?.length === 0 && savedIdeas?.length === 0 && draftIdeas?.length === 0 ) {
 		return (
 			<Widget noPadding>
 				<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
