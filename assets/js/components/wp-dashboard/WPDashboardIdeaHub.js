@@ -60,6 +60,7 @@ function WPDashboardIdeaHub() {
 					Need some inspiration? Revisit your saved ideas in Site Kit
 				</Link>
 			</p>
+
 			<p className="googlesitekit-idea-hub__wpdashboard--link">
 				<Link href={ dashboardURL }>
 					View

@@ -18,6 +18,7 @@
 .googlesitekit-idea-hub__wpdashboard--notice {
 	background-color: $c-background-notice-info;
 	display: flex;
+	flex-wrap: wrap;
 	justify-content: space-between;
 	margin-top: 13px;
 	padding: 14px;
