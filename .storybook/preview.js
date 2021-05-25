@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-import cloneDeep from 'lodash/cloneDeep';
-import { addDecorator } from '@storybook/react';
+import { useFirstMountState, useUnmount } from 'react-use';
 
 /**
  * Internal dependencies
@@ -29,78 +28,47 @@ import '../assets/sass/wpdashboard.scss';
 import '../assets/sass/adminbar.scss';
 import '../assets/sass/admin.scss';
 import './assets/sass/wp-admin.scss';
+// Ensure all globals are set up before any other imports are run.
+import './polyfill-globals';
+import { resetGlobals } from './utils/resetGlobals';
 import { bootstrapFetchMocks } from './fetch-mocks';
-// TODO: Remove when legacy data API is removed.
-import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
+import { WithTestRegistry } from '../tests/js/utils';
+import { enabledFeatures } from '../assets/js/features';
 
 bootstrapFetchMocks();
 
-const resetGlobals = () => {
-	global._googlesitekitLegacyData = cloneDeep( dashboardData );
-	global._googlesitekitLegacyData.admin.assetsRoot = '';
-	global._googlesitekitLegacyData.isStorybook = true;
-	global._googlesitekitBaseData = {
-		homeURL: 'http://example.com/',
-		referenceSiteURL: 'http://example.com/',
-		userIDHash: 'storybook',
-		adminURL: 'http://example.com/wp-admin/',
-		assetsURL: 'http://example.com/wp-content/plugins/google-site-kit/dist/assets/',
-		blogPrefix: 'wp_',
-		ampMode: false,
-		isNetworkMode: false,
-		isFirstAdmin: true,
-		isOwner: true,
-		splashURL: 'http://example.com/wp-admin/admin.php?page=googlesitekit-splash',
-		proxySetupURL: 'http://example.com/wp-admin/index.php?action=googlesitekit_proxy_setup&nonce=abc123',
-		proxyPermissionsURL: 'http://example.com/wp-admin/index.php?action=googlesitekit_proxy_permissions&nonce=abc123',
-		trackingEnabled: false,
-		trackingID: 'UA-000000000-1',
-	};
-	global._googlesitekitEntityData = {
-		currentEntityURL: null,
-		currentEntityType: null,
-		currentEntityTitle: null,
-		currentEntityID: null,
-	};
-	global._googlesitekitUserData = {
-		user: {
-			id: 1,
-			name: 'Wapuu WordPress',
-			email: 'wapuu.wordpress@gmail.com',
-			picture: 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
-		},
-		connectURL: 'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
-		initialVersion: '',
-		verified: true,
-		userInputState: 'completed',
-		permissions: {
-			googlesitekit_authenticate: true,
-			googlesitekit_setup: true,
-			googlesitekit_view_posts_insights: true,
-			googlesitekit_view_dashboard: true,
-			googlesitekit_view_module_details: true,
-			googlesitekit_manage_options: true,
-			googlesitekit_publish_posts: true,
-		},
-	};
-};
-resetGlobals();
+// Decorators run from last added to first. (Eg. In reverse order as listed.)
+export const decorators = [
+	( Story ) => (
+		<div className="googlesitekit-plugin-preview js">
+			<div className="googlesitekit-plugin">
+				<Story />
+			</div>
+		</div>
+	),
+	// Features must be set up before test registry is initialized.
+	( Story, { parameters } ) => {
+		const { features = [] } = parameters;
+		const isFirstMount = useFirstMountState();
+		useUnmount( () => enabledFeatures.clear() );
 
-addDecorator( ( story ) => {
-	resetGlobals();
-	return story();
-} );
+		if ( isFirstMount ) {
+			enabledFeatures.clear();
+			features.forEach( ( feature ) => enabledFeatures.add( feature ) );
+		}
 
-// Global Decorator.
-addDecorator( ( story ) => (
-	<div className="googlesitekit-plugin-preview js">
-		<div className="googlesitekit-plugin">{ story() }</div>
-	</div>
-) );
+		return (
+			<WithTestRegistry features={ features }>
+				<Story />
+			</WithTestRegistry>
+		);
+	},
+	( Story ) => {
+		resetGlobals();
 
-// TODO Would be nice if this wrote to a file. This logs our Storybook data to the browser console. Currently it gets put in .storybook/storybook-data and used in tests/backstop/scenarios.js.
-// eslint-disable-next-line no-console
-console.log( '__STORYBOOK_CLIENT_API__.raw()', global.__STORYBOOK_CLIENT_API__.raw() );
+		return <Story />;
+	},
+];
 
 export const parameters = {
 	layout: 'fullscreen',

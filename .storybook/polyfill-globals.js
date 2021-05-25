@@ -1,5 +1,5 @@
 /**
- * `modules/idea-hub` data store constants.
+ * Functions to reset globals in stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,12 +16,6 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/idea-hub';
-export { STORE_NAME as MODULES_IDEA_HUB };
+import { resetGlobals } from './utils/resetGlobals';
 
-export const IDEA_HUB_BUTTON_CREATE = 'IDEA_HUB_BUTTON_CREATE';
-export const IDEA_HUB_BUTTON_VIEW = 'IDEA_HUB_BUTTON_VIEW';
-export const IDEA_HUB_BUTTON_PIN = 'IDEA_HUB_BUTTON_PIN';
-export const IDEA_HUB_BUTTON_UNPIN = 'IDEA_HUB_BUTTON_UNPIN';
-export const IDEA_HUB_BUTTON_DELETE = 'IDEA_HUB_BUTTON_DELETE';
-export const IDEA_HUB_IDEAS_PER_PAGE = 4;
+resetGlobals();
