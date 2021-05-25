@@ -52,22 +52,22 @@ storiesOf( 'Global/Notices', module )
 		</SettingsNotice>
 	) )
 	.add( 'Settings info notice single line', () => (
-		<SettingsNotice type={ TYPE_INFO } Icon={ InfoIcon } LearnMore={ LearnMore }>
+		<SettingsNotice type={ TYPE_INFO } Icon={ <InfoIcon /> } LearnMore={ <LearnMore /> }>
 			{ 'This is an information.' }
 		</SettingsNotice>
 	) )
 	.add( 'Settings info notice multi line', () => (
-		<SettingsNotice type={ TYPE_INFO } Icon={ InfoIcon } LearnMore={ LearnMore }>
+		<SettingsNotice type={ TYPE_INFO } Icon={ <InfoIcon /> } LearnMore={ <LearnMore /> }>
 			{ new Array( 10 ).fill( 'This is an information. ' ) }
 		</SettingsNotice>
 	) )
 	.add( 'Settings info notice no Icon', () => (
-		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore }>
+		<SettingsNotice type={ TYPE_INFO } LearnMore={ <LearnMore /> }>
 			{ 'This is an information.' }
 		</SettingsNotice>
 	) )
 	.add( 'Settings info notice no LearnMore', () => (
-		<SettingsNotice type={ TYPE_INFO } Icon={ InfoIcon }>
+		<SettingsNotice type={ TYPE_INFO } Icon={ <InfoIcon /> }>
 			{ 'This is an information.' }
 		</SettingsNotice>
 	) )

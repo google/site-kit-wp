@@ -59,7 +59,7 @@ export default function SettingsNotice( { children, type, Icon, LearnMore } ) {
 								mdc-layout-grid__cell--align-bottom
 								googlesitekit-settings-notice__text
 								googlesitekit-settings-notice__learn-more">
-					{ LearnMore() }
+					{ LearnMore }
 				</div>
 			</div>
 		</div>
@@ -69,12 +69,12 @@ export default function SettingsNotice( { children, type, Icon, LearnMore } ) {
 SettingsNotice.propTypes = {
 	children: PropTypes.node.isRequired,
 	type: PropTypes.string,
-	Icon: PropTypes.element,
-	LearnMore: PropTypes.func,
+	Icon: PropTypes.node,
+	LearnMore: PropTypes.node,
 };
 
 SettingsNotice.defaultProps = {
 	type: TYPE_WARNING,
 	Icon: null,
-	LearnMore: () => {},
+	LearnMore: null,
 };
