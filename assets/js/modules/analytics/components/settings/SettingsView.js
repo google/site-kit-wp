@@ -36,8 +36,6 @@ import Link from '../../../../components/Link';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	// @TODO remove me before CR
-	// global.googlesitekit.data.stores[ 'modules/analytics-4' ].actions.setPropertyID( 12345 );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const propertyID4 = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
