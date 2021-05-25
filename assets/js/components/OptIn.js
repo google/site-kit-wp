@@ -73,7 +73,7 @@ export default function OptIn( { id, name, className, optinAction } ) {
 				onChange={ handleOptIn }
 			>
 				{ createInterpolateElement(
-					__( 'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a>Google Privacy Policy</a>', 'google-site-kit' ),
+					__( 'Help us improve Site Kit by sharing anonymous usage data. All collected data is treated in accordance with the <a>Google Privacy Policy</a>', 'google-site-kit' ),
 					{
 						a: <Link
 							key="link"
