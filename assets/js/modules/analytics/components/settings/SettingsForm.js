@@ -43,7 +43,12 @@ import {
 import { isFeatureEnabled } from '../../../../features';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4Notice from '../common/GA4Notice';
-import { SETUP_FLOW_MODE_GA4_TRANSITIONAL, SETUP_FLOW_MODE_UA, STORE_NAME } from '../../datastore/constants';
+import {
+	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
+	SETUP_FLOW_MODE_LEGACY,
+	SETUP_FLOW_MODE_UA,
+	STORE_NAME,
+} from '../../datastore/constants';
 import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from '../../../analytics-4/datastore/constants';
 import SettingsNotice, { TYPE_INFO } from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
@@ -53,17 +58,25 @@ export default function SettingsForm() {
 	const ga4Enabled = isFeatureEnabled( 'ga4setup' );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
-	// const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
-	// @TODO remove these, only for dev.
-	const setupFlowMode = SETUP_FLOW_MODE_UA;
+	useSelect( ( select ) => {
+		// We need to call getProperties for getSetupFlowMode to work.
+		const accountID = select( STORE_NAME ).getAccountID();
+		return select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+	} );
+	// @TODO remove these, only for dev purposes
+	// const setupFlowMode = SETUP_FLOW_MODE_UA;
 	// const setupFlowMode = SETUP_FLOW_MODE_GA4_TRANSITIONAL
+	// const setupFlowMode = SETUP_FLOW_MODE_GA4_TRANSITIONAL;
+	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
 	if ( ga4Enabled && SETUP_FLOW_MODE_UA === setupFlowMode ) {
 		selectProperty( PROPERTY_CREATE );
 	}
 
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
-			<GA4Notice />
+			{ SETUP_FLOW_MODE_LEGACY === setupFlowMode && (
+				<GA4Notice />
+			) }
 			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
 			<ExistingTagNotice />
 			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }

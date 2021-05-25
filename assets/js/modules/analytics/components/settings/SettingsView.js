@@ -96,7 +96,7 @@ export default function SettingsView() {
 					<div className="googlesitekit-settings-module__meta-items">
 						<div className="googlesitekit-settings-module__meta-item">
 							<h5 className="googlesitekit-settings-module__meta-item-type">
-								{ __( 'GA4 Property', 'google-site-kit' ) }
+								{ __( 'Google Analytics 4 Property', 'google-site-kit' ) }
 							</h5>
 							<p className="googlesitekit-settings-module__meta-item-data">
 								<DisplaySetting value={ propertyID4 } />
