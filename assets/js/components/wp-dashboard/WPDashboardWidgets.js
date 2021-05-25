@@ -35,6 +35,7 @@ import WPDashboardClicks from './WPDashboardClicks';
 import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
 import WPDashboardSessionDuration from './WPDashboardSessionDuration';
 import WPDashboardPopularPages from './WPDashboardPopularPages';
+import WPDashboardIdeaHub from './WPDashboardIdeaHub';
 import ActivateModuleCTA from '../ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -54,6 +55,7 @@ const WPDashboardClicksWidget = withWidgetComponentProps( WIDGET_CLICKS )( WPDas
 const WPDashboardUniqueVisitorsWidget = withWidgetComponentProps( WIDGET_VISITORS )( WPDashboardUniqueVisitors );
 const WPDashboardSessionDurationWidget = withWidgetComponentProps( WIDGET_SESSION_DURATION )( WPDashboardSessionDuration );
 const WPDashboardPopularPagesWidget = withWidgetComponentProps( WIDGET_POPULAR_PAGES )( WPDashboardPopularPages );
+// Idea Hub widgets.
 
 const WPDashboardWidgets = () => {
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
@@ -85,6 +87,7 @@ const WPDashboardWidgets = () => {
 			{ analyticsModuleActive && analyticsModuleConnected && (
 				<WPDashboardPopularPagesWidget />
 			) }
+			<WPDashboardIdeaHub />
 		</div>
 	);
 };
