@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -51,18 +56,20 @@ function WPDashboardIdeaHub() {
 		<div className="googlesitekit-idea-hub__wpdashboard--notice">
 			<div className="googlesitekit-idea-hub__wpdashboard--header">
 				<GoogleLogoIcon width="16" heigth="16" />
-				<div className="googlesitekit-idea-hub__wpdashboard--title">Site Kit</div>
+				<div className="googlesitekit-idea-hub__wpdashboard--title">
+					{ __( 'Site Kit', 'google-site-kit' ) }
+				</div>
 			</div>
 
 			<p className="googlesitekit-idea-hub__wpdashboard--link">
 				<Link href={ dashboardURL }>
-					Need some inspiration? Revisit your saved ideas in Site Kit
+					{ __( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ) }
 				</Link>
 			</p>
 
 			<p className="googlesitekit-idea-hub__wpdashboard--link">
 				<Link href={ dashboardURL }>
-					View
+					{ __( 'View', 'google-site-kit' ) }
 				</Link>
 			</p>
 		</div>
