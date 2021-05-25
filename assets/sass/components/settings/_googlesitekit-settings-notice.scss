@@ -22,7 +22,6 @@
 	color: $c-text-notice;
 	margin: 1.5em 0;
 	padding: $grid-gap-phone;
-	position: relative;
 
 	@media (min-width: $bp-desktop) {
 		padding: $grid-gap-desktop;
@@ -32,6 +31,7 @@
 	&--info,
 	&--suggestion {
 
+		// do we want this? the parent should decide?
 		svg {
 			height: 20px;
 			width: 20px;

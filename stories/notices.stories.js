@@ -35,21 +35,18 @@ import SuggestionIcon from '../assets/svg/suggestion-icon.svg';
 import WarningIcon from '../assets/svg/warning-icon.svg';
 import Link from '../assets/js/components/Link';
 
-const LearnMore = () => {
-	return (
-		<Link
-			href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
-			external
-			inherit
-		>
-			{ __( 'Learn more here.', 'google-site-kit' ) }
-		</Link>
-	);
-};
+const LearnMore = () => (
+	<Link
+		href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
+		external
+		inherit
+	>
+		{ __( 'Learn more here.', 'google-site-kit' ) }
+	</Link>
+);
 
 storiesOf( 'Global/Notices', module )
 	.add( 'Settings warning notice', () => (
-		// TODO - fix
 		<SettingsNotice type={ TYPE_WARNING } Icon={ <WarningIcon /> } LearnMore={ <LearnMore /> }>
 			{ 'This is a warning.' }
 		</SettingsNotice>
@@ -75,7 +72,6 @@ storiesOf( 'Global/Notices', module )
 		</SettingsNotice>
 	) )
 	.add( 'Settings suggestion notice', () => (
-		// TODO - fix
 		<SettingsNotice type={ TYPE_SUGGESTION } Icon={ <SuggestionIcon /> } LearnMore={ <LearnMore /> }>
 			{ 'This is a suggestion.' }
 		</SettingsNotice>
