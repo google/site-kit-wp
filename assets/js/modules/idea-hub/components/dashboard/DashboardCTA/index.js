@@ -38,21 +38,19 @@ import IdeaHubIcon from '../../../../../../svg/idea-hub.svg';
 import BulbIcon from '../../../../../../svg/bulb.svg';
 const { useSelect, useDispatch } = Data;
 
-const MODULE_SLUG = 'idea-hub';
-
 function DashboardCTA() {
-	const { connected, active } = useSelect( ( select ) => select( CORE_MODULES ).getModule( MODULE_SLUG ) );
+	const { connected, active } = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'idea-hub' ) );
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const onClick = useCallback( async () => {
-		const { error, response } = await activateModule( MODULE_SLUG );
+		const { error, response } = await activateModule( 'idea-hub' );
 
 		if ( ! error ) {
 			navigateTo( response.moduleReauthURL );
 		} else {
 			showErrorNotification( GenericError, {
-				id: `${ MODULE_SLUG }-setup-error`,
+				id: `idea-hub-setup-error`,
 				title: __( 'Internal Server Error', 'google-site-kit' ),
 				description: error.message,
 				format: 'small',
