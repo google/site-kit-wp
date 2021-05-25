@@ -244,7 +244,7 @@ const baseActions = {
 	setPrimaryPropertyType( primaryPropertyType ) {
 		invariant(
 			[ PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 ].includes( primaryPropertyType ),
-			'type must be "ua" or "ga4"',
+			`type must be "${ PROPERTY_TYPE_UA }" or "${ PROPERTY_TYPE_GA4 }"`,
 		);
 
 		return {
