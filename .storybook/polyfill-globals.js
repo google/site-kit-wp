@@ -1,5 +1,5 @@
 /**
- * Storybook main config.
+ * Functions to reset globals in stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,12 +16,6 @@
  * limitations under the License.
  */
 
-module.exports = {
-	stories: [
-		'../stories/**/*.stories.js',
-		'../assets/js/**/*.stories.js',
-	],
-	addons: [
-		'@storybook/addon-viewport',
-	],
-};
+import { resetGlobals } from './utils/resetGlobals';
+
+resetGlobals();

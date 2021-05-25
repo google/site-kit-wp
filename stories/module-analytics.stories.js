@@ -39,6 +39,7 @@ import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admi
 import {
 	AccountSelect,
 	PropertySelect,
+	PropertySelectIncludingGA4,
 	ProfileSelect,
 	AnonymizeIPSwitch,
 	UseSnippetSwitch,
@@ -47,7 +48,10 @@ import {
 } from '../assets/js/modules/analytics/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
+import { properties as propertiesGA4 } from '../assets/js/modules/analytics-4/datastore/__fixtures__';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
+import { enabledFeatures } from '../assets/js/features';
 
 function SetupWrap( { children } ) {
 	return (
@@ -119,6 +123,47 @@ storiesOf( 'Analytics Module', module )
 						<AccountSelect />
 						<PropertySelect />
 						<ProfileSelect />
+					</div>
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Property Select including GA4 properties', () => {
+		enabledFeatures.add( 'ga4setup' );
+
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		/* eslint-disable sitekit/acronym-case */
+		const accountID = properties[ 0 ].accountId;
+		const propertyID = profiles[ 0 ].webPropertyId;
+		/* eslint-enable */
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+
+			// eslint-disable-next-line sitekit/acronym-case
+			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+				accountID,
+				propertyID,
+			} );
+
+			dispatch( STORE_NAME ).receiveGetSettings( {
+				accountID,
+			} );
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+				propertiesGA4,
+				{ accountID }
+			);
+		};
+
+		return (
+			<WithTestRegistry
+				callback={ setupRegistry }
+				features={ [ 'ga4setup' ] }
+			>
+				<SetupWrap>
+					<div className="googlesitekit-setup-module__inputs">
+						<PropertySelectIncludingGA4 />
 					</div>
 				</SetupWrap>
 			</WithTestRegistry>
