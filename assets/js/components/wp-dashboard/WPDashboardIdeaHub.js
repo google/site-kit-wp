@@ -35,23 +35,37 @@ function WPDashboardIdeaHub() {
 	const {
 		hasSavedIdeas,
 		isModuleActive,
-		adminURL,
+		dashboardURL,
 	} = useSelect( ( select ) => {
 		const savedIdeas = select( MODULES_IDEA_HUB ).getSavedIdeas();
+		const adminURL = select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' );
 		return {
 			isModuleActive: select( CORE_MODULES ).isModuleActive( 'idea-hub' ),
 			hasSavedIdeas: savedIdeas && savedIdeas.length,
-			adminURL: select( CORE_SITE ).getAdminURL(),
+			dashboardURL: `${ adminURL }#saved-ideas`,
 		};
 	} );
 
 	const shouldRender = isFeatureEnabled && isModuleActive && hasSavedIdeas;
 
 	return ! shouldRender ? (
-		<p className="googlesitekit-idea-hub__wpdashboard--notice">
-			<GoogleLogoIcon width="28" heigth="28" />
-			<p><Link href={ adminURL }>Need some inspiration? Revisit your saved ideas in Site Kit</Link></p>
-		</p>
+		<div className="googlesitekit-idea-hub__wpdashboard--notice">
+			<div className="googlesitekit-idea-hub__wpdashboard--header">
+				<GoogleLogoIcon width="16" heigth="16" />
+				<div className="googlesitekit-idea-hub__wpdashboard--title">Site Kit</div>
+			</div>
+
+			<p className="googlesitekit-idea-hub__wpdashboard--link">
+				<Link href={ dashboardURL }>
+					Need some inspiration? Revisit your saved ideas in Site Kit
+				</Link>
+			</p>
+			<p className="googlesitekit-idea-hub__wpdashboard--link">
+				<Link href={ dashboardURL }>
+					View
+				</Link>
+			</p>
+		</div>
 	) : null;
 }
 

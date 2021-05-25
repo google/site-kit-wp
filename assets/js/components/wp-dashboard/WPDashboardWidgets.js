@@ -66,6 +66,7 @@ const WPDashboardWidgets = () => {
 			'googlesitekit-wp-dashboard-stats',
 			{ 'googlesitekit-wp-dashboard-stats--fourup': analyticsModuleActive && analyticsModuleConnected }
 		) }>
+			<WPDashboardIdeaHub />
 			{ analyticsModuleActive && analyticsModuleConnected && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsWidget />
@@ -87,7 +88,6 @@ const WPDashboardWidgets = () => {
 			{ analyticsModuleActive && analyticsModuleConnected && (
 				<WPDashboardPopularPagesWidget />
 			) }
-			<WPDashboardIdeaHub />
 		</div>
 	);
 };
