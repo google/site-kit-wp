@@ -84,7 +84,7 @@ const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportErro
 	if ( newIdeas?.length === 0 && savedIdeas?.length === 0 && draftIdeas?.length === 0 ) {
 		return (
 			<Widget noPadding>
-				<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
+				<div className="googlesitekit-idea-hub">
 					<Empty
 						Icon={ <EmptyIcon /> }
 						title={ __( 'Idea Hub is generating ideas', 'google-site-kit' ) }
