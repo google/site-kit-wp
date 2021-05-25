@@ -47,8 +47,7 @@ function WPDashboardIdeaHub() {
 	} );
 
 	const shouldRender = isFeatureEnabled && isModuleActive && hasSavedIdeas;
-
-	return ! shouldRender ? (
+	const Component = (
 		<div className="googlesitekit-idea-hub__wpdashboard--notice">
 			<div className="googlesitekit-idea-hub__wpdashboard--header">
 				<GoogleLogoIcon width="16" heigth="16" />
@@ -67,7 +66,9 @@ function WPDashboardIdeaHub() {
 				</Link>
 			</p>
 		</div>
-	) : null;
+	);
+
+	return shouldRender ? Component : null;
 }
 
 export default WPDashboardIdeaHub;
