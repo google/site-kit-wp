@@ -28,37 +28,29 @@ export const TYPE_SUGGESTION = 'suggestion';
 
 export default function SettingsNotice( { children, type, Icon, LearnMore } ) {
 	return (
-		<div className="mdc-layout-grid">
+		<div className={ classnames(
+			'mdc-layout-grid',
+			'googlesitekit-settings-notice',
+			`googlesitekit-settings-notice--${ type }`
+		) } >
 			<div className={ classnames(
 				'mdc-layout-grid__inner',
-				'googlesitekit-settings-notice',
-				`googlesitekit-settings-notice--${ type }`
+				'googlesitekit-settings-notice__inner',
 			) } >
-				<div className="mdc-layout-grid__cell--span-8-desktop
-								mdc-layout-grid__cell--span-8-tablet
-								mdc-layout-grid__cell--span-4-phone">
-					<div className="mdc-layout-grid__inner">
-						<div className="mdc-layout-grid__cell--span-1-desktop
-										mdc-layout-grid__cell--span-1-tablet
-										mdc-layout-grid__cell--span-1-phone
-										mdc-layout-grid__cell--align-right">
-							{ Icon }
-						</div>
-						<div className="mdc-layout-grid__cell--span-11-desktop
-										mdc-layout-grid__cell--span-7-tablet
-										mdc-layout-grid__cell--span-3-phone
-										googlesitekit-settings-notice__text">
-							{ children }
-						</div>
-					</div>
+				<div className="mdc-layout-grid__cell--span-1-desktop
+	mdc-layout-grid__cell--span-1-tablet
+	mdc-layout-grid__cell--span-1-phone
+	mdc-layout-grid__cell--align-right">
+					{ Icon }
 				</div>
-				<div className="mdc-layout-grid__cell--span-4-desktop
-								mdc-layout-grid__cell--span-8-tablet
-								mdc-layout-grid__cell--span-4-phone
-								mdc-layout-grid__cell--align-right
-								mdc-layout-grid__cell--align-bottom
-								googlesitekit-settings-notice__text
-								googlesitekit-settings-notice__learn-more">
+				<div className="mdc-layout-grid__cell--span-11-desktop
+	mdc-layout-grid__cell--span-7-tablet
+	mdc-layout-grid__cell--span-3-phone
+	googlesitekit-settings-notice__text">
+					{ children }
+				</div>
+				<div className="googlesitekit-settings-notice__text
+googlesitekit-settings-notice__learn-more">
 					{ LearnMore }
 				</div>
 			</div>

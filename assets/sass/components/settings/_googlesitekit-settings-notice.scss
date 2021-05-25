@@ -22,6 +22,7 @@
 	color: $c-text-notice;
 	margin: 1.5em 0;
 	padding: $grid-gap-phone;
+	position: relative;
 
 	@media (min-width: $bp-desktop) {
 		padding: $grid-gap-desktop;
@@ -56,7 +57,14 @@
 		}
 
 		.googlesitekit-settings-notice__learn-more {
+			bottom: 0;
 			padding-bottom: 4px;
+			position: absolute;
+			right: 0;
+		}
+
+		.googlesitekit-settings-notice__inner {
+			position: relative;
 		}
 	}
 
