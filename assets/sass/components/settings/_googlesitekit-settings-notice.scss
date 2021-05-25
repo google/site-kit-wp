@@ -39,21 +39,6 @@
 
 		.googlesitekit-settings-notice__text {
 			position: relative;
-
-			&::before {
-				background-position: center center;
-				background-repeat: no-repeat;
-				background-size: 2px 12px;
-				border-radius: 50%;
-				border-style: solid;
-				border-width: 2px;
-				content: "";
-				display: block;
-				height: 22px;
-				left: 0;
-				position: absolute;
-				width: 22px;
-			}
 		}
 
 		.googlesitekit-settings-notice__learn-more {
@@ -71,33 +56,15 @@
 	&--warning {
 		background-color: $c-background-notice-warning;
 		color: $c-text-notice-warning;
-
-		.googlesitekit-settings-notice__text::before {
-			border-color: $c-icon-notice-warning;
-		}
 	}
 
 	&--info {
 		background-color: $c-background-notice-info;
 		color: $c-text-notice-info;
-
-		.googlesitekit-settings-notice__text::before {
-			background-size: 20px 19px;
-			border-color: $c-icon-notice-info;
-			border-radius: 0;
-			border-width: 0;
-			height: 19px;
-			width: 20px;
-		}
 	}
 
 	&--suggestion {
 		background-color: $c-background-notice-suggestion;
 		color: $c-text-notice-suggestion;
-
-		.googlesitekit-settings-notice__text::before {
-			//background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%222%22%20height%3D%2211%22%20viewBox%3D%220%200%202%2011%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%231967d2%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%204h2v7H0zM0%200h2v2H0z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
-			border-color: $c-icon-notice-suggestion;
-		}
 	}
 }
