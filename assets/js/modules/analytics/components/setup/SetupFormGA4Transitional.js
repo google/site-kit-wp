@@ -38,7 +38,6 @@ import {
 	PropertySelect,
 	PropertySelectIncludingGA4,
 	ProfileNameTextField,
-	GA4Notice,
 } from '../common';
 const { useSelect } = Data;
 
@@ -53,7 +52,6 @@ export default function SetupFormGA4Transitional() {
 	return (
 		<Fragment>
 			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
-			<GA4Notice />
 
 			{ ( !! accounts.length && ! hasExistingTag ) && (
 				<p className="googlesitekit-margin-bottom-0">
