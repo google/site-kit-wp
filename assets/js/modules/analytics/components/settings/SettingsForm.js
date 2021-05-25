@@ -66,7 +66,7 @@ export default function SettingsForm() {
 	// @TODO remove these, only for dev purposes
 	// const setupFlowMode = SETUP_FLOW_MODE_UA;
 	// const setupFlowMode = SETUP_FLOW_MODE_GA4_TRANSITIONAL
-	// const setupFlowMode = SETUP_FLOW_MODE_GA4_TRANSITIONAL;
+	// const setupFlowMode = SETUP_FLOW_MODE_LEGACY;
 	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
 	if ( ga4Enabled && SETUP_FLOW_MODE_UA === setupFlowMode ) {
 		selectProperty( PROPERTY_CREATE );
