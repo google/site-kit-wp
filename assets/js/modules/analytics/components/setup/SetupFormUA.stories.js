@@ -19,60 +19,73 @@
 /**
  * Internal dependencies
  */
-import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import { STORE_NAME } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { createTestRegistry, provideModules, provideModuleRegistrations, WithTestRegistry } from '../../../../../../tests/js/utils';
-import * as fixtures from '../../datastore/__fixtures__';
-import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
+import { provideModules, provideModuleRegistrations } from '../../../../../../tests/js/utils';
 import { enabledFeatures } from '../../../../features';
+import ModuleSetup from '../../../../components/setup/ModuleSetup';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import * as fixtures from '../../datastore/__fixtures__';
 
 export const Ready = () => <ModuleSetup moduleSlug="analytics" />;
 Ready.storyName = 'SetupFormUA';
 Ready.decorators = [
 	( Story ) => {
-		enabledFeatures.clear();
-		enabledFeatures.add( 'ga4setup' );
+		const setupRegistry = ( registry ) => {
+			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+			/* eslint-disable sitekit/acronym-case */
+			const accountID = properties[ 0 ].accountId;
+			const propertyID = profiles[ 0 ].webPropertyId;
 
-		const registry = createTestRegistry();
-		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-		provideModuleRegistrations( registry );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+			registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 
-		const testAccountID = ga4Fixtures.properties[ 0 ]._accountID;
-		const accountID = testAccountID;
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( ga4Fixtures.properties, { accountID } );
-
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/acronym-case
-			accountID: properties[ 0 ].accountId,
-			// eslint-disable-next-line sitekit/acronym-case
-			propertyID: profiles[ 0 ].webPropertyId,
-		} );
+			registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
+			registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
+
+			registry.dispatch( STORE_NAME ).receiveGetSettings( { accountID } );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], { accountID } );
+		};
 
 		return (
-			<WithTestRegistry registry={ registry }>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
-			</WithTestRegistry>
+			</WithRegistrySetup>
 		);
 	},
 ];
 
 export default {
 	title: 'Modules/Analytics/Setup/SetupFormUA',
+	decorators: [
+		( Story ) => {
+			const setupRegistry = ( registry ) => {
+				enabledFeatures.clear();
+				enabledFeatures.add( 'ga4setup' );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics',
+						active: true,
+						connected: true,
+					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				provideModuleRegistrations( registry );
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };
