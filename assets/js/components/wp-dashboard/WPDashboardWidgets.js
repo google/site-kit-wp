@@ -55,7 +55,6 @@ const WPDashboardClicksWidget = withWidgetComponentProps( WIDGET_CLICKS )( WPDas
 const WPDashboardUniqueVisitorsWidget = withWidgetComponentProps( WIDGET_VISITORS )( WPDashboardUniqueVisitors );
 const WPDashboardSessionDurationWidget = withWidgetComponentProps( WIDGET_SESSION_DURATION )( WPDashboardSessionDuration );
 const WPDashboardPopularPagesWidget = withWidgetComponentProps( WIDGET_POPULAR_PAGES )( WPDashboardPopularPages );
-// Idea Hub widgets.
 
 const WPDashboardWidgets = () => {
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
