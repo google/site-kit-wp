@@ -18,3 +18,8 @@
 
 export { default as SetupForm } from './SetupForm';
 export { default as SetupMain } from './SetupMain';
+export { default as SetupFormLegacy } from './SetupFormLegacy';
+export { default as SetupFormUA } from './SetupFormUA';
+export { default as SetupFormGA4 } from './SetupFormGA4';
+export { default as SetupFormGA4Transitional } from './SetupFormGA4Transitional';
+

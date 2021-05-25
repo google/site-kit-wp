@@ -163,7 +163,7 @@ final class PageSpeed_Insights extends Module
 		return array(
 			'slug'        => 'pagespeed-insights',
 			'name'        => _x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
-			'description' => __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA.', 'google-site-kit' ),
+			'description' => __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA', 'google-site-kit' ),
 			'cta'         => __( 'Learn more about your website’s performance.', 'google-site-kit' ),
 			'order'       => 4,
 			'homepage'    => __( 'https://developers.google.com/speed/pagespeed/insights/', 'google-site-kit' ),

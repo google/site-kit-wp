@@ -20,6 +20,10 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { registerStore } from './modules/idea-hub';
+import Widgets from 'googlesitekit-widgets';
+import Modules from 'googlesitekit-modules';
+import { registerStore, registerWidgets, registerModule } from './modules/idea-hub';
 
 registerStore( Data );
+registerWidgets( Widgets );
+registerModule( Modules );

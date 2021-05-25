@@ -28,10 +28,11 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySelection } from '../util';
-import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
+import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import { isFeatureEnabled } from '../../../features';
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
@@ -101,7 +102,7 @@ const baseInitialState = {
 	properties: {},
 	isAwaitingPropertiesProfilesCompletion: {},
 	matchedProperty: undefined,
-	primaryPropertyType: 'ua',
+	primaryPropertyType: PROPERTY_TYPE_UA,
 };
 
 const baseActions = {
@@ -153,10 +154,11 @@ const baseActions = {
 	 * @param {string} [internalPropertyID] Internal property ID (if available).
 	 * @return {Object} A Generator function.
 	 */
-	selectProperty( propertyID, internalPropertyID = '' ) {
-		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
-
-		return ( function* () {
+	selectProperty: createValidatedAction(
+		( propertyID ) => {
+			invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
+		},
+		function* ( propertyID, internalPropertyID = '' ) {
 			const registry = yield Data.commonActions.getRegistry();
 
 			const accountID = registry.select( STORE_NAME ).getAccountID();
@@ -202,8 +204,8 @@ const baseActions = {
 
 			// Otherwise just select the first profile, or the option to create if none.
 			registry.dispatch( STORE_NAME ).setProfileID( profiles[ 0 ]?.id || PROFILE_CREATE );
-		}() );
-	},
+		}
+	),
 
 	receiveGetProperties( properties, { accountID } ) {
 		invariant( Array.isArray( properties ), 'properties must be an array.' );
@@ -240,7 +242,10 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setPrimaryPropertyType( primaryPropertyType ) {
-		invariant( [ 'ua', 'ga4' ].includes( primaryPropertyType ), 'type must be "ua" or "ga4"' );
+		invariant(
+			[ PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 ].includes( primaryPropertyType ),
+			`type must be "${ PROPERTY_TYPE_UA }" or "${ PROPERTY_TYPE_GA4 }"`,
+		);
 
 		return {
 			payload: { primaryPropertyType },
@@ -353,14 +358,7 @@ const baseResolvers = {
 			if ( error ) {
 				// Store error manually since getProperties signature differs from fetchGetPropertiesProfiles.
 				yield receiveError( error, 'getProperties', [ accountID ] );
-				return;
 			}
-		}
-
-		const propertyID = registry.select( STORE_NAME ).getPropertyID();
-		if ( ! propertyID ) {
-			const property = properties[ 0 ] || { id: PROPERTY_CREATE };
-			yield baseActions.selectProperty( property.id, property.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 		}
 	},
 };
@@ -476,8 +474,15 @@ const baseSelectors = {
 	getPropertiesIncludingGA4: createRegistrySelector( ( select ) => ( state, accountID ) => {
 		let properties = select( STORE_NAME ).getProperties( accountID );
 
-		if ( select( MODULES_ANALYTICS_4 ) ) {
+		if ( properties === undefined ) {
+			return undefined;
+		}
+
+		if ( isFeatureEnabled( 'ga4setup' ) ) {
 			const propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+			if ( propertiesGA4 === undefined ) {
+				return undefined;
+			}
 			properties = properties.concat( propertiesGA4 );
 		}
 

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useMount } from 'react-use';
+import { useEffectOnce } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -30,7 +30,7 @@ function Modal( { children } ) {
 	// Using state as we need `el` to not change when the component re-renders
 	const [ el ] = useState( document.createElement( 'div' ) );
 
-	useMount( () => {
+	useEffectOnce( () => {
 		const root = document.querySelector( '.googlesitekit-plugin' ) || document.body;
 		root.appendChild( el );
 

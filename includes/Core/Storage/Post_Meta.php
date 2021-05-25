@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Storage;
 /**
  * Post metadata storage class.
  *
- * @since n.e.x.t
+ * @since 1.33.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ final class Post_Meta implements Post_Meta_Interface {
 	/**
 	 * Gets post meta.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param int    $post_id Post ID.
 	 * @param string $key     Metadata key.
@@ -36,7 +36,7 @@ final class Post_Meta implements Post_Meta_Interface {
 	/**
 	 * Updates a post meta field based on the given post ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param int    $post_id    Post ID.
 	 * @param string $key        Metadata key.
@@ -51,7 +51,7 @@ final class Post_Meta implements Post_Meta_Interface {
 	/**
 	 * Adds a meta field to the given post.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param int    $post_id Post ID.
 	 * @param string $key     Metadata key.
@@ -66,7 +66,7 @@ final class Post_Meta implements Post_Meta_Interface {
 	/**
 	 * Deletes a post meta field for the given post ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param int    $post_id Post ID.
 	 * @param string $key     Metadata key.

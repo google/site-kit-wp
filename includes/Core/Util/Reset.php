@@ -186,7 +186,7 @@ class Reset {
 	/**
 	 * Deletes all Site Kit post meta settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param string $scope Scope of the deletion ('site' or 'network').
 	 */

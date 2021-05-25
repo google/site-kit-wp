@@ -99,6 +99,7 @@ export function WithTestRegistry( {
 	features = [],
 	registry = createTestRegistry(),
 } = {} ) {
+	const enabledFeatures = new Set( features );
 	// Populate most basic data which should not affect any tests.
 	provideUserInfo( registry );
 
@@ -108,7 +109,7 @@ export function WithTestRegistry( {
 
 	return (
 		<RegistryProvider value={ registry }>
-			<FeaturesProvider value={ features }>
+			<FeaturesProvider value={ enabledFeatures }>
 				{ children }
 			</FeaturesProvider>
 		</RegistryProvider>

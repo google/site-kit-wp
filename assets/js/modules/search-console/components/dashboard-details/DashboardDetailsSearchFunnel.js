@@ -40,7 +40,7 @@ class DashboardDetailsSearchFunnel extends Component {
 					mdc-layout-grid__cell--span-12
 				">
 					<DashboardModuleHeader
-						description={ __( 'How your site appeared in Search results and how many visitors you got from Search.', 'google-site-kit' ) }
+						description={ __( 'How your site appeared in Search results and how many visitors you got from Search', 'google-site-kit' ) }
 						title={ __( 'Search Funnel', 'google-site-kit' ) }
 					/>
 				</div>

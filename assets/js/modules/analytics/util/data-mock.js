@@ -23,6 +23,7 @@ import md5 from 'md5';
 import faker from 'faker';
 import { zip, from, Observable } from 'rxjs';
 import { map, reduce, take } from 'rxjs/operators';
+import { STORE_NAME } from '../datastore/constants';
 
 const ANALYTICS_METRIC_TYPES = {
 	'ga:users': 'INTEGER',
@@ -295,3 +296,18 @@ export function getAnalyticsMockResponse( args ) {
 		data,
 	} ];
 }
+
+/**
+ * Generates mock response for Analytics reports.
+ *
+ * @since n.e.x.t
+ *
+ * @param {wp.data.registry} registry Registry with all available stores registered.
+ * @param {Object}           options  Report options.
+ */
+export const provideAnalyticsMockReport = ( registry, options ) => {
+	registry.dispatch( STORE_NAME ).receiveGetReport(
+		getAnalyticsMockResponse( options ),
+		{ options }
+	);
+};
