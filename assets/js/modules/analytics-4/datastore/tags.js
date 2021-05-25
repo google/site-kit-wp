@@ -33,8 +33,6 @@ const existingTagStore = createExistingTagStore( {
 
 const store = Data.combineStores(
 	existingTagStore,
-	{
-	}
 );
 
 export const initialState = store.initialState;

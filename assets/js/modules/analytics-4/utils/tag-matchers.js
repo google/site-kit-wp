@@ -18,15 +18,15 @@
 
 export const tagMatchers = [
 	// Detect gtag script calls.
-	/<script [^>]*src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=G-(\d+)['|"][^>]*><\/script>/,
+	/<script [^>]*src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=G-([a-zA-Z0-9]+)['|"][^>]*><\/script>/i,
 	// Detect common analytics code usage.
-	/<script[^>]*>[^<]+google-analytics\.com\/analytics\.js[^<]+G-(\d+)/,
-	/__gaTracker\(\s*['|"]create['|"],\s+['|"]G-(\d+)['|"], ?['|"]auto['|"]\s*\)/,
+	/<script[^>]*>[^<]+google-analytics\.com\/analytics\.js[^<]+G-([a-zA-Z0-9]+)/i,
+	/__gaTracker\(\s*['|"]create['|"],\s+['|"]G-([a-zA-Z0-9]+)['|"], ?['|"]auto['|"]\s*\)/i,
 	// Detect ga create calls.
-	/ga\(\s*['|"]create['|"],\s*['|"]G-(\d+)['|"],\s*['|"]auto['|"]\s?\)/,
-	/_gaq\.push\(\s*\[\s*['|"]_setAccount['|"],\s*['|"]G-(\d+)['|"]\s*]\s*\)/,
+	/ga\(\s*['|"]create['|"],\s*['|"]G-([a-zA-Z0-9]+)['|"],\s*['|"]auto['|"]\s?\)/i,
+	/_gaq\.push\(\s*\[\s*['|"]_setAccount['|"],\s*['|"]G-([a-zA-Z0-9]+)['|"]\s*]\s*\)/i,
 	// Detect amp-analytics gtag.
-	/<amp-analytics [^>]*type="gtag"[^>]*>[^<]*<script type="application\/json">[^<]*"gtag_id":\s*"G-(\d+)"/,
+	/<amp-analytics [^>]*type="gtag"[^>]*>[^<]*<script type="application\/json">[^<]*"gtag_id":\s*"G-([a-zA-Z0-9]+)"/i,
 	// Detect amp-analytics googleanalytics.
-	/<amp-analytics [^>]*type="googleanalytics"[^>]*>[^<]*<script type="application\/json">[^<]*"account":\s*"G-(\d+)"/,
+	/<amp-analytics [^>]*type="googleanalytics"[^>]*>[^<]*<script type="application\/json">[^<]*"account":\s*"G-([a-zA-Z0-9]+)"/i,
 ];
