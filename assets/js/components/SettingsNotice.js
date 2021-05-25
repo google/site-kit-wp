@@ -22,11 +22,37 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
 export const TYPE_WARNING = 'warning';
 export const TYPE_INFO = 'info';
 export const TYPE_SUGGESTION = 'suggestion';
 
 export default function SettingsNotice( { children, type, Icon, LearnMore } ) {
+	const innerChildren = Icon ? (
+		<Fragment>
+			<div className="mdc-layout-grid__cell--span-1-desktop
+		mdc-layout-grid__cell--span-1-tablet
+		mdc-layout-grid__cell--span-1-phone
+		mdc-layout-grid__cell--align-right">
+				{ Icon }
+			</div>
+			<div className="mdc-layout-grid__cell--span-11-desktop
+		mdc-layout-grid__cell--span-7-tablet
+		mdc-layout-grid__cell--span-3-phone
+		googlesitekit-settings-notice__text">
+				{ children }
+			</div>
+		</Fragment>
+	) : (
+		<div className="mdc-layout-grid__cell--span-12
+		googlesitekit-settings-notice__text">
+			{ children }
+		</div>
+	);
 	return (
 		<div className={ classnames(
 			'mdc-layout-grid',
@@ -37,18 +63,7 @@ export default function SettingsNotice( { children, type, Icon, LearnMore } ) {
 				'mdc-layout-grid__inner',
 				'googlesitekit-settings-notice__inner',
 			) } >
-				<div className="mdc-layout-grid__cell--span-1-desktop
-	mdc-layout-grid__cell--span-1-tablet
-	mdc-layout-grid__cell--span-1-phone
-	mdc-layout-grid__cell--align-right">
-					{ Icon }
-				</div>
-				<div className="mdc-layout-grid__cell--span-11-desktop
-	mdc-layout-grid__cell--span-7-tablet
-	mdc-layout-grid__cell--span-3-phone
-	googlesitekit-settings-notice__text">
-					{ children }
-				</div>
+				{ innerChildren }
 				<div className="googlesitekit-settings-notice__text
 googlesitekit-settings-notice__learn-more">
 					{ LearnMore }
