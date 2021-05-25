@@ -55,12 +55,8 @@ const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 
 const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportError } ) => {
 	const ideaHubContainer = useRef();
-	// ADD getNewIdeas?
 	const newIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeas() );
-
-	// THIS
 	const savedIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeas() );
-	// THIS
 	const draftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas() );
 
 	const [ hash, setHash ] = useHash();
