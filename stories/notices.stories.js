@@ -31,6 +31,8 @@ import { __ } from '@wordpress/i18n';
  */
 import SettingsNotice, { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION } from '../assets/js/components/SettingsNotice';
 import InfoIcon from '../assets/svg/info-icon.svg';
+import SuggestionIcon from '../assets/svg/suggestion-icon.svg';
+import WarningIcon from '../assets/svg/warning-icon.svg';
 import Link from '../assets/js/components/Link';
 
 const LearnMore = () => {
@@ -47,7 +49,8 @@ const LearnMore = () => {
 
 storiesOf( 'Global/Notices', module )
 	.add( 'Settings warning notice', () => (
-		<SettingsNotice type={ TYPE_WARNING }>
+		// TODO - fix
+		<SettingsNotice type={ TYPE_WARNING } Icon={ <WarningIcon /> } LearnMore={ <LearnMore /> }>
 			{ 'This is a warning.' }
 		</SettingsNotice>
 	) )
@@ -72,7 +75,8 @@ storiesOf( 'Global/Notices', module )
 		</SettingsNotice>
 	) )
 	.add( 'Settings suggestion notice', () => (
-		<SettingsNotice type={ TYPE_SUGGESTION }>
+		// TODO - fix
+		<SettingsNotice type={ TYPE_SUGGESTION } Icon={ <SuggestionIcon /> } LearnMore={ <LearnMore /> }>
 			{ 'This is a suggestion.' }
 		</SettingsNotice>
 	) );
