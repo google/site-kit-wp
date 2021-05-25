@@ -28,7 +28,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySelection } from '../util';
-import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
+import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
@@ -102,7 +102,7 @@ const baseInitialState = {
 	properties: {},
 	isAwaitingPropertiesProfilesCompletion: {},
 	matchedProperty: undefined,
-	primaryPropertyType: 'ua',
+	primaryPropertyType: PROPERTY_TYPE_UA,
 };
 
 const baseActions = {
@@ -154,10 +154,11 @@ const baseActions = {
 	 * @param {string} [internalPropertyID] Internal property ID (if available).
 	 * @return {Object} A Generator function.
 	 */
-	selectProperty( propertyID, internalPropertyID = '' ) {
-		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
-
-		return ( function* () {
+	selectProperty: createValidatedAction(
+		( propertyID ) => {
+			invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
+		},
+		function* ( propertyID, internalPropertyID = '' ) {
 			const registry = yield Data.commonActions.getRegistry();
 
 			const accountID = registry.select( STORE_NAME ).getAccountID();
@@ -203,8 +204,8 @@ const baseActions = {
 
 			// Otherwise just select the first profile, or the option to create if none.
 			registry.dispatch( STORE_NAME ).setProfileID( profiles[ 0 ]?.id || PROFILE_CREATE );
-		}() );
-	},
+		}
+	),
 
 	receiveGetProperties( properties, { accountID } ) {
 		invariant( Array.isArray( properties ), 'properties must be an array.' );
@@ -241,7 +242,10 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setPrimaryPropertyType( primaryPropertyType ) {
-		invariant( [ 'ua', 'ga4' ].includes( primaryPropertyType ), 'type must be "ua" or "ga4"' );
+		invariant(
+			[ PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 ].includes( primaryPropertyType ),
+			`type must be "${ PROPERTY_TYPE_UA }" or "${ PROPERTY_TYPE_GA4 }"`,
+		);
 
 		return {
 			payload: { primaryPropertyType },
