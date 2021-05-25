@@ -44,7 +44,7 @@ const Template = ( { setupRegistry, ...args } ) => (
 );
 
 export const Ready = Template.bind( {} );
-Ready.storyName = 'Ready';
+Ready.storyName = 'Idea Hub notice';
 Ready.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { adminURL: 'http://www.example.com' } );
@@ -55,6 +55,9 @@ Ready.args = {
 		} ] );
 	},
 };
+Ready.parameters = {
+	features: [ 'ideaHubModule' ],
+};
 
 export default {
 	title: 'Views/WPDashboardApp',
@@ -64,7 +67,4 @@ export default {
 			return <Story />;
 		},
 	],
-	parameters: {
-		features: [ 'ideaHubModule' ],
-	},
 };
