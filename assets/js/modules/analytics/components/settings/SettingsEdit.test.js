@@ -32,6 +32,10 @@ describe( 'SettingsEdit', () => {
 			/tagmanager\/data\/settings/,
 			{ body: {}, status: 200 },
 		);
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+			{ body: [], status: 200 },
+		);
 
 		const registry = createTestRegistry();
 		const existingTag = {};
