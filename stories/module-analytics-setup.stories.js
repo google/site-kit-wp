@@ -26,14 +26,16 @@ import { storiesOf } from '@storybook/react';
  */
 import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
-import * as ga4Fixtures from '../assets/js/modules/analytics-4/datastore/__fixtures__';
 import { STORE_NAME, ACCOUNT_CREATE, PROFILE_CREATE, PROVISIONING_SCOPE } from '../assets/js/modules/analytics/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
-import { WithTestRegistry, createTestRegistry, provideModules, provideModuleRegistrations, provideSiteInfo } from '../tests/js/utils';
+import {
+	WithTestRegistry,
+	createTestRegistry,
+	provideModules,
+	provideModuleRegistrations,
+} from '../tests/js/utils';
 import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
-import { enabledFeatures } from '../assets/js/features';
 
 function Setup( props ) {
 	return (
@@ -68,33 +70,6 @@ const withRegistry = ( Story ) => {
 		<Story registry={ registry } />
 	);
 };
-
-function withGA4Registry( Story ) {
-	const registry = createTestRegistry();
-
-	global._googlesitekitLegacyData.setup.moduleToSetup = 'analytics';
-	enabledFeatures.add( 'ga4setup' );
-
-	provideModules( registry, [
-		{
-			slug: 'analytics',
-			active: true,
-			connected: false,
-		},
-		{
-			slug: 'analytics-4',
-			active: true,
-			connected: false,
-		},
-	] );
-
-	provideSiteInfo( registry );
-	provideModuleRegistrations( registry );
-
-	return (
-		<Story registry={ registry } />
-	);
-}
 
 storiesOf( 'Analytics Module/Setup', module )
 	.add( 'Loading', ( args, { registry } ) => {
@@ -364,76 +339,5 @@ storiesOf( 'Analytics Module/Setup', module )
 	}, {
 		decorators: [
 			withRegistry,
-		],
-	} )
-	.add( 'GA4 Transitional', ( args, { registry } ) => {
-		const { profiles } = fixtures.accountsPropertiesProfiles;
-		const accounts = [
-			{
-				id: '1000',
-				name: 'Account A',
-			},
-			{
-				id: '1001',
-				name: 'Account B',
-			},
-		];
-
-		const propertiesA = [
-			{
-				id: 'UA-2000-1',
-				name: 'Property A_A',
-				/* eslint-disable sitekit/acronym-case */
-				internalWebPropertyId: '216084934',
-				accountId: accounts[ 0 ].id,
-				websiteUrl: 'https://www.example.com',
-				/* eslint-enable */
-			},
-		];
-
-		const propertiesB = [
-			{
-				id: 'UA-3000-1',
-				name: 'Property B_A',
-				/* eslint-disable sitekit/acronym-case */
-				internalWebPropertyId: '216084966',
-				accountId: accounts[ 1 ].id,
-				websiteUrl: 'https://www.example.org',
-				/* eslint-enable */
-			},
-			{
-				id: 'UA-3000-1',
-				name: 'Property B_A',
-				/* eslint-disable sitekit/acronym-case */
-				internalWebPropertyId: '216084979',
-				accountId: accounts[ 1 ].id,
-				websiteUrl: 'https://subdomain.example.org',
-				/* eslint-enable */
-			},
-		];
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( ga4Fixtures.properties, { accountID: accounts[ 0 ].id } );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], { accountID: accounts[ 1 ].id } );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( ga4Fixtures.webDataStreams, { propertyID: ga4Fixtures.properties[ 0 ]._id } );
-
-		registry.dispatch( STORE_NAME ).receiveGetSettings( { adsConversionID: '' } );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-
-		registry.dispatch( STORE_NAME ).receiveGetProperties( propertiesA, { accountID: accounts[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetProperties( propertiesB, { accountID: accounts[ 1 ].id } );
-
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID: accounts[ 0 ].id, propertyID: propertiesA[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID: accounts[ 1 ].id, propertyID: propertiesB[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID: accounts[ 1 ].id, propertyID: propertiesB[ 1 ].id } );
-
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-
-		registry.dispatch( STORE_NAME ).selectAccount( accounts[ 0 ].id );
-
-		return <Setup registry={ registry } />;
-	}, {
-		decorators: [
-			withGA4Registry,
 		],
 	} );
