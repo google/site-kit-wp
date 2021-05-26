@@ -64,6 +64,11 @@ export default function AdminBarApp() {
 								? decodeHTMLEntity( currentEntityTitle )
 								: currentEntityURL
 							}
+							{ /* TODO - should not be hardcoded */ }
+							{ /* TODO - use translation string */ }
+							<p className="googlesitekit-adminbar__title--date-range">
+								over the last 28 days
+							</p>
 						</div>
 					</div>
 
