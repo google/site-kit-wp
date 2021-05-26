@@ -49,26 +49,26 @@ storiesOf( 'Analytics-4 Module', module )
 			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
-			const accountA = {
+			const account = {
 				id: '1000',
 				name: 'Account A',
 			};
 
 			const propertyA = {
 				_id: '2000',
-				_accountID: accountA.id,
+				_accountID: account.id,
 				name: 'properties/2000',
 				displayName: 'Property A',
 			};
 
-			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [ accountA ] );
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [ account ] );
 			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 
-			dispatch( MODULES_ANALYTICS ).receiveGetProperties( [], { accountID: accountA.id } );
-			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ accountA.id ] );
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( [], { accountID: account.id } );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ account.id ] );
 
-			dispatch( STORE_NAME ).receiveGetProperties( [ propertyA ], { accountID: accountA.id } );
-			dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountA.id ] );
+			dispatch( STORE_NAME ).receiveGetProperties( [ propertyA ], { accountID: account.id } );
+			dispatch( STORE_NAME ).finishResolution( 'getProperties', [ account.id ] );
 		};
 
 		return (

@@ -68,22 +68,22 @@ function SetupWrap( { children } ) {
 storiesOf( 'Analytics Module', module )
 	.add( 'Account Property Profile Select', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			const accountA = {
+			const account = {
 				id: '1000',
 				name: 'Account A',
 			};
 
-			const propertyA = {
+			const propertyOne = {
 				id: 'UA-2000-1',
 				name: 'Property A',
 			};
 
-			const propertyB = {
+			const propertyTwo = {
 				id: 'UA-2001-1',
 				name: 'Property B',
 			};
 
-			const profileA = {
+			const profile = {
 				id: '3000',
 				name: 'Profile A',
 			};
@@ -91,17 +91,17 @@ storiesOf( 'Analytics Module', module )
 			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
-			dispatch( STORE_NAME ).receiveGetAccounts( [ accountA ] );
+			dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 			dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 
-			dispatch( STORE_NAME ).receiveGetProperties( [ propertyA, propertyB ], { accountID: accountA.id } );
-			dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountA.id ] );
+			dispatch( STORE_NAME ).receiveGetProperties( [ propertyOne, propertyTwo ], { accountID: account.id } );
+			dispatch( STORE_NAME ).finishResolution( 'getProperties', [ account.id ] );
 
-			dispatch( STORE_NAME ).receiveGetProfiles( [ profileA ], { accountID: accountA.id, propertyID: propertyA.id } );
-			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ accountA.id, propertyA.id ] );
+			dispatch( STORE_NAME ).receiveGetProfiles( [ profile ], { accountID: account.id, propertyID: propertyOne.id } );
+			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ account.id, propertyOne.id ] );
 
-			dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID: accountA.id, propertyID: propertyB.id } );
-			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ accountA.id, propertyB.id ] );
+			dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID: account.id, propertyID: propertyTwo.id } );
+			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ account.id, propertyTwo.id ] );
 		};
 
 		return (

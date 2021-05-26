@@ -91,7 +91,7 @@ describe( 'PropertySelect', () => {
 			registry.dispatch( STORE_NAME ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
 		} );
 
-		// ACCOUNT_CREATE is an invalid (but valid selection), so ensure the select is not rendered
+		// ACCOUNT_CREATE is an invalid account ID (but valid selection), so ensure the property select dropdown is not rendered.
 		expect( container ).toBeEmptyDOMElement();
 
 		act( () => {
