@@ -56,9 +56,8 @@ function shouldCombineAllWidgets( widgets, widgetStates ) {
 		const state = widgetState?.Component?.name;
 		const module = widgetState?.metadata?.moduleSlug;
 		const isSpecialState = SPECIAL_WIDGET_STATES.includes( state );
-		const isMultipleModules = Object.keys( states ).length > 1;
 
-		if ( ! state || ! module || ! isSpecialState || isMultipleModules ) {
+		if ( ! state || ! module || ! isSpecialState ) {
 			return false;
 		}
 
@@ -74,6 +73,12 @@ function shouldCombineAllWidgets( widgets, widgetStates ) {
 		}
 	}
 
+	if ( Object.keys( states ).length > 1 ) {
+		// We have multiple modules, so the widgets can't be combined.
+		return false;
+	}
+
+	// const isMultipleModules = Object.keys( states ).length > 1;
 	return true;
 }
 
