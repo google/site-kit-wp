@@ -340,4 +340,5 @@ storiesOf( 'Analytics Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
-	} );
+	} )
+;
