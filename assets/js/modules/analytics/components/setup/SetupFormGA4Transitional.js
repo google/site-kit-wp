@@ -26,11 +26,10 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import StarIcon from '../../../../../svg/star.svg';
 import { STORE_NAME, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import SettingsNotice from '../../../../components/SettingsNotice';
-import Button from '../../../../components/Button';
+import SettingsNotice, { TYPE_INFO } from '../../../../components/SettingsNotice';
+import Link from '../../../../components/Link';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import {
 	AccountSelect,
@@ -75,11 +74,10 @@ export default function SetupFormGA4Transitional() {
 				</div>
 			) }
 
-			<SettingsNotice>
+			<SettingsNotice type={ TYPE_INFO }>
 				{ propertyType === PROPERTY_TYPE_GA4 && (
 					<Fragment>
 						<p>
-							<StarIcon width={ 20 } height={ 19 } />
 							{ __( 'You’ll need to connect the Universal Analytics property that’s associated with this Google Analytics 4 property', 'google-site-kit' ) }
 						</p>
 
@@ -95,16 +93,15 @@ export default function SetupFormGA4Transitional() {
 						) }
 
 						<p>
-							<Button href={ '#' } text>
+							<Link href={ '#' }>
 								{ __( 'Learn More', 'google-site-kit' ) }
-							</Button>
+							</Link>
 						</p>
 					</Fragment>
 				) }
 				{ propertyType === PROPERTY_TYPE_UA && (
 					<Fragment>
 						<p>
-							<StarIcon width={ 20 } height={ 19 } />
 							{ __( 'You’ll need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property', 'google-site-kit' ) }
 						</p>
 
@@ -113,9 +110,9 @@ export default function SetupFormGA4Transitional() {
 						</div>
 
 						<p>
-							<Button href={ '#' } text>
+							<Link href={ '#' }>
 								{ __( 'Learn More', 'google-site-kit' ) }
-							</Button>
+							</Link>
 						</p>
 					</Fragment>
 				) }
