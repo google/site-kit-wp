@@ -47,7 +47,7 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Idea Hub notice';
 Ready.args = {
 	setupRegistry: ( registry ) => {
-		provideSiteInfo( registry, { adminURL: 'http://www.example.com' } );
+		provideSiteInfo( registry );
 		provideModules( registry, [ {
 			active: true,
 			connected: true,
