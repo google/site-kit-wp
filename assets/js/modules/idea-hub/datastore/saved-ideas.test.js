@@ -27,6 +27,7 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { enabledFeatures } from '../../../features';
 
 describe( 'modules/idea-hub saved-ideas', () => {
 	let registry;
@@ -36,6 +37,7 @@ describe( 'modules/idea-hub saved-ideas', () => {
 	} );
 
 	beforeEach( () => {
+		enabledFeatures.add( 'ideaHubModule' );
 		registry = createTestRegistry();
 	} );
 
@@ -62,7 +64,7 @@ describe( 'modules/idea-hub saved-ideas', () => {
 
 				const pendingSavedIdeas = registry.select( STORE_NAME ).getSavedIdeas( options );
 
-				expect( pendingSavedIdeas ).toEqual( [] );
+				expect( pendingSavedIdeas ).toEqual( undefined );
 				await untilResolved( registry, STORE_NAME ).getSavedIdeas( options );
 
 				const savedIdeas = registry.select( STORE_NAME ).getSavedIdeas( options );
@@ -191,7 +193,7 @@ describe( 'modules/idea-hub saved-ideas', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const savedIdeas = registry.select( STORE_NAME ).getSavedIdeas( options );
-				expect( savedIdeas ).toEqual( [] );
+				expect( savedIdeas ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );
 		} );

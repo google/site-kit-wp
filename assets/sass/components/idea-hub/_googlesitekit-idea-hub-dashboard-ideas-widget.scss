@@ -1,0 +1,223 @@
+/**
+ * Idea Hub widget styles.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-idea-hub {
+		background-color: $c-idea-hub-background;
+		height: 100%;
+	}
+
+	.googlesitekit-idea-hub__header {
+		padding: 24px 16px 0;
+	}
+
+	.googlesitekit-idea-hub__title {
+		font-size: 0.875rem;
+		font-weight: $fw-primary-medium;
+		line-height: 1.25;
+		margin: 0 0 12px 8px;
+	}
+
+	.googlesitekit-idea-hub__tabs {
+
+		.mdc-tab {
+			flex: 0;
+			height: 40px;
+			padding: 0 12px;
+
+			@media (min-width: $bp-desktop) {
+				padding: 0 40px;
+			}
+		}
+
+		.mdc-tab__content {
+			color: rgba($c-black, 0.54);
+			font-size: 0.875rem;
+			font-weight: $fw-primary-medium;
+			letter-spacing: 0.25px;
+			line-height: 1.25;
+			text-transform: capitalize;
+
+			> span {
+				margin-left: 2px;
+			}
+		}
+
+		.mdc-tab-indicator__content--underline {
+			border-radius: 3px 3px 0 0;
+			height: 3px;
+		}
+
+		[aria-selected="true"] {
+
+			.mdc-tab__content {
+				color: $c-idea-hub-active-nav;
+			}
+		}
+	}
+
+	.googlesitekit-idea-hub__content {
+
+		&[aria-hidden="true"] {
+			display: none;
+		}
+
+		.googlesitekit-preview-table__row {
+			margin-bottom: 1px;
+		}
+	}
+
+	.googlesitekit-idea-hub__idea--topics {
+		line-height: 1;
+	}
+
+	.googlesitekit-idea-hub__idea--topic {
+		color: $c-idea-hub-topic;
+		display: inline-block;
+		font-size: 0.6875rem;
+		font-weight: $fw-primary-medium;
+		line-height: 1.45;
+		margin: 0 8px 4px 0;
+		text-transform: uppercase;
+		vertical-align: top;
+	}
+
+	.googlesitekit-idea-hub__idea--text {
+		color: $c-idea-hub-name;
+		font-size: 0.875rem;
+		line-height: 1.45;
+		margin: 0;
+	}
+
+	.googlesitekit-idea-hub__actions--delete,
+	.googlesitekit-idea-hub__actions--pin,
+	.googlesitekit-idea-hub__actions--unpin {
+
+		@media (min-width: $bp-tablet) {
+			display: none;
+		}
+	}
+
+	.googlesitekit-idea-hub__idea--single {
+		box-shadow: 0 -1px 0 rgba($c-black, 0.12);
+		padding-bottom: 12px;
+		padding-top: 12px;
+		transition: background $t-default ease-in-out;
+
+		+ .googlesitekit-idea-hub__idea--single {
+			padding-bottom: 12px;
+			padding-top: 12px;
+		}
+
+		&:hover,
+		&:focus {
+			background-color: $c-idea-hub-background-hover;
+
+			.googlesitekit-idea-hub__actions--delete,
+			.googlesitekit-idea-hub__actions--pin,
+			.googlesitekit-idea-hub__actions--unpin {
+				display: inline-flex;
+			}
+
+			svg {
+				opacity: 0.54;
+				transition: opacity $t-default ease-in-out;
+			}
+		}
+
+		.mdc-layout-grid__inner {
+			align-items: center;
+		}
+
+		.googlesitekit-idea-hub__idea--actions {
+			align-self: flex-start;
+			display: flex;
+			min-height: 48px;
+
+			@media (min-width: $bp-tablet) {
+				justify-content: flex-end;
+			}
+
+			svg {
+				color: $c-idea-hub-icon-color;
+				height: 24px;
+				width: 24px;
+			}
+
+			.googlesitekit-idea-hub__actions--unpin {
+
+				svg {
+					color: $c-idea-hub-active-nav;
+				}
+			}
+
+			button,
+			button.mdc-button {
+				background-color: transparent;
+				border-radius: 50%;
+				box-shadow: none;
+				height: 48px;
+				min-width: 48px;
+				padding: 0;
+				width: 48px;
+
+				&:hover {
+					background-color: $c-idea-hub-button-hover;
+
+					& svg {
+						opacity: 1;
+					}
+				}
+			}
+		}
+	}
+
+	.mdc-button.googlesitekit-idea-hub__actions--view {
+		background-color: transparent;
+		box-shadow: none;
+		color: $c-denim;
+		font-size: 0.75rem;
+		letter-spacing: 0.3px;
+		line-height: 1.33;
+		text-transform: none;
+
+		&:hover,
+		&:focus {
+			text-decoration: underline;
+		}
+	}
+
+	.googlesitekit-idea-hub__footer {
+		box-shadow: 0 -1px 0 rgba($c-black, 0.12);
+		padding: $grid-gap-phone;
+	}
+
+	.googlesitekit-idea-hub__footer--updated {
+		align-items: center;
+		color: $c-idea-hub-topic;
+		display: inline-flex;
+		font-size: 0.75rem;
+		justify-content: center;
+		line-height: 1.33;
+
+		@media (min-width: $bp-tablet) {
+			justify-content: flex-start;
+		}
+	}
+}

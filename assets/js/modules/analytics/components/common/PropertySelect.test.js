@@ -147,10 +147,13 @@ describe( 'PropertySelect', () => {
 		const targetProperty = properties[ 1 ];
 
 		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, [] );
-		// Click the label to expose the elements in the menu.
-		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-		// Click this element to select it and fire the onChange event.
-		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
+
+		act( () => {
+			// Click the label to expose the elements in the menu.
+			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
+			// Click this element to select it and fire the onChange event.
+			fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
+		} );
 
 		const newPropertyID = registry.select( STORE_NAME ).getPropertyID();
 		expect( targetProperty.id ).toEqual( newPropertyID );
