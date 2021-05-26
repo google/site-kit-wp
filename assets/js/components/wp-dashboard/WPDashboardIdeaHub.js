@@ -63,7 +63,7 @@ function WPDashboardIdeaHub() {
 			<div className="googlesitekit-idea-hub__wpdashboard--header">
 				<GoogleLogoIcon width="16" height="16" />
 				<div className="googlesitekit-idea-hub__wpdashboard--title">
-					{ __( 'Site Kit', 'google-site-kit' ) }
+					  Site Kit
 				</div>
 			</div>
 
