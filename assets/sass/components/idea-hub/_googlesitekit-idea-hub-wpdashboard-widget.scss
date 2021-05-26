@@ -41,15 +41,14 @@
 	.googlesitekit-idea-hub__wpdashboard--copy,
 	.googlesitekit-idea-hub__wpdashboard--link {
 		font-size: 14px;
+		margin: 0;
 	}
 
 	.googlesitekit-idea-hub__wpdashboard--copy {
 		color: $c-text-notice-info;
-		margin: 0;
 	}
 
 	.googlesitekit-idea-hub__wpdashboard--link {
-		margin: 0;
 		text-transform: uppercase;
 	}
 }
