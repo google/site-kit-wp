@@ -35,6 +35,7 @@ import WPDashboardClicks from './WPDashboardClicks';
 import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
 import WPDashboardSessionDuration from './WPDashboardSessionDuration';
 import WPDashboardPopularPages from './WPDashboardPopularPages';
+import WPDashboardIdeaHub from './WPDashboardIdeaHub';
 import ActivateModuleCTA from '../ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -64,6 +65,7 @@ const WPDashboardWidgets = () => {
 			'googlesitekit-wp-dashboard-stats',
 			{ 'googlesitekit-wp-dashboard-stats--fourup': analyticsModuleActive && analyticsModuleConnected }
 		) }>
+			<WPDashboardIdeaHub />
 			{ analyticsModuleActive && analyticsModuleConnected && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsWidget />
