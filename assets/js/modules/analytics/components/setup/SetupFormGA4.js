@@ -31,7 +31,8 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, PROPERTY_CREATE } from '../../datastore/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { STORE_NAME, PROPERTY_CREATE, FORM_SETUP } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import SettingsNotice, { TYPE_INFO } from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
@@ -43,8 +44,10 @@ export default function SetupFormGA4() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 
 	const { selectProperty } = useDispatch( STORE_NAME );
+	const { setValues } = useDispatch( CORE_FORMS );
 	useMount( () => {
 		selectProperty( PROPERTY_CREATE );
+		setValues( FORM_SETUP, { profileName: 'All Web Site Data' } );
 	} );
 
 	return (
