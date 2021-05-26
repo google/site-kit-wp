@@ -51,7 +51,7 @@ function shouldCombineAllWidgets( widgets, widgetStates ) {
 
 	for ( let i = 0; i < widgets.length; i++ ) {
 		const widget = widgets[ i ];
-		const widgetState = widgetStates?.[widget.slug];
+		const widgetState = widgetStates?.[ widget.slug ];
 
 		const state = widgetState?.Component?.name;
 		const module = widgetState?.metadata?.moduleSlug;
@@ -73,6 +73,7 @@ function shouldCombineAllWidgets( widgets, widgetStates ) {
 			states[ module ] = [ state ];
 		}
 	}
+
 	return true;
 }
 
