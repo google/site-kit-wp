@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf, _n } from '@wordpress/i18n';
 
 /**
  * Internal dependencies.
@@ -66,10 +66,14 @@ export default function AdminBarApp() {
 								? decodeHTMLEntity( currentEntityTitle )
 								: currentEntityURL
 							}
-							{ /* TODO - should not be hardcoded */ }
-							{ /* TODO - use translation string */ }
 							<p className="googlesitekit-adminbar__title--date-range">
-								over the last { dateRangeLength } days
+								{
+									sprintf(
+										/* translators: %s: number of days */
+										_n( 'over the last %s day', 'over the last %s days', dateRangeLength, 'google-site-kit', ),
+										28,
+									)
+								}
 							</p>
 						</div>
 					</div>
