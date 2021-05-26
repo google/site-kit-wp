@@ -68,6 +68,10 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID, selectProperty ] );
 
+	if ( ! isValidAccountID( accountID ) ) {
+		return null;
+	}
+
 	if ( ! hasResolvedAccounts || isResolvingProperties ) {
 		return <ProgressBar small />;
 	}
@@ -78,7 +82,7 @@ export default function PropertySelect() {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || hasGTMPropertyID || ! isValidAccountID( accountID ) }
+			disabled={ hasExistingTag || hasGTMPropertyID }
 			enhanced
 			outlined
 		>
