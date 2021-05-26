@@ -35,13 +35,16 @@ import Link from '../Link';
 const { useSelect } = Data;
 
 function WPDashboardIdeaHub() {
-	const isFeatureEnabled = useFeature( 'ideaHubModule' );
+	const isIdeaHubEnabled = useFeature( 'ideaHubModule' );
 
 	const {
 		hasSavedIdeas,
 		isModuleActive,
 		dashboardURL,
 	} = useSelect( ( select ) => {
+		if ( ! isIdeaHubEnabled ) {
+			return {};
+		}
 		const savedIdeas = select( MODULES_IDEA_HUB ).getSavedIdeas();
 		const adminURL = select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' );
 		return {
@@ -51,7 +54,7 @@ function WPDashboardIdeaHub() {
 		};
 	} );
 
-	const shouldRender = isFeatureEnabled && isModuleActive && hasSavedIdeas;
+	const shouldRender = isModuleActive && hasSavedIdeas;
 	const Component = (
 		<div className="googlesitekit-idea-hub__wpdashboard--notice">
 			<div className="googlesitekit-idea-hub__wpdashboard--header">
