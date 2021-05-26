@@ -15,28 +15,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+.googlesitekit-plugin {
 
-.googlesitekit-idea-hub__wpdashboard--notice {
-	background-color: $c-background-notice-info;
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-between;
-	margin-top: 13px;
-	padding: 14px;
-	width: 100%;
-}
+	.googlesitekit-idea-hub__wpdashboard--notice {
+		background-color: $c-background-notice-info;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		margin-top: 13px;
+		padding: 14px;
+		width: 100%;
+	}
 
-.googlesitekit-idea-hub__wpdashboard--header {
-	align-items: center;
-	display: flex;
-}
+	.googlesitekit-idea-hub__wpdashboard--header {
+		align-items: center;
+		display: flex;
+	}
 
-.googlesitekit-idea-hub__wpdashboard--title {
-	color: $c-secondary;
-	font-size: 16px;
-	margin-left: 12px;
-}
+	.googlesitekit-idea-hub__wpdashboard--title {
+		color: $c-secondary;
+		font-size: 16px;
+		margin-left: 12px;
+	}
 
-.googlesitekit-idea-hub__wpdashboard--link {
-	margin: 0;
+	.googlesitekit-idea-hub__wpdashboard--copy,
+	.googlesitekit-idea-hub__wpdashboard--link {
+		font-size: 14px;
+	}
+
+	.googlesitekit-idea-hub__wpdashboard--copy {
+		color: $c-text-notice-info;
+		margin: 0;
+	}
+
+	.googlesitekit-idea-hub__wpdashboard--link {
+		margin: 0;
+		text-transform: uppercase;
+	}
 }
