@@ -95,7 +95,7 @@ describe( 'PropertySelect', () => {
 			.toHaveClass( 'mdc-select--disabled' );
 	} );
 
-	it( 'should not render in the absence of an valid account ID.', async () => {
+	it( 'should not render if account ID is invalid', async () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry( { dispatch } ) {
 				setupRegistry( { dispatch } );
@@ -118,7 +118,7 @@ describe( 'PropertySelect', () => {
 
 		await act( () => registry.dispatch( STORE_NAME ).setAccountID( accountID ) );
 
-		// now select should be visible again
+		// A valid account ID was set, so the select should be visible.
 		expect( container.querySelector( '.googlesitekit-analytics__select-property' ) ).toBeInTheDocument();
 	} );
 

@@ -75,7 +75,7 @@ describe( 'PropertySelect', () => {
 		expect( listItems ).toHaveLength( properties.length + 1 );
 	} );
 
-	it( 'should not render in the absence of an valid account ID.', async () => {
+	it( 'should not render if account ID is not valid', async () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry,
 		} );
@@ -98,7 +98,7 @@ describe( 'PropertySelect', () => {
 			registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 		} );
 
-		// now select should be visible again
+		// After we set a valid account ID, the property select should be visible.
 		expect( container.querySelector( '.googlesitekit-analytics__select-property' ) ).toBeInTheDocument();
 		expect( container.querySelector( '.mdc-select__selected-text' ) ).toBeInTheDocument();
 	} );
