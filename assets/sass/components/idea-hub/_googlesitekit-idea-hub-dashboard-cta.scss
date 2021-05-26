@@ -18,12 +18,12 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-idea-hub-dashboardcta {
+	.googlesitekit-idea-hub__dashboard-cta {
 		background-color: $c-white;
 		display: flex;
 	}
 
-	.googlesitekit-idea-hub-dashboardcta__content {
+	.googlesitekit-idea-hub__dashboard-cta__content {
 		display: inline-block;
 		padding: $grid-gap-desktop;
 
@@ -36,23 +36,23 @@
 		}
 	}
 
-	.googlesitekit-idea-hub-dashboardcta__icon {
+	.googlesitekit-idea-hub__dashboard-cta__icon {
 		display: inline-block;
 		padding: $grid-gap-desktop 0 $grid-gap-desktop $grid-gap-desktop;
 	}
 
-	.googlesitekit-idea-hub-dashboardcta__icon svg {
+	.googlesitekit-idea-hub__dashboard-cta__icon svg {
+		// The icon sits in a 144px circle with a 30px
+		// gutter between the icon and the edge of the circle.
+		// The padding here reduces the size of the icon to create
+		// the gutter.
 		background-color: rgba($c-idea-hub-orange, 0.2);
-		background-size: 144px 144px;
 		border-radius: 50%;
-		height: 144px;
-		padding: 32px;
-		width: 144px;
+		padding: 30px;
 	}
 
-	.googlesitekit-idea-hub-dashboardcta__learnmore-bulb {
+	.googlesitekit-idea-hub__dashboard-cta__learnmore-bulb {
 		height: 1rem;
-		margin-bottom: -0.1rem;
-		margin-right: 7px;
+		vertical-align: middle;
 	}
 }

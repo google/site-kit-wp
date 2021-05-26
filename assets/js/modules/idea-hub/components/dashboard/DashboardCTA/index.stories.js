@@ -19,56 +19,43 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../../../../tests/js/utils';
-import { enabledFeatures } from '../../../../../features';
+import { provideModules } from '../../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import DashboardCTA from './index';
 
-const bootstrapRegistry = ( overrides = {} ) => {
-	enabledFeatures.clear();
-	const registry = createTestRegistry();
-	provideModules( registry, [ {
-		slug: 'idea-hub',
-		active: false,
-		connected: false,
-		...overrides,
-	} ] );
-
-	return registry;
-};
-
-const Template = ( args ) => <DashboardCTA { ...args } />;
+const Template = ( { setupRegistry, ...args } ) => (
+	<WithRegistrySetup func={ setupRegistry }>
+		<DashboardCTA { ...args } />
+	</WithRegistrySetup>
+);
 
 export const DefaultDashboardCTA = Template.bind( {} );
 DefaultDashboardCTA.storyName = 'Default';
-DefaultDashboardCTA.decorators = [
-	( Story ) => {
-		const registry = bootstrapRegistry();
-		return (
-			<WithTestRegistry registry={ registry }>
-				<Story />
-			</WithTestRegistry>
-		);
+DefaultDashboardCTA.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [ {
+			active: true,
+			connected: true,
+			slug: 'idea-hub',
+		} ] );
 	},
-];
+};
 
 export const ActiveNotConnected = Template.bind( {} );
 ActiveNotConnected.storyName = 'Active, not connected';
-ActiveNotConnected.decorators = [
-	( Story ) => {
-		const registry = bootstrapRegistry( {
+ActiveNotConnected.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [ {
 			active: true,
 			connected: false,
-		} );
-
-		return (
-			<WithTestRegistry registry={ registry }>
-				<Story />
-			</WithTestRegistry>
-		);
+			slug: 'idea-hub',
+		} ] );
 	},
-];
+};
 
 export default {
-	title: 'Modules/Idea Hub/components/dashboard/DashboardCTA',
-	component: DashboardCTA,
+	title: 'Modules/Idea Hub/Components/dashboard/DashboardCTA',
+	parameters: {
+		features: [ 'ideaHubModule' ],
+	},
 };
