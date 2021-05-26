@@ -69,19 +69,19 @@ describe( 'combineWidgets', () => {
 			getQuarterWidget( 'test4' ),
 		];
 		const widgetStates = {
-			// This widget should not be combined even though it is in the same
-			// special state as the others.
-			test1: getReportZeroState( 'search-console' ),
 			// The following widgets should be combined as they are all from the same
 			// module and in the same state.
+			test1: getReportZeroState( 'analytics' ),
 			test2: getReportZeroState( 'analytics' ),
 			test3: getReportZeroState( 'analytics' ),
-			test4: getReportZeroState( 'analytics' ),
+			// This widget should not be combined even though it is in the same
+			// special state as the others.
+			test4: getReportZeroState( 'search-console' ),
 		};
 
 		const expected = {
-			overrideComponents: [ null, null, null, getReportZeroState( 'analytics' ) ],
-			gridColumnWidths: [ 3, 0, 0, 9 ],
+			overrideComponents: [ null, null, getReportZeroState( 'analytics' ), null ],
+			gridColumnWidths: [ 0, 0, 9, 3 ],
 		};
 
 		const layout = getWidgetLayout( widgets, widgetStates );
