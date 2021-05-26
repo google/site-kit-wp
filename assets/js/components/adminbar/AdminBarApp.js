@@ -28,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Link from '../Link';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { decodeHTMLEntity, trackEvent } from '../../util';
 import AdminBarWidgets from './AdminBarWidgets';
 const { useSelect } = Data;
@@ -36,6 +37,7 @@ export default function AdminBarApp() {
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
 	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: currentEntityURL } ) );
+	const dateRangeLength = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
 	const onMoreDetailsClick = useCallback( async () => {
 		await trackEvent( 'admin_bar', 'post_details_click' );
@@ -67,7 +69,7 @@ export default function AdminBarApp() {
 							{ /* TODO - should not be hardcoded */ }
 							{ /* TODO - use translation string */ }
 							<p className="googlesitekit-adminbar__title--date-range">
-								over the last 28 days
+								over the last { dateRangeLength } days
 							</p>
 						</div>
 					</div>
