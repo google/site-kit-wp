@@ -54,8 +54,11 @@ function WPDashboardIdeaHub() {
 		};
 	} );
 
-	const shouldRender = isModuleActive && hasSavedIdeas;
-	const Component = (
+	if ( ! isModuleActive && ! hasSavedIdeas ) {
+		return null;
+	}
+
+	return (
 		<div className="googlesitekit-idea-hub__wpdashboard--notice">
 			<div className="googlesitekit-idea-hub__wpdashboard--header">
 				<GoogleLogoIcon width="16" height="16" />
@@ -77,8 +80,6 @@ function WPDashboardIdeaHub() {
 			</p>
 		</div>
 	);
-
-	return shouldRender ? Component : null;
 }
 
 export default WPDashboardIdeaHub;
