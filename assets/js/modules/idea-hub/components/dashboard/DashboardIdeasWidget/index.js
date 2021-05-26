@@ -36,9 +36,11 @@ import { useState, useRef, useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../../datastore/constants';
 import whenActive from '../../../../../util/when-active';
+import EmptyIcon from '../../../../../../svg/idea-hub-empty-new-ideas.svg';
 import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
+import Empty from './Empty';
 const { useSelect } = Data;
 
 const getHash = ( hash ) => hash ? hash.replace( '#', '' ) : false;
@@ -53,6 +55,7 @@ const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 
 const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportError } ) => {
 	const ideaHubContainer = useRef();
+	const newIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeas() );
 	const savedIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeas() );
 	const draftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas() );
 
@@ -77,6 +80,20 @@ const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportErro
 		setActiveTabIndex( tabIndex );
 		setHash( DashboardIdeasWidget.tabIDsByIndex[ tabIndex ] );
 	}, [ setHash, setActiveTabIndex ] );
+
+	if ( newIdeas?.length === 0 && savedIdeas?.length === 0 && draftIdeas?.length === 0 ) {
+		return (
+			<Widget noPadding>
+				<div className="googlesitekit-idea-hub">
+					<Empty
+						Icon={ <EmptyIcon /> }
+						title={ __( 'Idea Hub is generating ideas', 'google-site-kit' ) }
+						subtitle={ __( 'This could take 24 hours.', 'google-site-kit' ) }
+					/>
+				</div>
+			</Widget>
+		);
+	}
 
 	return (
 		<Widget noPadding>
