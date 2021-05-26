@@ -22,7 +22,6 @@
 import { STORE_NAME } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { provideModules, provideModuleRegistrations } from '../../../../../../tests/js/utils';
-import { enabledFeatures } from '../../../../features';
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
@@ -56,15 +55,17 @@ Ready.decorators = [
 		);
 	},
 ];
+Ready.parameters = {
+	features: [
+		'ga4setup',
+	],
+};
 
 export default {
 	title: 'Modules/Analytics/Setup/SetupFormUA',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				enabledFeatures.clear();
-				enabledFeatures.add( 'ga4setup' );
-
 				provideModules( registry, [
 					{
 						slug: 'analytics',
