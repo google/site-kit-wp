@@ -30,7 +30,7 @@ import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME, PROPERTY_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
-import { isValidAccountID } from '../../util';
+import { isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
@@ -68,7 +68,7 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID, selectProperty ] );
 
-	if ( ! isValidAccountID( accountID ) ) {
+	if ( ! isValidAccountSelection( accountID ) ) {
 		return null;
 	}
 
