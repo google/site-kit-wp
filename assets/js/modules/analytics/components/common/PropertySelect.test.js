@@ -95,13 +95,15 @@ describe( 'PropertySelect', () => {
 			.toHaveClass( 'mdc-select--disabled' );
 	} );
 
-	it( 'should be disabled when in the absence of an valid account ID.', async () => {
+	it( 'should not render if account ID is invalid', async () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry( { dispatch } ) {
 				setupRegistry( { dispatch } );
 				dispatch( STORE_NAME ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
 			},
 		} );
+
+		const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
 		// A valid accountID is provided, so ensure it is not currently disabled.
 		const selectWrapper = container.querySelector( '.googlesitekit-analytics__select-property' );
@@ -111,9 +113,13 @@ describe( 'PropertySelect', () => {
 
 		await act( () => registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE ) );
 
-		// ACCOUNT_CREATE is an invalid (but valid selection), so ensure the select IS currently disabled.
-		expect( selectWrapper ).toHaveClass( 'mdc-select--disabled' );
-		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'true' );
+		// ACCOUNT_CREATE is an invalid account ID (but valid selection), so ensure the property select dropdown is not rendered.
+		expect( container ).toBeEmptyDOMElement();
+
+		await act( () => registry.dispatch( STORE_NAME ).setAccountID( accountID ) );
+
+		// A valid account ID was set, so the select should be visible.
+		expect( container.querySelector( '.googlesitekit-analytics__select-property' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
