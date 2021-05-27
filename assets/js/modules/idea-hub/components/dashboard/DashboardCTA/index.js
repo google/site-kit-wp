@@ -50,7 +50,7 @@ function DashboardCTA() {
 			navigateTo( response.moduleReauthURL );
 		} else {
 			showErrorNotification( GenericError, {
-				id: `idea-hub-setup-error`,
+				id: 'idea-hub-setup-error',
 				title: __( 'Internal Server Error', 'google-site-kit' ),
 				description: error.message,
 				format: 'small',
