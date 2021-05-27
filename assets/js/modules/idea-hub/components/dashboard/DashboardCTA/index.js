@@ -69,9 +69,8 @@ function DashboardCTA() {
 				<h5>
 					{ __( 'Get new topics based on what people are searching for with Idea Hub', 'google-site-kit' ) }
 				</h5>
-				<p>
+				<p className="googlesitekit-idea-hub__dashboard-cta__learnmore-copy">
 					<BulbIcon
-						className="googlesitekit-idea-hub__dashboard-cta__learnmore-bulb"
 						width="16"
 						height="16"
 					/>
