@@ -21,7 +21,7 @@
  */
 import { STORE_NAME } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { provideModules, provideModuleRegistrations } from '../../../../../../tests/js/utils';
+import { provideModules, provideModuleRegistrations, provideSiteInfo } from '../../../../../../tests/js/utils';
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
@@ -31,18 +31,19 @@ Ready.storyName = 'SetupFormUA';
 Ready.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
+			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 			/* eslint-disable sitekit/acronym-case */
 			const accountID = properties[ 0 ].accountId;
 			const propertyID = profiles[ 0 ].webPropertyId;
+			/* eslint-enable */
 
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( { adsConversionID: '' } );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
 			registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
 			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			registry.dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], { accountID } );
+			registry.dispatch( STORE_NAME ).selectAccount( accountID );
 		};
 
 		return (
@@ -76,6 +77,7 @@ export default {
 					},
 				] );
 
+				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
 			};
 

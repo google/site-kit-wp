@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -27,10 +32,10 @@ import { __ } from '@wordpress/i18n';
 import SettingsNotice, { TYPE_INFO } from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
 
-export default function GA4PropertyNotice() {
+export default function GA4PropertyNotice( { notice } ) {
 	return (
 		<SettingsNotice type={ TYPE_INFO }>
-			{ __( 'A Google Analytics 4 property will also be created.', 'google-site-kit' ) }
+			{ notice }
 			{ ' ' }
 			<Link
 				href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
@@ -42,3 +47,7 @@ export default function GA4PropertyNotice() {
 		</SettingsNotice>
 	);
 }
+
+GA4PropertyNotice.propTypes = { // eslint-disable-line sitekit/acronym-case
+	notice: PropTypes.string.isRequired,
+};

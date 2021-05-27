@@ -43,7 +43,6 @@ import { STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from '../../../analytics-4/datastore/constants';
 import GA4PropertyNotice from '../common/GA4PropertyNotice';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { isValidPropertyID } from '../../util';
 
 const { useSelect, useDispatch } = Data;
 
@@ -51,7 +50,6 @@ export default function SetupFormUA() {
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 
 	// Needed to conditionally show the profile name field and surrounding container.
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
@@ -78,7 +76,7 @@ export default function SetupFormUA() {
 
 				<PropertySelect />
 
-				{ isValidPropertyID( propertyID ) && <ProfileSelect /> }
+				<ProfileSelect />
 			</div>
 
 			{ profileID === PROFILE_CREATE && (
@@ -87,7 +85,9 @@ export default function SetupFormUA() {
 				</div>
 			) }
 
-			{ isValidPropertyID( propertyID ) && <GA4PropertyNotice /> }
+			<GA4PropertyNotice
+				notice={ __( 'A Google Analytics 4 property will also be created.', 'google-site-kit' ) }
+			/>
 		</Fragment>
 	);
 }
