@@ -1,5 +1,5 @@
 /**
- * Modal component.
+ * Portal component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -26,7 +26,7 @@ import { useEffectOnce } from 'react-use';
  */
 import { createPortal, useState } from '@wordpress/element';
 
-function Modal( { children } ) {
+function Portal( { children } ) {
 	// Using state as we need `el` to not change when the component re-renders
 	const [ el ] = useState( document.createElement( 'div' ) );
 
@@ -43,4 +43,4 @@ function Modal( { children } ) {
 	);
 }
 
-export default Modal;
+export default Portal;
