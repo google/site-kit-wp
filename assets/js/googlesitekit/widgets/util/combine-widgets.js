@@ -62,14 +62,12 @@ function shouldCombineAllWidgets( widgets, widgetStates ) {
 		}
 
 		if ( states[ module ] ) {
-			if ( states[ module ].includes( state ) === false ) {
+			if ( states[ module ] !== state ) {
 				// We have a widget from a given module in a different state from the others.
 				return false;
 			}
-
-			states[ module ].push( state );
 		} else {
-			states[ module ] = [ state ];
+			states[ module ] = state;
 		}
 	}
 
@@ -78,7 +76,6 @@ function shouldCombineAllWidgets( widgets, widgetStates ) {
 		return false;
 	}
 
-	// const isMultipleModules = Object.keys( states ).length > 1;
 	return true;
 }
 
