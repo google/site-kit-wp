@@ -72,8 +72,8 @@ function DashboardCTA() {
 				<p>
 					<BulbIcon
 						className="googlesitekit-idea-hub__dashboard-cta__learnmore-bulb"
-						width="16px"
-						height="16px"
+						width="16"
+						height="16"
 					/>
 					&nbsp;
 					<Link
