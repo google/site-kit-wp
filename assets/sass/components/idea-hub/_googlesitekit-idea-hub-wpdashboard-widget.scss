@@ -20,7 +20,6 @@
 	.googlesitekit-idea-hub__wpdashboard--notice {
 		background-color: $c-background-notice-info;
 		display: flex;
-		flex-wrap: wrap;
 		justify-content: space-between;
 		margin-top: 13px;
 		padding: 14px;
@@ -30,6 +29,7 @@
 	.googlesitekit-idea-hub__wpdashboard--header {
 		align-items: center;
 		display: flex;
+		white-space: nowrap;
 	}
 
 	.googlesitekit-idea-hub__wpdashboard--title {
@@ -41,14 +41,15 @@
 	.googlesitekit-idea-hub__wpdashboard--copy,
 	.googlesitekit-idea-hub__wpdashboard--link {
 		font-size: 14px;
-		margin: 0;
 	}
 
 	.googlesitekit-idea-hub__wpdashboard--copy {
 		color: $c-text-notice-info;
+		margin: 0 24px;
 	}
 
 	.googlesitekit-idea-hub__wpdashboard--link {
+		margin: 0;
 		text-transform: uppercase;
 	}
 }
