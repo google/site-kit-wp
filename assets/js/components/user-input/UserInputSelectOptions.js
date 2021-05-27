@@ -200,6 +200,7 @@ export default function UserInputSelectOptions( { slug, options, max, next, isAc
 							disabled={ disabled }
 							tabIndex={ ! values.includes( other.trim() ) || ! isActive ? '-1' : undefined }
 							onKeyDown={ onKeyDown }
+							maxLength={ 100 }
 						/>
 					</TextField>
 					<label htmlFor={ `${ slug }-select-options` } className="screen-reader-text">
