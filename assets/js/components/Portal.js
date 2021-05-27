@@ -20,18 +20,23 @@
  * External dependencies
  */
 import { useEffectOnce } from 'react-use';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
 import { createPortal, useState } from '@wordpress/element';
 
-function Portal( { children } ) {
+function Portal( { children, slug, appendPluginRoot } ) {
+	const elDiv = document.createElement( 'div' );
+	if ( slug ) {
+		elDiv.classList.add( `googlesitekit-portal-${ slug }` );
+	}
 	// Using state as we need `el` to not change when the component re-renders
-	const [ el ] = useState( document.createElement( 'div' ) );
+	const [ el ] = useState( elDiv );
 
 	useEffectOnce( () => {
-		const root = document.querySelector( '.googlesitekit-plugin' ) || document.body;
+		const root = appendPluginRoot ? document.querySelector( '.googlesitekit-plugin' ) || document.body : document.body;
 		root.appendChild( el );
 
 		return () => root.removeChild( el );
@@ -42,5 +47,15 @@ function Portal( { children } ) {
 		el,
 	);
 }
+
+Portal.propTypes = {
+	slug: PropTypes.string,
+	appendPluginRoot: PropTypes.bool,
+};
+
+Portal.defaultProps = {
+	slug: '',
+	appendPluginRoot: true,
+};
 
 export default Portal;
