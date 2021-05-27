@@ -9,8 +9,7 @@
         {
             "name": "firebase/php-jwt",
             "version": "v5.2.0",
-            "source": {
-                "type": "git",
+            "source": {xxxxxxxxxxxxxxx
                 "url": "https://github.com/firebase/php-jwt.git",
                 "reference": "feb0e820b8436873675fd3aca04f3728eb2185cb"
             },

@@ -21,7 +21,7 @@
     "ext-openssl": "*",
     "google/apiclient": "^2.9.1",
     "google/apiclient-services": "^0.157",
-    "guzzlehttp/guzzle": "^5.3.4"
+    "guzzlehttp/guzzle": "^5.3.3"
   },
   "replace": {
     "phpseclib/phpseclib": "*"
