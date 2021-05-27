@@ -29,19 +29,19 @@ function tagHeadHTML( measurementID ) {
 }
 
 /**
- * Generates valid HTML with an Analytics tag.
+ * Generates valid HTML with an Analytics-4 tag.
  *
  * @since n.e.x.t
  *
- * @param {string} analyticsID Analytics ID to generate tag with.
+ * @param {string} measurementID Measurement ID to generate tag with.
  * @return {string} HTML.
  */
-export function generateHTMLWithTag( analyticsID ) {
+export function generateHTMLWithTag( measurementID ) {
 	return `
 		<!DOCTYPE html>
 		<html>
 			<head>
-				${ analyticsID && tagHeadHTML( analyticsID ) }
+				${ measurementID && tagHeadHTML( measurementID ) }
 				<title>Test Title</title>
 			</head>
 			<body>
@@ -50,4 +50,3 @@ export function generateHTMLWithTag( analyticsID ) {
 		</html>
 	`;
 }
-

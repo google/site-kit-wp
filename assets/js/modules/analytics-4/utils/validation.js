@@ -70,5 +70,5 @@ export function isValidWebDataStreamID( webDataStreamID ) {
  * @return {boolean} TRUE if the measurementID is valid, otherwise FALSE.
  */
 export function isValidMeasurementID( measurementID ) {
-	return typeof webDataStreamID === 'string' && /^[a-zA-Z0-9]+$/.test( measurementID );
+	return typeof measurementID === 'string' && /^[a-zA-Z0-9]+$/.test( measurementID );
 }
