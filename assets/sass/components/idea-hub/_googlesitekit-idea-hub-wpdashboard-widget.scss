@@ -45,7 +45,11 @@
 
 	.googlesitekit-idea-hub__wpdashboard--copy {
 		color: $c-text-notice-info;
-		margin: 0 24px;
+		margin: 0 $grid-gap-phone;
+
+		@media (min-width: $bp-desktop) {
+			margin: 0 $grid-gap-desktop;
+		}
 	}
 
 	.googlesitekit-idea-hub__wpdashboard--link {
