@@ -31,20 +31,17 @@ Ready.storyName = 'SetupFormUA';
 Ready.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+			const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
 			/* eslint-disable sitekit/acronym-case */
 			const accountID = properties[ 0 ].accountId;
 			const propertyID = profiles[ 0 ].webPropertyId;
 
 			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-
-			// eslint-disable-next-line sitekit/acronym-case
 			registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
 			registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
-
-			registry.dispatch( STORE_NAME ).receiveGetSettings( { accountID } );
+			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+			registry.dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], { accountID } );
 		};
 
