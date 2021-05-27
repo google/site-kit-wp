@@ -32,14 +32,16 @@ Ready.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-			/* eslint-disable sitekit/acronym-case */
-			const accountID = properties[ 0 ].accountId;
-			const propertyID = profiles[ 0 ].webPropertyId;
-			/* eslint-enable */
+			const accountID = accounts[ 0 ].id;
+			const propertyID = properties[ 0 ].id;
 
 			registry.dispatch( STORE_NAME ).receiveGetSettings( { adsConversionID: '' } );
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
+			registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts.slice( 0, 1 ) );
+			registry.dispatch( STORE_NAME ).receiveGetProperties(
+				// eslint-disable-next-line sitekit/acronym-case
+				properties.slice( 0, 1 ).map( ( property ) => ( { ...property, websiteUrl: 'http://example.com' } ) ),
+				{ accountID },
+			);
 			registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
 			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], { accountID } );
