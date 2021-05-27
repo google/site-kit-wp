@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-function tagHeadHTML( analyticsID ) {
+function tagHeadHTML( measurementID ) {
 	return `<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-${ analyticsID }"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-${ measurementID }"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
 	
-	  gtag('config', 'G-${ analyticsID }');
+	  gtag('config', 'G-${ measurementID }');
 	</script>`;
 }
 
