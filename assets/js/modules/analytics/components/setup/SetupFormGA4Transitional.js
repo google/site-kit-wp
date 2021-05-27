@@ -28,8 +28,6 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import SettingsNotice, { TYPE_INFO } from '../../../../components/SettingsNotice';
-import Link from '../../../../components/Link';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import {
 	AccountSelect,
@@ -37,6 +35,7 @@ import {
 	PropertySelect,
 	PropertySelectIncludingGA4,
 	ProfileNameTextField,
+	GA4PropertyNotice,
 } from '../common';
 const { useSelect } = Data;
 
@@ -74,13 +73,11 @@ export default function SetupFormGA4Transitional() {
 				</div>
 			) }
 
-			<SettingsNotice type={ TYPE_INFO }>
+			<GA4PropertyNotice
+				notice={ __( 'You’ll need to connect the Universal Analytics property that’s associated with this Google Analytics 4 property.', 'google-site-kit' ) }
+			>
 				{ propertyType === PROPERTY_TYPE_GA4 && (
 					<Fragment>
-						<p>
-							{ __( 'You’ll need to connect the Universal Analytics property that’s associated with this Google Analytics 4 property', 'google-site-kit' ) }
-						</p>
-
 						<div className="googlesitekit-setup-module__inputs">
 							<PropertySelect />
 							<ProfileSelect />
@@ -91,32 +88,14 @@ export default function SetupFormGA4Transitional() {
 								<ProfileNameTextField />
 							</div>
 						) }
-
-						<p>
-							<Link href={ '#' }>
-								{ __( 'Learn More', 'google-site-kit' ) }
-							</Link>
-						</p>
 					</Fragment>
 				) }
 				{ propertyType === PROPERTY_TYPE_UA && (
-					<Fragment>
-						<p>
-							{ __( 'You’ll need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property', 'google-site-kit' ) }
-						</p>
-
-						<div className="googlesitekit-setup-module__inputs">
-							<GA4PropertySelect />
-						</div>
-
-						<p>
-							<Link href={ '#' }>
-								{ __( 'Learn More', 'google-site-kit' ) }
-							</Link>
-						</p>
-					</Fragment>
+					<div className="googlesitekit-setup-module__inputs">
+						<GA4PropertySelect />
+					</div>
 				) }
-			</SettingsNotice>
+			</GA4PropertyNotice>
 		</Fragment>
 	);
 }
