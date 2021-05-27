@@ -7,7 +7,7 @@ on:
       - main
     # Only run if CSS/JS/MD-related files changed.
     paths:
-      - '.github/workflows/js-css-lint.yml'
+      - '.github/workflows/js-css-lint-test.yml'
       - '**.js'
       - '**.json'
       - '**.scss'
@@ -24,7 +24,7 @@ on:
       - main
     # Only run if CSS/JS/MD-related files changed.
     paths:
-      - '.github/workflows/js-css-lint.yml'
+      - '.github/workflows/js-css-lint-test.yml'
       - '**.js'
       - '**.json'
       - '**.scss'
