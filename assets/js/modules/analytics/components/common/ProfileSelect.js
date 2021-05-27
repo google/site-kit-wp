@@ -53,6 +53,10 @@ export default function ProfileSelect() {
 		}
 	}, [ profileID, setProfileID ] );
 
+	if ( ! isValidAccountID( accountID ) || ! isValidPropertyID( propertyID ) ) {
+		return null;
+	}
+
 	if ( isLoading ) {
 		return <ProgressBar small />;
 	}
