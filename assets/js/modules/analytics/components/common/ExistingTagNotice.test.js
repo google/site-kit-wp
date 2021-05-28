@@ -22,7 +22,6 @@
 import ExistingTagNotice from './ExistingTagNotice';
 import { render } from '../../../../../../tests/js/test-utils';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
-// import { enabledFeatures } from '../../../../features';
 import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 // import * as fixtures from '../../datastore/__fixtures__';
 
@@ -33,6 +32,8 @@ const {
 const accountID = createProperty._accountID;
 // const { accounts, properties: propertiesUA, profiles } = fixtures.accountsPropertiesProfiles;
 // const propertyIDua = propertiesUA[ 0 ].id;
+
+const features = [ 'ga4setup' ];
 
 describe( 'ExistingTagNotice', () => {
 	it( 'should not render if does not have existing tag', async () => {
@@ -65,6 +66,15 @@ describe( 'ExistingTagNotice', () => {
 		await findByText( /An existing Analytics tag was found on your site with the ID/ );
 	} );
 
-	// enabledFeatures.add( 'ga4setup' );
+	it( 'should do new functionality if ga4 tag enabled', async () => {
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
+			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( 'UA-12345678-1' );
+		};
+
+		const { findByText } = render( <ExistingTagNotice />, { features, setupRegistry } );
+
+		await findByText( 'ga4 enabled' );
+	} );
 } );
 
