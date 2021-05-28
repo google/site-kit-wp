@@ -78,7 +78,15 @@ class REST_User_Surveys_Controller {
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						return rest_ensure_response( array() );
+						$proxy = $this->authentication->get_google_proxy();
+						$creds = $this->authentication->credentials();
+						$token = $this->authentication->get_oauth_client()->get_access_token();
+						$data  = $request->get_param( 'data' );
+
+						$response = $proxy->send_survey_trigger( $creds, $token, $data['token_id'] );
+						$response = rest_ensure_response( $response );
+
+						return $response;
 					},
 					'permission_callback' => $can_authenticate,
 					'args'                => array(
@@ -100,7 +108,15 @@ class REST_User_Surveys_Controller {
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						return rest_ensure_response( array() );
+						$proxy = $this->authentication->get_google_proxy();
+						$creds = $this->authentication->credentials();
+						$token = $this->authentication->get_oauth_client()->get_access_token();
+						$data  = $request->get_param( 'data' );
+
+						$response = $proxy->send_survey_event( $creds, $token, $data['session'], $data['event'] );
+						$response = rest_ensure_response( $response );
+
+						return $response;
 					},
 					'permission_callback' => $can_authenticate,
 					'args'                => array(
