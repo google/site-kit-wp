@@ -19,31 +19,31 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import { Icon, closeSmall } from '@wordpress/icons';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
-import { Grid, Row, Cell } from '../../material-components';
 import Button from '../../components/Button';
 import Logo from '../../../svg/logo-g.svg';
 
 const SurveyHeader = ( { title, dismissSurvey } ) => (
-	<Grid className="googlesitekit-survey__header">
-		<Row>
-			<Cell className="googlesitekit-survey__header--logo">
-				<Logo />
-			</Cell>
-			<Cell>{ title }</Cell>
-			<Cell>
-				<Button
-					icon={ <Icon icon={ closeSmall } /> }
-					onClick={ dismissSurvey }
-				/>
-			</Cell>
-		</Row>
-	</Grid>
+	<div className="googlesitekit-survey__header">
+		<div className="googlesitekit-survey__header--logo">
+			<Logo />
+		</div>
+
+		<div className="googlesitekit-survey__header--details">
+			<h3>{ title }</h3>
+
+			<Button
+				icon={ <Icon icon={ closeSmall } size={ 40 } /> }
+				onClick={ dismissSurvey || undefined }
+				className="googlesitekit-survey__header--close"
+			/>
+		</div>
+	</div>
 );
 
 SurveyHeader.propTypes = {
@@ -52,7 +52,7 @@ SurveyHeader.propTypes = {
 };
 
 SurveyHeader.defaultProps = {
-	dismissSurvey: () => {},
+	dismissSurvey: null,
 };
 
 export default SurveyHeader;

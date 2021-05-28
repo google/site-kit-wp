@@ -19,44 +19,26 @@
 /**
  * Internal dependencies
  */
-import SurveyQuestionRating from './SurveyQuestionRating';
+import SurveyCompletion from './SurveyCompletion';
 
-export const SurveyQuestionRatingStory = () => (
+export const SurveyCompletionStory = () => (
 	<div className="googlesitekit-survey">
-		<SurveyQuestionRating
-			question="Based on your experience so far, how satisfied are you with Site Kit?"
-			choices={ [
-				{
-					answer_ordinal: 1,
-					text: 'Unhappy',
-				},
-				{
-					answer_ordinal: 2,
-					text: 'Dissatisfied',
-				},
-				{
-					answer_ordinal: 3,
-					text: 'Neutral',
-				},
-				{
-					answer_ordinal: 4,
-					text: 'Satisfied',
-				},
-				{
-					answer_ordinal: 5,
-					text: 'Delighted',
-				},
-			] }
-			answerQuestion={ ( answer ) => {
-				global.console.log( `Clicked: ${ answer }` );
+		<SurveyCompletion
+			title="Thanks for sharing your thoughts!"
+			ctaText="Let’s go"
+			ctaURL="https://sitekit.withgoogle.com/"
+			ctaOnClick={ () => {
+				global.console.log( 'Clicked' );
 			} }
 			dismissSurvey={ () => {
-				global.console.log( 'Dismissed Survey' );
+				global.console.log( 'Dismissed Completed Survey' );
 			} }
-		/>
+		>
+			We’re glad Site Kit is helpful for you! To help others discover it too, take a moment to share your opinion as a review.
+		</SurveyCompletion>
 	</div>
 );
-SurveyQuestionRatingStory.storyName = 'SurveyQuestionRating';
+SurveyCompletionStory.storyName = 'SurveyCompletion';
 
 export default {
 	title: 'Components/Surveys',

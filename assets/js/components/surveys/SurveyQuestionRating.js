@@ -20,15 +20,17 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useCallback } from '@wordpress/element';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Button from '../../components/Button';
 import SurveyHeader from './SurveyHeader';
 import SurveyUnhappy from '../../../svg/survey-unhappy.svg';
 import SurveyDissatisfied from '../../../svg/survey-dissatisfied.svg';
@@ -38,7 +40,11 @@ import SurveyDelighted from '../../../svg/survey-delighted.svg';
 
 const SurveyQuestionRating = ( { question, choices, answerQuestion, dismissSurvey } ) => {
 	const getIcon = ( answerOrdinal ) => {
-		switch ( answerOrdinal ) {
+		if ( ! answerOrdinal ) {
+			return null;
+		}
+
+		switch ( parseInt( answerOrdinal, 10 ) ) {
 			case 1:
 				return <SurveyUnhappy />;
 			case 2:
@@ -52,10 +58,45 @@ const SurveyQuestionRating = ( { question, choices, answerQuestion, dismissSurve
 		}
 	};
 
+	const handleButtonClick = useCallback( ( answer ) => {
+		if ( typeof answerQuestion === 'function' ) {
+			answerQuestion( answer );
+		}
+	}, [ answerQuestion ] );
+
 	return (
-		<SurveyHeader
-			title={ __( 'Based on your experience so far, how satisfied are you with Site Kit?', 'google-site-kit' ) }
-		/>
+		<div className="googlesitekit-survey__question-rating">
+			<SurveyHeader
+				title={ question }
+				dismissSurvey={ dismissSurvey }
+			/>
+
+			<div className="googlesitekit-survey__body">
+				<div className="googlesitekit-survey__choices">
+					{ choices.map( ( choice, index ) => {
+						return (
+							<div className="googlesitekit-survey__choice" key={ index }>
+								<Button
+									icon={ getIcon( choice.answer_ordinal ) }
+									aria-label={
+										sprintf(
+											/* translators: %s: Icon Expression */
+											__( '%s icon', 'google-site-kit' ),
+											choice.text,
+										)
+									}
+									onClick={ handleButtonClick.bind( null, choice.answer_ordinal ) }
+								/>
+
+								<p>
+									{ choice.text }
+								</p>
+							</div>
+						);
+					} ) }
+				</div>
+			</div>
+		</div>
 	);
 };
 
@@ -63,16 +104,21 @@ SurveyQuestionRating.propTypes = {
 	question: PropTypes.string.isRequired,
 	choices: PropTypes.arrayOf(
 		PropTypes.shape( {
-			answer_ordinal: PropTypes.string,
+			answer_ordinal: PropTypes.oneOfType( [
+				PropTypes.string,
+				PropTypes.number,
+			] ),
 			text: PropTypes.string,
-		} ).isRequired
+		} ),
 	),
-	answerQuestion: PropTypes.func.isRequired,
+	answerQuestion: PropTypes.func,
 	dismissSurvey: PropTypes.func,
 };
 
 SurveyQuestionRating.defaultProps = {
-	dismissSurvey: () => {},
+	choices: [],
+	answerQuestion: null,
+	dismissSurvey: null,
 };
 
 export default SurveyQuestionRating;
