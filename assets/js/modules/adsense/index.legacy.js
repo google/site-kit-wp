@@ -22,7 +22,6 @@
 import { createAddToFilter } from '../../util/helpers';
 import { getModulesData } from '../../util';
 import AdSenseDashboardWidget from './components/dashboard/AdSenseDashboardWidget';
-import LegacyDashboardEarnings from './components/dashboard/LegacyDashboardEarnings';
 
 /**
  * WordPress dependencies
@@ -33,7 +32,6 @@ const slug = 'adsense';
 const modulesData = getModulesData();
 if ( modulesData.adsense.active ) {
 	const addAdSenseDashboardWidget = createAddToFilter( <AdSenseDashboardWidget /> );
-	const addLegacyDashboardEarnings = createAddToFilter( <LegacyDashboardEarnings /> );
 
 	// If setup is complete, show the AdSense data.
 	if ( modulesData[ slug ].setupComplete ) {
@@ -44,9 +42,7 @@ if ( modulesData.adsense.active ) {
 			'googlesitekit.ModuleApp',
 			addAdSenseDashboardWidget );
 
-		addFilter( 'googlesitekit.DashboardModule',
-			'googlesitekit.DashboardEarningModule',
-			addLegacyDashboardEarnings, 50 );
+		// surely this component should be removed now?
 	} else {
 		// Show module as connected in the settings when status is pending review.
 		addFilter( `googlesitekit.Connected-${ slug }`,

@@ -32,7 +32,6 @@ import AnalyticsDashboardDetailsWidgetTopAcquisitionSources from './components/d
 import LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable from './components/dashboard/LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable';
 import LegacyAnalyticsDashboardWidgetPopularPagesTable from './components/dashboard/LegacyAnalyticsDashboardWidgetPopularPagesTable';
 import LegacyAdSenseDashboardWidgetTopPagesTableSmall from './components/dashboard/LegacyAdSenseDashboardWidgetTopPagesTableSmall';
-import LegacyDashboardAllTraffic from './components/dashboard/DashboardAllTrafficWidget/LegacyDashboardAllTraffic';
 
 const slug = 'analytics';
 
@@ -40,7 +39,6 @@ const modulesData = getModulesData();
 
 if ( modulesData.analytics.active ) {
 	const addAnalyticsDashboardWidget = createAddToFilter( <LegacyAnalyticsDashboardWidget /> );
-	const legacyDashboardAllTraffic = createAddToFilter( <LegacyDashboardAllTraffic /> );
 	const addLegacyAnalyticsDashboardWidgetTopLevel = createAddToFilter( <LegacyAnalyticsDashboardWidgetTopLevel /> );
 	const addAnalyticsDashboardDetailsWidget = createAddToFilter( <AnalyticsDashboardDetailsWidgetTopAcquisitionSources /> );
 	const addAnalyticsAdSenseTopPagesWidget = createAddToFilter( <LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable /> );
@@ -50,9 +48,6 @@ if ( modulesData.analytics.active ) {
 	/**
 	 * Add components to the Site Kit Dashboard.
 	 */
-	addFilter( 'googlesitekit.DashboardModule',
-		'googlesitekit.Analytics',
-		legacyDashboardAllTraffic, 9 );
 	addFilter( 'googlesitekit.DashboardSearchFunnel',
 		'googlesitekit.Analytics',
 		addLegacyAnalyticsDashboardWidgetTopLevel, 11 );
