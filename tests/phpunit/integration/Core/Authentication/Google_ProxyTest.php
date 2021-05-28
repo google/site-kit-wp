@@ -331,8 +331,7 @@ class Google_ProxyTest extends TestCase {
 
 		$expected_url              = $this->google_proxy->url( Google_Proxy::FEATURES_URI );
 		$expected_success_response = array(
-			'userInput'         => array( 'enabled' => true ),
-			'widgets.dashboard' => array( 'enabled' => true ),
+			'userInput' => array( 'enabled' => true ),
 		);
 
 		$this->mock_http_request( $expected_url, $expected_success_response );
