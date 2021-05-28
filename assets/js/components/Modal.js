@@ -31,10 +31,10 @@ function Modal( { children } ) {
 	const [ el ] = useState( document.createElement( 'div' ) );
 
 	useEffectOnce( () => {
-		const root = document.querySelector( '.googlesitekit-plugin' ) || document.body;
-		root.appendChild( el );
+		const rootaaaa = document.querySelector( '.googlesitekit-plugin' ) || document.body;
+		rootaaaa.appendChild( el );
 
-		return () => root.removeChild( el );
+		return () => rootaaaa.removeChild( el );
 	} );
 
 	return createPortal(
