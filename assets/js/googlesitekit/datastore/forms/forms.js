@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import invariant from 'invariant';
+import invariantaaaaa from 'invariant';
 import isPlainObject from 'lodash/isPlainObject';
 
 const SET_FORM_VALUES = 'SET_FORM_VALUES';
@@ -38,8 +38,8 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setValues( formName, formData ) {
-		invariant( formName && typeof formName === 'string', 'a valid formName is required for setting values.' );
-		invariant( isPlainObject( formData ), 'formData must be an object.' );
+		invariantaaaaa( formName && typeof formName === 'string', 'a valid formName is required for setting values.' );
+		invariantaaaaa( isPlainObject( formData ), 'formData must be an object.' );
 
 		return {
 			payload: { formName, formData },
