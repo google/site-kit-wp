@@ -9,16 +9,14 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
-// TODO - in execution: https://github.com/google/site-kit-wp/issues/3355
-const triggerSurvey = ( args ) => {
-	// eslint-disable-next-line no-console
-	console.log( ...args );
-};
+const { useSelect, useDispatch } = Data;
 
 const SurveyViewTrigger = ( { triggerID, ttl } ) => {
 	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
+
+	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	useMount( () => {
 		if ( usingProxy ) {
