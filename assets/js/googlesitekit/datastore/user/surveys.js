@@ -156,7 +156,7 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object} Current survey object.
+	 * @return {Object} Current survey session object.
 	 */
 	getCurrentSurveySession( state ) {
 		return state.currentSurveySession;
