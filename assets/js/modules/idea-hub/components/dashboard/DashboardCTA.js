@@ -77,7 +77,10 @@ function DashboardCTA() {
 					&nbsp;
 					<Link
 						className="googlesitekit-idea-hub__dashboard-cta__learnmore"
-						href="https://sitekit.withgoogle.com/documentation/idea-hub-module/">
+						href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
+						external
+						hideExternalIndicator
+					>
 						{ __( 'Learn more', 'google-site-kit' ) }
 					</Link>
 				</p>
