@@ -23,17 +23,23 @@ import ExistingTagNotice from './ExistingTagNotice';
 import { render } from '../../../../../../tests/js/test-utils';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
-// import * as fixtures from '../../datastore/__fixtures__';
+import * as fixtures from '../../datastore/__fixtures__';
 
 const {
 	createProperty,
 } = analytics4Fixtures;
 
 const accountID = createProperty._accountID;
-// const { accounts, properties: propertiesUA, profiles } = fixtures.accountsPropertiesProfiles;
-// const propertyIDua = propertiesUA[ 0 ].id;
+const { accounts, properties: propertiesUA, profiles } = fixtures.accountsPropertiesProfiles;
+const propertyIDua = propertiesUA[ 0 ].id;
 
 const features = [ 'ga4setup' ];
+
+const {
+	// id,
+	webPropertyId: propertyID, // eslint-disable-line sitekit/acronym-case
+	// accountId: accountID, // eslint-disable-line sitekit/acronym-case
+} = fixtures.propertiesProfiles.profiles[ 0 ];
 
 describe( 'ExistingTagNotice', () => {
 	it( 'should not render if does not have existing tag', async () => {
@@ -50,15 +56,6 @@ describe( 'ExistingTagNotice', () => {
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
 			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( 'UA-12345678-1' );
-
-			// dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
-			// dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
-
-			// dispatch( MODULES_ANALYTICS ).receiveGetProperties( propertiesUA, { accountID } );
-			// dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ accountID ] );
-
-			// dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, { accountID, propertyID: propertyIDua } );
-			// dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ accountID, propertyIDua ] );
 		};
 
 		const { findByText } = render( <ExistingTagNotice />, { setupRegistry } );
@@ -66,15 +63,37 @@ describe( 'ExistingTagNotice', () => {
 		await findByText( /An existing Analytics tag was found on your site with the ID/ );
 	} );
 
-	it( 'should do new functionality if ga4 tag enabled', async () => {
+	it.only( 'should do new functionality if ga4 tag enabled', async () => {
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
 			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( 'UA-12345678-1' );
+
+			// trying to set ua property id
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( propertiesUA, { accountID } );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ accountID ] );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, { accountID, propertyID: propertyIDua } );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ accountID, propertyIDua ] );
+
+			// this
+			dispatch( MODULES_ANALYTICS ).setPropertyID( propertyID );
 		};
 
 		const { findByText } = render( <ExistingTagNotice />, { features, setupRegistry } );
 
 		await findByText( 'ga4 enabled' );
 	} );
+
+	// If the existing UA tag is not empty but GA4 tag is empty, then
+
+	// if a UA property is selected and it is the same one as indicated by the existing tag:
+	// Display the following message
+	// An existing Universal Analytics tag was found on your site with the ID {propertyID}. Since this tag refers to the same property you have selected here, Site Kit will not place its own tag and rely on the existing one. If later on you decide to remove this tag, Site Kit can place a new tag for you.
+
+	// Otherwise display the following message:
+	// An existing Universal Analytics tag was found on your site with the ID {propertyID}.
 } );
 

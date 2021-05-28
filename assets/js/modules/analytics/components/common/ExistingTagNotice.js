@@ -27,27 +27,35 @@ import { sprintf, __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import {
 	STORE_NAME,
-	// MODULES_ANALYTICS
+	MODULES_ANALYTICS,
 } from '../../datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
-// import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	// why is propertyID called getExistingTag?
+	// why is propertyID called getExistingTag? I don't think it should be. TO DISCUSS!
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 	const ga4setupEnabled = useFeature( 'ga4setup' );
 
-	// const ga4existingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
+	// Works!
+	const uaexistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).getExistingTag() );
+	console.debug( 'uaexistingTag ', uaexistingTag );
 
-	// says "propertyID settings"... not this?
+	// const ga4existingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).getExistingTag() );
+	// console.debug( 'ga4existingTag ', ga4existingTag );
+
+	const uaPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
+	console.debug( 'uaPropertyID ', uaPropertyID );
+
 	// const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
-	// const uaPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
+	// console.debug( 'ga4PropertyID ', ga4PropertyID );
 
 	// how come is null if i'm setting this?
 	// console.debug( 'propertyID ', propertyID );
 
+	// not sure if this rule is even needed!
 	if ( ! hasExistingTag ) {
 		return null;
 	}
