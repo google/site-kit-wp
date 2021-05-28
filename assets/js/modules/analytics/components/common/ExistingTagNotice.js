@@ -35,6 +35,7 @@ const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	// why is propertyID called getExistingTag?
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 	const ga4setupEnabled = useFeature( 'ga4setup' );
 
@@ -43,6 +44,12 @@ export default function ExistingTagNotice() {
 	// says "propertyID settings"... not this?
 	// const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 	// const uaPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
+
+	// don't even know where this is coming from! some automatic stuff
+	// console.debug( 'hasExistingTag ', hasExistingTag );
+
+	// how come is null if i'm setting this?
+	// console.debug( 'propertyID ', propertyID );
 
 	if ( ! hasExistingTag ) {
 		return null;
