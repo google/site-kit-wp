@@ -43,8 +43,8 @@ const Menu = forwardRef( ( {
 	id,
 }, ref ) => {
 	const [ menu, setMenu ] = useState( null );
-	const menuRef = useRef( null );
-	const mergedRefs = useMergedRef( ref, menuRef );
+	const menuRefaaa = useRef( null );
+	const mergedRefs = useMergedRef( ref, menuRefaaa );
 	const handleMenuSelected = useCallback( ( event ) => {
 		const { detail: { index } } = event;
 
@@ -52,11 +52,11 @@ const Menu = forwardRef( ( {
 	}, [ onSelected ] );
 
 	useEffectOnce( () => {
-		if ( ! menuRef?.current ) {
+		if ( ! menuRefaaa?.current ) {
 			return;
 		}
 
-		const menuComponent = new MDCMenu( menuRef.current );
+		const menuComponent = new MDCMenu( menuRefaaa.current );
 		menuComponent.listen( 'MDCMenu:selected', handleMenuSelected );
 		setMenu( menuComponent );
 
