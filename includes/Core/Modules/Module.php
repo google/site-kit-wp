@@ -518,15 +518,29 @@ abstract class Module {
 			return;
 		}
 
-		$datapoint = $definitions[ $datapoint_key ];
+		$datapoint        = $definitions[ $datapoint_key ];
+		$requires_service = isset( $datapoint['service'] );
+		$scopes           = $datapoint['scopes'];
+		$oauth_client     = $this->authentication->get_oauth_client();
+		$scopes_granted   = $oauth_client->has_sufficient_scopes( $scopes );
 
-		// If the datapoint requires specific scopes, ensure they are satisfied.
-		if ( ! $this->authentication->get_oauth_client()->has_sufficient_scopes( $datapoint['scopes'] ) ) {
-			$request_scopes_message = ! empty( $datapoint['request_scopes_message'] )
-				? $datapoint['request_scopes_message']
-				: __( 'You’ll need to grant Site Kit permission to do this.', 'google-site-kit' );
+		if ( ! $scopes_granted ) {
+			if ( $requires_service ) {
+				// If the datapoint relies on a service which requires scopes and
+				// these have not been granted, fail the request with a permissions
+				// error (see issue #3227).
 
-			throw new Insufficient_Scopes_Exception( $request_scopes_message, 0, null, $datapoint['scopes'] );
+				/* translators: %s: module name */
+				$message = sprintf( __( 'Site Kit can’t access the relevant data from %s because you haven’t granted all permissions requested during setup.', 'google-site-kit' ), $this->name );
+			} else {
+				// Otherwise, if the datapoint doesn't rely on a service but requires
+				// specific scopes, ensure they are satisfied.
+				$message = ! empty( $datapoint['request_scopes_message'] )
+					? $datapoint['request_scopes_message']
+					: __( 'You’ll need to grant Site Kit permission to do this.', 'google-site-kit' );
+			}
+
+			throw new Insufficient_Scopes_Exception( $message, 0, null, $datapoint['scopes'] );
 		}
 	}
 
