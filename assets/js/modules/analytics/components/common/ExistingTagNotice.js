@@ -30,31 +30,24 @@ import {
 	MODULES_ANALYTICS,
 } from '../../datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
-// import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	// why is propertyID called getExistingTag? I don't think it should be. TO DISCUSS!
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 	const ga4setupEnabled = useFeature( 'ga4setup' );
 
 	// Works!
 	const uaexistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).getExistingTag() );
-	// console.debug( 'uaexistingTag ', uaexistingTag );
 
-	// const ga4existingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).getExistingTag() );
+	// this is not a function... AC says to do this though! is it in a blocked ticket?
+	// const ga4existingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
 	// console.debug( 'ga4existingTag ', ga4existingTag );
 
 	// Works!
 	const uaPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
-	// console.debug( 'uaPropertyID ', uaPropertyID );
 
-	// const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
-	// console.debug( 'ga4PropertyID ', ga4PropertyID );
-
-	// how come is null if i'm setting this?
-	// console.debug( 'propertyID ', propertyID );
+	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 
 	// not sure if this rule is even needed!
 	if ( ! hasExistingTag ) {
@@ -68,7 +61,7 @@ export default function ExistingTagNotice() {
 					sprintf(
 					/* translators: %s: Analytics tag ID */
 						__( 'An existing Analytics tag was found on your site with the ID %s. If later on you decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ),
-						propertyID
+						uaexistingTag
 					)
 				}
 			</p>
@@ -79,8 +72,8 @@ export default function ExistingTagNotice() {
 		<div>
 			<p>uaexistingTag: { uaexistingTag }</p>
 			<p>uaPropertyID: { uaPropertyID }</p>
-			{ /* <p>ga4existingTag: { ga4existingTag }</p>
-			<p>ga4PropertyID: { ga4PropertyID }</p> */ }
+			{ /* <p>ga4existingTag: { ga4existingTag }</p> */ }
+			<p>ga4PropertyID: { ga4PropertyID }</p>
 		</div>
 	);
 }

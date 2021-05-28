@@ -23,6 +23,7 @@ import ExistingTagNotice from './ExistingTagNotice';
 import { render } from '../../../../../../tests/js/test-utils';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 
 const {
@@ -56,6 +57,7 @@ const setupRegistryPopulateEverythingDemo = ( { dispatch } ) => {
 	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ accountID, propertyIDua ] );
 
 	dispatch( MODULES_ANALYTICS ).setPropertyID( propertyID );
+	dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 };
 
 describe( 'ExistingTagNotice', () => {
@@ -63,6 +65,9 @@ describe( 'ExistingTagNotice', () => {
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
 			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+
+			// but flag is not enabled so why is this called?
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( { accountID } );
 		};
 
 		const { container } = render( <ExistingTagNotice />, { setupRegistry } );
@@ -74,6 +79,9 @@ describe( 'ExistingTagNotice', () => {
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
 			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( 'UA-12345678-1' );
+
+			// but flag is not enabled so why is this called?
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( { accountID } );
 		};
 
 		const { findByText } = render( <ExistingTagNotice />, { setupRegistry } );
@@ -91,6 +99,19 @@ describe( 'ExistingTagNotice', () => {
 		const { findByText } = render( <ExistingTagNotice />, { features, setupRegistry: setupRegistryPopulateEverythingDemo } );
 
 		await findByText( `uaPropertyID: ${ propertyID }` );
+	} );
+
+	// not sure how to get or set this! selector not there. check blocking tickets
+	it.skip( 'should output GA4 existing tag', async () => {
+		const { findByText } = render( <ExistingTagNotice />, { features, setupRegistry: setupRegistryPopulateEverythingDemo } );
+
+		await findByText( 'ga4existingTag: UA-12345678-1' );
+	} );
+
+	it( 'should output GA4 property Id', async () => {
+		const { findByText } = render( <ExistingTagNotice />, { features, setupRegistry: setupRegistryPopulateEverythingDemo } );
+
+		await findByText( `ga4PropertyID: ${ propertyID }` );
 	} );
 
 	// If the existing UA tag is not empty but GA4 tag is empty, then
