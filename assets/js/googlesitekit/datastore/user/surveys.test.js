@@ -115,6 +115,7 @@ describe( 'core/user surveys', () => {
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, { body: { data: { triggerID: 'b' } } } );
 			} );
 		} );
+
 		describe( 'getCurrentSurveySession', () => {
 			it( 'returns null when no current survey session is set', async () => {
 				expect( registry.select( STORE_NAME ).getCurrentSurveySession() ).toEqual( null );
