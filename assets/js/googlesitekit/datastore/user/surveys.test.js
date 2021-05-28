@@ -21,6 +21,7 @@
  */
 import {
 	createTestRegistry,
+	muteFetch,
 } from '../../../../../tests/js/utils';
 import {
 	act,
@@ -54,10 +55,7 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'does not throw an error when parameters are correct', () => {
-				fetchMock.post(
-					/^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/,
-					{ body: survey, status: 200 }
-				);
+				muteFetch( /^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/, [] );
 				expect( () => {
 					registry.dispatch( STORE_NAME ).triggerSurvey( 'a' );
 				} ).not.toThrow();
@@ -99,10 +97,7 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'returns the current survey when it is set', async () => {
-				fetchMock.post(
-					/^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/,
-					{ body: survey, status: 200 }
-				);
+				muteFetch( /^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/, survey );
 				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'b', { ttl: 1 } ) );
 				expect( registry.select( STORE_NAME ).getCurrentSurvey() ).toEqual( survey.survey_payload );
 			} );
@@ -113,10 +108,7 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'returns the error once set', async () => {
-				fetchMock.post(
-					/^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/,
-					{ body: survey, status: 200 }
-				);
+				muteFetch( /^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/, survey );
 				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'b', { ttl: 1 } ) );
 				expect( registry.select( STORE_NAME ).getCurrentSurveySession() ).toEqual( survey.session );
 			} );
