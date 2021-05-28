@@ -867,8 +867,7 @@ class AuthenticationTest extends TestCase {
 				}
 
 				$data = array(
-					'userInput'             => array( 'enabled' => true ),
-					'widgets.pageDashboard' => array( 'enabled' => false ),
+					'userInput' => array( 'enabled' => true ),
 				);
 
 				return array(
@@ -882,7 +881,6 @@ class AuthenticationTest extends TestCase {
 		);
 
 		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'nonExisting' ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'widgets.pageDashboard' ) );
 	}
 
 	protected function get_user_option_keys() {
