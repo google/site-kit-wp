@@ -100,6 +100,7 @@ const baseActions = {
 			if ( false === cacheHit && ttl ) {
 				const { error, response } = yield fetchTriggerSurveyStore.actions.fetchTriggerSurvey( triggerID );
 				if ( ! error && ttl > 0 ) {
+					// With a positive ttl we cache an empty object to avoid calling fetchTriggerSurvey() again.
 					yield Data.commonActions.await( setItem( cacheKey, {} ) );
 					return { response, error };
 				}
