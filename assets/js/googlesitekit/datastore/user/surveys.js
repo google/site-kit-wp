@@ -75,16 +75,17 @@ const baseActions = {
 			invariant( isPlainObject( options ), 'options must be an object' );
 			invariant( 'number' === typeof ttl, 'options.ttl must be a number' );
 		},
-		function* ( triggerID, { ttl = 0 } = {} ) {
+		function* ( triggerID, options = {} ) {
+			const { ttl = 0 } = options;
 			const { select } = yield Data.commonActions.getRegistry();
 			if ( null !== select( STORE_NAME ).getCurrentSurvey() ) {
 				return;
 			}
 			const cacheKey = createCacheKey( 'core', 'user', 'survey-event', { triggerID } );
 			const { cacheHit, value } = yield Data.commonActions.await( getItem( cacheKey ) );
-			if ( false === cacheHit && options.ttl ) {
+			if ( false === cacheHit && ttl ) {
 				const { error, response } = yield fetchTriggerSurveyStore.actions.fetchTriggerSurvey( triggerID );
-				if ( ! error && options.ttl > 0 ) {
+				if ( ! error && ttl > 0 ) {
 					yield Data.commonActions.await( setItem( cacheKey, {} ) );
 					return { response, error };
 				}
