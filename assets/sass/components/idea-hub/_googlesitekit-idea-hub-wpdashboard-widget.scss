@@ -1,5 +1,5 @@
 /**
- * Widgets layout constants.
+ * Idea Hub notice component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,20 +16,27 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { WIDGET_WIDTHS } from '../datastore/constants';
+.googlesitekit-idea-hub__wpdashboard--notice {
+	background-color: $c-background-notice-info;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	margin-top: 13px;
+	padding: 14px;
+	width: 100%;
+}
 
-export const WIDTH_GRID_COUNTER_MAP = {
-	[ WIDGET_WIDTHS.QUARTER ]: 3,
-	[ WIDGET_WIDTHS.HALF ]: 6,
-	[ WIDGET_WIDTHS.FULL ]: 12,
-};
+.googlesitekit-idea-hub__wpdashboard--header {
+	align-items: center;
+	display: flex;
+}
 
-export const HIDDEN_CLASS = 'googlesitekit-hidden';
-export const SPECIAL_WIDGET_STATES = [
-	'ReportZero',
-	'ModuleActivateCTA',
-	'CompleteModuleActivationCTA',
-];
+.googlesitekit-idea-hub__wpdashboard--title {
+	color: $c-secondary;
+	font-size: 16px;
+	margin-left: 12px;
+}
+
+.googlesitekit-idea-hub__wpdashboard--link {
+	margin: 0;
+}
