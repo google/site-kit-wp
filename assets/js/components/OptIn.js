@@ -44,7 +44,7 @@ export default function OptIn( { id, name, className, optinAction } ) {
 	const error = useSelect( ( select ) => select( CORE_USER ).getErrorForAction( 'setTrackingEnabled', [ ! enabled ] ) );
 
 	const { setTrackingEnabled } = useDispatch( CORE_USER );
-	const handleOptIn = useCallback( async ( e ) => {
+	const handleOptInaaaa = useCallback( async ( e ) => {
 		const {
 			response,
 			error: responseError,
@@ -70,7 +70,7 @@ export default function OptIn( { id, name, className, optinAction } ) {
 				value="1"
 				checked={ enabled }
 				disabled={ saving }
-				onChange={ handleOptIn }
+				onChange={ handleOptInaaaa }
 			>
 				{ createInterpolateElement(
 					__( 'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a>Google Privacy Policy</a>', 'google-site-kit' ),
