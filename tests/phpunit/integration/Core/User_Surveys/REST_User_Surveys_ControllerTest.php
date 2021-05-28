@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Core\User_Surveys;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\User_Surveys\REST_User_Surveys_Controller;
 use Google\Site_Kit\Tests\TestCase;
 
 class REST_User_Surveys_ControllerTest extends TestCase {
