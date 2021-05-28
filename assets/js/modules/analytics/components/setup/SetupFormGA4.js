@@ -24,7 +24,7 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 
 /**
@@ -44,9 +44,10 @@ export default function SetupFormGA4() {
 
 	const { selectProperty } = useDispatch( STORE_NAME );
 	const { setValues } = useDispatch( CORE_FORMS );
+
 	useMount( () => {
 		selectProperty( PROPERTY_CREATE );
-		setValues( FORM_SETUP, { profileName: 'All Web Site Data' } );
+		setValues( FORM_SETUP, { profileName: _x( 'All Web Site Data', 'default Analytics view name', 'google-site-kit' ) } );
 	} );
 
 	return (
