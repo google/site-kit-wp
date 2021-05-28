@@ -49,7 +49,7 @@ const fetchTriggerSurveyStore = createFetchStore( {
 		};
 	},
 	validateParams: ( { triggerID } = {} ) => {
-		invariant( 'string' === typeof triggerID, 'triggerID is mandatory and must be a string' );
+		invariant( 'string' === typeof triggerID && triggerID.length, 'triggerID is required and must be a string' );
 	},
 
 } );
@@ -70,7 +70,7 @@ const baseInitialState = {
 const baseActions = {
 	triggerSurvey: createValidatedAction(
 		( triggerID, options = { ttl: 0 } ) => {
-			invariant( 'string' === typeof triggerID, 'triggerID is mandatory and must be a string' );
+			invariant( 'string' === typeof triggerID && triggerID.length, 'triggerID is required and must be a string' );
 			invariant( isPlainObject( options ), 'options must be an object' );
 			invariant( 'number' === typeof options.ttl, 'options.ttl must be a number' );
 		},
@@ -96,7 +96,7 @@ const baseActions = {
 	),
 	sendSurveyEvent: createValidatedAction(
 		( eventID, eventData = {} ) => {
-			invariant( 'string' === typeof eventID, 'eventID is mandatory and must be a string' );
+			invariant( 'string' === typeof eventID && eventID.length, 'eventID is required and must be a string' );
 			invariant( isPlainObject( eventData ), 'eventData must be an object' );
 		},
 		function* ( eventID, eventData = {} ) {

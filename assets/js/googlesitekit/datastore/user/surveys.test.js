@@ -45,7 +45,7 @@ describe( 'core/user surveys', () => {
 			it( 'throws an error when parameters are missing or incorrect', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).triggerSurvey();
-				} ).toThrow( 'triggerID is mandatory and must be a string' );
+				} ).toThrow( 'triggerID is required and must be a string' );
 				expect( () => {
 					registry.dispatch( STORE_NAME ).triggerSurvey( 'ABCD', false );
 				} ).toThrow( 'options must be an object' );
@@ -69,7 +69,7 @@ describe( 'core/user surveys', () => {
 			it( 'throws an error when parameters are missing or incorrect', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).sendSurveyEvent();
-				} ).toThrow( 'eventID is mandatory and must be a string' );
+				} ).toThrow( 'eventID is required and must be a string' );
 				expect( () => {
 					registry.dispatch( STORE_NAME ).sendSurveyEvent( 'a', 'b' );
 				} ).toThrow( 'eventData must be an object' );
