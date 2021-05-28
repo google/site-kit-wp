@@ -74,7 +74,7 @@ const baseActions = {
 			invariant( isPlainObject( options ), 'options must be an object' );
 			invariant( 'number' === typeof options.ttl, 'options.ttl must be a number' );
 		},
-		function* ( triggerID, options = { ttl: 0 } ) {
+		function* ( triggerID, { ttl = 0 } = {} ) {
 			const { select } = yield Data.commonActions.getRegistry();
 			if ( null !== select( STORE_NAME ).getCurrentSurvey() ) {
 				return;
