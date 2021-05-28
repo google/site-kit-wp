@@ -73,27 +73,25 @@ const SurveyQuestionRating = ( { question, choices, answerQuestion, dismissSurve
 
 			<div className="googlesitekit-survey__body">
 				<div className="googlesitekit-survey__choices">
-					{ choices.map( ( choice, index ) => {
-						return (
-							<div className="googlesitekit-survey__choice" key={ index }>
-								<Button
-									icon={ getIcon( choice.answer_ordinal ) }
-									aria-label={
-										sprintf(
-											/* translators: %s: Icon Expression */
-											__( '%s icon', 'google-site-kit' ),
-											choice.text,
-										)
-									}
-									onClick={ handleButtonClick.bind( null, choice.answer_ordinal ) }
-								/>
+					{ choices.map( ( choice, index ) => (
+						<div className="googlesitekit-survey__choice" key={ index }>
+							<Button
+								icon={ getIcon( choice.answer_ordinal ) }
+								aria-label={
+									sprintf(
+										/* translators: %s: Icon Expression */
+										__( '%s icon', 'google-site-kit' ),
+										choice.text,
+									)
+								}
+								onClick={ handleButtonClick.bind( null, choice.answer_ordinal ) }
+							/>
 
-								<p>
-									{ choice.text }
-								</p>
-							</div>
-						);
-					} ) }
+							<p>
+								{ choice.text }
+							</p>
+						</div>
+					) ) }
 				</div>
 			</div>
 		</div>
