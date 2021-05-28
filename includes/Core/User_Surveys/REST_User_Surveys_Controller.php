@@ -11,7 +11,10 @@
 namespace Google\Site_Kit\Core\User_Surveys;
 
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
+use WP_REST_Request;
+use WP_REST_Server;
 
 /**
  * Class for handling user survey rest routes.
@@ -64,7 +67,88 @@ class REST_User_Surveys_Controller {
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
-		return array();
+		$can_authenticate = function () {
+			return $this->authentication->is_authenticated()
+				&& $this->authentication->credentials()->using_proxy();
+		};
+
+		return array(
+			new REST_Route(
+				'core/user/data/survey-trigger',
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => function ( WP_REST_Request $request ) {
+						return rest_ensure_response( array() );
+					},
+					'permission_callback' => $can_authenticate,
+					'args'                => array(
+						'data' => array(
+							'type'       => 'object',
+							'required'   => true,
+							'properties' => array(
+								'trigger_id' => array(
+									'type'     => 'string',
+									'required' => true,
+								),
+							),
+						),
+					),
+				)
+			),
+			new REST_Route(
+				'core/user/data/survey-event',
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => function ( WP_REST_Request $request ) {
+						return rest_ensure_response( array() );
+					},
+					'permission_callback' => $can_authenticate,
+					'args'                => array(
+						'data' => array(
+							'type'       => 'object',
+							'required'   => true,
+							'properties' => array(
+								'session' => array(
+									'type'       => 'object',
+									'required'   => true,
+									'properties' => array(
+										'session_id'    => array(
+											'type'     => 'string',
+											'required' => true,
+										),
+										'session_token' => array(
+											'type'     => 'string',
+											'required' => true,
+										),
+									),
+								),
+								'event'   => array(
+									'type'       => 'object',
+									'required'   => true,
+									'properties' => array(
+										'survey_shown'     => array(
+											'type' => 'object',
+										),
+										'survey_closed'    => array(
+											'type' => 'object',
+										),
+										'question_answered' => array(
+											'type' => 'object',
+										),
+										'completion_shown' => array(
+											'type' => 'object',
+										),
+										'follow_up_link_clicked' => array(
+											'type' => 'object',
+										),
+									),
+								),
+							),
+						),
+					),
+				)
+			),
+		);
 	}
 
 }
