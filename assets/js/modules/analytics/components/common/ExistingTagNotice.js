@@ -26,25 +26,30 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
+import { useFeature } from '../../../../hooks/useFeature';
+
 const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
+	const ga4setupEnabled = useFeature( 'ga4setup' );
 
 	if ( ! hasExistingTag ) {
 		return null;
 	}
 
-	return (
-		<p>
-			{
-				sprintf(
+	if ( ! ga4setupEnabled ) {
+		return (
+			<p>
+				{
+					sprintf(
 					/* translators: %s: Analytics tag ID */
-					__( 'An existing Analytics tag was found on your site with the ID %s. If later on you decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ),
-					propertyID
-				)
-			}
-		</p>
-	);
+						__( 'An existing Analytics tag was found on your site with the ID %s. If later on you decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ),
+						propertyID
+					)
+				}
+			</p>
+		);
+	}
 }
