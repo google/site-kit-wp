@@ -28,3 +28,8 @@ export const WIDTH_GRID_COUNTER_MAP = {
 };
 
 export const HIDDEN_CLASS = 'googlesitekit-hidden';
+export const SPECIAL_WIDGET_STATES = [
+	'ReportZero',
+	'ModuleActivateCTA',
+	'CompleteModuleActivationCTA',
+];
