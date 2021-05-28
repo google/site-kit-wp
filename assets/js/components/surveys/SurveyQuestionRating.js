@@ -38,26 +38,26 @@ import SurveyNeutral from '../../../svg/survey-neutral.svg';
 import SurveySatisfied from '../../../svg/survey-satisfied.svg';
 import SurveyDelighted from '../../../svg/survey-delighted.svg';
 
+const getIcon = ( answerOrdinal ) => {
+	if ( ! answerOrdinal ) {
+		return null;
+	}
+
+	switch ( parseInt( answerOrdinal, 10 ) ) {
+		case 1:
+			return <SurveyUnhappy />;
+		case 2:
+			return <SurveyDissatisfied />;
+		case 3:
+			return <SurveyNeutral />;
+		case 4:
+			return <SurveySatisfied />;
+		case 5:
+			return <SurveyDelighted />;
+	}
+};
+
 const SurveyQuestionRating = ( { question, choices, answerQuestion, dismissSurvey } ) => {
-	const getIcon = ( answerOrdinal ) => {
-		if ( ! answerOrdinal ) {
-			return null;
-		}
-
-		switch ( parseInt( answerOrdinal, 10 ) ) {
-			case 1:
-				return <SurveyUnhappy />;
-			case 2:
-				return <SurveyDissatisfied />;
-			case 3:
-				return <SurveyNeutral />;
-			case 4:
-				return <SurveySatisfied />;
-			case 5:
-				return <SurveyDelighted />;
-		}
-	};
-
 	const handleButtonClick = useCallback( ( answer ) => {
 		if ( typeof answerQuestion === 'function' ) {
 			answerQuestion( answer );
