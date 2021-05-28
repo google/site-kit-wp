@@ -72,6 +72,16 @@ const baseInitialState = {
 };
 
 const baseActions = {
+	/**
+	 * Triggers a survey.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} triggerID     Trigger ID for the survey.
+	 * @param {Object} options       Survey options.
+	 * @param {number} [options.ttl] Optional. TTL for survey.
+	 * @return {Object} Object with `response` and `error`.
+	 */
 	triggerSurvey: createValidatedAction(
 		( triggerID, options = {} ) => {
 			const { ttl = 0 } = options;
@@ -100,6 +110,16 @@ const baseActions = {
 			};
 		}
 	),
+
+	/**
+	 * Sends a survey event.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} eventID   Event ID for the survey.
+	 * @param {Object} eventData Event Data.
+	 * @return {Object} Object with `response` and `error`.
+	 */
 	sendSurveyEvent: createValidatedAction(
 		( eventID, eventData = {} ) => {
 			invariant( 'string' === typeof eventID && eventID.length, 'eventID is required and must be a string' );
