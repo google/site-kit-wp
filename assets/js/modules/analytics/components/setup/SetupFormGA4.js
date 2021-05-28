@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME, PROPERTY_CREATE, FORM_SETUP } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import PropertySelect from '../../../analytics-4/components/common/PropertySelect';
+import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import AccountSelect from '../common/AccountSelect';
 import GA4PropertyNotice from '../common/GA4PropertyNotice';
 const { useSelect, useDispatch } = Data;
@@ -62,7 +62,7 @@ export default function SetupFormGA4() {
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
-				<PropertySelect />
+				<GA4PropertySelect />
 			</div>
 
 			<GA4PropertyNotice
