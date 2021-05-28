@@ -41,10 +41,10 @@ const fetchTriggerSurveyStore = createFetchStore( {
 	argsToParams: ( triggerID ) => {
 		return { triggerID };
 	},
-	reducerCallback: ( state, { surveyPayload, session } ) => {
+	reducerCallback: ( state, { survey_payload, session } ) => { // eslint-disable-line camelcase
 		return {
 			...state,
-			currentSurvey: surveyPayload,
+			currentSurvey: survey_payload,
 			currentSurveySession: session,
 		};
 	},

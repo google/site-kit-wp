@@ -22,6 +22,9 @@
 import {
 	createTestRegistry,
 } from '../../../../../tests/js/utils';
+import {
+	act,
+} from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/user surveys', () => {
@@ -30,6 +33,11 @@ describe( 'core/user surveys', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 	} );
+
+	const survey = {
+		survey_payload: 'foo',
+		session: 'bar',
+	};
 
 	describe( 'actions', () => {
 		describe( 'triggerSurvey', () => {
@@ -46,13 +54,9 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'does not throw an error when parameters are correct', () => {
-				const triggerSurvey = {
-					survey_payload: 'foo',
-					session: 'bar',
-				};
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/,
-					{ body: triggerSurvey, status: 200 }
+					{ body: survey, status: 200 }
 				);
 				expect( () => {
 					registry.dispatch( STORE_NAME ).triggerSurvey( 'a' );
@@ -84,6 +88,37 @@ describe( 'core/user surveys', () => {
 					registry.dispatch( STORE_NAME ).triggerSurvey( 'c' );
 					registry.dispatch( STORE_NAME ).sendSurveyEvent( 'd', { foo: 'bar' } );
 				} ).not.toThrow();
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'getCurrentSurvey', () => {
+			it( 'returns null when no current survey is set', async () => {
+				expect( registry.select( STORE_NAME ).getCurrentSurvey() ).toEqual( null );
+			} );
+
+			it( 'returns the current survey when it is set', async () => {
+				fetchMock.post(
+					/^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/,
+					{ body: survey, status: 200 }
+				);
+				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'b', { ttl: 1 } ) );
+				expect( registry.select( STORE_NAME ).getCurrentSurvey() ).toEqual( survey.survey_payload );
+			} );
+		} );
+		describe( 'getCurrentSurveySession', () => {
+			it( 'returns null when no current survey session is set', async () => {
+				expect( registry.select( STORE_NAME ).getCurrentSurveySession() ).toEqual( null );
+			} );
+
+			it( 'returns the error once set', async () => {
+				fetchMock.post(
+					/^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/,
+					{ body: survey, status: 200 }
+				);
+				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'b', { ttl: 1 } ) );
+				expect( registry.select( STORE_NAME ).getCurrentSurveySession() ).toEqual( survey.session );
 			} );
 		} );
 	} );
