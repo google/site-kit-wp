@@ -32,6 +32,11 @@ function Portal( { children, slug, appendPluginRoot } ) {
 	if ( slug ) {
 		elDiv.classList.add( `googlesitekit-portal-${ slug }` );
 	}
+
+	if ( ! appendPluginRoot ) {
+		elDiv.classList.add( 'googlesitekit-plugin' );
+	}
+
 	// Using state as we need `el` to not change when the component re-renders
 	const [ el ] = useState( elDiv );
 
