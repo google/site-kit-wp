@@ -30,14 +30,14 @@ import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
 export default function ModuleIcon( { slug, size, ...props } ) {
-	const ModuleIconComponentaaaa = useSelect( ( select ) => select( CORE_MODULES ).getModuleIcon( slug ) );
+	const ModuleIconComponent = useSelect( ( select ) => select( CORE_MODULES ).getModuleIcon( slug ) );
 
-	if ( ! ModuleIconComponentaaaa ) {
+	if ( ! ModuleIconComponent ) {
 		return null;
 	}
 
 	return (
-		<ModuleIconComponentaaaa
+		<ModuleIconComponent
 			width={ size }
 			height={ size }
 			{ ...props }
