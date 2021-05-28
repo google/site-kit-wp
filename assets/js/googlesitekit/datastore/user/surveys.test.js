@@ -39,6 +39,7 @@ describe( 'core/user surveys', () => {
 		survey_payload: 'foo',
 		session: 'bar',
 	};
+	const surveyTriggerEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/;
 
 	describe( 'actions', () => {
 		describe( 'triggerSurvey', () => {
@@ -54,14 +55,16 @@ describe( 'core/user surveys', () => {
 				} ).toThrow( 'options.ttl must be a number' );
 			} );
 
-			it( 'does not throw an error when parameters are correct', () => {
-				muteFetch( /^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/, [] );
+			it( 'does not throw an error when parameters are correct', async () => {
+				muteFetch( surveyTriggerEndpoint, [] );
+				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'b', { ttl: 1 } ) );
 				expect( () => {
 					registry.dispatch( STORE_NAME ).triggerSurvey( 'a' );
 				} ).not.toThrow();
 				expect( () => {
 					registry.dispatch( STORE_NAME ).triggerSurvey( 'b', { ttl: 1 } );
 				} ).not.toThrow();
+				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, { body: { data: { triggerID: 'b' } } } );
 			} );
 		} );
 
@@ -97,9 +100,10 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'returns the current survey when it is set', async () => {
-				muteFetch( /^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/, survey );
+				muteFetch( surveyTriggerEndpoint, survey );
 				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'b', { ttl: 1 } ) );
 				expect( registry.select( STORE_NAME ).getCurrentSurvey() ).toEqual( survey.survey_payload );
+				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, { body: { data: { triggerID: 'b' } } } );
 			} );
 		} );
 		describe( 'getCurrentSurveySession', () => {
@@ -108,9 +112,10 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'returns the error once set', async () => {
-				muteFetch( /^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/, survey );
+				muteFetch( surveyTriggerEndpoint, survey );
 				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'b', { ttl: 1 } ) );
 				expect( registry.select( STORE_NAME ).getCurrentSurveySession() ).toEqual( survey.session );
+				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, { body: { data: { triggerID: 'b' } } } );
 			} );
 		} );
 	} );
