@@ -73,7 +73,7 @@ const baseActions = {
 			const { ttl = 0 } = options;
 			invariant( 'string' === typeof triggerID && triggerID.length, 'triggerID is required and must be a string' );
 			invariant( isPlainObject( options ), 'options must be an object' );
-			invariant( 'number' === typeof options.ttl, 'options.ttl must be a number' );
+			invariant( 'number' === typeof ttl, 'options.ttl must be a number' );
 		},
 		function* ( triggerID, { ttl = 0 } = {} ) {
 			const { select } = yield Data.commonActions.getRegistry();
