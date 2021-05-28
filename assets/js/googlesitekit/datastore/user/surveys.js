@@ -48,6 +48,10 @@ const fetchTriggerSurveyStore = createFetchStore( {
 			currentSurveySession: session,
 		};
 	},
+	validateParams: ( { triggerID } = {} ) => {
+		invariant( 'string' === typeof triggerID, 'triggerID is mandatory and must be a string' );
+	},
+
 } );
 
 const fetchSendSurveyEventStore = createFetchStore( {
@@ -70,14 +74,14 @@ const baseActions = {
 			invariant( isPlainObject( options ), 'options must be an object' );
 			invariant( 'number' === typeof options.ttl, 'options.ttl must be a number' );
 		},
-		function* ( triggerID, options ) {
+		function* ( triggerID, options = { ttl: 0 } ) {
 			const { select } = yield Data.commonActions.getRegistry();
 			if ( null !== select( STORE_NAME ).getCurrentSurvey() ) {
 				return;
 			}
 			const cacheKey = createCacheKey( 'core', 'user', 'survey-event', { triggerID } );
-			const surveyEvent = yield Data.commonActions.await( getItem( cacheKey ) );
-			if ( false === surveyEvent && options.ttl && options.ttl > 0 ) {
+			const { cacheHit, value } = yield Data.commonActions.await( getItem( cacheKey ) );
+			if ( false === cacheHit && options.ttl ) {
 				const { error, response } = yield fetchTriggerSurveyStore.actions.fetchTriggerSurvey( triggerID );
 				if ( ! error && options.ttl > 0 ) {
 					yield Data.commonActions.await( setItem( cacheKey, {} ) );
@@ -85,7 +89,7 @@ const baseActions = {
 				}
 			}
 			return {
-				response: surveyEvent,
+				response: value,
 				error: false,
 			};
 		}
@@ -95,12 +99,14 @@ const baseActions = {
 			invariant( 'string' === typeof eventID, 'eventID is mandatory and must be a string' );
 			invariant( isPlainObject( eventData ), 'eventData must be an object' );
 		},
-		function* ( eventID, eventData ) {
-			const event = { eventID: eventData };
+		function* ( eventID, eventData = {} ) {
+			const event = { [ eventID ]: eventData };
 			const { select } = yield Data.commonActions.getRegistry();
 			const session = select( STORE_NAME ).getCurrentSurveySession();
-			const { response, error } = yield fetchSendSurveyEventStore.actions.fetchSendSurveyEvent( event, session );
-			return { response, error };
+			if ( session ) {
+				const { response, error } = yield fetchSendSurveyEventStore.actions.fetchSendSurveyEvent( event, session );
+				return { response, error };
+			}
 		}
 	),
 };
@@ -132,6 +138,8 @@ const baseSelectors = {
 };
 
 const store = Data.combineStores(
+	fetchTriggerSurveyStore,
+	fetchSendSurveyEventStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
