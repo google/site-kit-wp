@@ -25,15 +25,24 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import {
+	STORE_NAME,
+	// MODULES_ANALYTICS
+} from '../../datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
-
+// import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 	const ga4setupEnabled = useFeature( 'ga4setup' );
+
+	// const ga4existingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
+
+	// says "propertyID settings"... not this?
+	// const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
+	// const uaPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
 
 	if ( ! hasExistingTag ) {
 		return null;
