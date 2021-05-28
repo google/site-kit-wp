@@ -41,9 +41,27 @@ const {
 	// accountId: accountID, // eslint-disable-line sitekit/acronym-case
 } = fixtures.propertiesProfiles.profiles[ 0 ];
 
+// TODO - just to populate everything before writing tests
+const setupRegistryPopulateEverythingDemo = ( { dispatch } ) => {
+	dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
+	dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( 'UA-12345678-1' );
+
+	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
+
+	dispatch( MODULES_ANALYTICS ).receiveGetProperties( propertiesUA, { accountID } );
+	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ accountID ] );
+
+	dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, { accountID, propertyID: propertyIDua } );
+	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ accountID, propertyIDua ] );
+
+	dispatch( MODULES_ANALYTICS ).setPropertyID( propertyID );
+};
+
 describe( 'ExistingTagNotice', () => {
 	it( 'should not render if does not have existing tag', async () => {
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
 			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 		};
 
@@ -63,28 +81,16 @@ describe( 'ExistingTagNotice', () => {
 		await findByText( /An existing Analytics tag was found on your site with the ID/ );
 	} );
 
-	it.only( 'should do new functionality if ga4 tag enabled', async () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
-			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( 'UA-12345678-1' );
+	it( 'should output UA existing tag', async () => {
+		const { findByText } = render( <ExistingTagNotice />, { features, setupRegistry: setupRegistryPopulateEverythingDemo } );
 
-			// trying to set ua property id
-			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
-			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
+		await findByText( 'uaexistingTag: UA-12345678-1' );
+	} );
 
-			dispatch( MODULES_ANALYTICS ).receiveGetProperties( propertiesUA, { accountID } );
-			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ accountID ] );
+	it( 'should output UA property Id', async () => {
+		const { findByText } = render( <ExistingTagNotice />, { features, setupRegistry: setupRegistryPopulateEverythingDemo } );
 
-			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, { accountID, propertyID: propertyIDua } );
-			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ accountID, propertyIDua ] );
-
-			// this
-			dispatch( MODULES_ANALYTICS ).setPropertyID( propertyID );
-		};
-
-		const { findByText } = render( <ExistingTagNotice />, { features, setupRegistry } );
-
-		await findByText( 'ga4 enabled' );
+		await findByText( `uaPropertyID: ${ propertyID }` );
 	} );
 
 	// If the existing UA tag is not empty but GA4 tag is empty, then

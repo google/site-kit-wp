@@ -30,7 +30,7 @@ import {
 	MODULES_ANALYTICS,
 } from '../../datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+// import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
@@ -41,13 +41,14 @@ export default function ExistingTagNotice() {
 
 	// Works!
 	const uaexistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).getExistingTag() );
-	console.debug( 'uaexistingTag ', uaexistingTag );
+	// console.debug( 'uaexistingTag ', uaexistingTag );
 
 	// const ga4existingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).getExistingTag() );
 	// console.debug( 'ga4existingTag ', ga4existingTag );
 
+	// Works!
 	const uaPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
-	console.debug( 'uaPropertyID ', uaPropertyID );
+	// console.debug( 'uaPropertyID ', uaPropertyID );
 
 	// const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 	// console.debug( 'ga4PropertyID ', ga4PropertyID );
@@ -74,5 +75,12 @@ export default function ExistingTagNotice() {
 		);
 	}
 
-	return <p>ga4 enabled</p>;
+	return (
+		<div>
+			<p>uaexistingTag: { uaexistingTag }</p>
+			<p>uaPropertyID: { uaPropertyID }</p>
+			{ /* <p>ga4existingTag: { ga4existingTag }</p>
+			<p>ga4PropertyID: { ga4PropertyID }</p> */ }
+		</div>
+	);
 }
