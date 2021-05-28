@@ -40,6 +40,7 @@ describe( 'core/user surveys', () => {
 		session: 'bar',
 	};
 	const surveyTriggerEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/;
+	const surveyEventEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/;
 
 	describe( 'actions', () => {
 		describe( 'triggerSurvey', () => {
@@ -55,15 +56,19 @@ describe( 'core/user surveys', () => {
 				} ).toThrow( 'options.ttl must be a number' );
 			} );
 
-			it( 'does not throw an error when parameters are correct', async () => {
+			it( 'does not throw an error when parameters are correct', () => {
 				muteFetch( surveyTriggerEndpoint, [] );
-				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'b', { ttl: 1 } ) );
 				expect( () => {
 					registry.dispatch( STORE_NAME ).triggerSurvey( 'a' );
 				} ).not.toThrow();
 				expect( () => {
 					registry.dispatch( STORE_NAME ).triggerSurvey( 'b', { ttl: 1 } );
 				} ).not.toThrow();
+			} );
+
+			it( 'makes network requests to endpoints', async () => {
+				muteFetch( surveyTriggerEndpoint, [] );
+				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'b', { ttl: 1 } ) );
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, { body: { data: { triggerID: 'b' } } } );
 			} );
 		} );
@@ -85,6 +90,14 @@ describe( 'core/user surveys', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).sendSurveyEvent( 'b', { foo: 'bar' } );
 				} ).not.toThrow();
+			} );
+
+			it( 'makes network requests to endpoints', async () => {
+				muteFetch( surveyTriggerEndpoint, survey );
+				muteFetch( surveyEventEndpoint, {} );
+				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'a', { ttl: 1 } ) );
+				await act( () => registry.dispatch( STORE_NAME ).sendSurveyEvent( 'b', { foo: 'bar' } ) );
+				expect( fetchMock ).toHaveFetched( surveyEventEndpoint, { body: { data: { event: { b: { foo: 'bar' } }, session: 'bar' } } } );
 			} );
 		} );
 	} );
