@@ -85,10 +85,6 @@ describe( 'core/user surveys', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).sendSurveyEvent( 'b', { foo: 'bar' } );
 				} ).not.toThrow();
-				expect( () => {
-					registry.dispatch( STORE_NAME ).triggerSurvey( 'c' );
-					registry.dispatch( STORE_NAME ).sendSurveyEvent( 'd', { foo: 'bar' } );
-				} ).not.toThrow();
 			} );
 		} );
 	} );
