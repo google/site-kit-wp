@@ -28,14 +28,14 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import {
 	showErrorNotification,
-} from '../../../../../util';
-import GenericError from '../../../../../components/legacy-notifications/generic-error';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
-import Button from '../../../../../components/Button';
-import Link from '../../../../../components/Link';
-import IdeaHubIcon from '../../../../../../svg/idea-hub.svg';
-import BulbIcon from '../../../../../../svg/bulb.svg';
+} from '../../../../util';
+import GenericError from '../../../../components/legacy-notifications/generic-error';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import Button from '../../../../components/Button';
+import Link from '../../../../components/Link';
+import IdeaHubIcon from '../../../../../svg/idea-hub.svg';
+import BulbIcon from '../../../../../svg/bulb.svg';
 const { useSelect, useDispatch } = Data;
 
 function DashboardCTA() {

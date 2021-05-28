@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import DashboardCTA from './index';
+import { provideModules } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import DashboardCTA from './DashboardCTA';
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
