@@ -282,13 +282,23 @@ final class Analytics extends Module
 			exit;
 		}
 
+		$internal_web_property_id = $web_property->getInternalWebPropertyId();
+
 		$this->get_settings()->merge(
 			array(
 				'accountID'             => $account_id,
 				'propertyID'            => $web_property_id,
 				'profileID'             => $profile_id,
-				'internalWebPropertyID' => $web_property->getInternalWebPropertyId(),
+				'internalWebPropertyID' => $internal_web_property_id,
 			)
+		);
+
+		do_action(
+			'googlesitekit_analytics_handle_provisioning_callback',
+			$account_id,
+			$web_property_id,
+			$internal_web_property_id,
+			$profile_id
 		);
 
 		wp_safe_redirect(
