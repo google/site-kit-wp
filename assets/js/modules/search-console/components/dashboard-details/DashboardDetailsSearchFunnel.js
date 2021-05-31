@@ -26,7 +26,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Layout from '../../../../components/layout/Layout';
-import LegacyDashboardSearchFunnelInner from '../dashboard/LegacyDashboardSearchFunnelInner';
 import { getModulesData } from '../../../../util';
 import ActivateModuleCTA from '../../../../components/ActivateModuleCTA';
 import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
@@ -48,7 +47,6 @@ class DashboardDetailsSearchFunnel extends Component {
 					<Layout className="googlesitekit-analytics-search-funnel">
 						<div className="mdc-layout-grid">
 							<div className="mdc-layout-grid__inner">
-								<LegacyDashboardSearchFunnelInner />
 								{ // Show the Analytics CTA if analytics is not enabled.
 									( ! getModulesData().analytics.active ) &&
 									<div className="

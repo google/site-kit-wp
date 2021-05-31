@@ -19,4 +19,3 @@
 export { default as DashboardPageSpeed } from './DashboardPageSpeed';
 export { default as DashboardPageSpeedWidget } from './DashboardPageSpeedWidget';
 export { default as LegacyDashboardSpeed } from './LegacyDashboardSpeed';
-export { default as LegacyDashboardPageSpeedCTA } from './LegacyDashboardPageSpeedCTA';
