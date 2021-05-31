@@ -201,6 +201,22 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Creates a new property for provided account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $account_id Account ID.
+	 * @return Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty A new property.
+	 */
+	private function create_property( $account_id ) {
+		$property = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty();
+		$property->setParent( self::normalize_account_id( $account_id ) );
+		$property->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+
+		return $this->get_service( 'analyticsadmin' )->properties->create( $property );
+	}
+
+	/**
 	 * Creates a request object for the given datapoint.
 	 *
 	 * @since 1.30.0
@@ -226,11 +242,7 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				$property = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty();
-				$property->setParent( self::normalize_account_id( $data['accountID'] ) );
-				$property->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
-
-				return $this->get_service( 'analyticsadmin' )->properties->create( $property );
+				return $this->create_property( $data['accountID'] );
 			case 'POST:create-webdatastream':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
