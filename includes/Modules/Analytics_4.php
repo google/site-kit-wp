@@ -217,6 +217,22 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Creates a new web data stream for provided property.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $property_id Property ID.
+	 * @return Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream A new web data stream.
+	 */
+	private function create_webdatastream( $property_id ) {
+		$datastream = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream();
+		$datastream->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+		$datastream->setDefaultUri( $this->context->get_reference_site_url() );
+
+		return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->create( self::normalize_property_id( $property_id ), $datastream );
+	}
+
+	/**
 	 * Creates a request object for the given datapoint.
 	 *
 	 * @since 1.30.0
@@ -253,11 +269,7 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				$datastream = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream();
-				$datastream->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
-				$datastream->setDefaultUri( $this->context->get_reference_site_url() );
-
-				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->create( self::normalize_property_id( $data['propertyID'] ), $datastream );
+				return $this->create_webdatastream( $data['propertyID'] );
 			case 'GET:properties':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
