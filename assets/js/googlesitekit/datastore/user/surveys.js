@@ -43,7 +43,7 @@ const fetchTriggerSurveyStore = createFetchStore( {
 	},
 	reducerCallback: ( state, { survey_payload, session } ) => { // eslint-disable-line camelcase
 		// We don't replace survey if we already have one.
-		if ( state.currentSurveySession || state.currentSurvey ) {
+		if ( baseSelectors.getCurrentSurvey( state ) ) {
 			return state;
 		}
 		return {
