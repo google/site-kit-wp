@@ -20,82 +20,46 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useCallback } from '@wordpress/element';
-
-/**
- * WordPress dependencies
- */
-import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Button from '../../components/Button';
 import SurveyHeader from './SurveyHeader';
-import SurveyUnhappy from '../../../svg/survey-unhappy.svg';
-import SurveyDissatisfied from '../../../svg/survey-dissatisfied.svg';
-import SurveyNeutral from '../../../svg/survey-neutral.svg';
-import SurveySatisfied from '../../../svg/survey-satisfied.svg';
-import SurveyDelighted from '../../../svg/survey-delighted.svg';
+import SurveyQuestionRatingChoice from './SurveyQuestionRatingChoice';
+import IconSurveyUnhappy from '../../../svg/survey-unhappy.svg';
+import IconSurveyDissatisfied from '../../../svg/survey-dissatisfied.svg';
+import IconSurveyNeutral from '../../../svg/survey-neutral.svg';
+import IconSurveySatisfied from '../../../svg/survey-satisfied.svg';
+import IconSurveyDelighted from '../../../svg/survey-delighted.svg';
 
-const getIcon = ( answerOrdinal ) => {
-	if ( ! answerOrdinal ) {
-		return null;
-	}
+const SurveyQuestionRating = ( { question, choices, answerQuestion, dismissSurvey } ) => (
+	<div className="googlesitekit-survey__question-rating">
+		<SurveyHeader
+			title={ question }
+			dismissSurvey={ dismissSurvey }
+		/>
 
-	switch ( parseInt( answerOrdinal, 10 ) ) {
-		case 1:
-			return <SurveyUnhappy />;
-		case 2:
-			return <SurveyDissatisfied />;
-		case 3:
-			return <SurveyNeutral />;
-		case 4:
-			return <SurveySatisfied />;
-		case 5:
-			return <SurveyDelighted />;
-	}
-};
-
-const SurveyQuestionRating = ( { question, choices, answerQuestion, dismissSurvey } ) => {
-	const handleButtonClick = useCallback( ( answer ) => {
-		if ( typeof answerQuestion === 'function' ) {
-			answerQuestion( answer );
-		}
-	}, [ answerQuestion ] );
-
-	return (
-		<div className="googlesitekit-survey__question-rating">
-			<SurveyHeader
-				title={ question }
-				dismissSurvey={ dismissSurvey }
-			/>
-
-			<div className="googlesitekit-survey__body">
-				<div className="googlesitekit-survey__choices">
-					{ choices.map( ( choice, index ) => (
-						<div className="googlesitekit-survey__choice" key={ index }>
-							<Button
-								icon={ getIcon( choice.answer_ordinal ) }
-								aria-label={
-									sprintf(
-										/* translators: %s: Icon Expression */
-										__( '%s icon', 'google-site-kit' ),
-										choice.text,
-									)
-								}
-								onClick={ handleButtonClick.bind( null, choice.answer_ordinal ) }
-							/>
-
-							<p>
-								{ choice.text }
-							</p>
-						</div>
-					) ) }
-				</div>
+		<div className="googlesitekit-survey__body">
+			<div className="googlesitekit-survey__choices">
+				{ choices.map( ( choice, index ) => (
+					<SurveyQuestionRatingChoice
+						key={ index }
+						choice={ choice }
+						answerQuestion={ answerQuestion }
+						Icon={ SurveyQuestionRating.ordinalIconMap[ choice.answer_ordinal ] }
+					/>
+				) ) }
 			</div>
 		</div>
-	);
+	</div>
+);
+
+SurveyQuestionRating.ordinalIconMap = {
+	1: IconSurveyUnhappy,
+	2: IconSurveyDissatisfied,
+	3: IconSurveyNeutral,
+	4: IconSurveySatisfied,
+	5: IconSurveyDelighted,
 };
 
 SurveyQuestionRating.propTypes = {
@@ -108,15 +72,9 @@ SurveyQuestionRating.propTypes = {
 			] ),
 			text: PropTypes.string,
 		} ),
-	),
-	answerQuestion: PropTypes.func,
-	dismissSurvey: PropTypes.func,
-};
-
-SurveyQuestionRating.defaultProps = {
-	choices: [],
-	answerQuestion: null,
-	dismissSurvey: null,
+	).isRequired,
+	answerQuestion: PropTypes.func.isRequired,
+	dismissSurvey: PropTypes.func.isRequired,
 };
 
 export default SurveyQuestionRating;

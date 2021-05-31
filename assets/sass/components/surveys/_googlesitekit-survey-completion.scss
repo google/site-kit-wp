@@ -16,19 +16,22 @@
  * limitations under the License.
  */
 
-.googlesitekit-survey__completion {
+.googlesitekit-plugin {
 
-	.googlesitekit-survey__body {
-		color: $c-scarpa-flow;
-		font-family: $f-primary;
-		font-size: 0.875rem;
-		font-weight: $fw-primary-normal;
-		line-height: 1.28;
-		padding: 0 $grid-gap-phone $grid-gap-phone 56px;
+	.googlesitekit-survey__completion {
 
-		@media (min-width: $bp-desktop) {
-			padding-left: 70px;
-			padding-right: $grid-gap-desktop;
+		.googlesitekit-survey__body {
+			color: $c-scarpa-flow;
+			font-family: $f-primary;
+			font-size: 0.875rem;
+			font-weight: $fw-primary-normal;
+			line-height: 1.28;
+			padding: 0 $grid-gap-phone $grid-gap-phone 56px;
+
+			@media (min-width: $bp-desktop) {
+				padding-left: 70px; // to align content with where the Google logo ends.
+				padding-right: $grid-gap-desktop;
+			}
 		}
 	}
 }

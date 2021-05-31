@@ -42,7 +42,7 @@ const SurveyCompletion = ( { title, children, ctaText, ctaURL, ctaOnClick, dismi
 			<div className="googlesitekit-survey__footer">
 				<Button
 					href={ ctaURL }
-					onClick={ ctaOnClick || undefined }
+					onClick={ ctaOnClick }
 				>
 					{ ctaText }
 				</Button>

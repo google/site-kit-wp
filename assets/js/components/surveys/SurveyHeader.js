@@ -19,8 +19,12 @@
 /**
  * External dependencies
  */
-import { Icon, closeSmall } from '@wordpress/icons';
 import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { Icon, closeSmall } from '@wordpress/icons';
 
 /**
  * Internal dependencies
@@ -30,17 +34,17 @@ import Logo from '../../../svg/logo-g.svg';
 
 const SurveyHeader = ( { title, dismissSurvey } ) => (
 	<div className="googlesitekit-survey__header">
-		<div className="googlesitekit-survey__header--logo">
-			<Logo />
+		<div className="googlesitekit-survey__header-logo">
+			<Logo width={ 24 } height={ 24 } />
 		</div>
 
-		<div className="googlesitekit-survey__header--details">
+		<div className="googlesitekit-survey__header-details">
 			<h3>{ title }</h3>
 
 			<Button
 				icon={ <Icon icon={ closeSmall } size={ 40 } /> }
-				onClick={ dismissSurvey || undefined }
-				className="googlesitekit-survey__header--close"
+				onClick={ dismissSurvey }
+				className="googlesitekit-survey__header-close"
 			/>
 		</div>
 	</div>
@@ -48,7 +52,7 @@ const SurveyHeader = ( { title, dismissSurvey } ) => (
 
 SurveyHeader.propTypes = {
 	title: PropTypes.string.isRequired,
-	dismissSurvey: PropTypes.func,
+	dismissSurvey: PropTypes.func.isRequired,
 };
 
 SurveyHeader.defaultProps = {

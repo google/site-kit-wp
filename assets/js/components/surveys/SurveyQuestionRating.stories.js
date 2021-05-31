@@ -21,43 +21,50 @@
  */
 import SurveyQuestionRating from './SurveyQuestionRating';
 
-export const SurveyQuestionRatingStory = () => (
-	<div className="googlesitekit-survey">
-		<SurveyQuestionRating
-			question="Based on your experience so far, how satisfied are you with Site Kit?"
-			choices={ [
-				{
-					answer_ordinal: 1,
-					text: 'Unhappy',
-				},
-				{
-					answer_ordinal: 2,
-					text: 'Dissatisfied',
-				},
-				{
-					answer_ordinal: 3,
-					text: 'Neutral',
-				},
-				{
-					answer_ordinal: 4,
-					text: 'Satisfied',
-				},
-				{
-					answer_ordinal: 5,
-					text: 'Delighted',
-				},
-			] }
-			answerQuestion={ ( answer ) => {
-				global.console.log( `Clicked: ${ answer }` );
-			} }
-			dismissSurvey={ () => {
-				global.console.log( 'Dismissed Survey' );
-			} }
-		/>
-	</div>
-);
+const Template = ( args ) => <SurveyQuestionRating { ...args } />;
+
+export const SurveyQuestionRatingStory = Template.bind( {} );
 SurveyQuestionRatingStory.storyName = 'SurveyQuestionRating';
+SurveyQuestionRatingStory.args = {
+	question: 'Based on your experience so far, how satisfied are you with Site Kit?',
+	choices: [
+		{
+			answer_ordinal: 1,
+			text: 'Unhappy',
+		},
+		{
+			answer_ordinal: 2,
+			text: 'Dissatisfied',
+		},
+		{
+			answer_ordinal: 3,
+			text: 'Neutral',
+		},
+		{
+			answer_ordinal: 4,
+			text: 'Satisfied',
+		},
+		{
+			answer_ordinal: 5,
+			text: 'Delighted',
+		},
+	],
+	answerQuestion: ( answer ) => {
+		global.console.log( `Clicked: ${ answer }` );
+		global.console.log( answer );
+	},
+	dismissSurvey: () => {
+		global.console.log( 'Dismissed Survey' );
+	},
+};
 
 export default {
 	title: 'Components/Surveys',
+	decorators: [
+		( Story ) => (
+			<div className="googlesitekit-survey">
+				<Story />
+			</div>
+		),
+	],
 };

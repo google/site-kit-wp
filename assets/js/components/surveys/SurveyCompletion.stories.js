@@ -1,5 +1,5 @@
 /**
- * SurveyQuestionRating Component Stories.
+ * SurveyCompletion Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -21,25 +21,45 @@
  */
 import SurveyCompletion from './SurveyCompletion';
 
-export const SurveyCompletionStory = () => (
-	<div className="googlesitekit-survey">
-		<SurveyCompletion
-			title="Thanks for sharing your thoughts!"
-			ctaText="Let’s go"
-			ctaURL="https://sitekit.withgoogle.com/"
-			ctaOnClick={ () => {
-				global.console.log( 'Clicked' );
-			} }
-			dismissSurvey={ () => {
-				global.console.log( 'Dismissed Completed Survey' );
-			} }
-		>
-			We’re glad Site Kit is helpful for you! To help others discover it too, take a moment to share your opinion as a review.
-		</SurveyCompletion>
-	</div>
-);
-SurveyCompletionStory.storyName = 'SurveyCompletion';
+const Template = ( args ) => <SurveyCompletion { ...args } />;
+
+export const SurveyCompletionReviewStory = Template.bind( {} );
+SurveyCompletionReviewStory.storyName = 'SurveyCompletion: Review';
+SurveyCompletionReviewStory.args = {
+	children: 'We’re glad Site Kit is helpful for you! To help others discover it too, take a moment to share your opinion as a review.',
+	title: 'Thanks for sharing your thoughts!',
+	ctaText: 'Let’s go',
+	ctaURL: 'https://sitekit.withgoogle.com/',
+	ctaOnClick: () => {
+		global.console.log( 'Clicked' );
+	},
+	dismissSurvey: () => {
+		global.console.log( 'Dismissed Completed Survey' );
+	},
+};
+
+export const SurveyCompletionForumStory = Template.bind( {} );
+SurveyCompletionForumStory.storyName = 'SurveyCompletion: Forum';
+SurveyCompletionForumStory.args = {
+	children: 'Do you need help with anything? We’re happy to answer your questions in the forum.',
+	title: 'Thanks for sharing your thoughts!',
+	ctaText: 'Get help',
+	ctaURL: 'https://sitekit.withgoogle.com/',
+	ctaOnClick: () => {
+		global.console.log( 'Clicked' );
+	},
+	dismissSurvey: () => {
+		global.console.log( 'Dismissed Completed Survey' );
+	},
+};
 
 export default {
 	title: 'Components/Surveys',
+	decorators: [
+		( Story ) => (
+			<div className="googlesitekit-survey">
+				<Story />
+			</div>
+		),
+	],
 };
