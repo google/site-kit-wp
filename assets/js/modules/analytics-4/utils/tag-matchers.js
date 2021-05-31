@@ -18,7 +18,7 @@
 
 export const tagMatchers = [
 	// Detect gtag script calls.
-	/<script [^>]*src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=G-([a-zA-Z0-9]+)['|"][^>]*><\/script>/i,
+	/<script [^>]*src=['|"]https:\/\/www\.googletagmanager\.com\/gtag\/js\?id=G-([a-zA-Z0-9]+)['|"][^>]*><\/script>/i,
 	// Detect common analytics code usage.
 	/<script[^>]*>[^<]+google-analytics\.com\/analytics\.js[^<]+G-([a-zA-Z0-9]+)/i,
 	/__gaTracker\(\s*['|"]create['|"],\s+['|"]G-([a-zA-Z0-9]+)['|"], ?['|"]auto['|"]\s*\)/i,
