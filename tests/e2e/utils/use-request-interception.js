@@ -17,6 +17,16 @@ export function useRequestInterception( callback ) {
 			return;
 		}
 
+		if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
+			/* if try and do this everywhere then get this error
+			  Error: Element .googlesitekit-cta-link (text: "/Set up PageSpeed Insights/i") not found
+				JSHandles can be evaluated only in the context they were created!
+
+				JSHandles can be evaluated only in the context they were created!
+			*/
+			// request.respond( { status: 200, body: JSON.stringify( {} ) } );
+		}
+
 		callback( request );
 	};
 
