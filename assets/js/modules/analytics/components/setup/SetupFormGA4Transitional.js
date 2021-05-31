@@ -47,6 +47,10 @@ export default function SetupFormGA4Transitional() {
 	// Needed to conditionally show the profile name field and surrounding container.
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 
+	const notice = propertyType === PROPERTY_TYPE_UA
+		? __( 'You’ll need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property.', 'google-site-kit' )
+		: __( 'You’ll need to connect the Universal Analytics property that’s associated with this Google Analytics 4 property.', 'google-site-kit' );
+
 	return (
 		<Fragment>
 			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
@@ -73,9 +77,7 @@ export default function SetupFormGA4Transitional() {
 				</div>
 			) }
 
-			<GA4PropertyNotice
-				notice={ __( 'You’ll need to connect the Universal Analytics property that’s associated with this Google Analytics 4 property.', 'google-site-kit' ) }
-			>
+			<GA4PropertyNotice notice={ notice }>
 				{ propertyType === PROPERTY_TYPE_GA4 && (
 					<Fragment>
 						<div className="googlesitekit-setup-module__inputs">
