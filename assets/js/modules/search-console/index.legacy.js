@@ -28,17 +28,13 @@ import { createAddToFilter } from '../../util/helpers';
 import PostSearcher from '../../components/PostSearcher';
 import GoogleSitekitSearchConsoleDashboardWidget from './components/dashboard/GoogleSitekitSearchConsoleDashboardWidget';
 import LegacySearchConsoleDashboardWidgetTopLevel from './components/dashboard/LegacySearchConsoleDashboardWidgetTopLevel';
-import DashboardDetailsWidgetKeywordsTable from './components/dashboard-details/DashboardDetailsWidgetKeywordsTable';
 import LegacyDashboardWidgetPopularKeywordsTable from './components/dashboard/LegacyDashboardWidgetPopularKeywordsTable';
-import DashboardDetailsWidgetSearchFunnel from './components/dashboard-details/DashboardDetailsSearchFunnel';
 
 const slug = 'search-console';
 
 const addGoogleSitekitSearchConsoleDashboardWidget = createAddToFilter( <GoogleSitekitSearchConsoleDashboardWidget /> );
 const addLegacySearchConsoleDashboardWidgetTopLevel = createAddToFilter( <LegacySearchConsoleDashboardWidgetTopLevel /> );
 
-const addDashboardDetailsSearchFunnel = createAddToFilter( <DashboardDetailsWidgetSearchFunnel /> );
-const addDashboardDetailsKeywords = createAddToFilter( <DashboardDetailsWidgetKeywordsTable /> );
 const addLegacyDashboardWidgetPopularKeywordsTable = createAddToFilter( <LegacyDashboardWidgetPopularKeywordsTable /> );
 const addPostSearcher = createAddToFilter( <PostSearcher /> );
 
@@ -48,16 +44,6 @@ const addPostSearcher = createAddToFilter( <PostSearcher /> );
 addFilter( 'googlesitekit.DashboardSearchFunnel',
 	'googlesitekit.SearchConsoleSearchFunnel',
 	addLegacySearchConsoleDashboardWidgetTopLevel );
-
-/**
- * Add components to the Site Kit URL Details Dashboard.
- */
-addFilter( 'googlesitekit.DashboardDetailsModule',
-	'googlesitekit.SearchConsole',
-	addDashboardDetailsSearchFunnel );
-addFilter( 'googlesitekit.DashboardDetailsModule',
-	'googlesitekit.SearchConsole',
-	addDashboardDetailsKeywords, 40 );
 
 addFilter( 'googlesitekit.DashboardPopularity',
 	'googlesitekit.SearchConsoleDashboardPopularity',
