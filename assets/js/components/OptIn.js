@@ -72,7 +72,7 @@ export default function OptIn( { id, name, className, optinAction } ) {
 				disabled={ saving }
 				onChange={ handleOptIn }
 			>
-				<span>{ __( 'Help us improve Site Kit by sharing anonymous usage data.', 'google-site-kit' ) }&nbsp;</span>
+				<span>{ __( 'Help us improve Site Kit by sharing anonymous usage data.', 'google-site-kit' ) }{ ' ' }</span>
 				<span>
 					{ createInterpolateElement(
 						__( 'All collected data is treated in accordance with the <a>Google Privacy Policy.</a>', 'google-site-kit' ),
