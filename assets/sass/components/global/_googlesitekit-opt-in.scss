@@ -48,4 +48,11 @@
 	&--align-top .mdc-checkbox {
 		margin-top: -7px;
 	}
+
+	span {
+
+		@media (min-width: $bp-desktop) {
+			display: block;
+		}
+	}
 }
