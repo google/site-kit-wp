@@ -76,7 +76,7 @@ export default function OptIn( { id, name, className, optinAction } ) {
 				<br />
 				<span>
 					{ createInterpolateElement(
-						__( 'All collected data is treated in accordance with the <a>Google Privacy Policy</a>', 'google-site-kit' ),
+						__( 'All collected data is treated in accordance with the <a>Google Privacy Policy.</a>', 'google-site-kit' ),
 						{
 							a: <Link
 								key="link"
