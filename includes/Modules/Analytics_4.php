@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Exception;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
@@ -230,6 +231,41 @@ final class Analytics_4 extends Module
 		$datastream->setDefaultUri( $this->context->get_reference_site_url() );
 
 		return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->create( self::normalize_property_id( $property_id ), $datastream );
+	}
+
+	/**
+	 * Provisions new GA4 property and web data stream for provided account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $account_id Account ID.
+	 */
+	private function handle_provisioning_callback( $account_id ) {
+		// TODO: remove this try/catch once GA4 API stabilizes.
+		try {
+			$property = $this->create_property( $account_id );
+			$property = self::filter_property_with_ids( $property );
+			if ( empty( $property->_id ) ) {
+				return;
+			}
+
+			$this->get_settings()->merge( array( 'propertyID' => $account_id ) );
+
+			$web_datastream = $this->create_webdatastream( $property->_id );
+			$web_datastream = self::filter_webdatastream_with_ids( $web_datastream );
+			if ( empty( $web_datastream->_id ) ) {
+				return;
+			}
+
+			$this->get_settings()->merge(
+				array(
+					'webDataStreamID' => $web_datastream->_id,
+					'measurementID'   => $web_datastream->measurementID, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				)
+			);
+		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// Suppress this exception because it might be caused by unstable GA4 API.
+		}
 	}
 
 	/**
