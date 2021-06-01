@@ -1,5 +1,5 @@
 /**
- * Analytics-4 module initialization.
+ * Analytics GA4 Property Notice component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,27 +17,37 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
-import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { isFeatureEnabled } from '../../features';
+import SettingsNotice, { TYPE_INFO } from '../../../../components/SettingsNotice';
+import Link from '../../../../components/Link';
 
-export { registerStore } from './datastore';
-
-if ( isFeatureEnabled( 'ga4setup' ) ) {
-	addFilter(
-		'googlesitekit.SetupWinNotification-analytics',
-		'googlesitekit.OptimizeSetupWinNotification',
-		( winData ) => {
-			winData.description = __( 'You’ll only see Universal Analytics data for now.', 'google-site-kit' );
-			winData.learnMore.label = 'Learn more';
-			winData.learnMore.url = 'https://sitekit.withgoogle.com/documentation/ga4-analytics-property/';
-			return winData;
-		}
+export default function GA4PropertyNotice( { notice } ) {
+	return (
+		<SettingsNotice type={ TYPE_INFO }>
+			{ notice }
+			{ ' ' }
+			<Link
+				href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
+				external
+				inherit
+			>
+				{ __( 'Learn more here.', 'google-site-kit' ) }
+			</Link>
+		</SettingsNotice>
 	);
 }
+
+GA4PropertyNotice.propTypes = { // eslint-disable-line sitekit/acronym-case
+	notice: PropTypes.string.isRequired,
+};

@@ -170,8 +170,9 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await proceedToSetUpAnalytics();
 
 			await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: '' } );
-			await expect( page ).toMatchElement( '.googlesitekit-analytics__select-property .mdc-select__selected-text', { text: '' } );
-			await expect( page ).toMatchElement( '.googlesitekit-analytics__select-profile .mdc-select__selected-text', { text: '' } );
+			await expect( page ).not.toMatchElement( '.googlesitekit-analytics__select-property' );
+			await expect( page ).not.toMatchElement( '.googlesitekit-analytics__select-profile' );
+
 			await expect( page ).toMatchElement( 'button[disabled]', { text: /configure analytics/i } );
 
 			// Select Test Account A
@@ -183,9 +184,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 
 					// See the selects populate
 					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account a/i } );
-					// Property and profile dropdowns should select "Set up a new property/view" options because there is no property associated with the current reference URL.
+					// Property dropdown should select "Set up a new property" option because there is no property associated with the current reference URL.
 					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new property/i } );
-					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new view/i } );
+					// Profile dropdown should select "Set up a new view" option.
+					await expect( page ).toMatchElement( '.googlesitekit-analytics__select-profile', { text: /set up a new view/i } );
 				},
 			);
 

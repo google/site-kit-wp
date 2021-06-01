@@ -980,10 +980,8 @@ final class Analytics extends Module
 			'slug'        => 'analytics',
 			'name'        => _x( 'Analytics', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.', 'google-site-kit' ),
-			'cta'         => __( 'Get to know your customers.', 'google-site-kit' ),
 			'order'       => 3,
 			'homepage'    => __( 'https://analytics.google.com/analytics/web', 'google-site-kit' ),
-			'learn_more'  => __( 'https://marketingplatform.google.com/about/analytics/', 'google-site-kit' ),
 		);
 	}
 

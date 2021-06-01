@@ -1,5 +1,5 @@
 /**
- * Idea Hub dashboard components.
+ * Idea Hub notice component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,5 +16,27 @@
  * limitations under the License.
  */
 
-export { default as DashboardIdeasWidget } from './DashboardIdeasWidget';
-export { default as DashboardCTA } from './DashboardCTA';
+.googlesitekit-idea-hub__wpdashboard--notice {
+	background-color: $c-background-notice-info;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	margin-top: 13px;
+	padding: 14px;
+	width: 100%;
+}
+
+.googlesitekit-idea-hub__wpdashboard--header {
+	align-items: center;
+	display: flex;
+}
+
+.googlesitekit-idea-hub__wpdashboard--title {
+	color: $c-secondary;
+	font-size: 16px;
+	margin-left: 12px;
+}
+
+.googlesitekit-idea-hub__wpdashboard--link {
+	margin: 0;
+}

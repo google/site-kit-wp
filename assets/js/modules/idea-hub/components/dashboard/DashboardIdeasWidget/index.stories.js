@@ -169,6 +169,20 @@ DataUnavailableDrafts.args = {
 	defaultActiveTabIndex: 2,
 };
 
+export const DataUnavailableAll = Template.bind( {} );
+DataUnavailableAll.storyName = 'Data Unavailable: All';
+DataUnavailableAll.decorators = [
+	( Story ) => {
+		mockEndpoints( {
+			draftPostIdeas: [],
+			newIdeas: [],
+			savedIdeas: [],
+		} );
+
+		return <Story />;
+	},
+];
+
 export default {
 	title: 'Modules/Idea Hub/Widgets/DashboardIdeasWidget',
 	component: DashboardIdeasWidget,
