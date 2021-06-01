@@ -92,10 +92,12 @@ const baseActions = {
 		function* ( triggerID, options = {} ) {
 			const { ttl = 0 } = options;
 			const { select } = yield Data.commonActions.getRegistry();
-			if ( null !== select( STORE_NAME ).getCurrentSurvey() ) {
-				return;
+			// Bail if there is already a current survey.
+			if ( select( STORE_NAME ).getCurrentSurvey() ) {
+				return {};
 			}
-			const cacheKey = createCacheKey( 'core', 'user', 'survey-event', { triggerID } );
+
+			const cacheKey = createCacheKey( 'core', 'user', 'survey-trigger', { triggerID } );
 			const { cacheHit } = yield Data.commonActions.await( getItem( cacheKey ) );
 			if ( false === cacheHit && ttl ) {
 				const { error } = yield fetchTriggerSurveyStore.actions.fetchTriggerSurvey( triggerID );
