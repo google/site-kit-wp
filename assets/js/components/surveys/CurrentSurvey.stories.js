@@ -17,11 +17,19 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import CurrentSurvey from './CurrentSurvey';
+const { useDispatch } = Data;
 
 export const CurrentSurveyStory = () => <CurrentSurvey />;
 CurrentSurveyStory.storyName = 'CurrentSurvey';
@@ -30,10 +38,21 @@ export default {
 	title: 'Components/Surveys',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			const survey = {
+				survey_payload: 'foo',
+				session: 'bar',
+			};
+			fetchMock.reset();
+			fetchMock.post(
+				/^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/,
+				{ body: survey, status: 200 }
+			);
+
+			const { triggerSurvey } = useDispatch( CORE_USER );
+			const setupRegistry = async ( registry ) => {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( { usingProxy: true } );
 
-				// @TOO: populate user data store with survey data
+				await triggerSurvey( 'test-survey', { ttl: 1 } );
 			};
 
 			return (
