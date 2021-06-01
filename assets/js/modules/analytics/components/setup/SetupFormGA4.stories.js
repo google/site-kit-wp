@@ -79,6 +79,7 @@ export default {
 				provideModuleRegistrations( registry );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( ga4Fixtures.properties, { accountID } );
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( ga4Fixtures.webDataStreams, { propertyID: ga4Fixtures.properties[ 0 ]._id } );
 

@@ -95,7 +95,16 @@ export default {
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				const accounts = fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
-				const properties = fixtures.accountsPropertiesProfiles.properties.slice( 0, 1 );
+				const properties = [
+					{
+						...fixtures.accountsPropertiesProfiles.properties[ 0 ],
+						websiteUrl: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+					},
+					{
+						...fixtures.accountsPropertiesProfiles.properties[ 1 ],
+					},
+				];
+
 				const accountID = accounts[ 0 ].id;
 
 				provideModules( registry, [
@@ -115,6 +124,7 @@ export default {
 				provideModuleRegistrations( registry );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( ga4Fixtures.properties, { accountID } );
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( ga4Fixtures.webDataStreams, { propertyID: ga4Fixtures.properties[ 0 ]._id } );
 
@@ -123,6 +133,7 @@ export default {
 				registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 				registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
 				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID: properties[ 0 ].id } );
+				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID: properties[ 1 ].id } );
 
 				registry.dispatch( STORE_NAME ).selectAccount( accountID );
 			};
