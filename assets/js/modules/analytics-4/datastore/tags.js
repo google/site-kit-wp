@@ -1,5 +1,5 @@
 /**
- * `modules/analytics-4` data store
+ * `modules/analytics-4` data store: tags.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,21 +20,19 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
 import { STORE_NAME } from './constants';
-import accounts from './accounts';
-import api from './api';
-import baseModuleStore from './base';
-import properties from './properties';
-import tags from './tags';
-import webdatastreams from './webdatastreams';
+import { tagMatchers } from '../utils/tag-matchers';
+import { isValidMeasurementID } from '../utils/validation';
+
+const existingTagStore = createExistingTagStore( {
+	storeName: STORE_NAME,
+	tagMatchers,
+	isValidTag: isValidMeasurementID,
+} );
 
 const store = Data.combineStores(
-	accounts,
-	api,
-	baseModuleStore,
-	properties,
-	tags,
-	webdatastreams,
+	existingTagStore,
 );
 
 export const initialState = store.initialState;
@@ -43,9 +41,5 @@ export const controls = store.controls;
 export const reducer = store.reducer;
 export const resolvers = store.resolvers;
 export const selectors = store.selectors;
-
-export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, store );
-};
 
 export default store;
