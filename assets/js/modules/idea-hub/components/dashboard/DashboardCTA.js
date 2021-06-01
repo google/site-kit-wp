@@ -80,6 +80,7 @@ function DashboardCTA( { Widget } ) {
 							className="googlesitekit-idea-hub__dashboard-cta__learnmore"
 							href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
 							external
+							inherit
 							hideExternalIndicator
 						>
 							{ __( 'Learn more', 'google-site-kit' ) }
