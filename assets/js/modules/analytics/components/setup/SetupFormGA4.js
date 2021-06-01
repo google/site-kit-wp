@@ -42,7 +42,7 @@ const { useSelect, useDispatch } = Data;
 export default function SetupFormGA4() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 
-	const ga4HasExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getHasExistingTag() );
+	const ga4HasExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).hasExistingTag() );
 	const ga4ExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
 	const ga4MeasurementID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID() );
 
