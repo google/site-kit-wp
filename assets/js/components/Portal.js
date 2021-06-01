@@ -28,19 +28,18 @@ import PropTypes from 'prop-types';
 import { createPortal, useState } from '@wordpress/element';
 
 function Portal( { children, slug, appendPluginRoot } ) {
-	const elDiv = document.createElement( 'div' );
-	if ( slug ) {
-		elDiv.classList.add( `googlesitekit-portal-${ slug }` );
-	}
-
-	if ( ! appendPluginRoot ) {
-		elDiv.classList.add( 'googlesitekit-plugin' );
-	}
-
 	// Using state as we need `el` to not change when the component re-renders
-	const [ el ] = useState( elDiv );
+	const [ el ] = useState( document.createElement( 'div' ) );
 
 	useEffectOnce( () => {
+		if ( slug ) {
+			el.classList.add( `googlesitekit-portal-${ slug }` );
+		}
+
+		if ( ! appendPluginRoot ) {
+			el.classList.add( 'googlesitekit-plugin' );
+		}
+
 		const root = appendPluginRoot ? document.querySelector( '.googlesitekit-plugin' ) || document.body : document.body;
 		root.appendChild( el );
 
@@ -56,11 +55,13 @@ function Portal( { children, slug, appendPluginRoot } ) {
 Portal.propTypes = {
 	slug: PropTypes.string,
 	appendPluginRoot: PropTypes.bool,
+	children: PropTypes.node,
 };
 
 Portal.defaultProps = {
 	slug: '',
 	appendPluginRoot: true,
+	children: null,
 };
 
 export default Portal;

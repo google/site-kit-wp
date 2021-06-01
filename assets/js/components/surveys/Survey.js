@@ -16,18 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-
-/**
- * WordPress dependencies
- */
-
-/**
- * Internal dependencies
- */
-
 const Survey = () => {
 	return (
 		<p>Scaffolded Survey component</p>

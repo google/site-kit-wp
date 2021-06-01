@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -41,22 +36,19 @@ export default {
 	title: 'Components/Surveys',
 	decorators: [
 		( Story ) => {
+			const { triggerSurvey, receiveTriggerSurvey } = useDispatch( CORE_USER );
+			const triggerID = 'test-survey';
 			const survey = {
 				survey_payload: 'foo',
 				session: 'bar',
 			};
-			fetchMock.reset();
-			fetchMock.post(
-				/^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/,
-				{ body: survey, status: 200 }
-			);
-
-			const { triggerSurvey } = useDispatch( CORE_USER );
 			const setupRegistry = async ( registry ) => {
 				await API.invalidateCache();
+
+				receiveTriggerSurvey( survey, { triggerID } );
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( { usingProxy: true } );
 
-				await triggerSurvey( 'test-survey', { ttl: 1 } );
+				await triggerSurvey( triggerID, { ttl: 1 } );
 			};
 
 			return (
