@@ -30,8 +30,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import SettingsNotice, { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION } from '../assets/js/components/SettingsNotice';
-import InfoIcon from '../assets/svg/info-icon.svg';
-import SuggestionIcon from '../assets/svg/suggestion-icon.svg';
 import WarningIcon from '../assets/svg/warning-icon.svg';
 import Link from '../assets/js/components/Link';
 
@@ -47,32 +45,32 @@ const LearnMore = () => (
 
 storiesOf( 'Global/Notices', module )
 	.add( 'Settings warning notice', () => (
-		<SettingsNotice type={ TYPE_WARNING } Icon={ <WarningIcon /> } LearnMore={ <LearnMore /> }>
+		<SettingsNotice type={ TYPE_WARNING } LearnMore={ <LearnMore /> }>
 			{ 'This is a warning.' }
 		</SettingsNotice>
 	) )
 	.add( 'Settings info notice single line', () => (
-		<SettingsNotice type={ TYPE_INFO } Icon={ <InfoIcon /> } LearnMore={ <LearnMore /> }>
-			{ 'This is an information.' }
-		</SettingsNotice>
-	) )
-	.add( 'Settings info notice multi line', () => (
-		<SettingsNotice type={ TYPE_INFO } Icon={ <InfoIcon /> } LearnMore={ <LearnMore /> }>
-			{ new Array( 10 ).fill( 'This is an information. ' ) }
-		</SettingsNotice>
-	) )
-	.add( 'Settings info notice no Icon', () => (
 		<SettingsNotice type={ TYPE_INFO } LearnMore={ <LearnMore /> }>
 			{ 'This is an information.' }
 		</SettingsNotice>
 	) )
+	.add( 'Settings info notice multi line', () => (
+		<SettingsNotice type={ TYPE_INFO } LearnMore={ <LearnMore /> }>
+			{ new Array( 10 ).fill( 'This is an information. ' ) }
+		</SettingsNotice>
+	) )
 	.add( 'Settings info notice no LearnMore', () => (
-		<SettingsNotice type={ TYPE_INFO } Icon={ <InfoIcon /> }>
+		<SettingsNotice type={ TYPE_INFO } >
+			{ 'This is an information.' }
+		</SettingsNotice>
+	) )
+	.add( 'Settings info notice with different icon', () => (
+		<SettingsNotice type={ TYPE_INFO } Icon={ <WarningIcon /> } LearnMore={ <LearnMore /> }>
 			{ 'This is an information.' }
 		</SettingsNotice>
 	) )
 	.add( 'Settings suggestion notice', () => (
-		<SettingsNotice type={ TYPE_SUGGESTION } Icon={ <SuggestionIcon /> } LearnMore={ <LearnMore /> }>
+		<SettingsNotice type={ TYPE_SUGGESTION } LearnMore={ <LearnMore /> }>
 			{ 'This is a suggestion.' }
 		</SettingsNotice>
 	) );
