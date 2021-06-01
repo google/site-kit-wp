@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 import SettingsNotice, { TYPE_INFO } from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
 
-export default function GA4PropertyNotice( { notice } ) {
+export default function GA4PropertyNotice( { notice, children } ) {
 	return (
 		<SettingsNotice type={ TYPE_INFO }>
 			{ notice }
@@ -44,10 +44,12 @@ export default function GA4PropertyNotice( { notice } ) {
 			>
 				{ __( 'Learn more here.', 'google-site-kit' ) }
 			</Link>
+			{ children }
 		</SettingsNotice>
 	);
 }
 
 GA4PropertyNotice.propTypes = { // eslint-disable-line sitekit/acronym-case
+	children: PropTypes.node,
 	notice: PropTypes.string.isRequired,
 };
