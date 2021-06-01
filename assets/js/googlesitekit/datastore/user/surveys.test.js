@@ -56,7 +56,7 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'does not throw an error when parameters are correct', () => {
-				muteFetch( surveyTriggerEndpoint, [] );
+				muteFetch( surveyTriggerEndpoint );
 
 				expect( () => {
 					registry.dispatch( STORE_NAME ).triggerSurvey( 'adSenseSurvey' );
@@ -68,7 +68,7 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'makes network requests to endpoints', async () => {
-				muteFetch( surveyTriggerEndpoint, [] );
+				muteFetch( surveyTriggerEndpoint );
 
 				await registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey', { ttl: 1 } );
 
