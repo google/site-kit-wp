@@ -31,25 +31,21 @@ import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
+	// should use this for returning null?
 	// const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+
 	const ga4setupEnabled = useFeature( 'ga4setup' );
 
-	// Works!
 	const uaexistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).getExistingTag() );
-
-	// CAUSING INVARIANT ERROR
 	const ga4existingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
-	// console.debug( 'ga4existingTag ', ga4existingTag );
 
-	// Works!
 	const uaPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
-
 	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 
 	// not sure if this rule is even needed!
-	// if ( ! hasExistingTag ) {
-	// 	return null;
-	// }
+	if ( ! uaexistingTag && ! ga4existingTag ) {
+		return null;
+	}
 
 	if ( ! ga4setupEnabled ) {
 		return (

@@ -22,7 +22,7 @@
 import ExistingTagNotice from './ExistingTagNotice';
 import {
 	render,
-	// act
+	act,
 } from '../../../../../../tests/js/test-utils';
 import { untilResolved } from '../../../../../../tests/js/utils';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
@@ -74,18 +74,29 @@ const homeURL = 'http://example.com';
 
 describe( 'ExistingTagNotice', () => {
 	// Still has act warnings. ignore this test for now
-	it.skip( 'should not render if does not have existing tag', async () => {
+	it.skip( 'should not render if does not have any existing tags', async () => {
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
 
 			dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
 			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
-			// but flag is not enabled so why is this called?
-			dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( { accountID } );
+			// Without this it tries to fetch GA4 settings, with this it times out
+			// dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( { accountID } );
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( propertiesUA, { accountID } );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ accountID ] );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, { accountID, propertyID: propertyIDua } );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ accountID, propertyIDua ] );
 		};
 
-		const { container, registry } = render( <ExistingTagNotice />, { setupRegistry } );
+		const { container, registry } = render( <ExistingTagNotice />, { features, setupRegistry } );
+		const { dispatch } = registry;
 
 		// expect( container ).toBeEmptyDOMElement();
 
@@ -96,9 +107,24 @@ describe( 'ExistingTagNotice', () => {
 		// 	registry.dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [ 'w000t' ] );
 		// } );
 
-		await untilResolved( registry, MODULES_ANALYTICS_4 ).getExistingTag();
+		// not functions
+		// await untilResolved( registry, MODULES_ANALYTICS ).getPropertyID();
+		// await untilResolved( registry, MODULES_ANALYTICS_4 ).getPropertyID();
+
+		// does nothing
+		// await untilResolved( registry, MODULES_ANALYTICS ).getExistingTag();
+		// await untilResolved( registry, MODULES_ANALYTICS_4 ).getExistingTag();
 
 		expect( container ).toBeEmptyDOMElement();
+
+		// act( () => {
+		// 	dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( 'UA-12345678-1' );
+		// 	dispatch( MODULES_ANALYTICS ).setPropertyID( propertyID );
+		// 	dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
+		// 	dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( '1A2BCD346E' );
+		// } );
+
+		// expect( container ).not.toBeEmptyDOMElement();
 	} );
 
 	it( 'should render default message if has tag but ga4 not enabled', async () => {
