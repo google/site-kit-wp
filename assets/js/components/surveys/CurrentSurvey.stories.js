@@ -24,6 +24,7 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -31,7 +32,9 @@ import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import CurrentSurvey from './CurrentSurvey';
 const { useDispatch } = Data;
 
-export const CurrentSurveyStory = () => <CurrentSurvey />;
+const Template = ( args ) => <CurrentSurvey { ...args } />;
+
+export const CurrentSurveyStory = Template.bind( {} );
 CurrentSurveyStory.storyName = 'CurrentSurvey';
 
 export default {
@@ -50,6 +53,7 @@ export default {
 
 			const { triggerSurvey } = useDispatch( CORE_USER );
 			const setupRegistry = async ( registry ) => {
+				await API.invalidateCache();
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( { usingProxy: true } );
 
 				await triggerSurvey( 'test-survey', { ttl: 1 } );
