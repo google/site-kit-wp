@@ -50,8 +50,7 @@ SurveyQuestionRatingStory.args = {
 		},
 	],
 	answerQuestion: ( answer ) => {
-		global.console.log( `Clicked: ${ answer }` );
-		global.console.log( answer );
+		global.console.log( 'Clicked', answer );
 	},
 	dismissSurvey: () => {
 		global.console.log( 'Dismissed Survey' );
