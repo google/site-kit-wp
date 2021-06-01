@@ -124,7 +124,7 @@ describe( 'core/user surveys', () => {
 	describe( 'selectors', () => {
 		describe( 'getCurrentSurvey', () => {
 			it( 'returns null when no current survey is set', async () => {
-				expect( registry.select( STORE_NAME ).getCurrentSurvey() ).toEqual( null );
+				expect( registry.select( STORE_NAME ).getCurrentSurvey() ).toBeNull();
 			} );
 
 			it( 'returns the current survey when it is set', () => {
@@ -140,7 +140,7 @@ describe( 'core/user surveys', () => {
 			it( 'returns null when no current survey session is set', async () => {
 				expect(
 					registry.select( STORE_NAME ).getCurrentSurveySession()
-				).toEqual( null );
+				).toBeNull();
 			} );
 
 			it( 'returns the current survey session when set', () => {
