@@ -69,6 +69,9 @@ const setupRegistryPopulateEverythingDemo = ( { dispatch } ) => {
 
 	dispatch( MODULES_ANALYTICS ).setPropertyID( propertyID );
 	dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
+
+	// Taken from GA4 webdatastreams fixtures (idea taken from  assets/js/modules/analytics-4/datastore/tags.test.js)
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( '1A2BCD346E' );
 };
 
 const homeURL = 'http://example.com';
@@ -132,11 +135,10 @@ describe( 'ExistingTagNotice', () => {
 		await findByText( `uaPropertyID: ${ propertyID }` );
 	} );
 
-	// only sure how to get or set this! selector not there. check blocking tickets
-	it.skip( 'should output GA4 existing tag', async () => {
+	it( 'should output GA4 existing tag', async () => {
 		const { findByText } = render( <ExistingTagNotice />, { features, setupRegistry: setupRegistryPopulateEverythingDemo } );
 
-		await findByText( 'ga4existingTag: UA-12345678-1' );
+		await findByText( 'ga4existingTag: 1A2BCD346E' );
 	} );
 
 	it( 'should output GA4 property Id', async () => {
