@@ -31,33 +31,37 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { ExistingTagError, ExistingTagNotice } from '../common';
+import { useFeature } from '../../../../hooks/useFeature';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
 const { useSelect } = Data;
 
 export default function SettingsView() {
+	const isGA4Enabled = useFeature( 'ga4setup' );
+	const ga4PropertyID = useSelect( ( select ) => isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getPropertyID() : '' );
+
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const propertyID4 = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const adsConversionID = useSelect( ( select ) => select( STORE_NAME ).getAdsConversionID() );
+
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const canUseSnippet = useSelect( ( select ) => select( STORE_NAME ).getCanUseSnippet() );
+
 	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
 	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() ) || [];
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const adsConversionID = useSelect( ( select ) => select( STORE_NAME ).getAdsConversionID() );
-	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
-	const editViewSettingsURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
-		{
-			path: `/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`,
-		}
-	) );
+
+	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
+
+	const editViewSettingsURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
+		path: `/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`,
+	} ) );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
-
 			{ /* Prevent showing ExistingTagError and general error notice at the same time. */ }
 			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } /> }
 			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
@@ -89,20 +93,18 @@ export default function SettingsView() {
 					</p>
 				</div>
 			</div>
-			{
-				propertyID4 && (
-					<div className="googlesitekit-settings-module__meta-items">
-						<div className="googlesitekit-settings-module__meta-item">
-							<h5 className="googlesitekit-settings-module__meta-item-type">
-								{ __( 'Google Analytics 4 Property', 'google-site-kit' ) }
-							</h5>
-							<p className="googlesitekit-settings-module__meta-item-data">
-								<DisplaySetting value={ propertyID4 } />
-							</p>
-						</div>
+			{ ( isGA4Enabled && ga4PropertyID ) && (
+				<div className="googlesitekit-settings-module__meta-items">
+					<div className="googlesitekit-settings-module__meta-item">
+						<h5 className="googlesitekit-settings-module__meta-item-type">
+							{ __( 'Google Analytics 4 Property', 'google-site-kit' ) }
+						</h5>
+						<p className="googlesitekit-settings-module__meta-item-data">
+							<DisplaySetting value={ ga4PropertyID } />
+						</p>
 					</div>
-				)
-			}
+				</div>
+			) }
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
 					<Link
@@ -174,7 +176,6 @@ export default function SettingsView() {
 					</div>
 				</div>
 			) }
-
 		</div>
 	);
 }
