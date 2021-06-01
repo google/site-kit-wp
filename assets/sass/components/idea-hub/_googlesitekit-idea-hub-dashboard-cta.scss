@@ -23,11 +23,6 @@
 		background-color: $c-white;
 		display: flex;
 		height: 100%;
-		padding: $grid-gap-desktop;
-
-		@media (min-width: $bp-desktop) {
-			padding: 48px;
-		}
 	}
 
 	.googlesitekit-idea-hub__dashboard-cta__content {
