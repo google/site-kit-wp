@@ -23,6 +23,8 @@ import {
 	createTestRegistry,
 	muteFetch,
 } from '../../../../../tests/js/utils';
+import { createCacheKey } from '../../api';
+import { setItem } from '../../api/cache';
 import { STORE_NAME } from './constants';
 
 describe( 'core/user surveys', () => {
@@ -81,6 +83,17 @@ describe( 'core/user surveys', () => {
 						data: { triggerID: 'optimizeSurvey' },
 					},
 				} );
+			} );
+
+			it( 'does not fetch if there is a cache value present for the trigger ID', async () => {
+				await setItem(
+					createCacheKey( 'core', 'user', 'survey-trigger', { triggerID: 'optimizeSurvey' } ),
+					{} // Any value will due for now.
+				);
+
+				await registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey' );
+
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 		} );
 
