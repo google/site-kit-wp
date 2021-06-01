@@ -38,7 +38,7 @@ const SurveyViewTrigger = ( { triggerID, ttl } ) => {
 
 	useMount( () => {
 		if ( usingProxy ) {
-			triggerSurvey( { triggerID, ttl } );
+			triggerSurvey( { triggerID, options: { ttl } } );
 		}
 	} );
 
