@@ -51,7 +51,7 @@ SurveyViewTrigger.propTypes = {
 };
 
 SurveyViewTrigger.defaultProps = {
-	ttl: null,
+	ttl: 0,
 };
 
 export default SurveyViewTrigger;
