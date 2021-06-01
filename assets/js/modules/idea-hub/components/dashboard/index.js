@@ -17,3 +17,4 @@
  */
 
 export { default as DashboardIdeasWidget } from './DashboardIdeasWidget';
+export { default as DashboardCTA } from './DashboardCTA';
