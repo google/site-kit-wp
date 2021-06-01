@@ -24,15 +24,11 @@ import {
 	render,
 	// act
 } from '../../../../../../tests/js/test-utils';
-import {
-	// provideSiteInfo,
-	untilResolved,
-} from '../../../../../../tests/js/utils';
+import { untilResolved } from '../../../../../../tests/js/utils';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
-// import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 const {
@@ -122,13 +118,13 @@ describe( 'ExistingTagNotice', () => {
 	} );
 
 	/* TESTS TO CHECK OUTPUT FOR FURTHER TESTS */
+	// SOON WILL HAVE TO REMOVE THESE
 	it( 'should output UA existing tag', async () => {
 		const { findByText } = render( <ExistingTagNotice />, { features, setupRegistry: setupRegistryPopulateEverythingDemo } );
 
 		await findByText( 'uaexistingTag: UA-12345678-1' );
 	} );
 
-	// This is just testing my testing logic lol
 	it( 'should output UA property Id', async () => {
 		const { findByText } = render( <ExistingTagNotice />, { features, setupRegistry: setupRegistryPopulateEverythingDemo } );
 
@@ -148,13 +144,81 @@ describe( 'ExistingTagNotice', () => {
 	} );
 	/* END */
 
-	// If the existing UA tag is not empty but GA4 tag is empty, then
+	// NEW FUNCTIONALITY TESTS -> TODO - describe.each?
 
-	// if a UA property is selected and it is the same one as indicated by the existing tag:
-	// Display the following message
-	// An existing Universal Analytics tag was found on your site with the ID {propertyID}. Since this tag refers to the same property you have selected here, Site Kit will not place its own tag and rely on the existing one. If later on you decide to remove this tag, Site Kit can place a new tag for you.
+	describe( 'If the existing UA tag is not empty but GA4 tag is empty', () => {
+		// , then
+		it( 'if a UA property is selected and it is the same one as indicated by the existing tag', async () => {
+			const setupRegistry = ( { dispatch } ) => {
+				dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
+
+				dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
+				dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( 'UA-12345678-1' );
+
+				dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+				dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
+
+				dispatch( MODULES_ANALYTICS ).receiveGetProperties( propertiesUA, { accountID } );
+				dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ accountID ] );
+
+				dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, { accountID, propertyID: propertyIDua } );
+				dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ accountID, propertyIDua ] );
+
+				dispatch( MODULES_ANALYTICS ).setPropertyID( 'UA-12345678-1' );
+				dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
+			};
+
+			const { findByText } = render( <ExistingTagNotice />, { features, setupRegistry } );
+
+			// Tried to do this but didn't render... order may make difference
+			// const { dispatch } = registry;
+
+			// dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( 'UA-12345678-1' );
+
+			// // TODO - check is same! not even too sure... re-read GA4?
+			// dispatch( MODULES_ANALYTICS ).setPropertyID( propertyID );
+
+			// // Need to dispatch ga4 stuff so all loads
+			// dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
+			// dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( '1A2BCD346E' );
+
+			await findByText( `An existing Universal Analytics tag was found on your site with the ID UA-12345678-1. Since this tag refers to the same property you have selected here, Site Kit will not place its own tag and rely on the existing one. If later on you decide to remove this tag, Site Kit can place a new tag for you.` );
+		} );
+
+		it( 'if a UA property is selected and it is NOT the same one as indicated by the existing tag', async () => {
+			const setupRegistry = ( { dispatch } ) => {
+				dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
+
+				dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
+				dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( 'UA-12345678-1' );
+
+				dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+				dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
+
+				dispatch( MODULES_ANALYTICS ).receiveGetProperties( propertiesUA, { accountID } );
+				dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ accountID ] );
+
+				dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, { accountID, propertyID: propertyIDua } );
+				dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ accountID, propertyIDua ] );
+
+				dispatch( MODULES_ANALYTICS ).setPropertyID( 'UA-12121212-1' );
+				dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
+			};
+
+			const { findByText } = render( <ExistingTagNotice />, { features, setupRegistry } );
+
+			// so we know both are the same
+			// await findByText( 'uaexistingTag: UA-12345678-1' );
+			// await findByText( `uaPropertyID: UA-12121212-1` );
+
+			await findByText( 'An existing Universal Analytics tag was found on your site with the ID UA-12345678-1.' );
+		} );
+
+		// :
+		// Display the following message
+		//
 
 	// Otherwise display the following message:
-	// An existing Universal Analytics tag was found on your site with the ID {propertyID}.
+	} );
 } );
 

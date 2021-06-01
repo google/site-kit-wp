@@ -68,6 +68,34 @@ export default function ExistingTagNotice() {
 		);
 	}
 
+	// TODO - fix test
+	if ( ! ga4existingTag && uaexistingTag ) {
+		if ( uaexistingTag === uaPropertyID ) {
+			return (
+				<p>
+					{
+						sprintf(
+						/* translators: %s: Analytics tag ID */
+							__( 'An existing Universal Analytics tag was found on your site with the ID %s. Since this tag refers to the same property you have selected here, Site Kit will not place its own tag and rely on the existing one. If later on you decide to remove this tag, Site Kit can place a new tag for you.', 'google-site-kit' ),
+							uaexistingTag
+						)
+					}
+				</p>
+			);
+		}
+		return (
+			<p>
+				{
+					sprintf(
+					/* translators: %s: Analytics tag ID */
+						__( 'An existing Universal Analytics tag was found on your site with the ID %s.', 'google-site-kit' ),
+						uaexistingTag
+					)
+				}
+			</p>
+		);
+	}
+
 	return (
 		<div>
 			<p>uaexistingTag: { uaexistingTag }</p>
