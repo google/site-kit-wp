@@ -26,11 +26,6 @@ import PropTypes from 'prop-types';
  */
 import SurveyHeader from './SurveyHeader';
 import SurveyQuestionRatingChoice from './SurveyQuestionRatingChoice';
-import IconSurveyUnhappy from '../../../svg/survey-unhappy.svg';
-import IconSurveyDissatisfied from '../../../svg/survey-dissatisfied.svg';
-import IconSurveyNeutral from '../../../svg/survey-neutral.svg';
-import IconSurveySatisfied from '../../../svg/survey-satisfied.svg';
-import IconSurveyDelighted from '../../../svg/survey-delighted.svg';
 
 const SurveyQuestionRating = ( { question, choices, answerQuestion, dismissSurvey } ) => (
 	<div className="googlesitekit-survey__question-rating">
@@ -46,21 +41,12 @@ const SurveyQuestionRating = ( { question, choices, answerQuestion, dismissSurve
 						key={ index }
 						choice={ choice }
 						answerQuestion={ answerQuestion }
-						Icon={ SurveyQuestionRating.ordinalIconMap[ choice.answer_ordinal ] }
 					/>
 				) ) }
 			</div>
 		</div>
 	</div>
 );
-
-SurveyQuestionRating.ordinalIconMap = {
-	1: IconSurveyUnhappy,
-	2: IconSurveyDissatisfied,
-	3: IconSurveyNeutral,
-	4: IconSurveySatisfied,
-	5: IconSurveyDelighted,
-};
 
 SurveyQuestionRating.propTypes = {
 	question: PropTypes.string.isRequired,

@@ -25,18 +25,26 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Button from '../../components/Button';
+import IconSurveyUnhappy from '../../../svg/survey-unhappy.svg';
+import IconSurveyDissatisfied from '../../../svg/survey-dissatisfied.svg';
+import IconSurveyNeutral from '../../../svg/survey-neutral.svg';
+import IconSurveySatisfied from '../../../svg/survey-satisfied.svg';
+import IconSurveyDelighted from '../../../svg/survey-delighted.svg';
 
-const SurveyQuestionRatingChoice = ( { Icon, choice, answerQuestion } ) => {
-	const handleButtonClick = () => {
+const SurveyQuestionRatingChoice = ( { choice, answerQuestion } ) => {
+	const handleButtonClick = useCallback( () => {
 		if ( typeof answerQuestion === 'function' ) {
 			answerQuestion( choice );
 		}
-	};
+	}, [ answerQuestion, choice ] );
+
+	const Icon = SurveyQuestionRatingChoice.ordinalIconMap[ choice.answer_ordinal ];
 
 	return (
 		<div className="googlesitekit-survey__choice">
@@ -59,8 +67,15 @@ const SurveyQuestionRatingChoice = ( { Icon, choice, answerQuestion } ) => {
 	);
 };
 
+SurveyQuestionRatingChoice.ordinalIconMap = {
+	1: IconSurveyUnhappy,
+	2: IconSurveyDissatisfied,
+	3: IconSurveyNeutral,
+	4: IconSurveySatisfied,
+	5: IconSurveyDelighted,
+};
+
 SurveyQuestionRatingChoice.propTypes = {
-	Icon: PropTypes.func,
 	choice: PropTypes.shape( {
 		answer_ordinal: PropTypes.oneOfType( [
 			PropTypes.string,
@@ -68,10 +83,6 @@ SurveyQuestionRatingChoice.propTypes = {
 		] ),
 		text: PropTypes.string,
 	} ).isRequired,
-};
-
-SurveyQuestionRatingChoice.defaultProps = {
-	Icon: null,
 };
 
 export default SurveyQuestionRatingChoice;

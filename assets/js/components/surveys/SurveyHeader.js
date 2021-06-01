@@ -55,8 +55,4 @@ SurveyHeader.propTypes = {
 	dismissSurvey: PropTypes.func.isRequired,
 };
 
-SurveyHeader.defaultProps = {
-	dismissSurvey: null,
-};
-
 export default SurveyHeader;

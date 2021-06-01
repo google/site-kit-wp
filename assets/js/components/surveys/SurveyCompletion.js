@@ -57,7 +57,7 @@ SurveyCompletion.propTypes = {
 	ctaText: PropTypes.string,
 	ctaURL: PropTypes.string,
 	ctaOnClick: PropTypes.func,
-	dismissSurvey: PropTypes.func,
+	dismissSurvey: PropTypes.func.isRequired,
 };
 
 SurveyCompletion.defaultProps = {
@@ -66,7 +66,6 @@ SurveyCompletion.defaultProps = {
 	ctaText: '',
 	ctaURL: '',
 	ctaOnClick: null,
-	dismissSurvey: null,
 };
 
 export default SurveyCompletion;
