@@ -55,12 +55,16 @@ describe( 'core/user surveys', () => {
 				} ).toThrow( 'options.ttl must be a number' );
 			} );
 
-			it( 'does not throw an error when parameters are correct', () => {
+			it( 'does not throw when called with only a triggerID', async () => {
 				muteFetch( surveyTriggerEndpoint );
 
 				expect( () => {
 					registry.dispatch( STORE_NAME ).triggerSurvey( 'adSenseSurvey' );
 				} ).not.toThrow();
+			} );
+
+			it( 'does not throw when called with a numeric ttl', () => {
+				muteFetch( surveyTriggerEndpoint );
 
 				expect( () => {
 					registry.dispatch( STORE_NAME ).triggerSurvey( 'analyticsSurvey', { ttl: 1 } );
@@ -70,7 +74,7 @@ describe( 'core/user surveys', () => {
 			it( 'makes network requests to endpoints', async () => {
 				muteFetch( surveyTriggerEndpoint );
 
-				await registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey', { ttl: 1 } );
+				await registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey' );
 
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 					body: {
