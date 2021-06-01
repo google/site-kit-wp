@@ -58,12 +58,9 @@ export default function SetupFormGA4Transitional() {
 	const { setUseSnippet: ga4SetUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 
 	useEffect( () => {
+		uaSetUseSnippet( existingTag !== propertyID );
 		ga4SetUseSnippet( ga4ExistingTag !== ga4MeasurementID );
-		if ( hasExistingTag ) {
-			uaSetUseSnippet( existingTag !== propertyID );
-		}
 	}, [
-		hasExistingTag,
 		uaSetUseSnippet,
 		existingTag,
 		propertyID,
