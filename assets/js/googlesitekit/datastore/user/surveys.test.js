@@ -23,9 +23,6 @@ import {
 	createTestRegistry,
 	muteFetch,
 } from '../../../../../tests/js/utils';
-import {
-	act,
-} from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/user surveys', () => {
@@ -73,7 +70,7 @@ describe( 'core/user surveys', () => {
 			it( 'makes network requests to endpoints', async () => {
 				muteFetch( surveyTriggerEndpoint, [] );
 
-				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey', { ttl: 1 } ) );
+				await registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey', { ttl: 1 } );
 
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 					body: {
@@ -109,9 +106,9 @@ describe( 'core/user surveys', () => {
 				muteFetch( surveyEventEndpoint, {} );
 
 				// Trigger a survey to appear.
-				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey', { ttl: 1 } ) );
+				await registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey', { ttl: 1 } );
 				// Send a survey event.
-				await act( () => registry.dispatch( STORE_NAME ).sendSurveyEvent( 'answer_question', { foo: 'bar' } ) );
+				await registry.dispatch( STORE_NAME ).sendSurveyEvent( 'answer_question', { foo: 'bar' } );
 
 				expect( fetchMock ).toHaveFetched( surveyEventEndpoint, {
 					body: {
@@ -133,7 +130,7 @@ describe( 'core/user surveys', () => {
 
 			it( 'returns the current survey when it is set', async () => {
 				muteFetch( surveyTriggerEndpoint, survey );
-				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey', { ttl: 1 } ) );
+				await registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey', { ttl: 1 } );
 
 				expect(
 					registry.select( STORE_NAME ).getCurrentSurvey()
@@ -157,7 +154,7 @@ describe( 'core/user surveys', () => {
 			it( 'returns the error once set', async () => {
 				muteFetch( surveyTriggerEndpoint, survey );
 
-				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey', { ttl: 1 } ) );
+				await registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey', { ttl: 1 } );
 
 				expect(
 					registry.select( STORE_NAME ).getCurrentSurveySession()
