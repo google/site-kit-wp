@@ -25,16 +25,13 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	STORE_NAME,
-	MODULES_ANALYTICS,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	// const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const ga4setupEnabled = useFeature( 'ga4setup' );
 
 	// Works!
@@ -50,9 +47,9 @@ export default function ExistingTagNotice() {
 	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 
 	// not sure if this rule is even needed!
-	if ( ! hasExistingTag ) {
-		return null;
-	}
+	// if ( ! hasExistingTag ) {
+	// 	return null;
+	// }
 
 	if ( ! ga4setupEnabled ) {
 		return (
@@ -68,7 +65,6 @@ export default function ExistingTagNotice() {
 		);
 	}
 
-	// TODO - fix test
 	if ( ! ga4existingTag && uaexistingTag ) {
 		if ( uaexistingTag === uaPropertyID ) {
 			return (
@@ -90,6 +86,33 @@ export default function ExistingTagNotice() {
 					/* translators: %s: Analytics tag ID */
 						__( 'An existing Universal Analytics tag was found on your site with the ID %s.', 'google-site-kit' ),
 						uaexistingTag
+					)
+				}
+			</p>
+		);
+	}
+
+	if ( ga4existingTag && ! uaexistingTag ) {
+		if ( ga4existingTag === ga4PropertyID ) {
+			return (
+				<p>
+					{
+						sprintf(
+						/* translators: %s: Analytics tag ID */
+							__( 'An existing Google Analytics 4 tag was found on your site with the ID G-%s. Since this tag refers to the same property you have selected here, Site Kit will not place its own tag and rely on the existing one. If later on you decide to remove this tag, Site Kit can place a new tag for you.', 'google-site-kit' ),
+							ga4existingTag
+						)
+					}
+				</p>
+			);
+		}
+		return (
+			<p>
+				{
+					sprintf(
+					/* translators: %s: Analytics tag ID */
+						__( 'An existing Google Analytics 4 tag was found on your site with the ID G-%s.', 'google-site-kit' ),
+						ga4existingTag
 					)
 				}
 			</p>
