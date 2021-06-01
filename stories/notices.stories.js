@@ -45,17 +45,17 @@ const LearnMore = () => (
 
 storiesOf( 'Global/Notices', module )
 	.add( 'Settings warning notice', () => (
-		<SettingsNotice type={ TYPE_WARNING } LearnMore={ <LearnMore /> }>
+		<SettingsNotice type={ TYPE_WARNING } LearnMore={ LearnMore }>
 			{ 'This is a warning.' }
 		</SettingsNotice>
 	) )
 	.add( 'Settings info notice single line', () => (
-		<SettingsNotice type={ TYPE_INFO } LearnMore={ <LearnMore /> }>
+		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore }>
 			{ 'This is an information.' }
 		</SettingsNotice>
 	) )
 	.add( 'Settings info notice multi line', () => (
-		<SettingsNotice type={ TYPE_INFO } LearnMore={ <LearnMore /> }>
+		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore }>
 			{ new Array( 10 ).fill( 'This is an information. ' ) }
 		</SettingsNotice>
 	) )
@@ -65,12 +65,12 @@ storiesOf( 'Global/Notices', module )
 		</SettingsNotice>
 	) )
 	.add( 'Settings info notice with different icon', () => (
-		<SettingsNotice type={ TYPE_INFO } Icon={ <WarningIcon /> } LearnMore={ <LearnMore /> }>
+		<SettingsNotice type={ TYPE_INFO } Icon={ WarningIcon } LearnMore={ LearnMore }>
 			{ 'This is an information.' }
 		</SettingsNotice>
 	) )
 	.add( 'Settings suggestion notice', () => (
-		<SettingsNotice type={ TYPE_SUGGESTION } LearnMore={ <LearnMore /> }>
+		<SettingsNotice type={ TYPE_SUGGESTION } LearnMore={ LearnMore }>
 			{ 'This is a suggestion.' }
 		</SettingsNotice>
 	) );
