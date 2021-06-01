@@ -23,11 +23,16 @@
 		background-color: $c-white;
 		display: flex;
 		height: 100%;
+		padding: $grid-gap-desktop;
+
+		@media (min-width: $bp-desktop) {
+			padding: 48px;
+		}
 	}
 
 	.googlesitekit-idea-hub__dashboard-cta__content {
 		display: inline-block;
-		padding: $grid-gap-desktop;
+		padding: $grid-gap-desktop 0 $grid-gap-desktop $grid-gap-desktop;
 
 		h5 {
 			font-family: $f-secondary;
@@ -40,7 +45,7 @@
 
 	.googlesitekit-idea-hub__dashboard-cta__icon {
 		display: inline-block;
-		padding: $grid-gap-desktop 0 $grid-gap-desktop $grid-gap-desktop;
+		padding: $grid-gap-desktop 0 $grid-gap-desktop 0;
 	}
 
 	.googlesitekit-idea-hub__dashboard-cta__icon svg {
