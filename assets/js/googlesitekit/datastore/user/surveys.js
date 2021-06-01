@@ -92,19 +92,25 @@ const baseActions = {
 		function* ( triggerID, options = {} ) {
 			const { ttl = 0 } = options;
 			const { select } = yield Data.commonActions.getRegistry();
-			if ( null !== select( STORE_NAME ).getCurrentSurvey() ) {
-				return;
+			// Bail if there is already a current survey.
+			if ( select( STORE_NAME ).getCurrentSurvey() ) {
+				return {};
 			}
-			const cacheKey = createCacheKey( 'core', 'user', 'survey-event', { triggerID } );
+
+			const cacheKey = createCacheKey( 'core', 'user', 'survey-trigger', { triggerID } );
 			const { cacheHit } = yield Data.commonActions.await( getItem( cacheKey ) );
-			if ( false === cacheHit && ttl ) {
-				const { error } = yield fetchTriggerSurveyStore.actions.fetchTriggerSurvey( triggerID );
-				if ( ! error && ttl > 0 ) {
+
+			if ( false === cacheHit ) {
+				const { response, error } = yield fetchTriggerSurveyStore.actions.fetchTriggerSurvey( triggerID );
+				if ( error ) {
+					return { response, error };
+				}
+				if ( ttl > 0 ) {
 					// With a positive ttl we cache an empty object to avoid calling fetchTriggerSurvey() again.
 					yield Data.commonActions.await( setItem( cacheKey, {} ) );
-					return { response: {}, error };
 				}
 			}
+
 			return {
 				response: {},
 				error: false,
