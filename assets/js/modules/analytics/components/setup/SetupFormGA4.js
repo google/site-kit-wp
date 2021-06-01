@@ -17,22 +17,57 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
+import { __, _x } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { AccountSelect } from '../common';
+import Data from 'googlesitekit-data';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { STORE_NAME, PROPERTY_CREATE, FORM_SETUP } from '../../datastore/constants';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
+import AccountSelect from '../common/AccountSelect';
+import GA4PropertyNotice from '../common/GA4PropertyNotice';
+const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4() {
+	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
+
+	const { selectProperty } = useDispatch( STORE_NAME );
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	useMount( () => {
+		selectProperty( PROPERTY_CREATE );
+		setValues( FORM_SETUP, { profileName: _x( 'All Web Site Data', 'default Analytics view name', 'google-site-kit' ) } );
+	} );
+
 	return (
 		<Fragment>
+			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
+
+			{ ( !! accounts.length ) && (
+				<p className="googlesitekit-margin-bottom-0">
+					{ __( 'Please select the account information below. You can change this view later in your settings.', 'google-site-kit' ) }
+				</p>
+			) }
+
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
+				<GA4PropertySelect />
 			</div>
-			<div>SetupFormGA4</div>
+
+			<GA4PropertyNotice
+				notice={ __( 'An associated Universal Analytics property will also be created.', 'google-site-kit' ) }
+			/>
 		</Fragment>
 	);
 }
