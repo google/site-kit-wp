@@ -25,7 +25,7 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { Fragment, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,26 +33,38 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME, PROPERTY_CREATE, FORM_SETUP } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
-import AccountSelect from '../common/AccountSelect';
-import GA4PropertyNotice from '../common/GA4PropertyNotice';
+import { AccountSelect, GA4PropertyNotice, ExistingTagNotice } from '../common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 
+	const ga4HasExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getHasExistingTag() );
+	const ga4ExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
+	const ga4MeasurementID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID() );
+
 	const { selectProperty } = useDispatch( STORE_NAME );
 	const { setValues } = useDispatch( CORE_FORMS );
+	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 
 	useMount( () => {
 		selectProperty( PROPERTY_CREATE );
 		setValues( FORM_SETUP, { profileName: _x( 'All Web Site Data', 'default Analytics view name', 'google-site-kit' ) } );
 	} );
 
+	useEffect( () => {
+		if ( ga4HasExistingTag ) {
+			setUseSnippet( ga4ExistingTag !== ga4MeasurementID );
+		}
+	}, [ setUseSnippet, ga4HasExistingTag, ga4ExistingTag, ga4MeasurementID ] );
+
 	return (
 		<Fragment>
 			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
+			<ExistingTagNotice />
 
 			{ ( !! accounts.length ) && (
 				<p className="googlesitekit-margin-bottom-0">
