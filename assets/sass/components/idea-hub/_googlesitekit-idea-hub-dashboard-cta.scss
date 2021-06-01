@@ -19,8 +19,10 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-idea-hub__dashboard-cta {
+		align-items: center;
 		background-color: $c-white;
 		display: flex;
+		height: 100%;
 	}
 
 	.googlesitekit-idea-hub__dashboard-cta__content {
