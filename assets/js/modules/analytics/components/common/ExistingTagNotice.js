@@ -40,8 +40,8 @@ export default function ExistingTagNotice() {
 	// Works!
 	const uaexistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).getExistingTag() );
 
-	// this is not a function... AC says to do this though! is it in a blocked ticket?
-	// const ga4existingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
+	// CAUSING INVARIANT ERROR
+	const ga4existingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
 	// console.debug( 'ga4existingTag ', ga4existingTag );
 
 	// Works!
@@ -72,7 +72,7 @@ export default function ExistingTagNotice() {
 		<div>
 			<p>uaexistingTag: { uaexistingTag }</p>
 			<p>uaPropertyID: { uaPropertyID }</p>
-			{ /* <p>ga4existingTag: { ga4existingTag }</p> */ }
+			<p>ga4existingTag: { ga4existingTag }</p>
 			<p>ga4PropertyID: { ga4PropertyID }</p>
 		</div>
 	);
