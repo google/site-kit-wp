@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { STORE_NAME } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from '../../../analytics-4/datastore/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { ExistingTagError, ExistingTagNotice } from '../common';
 import { useFeature } from '../../../../hooks/useFeature';
@@ -93,7 +93,7 @@ export default function SettingsView() {
 					</p>
 				</div>
 			</div>
-			{ ( isGA4Enabled && ga4PropertyID ) && (
+			{ ( isGA4Enabled && ga4PropertyID && ga4PropertyID !== PROPERTY_CREATE ) && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
