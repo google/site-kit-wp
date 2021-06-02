@@ -1,5 +1,5 @@
 /**
- * User Feedback styles.
+ * Survey component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-surveys-modal";
-@import "googlesitekit-survey-header";
-@import "googlesitekit-surveys";
-@import "googlesitekit-survey-completion";
+const Survey = () => {
+	return (
+		<p>Scaffolded Survey component</p>
+	);
+};
+
+export default Survey;
