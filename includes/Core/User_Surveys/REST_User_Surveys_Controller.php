@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\User_Surveys;
 
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -83,7 +82,7 @@ class REST_User_Surveys_Controller {
 						$token = $this->authentication->get_oauth_client()->get_access_token();
 						$data  = $request->get_param( 'data' );
 
-						$response = $proxy->send_survey_trigger( $creds, $token, $data['token_id'] );
+						$response = $proxy->send_survey_trigger( $creds, $token, $data['triggerID'] );
 						$response = rest_ensure_response( $response );
 
 						return $response;
@@ -94,7 +93,7 @@ class REST_User_Surveys_Controller {
 							'type'       => 'object',
 							'required'   => true,
 							'properties' => array(
-								'trigger_id' => array(
+								'triggerID' => array(
 									'type'     => 'string',
 									'required' => true,
 								),
