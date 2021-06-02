@@ -37,6 +37,14 @@ import IconSurveyNeutral from '../../../svg/survey-neutral.svg';
 import IconSurveySatisfied from '../../../svg/survey-satisfied.svg';
 import IconSurveyDelighted from '../../../svg/survey-delighted.svg';
 
+const ordinalIconMap = {
+	1: IconSurveyUnhappy,
+	2: IconSurveyDissatisfied,
+	3: IconSurveyNeutral,
+	4: IconSurveySatisfied,
+	5: IconSurveyDelighted,
+};
+
 const SurveyQuestionRatingChoice = ( { choice, answerQuestion } ) => {
 	const handleButtonClick = useCallback( () => {
 		if ( typeof answerQuestion === 'function' ) {
@@ -44,13 +52,6 @@ const SurveyQuestionRatingChoice = ( { choice, answerQuestion } ) => {
 		}
 	}, [ answerQuestion, choice ] );
 
-	const ordinalIconMap = {
-		1: IconSurveyUnhappy,
-		2: IconSurveyDissatisfied,
-		3: IconSurveyNeutral,
-		4: IconSurveySatisfied,
-		5: IconSurveyDelighted,
-	};
 	const Icon = ordinalIconMap[ choice.answer_ordinal ];
 
 	if ( ! Icon ) {
