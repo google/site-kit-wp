@@ -23,9 +23,8 @@ import {
 	createTestRegistry,
 	muteFetch,
 } from '../../../../../tests/js/utils';
-import {
-	act,
-} from '../../../../../tests/js/test-utils';
+import { createCacheKey } from '../../api';
+import { setItem } from '../../api/cache';
 import { STORE_NAME } from './constants';
 
 describe( 'core/user surveys', () => {
@@ -58,12 +57,16 @@ describe( 'core/user surveys', () => {
 				} ).toThrow( 'options.ttl must be a number' );
 			} );
 
-			it( 'does not throw an error when parameters are correct', () => {
-				muteFetch( surveyTriggerEndpoint, [] );
+			it( 'does not throw when called with only a triggerID', async () => {
+				muteFetch( surveyTriggerEndpoint );
 
 				expect( () => {
 					registry.dispatch( STORE_NAME ).triggerSurvey( 'adSenseSurvey' );
 				} ).not.toThrow();
+			} );
+
+			it( 'does not throw when called with a numeric ttl', () => {
+				muteFetch( surveyTriggerEndpoint );
 
 				expect( () => {
 					registry.dispatch( STORE_NAME ).triggerSurvey( 'analyticsSurvey', { ttl: 1 } );
@@ -71,15 +74,26 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'makes network requests to endpoints', async () => {
-				muteFetch( surveyTriggerEndpoint, [] );
+				muteFetch( surveyTriggerEndpoint );
 
-				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey', { ttl: 1 } ) );
+				await registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey' );
 
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 					body: {
 						data: { triggerID: 'optimizeSurvey' },
 					},
 				} );
+			} );
+
+			it( 'does not fetch if there is a cache value present for the trigger ID', async () => {
+				await setItem(
+					createCacheKey( 'core', 'user', 'survey-trigger', { triggerID: 'optimizeSurvey' } ),
+					{} // Any value will due for now.
+				);
+
+				await registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey' );
+
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 		} );
 
@@ -105,19 +119,18 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'makes network requests to endpoints', async () => {
-				muteFetch( surveyTriggerEndpoint, survey );
-				muteFetch( surveyEventEndpoint, {} );
+				muteFetch( surveyEventEndpoint );
 
-				// Trigger a survey to appear.
-				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey', { ttl: 1 } ) );
+				// Survey events are only sent if there is a current survey.
+				registry.dispatch( STORE_NAME ).receiveTriggerSurvey( survey, { triggerID: 'optimizeSurvey' } );
 				// Send a survey event.
-				await act( () => registry.dispatch( STORE_NAME ).sendSurveyEvent( 'answer_question', { foo: 'bar' } ) );
+				await registry.dispatch( STORE_NAME ).sendSurveyEvent( 'answer_question', { foo: 'bar' } );
 
 				expect( fetchMock ).toHaveFetched( surveyEventEndpoint, {
 					body: {
 						data: {
 							event: { answer_question: { foo: 'bar' } },
-							session: 'bar',
+							session: survey.session,
 						},
 					},
 				} );
@@ -128,22 +141,15 @@ describe( 'core/user surveys', () => {
 	describe( 'selectors', () => {
 		describe( 'getCurrentSurvey', () => {
 			it( 'returns null when no current survey is set', async () => {
-				expect( registry.select( STORE_NAME ).getCurrentSurvey() ).toEqual( null );
+				expect( registry.select( STORE_NAME ).getCurrentSurvey() ).toBeNull();
 			} );
 
-			it( 'returns the current survey when it is set', async () => {
-				muteFetch( surveyTriggerEndpoint, survey );
-				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey', { ttl: 1 } ) );
+			it( 'returns the current survey when it is set', () => {
+				registry.dispatch( STORE_NAME ).receiveTriggerSurvey( survey, { triggerID: 'optimizeSurvey' } );
 
 				expect(
 					registry.select( STORE_NAME ).getCurrentSurvey()
 				).toEqual( survey.survey_payload );
-
-				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-					body: {
-						data: { triggerID: 'optimizeSurvey' },
-					},
-				} );
 			} );
 		} );
 
@@ -151,22 +157,15 @@ describe( 'core/user surveys', () => {
 			it( 'returns null when no current survey session is set', async () => {
 				expect(
 					registry.select( STORE_NAME ).getCurrentSurveySession()
-				).toEqual( null );
+				).toBeNull();
 			} );
 
-			it( 'returns the error once set', async () => {
-				muteFetch( surveyTriggerEndpoint, survey );
-
-				await act( () => registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey', { ttl: 1 } ) );
+			it( 'returns the current survey session when set', () => {
+				registry.dispatch( STORE_NAME ).receiveTriggerSurvey( survey, { triggerID: 'optimizeSurvey' } );
 
 				expect(
 					registry.select( STORE_NAME ).getCurrentSurveySession()
 				).toEqual( survey.session );
-				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-					body: {
-						data: { triggerID: 'optimizeSurvey' },
-					},
-				} );
 			} );
 		} );
 	} );
