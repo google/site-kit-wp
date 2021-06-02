@@ -519,7 +519,7 @@ abstract class Module {
 		}
 
 		$datapoint        = $definitions[ $datapoint_key ];
-		$requires_service = isset( $datapoint['service'] );
+		$requires_service = ! empty( $datapoint['service'] );
 		$scopes           = $datapoint['scopes'];
 		$oauth_client     = $this->authentication->get_oauth_client();
 		$scopes_granted   = $oauth_client->has_sufficient_scopes( $scopes );
