@@ -67,10 +67,8 @@ function WPDashboardIdeaHub() {
 				</div>
 			</div>
 
-			<p className="googlesitekit-idea-hub__wpdashboard--link">
-				<Link href={ dashboardURL }>
-					{ __( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ) }
-				</Link>
+			<p className="googlesitekit-idea-hub__wpdashboard--copy">
+				{ __( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ) }
 			</p>
 
 			<p className="googlesitekit-idea-hub__wpdashboard--link">
