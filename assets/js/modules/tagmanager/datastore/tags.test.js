@@ -128,14 +128,14 @@ describe( 'modules/tagmanager existing-tag', () => {
 				// The value will be undefined until the response is received.
 				expect( registry.select( STORE_NAME ).getTagPermission( containerID ) ).toEqual( undefined );
 
+				await untilResolved( registry, STORE_NAME ).getTagPermission( containerID );
+
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/,
 					{
 						query: { containerID },
 					}
 				);
-
-				await untilResolved( registry, STORE_NAME ).getTagPermission( containerID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				// The value will be undefined until the response is received.

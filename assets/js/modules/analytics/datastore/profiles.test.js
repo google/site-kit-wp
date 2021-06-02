@@ -26,7 +26,7 @@ import {
 	muteFetch,
 	unsubscribeFromAll,
 	untilResolved,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics profiles', () => {
@@ -139,6 +139,9 @@ describe( 'modules/analytics profiles', () => {
 
 				const initialProfiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
+				expect( initialProfiles ).toEqual( undefined );
+				await untilResolved( registry, STORE_NAME ).getProfiles( testAccountID, testPropertyID );
+
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
@@ -149,9 +152,6 @@ describe( 'modules/analytics profiles', () => {
 						},
 					}
 				);
-
-				expect( initialProfiles ).toEqual( undefined );
-				await untilResolved( registry, STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
 				const profiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 

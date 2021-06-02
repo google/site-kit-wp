@@ -222,6 +222,10 @@ describe( 'modules/tagmanager containers', () => {
 
 				const initialContainers = registry.select( STORE_NAME ).getContainers( accountID );
 
+				expect( initialContainers ).toEqual( undefined );
+
+				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
+
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
@@ -229,10 +233,6 @@ describe( 'modules/tagmanager containers', () => {
 						query: { accountID },
 					}
 				);
-
-				expect( initialContainers ).toEqual( undefined );
-
-				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
 
 				const resolvedContainers = registry.select( STORE_NAME ).getContainers( accountID );
 
@@ -295,6 +295,10 @@ describe( 'modules/tagmanager containers', () => {
 
 				const initialContainers = registry.select( STORE_NAME ).getWebContainers( accountID );
 
+				expect( initialContainers ).toEqual( undefined );
+
+				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
+
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
@@ -302,10 +306,6 @@ describe( 'modules/tagmanager containers', () => {
 						query: { accountID },
 					}
 				);
-
-				expect( initialContainers ).toEqual( undefined );
-
-				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect(
@@ -347,6 +347,10 @@ describe( 'modules/tagmanager containers', () => {
 
 				const initialContainers = registry.select( STORE_NAME ).getAMPContainers( accountID );
 
+				expect( initialContainers ).toEqual( undefined );
+
+				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
+
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
@@ -354,10 +358,6 @@ describe( 'modules/tagmanager containers', () => {
 						query: { accountID },
 					}
 				);
-
-				expect( initialContainers ).toEqual( undefined );
-
-				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect(

@@ -23,9 +23,9 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+	untilResolved,
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/pagespeed-insights report', () => {
@@ -77,6 +77,9 @@ describe( 'modules/pagespeed-insights report', () => {
 
 				const initialReport = registry.select( STORE_NAME ).getReport( url, strategy );
 
+				expect( initialReport ).toEqual( undefined );
+				await untilResolved( registry, STORE_NAME ).getReport( url, strategy );
+
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
@@ -86,11 +89,6 @@ describe( 'modules/pagespeed-insights report', () => {
 							strategy,
 						},
 					}
-				);
-
-				expect( initialReport ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
 				);
 
 				const report = registry.select( STORE_NAME ).getReport( url, strategy );
@@ -114,9 +112,7 @@ describe( 'modules/pagespeed-insights report', () => {
 				const url = 'http://example.com/';
 
 				registry.select( STORE_NAME ).getReport( url, strategy );
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
-				);
+				await untilResolved( registry, STORE_NAME ).getReport( url, strategy );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 

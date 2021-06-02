@@ -23,11 +23,11 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	muteFetch,
 	freezeFetch,
-	subscribeUntil,
+	muteFetch,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+	untilResolved,
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { enabledFeatures } from '../../../features';
@@ -233,19 +233,15 @@ describe( 'modules/analytics properties', () => {
 
 				const initialProperties = registry.select( STORE_NAME ).getProperties( accountID );
 
+				expect( initialProperties ).toEqual( undefined );
+				await untilResolved( registry, STORE_NAME ).getProperties( accountID );
+
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 					{
 						query: { accountID },
 					}
-				);
-
-				expect( initialProperties ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getProperties( accountID ) !== undefined
-					),
 				);
 
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
@@ -270,10 +266,9 @@ describe( 'modules/analytics properties', () => {
 
 				const properties = registry.select( STORE_NAME ).getProperties( testAccountID );
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
+				await untilResolved( registry, STORE_NAME )
 					.hasFinishedResolution( 'getProperties', [ testAccountID ] )
-				);
+				;
 
 				// It _may_ make a request for profiles internally if not loaded,
 				// so we only care that it did not fetch properties here.
@@ -297,9 +292,7 @@ describe( 'modules/analytics properties', () => {
 
 				const fakeAccountID = '777888999';
 				registry.select( STORE_NAME ).getProperties( fakeAccountID );
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isDoingGetProperties( fakeAccountID ) === false,
-				);
+				await untilResolved( registry, STORE_NAME ).isDoingGetProperties( fakeAccountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 

@@ -47,7 +47,7 @@ export const actions = {
 export const controls = {
 	// TODO: Refactor this once we have dedicated actions for this.
 	[ __ADSENSE_LINKED_GET_RESOLVED_SETTINGS ]: createRegistryControl( ( registry ) => () => {
-		return registry.__experimentalResolveSelect( STORE_NAME ).getSettings();
+		return registry.resolveSelect( STORE_NAME ).getSettings();
 	} ),
 };
 

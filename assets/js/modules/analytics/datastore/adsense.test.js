@@ -23,10 +23,9 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	// muteConsole,
 	unsubscribeFromAll,
 	untilResolved,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import fetchMock from 'fetch-mock';
 
 describe( 'modules/analytics adsense', () => {
@@ -90,6 +89,8 @@ describe( 'modules/analytics adsense', () => {
 
 				await untilResolved( registry, STORE_NAME ).getSettings();
 
+				expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ );
+
 				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( true );
 			} );
 
@@ -103,7 +104,7 @@ describe( 'modules/analytics adsense', () => {
 					responsePromise
 				);
 				// Select getAdsenseLinked once, using resolve select.
-				const selectPromise = registry.__experimentalResolveSelect( STORE_NAME ).getAdsenseLinked();
+				const selectPromise = registry.resolveSelect( STORE_NAME ).getAdsenseLinked();
 				// A regular synchronous select shows the value is currently in its initial state.
 				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBeUndefined();
 				// Resolve settings request response.

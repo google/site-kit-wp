@@ -20,8 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { createTestRegistry, subscribeUntil, unsubscribeFromAll } from '../../../../../tests/js/utils';
-import { waitFor } from '../../../../../tests/js/test-utils';
+import { createTestRegistry, subscribeUntil, unsubscribeFromAll, untilResolved } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/user tracking settings', () => {
@@ -98,10 +97,10 @@ describe( 'core/user tracking settings', () => {
 					body: { enabled },
 				} );
 
-				const { isTrackingEnabled, hasFinishedResolution } = registry.select( STORE_NAME );
+				const { isTrackingEnabled } = registry.select( STORE_NAME );
 
 				expect( isTrackingEnabled() ).toBeUndefined();
-				await waitFor( () => hasFinishedResolution( 'isTrackingEnabled' ) !== true );
+				await untilResolved( registry, STORE_NAME ).isTrackingEnabled();
 
 				expect( isTrackingEnabled() ).toBe( enabled );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );

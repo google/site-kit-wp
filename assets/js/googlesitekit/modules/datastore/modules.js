@@ -427,7 +427,7 @@ const baseResolvers = {
 
 	*canActivateModule( slug ) {
 		const registry = yield Data.commonActions.getRegistry();
-		yield Data.commonActions.await( registry.__experimentalResolveSelect( STORE_NAME ).getModules() );
+		yield Data.commonActions.await( registry.resolveSelect( STORE_NAME ).getModules() );
 		const module = registry.select( STORE_NAME ).getModule( slug );
 
 		if ( ! module ) {

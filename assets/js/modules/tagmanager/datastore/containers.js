@@ -180,7 +180,7 @@ const baseActions = {
 			invariant( isValidAccountID( accountID ), 'A valid accountID is required to wait for containers.' );
 		},
 		function* ( accountID ) {
-			return {
+			yield {
 				payload: { accountID },
 				type: WAIT_FOR_CONTAINERS,
 			};
@@ -190,24 +190,10 @@ const baseActions = {
 
 const baseControls = {
 	[ WAIT_FOR_CONTAINERS ]: createRegistryControl(
-		( registry ) => ( { payload: { accountID } } ) => {
-		// Select first to ensure resolution is always triggered.
-			registry.select( STORE_NAME ).getContainers( accountID );
-			const areContainersLoaded = () => registry.select( STORE_NAME ).hasFinishedResolution( 'getContainers', [ accountID ] );
-
-			if ( areContainersLoaded() ) {
-				return;
-			}
-
-			return new Promise( ( resolve ) => {
-				const unsubscribe = registry.subscribe( () => {
-					if ( areContainersLoaded() ) {
-						unsubscribe();
-						resolve();
-					}
-				} );
-			} );
-		} ),
+		( registry ) => async ( { payload: { accountID } } ) => {
+			await registry.resolveSelect( STORE_NAME ).getContainers( accountID );
+		}
+	),
 };
 
 const baseResolvers = {

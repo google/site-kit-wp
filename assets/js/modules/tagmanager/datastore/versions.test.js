@@ -27,6 +27,7 @@ import {
 	muteFetch,
 	untilResolved,
 	unsubscribeFromAll,
+	subscribeUntil,
 } from '../../../../../tests/js/utils';
 import {
 	createBuildAndReceivers,
@@ -118,7 +119,7 @@ describe( 'modules/tagmanager versions', () => {
 					expect( propertyIDs ).toEqual( [ null ] );
 				} );
 
-				it( 'returns undefined if the live container data is not loaded yet', () => {
+				it( 'returns undefined if the live container data is not loaded yet', async () => {
 					registry.dispatch( STORE_NAME ).setAccountID( '12345' );
 					registry.dispatch( STORE_NAME ).setContainerID( 'GTM-G000GL3' );
 					registry.dispatch( STORE_NAME ).setInternalContainerID( '9876' );
@@ -127,6 +128,8 @@ describe( 'modules/tagmanager versions', () => {
 					const propertyIDs = registry.select( STORE_NAME ).getAnalyticsPropertyIDs();
 
 					expect( propertyIDs ).toStrictEqual( undefined );
+
+					await registry.resolveSelect( STORE_NAME ).getLiveContainerVersion( '12345', '9876' );
 				} );
 			} );
 
@@ -160,7 +163,7 @@ describe( 'modules/tagmanager versions', () => {
 					expect( propertyIDs ).toEqual( [ null ] );
 				} );
 
-				it( 'returns undefined if the live container data is not loaded yet', () => {
+				it( 'returns undefined if the live container data is not loaded yet', async () => {
 					registry.dispatch( STORE_NAME ).setAccountID( '12345' );
 					registry.dispatch( STORE_NAME ).setAMPContainerID( 'GTM-G000GL3' );
 					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '9876' );
@@ -169,6 +172,7 @@ describe( 'modules/tagmanager versions', () => {
 					const propertyIDs = registry.select( STORE_NAME ).getAnalyticsPropertyIDs();
 
 					expect( propertyIDs ).toStrictEqual( undefined );
+					await registry.resolveSelect( STORE_NAME ).getLiveContainerVersion( '12345', '9876' );
 				} );
 			} );
 
@@ -204,7 +208,7 @@ describe( 'modules/tagmanager versions', () => {
 					expect( propertyIDs ).toEqual( [ null ] );
 				} );
 
-				it( 'returns undefined if the live container data is not loaded yet for either container', () => {
+				it( 'returns undefined if the live container data is not loaded yet for either container', async () => {
 					const liveContainerVersionWeb = factories.buildLiveContainerVersionWeb();
 					const { accountID, containerID, internalContainerID } = parseIDs( liveContainerVersionWeb );
 					registry.dispatch( STORE_NAME ).setAccountID( accountID );
@@ -221,6 +225,10 @@ describe( 'modules/tagmanager versions', () => {
 					const propertyIDs = registry.select( STORE_NAME ).getAnalyticsPropertyIDs();
 
 					expect( propertyIDs ).toStrictEqual( undefined );
+					await Promise.all( [
+						registry.resolveSelect( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ),
+						registry.resolveSelect( STORE_NAME ).getLiveContainerVersion( accountID, internalAMPContainerID ),
+					] );
 				} );
 			} );
 		} );
@@ -268,7 +276,7 @@ describe( 'modules/tagmanager versions', () => {
 				expect( tagObject ).toStrictEqual( null );
 			} );
 
-			it( 'returns undefined if the live container version is not loaded yet', () => {
+			it( 'returns undefined if the live container version is not loaded yet', async () => {
 				const accountID = '12345';
 				const internalContainerID = '98765';
 
@@ -276,6 +284,8 @@ describe( 'modules/tagmanager versions', () => {
 				const tagObject = registry.select( STORE_NAME ).getLiveContainerAnalyticsTag( accountID, internalContainerID );
 
 				expect( tagObject ).toStrictEqual( undefined );
+
+				await registry.resolveSelect( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 			} );
 		} );
 
@@ -320,7 +330,7 @@ describe( 'modules/tagmanager versions', () => {
 				expect( propertyID ).toStrictEqual( null );
 			} );
 
-			it( 'returns undefined if the live container version is not loaded yet', () => {
+			it( 'returns undefined if the live container version is not loaded yet', async () => {
 				const liveContainerVersion = factories.buildLiveContainerVersionWeb();
 				const { accountID, internalContainerID } = parseIDs( liveContainerVersion );
 
@@ -328,6 +338,8 @@ describe( 'modules/tagmanager versions', () => {
 				const propertyID = registry.select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalContainerID );
 
 				expect( propertyID ).toStrictEqual( undefined );
+
+				await registry.resolveSelect( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 			} );
 		} );
 
@@ -364,7 +376,7 @@ describe( 'modules/tagmanager versions', () => {
 				expect( variableObject ).toStrictEqual( null );
 			} );
 
-			it( 'returns undefined if the live container version is not loaded yet', () => {
+			it( 'returns undefined if the live container version is not loaded yet', async () => {
 				const { accountID, internalContainerID } = parseIDs( factories.buildLiveContainerVersionWeb() );
 				const variableName = 'Test Variable';
 
@@ -372,6 +384,7 @@ describe( 'modules/tagmanager versions', () => {
 				const variableObject = registry.select( STORE_NAME ).getLiveContainerVariable( accountID, internalContainerID, variableName );
 
 				expect( variableObject ).toStrictEqual( undefined );
+				await registry.resolveSelect( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 			} );
 		} );
 
@@ -565,7 +578,7 @@ describe( 'modules/tagmanager versions', () => {
 				expect( registry.select( STORE_NAME ).hasMultipleAnalyticsPropertyIDs() ).toBe( false );
 			} );
 
-			it( 'returns undefined if either container’s live container version is not loaded yet', () => {
+			it( 'returns undefined if either container’s live container version is not loaded yet', async () => {
 				const accountID = '12345';
 				registry.dispatch( STORE_NAME ).setAccountID( accountID );
 				const liveContainerVersionWeb = factories.buildLiveContainerVersionWeb( { accountID } );
@@ -583,6 +596,12 @@ describe( 'modules/tagmanager versions', () => {
 
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
 				expect( registry.select( STORE_NAME ).hasMultipleAnalyticsPropertyIDs() ).toStrictEqual( undefined );
+
+				const { getInternalContainerID, getInternalAMPContainerID } = registry.select( STORE_NAME );
+				await Promise.all( [
+					registry.resolveSelect( STORE_NAME ).getLiveContainerVersion( accountID, getInternalContainerID() ),
+					registry.resolveSelect( STORE_NAME ).getLiveContainerVersion( accountID, getInternalAMPContainerID() ),
+				] );
 			} );
 		} );
 
@@ -598,9 +617,10 @@ describe( 'modules/tagmanager versions', () => {
 
 				registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
-				expect(
-					registry.select( STORE_NAME ).isDoingGetLiveContainerVersion( accountID, internalContainerID )
-				).toBe( true );
+				// Fetch does not start synchronously, so we need to wait for it.
+				await subscribeUntil( registry,
+					() => true === registry.select( STORE_NAME ).isDoingGetLiveContainerVersion( accountID, internalContainerID )
+				);
 
 				await untilResolved( registry, STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 

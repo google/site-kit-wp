@@ -200,10 +200,12 @@ describe( 'core/user feature-tours', () => {
 		const fetchGetDismissedToursRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/dismissed-tours/;
 
 		describe( 'getDismissedFeatureTourSlugs', () => {
-			it( 'returns the initial state before the resolver runs', () => {
+			it( 'returns the initial state before the resolver runs', async () => {
 				muteFetch( fetchGetDismissedToursRegExp, [] );
 
 				expect( registry.select( STORE_NAME ).getDismissedFeatureTourSlugs() ).toBe( initialState.dismissedTourSlugs );
+
+				await untilResolved( registry, STORE_NAME ).getDismissedFeatureTourSlugs();
 			} );
 
 			it( 'receives dismissed tours from the fetch dispatched by the resolver', async () => {
@@ -253,11 +255,11 @@ describe( 'core/user feature-tours', () => {
 				registry.dispatch( STORE_NAME ).receiveAllFeatureTours( [ testTourA, testTourB ] );
 
 				expect(
-					await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' )
+					await registry.resolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' )
 				).toEqual( [ testTourA, testTourB ] );
 
 				expect(
-					await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'b-only-context' )
+					await registry.resolveSelect( STORE_NAME ).getFeatureToursForView( 'b-only-context' )
 				).toEqual( [ testTourB ] );
 			} );
 
@@ -270,7 +272,7 @@ describe( 'core/user feature-tours', () => {
 					{ ...testTourB, version: tourVersion },
 				] );
 				// Tour A's version matches the user's initial version, so only Tour B is returned.
-				const viewTours = await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' );
+				const viewTours = await registry.resolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' );
 				expect( viewTours.map( ( { slug } ) => slug ) ).toEqual( [ testTourB.slug ] );
 			} );
 
@@ -279,7 +281,7 @@ describe( 'core/user feature-tours', () => {
 				registry.dispatch( STORE_NAME ).receiveGetDismissedTours( [ testTourB.slug ] );
 				// Tour B was received as dismissed, but A was not.
 				expect(
-					await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' )
+					await registry.resolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' )
 				).toEqual( [ testTourA ] );
 			} );
 
@@ -297,7 +299,7 @@ describe( 'core/user feature-tours', () => {
 					{ ...testTourB, checkRequirements: checkB },
 				] );
 
-				const viewTours = await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' );
+				const viewTours = await registry.resolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' );
 				expect( viewTours.map( ( { slug } ) => slug ) ).toEqual( [ testTourA.slug ] );
 				// Check functions should be called with the registry as the first parameter.
 				const registryMatcher = expect.objectContaining( {
@@ -333,19 +335,22 @@ describe( 'core/user feature-tours', () => {
 				expect( registry.select( STORE_NAME ).isTourDismissed( 'feature-x' ) ).toBe( true );
 			} );
 
-			it( 'will trigger the resolver for getDismissedFeatureTourSlugs and fetch if necessary', () => {
+			it( 'will trigger the resolver for getDismissedFeatureTourSlugs and fetch if necessary', async () => {
 				muteFetch( fetchGetDismissedToursRegExp );
 
 				registry.select( STORE_NAME ).isTourDismissed( 'feature-x' );
 
+				await untilResolved( registry, STORE_NAME ).getDismissedFeatureTourSlugs();
 				expect( fetchMock ).toHaveFetched( fetchGetDismissedToursRegExp );
 			} );
 
-			it( 'returns `undefined` if dismissed tours are not resolved yet', () => {
+			it( 'returns `undefined` if dismissed tours are not resolved yet', async () => {
 				// The request will respond that `feature-x` _is dismissed_
 				// but the selector will return `false` until the response is received.
 				fetchMock.getOnce( fetchGetDismissedToursRegExp, { body: [ 'feature-x' ] } );
 				expect( registry.select( STORE_NAME ).isTourDismissed( 'feature-x' ) ).toBeUndefined();
+
+				await untilResolved( registry, STORE_NAME ).getDismissedFeatureTourSlugs();
 			} );
 		} );
 

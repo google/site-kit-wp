@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import {
+	controls,
 	createRegistry,
 	createRegistryControl,
 	createRegistrySelector,
@@ -49,6 +50,7 @@ Data.combineStores = combineStores;
 Data.commonActions = commonActions;
 Data.commonControls = commonControls;
 Data.commonStore = commonStore;
+Data.controls = controls;
 Data.createRegistryControl = createRegistryControl;
 Data.createRegistrySelector = createRegistrySelector;
 Data.useSelect = useSelect;
