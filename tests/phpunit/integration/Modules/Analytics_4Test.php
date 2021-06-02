@@ -26,39 +26,59 @@ use Google\Site_Kit\Tests\TestCase;
  * @group Modules
  */
 class Analytics_4Test extends TestCase {
+
 	use Module_With_Scopes_ContractTests;
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
 
+	/**
+	 * Context object.
+	 *
+	 * @var Context
+	 */
+	private $context;
+
+	/**
+	 * Analytics 4 object.
+	 *
+	 * @var Analytics_4
+	 */
+	private $analytics;
+
+	public function setUp() {
+		parent::setUp();
+
+		$this->context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->analytics = new Analytics_4( $this->context );
+	}
+
 	public function test_register() {
-		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 
-		$analytics->register();
+		$this->analytics->register();
 
 		// Adding required scopes.
 		$this->assertEquals(
-			$analytics->get_scopes(),
+			$this->analytics->get_scopes(),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
 	}
 
-	public function test_get_scopes() {
-		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	public function test_handle_provisioning_callback() {
+	}
 
+	public function test_get_scopes() {
 		$this->assertEqualSets(
 			array(
 				'https://www.googleapis.com/auth/analytics.readonly',
 			),
-			$analytics->get_scopes()
+			$this->analytics->get_scopes()
 		);
 	}
 
 	public function test_is_connected() {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options = new Options( $context );
-
-		$analytics = new Analytics_4( $context, $options );
+		$options   = new Options( $this->context );
+		$analytics = new Analytics_4( $this->context, $options );
 
 		$this->assertFalse( $analytics->is_connected() );
 
@@ -76,19 +96,16 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_on_deactivation() {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options = new Options( $context );
+		$options = new Options( $this->context );
 		$options->set( Settings::OPTION, 'test-value' );
 
-		$analytics = new Analytics_4( $context, $options );
+		$analytics = new Analytics_4( $this->context, $options );
 		$analytics->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
 	}
 
 	public function test_get_datapoints() {
-		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
 		$this->assertEqualSets(
 			array(
 				'account-summaries',
@@ -100,7 +117,7 @@ class Analytics_4Test extends TestCase {
 				'webdatastreams',
 				'webdatastreams-batch',
 			),
-			$analytics->get_datapoints()
+			$this->analytics->get_datapoints()
 		);
 	}
 
@@ -108,20 +125,21 @@ class Analytics_4Test extends TestCase {
 	 * @return Module_With_Scopes
 	 */
 	protected function get_module_with_scopes() {
-		return new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		return $this->analytics;
 	}
 
 	/**
 	 * @return Module_With_Settings
 	 */
 	protected function get_module_with_settings() {
-		return new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		return $this->analytics;
 	}
 
 	/**
 	 * @return Module_With_Owner
 	 */
 	protected function get_module_with_owner() {
-		return new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		return $this->analytics;
 	}
+
 }

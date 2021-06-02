@@ -227,11 +227,16 @@ final class Analytics_4 extends Module
 	 * @return Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream A new web data stream.
 	 */
 	private function create_webdatastream( $property_id ) {
-		$datastream = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream();
-		$datastream->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
-		$datastream->setDefaultUri( $this->context->get_reference_site_url() );
+		$site_url = $this->context->get_reference_site_url();
 
-		return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->create( self::normalize_property_id( $property_id ), $datastream );
+		$datastream = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream();
+		$datastream->setDisplayName( wp_parse_url( $site_url, PHP_URL_HOST ) );
+		$datastream->setDefaultUri( $site_url );
+
+		return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->create(
+			self::normalize_property_id( $property_id ),
+			$datastream
+		);
 	}
 
 	/**
