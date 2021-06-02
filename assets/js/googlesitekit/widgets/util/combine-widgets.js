@@ -37,7 +37,7 @@ function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
  * all from the same module and they are all in the same special
  * state (see #3225).
  *
- * @since n.e.x.t
+ * @since 1.34.0
  *
  * @param {Array.<Object>} widgets      List of widgets.
  * @param {Object}         widgetStates Map of widget slug and their

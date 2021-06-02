@@ -61,7 +61,7 @@ const baseActions = {
 	 *
 	 * Creates a new draft post and attaches an idea to it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @param {Object} idea Idea Hub Idea.
 	 * @return {Object} Object with `response` and `error`.

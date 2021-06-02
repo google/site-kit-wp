@@ -75,7 +75,7 @@ const baseActions = {
 	/**
 	 * Triggers a survey.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @param {string} triggerID     Trigger ID for the survey.
 	 * @param {Object} options       Survey options.
@@ -121,7 +121,7 @@ const baseActions = {
 	/**
 	 * Sends a survey event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @param {string} eventID   Event ID for the survey.
 	 * @param {Object} eventData Event Data.
@@ -148,7 +148,7 @@ const baseSelectors = {
 	/**
 	 * Gets the current survey.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object} Current survey object.
@@ -159,7 +159,7 @@ const baseSelectors = {
 	/**
 	 * Gets the current survey session.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object} Current survey session object.
