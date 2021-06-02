@@ -180,7 +180,7 @@ const baseActions = {
 			invariant( isValidAccountID( accountID ), 'A valid accountID is required to wait for containers.' );
 		},
 		function* ( accountID ) {
-			return {
+			yield {
 				payload: { accountID },
 				type: WAIT_FOR_CONTAINERS,
 			};
