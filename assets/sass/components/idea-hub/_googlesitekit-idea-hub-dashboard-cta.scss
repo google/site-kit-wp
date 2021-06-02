@@ -22,14 +22,13 @@
 		align-items: center;
 		background-color: $c-white;
 		height: 100%;
-		padding: $grid-gap-desktop;
 
 		@media (min-width: $bp-tablet) {
 			display: flex;
 		}
 
 		@media (min-width: $bp-desktop) {
-			padding: 48px;
+			padding: $grid-gap-desktop;
 		}
 	}
 
@@ -37,7 +36,7 @@
 		display: inline-block;
 
 		@media (min-width: $bp-tablet) {
-			padding: $grid-gap-desktop 0 $grid-gap-desktop $grid-gap-desktop;
+			padding-left: $grid-gap-desktop;
 		}
 
 
@@ -55,7 +54,7 @@
 		padding-bottom: $grid-gap-desktop;
 
 		@media (min-width: $bp-tablet) {
-			padding: $grid-gap-desktop 0 $grid-gap-desktop 0;
+			padding-bottom: 0;
 		}
 	}
 
