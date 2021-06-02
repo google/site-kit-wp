@@ -200,10 +200,12 @@ describe( 'core/user feature-tours', () => {
 		const fetchGetDismissedToursRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/dismissed-tours/;
 
 		describe( 'getDismissedFeatureTourSlugs', () => {
-			it( 'returns the initial state before the resolver runs', () => {
+			it( 'returns the initial state before the resolver runs', async () => {
 				muteFetch( fetchGetDismissedToursRegExp, [] );
 
 				expect( registry.select( STORE_NAME ).getDismissedFeatureTourSlugs() ).toBe( initialState.dismissedTourSlugs );
+
+				await untilResolved( registry, STORE_NAME ).getDismissedFeatureTourSlugs();
 			} );
 
 			it( 'receives dismissed tours from the fetch dispatched by the resolver', async () => {
@@ -333,11 +335,12 @@ describe( 'core/user feature-tours', () => {
 				expect( registry.select( STORE_NAME ).isTourDismissed( 'feature-x' ) ).toBe( true );
 			} );
 
-			it( 'will trigger the resolver for getDismissedFeatureTourSlugs and fetch if necessary', () => {
+			it( 'will trigger the resolver for getDismissedFeatureTourSlugs and fetch if necessary', async () => {
 				muteFetch( fetchGetDismissedToursRegExp );
 
 				registry.select( STORE_NAME ).isTourDismissed( 'feature-x' );
 
+				await untilResolved( registry, STORE_NAME ).getDismissedFeatureTourSlugs();
 				expect( fetchMock ).toHaveFetched( fetchGetDismissedToursRegExp );
 			} );
 
