@@ -38,7 +38,7 @@ describe( 'combineWidgets', () => {
 	const getCompleteModuleActivationCTAState = ( moduleSlug ) => ( { Component: CompleteModuleActivationCTA, metadata: { moduleSlug } } );
 	const getNullState = () => ( { Component: Null, metadata: {} } );
 
-	it( 'Widgets in an area are combined beyond their row if all of them have the same special state', () => {
+	it( 'should combine widgets beyond their row if all of them have the same special state', () => {
 		const widgets = [
 			getFullWidget( 'test1' ),
 			getFullWidget( 'test2' ),
@@ -61,7 +61,7 @@ describe( 'combineWidgets', () => {
 		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
 	} );
 
-	it( 'Widgets in an area from different modules are not combined if all of them have the same special state', () => {
+	it( 'should not combine widgets in the same special state beyond their row if they are from different modules', () => {
 		const widgets = [
 			getQuarterWidget( 'test1' ),
 			getQuarterWidget( 'test2' ),
