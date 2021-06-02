@@ -1,0 +1,125 @@
+/**
+ * User Feedback styles.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-survey {
+		background-color: $c-white;
+		box-shadow: 0 0 3px rgba($c-black, 0.25);
+		max-width: 400px;
+	}
+
+	.googlesitekit-survey__body {
+		padding: 0 0 $grid-gap-phone;
+		position: relative;
+
+		@media (min-width: $bp-desktop) {
+			padding-bottom: $grid-gap-desktop;
+		}
+	}
+
+	.googlesitekit-survey__choices {
+		display: flex;
+		flex-wrap: nowrap;
+		justify-content: space-between;
+		margin-top: 8px;
+
+		> div {
+			min-width: 50px;
+			overflow: visible;
+		}
+	}
+
+	.googlesitekit-survey__footer {
+		padding: 0 $grid-gap-phone $grid-gap-phone;
+		position: relative;
+		text-align: right;
+
+		@media (min-width: $bp-desktop) {
+			padding: 0 $grid-gap-desktop $grid-gap-desktop;
+		}
+
+		.mdc-button {
+			text-transform: none;
+		}
+	}
+
+	.googlesitekit-survey__choice {
+
+		p {
+			color: $c-boulder;
+			font-family: $f-primary;
+			font-size: 0.75rem;
+			line-height: 1.16;
+			margin: 6px 0 0;
+		}
+
+		/**
+		 * Manually position the first and last items so that
+		 * they are centered within the container since some
+		 * content is right aligned and others left aligned.
+		 */
+		&:first-child {
+			margin-left: 8px;
+
+			@media (min-width: $bp-desktop) {
+				margin-left: 15px;
+			}
+
+			p {
+				transform: translateX(9px);
+			}
+		}
+
+		&:last-child {
+			margin-right: 7px;
+
+			@media (min-width: $bp-desktop) {
+				margin-right: 17px;
+			}
+
+			p {
+				transform: translateX(-9px);
+			}
+		}
+
+		&:not(:first-child):not(:last-child) {
+
+			p {
+				display: none;
+			}
+		}
+
+		.mdc-button:not(:disabled) {
+			background-color: transparent;
+			border-radius: 50%;
+			box-shadow: none;
+			color: $c-device-icon-gray;
+			height: 50px;
+			min-width: 50px;
+			padding: 0;
+			transition: background $t-default ease-in-out;
+			width: 50px;
+
+			&:hover,
+			&:focus {
+				background-color: $c-gallery;
+			}
+		}
+	}
+}
