@@ -20,8 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { createTestRegistry, subscribeUntil, unsubscribeFromAll } from '../../../../../tests/js/utils';
-import { waitFor } from '../../../../../tests/js/test-utils';
+import { createTestRegistry, subscribeUntil, unsubscribeFromAll, untilResolved } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/user user-input-settings', () => {
@@ -158,7 +157,7 @@ describe( 'core/user user-input-settings', () => {
 				const { getUserInputSettings } = registry.select( STORE_NAME );
 
 				expect( getUserInputSettings() ).toBeUndefined();
-				await waitFor( () => getUserInputSettings() !== undefined );
+				await untilResolved( registry, STORE_NAME ).getUserInputSettings();
 
 				const settings = getUserInputSettings();
 				expect( settings ).toEqual( coreUserInputSettingsExpectedResponse );
