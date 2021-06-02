@@ -20,7 +20,12 @@ use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
+use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
+use \ReflectionClass;
 
 /**
  * @group Modules
@@ -65,6 +70,78 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_handle_provisioning_callback() {
+		$property_id      = '1001';
+		$webdatastream_id = '2001';
+		$measurement_id   = '1A2BCD345E';
+
+		$http_client = new FakeHttpClient();
+		$http_client->set_request_handler(
+			function( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id ) {
+				$url = parse_url( $request->getUrl() );
+				if ( 'analyticsadmin.googleapis.com' !== $url['host'] ) {
+					return new Response( 200 );
+				}
+
+				switch ( $url['path'] ) {
+					case '/v1alpha/properties':
+						return new Response(
+							200,
+							array(),
+							Stream::factory(
+								json_encode(
+									array(
+										'name' => "properties/{$property_id}",
+									)
+								)
+							)
+						);
+					case "/v1alpha/properties/{$property_id}/webDataStreams":
+						return new Response(
+							200,
+							array(),
+							Stream::factory(
+								json_encode(
+									array(
+										'name'          => "properties/{$property_id}/webDataStreams/{$webdatastream_id}",
+										'measurementId' => $measurement_id,
+									)
+								)
+							)
+						);
+					default:
+						return new Response( 200 );
+				}
+			}
+		);
+
+		$this->analytics->get_client()->setHttpClient( $http_client );
+
+		$options   = new Options( $this->context );
+		$analytics = new Analytics_4( $this->context, $options );
+
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '',
+				'webDataStreamID' => '',
+				'measurementID'   => '',
+			)
+		);
+
+		$handle_provisioning_callback = ( new ReflectionClass( $analytics ) )->getMethod( 'handle_provisioning_callback' );
+		$handle_provisioning_callback->setAccessible( true );
+		$handle_provisioning_callback->invoke( $this->analytics, '12345678' );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => $property_id,
+				'webDataStreamID' => $webdatastream_id,
+				'measurementID'   => $measurement_id,
+			),
+			$options->get( Settings::OPTION )
+		);
 	}
 
 	public function test_get_scopes() {
