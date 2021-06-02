@@ -23,6 +23,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { initialState } from './index';
 import { STORE_NAME } from './constants';
@@ -131,6 +132,7 @@ describe( 'core/user userInfo', () => {
 				const connectURL = registry.select( STORE_NAME ).getConnectURL();
 
 				expect( connectURL ).toEqual( initialState.connectURL );
+				await untilResolved( registry, STORE_NAME ).getConnectURL();
 				expect( console ).toHaveErrored();
 			} );
 
@@ -182,6 +184,7 @@ describe( 'core/user userInfo', () => {
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
 				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
 			} );
+
 			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
 
@@ -189,6 +192,7 @@ describe( 'core/user userInfo', () => {
 
 				const { user } = initialState;
 				expect( userInfo ).toEqual( user );
+				await untilResolved( registry, STORE_NAME ).getUser();
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -206,11 +210,12 @@ describe( 'core/user userInfo', () => {
 				).toBe( '1.2.3' );
 			} );
 
-			it( 'will return initial state (undefined) when no data is available', () => {
+			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toBeUndefined();
 				const initialVersion = registry.select( STORE_NAME ).getInitialSiteKitVersion();
 
 				expect( initialVersion ).toEqual( initialState.initialVersion );
+				await untilResolved( registry, STORE_NAME ).getInitialSiteKitVersion();
 				expect( console ).toHaveErrored( 'Could not load core/user info.' );
 			} );
 		} );
@@ -232,6 +237,7 @@ describe( 'core/user userInfo', () => {
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
 				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
 			} );
+
 			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
 
@@ -239,6 +245,7 @@ describe( 'core/user userInfo', () => {
 
 				const { verified } = initialState;
 				expect( isVerified ).toEqual( verified );
+				await untilResolved( registry, STORE_NAME ).isVerified();
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -254,25 +261,24 @@ describe( 'core/user userInfo', () => {
 				global[ userDataGlobal ] = userData;
 
 				registry.select( STORE_NAME )[ selector ]();
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME )[ selector ]() !== undefined
-					),
-				);
+				await untilResolved( registry, STORE_NAME ).getUser();
 
 				const userInfo = registry.select( STORE_NAME ).getUser();
 
 				expect( userInfo ).toEqual( userData.user );
 			} );
+
 			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
 
 				const result = registry.select( STORE_NAME )[ selector ]();
 
 				expect( result ).toEqual( undefined );
+				await untilResolved( registry, STORE_NAME ).getUser();
 				expect( console ).toHaveErrored();
 			} );
 		} );
+
 		describe( 'getUserInputState', () => {
 			it( 'uses a resolver to load user input state from a global variable', async () => {
 				// Set up the global
