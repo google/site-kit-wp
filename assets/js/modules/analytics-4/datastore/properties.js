@@ -217,7 +217,7 @@ const baseActions = {
 		for ( let i = 0; i < properties.length; i += MAX_WEBDATASTREAMS_PER_BATCH ) {
 			const chunk = properties.slice( i, i + MAX_WEBDATASTREAMS_PER_BATCH );
 			const webdatastreams = yield commonActions.await(
-				registry.__experimentalResolveSelect( STORE_NAME ).getWebDataStreamsBatch( chunk ),
+				registry.resolveSelect( STORE_NAME ).getWebDataStreamsBatch( chunk ),
 			);
 
 			for ( const propertyID in webdatastreams ) {
@@ -225,7 +225,7 @@ const baseActions = {
 					for ( const singleURL of urls ) {
 						if ( singleURL === normalizeURL( webdatastream.defaultUri ) ) {
 							return yield commonActions.await(
-								registry.__experimentalResolveSelect( STORE_NAME ).getProperty( propertyID ),
+								registry.resolveSelect( STORE_NAME ).getProperty( propertyID ),
 							);
 						}
 					}
@@ -252,7 +252,7 @@ const baseActions = {
 		for ( let i = 0; i < properties.length; i += MAX_WEBDATASTREAMS_PER_BATCH ) {
 			const chunk = properties.slice( i, i + MAX_WEBDATASTREAMS_PER_BATCH );
 			const webdatastreams = yield commonActions.await(
-				registry.__experimentalResolveSelect( STORE_NAME ).getWebDataStreamsBatch( chunk ),
+				registry.resolveSelect( STORE_NAME ).getWebDataStreamsBatch( chunk ),
 			);
 
 			for ( const propertyID in webdatastreams ) {
@@ -260,7 +260,7 @@ const baseActions = {
 					for ( const singleMeasurementID of measurementIDs ) {
 						if ( singleMeasurementID === webdatastream.measurementId ) { // eslint-disable-line sitekit/acronym-case
 							return yield commonActions.await(
-								registry.__experimentalResolveSelect( STORE_NAME ).getProperty( propertyID ),
+								registry.resolveSelect( STORE_NAME ).getProperty( propertyID ),
 							);
 						}
 					}
@@ -287,10 +287,10 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ WAIT_FOR_PROPERTIES ]: createRegistryControl( ( { __experimentalResolveSelect } ) => {
+	[ WAIT_FOR_PROPERTIES ]: createRegistryControl( ( { resolveSelect } ) => {
 		return async ( { payload } ) => {
 			const { accountID } = payload;
-			await __experimentalResolveSelect( STORE_NAME ).getProperties( accountID );
+			await resolveSelect( STORE_NAME ).getProperties( accountID );
 		};
 	} ),
 };

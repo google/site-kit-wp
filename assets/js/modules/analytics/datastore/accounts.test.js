@@ -491,7 +491,7 @@ describe( 'modules/analytics accounts', () => {
 				} );
 
 				it( 'should select correct GA4 property', async () => {
-					await registry.__experimentalResolveSelect( STORE_NAME ).getAccounts();
+					await registry.resolveSelect( STORE_NAME ).getAccounts();
 					expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( ga4Fixtures.properties[ 0 ]._id );
 				} );
 			} );

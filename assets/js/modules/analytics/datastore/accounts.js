@@ -323,7 +323,7 @@ const baseResolvers = {
 		const ga4PropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
 		if ( ga4PropertyID ) {
 			ga4Property = yield Data.commonActions.await(
-				registry.__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty( ga4PropertyID )
+				registry.resolveSelect( MODULES_ANALYTICS_4 ).getProperty( ga4PropertyID )
 			);
 		}
 
