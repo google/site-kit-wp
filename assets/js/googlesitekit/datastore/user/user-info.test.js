@@ -194,12 +194,16 @@ describe( 'core/user userInfo', () => {
 		} );
 
 		describe( 'getInitialSiteKitVersion', () => {
-			it( 'uses a resolver to synchronously load data from a global variable', () => {
+			it( 'uses a resolver to load data from a global variable', async () => {
 				global[ userDataGlobal ] = { ...userData, initialVersion: '1.2.3' };
 
 				expect( registry.stores[ STORE_NAME ].store.getState().initialVersion ).toBeUndefined();
 				expect( registry.select( STORE_NAME ).hasStartedResolution( 'getInitialSiteKitVersion' ) ).toBe( false );
-				expect( registry.select( STORE_NAME ).getInitialSiteKitVersion() ).toBe( '1.2.3' );
+				expect( registry.select( STORE_NAME ).getInitialSiteKitVersion() ).toBeUndefined();
+
+				expect(
+					await registry.resolveSelect( STORE_NAME ).getInitialSiteKitVersion()
+				).toBe( '1.2.3' );
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', () => {
