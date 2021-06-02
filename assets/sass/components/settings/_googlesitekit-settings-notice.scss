@@ -20,6 +20,8 @@
 	background-color: $c-background-notice;
 	border-radius: 4px;
 	color: $c-text-notice;
+
+	display: flex;
 	margin: 1.5em 0;
 	padding: $grid-gap-phone;
 
@@ -37,19 +39,16 @@
 			width: 20px;
 		}
 
+		.googlesitekit-settings-notice__icon {
+			margin-right: 10px;
+		}
+
 		.googlesitekit-settings-notice__text {
-			position: relative;
+			flex-grow: 1;
 		}
 
 		.googlesitekit-settings-notice__learn-more {
-			bottom: 0;
-			padding-bottom: 4px;
-			position: absolute;
-			right: 0;
-		}
-
-		.googlesitekit-settings-notice__inner {
-			position: relative;
+			float: right;
 		}
 	}
 
