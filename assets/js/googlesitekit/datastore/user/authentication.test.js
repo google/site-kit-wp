@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
-	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -110,11 +109,7 @@ describe( 'core/user authentication', () => {
 				// The authentication info will be its initial value while the authentication
 				// info is fetched.
 				expect( initialAuthentication ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getAuthentication() !== undefined
-					),
-				);
+				await untilResolved( registry, STORE_NAME ).getAuthentication();
 
 				const authentication = registry.select( STORE_NAME ).getAuthentication();
 
@@ -131,10 +126,7 @@ describe( 'core/user authentication', () => {
 
 				const authentication = registry.select( STORE_NAME ).getAuthentication();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getAuthentication' )
-				);
+				await untilResolved( registry, STORE_NAME ).getAuthentication();
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( authentication ).toEqual( coreUserDataExpectedResponse );
@@ -152,10 +144,7 @@ describe( 'core/user authentication', () => {
 				);
 
 				registry.select( STORE_NAME ).getAuthentication();
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getAuthentication' )
-				);
+				await untilResolved( registry, STORE_NAME ).getAuthentication();
 
 				const authentication = registry.select( STORE_NAME ).getAuthentication();
 
@@ -184,9 +173,7 @@ describe( 'core/user authentication', () => {
 				// The granted scope info will be its initial value while the granted scope
 				// info is fetched.
 				expect( hasScope ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAuthentication' )
-				);
+				await untilResolved( registry, STORE_NAME ).getAuthentication();
 
 				const hasScopeAfterResolved = registry.select( STORE_NAME ).hasScope( grantedScope );
 				expect( hasScopeAfterResolved ).toEqual( true );
@@ -199,6 +186,7 @@ describe( 'core/user authentication', () => {
 				muteFetch( coreUserDataEndpointRegExp );
 				const hasProvisioningScope = registry.select( STORE_NAME ).hasScope( 'https://www.googleapis.com/auth/ungranted.scope' );
 				expect( hasProvisioningScope ).toEqual( undefined );
+				await untilResolved( registry, STORE_NAME ).getAuthentication();
 			} );
 		} );
 
@@ -251,6 +239,7 @@ describe( 'core/user authentication', () => {
 			it( 'returns undefined if authentication info is not available', async () => {
 				muteFetch( coreUserDataEndpointRegExp );
 				expect( registry.select( STORE_NAME )[ selector ]() ).toBeUndefined();
+				await untilResolved( registry, STORE_NAME ).getAuthentication();
 			} );
 		} );
 
