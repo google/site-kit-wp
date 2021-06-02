@@ -26,9 +26,8 @@ import { __ } from '@wordpress/i18n';
  */
 import SettingsNotice, { TYPE_INFO } from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
-import InfoIcon from '../../../../../svg/info-icon.svg';
 
-const LEARN_MORE = (
+const LearnMore = () => (
 	<Link
 		href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
 		external
@@ -40,7 +39,7 @@ const LEARN_MORE = (
 
 export default function GA4Notice() {
 	return (
-		<SettingsNotice type={ TYPE_INFO } LearnMore={ LEARN_MORE } Icon={ <InfoIcon /> }>
+		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore } >
 			{ __( 'Got a Google Analytics 4 (GA4) property and want to find out how to use it with Site Kit?', 'google-site-kit' ) }
 		</SettingsNotice>
 	);
