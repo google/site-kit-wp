@@ -250,7 +250,7 @@ final class Analytics_4 extends Module
 				return;
 			}
 
-			$this->get_settings()->merge( array( 'propertyID' => $account_id ) );
+			$this->get_settings()->merge( array( 'propertyID' => $property->_id ) );
 
 			$web_datastream = $this->create_webdatastream( $property->_id );
 			$web_datastream = self::filter_webdatastream_with_ids( $web_datastream );
@@ -261,7 +261,7 @@ final class Analytics_4 extends Module
 			$this->get_settings()->merge(
 				array(
 					'webDataStreamID' => $web_datastream->_id,
-					'measurementID'   => $web_datastream->measurementID, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					'measurementID'   => $web_datastream->measurementId, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				)
 			);
 		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
