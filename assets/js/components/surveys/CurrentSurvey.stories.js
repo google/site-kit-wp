@@ -40,6 +40,7 @@ export default {
 			};
 			const setupRegistry = async ( registry ) => {
 				provideSiteInfo( registry );
+
 				registry.dispatch( CORE_USER ).receiveTriggerSurvey( survey, { triggerID } );
 				await registry.dispatch( CORE_USER ).triggerSurvey( triggerID, { ttl: 1 } );
 			};
