@@ -319,7 +319,7 @@ class Google_ProxyTest extends TestCase {
 
 		$access_token = 'abcd';
 		$trigger_id   = '1234';
-		$survey_data  = $this->google_proxy->send_survey_trigger( $credentials, $access_token, $trigger_id );
+		$response     = $this->google_proxy->send_survey_trigger( $credentials, $access_token, $trigger_id );
 
 		$this->assertEquals( $expected_url, $this->request_url );
 		$this->assertEquals( 'POST', $this->request_args['method'] );
@@ -339,7 +339,46 @@ class Google_ProxyTest extends TestCase {
 			json_decode( $this->request_args['body'], true )
 		);
 
-		$this->assertEqualSetsWithIndex( $expected_success_response, $survey_data );
+		$this->assertEqualSetsWithIndex( $expected_success_response, $response );
+	}
+
+	public function test_send_survey_event() {
+		list ( $credentials, $fake_creds ) = $this->get_credentials();
+
+		$expected_url              = $this->google_proxy->url( Google_Proxy::SURVEY_EVENT_URI );
+		$expected_success_response = array();
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+
+		$access_token = 'dcba';
+		$session      = array(
+			'session_id'    => '0123456789abcdef',
+			'session_token' => '0123-4567-89ab-cdef',
+		);
+		$event        = array(
+			'survey_shown'  => array(),
+			'survey_closed' => array(),
+		);
+
+		$response = $this->google_proxy->send_survey_event( $credentials, $access_token, $session, $event );
+
+		$this->assertEquals( $expected_url, $this->request_url );
+		$this->assertEquals( 'POST', $this->request_args['method'] );
+
+		$this->assertArrayHasKey( 'Authorization', $this->request_args['headers'] );
+		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'] );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'site_id'     => $fake_creds['client_id'],
+				'site_secret' => $fake_creds['client_secret'],
+				'session'     => $session,
+				'event'       => $event,
+			),
+			json_decode( $this->request_args['body'], true )
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_success_response, $response );
 	}
 
 	/**
