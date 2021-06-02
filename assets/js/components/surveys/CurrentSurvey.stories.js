@@ -19,13 +19,10 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { provideSiteInfo } from '../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import CurrentSurvey from './CurrentSurvey';
-const { useDispatch } = Data;
 
 const Template = ( args ) => <CurrentSurvey { ...args } />;
 
@@ -36,19 +33,15 @@ export default {
 	title: 'Components/Surveys',
 	decorators: [
 		( Story ) => {
-			const { triggerSurvey, receiveTriggerSurvey } = useDispatch( CORE_USER );
 			const triggerID = 'test-survey';
 			const survey = {
 				survey_payload: 'foo',
 				session: 'bar',
 			};
 			const setupRegistry = async ( registry ) => {
-				await API.invalidateCache();
-
-				receiveTriggerSurvey( survey, { triggerID } );
-				registry.dispatch( CORE_SITE ).receiveSiteInfo( { usingProxy: true } );
-
-				await triggerSurvey( triggerID, { ttl: 1 } );
+				provideSiteInfo( registry );
+				registry.dispatch( CORE_USER ).receiveTriggerSurvey( survey, { triggerID } );
+				await registry.dispatch( CORE_USER ).triggerSurvey( triggerID, { ttl: 1 } );
 			};
 
 			return (

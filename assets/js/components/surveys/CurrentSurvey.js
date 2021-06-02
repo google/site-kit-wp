@@ -35,7 +35,7 @@ const CurrentSurvey = () => {
 	}
 
 	return (
-		<Portal slug="survey" appendPluginRoot={ false }>
+		<Portal slug="survey">
 			<Survey
 				questions={ currentSurvey.question }
 				completions={ currentSurvey.completion }
