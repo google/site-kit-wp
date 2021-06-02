@@ -158,7 +158,7 @@ export const baseReducer = ( state, { type } ) => {
 
 export const baseResolvers = {
 	*getAccounts() {
-		const { select, dispatch } = yield Data.commonActions.getRegistry();
+		const { select } = yield Data.commonActions.getRegistry();
 		let accounts = select( STORE_NAME ).getAccounts();
 
 		// Only fetch accounts if they have not been received yet.
@@ -168,7 +168,7 @@ export const baseResolvers = {
 
 		if ( accounts?.length && ! select( STORE_NAME ).getAccountID() ) {
 			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).selectAccount( accounts[ 0 ].accountId );
+			yield baseActions.selectAccount( accounts[ 0 ].accountId );
 		}
 	},
 };
