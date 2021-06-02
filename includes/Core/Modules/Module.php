@@ -535,13 +535,13 @@ abstract class Module {
 		}
 
 		if ( $requires_service && ! $oauth_client->has_sufficient_scopes( $base_scopes ) ) {
-				// If the datapoint relies on a service which requires scopes and
-				// these have not been granted, fail the request with a permissions
-				// error (see issue #3227).
+			// If the datapoint relies on a service which requires scopes and
+			// these have not been granted, fail the request with a permissions
+			// error (see issue #3227).
 
-				/* translators: %s: module name */
+			/* translators: %s: module name */
 			$message = sprintf( __( 'Site Kit can’t access the relevant data from %s because you haven’t granted all permissions requested during setup.', 'google-site-kit' ), $this->name );
-				throw new Insufficient_Scopes_Exception( $message, 0, null, $base_scopes );
+			throw new Insufficient_Scopes_Exception( $message, 0, null, $base_scopes );
 		}
 	}
 
