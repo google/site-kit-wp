@@ -525,7 +525,7 @@ export const selectors = {
 	/**
 	 * Gets an array with site URL permutations.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @return {Array.<string>} An array with permutations.
 	 */
