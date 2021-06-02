@@ -44,7 +44,18 @@ const SurveyQuestionRatingChoice = ( { choice, answerQuestion } ) => {
 		}
 	}, [ answerQuestion, choice ] );
 
-	const Icon = SurveyQuestionRatingChoice.ordinalIconMap[ choice.answer_ordinal ];
+	const ordinalIconMap = {
+		1: IconSurveyUnhappy,
+		2: IconSurveyDissatisfied,
+		3: IconSurveyNeutral,
+		4: IconSurveySatisfied,
+		5: IconSurveyDelighted,
+	};
+	const Icon = ordinalIconMap[ choice.answer_ordinal ];
+
+	if ( ! Icon ) {
+		return null;
+	}
 
 	return (
 		<div className="googlesitekit-survey__choice">
@@ -65,14 +76,6 @@ const SurveyQuestionRatingChoice = ( { choice, answerQuestion } ) => {
 			</p>
 		</div>
 	);
-};
-
-SurveyQuestionRatingChoice.ordinalIconMap = {
-	1: IconSurveyUnhappy,
-	2: IconSurveyDissatisfied,
-	3: IconSurveyNeutral,
-	4: IconSurveySatisfied,
-	5: IconSurveyDelighted,
 };
 
 SurveyQuestionRatingChoice.propTypes = {
