@@ -21,18 +21,20 @@
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import baseModuleStore from './base';
 import accounts from './accounts';
-import properties from './properties';
-import webdatastreams from './webdatastreams';
 import api from './api';
+import baseModuleStore from './base';
+import properties from './properties';
+import tags from './tags';
+import webdatastreams from './webdatastreams';
 
 const store = Data.combineStores(
-	baseModuleStore,
 	accounts,
+	api,
+	baseModuleStore,
 	properties,
+	tags,
 	webdatastreams,
-	api
 );
 
 export const initialState = store.initialState;

@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -41,19 +35,10 @@ const fetchGetSavedIdeasStore = createFetchStore( {
 			savedIdeas,
 		};
 	},
-	validateParams: ( { options = {} } ) => {
-		invariant( isPlainObject( options ), 'options must be an object.' );
-		if ( options.length ) {
-			invariant( typeof options.length === 'number', 'options.length must be a number.' );
-		}
-		if ( options.offset ) {
-			invariant( typeof options.offset === 'number', 'options.offset must be a number.' );
-		}
-	},
 } );
 
 const baseInitialState = {
-	savedIdeas: [],
+	savedIdeas: undefined,
 };
 
 const baseResolvers = {
@@ -62,11 +47,9 @@ const baseResolvers = {
 		const savedIdeas = registry.select( STORE_NAME ).getSavedIdeas( options );
 
 		// If there are already saved ideas in state, don't make an API request.
-		if ( savedIdeas.length ) {
-			return;
+		if ( savedIdeas === undefined ) {
+			yield fetchGetSavedIdeasStore.actions.fetchGetSavedIdeas();
 		}
-
-		yield fetchGetSavedIdeasStore.actions.fetchGetSavedIdeas();
 	},
 };
 
@@ -74,7 +57,7 @@ const baseSelectors = {
 	/**
 	 * Gets Saved Ideas from the Idea Hub.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param {Object} state            Data store's state.
 	 * @param {Object} options          Options for getting saved ideas.
@@ -84,6 +67,11 @@ const baseSelectors = {
 	 */
 	getSavedIdeas( state, options = {} ) {
 		const { savedIdeas } = state;
+
+		if ( savedIdeas === undefined ) {
+			return undefined;
+		}
+
 		const offset = options?.offset || 0;
 		const length = options.length ? offset + options.length : savedIdeas.length;
 		return ( 'offset' in options || 'length' in options ) ? savedIdeas.slice( offset, length ) : savedIdeas;

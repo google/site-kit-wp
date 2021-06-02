@@ -26,6 +26,8 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import {
 	AccountSelect,
 	ExistingGTMPropertyNotice,
@@ -33,11 +35,8 @@ import {
 	ProfileSelect,
 	PropertySelect,
 	ProfileNameTextField,
+	GA4Notice,
 } from '../common';
-import { STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
-import GA4Notice from '../common/GA4Notice';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-
 const { useSelect } = Data;
 
 export default function SetupFormLegacy() {

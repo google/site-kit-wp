@@ -23,6 +23,7 @@ import { STORE_NAME } from './datastore/constants';
 import { registerStore as registerDataStore } from './datastore';
 import { isFeatureEnabled } from '../../features';
 import { AREA_DASHBOARD_ACQUISITION } from '../../googlesitekit/widgets/default-areas';
+
 import DashboardIdeasWidget from './components/dashboard/DashboardIdeasWidget';
 import IdeaHubIcon from '../../../svg/idea-hub.svg';
 

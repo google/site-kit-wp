@@ -26,13 +26,15 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME, PROPERTY_CREATE, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
 import { normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
 import { isValidAccountID } from '../../analytics/util';
-const { commonActions } = Data;
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
+const { commonActions, createRegistryControl } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',
@@ -111,6 +113,9 @@ const fetchCreatePropertyStore = createFetchStore( {
 	},
 } );
 
+// Actions
+const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
+
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
@@ -142,10 +147,11 @@ const baseActions = {
 	 * @param {string} propertyID GA4 property ID.
 	 * @return {Object} A Generator function.
 	 */
-	selectProperty( propertyID ) {
-		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
-
-		return ( function* () {
+	selectProperty: createValidatedAction(
+		( propertyID ) => {
+			invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
+		},
+		function* ( propertyID ) {
 			const registry = yield Data.commonActions.getRegistry();
 
 			registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
@@ -163,13 +169,42 @@ const baseActions = {
 				registry.dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._id );
 				registry.dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
 			}
-		}() );
+		}
+	),
+
+	/**
+	 * Matches and selects a property for provided accountID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} accountID          GA4 account ID.
+	 * @param {string} fallbackPropertyID A fallback propertyID to use if a matched property is not found.
+	 * @return {Object|null} Matched property object on success, otherwise NULL.
+	 */
+	*matchAndSelectProperty( accountID, fallbackPropertyID = '' ) {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield baseActions.waitForProperties( accountID );
+
+		const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
+		const properties = registry.select( STORE_NAME ).getProperties( accountID );
+		const property = yield baseActions.matchPropertyByURL(
+			( properties || [] ).map( ( { _id } ) => _id ),
+			referenceURL,
+		);
+
+		const propertyID = property?._id || fallbackPropertyID;
+		if ( propertyID ) {
+			yield baseActions.selectProperty( propertyID );
+		}
+
+		return property;
 	},
 
 	/**
 	 * Matches a property by URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param {Array.<number>}        properties Array of property IDs.
 	 * @param {Array.<string>|string} url        A list of URLs or a signle URL to match properties.
@@ -204,7 +239,7 @@ const baseActions = {
 	/**
 	 * Matches a property by measurement ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param {Array.<number>}        properties    Array of property IDs.
 	 * @param {Array.<string>|string} measurementID A list of measurement IDs or a signle measurement ID to match properties.
@@ -235,9 +270,29 @@ const baseActions = {
 
 		return null;
 	},
+
+	/**
+	 * Waits for properties to be loaded for an account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} accountID GA4 account ID.
+	 */
+	*waitForProperties( accountID ) {
+		yield {
+			payload: { accountID },
+			type: WAIT_FOR_PROPERTIES,
+		};
+	},
 };
 
 const baseControls = {
+	[ WAIT_FOR_PROPERTIES ]: createRegistryControl( ( { __experimentalResolveSelect } ) => {
+		return async ( { payload } ) => {
+			const { accountID } = payload;
+			await __experimentalResolveSelect( STORE_NAME ).getProperties( accountID );
+		};
+	} ),
 };
 
 const baseReducer = ( state, { type } ) => {

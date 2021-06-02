@@ -75,7 +75,7 @@ describe( 'PropertySelect', () => {
 		expect( listItems ).toHaveLength( properties.length + 1 );
 	} );
 
-	it( 'should be disabled when in the absence of an valid account ID.', async () => {
+	it( 'should not render if account ID is not valid', async () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry,
 		} );
@@ -90,9 +90,17 @@ describe( 'PropertySelect', () => {
 			registry.dispatch( MODULES_ANALYTICS ).setAccountID( ACCOUNT_CREATE );
 			registry.dispatch( STORE_NAME ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
 		} );
-		// ACCOUNT_CREATE is an invalid accountID (but valid selection), so ensure the select IS currently disabled.
-		expect( selectWrapper ).toHaveClass( 'mdc-select--disabled' );
-		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'true' );
+
+		// ACCOUNT_CREATE is an invalid account ID (but valid selection), so ensure the property select dropdown is not rendered.
+		expect( container ).toBeEmptyDOMElement();
+
+		act( () => {
+			registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		} );
+
+		// After we set a valid account ID, the property select should be visible.
+		expect( container.querySelector( '.googlesitekit-analytics__select-property' ) ).toBeInTheDocument();
+		expect( container.querySelector( '.mdc-select__selected-text' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {

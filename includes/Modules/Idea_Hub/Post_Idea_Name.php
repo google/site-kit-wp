@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Post_Meta_Setting;
 /**
  * Class for Idea Hub name setting.
  *
- * @since n.e.x.t
+ * @since 1.33.0
  * @access private
  * @ignore
  */

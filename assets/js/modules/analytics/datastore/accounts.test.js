@@ -20,7 +20,15 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME, FORM_ACCOUNT_CREATE } from './constants';
+import {
+	STORE_NAME,
+	FORM_ACCOUNT_CREATE,
+	ACCOUNT_CREATE,
+	PROPERTY_CREATE,
+	PROFILE_CREATE,
+	PROPERTY_TYPE_UA,
+	PROPERTY_TYPE_GA4,
+} from './constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -29,9 +37,13 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
-} from 'tests/js/utils';
+	provideSiteInfo,
+} from '../../../../../tests/js/utils';
+import { enabledFeatures } from '../../../features';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
+import * as ga4Fixtures from '../../analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 describe( 'modules/analytics accounts', () => {
 	let registry;
@@ -170,6 +182,98 @@ describe( 'modules/analytics accounts', () => {
 				registry.dispatch( STORE_NAME ).resetAccounts();
 
 				expect( registry.select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) ).toStrictEqual( false );
+			} );
+		} );
+
+		describe( 'selectAccount', () => {
+			beforeEach( () => {
+				provideSiteInfo( registry, {
+					referenceSiteURL: fixtures.propertiesProfiles.properties[ 0 ].websiteUrl, // eslint-disable-line sitekit/acronym-case
+				} );
+			} );
+
+			it( 'should throw an error if accountID is invalid', () => {
+				expect( () => registry.dispatch( STORE_NAME ).selectAccount( false ) ).toThrow();
+			} );
+
+			it( 'should property reset propertyID and profileID when selecting ACCOUNT_CREATE option', () => {
+				registry.dispatch( STORE_NAME ).selectAccount( ACCOUNT_CREATE );
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( ACCOUNT_CREATE );
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( '' );
+			} );
+
+			it( 'should correctly select property and profile IDs', async () => {
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+					{ body: fixtures.propertiesProfiles, status: 200 }
+				);
+
+				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+
+				await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( accountID );
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( fixtures.propertiesProfiles.profiles[ 0 ].webPropertyId ); // eslint-disable-line sitekit/acronym-case
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( fixtures.propertiesProfiles.profiles[ 0 ].internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( fixtures.propertiesProfiles.profiles[ 0 ].id );
+			} );
+
+			it( 'should correctly select PROPERTY_CREATE and PROFILE_CREATE when account has no properties', async () => {
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+					{ body: { properties: [], profiles: [] }, status: 200 }
+				);
+
+				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+
+				await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( accountID );
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( PROFILE_CREATE );
+			} );
+
+			describe( 'analytics-4', () => {
+				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+
+				beforeEach( () => {
+					enabledFeatures.add( 'ga4setup' );
+
+					[
+						[ /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, fixtures.propertiesProfiles ],
+						[ /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/, ga4Fixtures.properties ],
+						[ /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/, ga4Fixtures.webDataStreamsBatch ],
+					].forEach( ( [ endpoint, body ] ) => {
+						fetchMock.get( endpoint, { body } );
+					} );
+
+					provideSiteInfo( registry );
+				} );
+
+				it( 'should select the correct GA4 property', async () => {
+					await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+					expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( ga4Fixtures.properties[ 0 ]._id );
+				} );
+
+				it( 'should select the correct UA property', async () => {
+					provideSiteInfo( registry, { referenceSiteURL: fixtures.propertiesProfiles.properties[ 0 ].websiteUrl } ); // eslint-disable-line sitekit/acronym-case
+					await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+					expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( fixtures.propertiesProfiles.properties[ 0 ].id );
+				} );
+
+				it( 'should set primary property type to UA when there is a matching UA property', async () => {
+					provideSiteInfo( registry, { referenceSiteURL: fixtures.propertiesProfiles.properties[ 0 ].websiteUrl } ); // eslint-disable-line sitekit/acronym-case
+					await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+					expect( registry.select( STORE_NAME ).getPrimaryPropertyType() ).toBe( PROPERTY_TYPE_UA );
+				} );
+
+				it( 'should set primary property type to GA4 when there is no matching UA property', async () => {
+					await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+					expect( registry.select( STORE_NAME ).getPrimaryPropertyType() ).toBe( PROPERTY_TYPE_GA4 );
+				} );
 			} );
 		} );
 	} );
@@ -365,6 +469,31 @@ describe( 'modules/analytics accounts', () => {
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( matchedProperty.id );
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( matchedProperty.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
+			} );
+
+			describe( 'analytics-4', () => {
+				beforeEach( () => {
+					enabledFeatures.add( 'ga4setup' );
+
+					[
+						[ /^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/, fixtures.accountsPropertiesProfiles ],
+						[ /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, fixtures.propertiesProfiles ],
+						[ /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/, ga4Fixtures.properties ],
+						[ /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/, ga4Fixtures.webDataStreamsBatch ],
+					].forEach( ( [ endpoint, body ] ) => {
+						fetchMock.get( endpoint, { body } );
+					} );
+
+					provideSiteInfo( registry );
+
+					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+					registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+				} );
+
+				it( 'should select correct GA4 property', async () => {
+					await registry.__experimentalResolveSelect( STORE_NAME ).getAccounts();
+					expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( ga4Fixtures.properties[ 0 ]._id );
+				} );
 			} );
 		} );
 
