@@ -344,11 +344,13 @@ describe( 'core/user feature-tours', () => {
 				expect( fetchMock ).toHaveFetched( fetchGetDismissedToursRegExp );
 			} );
 
-			it( 'returns `undefined` if dismissed tours are not resolved yet', () => {
+			it( 'returns `undefined` if dismissed tours are not resolved yet', async () => {
 				// The request will respond that `feature-x` _is dismissed_
 				// but the selector will return `false` until the response is received.
 				fetchMock.getOnce( fetchGetDismissedToursRegExp, { body: [ 'feature-x' ] } );
 				expect( registry.select( STORE_NAME ).isTourDismissed( 'feature-x' ) ).toBeUndefined();
+
+				await untilResolved( registry, STORE_NAME ).getDismissedFeatureTourSlugs();
 			} );
 		} );
 
