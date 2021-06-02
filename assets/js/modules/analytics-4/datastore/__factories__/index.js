@@ -1,5 +1,5 @@
 /**
- * Idea Hub dashboard components.
+ * Analytics-4 datastore test factories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,5 +16,4 @@
  * limitations under the License.
  */
 
-export { default as DashboardIdeasWidget } from './DashboardIdeasWidget';
-export { default as DashboardCTA } from './DashboardCTA';
+export * from './html-with-tag';
