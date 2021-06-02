@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
-import { isValidPropertyID, isValidAccountID } from '../../util';
+import { isValidPropertySelection, isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
@@ -53,7 +53,7 @@ export default function ProfileSelect() {
 		}
 	}, [ profileID, setProfileID ] );
 
-	if ( ! isValidAccountID( accountID ) || ! isValidPropertyID( propertyID ) ) {
+	if ( ! isValidAccountSelection( accountID ) || ! isValidPropertySelection( propertyID ) ) {
 		return null;
 	}
 
@@ -67,7 +67,6 @@ export default function ProfileSelect() {
 			label={ __( 'View', 'google-site-kit' ) }
 			value={ profileID }
 			onEnhancedChange={ onChange }
-			disabled={ ! isValidAccountID( accountID ) || ! isValidPropertyID( propertyID ) }
 			enhanced
 			outlined
 		>

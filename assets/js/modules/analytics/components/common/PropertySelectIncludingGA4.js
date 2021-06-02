@@ -28,8 +28,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
-import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from '../../../analytics-4/datastore/constants';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { MODULES_ANALYTICS, PROPERTY_TYPE_GA4, PROPERTY_TYPE_UA, PROPERTY_CREATE } from '../../datastore/constants';
 import { isValidAccountID } from '../../util';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
@@ -40,9 +40,9 @@ export default function PropertySelectIncludingGA4() {
 	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 	const uaPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
 	const isLoading = useSelect( ( select ) => {
-		const isLoadingAccounts =	! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' );
-		const isLoadingPropertiesGA4 =	! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ accountID ] );
-		const isLoadingProperties =	! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getProperties', [ accountID ] );
+		const isLoadingAccounts = ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' );
+		const isLoadingPropertiesGA4 = ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ accountID ] );
+		const isLoadingProperties = ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getProperties', [ accountID ] );
 
 		return isLoadingAccounts || isLoadingProperties || isLoadingPropertiesGA4;
 	} );
@@ -52,28 +52,31 @@ export default function PropertySelectIncludingGA4() {
 	const ga4Dispatch = useDispatch( MODULES_ANALYTICS_4 );
 	const uaDispatch = useDispatch( MODULES_ANALYTICS );
 
-	const propertyID = primaryPropertyType === 'ga4' ? ga4PropertyID : uaPropertyID;
+	const propertyID = primaryPropertyType === PROPERTY_TYPE_GA4 ? ga4PropertyID : uaPropertyID;
 
 	const onChange = useCallback( ( index, item ) => {
 		const newPropertyID = item.dataset.value;
 		const internalID = item.dataset.internalId; // eslint-disable-line sitekit/acronym-case
-		if ( propertyID !== newPropertyID ) {
-			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
-			if ( !! internalID ) {
-				uaDispatch.selectProperty( newPropertyID, internalID );
-				uaDispatch.setPrimaryPropertyType( 'ua' );
+		if ( propertyID === newPropertyID ) {
+			return;
+		}
 
-				ga4Dispatch.setPropertyID( '' );
-				ga4Dispatch.setWebDataStreamID( '' );
-				ga4Dispatch.setMeasurementID( '' );
-			} else {
-				ga4Dispatch.selectProperty( newPropertyID );
-				uaDispatch.setPrimaryPropertyType( 'ga4' );
+		trackEvent( 'analytics_setup', 'property_change', newPropertyID );
 
-				uaDispatch.setPropertyID( '' );
-				uaDispatch.setInternalWebPropertyID( '' );
-				uaDispatch.setProfileID( '' );
-			}
+		if ( !! internalID || newPropertyID === PROPERTY_CREATE ) {
+			uaDispatch.selectProperty( newPropertyID, internalID );
+			uaDispatch.setPrimaryPropertyType( PROPERTY_TYPE_UA );
+
+			ga4Dispatch.setPropertyID( '' );
+			ga4Dispatch.setWebDataStreamID( '' );
+			ga4Dispatch.setMeasurementID( '' );
+		} else {
+			ga4Dispatch.selectProperty( newPropertyID );
+			uaDispatch.setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
+
+			uaDispatch.setPropertyID( '' );
+			uaDispatch.setInternalWebPropertyID( '' );
+			uaDispatch.setProfileID( '' );
 		}
 	}, [ propertyID, ga4Dispatch, uaDispatch ] );
 
