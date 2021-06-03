@@ -110,14 +110,12 @@ export const isDataZeroSearchConsole = ( data ) => {
 		return true;
 	}
 
-	const processedData = extractSearchConsoleDashboardData( data );
-
 	const {
 		totalClicks,
 		totalImpressions,
 		averageCTR,
 		averagePosition,
-	} = processedData;
+	} = reduceSearchConsoleData( data );
 
 	return (
 		0 === parseInt( totalClicks, 10 ) &&
