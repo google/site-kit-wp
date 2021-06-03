@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { Icon, closeSmall } from '@wordpress/icons';
 
 /**
@@ -42,6 +43,7 @@ const SurveyHeader = ( { title, dismissSurvey } ) => (
 			<h3>{ title }</h3>
 
 			<Button
+				aria-label={ __( 'Dismiss this survey', 'google-site-kit' ) }
 				icon={ <Icon icon={ closeSmall } size={ 40 } /> }
 				onClick={ dismissSurvey }
 				className="googlesitekit-survey__header-close"

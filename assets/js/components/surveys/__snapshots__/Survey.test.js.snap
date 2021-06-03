@@ -1,0 +1,123 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Survey should render a survey when one exists in the datastore 1`] = `
+<div>
+  <div
+    class="googlesitekit-survey__question-rating"
+  >
+    <div
+      class="googlesitekit-survey__header"
+    >
+      <div
+        class="googlesitekit-survey__header-logo"
+      >
+        <svg />
+      </div>
+      <div
+        class="googlesitekit-survey__header-details"
+      >
+        <h3>
+          Based on your experience so far, how satisfied are you with Site Kit?
+        </h3>
+        <button
+          aria-label="Dismiss this survey"
+          class="mdc-button googlesitekit-survey__header-close mdc-button--raised"
+          target="_self"
+        >
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            height="40"
+            role="img"
+            viewBox="0 0 24 24"
+            width="40"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div
+      class="googlesitekit-survey__body"
+    >
+      <div
+        class="googlesitekit-survey__choices"
+      >
+        <div
+          class="googlesitekit-survey__choice"
+        >
+          <button
+            aria-label="Unhappy icon"
+            class="mdc-button mdc-button--raised"
+            target="_self"
+          >
+            <svg />
+          </button>
+          <p>
+            Unhappy
+          </p>
+        </div>
+        <div
+          class="googlesitekit-survey__choice"
+        >
+          <button
+            aria-label="Dissatisfied icon"
+            class="mdc-button mdc-button--raised"
+            target="_self"
+          >
+            <svg />
+          </button>
+          <p>
+            Dissatisfied
+          </p>
+        </div>
+        <div
+          class="googlesitekit-survey__choice"
+        >
+          <button
+            aria-label="Neutral icon"
+            class="mdc-button mdc-button--raised"
+            target="_self"
+          >
+            <svg />
+          </button>
+          <p>
+            Neutral
+          </p>
+        </div>
+        <div
+          class="googlesitekit-survey__choice"
+        >
+          <button
+            aria-label="Satisfied icon"
+            class="mdc-button mdc-button--raised"
+            target="_self"
+          >
+            <svg />
+          </button>
+          <p>
+            Satisfied
+          </p>
+        </div>
+        <div
+          class="googlesitekit-survey__choice"
+        >
+          <button
+            aria-label="Delighted icon"
+            class="mdc-button mdc-button--raised"
+            target="_self"
+          >
+            <svg />
+          </button>
+          <p>
+            Delighted
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

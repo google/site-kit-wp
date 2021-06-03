@@ -27,11 +27,12 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
 import { createCacheKey } from '../../api';
 import { getItem, setItem } from '../../api/cache';
+const { createRegistrySelector } = Data;
 
 const fetchTriggerSurveyStore = createFetchStore( {
 	baseName: 'triggerSurvey',
@@ -93,7 +94,7 @@ const baseActions = {
 			const { ttl = 0 } = options;
 			const { select } = yield Data.commonActions.getRegistry();
 			// Bail if there is already a current survey.
-			if ( select( STORE_NAME ).getCurrentSurvey() ) {
+			if ( select( CORE_USER ).getCurrentSurvey() ) {
 				return {};
 			}
 
@@ -135,7 +136,7 @@ const baseActions = {
 		function* ( eventID, eventData = {} ) {
 			const event = { [ eventID ]: eventData };
 			const { select } = yield Data.commonActions.getRegistry();
-			const session = select( STORE_NAME ).getCurrentSurveySession();
+			const session = select( CORE_USER ).getCurrentSurveySession();
 			if ( session ) {
 				const { response, error } = yield fetchSendSurveyEventStore.actions.fetchSendSurveyEvent( event, session );
 				return { response, error };
@@ -156,6 +157,7 @@ const baseSelectors = {
 	getCurrentSurvey( state ) {
 		return state.currentSurvey;
 	},
+
 	/**
 	 * Gets the current survey session.
 	 *
@@ -167,6 +169,40 @@ const baseSelectors = {
 	getCurrentSurveySession( state ) {
 		return state.currentSurveySession;
 	},
+
+	/**
+	 * Gets the completion triggers for the current survey, if one exists.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array|null|undefined} Current survey's completion triggers if available; undefined if loading and `null` if no questions/survey are found.
+	 */
+	getCurrentSurveyCompletions: createRegistrySelector( ( select ) => () => {
+		const currentSurvey = select( CORE_USER ).getCurrentSurvey();
+
+		if ( currentSurvey === undefined ) {
+			return undefined;
+		}
+
+		return currentSurvey?.completion || null;
+	} ),
+
+	/**
+	 * Gets the questions from the current survey, if one exists.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array|null|undefined} Current survey's questions if available; undefined if loading and `null` if no questions/survey are found.
+	 */
+	getCurrentSurveyQuestions: createRegistrySelector( ( select ) => () => {
+		const currentSurvey = select( CORE_USER ).getCurrentSurvey();
+
+		if ( currentSurvey === undefined ) {
+			return undefined;
+		}
+
+		return currentSurvey?.question || null;
+	} ),
 
 };
 
