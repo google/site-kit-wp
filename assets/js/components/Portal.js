@@ -1,5 +1,5 @@
 /**
- * Modal component.
+ * Portal component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,17 +20,22 @@
  * External dependencies
  */
 import { useEffectOnce } from 'react-use';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
 import { createPortal, useState } from '@wordpress/element';
 
-function Modal( { children } ) {
+function Portal( { children, slug } ) {
 	// Using state as we need `el` to not change when the component re-renders
 	const [ el ] = useState( document.createElement( 'div' ) );
 
 	useEffectOnce( () => {
+		if ( slug ) {
+			el.classList.add( `googlesitekit-portal-${ slug }` );
+		}
+
 		const root = document.querySelector( '.googlesitekit-plugin' ) || document.body;
 		root.appendChild( el );
 
@@ -43,4 +48,14 @@ function Modal( { children } ) {
 	);
 }
 
-export default Modal;
+Portal.propTypes = {
+	slug: PropTypes.string,
+	children: PropTypes.node,
+};
+
+Portal.defaultProps = {
+	slug: '',
+	children: null,
+};
+
+export default Portal;

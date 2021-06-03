@@ -394,7 +394,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Parses a response for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @param Data_Request $data     Data request object.
 	 * @param mixed        $response Request response.

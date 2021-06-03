@@ -1,5 +1,5 @@
 /**
- * User Feedback styles.
+ * User Feedback Modal styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-surveys-modal";
-@import "googlesitekit-survey-header";
-@import "googlesitekit-surveys";
-@import "googlesitekit-survey-completion";
+.googlesitekit-portal-survey {
+	bottom: 36px;
+	position: fixed;
+	right: 36px;
+	z-index: 99999;
+}
