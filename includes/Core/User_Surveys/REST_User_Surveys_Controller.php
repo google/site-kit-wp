@@ -72,7 +72,7 @@ class REST_User_Surveys_Controller {
 		};
 
 		return array(
-			new REST_Route(
+			'survey-trigger' => new REST_Route(
 				'core/user/data/survey-trigger',
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
@@ -102,7 +102,7 @@ class REST_User_Surveys_Controller {
 					),
 				)
 			),
-			new REST_Route(
+			'survey-event'   => new REST_Route(
 				'core/user/data/survey-event',
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
