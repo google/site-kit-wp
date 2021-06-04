@@ -77,9 +77,7 @@ function reduceSearchConsoleData( rows ) {
 	};
 }
 
-export const extractSearchConsoleDashboardData = ( rows ) => {
-	// Infer range length from total number of rows.
-	const dateRangeLength = Math.floor( rows.length / 2 );
+export const extractSearchConsoleDashboardData = ( rows, dateRangeLength ) => {
 	const { compareRange, currentRange } = partitionReport( rows, { dateRangeLength } );
 	const latestData = reduceSearchConsoleData( currentRange );
 	const olderData = reduceSearchConsoleData( compareRange );
