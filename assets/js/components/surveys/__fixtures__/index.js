@@ -60,7 +60,7 @@ export const multiQuestionSurvey = {
 			{
 				completion_ordinal: 2,
 				completion_title: 'You answered both questions!',
-				completion_text: 'What a completionist!.',
+				completion_text: 'What a completionist!',
 				follow_up_text: 'Get help',
 				follow_up_url: '#new-url-2',
 				trigger_condition: [
@@ -258,4 +258,3 @@ export const singleQuestionSurveyWithNoFollowUp = {
 		session_token: 'token_12345',
 	},
 };
-
