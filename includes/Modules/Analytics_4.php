@@ -226,9 +226,15 @@ final class Analytics_4 extends Module
 					);
 				}
 
+				$timezone = get_option( 'timezone_string' );
+				if ( empty( $timezone ) ) {
+					$timezone = 'UTC';
+				}
+
 				$property = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty();
 				$property->setParent( self::normalize_account_id( $data['accountID'] ) );
 				$property->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+				$property->setTimeZone( $timezone );
 
 				return $this->get_service( 'analyticsadmin' )->properties->create( $property );
 			case 'POST:create-webdatastream':
