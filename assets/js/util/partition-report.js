@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Splits report data into segments for current and comparison ranges.
  *
  * @since 1.33.0
- * @since n.e.x.t Updated to support incomplete `report` arrays.
+ * @since 1.34.0 Updated to support incomplete `report` arrays.
  *
  * @param {Array}  report               Report rows.
  * @param {Object} args                 Additional arguments.

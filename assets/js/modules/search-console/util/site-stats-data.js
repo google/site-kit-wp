@@ -36,7 +36,7 @@ import { getPreviousDate } from '../../../util/date-range/get-previous-date';
  * Gets data for a Google chart from a Search Console report.
  *
  * @since 1.30.0
- * @since n.e.x.t Added `dateRangeLength` parameter.
+ * @since 1.34.0 Added `dateRangeLength` parameter.
  *
  * @param {Array}  current         Report rows for the current period.
  * @param {Array}  previous        Report rows for the previous period.
