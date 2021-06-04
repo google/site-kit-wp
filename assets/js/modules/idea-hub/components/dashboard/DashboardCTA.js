@@ -38,7 +38,7 @@ import IdeaHubIcon from '../../../../../svg/idea-hub.svg';
 import BulbIcon from '../../../../../svg/bulb.svg';
 const { useSelect, useDispatch } = Data;
 
-function DashboardCTA() {
+function DashboardCTA( { Widget } ) {
 	const { connected, active } = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'idea-hub' ) );
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -60,41 +60,44 @@ function DashboardCTA() {
 	}, [ activateModule, navigateTo ] );
 
 	return (
-		<div className="googlesitekit-idea-hub__dashboard-cta">
-			<div className="googlesitekit-idea-hub__dashboard-cta__icon">
-				<IdeaHubIcon height="144" width="144" />
+		<Widget>
+			<div className="googlesitekit-idea-hub__dashboard-cta">
+				<div className="googlesitekit-idea-hub__dashboard-cta__icon">
+					<IdeaHubIcon height="144" width="144" />
+				</div>
+
+				<div className="googlesitekit-idea-hub__dashboard-cta__content">
+					<h5>
+						{ __( 'Get new topics based on what people are searching for with Idea Hub', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-idea-hub__dashboard-cta__learnmore-copy">
+						<BulbIcon
+							width="16"
+							height="16"
+						/>
+						&nbsp;
+						<Link
+							className="googlesitekit-idea-hub__dashboard-cta__learnmore"
+							href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
+							external
+							inherit
+							hideExternalIndicator
+						>
+							{ __( 'Learn more', 'google-site-kit' ) }
+						</Link>
+					</p>
+
+					<Button className="googlesitekit-idea-hub__dashboard-cta__setup" onClick={ onClick }>
+						{
+							active && ! connected
+								? __( 'Complete set up', 'google-site-kit' )
+								: __( 'Set up', 'google-site-kit' )
+						}
+					</Button>
+
+				</div>
 			</div>
-
-			<div className="googlesitekit-idea-hub__dashboard-cta__content">
-				<h5>
-					{ __( 'Get new topics based on what people are searching for with Idea Hub', 'google-site-kit' ) }
-				</h5>
-				<p className="googlesitekit-idea-hub__dashboard-cta__learnmore-copy">
-					<BulbIcon
-						width="16"
-						height="16"
-					/>
-					&nbsp;
-					<Link
-						className="googlesitekit-idea-hub__dashboard-cta__learnmore"
-						href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
-						external
-						hideExternalIndicator
-					>
-						{ __( 'Learn more', 'google-site-kit' ) }
-					</Link>
-				</p>
-
-				<Button onClick={ onClick }>
-					{
-						active && ! connected
-							? __( 'Complete set up', 'google-site-kit' )
-							: __( 'Set up', 'google-site-kit' )
-					}
-				</Button>
-
-			</div>
-		</div>
+		</Widget>
 	);
 }
 

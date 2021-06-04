@@ -175,7 +175,7 @@ const baseActions = {
 	/**
 	 * Matches and selects a property for provided accountID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @param {string} accountID          GA4 account ID.
 	 * @param {string} fallbackPropertyID A fallback propertyID to use if a matched property is not found.
@@ -274,7 +274,7 @@ const baseActions = {
 	/**
 	 * Waits for properties to be loaded for an account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @param {string} accountID GA4 account ID.
 	 */

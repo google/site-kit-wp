@@ -1,5 +1,5 @@
 /**
- * Widgets layout constants.
+ * Survey component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,23 +16,10 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { WIDGET_WIDTHS } from '../datastore/constants';
-import ReportZero from '../../../components/ReportZero';
-import CompleteModuleActivationCTA from '../../../components/CompleteModuleActivationCTA';
-import ActivateModuleCTA from '../../../components/ActivateModuleCTA';
-
-export const WIDTH_GRID_COUNTER_MAP = {
-	[ WIDGET_WIDTHS.QUARTER ]: 3,
-	[ WIDGET_WIDTHS.HALF ]: 6,
-	[ WIDGET_WIDTHS.FULL ]: 12,
+const Survey = () => {
+	return (
+		<p>Scaffolded Survey component</p>
+	);
 };
 
-export const HIDDEN_CLASS = 'googlesitekit-hidden';
-export const SPECIAL_WIDGET_STATES = [
-	ActivateModuleCTA,
-	CompleteModuleActivationCTA,
-	ReportZero,
-];
+export default Survey;
