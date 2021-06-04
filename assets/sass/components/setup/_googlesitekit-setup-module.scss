@@ -121,6 +121,10 @@
 		> .googlesitekit-setup-module__input {
 			margin: 1em 0;
 		}
+
+		& + .googlesitekit-settings-notice {
+			margin-top: 0;
+		}
 	}
 
 	.googlesitekit-setup-module__switch {

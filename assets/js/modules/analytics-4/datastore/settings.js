@@ -41,38 +41,31 @@ export async function submitChanges( { select, dispatch } ) {
 		const accountID = select( MODULES_ANALYTICS ).getAccountID();
 		const { response: property, error } = await dispatch( STORE_NAME ).createProperty( accountID );
 		if ( error ) {
-			return {
-				// @TODO: uncomment the following line once GA4 API is stabilized
-				// error,
-			};
+			return { error };
 		}
 
 		propertyID = property._id;
-		await dispatch( STORE_NAME ).setPropertyID( propertyID );
+		dispatch( STORE_NAME ).setPropertyID( propertyID );
 		// We set an empty string for the webDataStreamID to make sure that a new web data stream will be created below.
-		await dispatch( STORE_NAME ).setWebDataStreamID( '' );
+		dispatch( STORE_NAME ).setWebDataStreamID( '' );
+		dispatch( STORE_NAME ).setMeasurementID( '' );
 	}
 
 	const webDataStreamID = select( STORE_NAME ).getWebDataStreamID();
 	if ( ! isValidWebDataStreamID( webDataStreamID ) ) {
 		const { response: webdatastream, error } = await dispatch( STORE_NAME ).createWebDataStream( propertyID );
 		if ( error ) {
-			return {
-				// @TODO: uncomment the following line once GA4 API is stabilized
-				// error,
-			};
+			return { error };
 		}
 
-		await dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._id );
+		dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._id );
+		dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
 	}
 
 	if ( select( STORE_NAME ).haveSettingsChanged() ) {
 		const { error } = await dispatch( STORE_NAME ).saveSettings();
 		if ( error ) {
-			return {
-				// @TODO: uncomment the following line once GA4 API is stabilized
-				// error,
-			};
+			return { error };
 		}
 	}
 
@@ -98,6 +91,9 @@ export function validateCanSubmitChanges( select ) {
 	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 
-	invariant( isValidPropertySelection( getPropertyID() ), INVARIANT_INVALID_PROPERTY_SELECTION );
-	invariant( isValidWebDataStreamID( getWebDataStreamID() ), INVARIANT_INVALID_WEBDATASTREAM_ID );
+	const propertyID = getPropertyID();
+	invariant( isValidPropertySelection( propertyID ), INVARIANT_INVALID_PROPERTY_SELECTION );
+	if ( propertyID !== PROPERTY_CREATE ) {
+		invariant( isValidWebDataStreamID( getWebDataStreamID() ), INVARIANT_INVALID_WEBDATASTREAM_ID );
+	}
 }
