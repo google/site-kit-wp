@@ -21,9 +21,9 @@
  */
 import Survey from './Survey';
 import { render, fireEvent, createTestRegistry } from '../../../../tests/js/test-utils';
-import * as fixtures from './__fixtures__';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import * as fixtures from './__fixtures__';
 
 describe( 'Survey', () => {
 	let registry;
@@ -44,12 +44,34 @@ describe( 'Survey', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
+	it( "should render a rating question when the `question_type` is 'rating'", async () => {
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'jestSurvey' } );
+
+		fetchMock.postOnce( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		const { container } = render( <Survey />, { registry } );
+
+		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/ );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render nothing when the `question_type` is unknown', async () => {
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.invalidQuestionTypeSurvey, { triggerID: 'jestSurvey' } );
+
+		fetchMock.postOnce( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		const { container } = render( <Survey />, { registry } );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
 	it( "should send a 'survey_shown' event on mount", async () => {
 		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'jestSurvey' } );
 
 		fetchMock.postOnce( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		render( <Survey />, { registry } );
+		const { rerender } = render( <Survey />, { registry } );
 
 		expect( fetchMock ).toHaveFetched(
 			'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
@@ -68,6 +90,13 @@ describe( 'Survey', () => {
 				method: 'POST',
 			}
 		);
+
+		fetchMock.reset();
+
+		// Render again to ensure we don't send another `survey_shown` event.
+		rerender();
+
+		expect( fetchMock ).not.toHaveFetched();
 	} );
 
 	it( "should send a 'question_answered' event when a question is answered", async () => {
@@ -132,6 +161,36 @@ describe( 'Survey', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
+	it( "should send a 'survey_closed' event when dismissed", () => {
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'jestSurvey' } );
+
+		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		const { getByLabelText } = render( <Survey />, { registry } );
+
+		fireEvent.click( getByLabelText( 'Dismiss this survey' ) );
+
+		expect( fetchMock ).toHaveFetched(
+			'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
+			{
+				body: {
+					data: {
+						event: {
+							survey_closed: {},
+						},
+						session: fixtures.singleQuestionSurvey.session,
+					},
+				},
+				credentials: 'include',
+				headers: {
+					Accept: 'application/json, */*;q=0.1',
+					'Content-Type': 'application/json',
+				},
+				method: 'POST',
+			}
+		);
+	} );
+
 	it( 'should render nothing if the survey is dismissed', () => {
 		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'jestSurvey' } );
 
@@ -142,5 +201,162 @@ describe( 'Survey', () => {
 		fireEvent.click( getByLabelText( 'Dismiss this survey' ) );
 
 		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should render the completed survey component if all questions have been answered', () => {
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'jestSurvey' } );
+
+		registry.dispatch( CORE_FORMS ).setValues(
+			`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
+			{
+				// Mark this survey as answered so the "Survey Complete" component is
+				// rendered.
+				answers: [
+					{ question_ordinal: 1, answer_ordinal: 2 },
+				],
+			}
+		);
+
+		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		const { container } = render( <Survey />, { registry } );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should trigger a completion once all questions are answered, even if no matching trigger_conditions are found', () => {
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'jestSurvey' } );
+
+		registry.dispatch( CORE_FORMS ).setValues(
+			`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
+			{
+				// Mark this survey as answered so the "Survey Complete" component is
+				// rendered.
+				answers: [
+					// 6 is not a valid answer ordinal for this survey and will cause no
+					// trigger conditions to be met, so this should fallback to the first
+					// trigger condition supplied.
+					{ question_ordinal: 1, answer_ordinal: 6 },
+				],
+			}
+		);
+
+		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		const { container } = render( <Survey />, { registry } );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( "should send a 'completion_shown' event when the survey is completed and the completion component is shown for the first time", () => {
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'jestSurvey' } );
+
+		registry.dispatch( CORE_FORMS ).setValues(
+			`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
+			{
+				// Mark this survey as answered so the "Survey Complete" component is
+				// rendered.
+				answers: [
+					// 6 is not a valid answer ordinal for this survey and will cause no
+					// trigger conditions to be met, so this should fallback to the first
+					// trigger condition supplied.
+					{ question_ordinal: 1, answer_ordinal: 5 },
+				],
+			}
+		);
+
+		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		const { rerender } = render( <Survey />, { registry } );
+
+		expect( fetchMock ).toHaveFetched(
+			'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
+			{
+				body: {
+					data: {
+						event: {
+							completion_shown: {
+								completion_ordinal: fixtures.singleQuestionSurvey.survey_payload.completion[ 0 ].completion_ordinal,
+							},
+						},
+						session: fixtures.singleQuestionSurvey.session,
+					},
+				},
+				credentials: 'include',
+				headers: {
+					Accept: 'application/json, */*;q=0.1',
+					'Content-Type': 'application/json',
+				},
+				method: 'POST',
+			}
+		);
+
+		fetchMock.reset();
+
+		// Render again to ensure we don't send another `survey_shown` event.
+		rerender();
+
+		expect( fetchMock ).not.toHaveFetched();
+	} );
+
+	it( "should send a 'follow_up_link_clicked' event, then a 'survey_closed' event when a follow-up link is clicked", () => {
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'jestSurvey' } );
+
+		registry.dispatch( CORE_FORMS ).setValues(
+			`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
+			{
+				// Mark this survey as answered so the "Survey Complete" component is
+				// rendered.
+				answers: [
+					{ question_ordinal: 1, answer_ordinal: 5 },
+				],
+			}
+		);
+
+		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		const { getByText } = render( <Survey />, { registry } );
+
+		fireEvent.click( getByText( 'Let’s go' ) );
+
+		expect( fetchMock ).toHaveFetched(
+			'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
+			{
+				body: {
+					data: {
+						event: {
+							follow_up_link_clicked: {},
+						},
+						session: fixtures.singleQuestionSurvey.session,
+					},
+				},
+				credentials: 'include',
+				headers: {
+					Accept: 'application/json, */*;q=0.1',
+					'Content-Type': 'application/json',
+				},
+				method: 'POST',
+			}
+		);
+
+		expect( fetchMock ).toHaveFetched(
+			'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
+			{
+				body: {
+					data: {
+						event: {
+							survey_closed: {},
+						},
+						session: fixtures.singleQuestionSurvey.session,
+					},
+				},
+				credentials: 'include',
+				headers: {
+					Accept: 'application/json, */*;q=0.1',
+					'Content-Type': 'application/json',
+				},
+				method: 'POST',
+			}
+		);
 	} );
 } );
