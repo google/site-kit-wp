@@ -52,12 +52,8 @@ addFilter(
 	fillFilterWithComponent( DashboardZeroData )
 );
 
-let isAdBlockerActive = () => {};
-
 export const registerStore = ( registry ) => {
 	registerDatastore( registry );
-	// TODO: fix hack
-	isAdBlockerActive = () => registry.__experimentalResolveSelect( STORE_NAME ).isAdBlockerActive();
 };
 
 export const registerModule = ( modules ) => {
@@ -74,8 +70,8 @@ export const registerModule = ( modules ) => {
 				__( 'Monetize your website', 'google-site-kit' ),
 				__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
 			],
-			checkRequirements: async () => {
-				if ( ! await isAdBlockerActive() ) {
+			checkRequirements: async ( registry ) => {
+				if ( ! registry.select( STORE_NAME ).isAdBlockerActive() ) {
 					return;
 				}
 
