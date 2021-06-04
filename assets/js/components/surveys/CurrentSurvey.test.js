@@ -19,13 +19,13 @@
 /**
  * Internal dependencies
  */
-import Survey from './Survey';
+import CurrentSurvey from './CurrentSurvey';
 import { render, fireEvent, createTestRegistry } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import * as fixtures from './__fixtures__';
 
-describe( 'Survey', () => {
+describe( 'CurrentSurvey', () => {
 	let registry;
 
 	beforeEach( () => {
@@ -37,7 +37,7 @@ describe( 'Survey', () => {
 
 		fetchMock.postOnce( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { container } = render( <Survey />, { registry } );
+		const { container } = render( <CurrentSurvey />, { registry } );
 
 		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/ );
 
@@ -49,7 +49,7 @@ describe( 'Survey', () => {
 
 		fetchMock.postOnce( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { container } = render( <Survey />, { registry } );
+		const { container } = render( <CurrentSurvey />, { registry } );
 
 		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/ );
 
@@ -61,7 +61,7 @@ describe( 'Survey', () => {
 
 		fetchMock.postOnce( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { container } = render( <Survey />, { registry } );
+		const { container } = render( <CurrentSurvey />, { registry } );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -71,7 +71,7 @@ describe( 'Survey', () => {
 
 		fetchMock.postOnce( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { rerender } = render( <Survey />, { registry } );
+		const { rerender } = render( <CurrentSurvey />, { registry } );
 
 		expect( fetchMock ).toHaveFetched(
 			'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
@@ -104,7 +104,7 @@ describe( 'Survey', () => {
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { getByLabelText } = render( <Survey />, { registry } );
+		const { getByLabelText } = render( <CurrentSurvey />, { registry } );
 
 		fireEvent.click( getByLabelText( 'Delighted icon' ) );
 
@@ -139,7 +139,7 @@ describe( 'Survey', () => {
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { getByLabelText } = render( <Survey />, { registry } );
+		const { getByLabelText } = render( <CurrentSurvey />, { registry } );
 
 		fireEvent.click( getByLabelText( 'Delighted icon' ) );
 
@@ -156,7 +156,7 @@ describe( 'Survey', () => {
 	} );
 
 	it( 'should render nothing if no survey exists', () => {
-		const { container } = render( <Survey />, { registry } );
+		const { container } = render( <CurrentSurvey />, { registry } );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -166,7 +166,7 @@ describe( 'Survey', () => {
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { getByLabelText } = render( <Survey />, { registry } );
+		const { getByLabelText } = render( <CurrentSurvey />, { registry } );
 
 		fireEvent.click( getByLabelText( 'Dismiss this survey' ) );
 
@@ -196,7 +196,7 @@ describe( 'Survey', () => {
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { container, getByLabelText } = render( <Survey />, { registry } );
+		const { container, getByLabelText } = render( <CurrentSurvey />, { registry } );
 
 		fireEvent.click( getByLabelText( 'Dismiss this survey' ) );
 
@@ -219,7 +219,7 @@ describe( 'Survey', () => {
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { container } = render( <Survey />, { registry } );
+		const { container } = render( <CurrentSurvey />, { registry } );
 
 		expect( container ).toMatchSnapshot();
 	} );
@@ -243,7 +243,7 @@ describe( 'Survey', () => {
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { container } = render( <Survey />, { registry } );
+		const { container } = render( <CurrentSurvey />, { registry } );
 
 		expect( container ).toMatchSnapshot();
 	} );
@@ -267,7 +267,7 @@ describe( 'Survey', () => {
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { rerender } = render( <Survey />, { registry } );
+		const { rerender } = render( <CurrentSurvey />, { registry } );
 
 		expect( fetchMock ).toHaveFetched(
 			'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
@@ -315,7 +315,7 @@ describe( 'Survey', () => {
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { getByText } = render( <Survey />, { registry } );
+		const { getByText } = render( <CurrentSurvey />, { registry } );
 
 		fireEvent.click( getByText( 'Let’s go' ) );
 

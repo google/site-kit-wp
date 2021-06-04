@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Survey should render a rating question when the \`question_type\` is 'rating' 1`] = `
+exports[`CurrentSurvey should render a rating question when the \`question_type\` is 'rating' 1`] = `
 <div>
   <div
     class="googlesitekit-survey__question-rating"
@@ -122,7 +122,7 @@ exports[`Survey should render a rating question when the \`question_type\` is 'r
 </div>
 `;
 
-exports[`Survey should render a survey when one exists in the datastore 1`] = `
+exports[`CurrentSurvey should render a survey when one exists in the datastore 1`] = `
 <div>
   <div
     class="googlesitekit-survey__question-rating"
@@ -244,7 +244,7 @@ exports[`Survey should render a survey when one exists in the datastore 1`] = `
 </div>
 `;
 
-exports[`Survey should render the completed survey component if all questions have been answered 1`] = `
+exports[`CurrentSurvey should render the completed survey component if all questions have been answered 1`] = `
 <div>
   <div
     class="googlesitekit-survey__completion"
@@ -309,7 +309,7 @@ exports[`Survey should render the completed survey component if all questions ha
 </div>
 `;
 
-exports[`Survey should trigger a completion once all questions are answered, even if no matching trigger_conditions are found 1`] = `
+exports[`CurrentSurvey should trigger a completion once all questions are answered, even if no matching trigger_conditions are found 1`] = `
 <div>
   <div
     class="googlesitekit-survey__completion"

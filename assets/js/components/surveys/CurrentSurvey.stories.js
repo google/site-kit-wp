@@ -1,5 +1,5 @@
 /**
- * CurrentSurvey Component Stories.
+ * Survey Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,36 +20,83 @@
  * Internal dependencies
  */
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { provideSiteInfo } from '../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import CurrentSurvey from './CurrentSurvey';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import * as fixtures from './__fixtures__';
+import fetchMock from 'fetch-mock';
 
-const Template = ( args ) => <CurrentSurvey { ...args } />;
+const Template = ( { setupRegistry, ...args } ) => (
+	<WithRegistrySetup func={ setupRegistry }>
+		<CurrentSurvey { ...args } />
+	</WithRegistrySetup>
+);
 
-export const CurrentSurveyStory = Template.bind( {} );
-CurrentSurveyStory.storyName = 'CurrentSurvey';
+export const SurveyNotAnsweredStory = Template.bind( {} );
+SurveyNotAnsweredStory.storyName = 'New survey';
+SurveyNotAnsweredStory.args = {
+	setupRegistry: ( registry ) => {
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'storybookSurvey' } );
+	},
+};
+
+export const SurveyNotAnsweredNoFollowUpStory = Template.bind( {} );
+SurveyNotAnsweredNoFollowUpStory.storyName = 'New survey (no follow-up CTA)';
+SurveyNotAnsweredNoFollowUpStory.args = {
+	setupRegistry: ( registry ) => {
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurveyWithNoFollowUp, { triggerID: 'storybookSurvey' } );
+	},
+};
+
+export const SurveyAnsweredPositiveStory = Template.bind( {} );
+SurveyAnsweredPositiveStory.storyName = 'Completed with Positive Rating';
+SurveyAnsweredPositiveStory.args = {
+	setupRegistry: ( registry ) => {
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'storybookSurvey' } );
+
+		registry.dispatch( CORE_FORMS ).setValues(
+			`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
+			{
+				answers: [
+					{ question_ordinal: 1, answer_ordinal: 5 },
+				],
+			}
+		);
+	},
+};
+
+export const SurveyAnsweredNegativeStory = Template.bind( {} );
+SurveyAnsweredNegativeStory.storyName = 'Completed with Negative Rating';
+SurveyAnsweredNegativeStory.args = {
+	setupRegistry: ( registry ) => {
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'storybookSurvey' } );
+
+		registry.dispatch( CORE_FORMS ).setValues(
+			`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
+			{
+				answers: [
+					{ question_ordinal: 1, answer_ordinal: 2 },
+				],
+			}
+		);
+	},
+};
 
 export default {
-	title: 'Components/Surveys',
+	title: 'Components/Surveys/CurrentSurvey',
 	decorators: [
-		( Story ) => {
-			const triggerID = 'test-survey';
-			const survey = {
-				survey_payload: 'foo',
-				session: 'bar',
-			};
-			const setupRegistry = async ( registry ) => {
-				provideSiteInfo( registry );
-
-				registry.dispatch( CORE_USER ).receiveTriggerSurvey( survey, { triggerID } );
-				await registry.dispatch( CORE_USER ).triggerSurvey( triggerID, { ttl: 1 } );
-			};
-
-			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
-				</WithRegistrySetup>
-			);
-		},
+		( Story ) => (
+			<div className="googlesitekit-survey">
+				<Story />
+			</div>
+		),
 	],
 };
