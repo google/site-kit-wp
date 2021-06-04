@@ -48,7 +48,10 @@ const ordinalIconMap = {
 const SurveyQuestionRatingChoice = ( { choice, answerQuestion } ) => {
 	const handleButtonClick = useCallback( () => {
 		if ( typeof answerQuestion === 'function' ) {
-			answerQuestion( choice );
+			answerQuestion( {
+				answer_ordinal: choice.answer_ordinal,
+				// answer: { answer_ordinal: choice.answer_ordinal },
+			} );
 		}
 	}, [ answerQuestion, choice ] );
 

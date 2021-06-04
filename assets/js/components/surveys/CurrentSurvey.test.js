@@ -117,7 +117,7 @@ describe( 'CurrentSurvey', () => {
 							question_answered: {
 								question_ordinal: 1,
 								answer: {
-									answer_ordinal: 5,
+									answer: { answer_ordinal: 5 },
 								},
 							},
 						},
@@ -152,7 +152,7 @@ describe( 'CurrentSurvey', () => {
 							question_answered: {
 								question_ordinal: 1,
 								answer: {
-									answer_ordinal: 1,
+									answer: { answer_ordinal: 1 },
 								},
 							},
 						},
@@ -201,7 +201,14 @@ describe( 'CurrentSurvey', () => {
 					'answers'
 				)
 		).toEqual(
-			[ { question_ordinal: 1, answer_ordinal: 5 } ]
+			[
+				{
+					question_ordinal: 1,
+					answer: {
+						answer: { answer_ordinal: 5 },
+					},
+				},
+			]
 		);
 	} );
 
@@ -262,7 +269,12 @@ describe( 'CurrentSurvey', () => {
 				// Mark this survey as answered so the "Survey Complete" component is
 				// rendered.
 				answers: [
-					{ question_ordinal: 1, answer_ordinal: 2 },
+					{
+						question_ordinal: 1,
+						answer: {
+							answer: { answer_ordinal: 2 },
+						},
+					},
 				],
 			}
 		);
@@ -286,7 +298,12 @@ describe( 'CurrentSurvey', () => {
 					// 6 is not a valid answer ordinal for this survey and will cause no
 					// trigger conditions to be met, so this should fallback to the first
 					// trigger condition supplied.
-					{ question_ordinal: 1, answer_ordinal: 6 },
+					{
+						question_ordinal: 1,
+						answer: {
+							answer: { answer_ordinal: 6 },
+						},
+					},
 				],
 			}
 		);
@@ -310,7 +327,12 @@ describe( 'CurrentSurvey', () => {
 					// 6 is not a valid answer ordinal for this survey and will cause no
 					// trigger conditions to be met, so this should fallback to the first
 					// trigger condition supplied.
-					{ question_ordinal: 1, answer_ordinal: 5 },
+					{
+						question_ordinal: 1,
+						answer: {
+							answer: { answer_ordinal: 5 },
+						},
+					},
 				],
 			}
 		);
@@ -358,7 +380,12 @@ describe( 'CurrentSurvey', () => {
 				// Mark this survey as answered so the "Survey Complete" component is
 				// rendered.
 				answers: [
-					{ question_ordinal: 1, answer_ordinal: 5 },
+					{
+						question_ordinal: 1,
+						answer: {
+							answer: { answer_ordinal: 5 },
+						},
+					},
 				],
 			}
 		);

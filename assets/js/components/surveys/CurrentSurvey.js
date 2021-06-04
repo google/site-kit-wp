@@ -50,9 +50,7 @@ const CurrentSurvey = () => {
 
 	const answers = useSelect( ( select ) => select( CORE_FORMS ).getValue( formName, 'answers' ) );
 
-	const currentQuestionOrdinal = answers?.length ? answers.reduce( ( a, b ) => {
-		return ( a.question_ordinal > b.question_ordinal ? a.question_ordinal : b.question_ordinal );
-	} ).question_ordinal + 1 : 1;
+	const currentQuestionOrdinal = Math.max( 0, ...( answers || [] ).map( ( a ) => a.question_ordinal ) ) + 1;
 
 	const shouldHide = useSelect( ( select ) => select( CORE_FORMS ).getValue( formName, 'hideSurvey' ) );
 
@@ -64,27 +62,23 @@ const CurrentSurvey = () => {
 	} );
 
 	const answerQuestion = useCallback( ( answer ) => {
-		// eslint-disable-next-line camelcase
-		if ( currentQuestion?.question_type === 'rating' ) {
-			sendSurveyEvent( 'question_answered', {
-				// eslint-disable-next-line camelcase
-				question_ordinal: currentQuestion?.question_ordinal,
-				answer: {
-					answer_ordinal: answer.answer_ordinal,
-				},
-			} );
+		// console.log( 'answer', answer );
+		sendSurveyEvent( 'question_answered', {
+			// eslint-disable-next-line camelcase
+			question_ordinal: currentQuestion?.question_ordinal,
+			answer: { answer },
+		} );
 
-			setValues( formName, {
-				answers: [
-					...answers || [],
-					{
+		setValues( formName, {
+			answers: [
+				...answers || [],
+				{
 					// eslint-disable-next-line camelcase
-						question_ordinal: currentQuestion?.question_ordinal,
-						answer_ordinal: answer.answer_ordinal,
-					},
-				],
-			} );
-		}
+					question_ordinal: currentQuestion?.question_ordinal,
+					answer: { answer },
+				},
+			],
+		} );
 	}, [ answers, currentQuestion, formName, sendSurveyEvent, setValues ] );
 
 	const ctaOnClick = useCallback( () => {
@@ -107,7 +101,7 @@ const CurrentSurvey = () => {
 	const ordinalAnswerMap = answers?.length ? answers.reduce( ( acc, answer ) => {
 		return {
 			...acc,
-			[ answer.question_ordinal ]: answer.answer_ordinal,
+			[ answer.question_ordinal ]: answer.answer.answer.answer_ordinal,
 		};
 	}, {} ) : [];
 
@@ -140,10 +134,10 @@ const CurrentSurvey = () => {
 
 	useEffect( () => {
 		if ( triggeredCompletion && ! hasSentCompletionEvent ) {
+			setHasSentCompletionEvent( true );
 			sendSurveyEvent( 'completion_shown', {
 				completion_ordinal: triggeredCompletion.completion_ordinal,
 			} );
-			setHasSentCompletionEvent( true );
 		}
 	}, [ hasSentCompletionEvent, sendSurveyEvent, triggeredCompletion ] );
 
@@ -182,7 +176,5 @@ const CurrentSurvey = () => {
 };
 
 CurrentSurvey.propTypes = {};
-
-CurrentSurvey.defaultProps = {};
 
 export default CurrentSurvey;

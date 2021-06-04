@@ -309,7 +309,7 @@ exports[`CurrentSurvey should render the completed survey component if all quest
 </div>
 `;
 
-exports[`CurrentSurvey should trigger a completion once all questions are answered, even if no matching trigger_conditions are found 1`] = `
+exports[`CurrentSurvey should trigger the first completion when no matching trigger_conditions are met 1`] = `
 <div>
   <div
     class="googlesitekit-survey__completion"
