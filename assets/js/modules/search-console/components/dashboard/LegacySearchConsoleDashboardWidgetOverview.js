@@ -37,12 +37,12 @@ import {
 import PropTypes from 'prop-types';
 class LegacySearchConsoleDashboardWidgetOverview extends Component {
 	render() {
-		const { data, selectedStats, handleStatSelection } = this.props;
+		const { data, selectedStats, handleStatSelection, dateRangeLength } = this.props;
 
 		if ( ! data || ! data.length ) {
 			return null;
 		}
-		const processedData = extractSearchConsoleDashboardData( data );
+		const processedData = extractSearchConsoleDashboardData( data, dateRangeLength );
 
 		const {
 			totalClicks,
