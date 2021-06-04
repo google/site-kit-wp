@@ -91,7 +91,7 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
-		fetchMock.reset();
+		fetchMock.resetHistory();
 
 		// Render again to ensure we don't send another `survey_shown` event.
 		rerender();
