@@ -134,6 +134,56 @@ describe( 'CurrentSurvey', () => {
 		);
 	} );
 
+	it( 'should advance to the next question when a question is answered in a multi-question survey', async () => {
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.multiQuestionSurvey, { triggerID: 'jestSurvey' } );
+
+		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		const { getByLabelText, getByText } = render( <CurrentSurvey />, { registry } );
+
+		fireEvent.click( getByLabelText( 'Unhappy icon' ) );
+
+		expect( fetchMock ).toHaveFetched(
+			'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
+			{
+				body: {
+					data: {
+						event: {
+							question_answered: {
+								question_ordinal: 1,
+								answer: {
+									answer_ordinal: 1,
+								},
+							},
+						},
+						session: fixtures.multiQuestionSurvey.session,
+					},
+				},
+				credentials: 'include',
+				headers: {
+					Accept: 'application/json, */*;q=0.1',
+					'Content-Type': 'application/json',
+				},
+				method: 'POST',
+			}
+		);
+
+		expect( getByText( 'Another question: how do you feel when it rains?' ) ).toBeVisible();
+	} );
+
+	it( 'should trigger an early completion if a trigger condition is met, even if all questions have not been answered', async () => {
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.multiQuestionSurvey, { triggerID: 'jestSurvey' } );
+
+		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		const { getByLabelText, getByText } = render( <CurrentSurvey />, { registry } );
+
+		// Answering with this value causes the completion trigger to be met.
+		fireEvent.click( getByLabelText( 'Delighted icon' ) );
+
+		expect( getByText( 'You answered early!' ) ).toBeVisible();
+	} );
+
 	it( 'should mark the question as answered in the core/forms datastore', async () => {
 		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'jestSurvey' } );
 

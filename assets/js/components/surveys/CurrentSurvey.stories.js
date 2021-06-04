@@ -32,13 +32,23 @@ const Template = ( { setupRegistry, ...args } ) => (
 	</WithRegistrySetup>
 );
 
-export const SurveyNotAnsweredStory = Template.bind( {} );
-SurveyNotAnsweredStory.storyName = 'New survey';
-SurveyNotAnsweredStory.args = {
+export const SurveySingleQuestionStory = Template.bind( {} );
+SurveySingleQuestionStory.storyName = 'Single question';
+SurveySingleQuestionStory.args = {
 	setupRegistry: ( registry ) => {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
 		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'storybookSurvey' } );
+	},
+};
+
+export const SurveyMultipleQuestionsStory = Template.bind( {} );
+SurveyMultipleQuestionsStory.storyName = 'Multiple questions';
+SurveyMultipleQuestionsStory.args = {
+	setupRegistry: ( registry ) => {
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.multiQuestionSurvey, { triggerID: 'storybookSurvey' } );
 	},
 };
 
@@ -65,25 +75,6 @@ SurveyAnsweredPositiveStory.args = {
 			{
 				answers: [
 					{ question_ordinal: 1, answer_ordinal: 5 },
-				],
-			}
-		);
-	},
-};
-
-export const SurveyAnsweredNegativeStory = Template.bind( {} );
-SurveyAnsweredNegativeStory.storyName = 'Completed with Negative Rating';
-SurveyAnsweredNegativeStory.args = {
-	setupRegistry: ( registry ) => {
-		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
-
-		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'storybookSurvey' } );
-
-		registry.dispatch( CORE_FORMS ).setValues(
-			`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
-			{
-				answers: [
-					{ question_ordinal: 1, answer_ordinal: 2 },
 				],
 			}
 		);
