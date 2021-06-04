@@ -408,6 +408,7 @@ class AnalyticsTest extends TestCase {
 			$method->invokeArgs( $analytics, array() );
 			$this->fail( 'Expected redirect to module page with "authentication_success" notification' );
 		} catch ( RedirectException $redirect ) {
+			$this->assertEquals( 1, did_action( 'googlesitekit_analytics_handle_provisioning_callback' ) );
 			$this->assertEquals(
 				add_query_arg(
 					array(

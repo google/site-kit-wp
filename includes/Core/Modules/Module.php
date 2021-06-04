@@ -680,12 +680,13 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 Now returns Google_Site_Kit_Client instance.
+	 * @since n.e.x.t Updated to be public.
 	 *
 	 * @return Google_Site_Kit_Client Google client instance.
 	 *
 	 * @throws Exception Thrown when the module did not correctly set up the client.
 	 */
-	final protected function get_client() {
+	final public function get_client() {
 		if ( null === $this->google_client ) {
 			$client = $this->setup_client();
 			if ( ! $client instanceof Google_Site_Kit_Client ) {
