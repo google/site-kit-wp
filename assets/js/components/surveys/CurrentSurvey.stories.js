@@ -63,7 +63,7 @@ SurveyNotAnsweredNoFollowUpStory.args = {
 };
 
 export const SurveyAnsweredPositiveStory = Template.bind( {} );
-SurveyAnsweredPositiveStory.storyName = 'Completed with Positive Rating';
+SurveyAnsweredPositiveStory.storyName = 'Completed';
 SurveyAnsweredPositiveStory.args = {
 	setupRegistry: ( registry ) => {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
