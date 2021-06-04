@@ -91,6 +91,9 @@ export function validateCanSubmitChanges( select ) {
 	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 
-	invariant( isValidPropertySelection( getPropertyID() ), INVARIANT_INVALID_PROPERTY_SELECTION );
-	invariant( isValidWebDataStreamID( getWebDataStreamID() ), INVARIANT_INVALID_WEBDATASTREAM_ID );
+	const propertyID = getPropertyID();
+	invariant( isValidPropertySelection( propertyID ), INVARIANT_INVALID_PROPERTY_SELECTION );
+	if ( propertyID !== PROPERTY_CREATE ) {
+		invariant( isValidWebDataStreamID( getWebDataStreamID() ), INVARIANT_INVALID_WEBDATASTREAM_ID );
+	}
 }
