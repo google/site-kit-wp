@@ -107,6 +107,10 @@ If you have some ideas to improve the plugin or to solve a bug, feel free to rai
 * Enhance widgets to combine into one widget if all widgets in an area have the same special state. See [#3225](https://github.com/google/site-kit-wp/issues/3225).
 * Update the wording used for the anonymous usage tracking checkbox label. See [#1238](https://github.com/google/site-kit-wp/issues/1238).
 
+**Fixed**
+
+* Fix potential `dateRangeLength must be a positive integer.` error for Search Console reports with missing dates. See [#3418](https://github.com/google/site-kit-wp/issues/3418).
+
 = 1.33.0 =
 
 **Enhanced**
