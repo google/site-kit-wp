@@ -112,6 +112,7 @@ const Stats = ( { data, metrics, selectedStats, dateRangeLength } ) => {
 		compareRange,
 		metrics[ selectedStats ].label,
 		metrics[ selectedStats ].metric,
+		dateRangeLength,
 	);
 
 	return (
