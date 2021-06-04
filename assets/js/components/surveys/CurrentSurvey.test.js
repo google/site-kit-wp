@@ -343,7 +343,7 @@ describe( 'CurrentSurvey', () => {
 
 		fetchMock.reset();
 
-		// Render again to ensure we don't send another `survey_shown` event.
+		// Render again to ensure we don't send another `completion_shown` event.
 		rerender();
 
 		expect( fetchMock ).not.toHaveFetched();
