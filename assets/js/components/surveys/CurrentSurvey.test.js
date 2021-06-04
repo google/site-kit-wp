@@ -274,7 +274,7 @@ describe( 'CurrentSurvey', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should trigger a completion once all questions are answered, even if no matching trigger_conditions are found', () => {
+	it( 'should trigger the first completion when no matching trigger_conditions are met', () => {
 		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'jestSurvey' } );
 
 		registry.dispatch( CORE_FORMS ).setValues(
