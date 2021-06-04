@@ -25,7 +25,6 @@ use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
-use \ReflectionClass;
 
 /**
  * @group Modules
@@ -70,9 +69,21 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_handle_provisioning_callback() {
+		$account_id       = '12345678';
 		$property_id      = '1001';
 		$webdatastream_id = '2001';
 		$measurement_id   = '1A2BCD345E';
+
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => $account_id,
+				'propertyID'      => '',
+				'webDataStreamID' => '',
+				'measurementID'   => '',
+			)
+		);
 
 		$http_client = new FakeHttpClient();
 		$http_client->set_request_handler(
@@ -114,28 +125,16 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
+		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
+
 		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
 
-		$options   = new Options( $this->context );
-		$analytics = new Analytics_4( $this->context, $options );
-
-		$options->set(
-			Settings::OPTION,
-			array(
-				'accountID'       => '12345678',
-				'propertyID'      => '',
-				'webDataStreamID' => '',
-				'measurementID'   => '',
-			)
-		);
-
-		$handle_provisioning_callback = ( new ReflectionClass( $analytics ) )->getMethod( 'handle_provisioning_callback' );
-		$handle_provisioning_callback->setAccessible( true );
-		$handle_provisioning_callback->invoke( $this->analytics, '12345678' );
+		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id );
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'       => '12345678',
+				'accountID'       => $account_id,
 				'propertyID'      => $property_id,
 				'webDataStreamID' => $webdatastream_id,
 				'measurementID'   => $measurement_id,
