@@ -175,14 +175,10 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {Array|null|undefined} Current survey's completion triggers if available; undefined if loading and `null` if no questions/survey are found.
+	 * @return {Array|null} Current survey's completion triggers if available; `null` if no questions/survey are found.
 	 */
 	getCurrentSurveyCompletions: createRegistrySelector( ( select ) => () => {
 		const currentSurvey = select( CORE_USER ).getCurrentSurvey();
-
-		if ( currentSurvey === undefined ) {
-			return undefined;
-		}
 
 		return currentSurvey?.completion || null;
 	} ),
@@ -192,14 +188,10 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {Array|null|undefined} Current survey's questions if available; undefined if loading and `null` if no questions/survey are found.
+	 * @return {Array|null} Current survey's questions if available; `null` if no questions/survey are found.
 	 */
 	getCurrentSurveyQuestions: createRegistrySelector( ( select ) => () => {
 		const currentSurvey = select( CORE_USER ).getCurrentSurvey();
-
-		if ( currentSurvey === undefined ) {
-			return undefined;
-		}
 
 		return currentSurvey?.question || null;
 	} ),
