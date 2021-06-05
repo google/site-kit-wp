@@ -31,6 +31,10 @@ import SurveyCompletion from './SurveyCompletion';
 import SurveyQuestionRating from './SurveyQuestionRating';
 const { useDispatch, useSelect } = Data;
 
+const ComponentMap = {
+	rating: SurveyQuestionRating,
+};
+
 const CurrentSurvey = () => {
 	const [ hasSentSurveyShownEvent, setHasSentSurveyShownEvent ] = useState( false );
 	const [ hasSentCompletionEvent, setHasSentCompletionEvent ] = useState( false );
@@ -160,19 +164,21 @@ const CurrentSurvey = () => {
 	}
 
 	// eslint-disable-next-line camelcase
-	if ( currentQuestion?.question_type === 'rating' ) {
-		return (
-			<SurveyQuestionRating
-				answerQuestion={ answerQuestion }
-				choices={ currentQuestion.question.answer_choice }
-				dismissSurvey={ dismissSurvey }
-				key={ currentQuestion.question_ordinal }
-				question={ currentQuestion.question_text }
-			/>
-		);
+	const SurveyQuestionComponent = ComponentMap[ currentQuestion?.question_type ];
+
+	if ( ! SurveyQuestionComponent ) {
+		return null;
 	}
 
-	return null;
+	return (
+		<SurveyQuestionComponent
+			answerQuestion={ answerQuestion }
+			choices={ currentQuestion.question.answer_choice }
+			dismissSurvey={ dismissSurvey }
+			key={ currentQuestion.question_ordinal }
+			question={ currentQuestion.question_text }
+		/>
+	);
 };
 
 CurrentSurvey.propTypes = {};
