@@ -319,7 +319,7 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( 'POST', $this->request_args['method'] );
 		$this->assertEqualSetsWithIndex(
 			array(
-				'platform'    => 'wordpress/google-site-kit',
+				'platform'    => is_multisite() ? 'wordpress-multisite/google-site-kit' : 'wordpress/google-site-kit',
 				'version'     => GOOGLESITEKIT_VERSION,
 				'site_id'     => $fake_creds['client_id'],
 				'site_secret' => $fake_creds['client_secret'],
@@ -327,6 +327,16 @@ class Google_ProxyTest extends TestCase {
 			$this->request_args['body']
 		);
 		$this->assertEqualSetsWithIndex( $expected_success_response, $features );
+	}
+
+	public function test_get_platform() {
+		$platform = $this->google_proxy->get_platform();
+
+		if ( is_multisite() ) {
+			$this->assertEquals( 'wordpress-multisite', $platform );
+		} else {
+			$this->assertEquals( 'wordpress', $platform ); // phpcs:ignore WordPress.WP.CapitalPDangit.Misspelled
+		}
 	}
 
 	public function test_send_survey_trigger() {
