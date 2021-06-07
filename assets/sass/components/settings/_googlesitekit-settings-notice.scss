@@ -39,11 +39,15 @@
 			@media (min-width: $bp-desktop) {
 				padding: $grid-gap-desktop;
 			}
-
 		}
 
-		.googlesitekit-settings-notice__row + .googlesitekit-settings-notice__row {
-			padding-top: 0;
+		.googlesitekit-settings-notice__inner-row {
+			display: flex;
+			padding-top: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				padding-top: $grid-gap-desktop;
+			}
 		}
 
 		.googlesitekit-settings-notice__icon {

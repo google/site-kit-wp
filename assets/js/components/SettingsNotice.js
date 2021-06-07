@@ -23,11 +23,6 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import InfoIcon from '../../svg/info-icon.svg';
@@ -82,27 +77,26 @@ const SettingsNoticeMultiRow = ( {
 	children,
 } ) => {
 	return (
-		<Fragment>
-			<div className="googlesitekit-settings-notice__row">
-				<div className="googlesitekit-settings-notice__icon">
-					{ Icon ? <Icon /> : getIconFromType( type ) }
-				</div>
+		<div className="googlesitekit-settings-notice__row">
+			<div className="googlesitekit-settings-notice__icon">
+				{ Icon ? <Icon /> : getIconFromType( type ) }
+			</div>
+			<div>
 				<div className="googlesitekit-settings-notice__text">
 					{ notice }
 				</div>
-			</div>
-			<div className="googlesitekit-settings-notice__row">
-				<div>
-
-					{ children }
-				</div>
-				{ LearnMore && (
-					<div className="googlesitekit-settings-notice__learn-more">
-						<LearnMore />
+				<div className="googlesitekit-settings-notice__inner-row">
+					<div>
+						{ children }
 					</div>
-				) }
+					{ LearnMore && (
+						<div className="googlesitekit-settings-notice__learn-more">
+							<LearnMore />
+						</div>
+					) }
+				</div>
 			</div>
-		</Fragment>
+		</div>
 	);
 };
 
