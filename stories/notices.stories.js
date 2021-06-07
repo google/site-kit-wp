@@ -45,32 +45,26 @@ const LearnMore = () => (
 
 storiesOf( 'Global/Notices', module )
 	.add( 'Settings warning notice', () => (
-		<SettingsNotice type={ TYPE_WARNING } LearnMore={ LearnMore }>
-			{ 'This is a warning.' }
-		</SettingsNotice>
+		<SettingsNotice type={ TYPE_WARNING } LearnMore={ LearnMore } notice="This is a warning." />
+
 	) )
 	.add( 'Settings info notice single line', () => (
-		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore }>
-			{ 'This is an information.' }
-		</SettingsNotice>
+		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore } notice="This is an information." />
 	) )
 	.add( 'Settings info notice multi line', () => (
-		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore }>
-			{ new Array( 10 ).fill( 'This is an information. ' ) }
+		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore } notice={ new Array( 10 ).fill( 'This is an information. ' ) } />
+	) )
+	.add( 'Settings info notice with children', () => (
+		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore } notice="This is an information.">
+			 { new Array( 10 ).fill( 'This is an information. ' ) }
 		</SettingsNotice>
 	) )
 	.add( 'Settings info notice no LearnMore', () => (
-		<SettingsNotice type={ TYPE_INFO } >
-			{ 'This is an information.' }
-		</SettingsNotice>
+		<SettingsNotice type={ TYPE_INFO } notice="This is an information." />
 	) )
 	.add( 'Settings info notice with different icon', () => (
-		<SettingsNotice type={ TYPE_INFO } Icon={ WarningIcon } LearnMore={ LearnMore }>
-			{ 'This is an information.' }
-		</SettingsNotice>
+		<SettingsNotice type={ TYPE_INFO } Icon={ WarningIcon } LearnMore={ LearnMore } notice="This is an information." />
 	) )
 	.add( 'Settings suggestion notice', () => (
-		<SettingsNotice type={ TYPE_SUGGESTION } LearnMore={ LearnMore }>
-			{ 'This is a suggestion.' }
-		</SettingsNotice>
+		<SettingsNotice type={ TYPE_SUGGESTION } LearnMore={ LearnMore } notice="This is a suggestion." />
 	) );

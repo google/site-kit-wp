@@ -46,30 +46,80 @@ const getIconFromType = ( type ) => {
 	}
 };
 
-export default function SettingsNotice( { children, type, Icon, LearnMore } ) {
+const SettingsNoticeSingleRow = ( {
+	notice,
+	type,
+	Icon,
+	LearnMore,
+} ) => {
+	return (
+		<div className="googlesitekit-settings-notice__row">
+			<div className="googlesitekit-settings-notice__icon">
+				{ Icon ? <Icon /> : getIconFromType( type ) }
+			</div>
+			<div className="googlesitekit-settings-notice__text">
+				{ notice }
+			</div>
+			{ LearnMore && (
+				<div>
+					<LearnMore />
+				</div>
+			) }
+		</div>
+	);
+};
+
+const SettingsNoticeMultiRow = ( {
+	notice,
+	type,
+	Icon,
+	LearnMore,
+	children,
+} ) => {
+	return (
+		<div className="googlesitekit-settings-notice__row">
+			<div className="googlesitekit-settings-notice__icon">
+				{ Icon ? <Icon /> : getIconFromType( type ) }
+			</div>
+			<div>
+				<div className="googlesitekit-settings-notice__text">
+					{ notice }
+				</div>
+				<div className="googlesitekit-settings-notice__inner-row">
+					<div>
+						{ children }
+					</div>
+					{ LearnMore && (
+						<div className="googlesitekit-settings-notice__learn-more--align-bottom">
+							<div>
+								<LearnMore />
+							</div>
+						</div>
+					) }
+				</div>
+			</div>
+		</div>
+	);
+};
+
+export default function SettingsNotice( props ) {
+	const { children, type } = props;
+
 	return (
 		<div className={ classnames(
 			'googlesitekit-settings-notice',
 			`googlesitekit-settings-notice--${ type }`
 		) } >
-
-			<div className="googlesitekit-settings-notice__icon">
-				{ Icon ? <Icon /> : getIconFromType( type ) }
-			</div>
-			<div className="googlesitekit-settings-notice__text">
-				{ LearnMore && (
-					<div className="googlesitekit-settings-notice__learn-more">
-						<LearnMore />
-					</div>
-				) }
-				{ children }
-			</div>
+			{ !! children && <SettingsNoticeMultiRow { ...props } /> }
+			{ ! children && (
+				<SettingsNoticeSingleRow { ...props } /> ) }
 		</div>
 	);
 }
 
 SettingsNotice.propTypes = {
-	children: PropTypes.node.isRequired,
+	children: PropTypes.node,
+	notice: PropTypes.node.isRequired,
 	type: PropTypes.oneOf( [ 'warning', 'info', 'suggestion' ] ),
 	Icon: PropTypes.elementType,
 	LearnMore: PropTypes.elementType,
@@ -79,4 +129,5 @@ SettingsNotice.defaultProps = {
 	type: TYPE_WARNING,
 	Icon: null,
 	LearnMore: null,
+	children: null,
 };

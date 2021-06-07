@@ -20,35 +20,51 @@
 	background-color: $c-background-notice;
 	border-radius: 4px;
 	color: $c-text-notice;
-
-	display: flex;
 	margin: 1.5em 0;
-	padding: $grid-gap-phone;
 
-	@media (min-width: $bp-desktop) {
-		padding: $grid-gap-desktop;
-	}
 
 	&--warning,
 	&--info,
 	&--suggestion {
 
-		// do we want this? the parent should decide?
 		svg {
 			height: 20px;
 			width: 20px;
 		}
 
+		.googlesitekit-settings-notice__row {
+			align-items: center;
+			display: flex;
+			padding: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				padding: $grid-gap-desktop;
+			}
+		}
+
+		.googlesitekit-settings-notice__inner-row {
+			display: flex;
+			padding-top: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				padding-top: $grid-gap-desktop;
+			}
+		}
+
 		.googlesitekit-settings-notice__icon {
-			margin-right: 10px;
+			margin-right: $grid-gap-desktop;
 		}
 
 		.googlesitekit-settings-notice__text {
 			flex-grow: 1;
 		}
 
-		.googlesitekit-settings-notice__learn-more {
-			float: right;
+		.googlesitekit-settings-notice__learn-more--align-bottom {
+			display: flex;
+			flex-direction: column;
+			flex-shrink: 0;
+			justify-content: flex-end;
+			margin-left: $grid-gap-desktop;
 		}
 	}
 
