@@ -27,24 +27,23 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
-export const Ready = () => <ModuleSetup moduleSlug="analytics" />;
-Ready.storyName = 'SetupFormGA4';
-Ready.decorators = [
+const features = [ 'ga4setup' ];
+
+function Template() {
+	return <ModuleSetup moduleSlug="analytics" />;
+}
+
+export const WithoutExistingTag = Template.bind( null );
+WithoutExistingTag.storyName = 'Without Existing Tag';
+WithoutExistingTag.parameters = { features };
+
+export const WithExistingTag = Template.bind( null );
+WithExistingTag.storyName = 'With Existing Tag';
+WithExistingTag.parameters = { features };
+WithExistingTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const accounts = fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
-			const accountID = accounts[ 0 ].id;
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( ga4Fixtures.properties, { accountID } );
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( ga4Fixtures.webDataStreams, { propertyID: ga4Fixtures.properties[ 0 ]._id } );
-
-			registry.dispatch( STORE_NAME ).receiveGetSettings( { adsConversionID: '' } );
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			registry.dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
-
-			registry.dispatch( STORE_NAME ).selectAccount( accountID );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( ga4Fixtures.webDataStreams[ 0 ].measurementId ); // eslint-disable-line sitekit/acronym-case
 		};
 
 		return (
@@ -54,17 +53,15 @@ Ready.decorators = [
 		);
 	},
 ];
-Ready.parameters = {
-	features: [
-		'ga4setup',
-	],
-};
 
 export default {
 	title: 'Modules/Analytics/Setup/SetupFormGA4',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				const accounts = fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
+				const accountID = accounts[ 0 ].id;
+
 				provideModules( registry, [
 					{
 						slug: 'analytics',
@@ -80,6 +77,18 @@ export default {
 
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( ga4Fixtures.properties, { accountID } );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( ga4Fixtures.webDataStreams, { propertyID: ga4Fixtures.properties[ 0 ]._id } );
+
+				registry.dispatch( STORE_NAME ).receiveGetSettings( { adsConversionID: '' } );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+				registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+				registry.dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
+
+				registry.dispatch( STORE_NAME ).selectAccount( accountID );
 			};
 
 			return (

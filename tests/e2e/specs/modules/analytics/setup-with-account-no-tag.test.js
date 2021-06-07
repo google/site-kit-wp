@@ -184,10 +184,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 
 					// See the selects populate
 					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account a/i } );
-					// Property dropdown should select "Set up a new property" option because there is no property associated with the current reference URL.
-					await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new property/i } );
-					// Profile dropdown should select "Set up a new view" option.
-					await expect( page ).toMatchElement( '.googlesitekit-analytics__select-profile', { text: /set up a new view/i } );
+					// Property dropdown should not select anything because there is no property associated with the current reference URL.
+					await expect( page ).toMatchElement( '.googlesitekit-analytics__select-property', { text: /property/i } );
+					// Profile dropdown should not be displayed.
+					await expect( page ).not.toMatchElement( '.googlesitekit-analytics__select-profile' );
 				},
 			);
 
