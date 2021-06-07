@@ -35,10 +35,15 @@ import {
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4Notice from '../common/GA4Notice';
 import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const useAnalyticsSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
+	const useTagManagerSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
+	const analyticsSinglePropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
+	const shouldShowTrackingExclusionSwitches = useAnalyticsSnippet || ( useTagManagerSnippet && analyticsSinglePropertyID );
 
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
@@ -62,7 +67,7 @@ export default function SettingsForm() {
 
 				<AnonymizeIPSwitch />
 
-				<TrackingExclusionSwitches />
+				{ shouldShowTrackingExclusionSwitches && <TrackingExclusionSwitches /> }
 
 				<AdsConversionIDTextField />
 			</div>
