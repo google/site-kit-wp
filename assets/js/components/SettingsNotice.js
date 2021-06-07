@@ -61,7 +61,7 @@ const SettingsNoticeSingleRow = ( {
 				{ notice }
 			</div>
 			{ LearnMore && (
-				<div className="googlesitekit-settings-notice__learn-more">
+				<div>
 					<LearnMore />
 				</div>
 			) }
@@ -90,7 +90,7 @@ const SettingsNoticeMultiRow = ( {
 						{ children }
 					</div>
 					{ LearnMore && (
-						<div className="googlesitekit-settings-notice__learn-more">
+						<div className="googlesitekit-settings-notice__learn-more--align-bottom">
 							<div>
 								<LearnMore />
 							</div>

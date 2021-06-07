@@ -33,6 +33,7 @@
 		}
 
 		.googlesitekit-settings-notice__row {
+			align-items: center;
 			display: flex;
 			padding: $grid-gap-phone;
 
@@ -58,9 +59,9 @@
 			flex-grow: 1;
 		}
 
-		.googlesitekit-settings-notice__learn-more {
+		.googlesitekit-settings-notice__learn-more--align-bottom {
 			display: flex;
-			flex-direction: row;
+			flex-direction: column;
 			flex-shrink: 0;
 			justify-content: flex-end;
 			margin-left: $grid-gap-desktop;
