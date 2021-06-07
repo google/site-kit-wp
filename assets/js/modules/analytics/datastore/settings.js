@@ -107,6 +107,8 @@ export async function submitChanges( { select, dispatch } ) {
 }
 
 export function validateCanSubmitChanges( select ) {
+	const isGA4Enabled = isFeatureEnabled( 'ga4setup' );
+
 	const strictSelect = createStrictSelect( select );
 	const {
 		getAccountID,
@@ -132,7 +134,11 @@ export function validateCanSubmitChanges( select ) {
 		);
 	}
 
-	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+	invariant(
+		haveSettingsChanged() || ( isGA4Enabled && select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ),
+		INVARIANT_SETTINGS_NOT_CHANGED,
+	);
+
 	invariant( isValidAccountID( getAccountID() ), INVARIANT_INVALID_ACCOUNT_ID );
 	invariant( isValidPropertySelection( getPropertyID() ), INVARIANT_INVALID_PROPERTY_SELECTION );
 	invariant( isValidProfileSelection( getProfileID() ), INVARIANT_INVALID_PROFILE_SELECTION );
@@ -155,7 +161,7 @@ export function validateCanSubmitChanges( select ) {
 	// Do existing tag check last.
 	invariant( hasExistingTagPermission() !== false, INVARIANT_INSUFFICIENT_TAG_PERMISSIONS );
 
-	if ( isFeatureEnabled( 'ga4setup' ) ) {
+	if ( isGA4Enabled ) {
 		select( MODULES_ANALYTICS_4 ).__dangerousCanSubmitChanges();
 	}
 }
