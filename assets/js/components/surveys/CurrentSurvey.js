@@ -78,7 +78,7 @@ const CurrentSurvey = () => {
 				{
 					// eslint-disable-next-line camelcase
 					question_ordinal: currentQuestion?.question_ordinal,
-					answer: { answer },
+					answer,
 				},
 			],
 		} );
@@ -153,15 +153,17 @@ const CurrentSurvey = () => {
 
 	if ( triggeredCompletion ) {
 		return (
-			<SurveyCompletion
-				dismissSurvey={ dismissSurvey }
-				ctaOnClick={ ctaOnClick }
-				ctaText={ triggeredCompletion.follow_up_text }
-				ctaURL={ triggeredCompletion.follow_up_url }
-				title={ triggeredCompletion.completion_title }
-			>
-				{ triggeredCompletion.completion_text }
-			</SurveyCompletion>
+			<div className="googlesitekit-survey">
+				<SurveyCompletion
+					dismissSurvey={ dismissSurvey }
+					ctaOnClick={ ctaOnClick }
+					ctaText={ triggeredCompletion.follow_up_text }
+					ctaURL={ triggeredCompletion.follow_up_url }
+					title={ triggeredCompletion.completion_title }
+				>
+					{ triggeredCompletion.completion_text }
+				</SurveyCompletion>
+			</div>
 		);
 	}
 
@@ -173,13 +175,15 @@ const CurrentSurvey = () => {
 	}
 
 	return (
-		<SurveyQuestionComponent
-			answerQuestion={ answerQuestion }
-			choices={ currentQuestion.question.answer_choice }
-			dismissSurvey={ dismissSurvey }
-			key={ currentQuestion.question_ordinal }
-			question={ currentQuestion.question_text }
-		/>
+		<div className="googlesitekit-survey">
+			<SurveyQuestionComponent
+				answerQuestion={ answerQuestion }
+				choices={ currentQuestion.question.answer_choice }
+				dismissSurvey={ dismissSurvey }
+				key={ currentQuestion.question_ordinal }
+				question={ currentQuestion.question_text }
+			/>
+		</div>
 	);
 };
 

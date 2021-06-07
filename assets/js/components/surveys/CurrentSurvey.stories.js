@@ -85,9 +85,7 @@ export default {
 	title: 'Components/Surveys/CurrentSurvey',
 	decorators: [
 		( Story ) => (
-			<div className="googlesitekit-survey">
-				<Story />
-			</div>
+			<Story />
 		),
 	],
 };
