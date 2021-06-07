@@ -27,6 +27,39 @@ import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { getAnalyticsMockResponse } from '../../modules/analytics/util/data-mock';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
+const adminbarAnalyticsMockData = [
+	// Mock Total Users widget data
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Total Users',
+			},
+		],
+		url: 'https://www.sitekitbygoogle.com/blog/',
+	},
+
+	// Mock Sessions widget data
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		dimensions: 'ga:date',
+		limit: 10,
+		metrics: [
+			{
+				expression: 'ga:sessions',
+				alias: 'Sessions',
+			},
+		],
+		url: 'https://www.sitekitbygoogle.com/blog/',
+	},
+];
 export const setupBaseRegistry = ( registry, args ) => {
 	// Set some site information.
 	provideSiteInfo( registry, {
@@ -54,46 +87,14 @@ export const setupBaseRegistry = ( registry, args ) => {
 	}
 };
 
-export const setupSearchConsoleMockReports = ( registry ) => {
+export const setupSearchConsoleMockReports = ( registry, data = adminbarSearchConsoleMockData ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( adminbarSearchConsoleMockData, { options: adminbarSearchConsoleOptions } );
+	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( data, { options: adminbarSearchConsoleOptions } );
 };
 
-export const setupAnalyticsMockReports = ( registry ) => {
+export const setupAnalyticsMockReports = ( registry, data = adminbarAnalyticsMockData ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-	[
-		// Mock Total Users widget data
-		{
-			startDate: '2020-12-31',
-			endDate: '2021-01-27',
-			compareStartDate: '2020-12-03',
-			compareEndDate: '2020-12-30',
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Total Users',
-				},
-			],
-			url: 'https://www.sitekitbygoogle.com/blog/',
-		},
-
-		// Mock Sessions widget data
-		{
-			startDate: '2020-12-31',
-			endDate: '2021-01-27',
-			compareStartDate: '2020-12-03',
-			compareEndDate: '2020-12-30',
-			dimensions: 'ga:date',
-			limit: 10,
-			metrics: [
-				{
-					expression: 'ga:sessions',
-					alias: 'Sessions',
-				},
-			],
-			url: 'https://www.sitekitbygoogle.com/blog/',
-		},
-	].forEach( ( options ) => {
+	data.forEach( ( options ) => {
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( getAnalyticsMockResponse( options ), { options } );
 	} );
 };
