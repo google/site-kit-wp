@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 
 /**
  * Internal dependencies
@@ -33,13 +32,11 @@ export default function SettingsNotice( props ) {
 	const { children, type } = props;
 
 	return (
-		<div className={ classnames(
-			'googlesitekit-settings-notice',
-			`googlesitekit-settings-notice--${ type }`
-		) } >
+		<div className={ `googlesitekit-settings-notice googlesitekit-settings-notice--${ type }` } >
 			{ !! children && <SettingsNoticeMultiRow { ...props } /> }
 			{ ! children && (
-				<SettingsNoticeSingleRow { ...props } /> ) }
+				<SettingsNoticeSingleRow { ...props } />
+			) }
 		</div>
 	);
 }
