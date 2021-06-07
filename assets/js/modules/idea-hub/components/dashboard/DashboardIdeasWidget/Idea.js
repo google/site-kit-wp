@@ -25,14 +25,16 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Button from '../../../../../components/Button';
 import { Grid, Cell, Row } from '../../../../../material-components';
 import {
+	STORE_NAME,
 	IDEA_HUB_BUTTON_CREATE,
 	IDEA_HUB_BUTTON_PIN,
 	IDEA_HUB_BUTTON_UNPIN,
@@ -44,7 +46,12 @@ import CreateIcon from '../../../../../../svg/idea-hub-create.svg';
 import PinIcon from '../../../../../../svg/idea-hub-pin.svg';
 import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
 
+const { useDispatch } = Data;
+
 const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
+	const { createIdeaDraftPost } = useDispatch( STORE_NAME );
+	const [ isProcessing, setIsProcessing ] = useState( false );
+
 	const handleDelete = useCallback( () => {
 		// @TODO: Implement callback.
 		global.console.log( `Deleted: ${ name }` );
@@ -61,9 +68,12 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 	}, [ name ] );
 
 	const handleCreate = useCallback( () => {
+		setIsProcessing( true );
+		createIdeaDraftPost( { name, text, topics } );
 		// @TODO: Implement callback.
 		global.console.log( `Created: ${ name }` );
-	}, [ name ] );
+		setIsProcessing( false );
+	}, [ name, text, topics, createIdeaDraftPost ] );
 
 	return (
 		<Grid className="googlesitekit-idea-hub__idea--single">
@@ -83,6 +93,7 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 							onClick={ handleDelete }
 							icon={ <DeleteIcon /> }
 							className="googlesitekit-idea-hub__actions--delete"
+							disabled={ isProcessing }
 						/>
 					) }
 
@@ -91,6 +102,7 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 							onClick={ handlePin }
 							icon={ <PinIcon /> }
 							className="googlesitekit-idea-hub__actions--pin"
+							disabled={ isProcessing }
 						/>
 					) }
 
@@ -99,6 +111,7 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 							onClick={ handleUnpin }
 							icon={ <UnpinIcon /> }
 							className="googlesitekit-idea-hub__actions--unpin"
+							disabled={ isProcessing }
 						/>
 					) }
 
@@ -106,6 +119,7 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 						<Button
 							onClick={ handleCreate }
 							icon={ <CreateIcon /> }
+							disabled={ isProcessing }
 						/>
 					) }
 
