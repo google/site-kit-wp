@@ -41,8 +41,8 @@ const CurrentSurvey = () => {
 
 	useEffect( () => {
 		if ( questions?.length && ! hasSentSurveyShownEvent ) {
-			sendSurveyEvent( 'survey_shown' );
 			setHasSentSurveyShownEvent( true );
+			sendSurveyEvent( 'survey_shown' );
 		}
 	}, [ questions, hasSentSurveyShownEvent, sendSurveyEvent ] );
 
@@ -66,11 +66,10 @@ const CurrentSurvey = () => {
 	} );
 
 	const answerQuestion = useCallback( ( answer ) => {
-		// console.log( 'answer', answer );
 		sendSurveyEvent( 'question_answered', {
 			// eslint-disable-next-line camelcase
 			question_ordinal: currentQuestion?.question_ordinal,
-			answer: { answer },
+			answer,
 		} );
 
 		setValues( formName, {

@@ -50,7 +50,6 @@ const SurveyQuestionRatingChoice = ( { choice, answerQuestion } ) => {
 		if ( typeof answerQuestion === 'function' ) {
 			answerQuestion( {
 				answer_ordinal: choice.answer_ordinal,
-				// answer: { answer_ordinal: choice.answer_ordinal },
 			} );
 		}
 	}, [ answerQuestion, choice ] );
