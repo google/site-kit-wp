@@ -46,7 +46,13 @@ const getIconFromType = ( type ) => {
 	}
 };
 
-export default function SettingsNotice( { children, type, Icon, LearnMore } ) {
+export default function SettingsNotice( {
+	notice,
+	type,
+	Icon,
+	LearnMore,
+	//  children,
+} ) {
 	return (
 		<div className={ classnames(
 			'googlesitekit-settings-notice',
@@ -62,7 +68,7 @@ export default function SettingsNotice( { children, type, Icon, LearnMore } ) {
 						<LearnMore />
 					</div>
 				) }
-				{ children }
+				{ notice }
 			</div>
 		</div>
 	);
@@ -70,6 +76,7 @@ export default function SettingsNotice( { children, type, Icon, LearnMore } ) {
 
 SettingsNotice.propTypes = {
 	children: PropTypes.node.isRequired,
+	notice: PropTypes.node,
 	type: PropTypes.oneOf( [ 'warning', 'info', 'suggestion' ] ),
 	Icon: PropTypes.elementType,
 	LearnMore: PropTypes.elementType,
@@ -79,4 +86,5 @@ SettingsNotice.defaultProps = {
 	type: TYPE_WARNING,
 	Icon: null,
 	LearnMore: null,
+	children: null,
 };
