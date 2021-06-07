@@ -34,7 +34,7 @@ class Google_Site_Kit_Proxy_Client extends Google_Site_Kit_Client {
 	 * @since 1.1.2
 	 * @var string
 	 */
-	protected $proxy_base_path = Google_Proxy::BASE_URL;
+	protected $proxy_base_path = Google_Proxy::PRODUCTION_BASE_URL;
 
 	/**
 	 * Construct the Google client.
