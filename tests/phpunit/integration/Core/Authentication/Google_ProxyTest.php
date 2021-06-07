@@ -295,13 +295,14 @@ class Google_ProxyTest extends TestCase {
 	}
 
 	public function test_get_platform() {
-		$platform = $this->google_proxy->get_platform();
+		$this->assertEquals( 'wordpress', Google_Proxy::get_platform() ); // phpcs:ignore WordPress.WP.CapitalPDangit.Misspelled
+	}
 
-		if ( is_multisite() ) {
-			$this->assertEquals( 'wordpress-multisite', $platform );
-		} else {
-			$this->assertEquals( 'wordpress', $platform ); // phpcs:ignore WordPress.WP.CapitalPDangit.Misspelled
-		}
+	/**
+	 * @group ms-required
+	 */
+	public function test_get_platform__multiste() {
+		$this->assertEquals( 'wordpress-multisite', Google_Proxy::get_platform() );
 	}
 
 	public function test_send_survey_trigger() {
