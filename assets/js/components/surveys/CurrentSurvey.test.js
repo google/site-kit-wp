@@ -171,7 +171,28 @@ describe( 'CurrentSurvey', () => {
 		expect( getByText( 'Another question: how do you feel when it rains?' ) ).toBeVisible();
 	} );
 
-	it( 'should trigger an early completion if a trigger condition is met, even if all questions have not been answered', async () => {
+	it( 'should not trigger an early completion if a trigger condition is met; all questions must be answered first', async () => {
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.multiQuestionSurvey, { triggerID: 'jestSurvey' } );
+
+		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		const { getByLabelText, getByText } = render( <CurrentSurvey />, { registry } );
+
+		// Even though the fixtures have a `trigger_completion` for this answer to
+		// this question, it should not be shown until all questions are answered.
+		fireEvent.click( getByLabelText( 'Delighted icon' ) );
+
+		expect( () => {
+			getByText( 'You answered positively!' );
+		} ).toThrow( /Unable to find an element with the text/ );
+
+		// The second question should appear after the first is answered.
+		expect(
+			getByText( 'Another question: how do you feel when it rains?' )
+		).toBeVisible();
+	} );
+
+	it( 'should show the completion for the first matching trigger', async () => {
 		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.multiQuestionSurvey, { triggerID: 'jestSurvey' } );
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
@@ -181,7 +202,10 @@ describe( 'CurrentSurvey', () => {
 		// Answering with this value causes the completion trigger to be met.
 		fireEvent.click( getByLabelText( 'Delighted icon' ) );
 
-		expect( getByText( 'You answered early!' ) ).toBeVisible();
+		// Answer the second question.
+		fireEvent.click( getByLabelText( 'Neutral icon' ) );
+
+		expect( getByText( 'You answered positively!' ) ).toBeVisible();
 	} );
 
 	it( 'should mark the question as answered in the core/forms datastore', async () => {

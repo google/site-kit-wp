@@ -63,8 +63,8 @@ export const multiQuestionSurvey = {
 		completion: [
 			{
 				completion_ordinal: 1,
-				completion_title: 'You answered early!',
-				completion_text: 'Because you picked answer 4 or 5 we ended this survey early. Cool!',
+				completion_title: 'You answered positively!',
+				completion_text: 'Because you picked answer 4 or 5 we showed this completion. Cool!',
 				follow_up_text: 'Let’s go',
 				follow_up_url: '#new-url',
 				trigger_condition: [
@@ -76,8 +76,8 @@ export const multiQuestionSurvey = {
 			},
 			{
 				completion_ordinal: 2,
-				completion_title: 'You answered both questions!',
-				completion_text: 'What a completionist!',
+				completion_title: 'You are seeing this because you did not answer the first question positively.',
+				completion_text: 'Thanks for completing the survey!',
 				follow_up_text: 'Get help',
 				follow_up_url: '#new-url-2',
 				trigger_condition: [
@@ -91,7 +91,7 @@ export const multiQuestionSurvey = {
 		question: [
 			{
 				question_ordinal: 1,
-				question_text: 'If you are really happy, this survey will end early!',
+				question_text: 'If you are really happy, this survey will show a different completion!',
 				question_type: 'rating',
 				question: {
 					answer_choice: [

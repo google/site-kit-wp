@@ -109,31 +109,34 @@ const CurrentSurvey = () => {
 		};
 	}, {} ) : [];
 
-	// Use Array.some to avoid looping through all completions; once a matching
-	// completion has been found, treat the survey as complete.
-	completions?.some( ( completion ) => {
-		completion.trigger_condition.some( ( condition ) => {
-			// If a question was answered with the appropriate value, a completion
-			// trigger has been fulfilled and we should treat this survey as complete.
-			if ( condition.answer_ordinal.includes( ordinalAnswerMap[ condition.question_ordinal ] ) ) { // eslint-disable-line camelcase
-				triggeredCompletion = completion;
+	if ( questions?.length && currentQuestionOrdinal > questions?.length ) {
+		// Use Array.some to avoid looping through all completions; once the first
+		// matching completion has been found, treat the survey as complete.
+		completions?.some( ( completion ) => {
+			completion.trigger_condition.some( ( condition ) => {
+				// If a question was answered with the appropriate value, a completion
+				// trigger has been fulfilled and we should treat this survey as
+				// complete.
+				if ( condition.answer_ordinal.includes( ordinalAnswerMap[ condition.question_ordinal ] ) ) { // eslint-disable-line camelcase
+					triggeredCompletion = completion;
+					return true;
+				}
+
+				return false;
+			} );
+
+			if ( triggeredCompletion ) {
 				return true;
 			}
 
 			return false;
 		} );
 
-		if ( triggeredCompletion ) {
-			return true;
+		// If no specific trigger has been found but all questions are answered, use
+		// the first available trigger.
+		if ( ! triggeredCompletion ) {
+			triggeredCompletion = completions[ 0 ];
 		}
-
-		return false;
-	} );
-
-	// If no specific trigger has been found but all questions are answered, use
-	// the first available trigger.
-	if ( ! triggeredCompletion && questions?.length && currentQuestionOrdinal > questions?.length ) {
-		triggeredCompletion = completions[ 0 ];
 	}
 
 	useEffect( () => {
