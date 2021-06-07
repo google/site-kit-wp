@@ -55,7 +55,7 @@ storiesOf( 'Global/Notices', module )
 		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore } notice={ new Array( 10 ).fill( 'This is an information. ' ) } />
 	) )
 	.add( 'Settings info notice with children', () => (
-		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore } notice="This is an information.">
+		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore } notice={ new Array( 5 ).fill( 'This is an information. ' ) }>
 			 { new Array( 10 ).fill( 'This is an information. ' ) }
 		</SettingsNotice>
 	) )
