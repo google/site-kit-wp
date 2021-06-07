@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import InfoIcon from '../../svg/info-icon.svg';
-import SuggestionIcon from '../../svg/suggestion-icon.svg';
-import WarningIcon from '../../svg/warning-icon.svg';
+import InfoIcon from '../../../svg/info-icon.svg';
+import SuggestionIcon from '../../../svg/suggestion-icon.svg';
+import WarningIcon from '../../../svg/warning-icon.svg';
 
 export const TYPE_WARNING = 'warning';
 export const TYPE_INFO = 'info';
