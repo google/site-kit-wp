@@ -59,7 +59,10 @@
 		}
 
 		.googlesitekit-settings-notice__learn-more {
+			display: flex;
+			flex-direction: row;
 			flex-shrink: 0;
+			justify-content: flex-end;
 			margin-left: $grid-gap-desktop;
 		}
 	}

@@ -91,7 +91,9 @@ const SettingsNoticeMultiRow = ( {
 					</div>
 					{ LearnMore && (
 						<div className="googlesitekit-settings-notice__learn-more">
-							<LearnMore />
+							<div>
+								<LearnMore />
+							</div>
 						</div>
 					) }
 				</div>
