@@ -39,6 +39,10 @@ const LearnMore = () => (
 
 export default function GA4Notice() {
 	return (
-		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore } notice={ __( 'Got a Google Analytics 4 (GA4) property and want to find out how to use it with Site Kit?', 'google-site-kit' ) } />
+		<SettingsNotice
+			type={ TYPE_INFO }
+			LearnMore={ LearnMore }
+			notice={ __( 'Got a Google Analytics 4 (GA4) property and want to find out how to use it with Site Kit?', 'google-site-kit' ) }
+		/>
 	);
 }
