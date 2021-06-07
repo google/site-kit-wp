@@ -27,21 +27,19 @@ import { __ } from '@wordpress/i18n';
 import SettingsNotice, { TYPE_INFO } from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
 
-const LearnMore = () => (
-	<Link
-		href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
-		external
-		inherit
-	>
-		{ __( 'Learn more here.', 'google-site-kit' ) }
-	</Link>
-);
-
 export default function GA4Notice() {
 	return (
 		<SettingsNotice
 			type={ TYPE_INFO }
-			LearnMore={ LearnMore }
+			LearnMore={ () => (
+				<Link
+					href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
+					external
+					inherit
+				>
+					{ __( 'Learn more here.', 'google-site-kit' ) }
+				</Link>
+			) }
 			notice={ __( 'Got a Google Analytics 4 (GA4) property and want to find out how to use it with Site Kit?', 'google-site-kit' ) }
 		/>
 	);
