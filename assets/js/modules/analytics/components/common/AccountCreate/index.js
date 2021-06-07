@@ -35,7 +35,6 @@ import AccountField from './AccountField';
 import PropertyField from './PropertyField';
 import ProfileField from './ProfileField';
 import CountrySelect from './CountrySelect';
-import GA4PropertyNotice from './GA4PropertyNotice';
 import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
 import GA4Notice from '../GA4Notice';
 import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../../../datastore/constants';
@@ -46,6 +45,7 @@ import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/c
 import { getAccountDefaults } from '../../../util/account';
 import { useFeature } from '../../../../../hooks/useFeature';
 import Data from 'googlesitekit-data';
+import SettingsNotice from '../../../../../components/SettingsNotice';
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
@@ -174,7 +174,22 @@ export default function AccountCreate() {
 				{ ! hasProvisioningScope && <span>{ __( 'You will need to give Site Kit permission to create an Analytics account on your behalf and also accept the Google Analytics terms of service.', 'google-site-kit' ) }</span> }
 			</p>
 
-			{ isGA4enabled && <GA4PropertyNotice /> }
+			{ isGA4enabled && (
+				<SettingsNotice
+					LearnMore={ () => (
+						<Link
+							// ticket says TODO. Felix clarified
+							href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
+							external
+							inherit
+						>
+							{ __( 'Learn more here.', 'google-site-kit' ) }
+						</Link>
+					) }
+					notice={ __( 'This will create both a Google Analytics 4 and Universal Analytics property.', 'google-site-kit' ) }
+				/>
+			)
+			}
 
 			<div className="googlesitekit-setup-module__action">
 				<Button

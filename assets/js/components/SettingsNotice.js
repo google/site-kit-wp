@@ -126,7 +126,7 @@ SettingsNotice.propTypes = {
 };
 
 SettingsNotice.defaultProps = {
-	type: TYPE_WARNING,
+	type: TYPE_INFO,
 	Icon: null,
 	LearnMore: null,
 	children: null,
