@@ -54,7 +54,4 @@ SettingsNotice.propTypes = {
 
 SettingsNotice.defaultProps = {
 	type: TYPE_INFO,
-	Icon: null,
-	LearnMore: null,
-	children: null,
 };
