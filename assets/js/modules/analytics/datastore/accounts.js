@@ -329,7 +329,7 @@ const baseResolvers = {
 
 		// Try to find a new matched ga4 property if the current one has a different accountID.
 		if ( ga4Property?._accountID !== accountID ) {
-			yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).matchAndSelectProperty( accountID ) );
+			yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).matchAndSelectProperty( accountID, GA4_PROPERTY_CREATE ) );
 		}
 	},
 };

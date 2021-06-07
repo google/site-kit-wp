@@ -300,7 +300,7 @@ export function getAnalyticsMockResponse( args ) {
 /**
  * Generates mock response for Analytics reports.
  *
- * @since n.e.x.t
+ * @since 1.34.0
  *
  * @param {wp.data.registry} registry Registry with all available stores registered.
  * @param {Object}           options  Report options.

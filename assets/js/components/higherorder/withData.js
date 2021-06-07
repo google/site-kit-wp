@@ -374,6 +374,7 @@ const withData = (
 	return withSelect( ( select ) => {
 		return {
 			dateRange: select( CORE_USER ).getDateRange(),
+			dateRangeLength: select( CORE_USER ).getDateRangeNumberOfDays(),
 		};
 	} )( NewComponent );
 };

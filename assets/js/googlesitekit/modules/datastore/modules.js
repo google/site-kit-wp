@@ -457,7 +457,7 @@ const baseResolvers = {
 			} );
 		} else {
 			try {
-				yield Data.commonActions.await( module.checkRequirements() );
+				yield Data.commonActions.await( module.checkRequirements( registry ) );
 				yield baseActions.receiveCheckRequirementsSuccess( slug );
 			} catch ( error ) {
 				yield baseActions.receiveCheckRequirementsError( slug, error );
