@@ -35,9 +35,21 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 		return API.set( 'modules', 'idea-hub', 'create-idea-draft-post', { idea } );
 	},
 	reducerCallback: ( state, ideaDraftPost ) => {
+		// ideaDraftPost is an array (?)
+		const draftPostIdea = ideaDraftPost[ 0 ];
+		const newIdeas = [
+			...( state.newIdeas || [] ),
+		].filter( ( { name } ) => name !== draftPostIdea.name );
+
+		const savedIdeas = [
+			...( state.savedIdeas || [] ),
+		].filter( ( { name } ) => name !== draftPostIdea.name );
+
 		return {
 			...state,
-			draftPostIdeas: [ ...( state.draftPostIdeas || [] ), ideaDraftPost ],
+			draftPostIdeas: [ ...( state.draftPostIdeas || [] ), draftPostIdea ],
+			newIdeas,
+			savedIdeas,
 		};
 	},
 	argsToParams: ( idea ) => {
