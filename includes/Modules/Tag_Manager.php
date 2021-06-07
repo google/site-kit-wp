@@ -95,6 +95,8 @@ final class Tag_Manager extends Module
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 		// Filter the Analytics `canUseSnippet` value.
 		add_action( 'googlesitekit_analytics_can_use_snippet', $this->get_method_proxy( 'can_analytics_use_snippet' ) );
+		// Filter whether certain users can be excluded from tracking.
+		add_action( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
 	}
 
 	/**
