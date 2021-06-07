@@ -42,6 +42,10 @@
 
 		}
 
+		.googlesitekit-settings-notice__row + .googlesitekit-settings-notice__row {
+			padding-top: 0;
+		}
+
 		.googlesitekit-settings-notice__icon {
 			margin-right: $grid-gap-desktop;
 		}

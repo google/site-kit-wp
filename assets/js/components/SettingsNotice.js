@@ -23,6 +23,11 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import InfoIcon from '../../svg/info-icon.svg';
@@ -54,7 +59,6 @@ const SettingsNoticeSingleRow = ( {
 } ) => {
 	return (
 		<div className="googlesitekit-settings-notice__row">
-
 			<div className="googlesitekit-settings-notice__icon">
 				{ Icon ? <Icon /> : getIconFromType( type ) }
 			</div>
@@ -66,31 +70,53 @@ const SettingsNoticeSingleRow = ( {
 					<LearnMore />
 				</div>
 			) }
-		</div> );
+		</div>
+	);
 };
 
-const SettingsNoticeMultiRow = () => <p>SettingsNoticeMultiRow</p>;
-
-export default function SettingsNotice( {
+const SettingsNoticeMultiRow = ( {
 	notice,
 	type,
 	Icon,
 	LearnMore,
 	children,
-} ) {
+} ) => {
+	return (
+		<Fragment>
+			<div className="googlesitekit-settings-notice__row">
+				<div className="googlesitekit-settings-notice__icon">
+					{ Icon ? <Icon /> : getIconFromType( type ) }
+				</div>
+				<div className="googlesitekit-settings-notice__text">
+					{ notice }
+				</div>
+			</div>
+			<div className="googlesitekit-settings-notice__row">
+				<div>
+
+					{ children }
+				</div>
+				{ LearnMore && (
+					<div className="googlesitekit-settings-notice__learn-more">
+						<LearnMore />
+					</div>
+				) }
+			</div>
+		</Fragment>
+	);
+};
+
+export default function SettingsNotice( props ) {
+	const { children, type } = props;
+
 	return (
 		<div className={ classnames(
 			'googlesitekit-settings-notice',
 			`googlesitekit-settings-notice--${ type }`
 		) } >
-			{ !! children && <SettingsNoticeMultiRow /> }
+			{ !! children && <SettingsNoticeMultiRow { ...props } /> }
 			{ ! children && (
-				<SettingsNoticeSingleRow
-					notice={ notice }
-					type={ type }
-					Icon={ Icon }
-					LearnMore={ LearnMore }
-				/> ) }
+				<SettingsNoticeSingleRow { ...props } /> ) }
 		</div>
 	);
 }
