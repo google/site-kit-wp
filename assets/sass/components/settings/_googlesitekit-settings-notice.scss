@@ -20,23 +20,26 @@
 	background-color: $c-background-notice;
 	border-radius: 4px;
 	color: $c-text-notice;
-
-	display: flex;
 	margin: 1.5em 0;
-	padding: $grid-gap-phone;
 
-	@media (min-width: $bp-desktop) {
-		padding: $grid-gap-desktop;
-	}
 
 	&--warning,
 	&--info,
 	&--suggestion {
 
-		// do we want this? the parent should decide?
 		svg {
 			height: 20px;
 			width: 20px;
+		}
+
+		.googlesitekit-settings-notice__row {
+			display: flex;
+			padding: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				padding: $grid-gap-desktop;
+			}
+
 		}
 
 		.googlesitekit-settings-notice__icon {

@@ -46,18 +46,14 @@ const getIconFromType = ( type ) => {
 	}
 };
 
-export default function SettingsNotice( {
+const SettingsNoticeSingleRow = ( {
 	notice,
 	type,
 	Icon,
 	LearnMore,
-	//  children,
-} ) {
+} ) => {
 	return (
-		<div className={ classnames(
-			'googlesitekit-settings-notice',
-			`googlesitekit-settings-notice--${ type }`
-		) } >
+		<div className="googlesitekit-settings-notice__row">
 
 			<div className="googlesitekit-settings-notice__icon">
 				{ Icon ? <Icon /> : getIconFromType( type ) }
@@ -70,13 +66,38 @@ export default function SettingsNotice( {
 				) }
 				{ notice }
 			</div>
+		</div> );
+};
+
+const SettingsNoticeMultiRow = () => <p>SettingsNoticeMultiRow</p>;
+
+export default function SettingsNotice( {
+	notice,
+	type,
+	Icon,
+	LearnMore,
+	children,
+} ) {
+	return (
+		<div className={ classnames(
+			'googlesitekit-settings-notice',
+			`googlesitekit-settings-notice--${ type }`
+		) } >
+			{ !! children && <SettingsNoticeMultiRow /> }
+			{ ! children && (
+				<SettingsNoticeSingleRow
+					notice={ notice }
+					type={ type }
+					Icon={ Icon }
+					LearnMore={ LearnMore }
+				/> ) }
 		</div>
 	);
 }
 
 SettingsNotice.propTypes = {
-	children: PropTypes.node.isRequired,
-	notice: PropTypes.node,
+	children: PropTypes.node,
+	notice: PropTypes.node.isRequired,
 	type: PropTypes.oneOf( [ 'warning', 'info', 'suggestion' ] ),
 	Icon: PropTypes.elementType,
 	LearnMore: PropTypes.elementType,
