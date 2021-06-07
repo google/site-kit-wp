@@ -109,6 +109,7 @@ If you have some ideas to improve the plugin or to solve a bug, feel free to rai
 
 **Fixed**
 
+* Fix regression where widget-based single URL screen would show up completely empty for content not found in the WordPress site. See [#3493](https://github.com/google/site-kit-wp/issues/3493).
 * Fix potential `dateRangeLength must be a positive integer.` error for Search Console reports with missing dates. See [#3418](https://github.com/google/site-kit-wp/issues/3418).
 
 = 1.33.0 =
