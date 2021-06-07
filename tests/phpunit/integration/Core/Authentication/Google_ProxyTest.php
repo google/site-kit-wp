@@ -294,6 +294,9 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEqualSetsWithIndex( $expected_success_response, $features );
 	}
 
+	/**
+	 * @group ms-excluded
+	 */
 	public function test_get_platform() {
 		$this->assertEquals( 'wordpress', Google_Proxy::get_platform() ); // phpcs:ignore WordPress.WP.CapitalPDangit.Misspelled
 	}
