@@ -426,7 +426,9 @@ describe( 'CurrentSurvey', () => {
 				body: {
 					data: {
 						event: {
-							follow_up_link_clicked: {},
+							follow_up_link_clicked: {
+								completion_ordinal: 1,
+							},
 						},
 						session: fixtures.singleQuestionSurvey.session,
 					},

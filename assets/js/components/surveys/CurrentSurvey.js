@@ -39,13 +39,6 @@ const CurrentSurvey = () => {
 	const [ hasSentSurveyShownEvent, setHasSentSurveyShownEvent ] = useState( false );
 	const [ hasSentCompletionEvent, setHasSentCompletionEvent ] = useState( false );
 
-	useEffect( () => {
-		if ( questions?.length && ! hasSentSurveyShownEvent ) {
-			setHasSentSurveyShownEvent( true );
-			sendSurveyEvent( 'survey_shown' );
-		}
-	}, [ questions, hasSentSurveyShownEvent, sendSurveyEvent ] );
-
 	const completions = useSelect( ( select ) => select( CORE_USER ).getCurrentSurveyCompletions() );
 	const questions = useSelect( ( select ) => select( CORE_USER ).getCurrentSurveyQuestions() );
 	const surveySession = useSelect( ( select ) => select( CORE_USER ).getCurrentSurveySession() );
@@ -60,6 +53,13 @@ const CurrentSurvey = () => {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { sendSurveyEvent } = useDispatch( CORE_USER );
+
+	useEffect( () => {
+		if ( questions?.length && ! hasSentSurveyShownEvent ) {
+			setHasSentSurveyShownEvent( true );
+			sendSurveyEvent( 'survey_shown' );
+		}
+	}, [ questions, hasSentSurveyShownEvent, sendSurveyEvent ] );
 
 	const currentQuestion = questions?.find( ( question ) => {
 		return question.question_ordinal === currentQuestionOrdinal;
@@ -83,19 +83,6 @@ const CurrentSurvey = () => {
 			],
 		} );
 	}, [ answers, currentQuestion, formName, sendSurveyEvent, setValues ] );
-
-	const ctaOnClick = useCallback( () => {
-		sendSurveyEvent( 'follow_up_link_clicked' );
-		sendSurveyEvent( 'survey_closed' );
-
-		setValues( formName, { hideSurvey: true } );
-	}, [ formName, sendSurveyEvent, setValues ] );
-
-	const dismissSurvey = useCallback( () => {
-		sendSurveyEvent( 'survey_closed' );
-
-		setValues( formName, { hideSurvey: true } );
-	}, [ formName, sendSurveyEvent, setValues ] );
 
 	// Check to see if a completion trigger has been met.
 	let triggeredCompletion;
@@ -138,11 +125,28 @@ const CurrentSurvey = () => {
 		}
 	}
 
+	const ctaOnClick = useCallback( () => {
+		sendSurveyEvent( 'follow_up_link_clicked', {
+			// eslint-disable-next-line camelcase
+			completion_ordinal: triggeredCompletion?.completion_ordinal,
+		} );
+		sendSurveyEvent( 'survey_closed' );
+
+		setValues( formName, { hideSurvey: true } );
+	}, [ formName, sendSurveyEvent, setValues, triggeredCompletion ] );
+
+	const dismissSurvey = useCallback( () => {
+		sendSurveyEvent( 'survey_closed' );
+
+		setValues( formName, { hideSurvey: true } );
+	}, [ formName, sendSurveyEvent, setValues ] );
+
 	useEffect( () => {
 		if ( triggeredCompletion && ! hasSentCompletionEvent ) {
 			setHasSentCompletionEvent( true );
 			sendSurveyEvent( 'completion_shown', {
-				completion_ordinal: triggeredCompletion.completion_ordinal,
+				// eslint-disable-next-line camelcase
+				completion_ordinal: triggeredCompletion?.completion_ordinal,
 			} );
 		}
 	}, [ hasSentCompletionEvent, sendSurveyEvent, triggeredCompletion ] );
