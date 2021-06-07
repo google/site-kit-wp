@@ -44,8 +44,7 @@ const LearnMore = () => (
 
 export default function GA4PropertyNotice( { notice, children } ) {
 	return (
-		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore }>
-			{ notice }
+		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore } notice={ notice }>
 			{ children }
 		</SettingsNotice>
 	);
