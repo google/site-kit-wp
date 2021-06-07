@@ -59,13 +59,13 @@ const SettingsNoticeSingleRow = ( {
 				{ Icon ? <Icon /> : getIconFromType( type ) }
 			</div>
 			<div className="googlesitekit-settings-notice__text">
-				{ LearnMore && (
-					<div className="googlesitekit-settings-notice__learn-more">
-						<LearnMore />
-					</div>
-				) }
 				{ notice }
 			</div>
+			{ LearnMore && (
+				<div className="googlesitekit-settings-notice__learn-more">
+					<LearnMore />
+				</div>
+			) }
 		</div> );
 };
 

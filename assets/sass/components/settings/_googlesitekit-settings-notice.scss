@@ -43,7 +43,7 @@
 		}
 
 		.googlesitekit-settings-notice__icon {
-			margin-right: 10px;
+			margin-right: $grid-gap-desktop;
 		}
 
 		.googlesitekit-settings-notice__text {
@@ -51,7 +51,8 @@
 		}
 
 		.googlesitekit-settings-notice__learn-more {
-			float: right;
+			flex-shrink: 0;
+			margin-left: $grid-gap-desktop;
 		}
 	}
 
