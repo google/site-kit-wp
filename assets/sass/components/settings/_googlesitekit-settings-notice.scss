@@ -92,12 +92,15 @@
 			}
 		}
 
+		.googlesitekit-settings-notice__learn-more {
+			flex-shrink: 0;
+			margin-left: $grid-gap-desktop;
+		}
+
 		.googlesitekit-settings-notice__learn-more--align-bottom {
 			display: flex;
 			flex-direction: column;
-			flex-shrink: 0;
 			justify-content: flex-end;
-			margin-left: $grid-gap-desktop;
 		}
 	}
 

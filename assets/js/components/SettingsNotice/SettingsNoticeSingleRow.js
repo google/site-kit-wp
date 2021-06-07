@@ -36,7 +36,7 @@ const SettingsNoticeSingleRow = ( {
 				{ notice }
 			</div>
 			{ LearnMore && (
-				<div>
+				<div className="googlesitekit-settings-notice__learn-more">
 					<LearnMore />
 				</div>
 			) }
