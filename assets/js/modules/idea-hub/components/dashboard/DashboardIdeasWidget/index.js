@@ -164,8 +164,7 @@ DashboardIdeasWidget.defaultProps = {
 	defaultActiveTabIndex: 0,
 };
 
-export default DashboardIdeasWidget;
-// export default whenActive( {
-// 	moduleName: 'idea-hub',
-// 	FallbackComponent: DashboardCTA,
-// } )( DashboardIdeasWidget );
+export default whenActive( {
+	moduleName: 'idea-hub',
+	FallbackComponent: DashboardCTA,
+} )( DashboardIdeasWidget );
