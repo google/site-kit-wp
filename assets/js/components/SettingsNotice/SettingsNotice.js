@@ -41,7 +41,7 @@ export default function SettingsNotice( props ) {
 	);
 }
 
-// Extra props are used in child components
+// Extra props are used in child components.
 SettingsNotice.propTypes = {
 	children: PropTypes.node,
 	notice: PropTypes.node.isRequired,
