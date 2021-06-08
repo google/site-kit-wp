@@ -151,6 +151,20 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( $failure_response_data, false );
 	}
 
+	public function test_url_handles_staging() {
+		$url = $this->google_proxy->url();
+		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
+		define( 'GOOGLESITEKIT_PROXY_URL', Google_Proxy::STAGING_BASE_URL );
+		$url = $this->google_proxy->url();
+		$this->assertEquals( $url, Google_Proxy::STAGING_BASE_URL );
+	}
+
+	public function test_url_ignores_invalid_values() {
+		define( 'GOOGLESITEKIT_PROXY_URL', 'https://example.com' );
+		$url = $this->google_proxy->url();
+		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
+	}
+
 	public function test_get_user_fields() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
