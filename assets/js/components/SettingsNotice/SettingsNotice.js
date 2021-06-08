@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import SettingsNoticeSingleRow from './SettingsNoticeSingleRow';
 import SettingsNoticeMultiRow from './SettingsNoticeMultiRow';
-import { TYPE_INFO } from './utils';
+import { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION } from './utils';
 
 export default function SettingsNotice( props ) {
 	const { children, type } = props;
@@ -45,7 +45,7 @@ export default function SettingsNotice( props ) {
 SettingsNotice.propTypes = {
 	children: PropTypes.node,
 	notice: PropTypes.node.isRequired,
-	type: PropTypes.oneOf( [ 'warning', 'info', 'suggestion' ] ),
+	type: PropTypes.oneOf( [ TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION ] ),
 	Icon: PropTypes.elementType,
 	LearnMore: PropTypes.elementType,
 };

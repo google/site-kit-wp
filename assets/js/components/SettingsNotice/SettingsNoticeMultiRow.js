@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { getIconFromType } from './utils';
+import { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION, getIconFromType } from './utils';
 
 const SettingsNoticeMultiRow = ( {
 	notice,
@@ -64,7 +64,7 @@ export default SettingsNoticeMultiRow;
 SettingsNoticeMultiRow.propTypes = {
 	children: PropTypes.node.isRequired,
 	notice: PropTypes.node.isRequired,
-	type: PropTypes.oneOf( [ 'warning', 'info', 'suggestion' ] ),
+	type: PropTypes.oneOf( [ TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION ] ),
 	Icon: PropTypes.elementType,
 	LearnMore: PropTypes.elementType,
 };
