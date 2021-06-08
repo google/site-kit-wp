@@ -90,7 +90,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await proceedToSetUpAnalytics();
 
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module--analytics p', {
-			text: new RegExp( `An existing analytics tag was found on your site with the id ${ existingTag.propertyID }`, 'i' ),
+			text: new RegExp( `An existing Universal Analytics tag was found on your site with the ID ${ existingTag.propertyID }`, 'i' ),
 		} );
 
 		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: /test account a/i } );

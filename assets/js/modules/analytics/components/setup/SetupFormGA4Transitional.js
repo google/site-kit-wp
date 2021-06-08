@@ -20,12 +20,13 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { Fragment, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { STORE_NAME, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
@@ -36,16 +37,37 @@ import {
 	PropertySelectIncludingGA4,
 	ProfileNameTextField,
 	GA4PropertyNotice,
+	ExistingTagNotice,
 } from '../common';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4Transitional() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const propertyType = useSelect( ( select ) => select( STORE_NAME ).getPrimaryPropertyType() );
 
-	// Needed to conditionally show the profile name field and surrounding container.
+	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
+
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+
+	const ga4ExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
+	const ga4MeasurementID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID() );
+
+	const { setUseSnippet: uaSetUseSnippet } = useDispatch( STORE_NAME );
+	const { setUseSnippet: ga4SetUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
+
+	useEffect( () => {
+		uaSetUseSnippet( existingTag !== propertyID );
+		ga4SetUseSnippet( ga4ExistingTag !== ga4MeasurementID );
+	}, [
+		uaSetUseSnippet,
+		existingTag,
+		propertyID,
+		ga4SetUseSnippet,
+		ga4ExistingTag,
+		ga4MeasurementID,
+	] );
 
 	const notice = propertyType === PROPERTY_TYPE_UA
 		? __( 'You’ll need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property.', 'google-site-kit' )
@@ -54,6 +76,7 @@ export default function SetupFormGA4Transitional() {
 	return (
 		<Fragment>
 			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
+			<ExistingTagNotice />
 
 			{ ( !! accounts.length && ! hasExistingTag ) && (
 				<p className="googlesitekit-margin-bottom-0">
