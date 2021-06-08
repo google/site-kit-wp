@@ -34,7 +34,6 @@
 
 		.googlesitekit-settings-notice__row {
 			display: flex;
-			padding: $grid-gap-phone;
 
 			@media (min-width: $bp-desktop) {
 				padding: $grid-gap-desktop;
@@ -42,8 +41,12 @@
 		}
 
 		.googlesitekit-settings-notice__inner-row {
-			display: flex;
 			padding-top: $grid-gap-phone;
+
+			@media (min-width: $bp-tablet) {
+				display: flex;
+				padding-top: $grid-gap-desktop;
+			}
 
 			@media (min-width: $bp-desktop) {
 				padding-top: $grid-gap-desktop;
@@ -55,7 +58,11 @@
 		}
 
 		.googlesitekit-settings-notice__icon {
-			margin-right: $grid-gap-desktop;
+			margin-right: $grid-gap-phone;
+
+			@media (min-width: $bp-tablet) {
+				margin-right: $grid-gap-desktop;
+			}
 		}
 
 		.googlesitekit-settings-notice__text {
@@ -97,13 +104,21 @@
 
 		.googlesitekit-settings-notice__learn-more {
 			flex-shrink: 0;
-			margin-left: $grid-gap-desktop;
+
+			@media (min-width: $bp-desktop) {
+				margin-left: $grid-gap-desktop;
+			}
 		}
 
 		.googlesitekit-settings-notice__learn-more--align-bottom {
-			display: flex;
-			flex-direction: column;
-			justify-content: flex-end;
+			text-align: right;
+
+			@media (min-width: $bp-tablet) {
+				display: flex;
+				flex-direction: column;
+				justify-content: flex-end;
+				text-align: left;
+			}
 		}
 	}
 
