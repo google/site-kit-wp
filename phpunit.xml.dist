@@ -1,7 +1,7 @@
 <phpunit
         bootstrap="tests/phpunit/bootstrap.php"
         backupGlobals="false"
-        processIsolation="false"
+        processIsolation="true"
         colors="true">
     <testsuites>
         <testsuite name="Site Kit Test Suite">

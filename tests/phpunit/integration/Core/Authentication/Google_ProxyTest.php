@@ -154,6 +154,13 @@ class Google_ProxyTest extends TestCase {
 	public function test_url_handles_staging() {
 		$url = $this->google_proxy->url();
 		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
+		if ( defined( 'GOOGLESITEKIT_PROXY_URL' ) ) {
+			if ( function_exists( 'runkit7_constant_remove' ) ) {
+				runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
+			} else {
+				return;
+			}
+		}
 		define( 'GOOGLESITEKIT_PROXY_URL', Google_Proxy::STAGING_BASE_URL );
 		$url = $this->google_proxy->url();
 		$this->assertEquals( $url, Google_Proxy::STAGING_BASE_URL );
