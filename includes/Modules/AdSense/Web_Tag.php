@@ -39,7 +39,9 @@ class Web_Tag extends Module_Web_Tag {
 				}
 
 				return $urls;
-			}
+			},
+			10,
+			2
 		);
 
 		$this->do_init_tag_action();
