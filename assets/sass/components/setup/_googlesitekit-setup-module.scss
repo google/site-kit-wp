@@ -66,12 +66,13 @@
 		margin-top: 0;
 	}
 
-	.googlesitekit-setup-module__inputs + .googlesitekit-settings-notice {
-		font-size: 0.875rem;
-		line-height: 1.42;
-		margin-top: 0;
-		padding: 14.5px;
-	}
+	// two week old rule by Asvin
+	// .googlesitekit-setup-module__inputs + .googlesitekit-settings-notice {
+	// 	font-size: 0.875rem;
+	// 	line-height: 1.42;
+	// 	margin-top: 0;
+	// 	padding: 14.5px;
+	// }
 
 	// Avoid paragraph's causing extra space
 	// before .googlesitekit-setup-module__inputs.
