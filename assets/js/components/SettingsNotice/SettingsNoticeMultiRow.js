@@ -42,13 +42,13 @@ const SettingsNoticeMultiRow = ( {
 				<div className="googlesitekit-settings-notice__text">
 					{ notice }
 				</div>
-				<div className="googlesitekit-settings-notice__inner-row">
+				<div className="googlesitekit-settings-notice--multi-row__inner-row">
 					<div className="googlesitekit-settings-notice__children-container">
 						{ children }
 					</div>
 					{ LearnMore && (
 						<div
-							className="googlesitekit-settings-notice__learn-more googlesitekit-settings-notice__learn-more--align-bottom"
+							className="googlesitekit-settings-notice__learn-more--multi-row"
 						>
 							<LearnMore />
 						</div>

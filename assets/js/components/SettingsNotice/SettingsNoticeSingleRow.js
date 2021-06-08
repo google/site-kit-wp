@@ -34,19 +34,21 @@ const SettingsNoticeSingleRow = ( {
 } ) => {
 	return (
 		<div
-			className="googlesitekit-settings-notice__row googlesitekit-settings-notice__row--single-row"
+			className="googlesitekit-settings-notice__row"
 		>
 			<div className="googlesitekit-settings-notice__icon">
 				{ Icon ? <Icon /> : getIconFromType( type ) }
 			</div>
-			<div className="googlesitekit-settings-notice__text">
-				{ notice }
-			</div>
-			{ LearnMore && (
-				<div className="googlesitekit-settings-notice__learn-more">
-					<LearnMore />
+			<div className="googlesitekit-settings-notice--single-row__inner-row">
+				<div className="googlesitekit-settings-notice__text">
+					{ notice }
 				</div>
-			) }
+				{ LearnMore && (
+					<div className="googlesitekit-settings-notice__learn-more--single-row">
+						<LearnMore />
+					</div>
+				) }
+			</div>
 		</div>
 	);
 };
