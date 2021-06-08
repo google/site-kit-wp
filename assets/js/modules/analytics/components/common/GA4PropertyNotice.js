@@ -38,7 +38,7 @@ const LearnMore = () => (
 		external
 		inherit
 	>
-		{ __( 'Learn more here.', 'google-site-kit' ) }
+		{ __( 'Learn more', 'google-site-kit' ) }
 	</Link>
 );
 
