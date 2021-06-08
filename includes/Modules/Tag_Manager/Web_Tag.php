@@ -37,6 +37,16 @@ class Web_Tag extends Module_Web_Tag {
 		add_action( 'wp_body_open', $render_no_js, -9999 );
 		// For non-AMP (as fallback).
 		add_action( 'wp_footer', $render_no_js );
+		add_filter(
+			'wp_resource_hints',
+			function( $urls, $relation_type ) {
+				if ( 'dns-prefetch' === $relation_type ) {
+					$urls[] = '//www.googletagmanager.com';
+				}
+
+				return $urls;
+			}
+		);
 
 		$this->do_init_tag_action();
 	}
