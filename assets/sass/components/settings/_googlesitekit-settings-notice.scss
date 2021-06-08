@@ -50,6 +50,10 @@
 			}
 		}
 
+		.googlesitekit-settings-notice__children-container {
+			flex-grow: 1;
+		}
+
 		.googlesitekit-settings-notice__icon {
 			margin-right: $grid-gap-desktop;
 		}
