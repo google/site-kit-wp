@@ -33,7 +33,9 @@ const SettingsNoticeSingleRow = ( {
 	LearnMore,
 } ) => {
 	return (
-		<div className="googlesitekit-settings-notice__row">
+		<div
+			className="googlesitekit-settings-notice__row googlesitekit-settings-notice__row--single-row"
+		>
 			<div className="googlesitekit-settings-notice__icon">
 				{ Icon ? <Icon /> : getIconFromType( type ) }
 			</div>

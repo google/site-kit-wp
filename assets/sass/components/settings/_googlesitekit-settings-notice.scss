@@ -119,6 +119,28 @@
 				text-align: left;
 			}
 		}
+
+		.googlesitekit-settings-notice__row--single-row {
+
+			@media (max-width: $bp-tablet) {
+				flex-wrap: wrap;
+			}
+
+			.googlesitekit-settings-notice__text {
+
+				@media (max-width: $bp-tablet) {
+					flex-basis: 80%;
+				}
+			}
+
+			.googlesitekit-settings-notice__learn-more {
+
+				@media (max-width: $bp-tablet) {
+					flex-basis: 100%;
+					padding-top: $grid-gap-phone;
+				}
+			}
+		}
 	}
 
 	&--warning {
