@@ -83,9 +83,4 @@ SurveyAnsweredPositiveStory.args = {
 
 export default {
 	title: 'Components/Surveys/CurrentSurvey',
-	decorators: [
-		( Story ) => (
-			<Story />
-		),
-	],
 };
