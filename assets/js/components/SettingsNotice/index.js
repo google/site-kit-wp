@@ -16,7 +16,11 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import SettingsNotice from './SettingsNotice';
+
 export { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION } from './utils';
 
 export default SettingsNotice;
