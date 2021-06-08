@@ -44,6 +44,7 @@ import {
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE, FORM_SETUP } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isFeatureEnabled } from '../../../features';
+import { isPermissionScopeError } from '../../../util/errors';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID = 'a valid accountID is required to submit changes';
@@ -66,8 +67,8 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 
 		propertyID = property.id;
-		await dispatch( STORE_NAME ).setPropertyID( property.id );
-		await dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
+		dispatch( STORE_NAME ).setPropertyID( property.id );
+		dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 	}
 
 	const profileID = select( STORE_NAME ).getProfileID();
@@ -80,7 +81,7 @@ export async function submitChanges( { select, dispatch } ) {
 			return { error };
 		}
 
-		await dispatch( STORE_NAME ).setProfileID( profile.id );
+		dispatch( STORE_NAME ).setProfileID( profile.id );
 	}
 
 	// This action shouldn't be called if settings haven't changed,
@@ -99,7 +100,10 @@ export async function submitChanges( { select, dispatch } ) {
 
 	if ( isFeatureEnabled( 'ga4setup' ) ) {
 		if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
-			await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+			const { error } = await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+			if ( isPermissionScopeError( error ) ) {
+				return { error };
+			}
 		}
 	}
 
