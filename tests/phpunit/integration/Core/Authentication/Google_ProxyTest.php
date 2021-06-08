@@ -154,6 +154,8 @@ class Google_ProxyTest extends TestCase {
 	public function test_url_handles_staging() {
 		$url = $this->google_proxy->url();
 		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
+		// The test for this behaviour depends on a constant value which can
+		// only be redefined if PECL extension runkit7 is installed.
 		if ( defined( 'GOOGLESITEKIT_PROXY_URL' ) ) {
 			if ( function_exists( 'runkit7_constant_remove' ) ) {
 				runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
@@ -167,6 +169,15 @@ class Google_ProxyTest extends TestCase {
 	}
 
 	public function test_url_ignores_invalid_values() {
+		// The test for this behaviour depends on a constant value which can
+		// only be redefined if PECL extension runkit7 is installed.
+		if ( defined( 'GOOGLESITEKIT_PROXY_URL' ) ) {
+			if ( function_exists( 'runkit7_constant_remove' ) ) {
+				runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
+			} else {
+				return;
+			}
+		}
 		define( 'GOOGLESITEKIT_PROXY_URL', 'https://example.com' );
 		$url = $this->google_proxy->url();
 		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
