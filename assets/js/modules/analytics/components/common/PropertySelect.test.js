@@ -95,7 +95,7 @@ describe( 'PropertySelect', () => {
 			.toHaveClass( 'mdc-select--disabled' );
 	} );
 
-	it( 'should be disabled when in the absence of an valid account ID.', async () => {
+	it( 'should not render if account ID is invalid', () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry( { dispatch } ) {
 				setupRegistry( { dispatch } );
@@ -109,11 +109,20 @@ describe( 'PropertySelect', () => {
 		expect( selectWrapper ).not.toHaveClass( 'mdc-select--disabled' );
 		expect( selectedText ).not.toHaveAttribute( 'aria-disabled', 'true' );
 
-		await act( () => registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE ) );
+		act( () => {
+			registry.dispatch( STORE_NAME ).setAccountID( 'abcd' );
+		} );
 
-		// ACCOUNT_CREATE is an invalid (but valid selection), so ensure the select IS currently disabled.
-		expect( selectWrapper ).toHaveClass( 'mdc-select--disabled' );
-		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'true' );
+		// abcd is an invalid account ID, so ensure the property select dropdown is not rendered.
+		expect( container ).toBeEmptyDOMElement();
+
+		act( () => {
+			const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+			registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		} );
+
+		// A valid account ID was set, so the select should be visible.
+		expect( container.querySelector( '.googlesitekit-analytics__select-property' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
@@ -147,10 +156,13 @@ describe( 'PropertySelect', () => {
 		const targetProperty = properties[ 1 ];
 
 		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, [] );
-		// Click the label to expose the elements in the menu.
-		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-		// Click this element to select it and fire the onChange event.
-		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
+
+		act( () => {
+			// Click the label to expose the elements in the menu.
+			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
+			// Click this element to select it and fire the onChange event.
+			fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
+		} );
 
 		const newPropertyID = registry.select( STORE_NAME ).getPropertyID();
 		expect( targetProperty.id ).toEqual( newPropertyID );

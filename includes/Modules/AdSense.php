@@ -569,10 +569,8 @@ final class AdSense extends Module
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'AdSense', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Earn money by placing ads on your website. It’s free and easy.', 'google-site-kit' ),
-			'cta'         => __( 'Monetize Your Site.', 'google-site-kit' ),
 			'order'       => 2,
 			'homepage'    => add_query_arg( $idenfifier_args, 'https://www.google.com/adsense/start' ),
-			'learn_more'  => __( 'https://www.google.com/intl/en_us/adsense/start/', 'google-site-kit' ),
 		);
 	}
 

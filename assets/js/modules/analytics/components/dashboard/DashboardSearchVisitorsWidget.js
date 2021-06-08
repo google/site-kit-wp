@@ -1,5 +1,5 @@
 /**
- * DashboardAllTrafficWidget component.
+ * DashboardSearchVisitorsWidget component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -39,7 +39,7 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
-function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } ) {
+function DashboardSearchVisitorsWidget( { WidgetReportZero, WidgetReportError } ) {
 	const {
 		loading,
 		error,
@@ -176,4 +176,4 @@ export default whenActive( {
 	moduleName: 'analytics',
 	FallbackComponent: ( { WidgetActivateModuleCTA } ) => <WidgetActivateModuleCTA moduleSlug="analytics" />,
 	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => <WidgetCompleteModuleActivationCTA moduleSlug="analytics" />,
-} )( DashboardUniqueVisitorsWidget );
+} )( DashboardSearchVisitorsWidget );

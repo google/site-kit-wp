@@ -97,6 +97,7 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 				data={ data }
 				handleStatsSelection={ setSelectedStats }
 				selectedStats={ selectedStats }
+				dateRangeLength={ dateRangeLength }
 			/>
 
 			<Stats

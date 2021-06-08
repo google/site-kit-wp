@@ -155,7 +155,7 @@ export default function Footer( props ) {
 				/>
 			</Link>
 		);
-	} else if ( ! isEditing ) {
+	} else if ( ! isEditing && homepage ) {
 		secondaryColumn = (
 			<Link
 				href={ homepage }

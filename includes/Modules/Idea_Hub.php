@@ -248,21 +248,22 @@ final class Idea_Hub extends Module
 					}
 				}
 
-				// Allows us to create a blank post.
-				add_filter( 'wp_insert_post_empty_content', '__return_false' );
+				return function() use ( $idea ) {
+					// Allows us to create a blank post.
+					add_filter( 'wp_insert_post_empty_content', '__return_false' );
 
-				$post_id = wp_insert_post( array(), false );
-				if ( 0 === $post_id ) {
-					return new WP_Error(
-						'unable_to_draft_post',
-						__( 'Unable to draft post.', 'google-site-kit' ),
-						array( 'status' => 400 )
-					);
-				}
+					$post_id = wp_insert_post( array(), false );
+					remove_filter( 'wp_insert_post_empty_content', '__return_false' );
+					if ( 0 === $post_id ) {
+						return new WP_Error(
+							'unable_to_draft_post',
+							__( 'Unable to draft post.', 'google-site-kit' ),
+							array( 'status' => 400 )
+						);
+					}
 
-				$this->set_post_idea( $post_id, $idea );
+					$this->set_post_idea( $post_id, $idea );
 
-				return function() use ( $post_id ) {
 					return $post_id;
 				};
 			case 'GET:draft-post-ideas':
@@ -393,7 +394,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Parses a response for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @param Data_Request $data     Data request object.
 	 * @param mixed        $response Request response.
@@ -403,6 +404,7 @@ final class Idea_Hub extends Module
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:draft-post-ideas':
+			case 'POST:create-idea-draft-post':
 				return array_filter(
 					array_map(
 						function( $post_id ) {
@@ -433,17 +435,6 @@ final class Idea_Hub extends Module
 						is_array( $response ) ? $response : array( $response )
 					)
 				);
-			case 'POST:create-idea-draft-post':
-				$idea = $data['idea'];
-				return array(
-					'idea' => array(
-						'name'        => $idea['name'],
-						'text'        => $idea['text'],
-						'topics'      => $idea['topics'],
-						'postID'      => $response,
-						'postEditURL' => get_edit_post_link( $response, '' ),
-					),
-				);
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -461,10 +452,8 @@ final class Idea_Hub extends Module
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Idea Hub', 'Service name', 'google-site-kit' ),
 			'description' => 'TODO.',
-			'cta'         => 'TODO.',
 			'order'       => 7,
 			'homepage'    => 'https://www.google.com',
-			'learn_more'  => 'https://www.google.com',
 		);
 	}
 
