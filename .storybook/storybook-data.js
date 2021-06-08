@@ -5,7 +5,7 @@ module.exports = [
 		name: 'Admin Bar',
 		story: 'Admin Bar',
 		parameters: {
-			fileName: './stories/adminbar.stories.js',
+			fileName: './assets/js/components/adminbar/AdminBarApp.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
