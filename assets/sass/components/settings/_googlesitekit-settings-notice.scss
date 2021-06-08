@@ -58,7 +58,7 @@
 		}
 
 		.googlesitekit-settings-notice__icon {
-			margin-right: $grid-gap-phone;
+			margin-right: 10px;
 		}
 
 		.googlesitekit-settings-notice__text {
@@ -113,6 +113,8 @@
 				display: flex;
 				flex-direction: column;
 				justify-content: flex-end;
+				padding-bottom: 4px;
+				padding-right: 12px;
 				text-align: left;
 			}
 		}
