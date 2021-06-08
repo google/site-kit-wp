@@ -1,6 +1,6 @@
 module.exports = [
 	{
-		id: 'global--admin-bar',
+		id: 'views-adminbarapp-adminbarapp--ready',
 		kind: 'Global',
 		name: 'Admin Bar',
 		story: 'Admin Bar',
