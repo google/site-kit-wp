@@ -36,7 +36,7 @@
 			display: flex;
 
 			@media (min-width: $bp-desktop) {
-				padding: $grid-gap-desktop;
+				padding: $grid-gap-phone $grid-gap-phone $grid-gap-phone $grid-gap-desktop;
 			}
 		}
 
@@ -59,10 +59,6 @@
 
 		.googlesitekit-settings-notice__icon {
 			margin-right: $grid-gap-phone;
-
-			@media (min-width: $bp-tablet) {
-				margin-right: $grid-gap-desktop;
-			}
 		}
 
 		.googlesitekit-settings-notice__text {
