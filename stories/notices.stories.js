@@ -22,11 +22,6 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import SettingsNotice, { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION } from '../assets/js/components/SettingsNotice';
@@ -39,7 +34,7 @@ const LearnMore = () => (
 		external
 		inherit
 	>
-		{ __( 'Learn more here.', 'google-site-kit' ) }
+		Learn more here
 	</Link>
 );
 
