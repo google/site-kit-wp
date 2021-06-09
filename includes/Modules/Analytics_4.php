@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Exception;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
@@ -68,6 +69,7 @@ final class Analytics_4 extends Module
 	public function register() {
 		$this->register_scopes_hook();
 
+		add_action( 'googlesitekit_analytics_handle_provisioning_callback', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 		// Analytics 4 tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 	}
@@ -201,6 +203,84 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Creates a new property for provided account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $account_id Account ID.
+	 * @return Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty A new property.
+	 */
+	private function create_property( $account_id ) {
+		$timezone = get_option( 'timezone_string' );
+		if ( empty( $timezone ) ) {
+			$timezone = 'UTC';
+		}
+
+		$property = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty();
+		$property->setParent( self::normalize_account_id( $account_id ) );
+		$property->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+		$property->setTimeZone( $timezone );
+
+		return $this->get_service( 'analyticsadmin' )->properties->create( $property );
+	}
+
+	/**
+	 * Creates a new web data stream for provided property.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $property_id Property ID.
+	 * @return Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream A new web data stream.
+	 */
+	private function create_webdatastream( $property_id ) {
+		$site_url = $this->context->get_reference_site_url();
+
+		$datastream = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream();
+		$datastream->setDisplayName( wp_parse_url( $site_url, PHP_URL_HOST ) );
+		$datastream->setDefaultUri( $site_url );
+
+		return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->create(
+			self::normalize_property_id( $property_id ),
+			$datastream
+		);
+	}
+
+	/**
+	 * Provisions new GA4 property and web data stream for provided account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $account_id Account ID.
+	 */
+	private function handle_provisioning_callback( $account_id ) {
+		// TODO: remove this try/catch once GA4 API stabilizes.
+		try {
+			$property = $this->create_property( $account_id );
+			$property = self::filter_property_with_ids( $property );
+			if ( empty( $property->_id ) ) {
+				return;
+			}
+
+			$this->get_settings()->merge( array( 'propertyID' => $property->_id ) );
+
+			$web_datastream = $this->create_webdatastream( $property->_id );
+			$web_datastream = self::filter_webdatastream_with_ids( $web_datastream );
+			if ( empty( $web_datastream->_id ) ) {
+				return;
+			}
+
+			$this->get_settings()->merge(
+				array(
+					'webDataStreamID' => $web_datastream->_id,
+					'measurementID'   => $web_datastream->measurementId, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				)
+			);
+		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// Suppress this exception because it might be caused by unstable GA4 API.
+		}
+	}
+
+	/**
 	 * Creates a request object for the given datapoint.
 	 *
 	 * @since 1.30.0
@@ -226,11 +306,7 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				$property = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty();
-				$property->setParent( self::normalize_account_id( $data['accountID'] ) );
-				$property->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
-
-				return $this->get_service( 'analyticsadmin' )->properties->create( $property );
+				return $this->create_property( $data['accountID'] );
 			case 'POST:create-webdatastream':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
@@ -241,11 +317,7 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				$datastream = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream();
-				$datastream->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
-				$datastream->setDefaultUri( $this->context->get_reference_site_url() );
-
-				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->create( self::normalize_property_id( $data['propertyID'] ), $datastream );
+				return $this->create_webdatastream( $data['propertyID'] );
 			case 'GET:properties':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(

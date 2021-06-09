@@ -1,5 +1,5 @@
 /**
- * Analytics-4 datastore test factories.
+ * Settings notice component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,4 +16,11 @@
  * limitations under the License.
  */
 
-export * from './html-with-tag';
+/**
+ * Internal dependencies
+ */
+import SettingsNotice from './SettingsNotice';
+
+export { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION } from './utils';
+
+export default SettingsNotice;

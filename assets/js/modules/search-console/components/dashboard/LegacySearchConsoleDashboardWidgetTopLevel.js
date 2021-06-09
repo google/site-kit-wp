@@ -49,7 +49,7 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
-function LegacySearchConsoleDashboardWidgetTopLevel( { data } ) {
+function LegacySearchConsoleDashboardWidgetTopLevel( { data, dateRangeLength } ) {
 	const { error } = data;
 
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
@@ -121,7 +121,7 @@ function LegacySearchConsoleDashboardWidgetTopLevel( { data } ) {
 		totalClicksChange,
 		totalImpressionsChange,
 		dataMap,
-	} = extractSearchConsoleDashboardData( data );
+	} = extractSearchConsoleDashboardData( data, dateRangeLength );
 
 	return (
 		<Fragment>

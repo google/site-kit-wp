@@ -1,5 +1,5 @@
 /**
- * Settings notice component.
+ * Settings notice utils.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,35 +17,25 @@
  */
 
 /**
- * External dependencies
+ * Internal dependencies
  */
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
+import InfoIcon from '../../../svg/info-icon.svg';
+import SuggestionIcon from '../../../svg/suggestion-icon.svg';
+import WarningIcon from '../../../svg/warning-icon.svg';
 
 export const TYPE_WARNING = 'warning';
 export const TYPE_INFO = 'info';
 export const TYPE_SUGGESTION = 'suggestion';
 
-export default function SettingsNotice( { children, type } ) {
-	return (
-		<div
-			className={ classnames(
-				'googlesitekit-settings-notice',
-				`googlesitekit-settings-notice--${ type }`
-			) }
-		>
-			<div className="googlesitekit-settings-notice__text">
-				{ children }
-			</div>
-		</div>
-	);
-}
-
-SettingsNotice.propTypes = {
-	children: PropTypes.node.isRequired,
-	type: PropTypes.string,
-};
-
-SettingsNotice.defaultProps = {
-	type: TYPE_WARNING,
+export const getIconFromType = ( type ) => {
+	switch ( type ) {
+		case TYPE_WARNING:
+			return <WarningIcon />;
+		case TYPE_INFO:
+			return <InfoIcon />;
+		case TYPE_SUGGESTION:
+			return <SuggestionIcon />;
+		default:
+			return null;
+	}
 };

@@ -50,10 +50,14 @@ class AMP_Tag extends Module_AMP_Tag {
 			// If Web Stories are enabled, render the auto ads code.
 			add_action( 'web_stories_print_analytics', $this->get_method_proxy( 'render_story_auto_ads' ) );
 		} else {
-			// For AMP Reader, and AMP Native and Transitional (if `wp_body_open` supported).
+			// For AMP Native and Transitional (if `wp_body_open` supported).
 			add_action( 'wp_body_open', $this->get_method_proxy( 'render' ), -9999 );
-			// For AMP Reader, and AMP Native and Transitional (as fallback).
+			// For AMP Native and Transitional (as fallback).
 			add_filter( 'the_content', $this->get_method_proxy( 'amp_content_add_auto_ads' ) );
+			// For AMP Reader (if `amp_post_template_body_open` supported).
+			add_action( 'amp_post_template_body_open', $this->get_method_proxy( 'render' ), -9999 );
+			// For AMP Reader (as fallback).
+			add_action( 'amp_post_template_footer', $this->get_method_proxy( 'render' ), -9999 );
 
 			// Load amp-auto-ads component for AMP Reader.
 			$this->enqueue_amp_reader_component_script( 'amp-auto-ads', 'https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js' );

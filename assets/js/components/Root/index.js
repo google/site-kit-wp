@@ -33,7 +33,7 @@ import RestoreSnapshots from '../RestoreSnapshots';
 import CollectModuleData from '../data/collect-module-data';
 import { FeatureToursDesktop } from '../FeatureToursDesktop';
 import { useFeature } from '../../hooks/useFeature';
-import CurrentSurvey from '../surveys/CurrentSurvey';
+import CurrentSurveyPortal from '../surveys/CurrentSurveyPortal';
 
 export default function Root( {
 	children,
@@ -62,7 +62,7 @@ export default function Root( {
 							<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
 						) }
 
-						{ userFeedbackEnabled && <CurrentSurvey /> }
+						{ userFeedbackEnabled && <CurrentSurveyPortal /> }
 					</RestoreSnapshots>
 					<PermissionsModal />
 				</ErrorHandler>
