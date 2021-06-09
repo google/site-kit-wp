@@ -17,14 +17,14 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * External dependencies
  */
 import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
 
 export default function SettingsNoticeSingleRow( {
 	notice,
