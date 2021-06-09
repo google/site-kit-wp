@@ -68,7 +68,9 @@ export const registerModule = ( modules ) => {
 				__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
 			],
 			checkRequirements: async ( registry ) => {
-				if ( ! registry.__experimentalResolveSelect( STORE_NAME ).isAdBlockerActive() ) {
+				const adBlockerActive = await registry.__experimentalResolveSelect( STORE_NAME ).isAdBlockerActive();
+
+				if ( ! adBlockerActive ) {
 					return;
 				}
 
