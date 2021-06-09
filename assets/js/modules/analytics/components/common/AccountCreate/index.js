@@ -25,27 +25,27 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Button from '../../../../../components/Button';
-import Link from '../../../../../components/Link';
-import ProgressBar from '../../../../../components/ProgressBar';
-import { trackEvent } from '../../../../../util';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
-import TimezoneSelect from './TimezoneSelect';
-import AccountField from './AccountField';
-import PropertyField from './PropertyField';
-import ProfileField from './ProfileField';
-import CountrySelect from './CountrySelect';
-import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
-import GA4Notice from '../GA4Notice';
+import Data from 'googlesitekit-data';
 import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
+import { trackEvent } from '../../../../../util';
 import { getAccountDefaults } from '../../../util/account';
 import { useFeature } from '../../../../../hooks/useFeature';
-import Data from 'googlesitekit-data';
-import SettingsNotice from '../../../../../components/SettingsNotice';
+import Button from '../../../../../components/Button';
+import Link from '../../../../../components/Link';
+import ProgressBar from '../../../../../components/ProgressBar';
+import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
+import GA4Notice from '../GA4Notice';
+import GA4PropertyNotice from '../GA4PropertyNotice';
+import TimezoneSelect from './TimezoneSelect';
+import AccountField from './AccountField';
+import PropertyField from './PropertyField';
+import ProfileField from './ProfileField';
+import CountrySelect from './CountrySelect';
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
@@ -174,22 +174,7 @@ export default function AccountCreate() {
 				{ ! hasProvisioningScope && <span>{ __( 'You will need to give Site Kit permission to create an Analytics account on your behalf and also accept the Google Analytics terms of service.', 'google-site-kit' ) }</span> }
 			</p>
 
-			{ isGA4enabled && (
-				<SettingsNotice
-					LearnMore={ () => (
-						<Link
-							// ticket says TODO. Felix clarified
-							href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
-							external
-							inherit
-						>
-							{ __( 'Learn more here.', 'google-site-kit' ) }
-						</Link>
-					) }
-					notice={ __( 'This will create both a Google Analytics 4 and Universal Analytics property.', 'google-site-kit' ) }
-				/>
-			)
-			}
+			{ isGA4enabled && <GA4PropertyNotice notice={ __( 'This will create both a Google Analytics 4 and Universal Analytics property.', 'google-site-kit' ) } /> }
 
 			<div className="googlesitekit-setup-module__action">
 				<Button
