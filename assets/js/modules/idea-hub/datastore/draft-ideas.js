@@ -35,16 +35,15 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 		return API.set( 'modules', 'idea-hub', 'create-idea-draft-post', { idea } );
 	},
 	reducerCallback: ( state, ideaDraftPost ) => {
-		const draftPostIdea = ideaDraftPost[ 0 ];
 		return {
 			...state,
-			draftPostIdeas: [ ...( state.draftPostIdeas || [] ), draftPostIdea ],
+			draftPostIdeas: [ ...( state.draftPostIdeas || [] ), ideaDraftPost ],
 			newIdeas: [
 				...( state.newIdeas || [] ),
-			].filter( ( { name } ) => name !== draftPostIdea.name ),
+			].filter( ( { name } ) => name !== ideaDraftPost.name ),
 			savedIdeas: [
 				...( state.savedIdeas || [] ),
-			].filter( ( { name } ) => name !== draftPostIdea.name ),
+			].filter( ( { name } ) => name !== ideaDraftPost.name ),
 		};
 	},
 	argsToParams: ( idea ) => {
