@@ -227,7 +227,7 @@ export function getAnalyticsMockResponse( args ) {
 
 				observer.complete();
 			} ) );
-		} else if ( dimension && typeof ANALYTICS_DIMENSION_OPTIONS?.[ dimension ] === 'function' ) {
+		} else if ( dimension && typeof ANALYTICS_DIMENSION_OPTIONS[ dimension ] === 'function' ) {
 			// Generates a stream (an array) of dimension values using a function associated with the current dimension.
 			streams.push( new Observable( ( observer ) => {
 				for ( let i = 1; i <= 90; i++ ) { // 90 is the max number of dates in the longest date range.
@@ -241,7 +241,7 @@ export function getAnalyticsMockResponse( args ) {
 
 				observer.complete();
 			} ) );
-		} else if ( dimension && Array.isArray( ANALYTICS_DIMENSION_OPTIONS?.[ dimension ] ) ) {
+		} else if ( dimension && Array.isArray( ANALYTICS_DIMENSION_OPTIONS[ dimension ] ) ) {
 			// Uses predefined array of dimension values to create a stream (an array) from.
 			streams.push( from( ANALYTICS_DIMENSION_OPTIONS[ dimension ] ) );
 		} else {
