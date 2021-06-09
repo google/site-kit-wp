@@ -29,14 +29,14 @@ import { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION, getIconFromType } from './uti
 const SettingsNoticeMultiRow = ( {
 	notice,
 	type,
-	Icon,
+	Icon = getIconFromType( type ),
 	LearnMore,
 	children,
 } ) => {
 	return (
 		<div className="googlesitekit-settings-notice__row">
 			<div className="googlesitekit-settings-notice__icon">
-				{ Icon ? <Icon /> : getIconFromType( type ) }
+				{ Icon && <Icon width="20" height="20" /> }
 			</div>
 			<div>
 				<div className="googlesitekit-settings-notice__text">

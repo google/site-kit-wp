@@ -29,7 +29,7 @@ import { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION, getIconFromType } from './uti
 const SettingsNoticeSingleRow = ( {
 	notice,
 	type,
-	Icon,
+	Icon = getIconFromType( type ),
 	LearnMore,
 } ) => {
 	return (
@@ -37,7 +37,7 @@ const SettingsNoticeSingleRow = ( {
 			className="googlesitekit-settings-notice__row"
 		>
 			<div className="googlesitekit-settings-notice__icon">
-				{ Icon ? <Icon /> : getIconFromType( type ) }
+				{ Icon && <Icon width="20" height="20" /> }
 			</div>
 			<div className="googlesitekit-settings-notice--single-row__inner-row">
 				<div className="googlesitekit-settings-notice__text">
