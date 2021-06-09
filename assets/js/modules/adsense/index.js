@@ -44,7 +44,6 @@ import AdSenseIcon from '../../../svg/adsense.svg';
 import { STORE_NAME } from './datastore/constants';
 import { ERROR_CODE_ADBLOCKER_ACTIVE, CONTEXT_MODULE_ADSENSE, AREA_MODULE_ADSENSE_MAIN } from './constants';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
-import { registerStore as registerDatastore } from './datastore';
 
 addFilter(
 	'googlesitekit.AdSenseDashboardZeroData',
@@ -52,9 +51,7 @@ addFilter(
 	fillFilterWithComponent( DashboardZeroData )
 );
 
-export const registerStore = ( registry ) => {
-	registerDatastore( registry );
-};
+export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
 	modules.registerModule(
@@ -71,7 +68,9 @@ export const registerModule = ( modules ) => {
 				__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
 			],
 			checkRequirements: async ( registry ) => {
-				if ( ! registry.select( STORE_NAME ).isAdBlockerActive() ) {
+				const adBlockerActive = await registry.__experimentalResolveSelect( STORE_NAME ).isAdBlockerActive();
+
+				if ( ! adBlockerActive ) {
 					return;
 				}
 

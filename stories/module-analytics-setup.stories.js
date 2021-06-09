@@ -26,7 +26,9 @@ import { storiesOf } from '@storybook/react';
  */
 import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
+import * as ga4Fixtures from '../assets/js/modules/analytics-4/datastore/__fixtures__';
 import { STORE_NAME, ACCOUNT_CREATE, PROFILE_CREATE, PROVISIONING_SCOPE } from '../assets/js/modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import {
@@ -34,6 +36,8 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideModuleRegistrations,
+	provideSiteInfo,
+	provideUserAuthentication,
 } from '../tests/js/utils';
 import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
 
@@ -254,6 +258,33 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup registry={ registry } />;
 	}, {
+		decorators: [
+			withRegistry,
+		],
+	} )
+	.add( 'Create Account GA4', ( args, { registry } ) => {
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry, { grantedScopes: [ PROVISIONING_SCOPE ] } );
+
+		registry.dispatch( STORE_NAME ).receiveGetSettings( { accountID: ACCOUNT_CREATE } );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+
+		/* eslint-disable sitekit/acronym-case */
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+			accountID: properties[ 0 ].accountId,
+			propertyID: profiles[ 0 ].webPropertyId,
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( ga4Fixtures.properties, { accountID: properties[ 0 ].accountId } );
+		/* eslint-enable */
+
+		return <Setup registry={ registry } />;
+	}, {
+		features: [ 'ga4setup' ],
 		decorators: [
 			withRegistry,
 		],
