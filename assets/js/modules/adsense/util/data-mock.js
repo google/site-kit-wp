@@ -25,10 +25,10 @@ import { Observable, zip } from 'rxjs';
 import { map, reduce } from 'rxjs/operators';
 
 const ADSENSE_METRIC_TYPES = {
-	EARNINGS: 'FLOAT',
-	PAGE_VIEWS_RPM: 'FLOAT',
-	IMPRESSIONS: 'INTEGER',
-	PAGE_VIEWS_CTR: 'FLOAT',
+	EARNINGS: 'METRIC_CURRENCY',
+	PAGE_VIEWS_RPM: 'METRIC_CURRENCY',
+	IMPRESSIONS: 'METRIC_TALLY',
+	PAGE_VIEWS_CTR: 'METRIC_CURRENCY',
 };
 
 /**
@@ -44,11 +44,14 @@ function generateMetricValues( metrics ) {
 
 	for ( const metric of metrics ) {
 		switch ( ADSENSE_METRIC_TYPES[ metric.toUpperCase() ] ) {
-			case 'INTEGER':
+			case 'METRIC_TALLY':
 				values.push( faker.random.number( { min: 0, max: 100 } ).toString() );
 				break;
-			case 'FLOAT':
+			case 'METRIC_CURRENCY':
 				values.push( faker.random.float( { min: 0, max: 100 } ).toFixed( 2 ) );
+				break;
+			default:
+				values.push( '' );
 				break;
 		}
 	}
@@ -91,8 +94,19 @@ export function getAdSenseMockResponse( args ) {
 
 	const streams = [];
 
-	( Array.isArray( args.dimensions ) ? args.dimensions : [ args.dimensions ] ).forEach( ( dimension ) => {
-		switch ( dimension.toUpperCase() ) {
+	const metrics = ( Array.isArray( args.metrics ) ? args.metrics : [ args.metrics ] ).filter( ( metric ) => !! metric );
+	const dimensions = ( Array.isArray( args.dimensions ) ? args.dimensions : [ args.dimensions ] ).filter( ( dimension ) => !! dimension );
+
+	dimensions.forEach( ( dimension ) => {
+		const ucDimension = dimension.toUpperCase();
+
+		data.headers.push( {
+			currency: null,
+			name: ucDimension,
+			type: 'DIMENSION',
+		} );
+
+		switch ( ucDimension ) {
 			case 'DATE':
 				// Generates a stream (an array) of dates when the dimension is ga:date.
 				streams.push( new Observable( ( observer ) => {
@@ -110,14 +124,24 @@ export function getAdSenseMockResponse( args ) {
 		}
 	} );
 
+	metrics.forEach( ( metric ) => {
+		const ucMetric = metric.toUpperCase();
+
+		data.headers.push( {
+			currency: ADSENSE_METRIC_TYPES[ ucMetric ] === 'METRIC_CURRENCY' ? 'USD' : null,
+			name: ucMetric,
+			type: ADSENSE_METRIC_TYPES[ ucMetric ],
+		} );
+	} );
+
 	// This is the list of operations that we apply to the cobmined stream (array) of dimension values.
 	const ops = [
 		// Make sure each row is an array.
-		map( ( row ) => Array.isArray( row ) ? row : [ row ] ),
+		map( ( row ) => ( Array.isArray( row ) ? row : [ row ] ).filter( ( item ) => !! item ) ),
 		// Add metric values.
 		map( ( row ) => [
 			...row,
-			...generateMetricValues( ( Array.isArray( args.metrics ) ? args.metrics : [ args.metrics ] ).filter( ( metric ) => !! metric ) ),
+			...generateMetricValues( metrics ),
 		] ),
 		// Accumulate all rows into a single array.
 		reduce( ( rows, row ) => [ ...rows, row ], [] ),
