@@ -48,7 +48,7 @@ export default function SettingsNotice( props ) {
 			) }
 		>
 			<div className="googlesitekit-settings-notice__icon">
-				{ Icon && <Icon width="20" height="20" /> }
+				<Icon width="20" height="20" />
 			</div>
 
 			<div className="googlesitekit-settings-notice__body">
