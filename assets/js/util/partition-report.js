@@ -22,9 +22,10 @@
 import invariant from 'invariant';
 
 /**
- * Splits report data into segments of equal length for current and comparison ranges.
+ * Splits report data into segments for current and comparison ranges.
  *
  * @since 1.33.0
+ * @since 1.34.0 Updated to support incomplete `report` arrays.
  *
  * @param {Array}  report               Report rows.
  * @param {Object} args                 Additional arguments.
@@ -35,12 +36,14 @@ export const partitionReport = ( report, { dateRangeLength } ) => {
 	invariant( Array.isArray( report ), 'report must be an array to partition.' );
 	invariant( Number.isInteger( dateRangeLength ) && dateRangeLength > 0, 'dateRangeLength must be a positive integer.' );
 
-	const compareRange = report.slice( 0, dateRangeLength );
-	const currentRange = report.slice( dateRangeLength, dateRangeLength * 2 );
-	// The current range will always be shorter here if the two segments are not of equal length.
+	// Use a negative date range length for reverse slicing.
+	const _dateRangeLength = -1 * dateRangeLength;
 
 	return {
-		compareRange: compareRange.slice( 0, currentRange.length ),
-		currentRange,
+		// The current range should always be sliced from the end.
+		currentRange: report.slice( _dateRangeLength ),
+		// The compare range continues from where the current left off (slicing towards the start),
+		// and may be shorter (where older data is not available yet) which is fine.
+		compareRange: report.slice( _dateRangeLength * 2, _dateRangeLength ),
 	};
 };

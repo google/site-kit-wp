@@ -24,7 +24,7 @@ import { normalizeURL } from '../../../util/urls';
 /**
  * Matches a property by URL.
  *
- * @since n.e.x.t
+ * @since 1.34.0
  *
  * @param {Array.<Object>}        properties Array of properties.
  * @param {Array.<string>|string} url        A list of URLs or a single URL to match properties.

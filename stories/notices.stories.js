@@ -22,11 +22,6 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import SettingsNotice, { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION } from '../assets/js/components/SettingsNotice';
@@ -39,7 +34,7 @@ const LearnMore = () => (
 		external
 		inherit
 	>
-		{ __( 'Learn more here.', 'google-site-kit' ) }
+		Learn more here
 	</Link>
 );
 
@@ -55,7 +50,7 @@ storiesOf( 'Global/Notices', module )
 		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore } notice={ new Array( 10 ).fill( 'This is an information. ' ) } />
 	) )
 	.add( 'Settings info notice with children', () => (
-		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore } notice="This is an information.">
+		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore } notice={ new Array( 5 ).fill( 'This is an information. ' ) }>
 			 { new Array( 10 ).fill( 'This is an information. ' ) }
 		</SettingsNotice>
 	) )
