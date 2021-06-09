@@ -66,13 +66,9 @@
 		margin-top: 0;
 	}
 
-	// two week old rule by Asvin
-	// .googlesitekit-setup-module__inputs + .googlesitekit-settings-notice {
-	// 	font-size: 0.875rem;
-	// 	line-height: 1.42;
-	// 	margin-top: 0;
-	// 	padding: 14.5px;
-	// }
+	.googlesitekit-setup-module__inputs + .googlesitekit-settings-notice {
+		margin-top: 0;
+	}
 
 	// Avoid paragraph's causing extra space
 	// before .googlesitekit-setup-module__inputs.

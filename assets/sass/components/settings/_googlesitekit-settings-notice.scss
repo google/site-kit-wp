@@ -20,8 +20,9 @@
 	background-color: $c-background-notice;
 	border-radius: 4px;
 	color: $c-text-notice;
+	font-size: 0.875rem;
+	line-height: 1.42;
 	margin: 1.5em 0;
-
 
 	&--warning,
 	&--info,
