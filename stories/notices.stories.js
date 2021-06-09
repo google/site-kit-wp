@@ -34,7 +34,7 @@ const LearnMore = () => (
 		external
 		inherit
 	>
-		Learn more here
+		Learn more
 	</Link>
 );
 
