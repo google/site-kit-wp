@@ -43,8 +43,10 @@ export default function SettingsNotice( props ) {
 			className={ classnames(
 				'googlesitekit-settings-notice',
 				`googlesitekit-settings-notice--${ type }`,
-				{ 'googlesitekit-settings-notice--single-row': ! children },
-				{ 'googlesitekit-settings-notice--multi-row': children },
+				{
+					'googlesitekit-settings-notice--single-row': ! children,
+					'googlesitekit-settings-notice--multi-row': children,
+				}
 			) }
 		>
 			<div className="googlesitekit-settings-notice__icon">
