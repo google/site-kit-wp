@@ -17,47 +17,35 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * External dependencies
  */
 import PropTypes from 'prop-types';
 
-/**
- * Internal dependencies
- */
-import { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION, getIconFromType } from './utils';
-
-const SettingsNoticeSingleRow = ( {
+export default function SettingsNoticeSingleRow( {
 	notice,
-	type,
-	Icon = getIconFromType( type ),
 	LearnMore,
-} ) => {
+} ) {
 	return (
-		<div
-			className="googlesitekit-settings-notice__row"
-		>
-			<div className="googlesitekit-settings-notice__icon">
-				{ Icon && <Icon width="20" height="20" /> }
+		<Fragment>
+			<div className="googlesitekit-settings-notice__text">
+				{ notice }
 			</div>
-			<div className="googlesitekit-settings-notice--single-row__inner-row">
-				<div className="googlesitekit-settings-notice__text">
-					{ notice }
-				</div>
-				{ LearnMore && (
-					<div className="googlesitekit-settings-notice__learn-more--single-row">
-						<LearnMore />
-					</div>
-				) }
-			</div>
-		</div>
-	);
-};
 
-export default SettingsNoticeSingleRow;
+			{ LearnMore && (
+				<div className="googlesitekit-settings-notice__learn-more">
+					<LearnMore />
+				</div>
+			) }
+		</Fragment>
+	);
+}
 
 SettingsNoticeSingleRow.propTypes = {
 	notice: PropTypes.node.isRequired,
-	type: PropTypes.oneOf( [ TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION ] ),
-	Icon: PropTypes.elementType,
 	LearnMore: PropTypes.elementType,
 };
