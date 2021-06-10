@@ -59,12 +59,12 @@ export default function AccountSelect() {
 			enhanced
 			outlined
 		>
-			{ ( accounts || [] ).map( ( { id, name }, index ) => (
+			{ ( accounts || [] ).map( ( { _id, displayName }, index ) => (
 				<Option
 					key={ index }
-					value={ id }
+					value={ _id }
 				>
-					{ name }
+					{ displayName }
 				</Option>
 			) ) }
 		</Select>

@@ -31,7 +31,6 @@
 			null
 		],
 		"endDate": "2020-11-25",
-		"kind": "adsense#report",
 		"rows": [ [ "45.12", "21.02", "48", "0.36" ] ],
 		"startDate": "2020-10-29",
 		"totalMatchedRows": "7",
@@ -74,7 +73,6 @@
 			null
 		],
 		"endDate": "2020-11-25",
-		"kind": "adsense#report",
 		"rows": [
 			[
 				"2020-10-29",
@@ -343,7 +341,6 @@
 			null
 		],
 		"endDate": "2020-10-28",
-		"kind": "adsense#report",
 		"rows": [ [ "39.56", "29.12", "88", "0.19" ] ],
 		"startDate": "2020-10-01",
 		"totalMatchedRows": "9",
@@ -386,7 +383,6 @@
 			null
 		],
 		"endDate": "2020-10-28",
-		"kind": "adsense#report",
 		"rows": [
 			[
 				"2020-10-01",
