@@ -26,7 +26,6 @@ import ModuleTopEarningPagesWidget from '../assets/js/modules/adsense/components
 import ModuleOverviewWidget from '../assets/js/modules/adsense/components/module/ModuleOverviewWidget';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
-import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 import { getAdSenseMockResponse } from '../assets/js/modules/adsense/util/data-mock';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 
@@ -171,10 +170,52 @@ generateReportBasedWidgetStories( {
 	group: 'AdSense Module/Components/Module/Overview Widget',
 	referenceDate: '2020-11-25',
 	...generateAdSenseData( [
-		fixtures.earnings.currentStatsArgs,
-		fixtures.earnings.prevStatsArgs,
-		fixtures.earnings.currentSummaryArgs,
-		fixtures.earnings.prevSummaryArgs,
+		{
+			metrics: [
+				'EARNINGS',
+				'PAGE_VIEWS_RPM',
+				'IMPRESSIONS',
+				'PAGE_VIEWS_CTR',
+			],
+			startDate: '2020-10-29',
+			endDate: '2020-11-25',
+		},
+		{
+			dimensions: [
+				'DATE',
+			],
+			metrics: [
+				'EARNINGS',
+				'PAGE_VIEWS_RPM',
+				'IMPRESSIONS',
+				'PAGE_VIEWS_CTR',
+			],
+			startDate: '2020-10-29',
+			endDate: '2020-11-25',
+		},
+		{
+			metrics: [
+				'EARNINGS',
+				'PAGE_VIEWS_RPM',
+				'IMPRESSIONS',
+				'PAGE_VIEWS_CTR',
+			],
+			startDate: '2020-10-01',
+			endDate: '2020-10-28',
+		},
+		{
+			dimensions: [
+				'DATE',
+			],
+			metrics: [
+				'EARNINGS',
+				'PAGE_VIEWS_RPM',
+				'IMPRESSIONS',
+				'PAGE_VIEWS_CTR',
+			],
+			startDate: '2020-10-01',
+			endDate: '2020-10-28',
+		},
 	] ),
 	Component: ModuleOverviewWidget,
 	wrapWidget: false,
