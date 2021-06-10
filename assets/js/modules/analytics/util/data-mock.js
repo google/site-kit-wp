@@ -250,7 +250,7 @@ export function getAnalyticsMockResponse( args ) {
 		}
 	} );
 
-	// This is the list of operations that we apply to the cobmined stream (array) of dimension values.
+	// This is the list of operations that we apply to the combined stream (array) of dimension values.
 	const ops = [
 		// Convert a dimension value to a row object and generate metric values.
 		map( ( dimensionValue ) => ( {
