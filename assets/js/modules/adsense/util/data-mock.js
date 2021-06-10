@@ -77,19 +77,47 @@ function generateHeaders( metrics, dimensions ) {
  * @return {Array.<string>} Array of metric values.
  */
 function generateMetricValues( date, metrics ) {
+	if ( typeof generateMetricValues.memory === 'undefined' ) {
+		generateMetricValues.memory = {};
+	}
+
 	const values = [];
+	const delta = .30;
 
 	for ( const metric of metrics ) {
+		const lastValue = generateMetricValues.memory[ metric ];
+
 		switch ( ADSENSE_METRIC_TYPES[ metric.toUpperCase() ] ) {
-			case METRIC_TALLY:
-				values.push( faker.random.number( { min: 0, max: 100 } ).toString() );
+			case METRIC_TALLY: {
+				const newValue = faker.random.number( {
+					min: lastValue ? Math.floor( lastValue * ( 1 - delta ) ) : faker.random.number( { min: 100, max: 900 } ),
+					max: lastValue ? Math.ceil( lastValue * ( 1 + delta ) ) : 1000,
+				} );
+
+				values.push( newValue.toString() );
+				generateMetricValues.memory[ metric ] = newValue;
 				break;
-			case METRIC_CURRENCY:
-				values.push( faker.random.float( { min: 0, max: 100 } ).toFixed( 2 ) );
+			}
+			case METRIC_CURRENCY: {
+				const newValue = faker.random.float( {
+					min: lastValue ? Math.floor( lastValue * ( 1 - delta ) ) : faker.random.number( { min: 100, max: 400 } ),
+					max: lastValue ? Math.ceil( lastValue * ( 1 + delta ) ) : 500,
+				} );
+
+				values.push( newValue.toFixed( 2 ) );
+				generateMetricValues.memory[ metric ] = newValue;
 				break;
-			case METRIC_RATIO:
-				values.push( faker.random.float( { min: 0, max: 1 } ).toFixed( 2 ) );
+			}
+			case METRIC_RATIO: {
+				const newValue = faker.random.float( {
+					min: lastValue ? lastValue * ( 1 - delta ) : faker.random.number( { min: .1, max: .9 } ),
+					max: lastValue ? Math.min( lastValue * ( 1 + delta ), 1 ) : 1,
+				} );
+
+				values.push( newValue.toFixed( 2 ) );
+				generateMetricValues.memory[ metric ] = newValue;
 				break;
+			}
 			default:
 				values.push( '' );
 				break;
@@ -133,7 +161,7 @@ function generateDimensionValues( date, dimensions ) {
 export function getAdSenseMockResponse( args ) {
 	const originalSeedValue = faker.seedValue;
 	const argsHash = parseInt(
-		md5( JSON.stringify( args ) ).substring( 0, 8 ),
+		md5( JSON.stringify( args ) ).substring( 0, 10 ),
 		16,
 	);
 
