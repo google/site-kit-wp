@@ -21,7 +21,7 @@
  */
 import faker from 'faker';
 import md5 from 'md5';
-import { Observable, zip } from 'rxjs';
+import { range } from 'rxjs';
 import { map, reduce } from 'rxjs/operators';
 
 const ADSENSE_METRIC_TYPES = {
@@ -92,36 +92,19 @@ export function getAdSenseMockResponse( args ) {
 		rows: [],
 	};
 
-	const streams = [];
+	const startDate = new Date( args.startDate );
+	const endDate = new Date( args.endDate );
+	const dayInMilliseconds = 24 * 60 * 60 * 1000;
 
 	const metrics = ( Array.isArray( args.metrics ) ? args.metrics : [ args.metrics ] ).filter( ( metric ) => !! metric );
 	const dimensions = ( Array.isArray( args.dimensions ) ? args.dimensions : [ args.dimensions ] ).filter( ( dimension ) => !! dimension );
 
 	dimensions.forEach( ( dimension ) => {
-		const ucDimension = dimension.toUpperCase();
-
 		data.headers.push( {
 			currency: null,
-			name: ucDimension,
+			name: dimension.toUpperCase(),
 			type: 'DIMENSION',
 		} );
-
-		switch ( ucDimension ) {
-			case 'DATE':
-				// Generates a stream (an array) of dates when the dimension is ga:date.
-				streams.push( new Observable( ( observer ) => {
-					const currentDate = new Date( args.startDate );
-					const end = new Date( args.endDate );
-
-					while ( currentDate.getTime() <= end.getTime() ) {
-						observer.next( currentDate.toISOString().split( 'T' )[ 0 ] );
-						currentDate.setDate( currentDate.getDate() + 1 );
-					}
-
-					observer.complete();
-				} ) );
-				break;
-		}
 	} );
 
 	metrics.forEach( ( metric ) => {
@@ -136,8 +119,22 @@ export function getAdSenseMockResponse( args ) {
 
 	// This is the list of operations that we apply to the cobmined stream (array) of dimension values.
 	const ops = [
-		// Make sure each row is an array.
-		map( ( row ) => ( Array.isArray( row ) ? row : [ row ] ).filter( ( item ) => !! item ) ),
+		map( () => {
+			const dateString = startDate.toISOString().split( 'T' )[ 0 ];
+			startDate.setDate( startDate.getDate() + 1 );
+			return dateString;
+		} ),
+		map( ( date ) => {
+			const row = [];
+			for ( const dimension of dimensions ) {
+				switch ( dimension.toUpperCase() ) {
+					case 'DATE':
+						row.push( date );
+						break;
+				}
+			}
+			return row;
+		} ),
 		// Add metric values.
 		map( ( row ) => [
 			...row,
@@ -148,15 +145,17 @@ export function getAdSenseMockResponse( args ) {
 	];
 
 	// Process the stream of dimension values and add generated rows to the report data object.
-	zip( ...streams ).pipe( ...ops ).subscribe( ( rows ) => {
-		data.rows = rows;
-		data.totalMatchedRows = rows.length.toString();
+	range( 0, 1 + ( ( endDate - startDate ) / dayInMilliseconds ) )
+		.pipe( ...ops )
+		.subscribe( ( rows ) => {
+			data.rows = rows;
+			data.totalMatchedRows = rows.length.toString();
 
-		// We pretend that the first row contains averages and the last one totals because we don't
-		// really need mathematically correct values and can simplify the process of finding this information.
-		data.totals = [ ...( rows[ rows.length - 1 ] || [] ) ];
-		data.averages = [ ...( rows[ 0 ] || [] ) ];
-	} );
+			// We pretend that the first row contains averages and the last one totals because we don't
+			// really need mathematically correct values and can simplify the process of finding this information.
+			data.totals = [ ...( rows[ rows.length - 1 ] || [] ) ];
+			data.averages = [ ...( rows[ 0 ] || [] ) ];
+		} );
 
 	// Set the original seed value for the faker.
 	faker.seed( originalSeedValue );

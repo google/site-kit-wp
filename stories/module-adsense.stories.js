@@ -39,6 +39,7 @@ import {
 	UserProfile,
 	SiteSteps,
 } from '../assets/js/modules/adsense/components/common';
+import { getAdSenseMockResponse } from '../assets/js/modules/adsense/util/data-mock';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
@@ -187,37 +188,50 @@ storiesOf( 'AdSense Module', module )
 			} = select( CORE_USER ).getDateRangeDates( { compare: true } );
 
 			const currentStatsArgs = {
-				...fixtures.earnings.currentStatsArgs,
 				startDate,
 				endDate,
+				dimensions: [
+					'DATE',
+				],
+				metrics: [
+					'EARNINGS',
+					'PAGE_VIEWS_RPM',
+					'IMPRESSIONS',
+					'PAGE_VIEWS_CTR',
+				],
 			};
 
 			const prevStatsArgs = {
-				...fixtures.earnings.prevStatsArgs,
+				...currentStatsArgs,
 				startDate: compareStartDate,
 				endDate: compareEndDate,
 			};
 
 			const currentSummaryArgs = {
-				...fixtures.earnings.currentSummaryArgs,
 				startDate,
 				endDate,
+				metrics: [
+					'EARNINGS',
+					'PAGE_VIEWS_RPM',
+					'IMPRESSIONS',
+					'PAGE_VIEWS_CTR',
+				],
 			};
 
 			const prevSummaryArgs = {
-				...fixtures.earnings.prevSummaryArgs,
+				...currentSummaryArgs,
 				startDate: compareStartDate,
 				endDate: compareEndDate,
 			};
 
-			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.currentStatsData, { options: currentStatsArgs } );
+			dispatch( STORE_NAME ).receiveGetReport( getAdSenseMockResponse( currentStatsArgs ), { options: currentStatsArgs } );
 			dispatch( STORE_NAME ).finishResolution( 'getReport', [ currentStatsArgs ] );
-			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.prevStatsData, { options: prevStatsArgs } );
+			dispatch( STORE_NAME ).receiveGetReport( getAdSenseMockResponse( prevStatsArgs ), { options: prevStatsArgs } );
 			dispatch( STORE_NAME ).finishResolution( 'getReport', [ prevStatsArgs ] );
 
-			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.currentSummaryData, { options: currentSummaryArgs } );
+			dispatch( STORE_NAME ).receiveGetReport( getAdSenseMockResponse( currentSummaryArgs ), { options: currentSummaryArgs } );
 			dispatch( STORE_NAME ).finishResolution( 'getReport', [ currentSummaryArgs ] );
-			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.prevSummaryData, { options: prevSummaryArgs } );
+			dispatch( STORE_NAME ).receiveGetReport( getAdSenseMockResponse( prevSummaryArgs ), { options: prevSummaryArgs } );
 			dispatch( STORE_NAME ).finishResolution( 'getReport', [ prevSummaryArgs ] );
 		};
 
