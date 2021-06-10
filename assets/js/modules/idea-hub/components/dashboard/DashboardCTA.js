@@ -87,7 +87,7 @@ function DashboardCTA( { Widget } ) {
 						</Link>
 					</p>
 
-					<Button className="googlesitekit-idea-hub__dashboard-cta__setup" onClick={ onClick }>
+					<Button onClick={ onClick }>
 						{
 							active && ! connected
 								? __( 'Complete set up', 'google-site-kit' )
