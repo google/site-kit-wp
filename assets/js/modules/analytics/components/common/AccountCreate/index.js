@@ -34,7 +34,7 @@ import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/c
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import { trackEvent } from '../../../../../util';
 import { getAccountDefaults } from '../../../util/account';
-import { isFeatureEnabled } from '../../../../../features';
+import { useFeature } from '../../../../../hooks/useFeature';
 import Button from '../../../../../components/Button';
 import Link from '../../../../../components/Link';
 import ProgressBar from '../../../../../components/ProgressBar';
@@ -49,8 +49,7 @@ import CountrySelect from './CountrySelect';
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
-	const isGA4enabled = isFeatureEnabled( 'ga4setup' );
-
+	const isGA4enabled = useFeature( 'ga4setup' );
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
 		accounts: select( STORE_NAME ).getAccounts(),
 		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
