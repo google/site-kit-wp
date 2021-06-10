@@ -27,6 +27,7 @@ import useMergedRef from '@react-hook/merged-ref';
  * WordPress dependencies
  */
 import { forwardRef, useCallback } from '@wordpress/element';
+import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -43,6 +44,7 @@ const Button = forwardRef( ( {
 	target,
 	icon,
 	trailingIcon,
+	ariaLabel,
 	...extraProps
 }, ref ) => {
 	const buttonRef = useCallback( ( el ) => {
@@ -54,6 +56,22 @@ const Button = forwardRef( ( {
 
 	// Use a button if disabled, even if a href is provided to ensure expected behavior.
 	const SemanticButton = ( href && ! disabled ) ? 'a' : 'button';
+
+	const getAriaLabel = () => {
+		let label = ariaLabel;
+
+		if ( target === '_blank' ) {
+			return label;
+		} else if ( typeof children === 'string' ) {
+			label = label || children;
+		}
+
+		const newTabText = _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' );
+		if ( label ) {
+			return `${ label } ${ newTabText }`;
+		}
+		return newTabText;
+	};
 
 	return (
 		<SemanticButton
@@ -68,6 +86,7 @@ const Button = forwardRef( ( {
 			href={ disabled ? undefined : href }
 			ref={ mergedRefs }
 			disabled={ !! disabled }
+			aria-label={ getAriaLabel() }
 			target={ target || '_self' }
 			role={ 'a' === SemanticButton ? 'button' : undefined }
 			{ ...extraProps }
