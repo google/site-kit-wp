@@ -19,7 +19,8 @@
 /**
  * Internal dependencies
  */
-import { isValidWebDataStreamID } from './validation';
+import { WEBDATASTREAM_CREATE } from '../datastore/constants';
+import { isValidWebDataStreamID, isValidWebDataStreamSelection } from './validation';
 
 describe( 'modules/analytics-4 validations', () => {
 	describe( 'isValidWebDataStreamID', () => {
@@ -32,8 +33,28 @@ describe( 'modules/analytics-4 validations', () => {
 			[ 'null', null ],
 			[ 'false', false ],
 			[ 'a number', 12345 ],
+			[ 'WEBDATASTREAM_CREATE', WEBDATASTREAM_CREATE ],
 		] )( 'should return FALSE when %s is passed', ( _, webDataStreamID ) => {
 			expect( isValidWebDataStreamID( webDataStreamID ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'isValidWebDataStreamSelection', () => {
+		it( 'should return TRUE when a valid webDataStreamID is passed', () => {
+			expect( isValidWebDataStreamSelection( '12345' ) ).toBe( true );
+		} );
+
+		it( 'should return TRUE when WEBDATASTREAM_CREATE is passed', () => {
+			expect( isValidWebDataStreamSelection( WEBDATASTREAM_CREATE ) ).toBe( true );
+		} );
+
+		it.each( [
+			[ 'undefined', undefined ],
+			[ 'null', null ],
+			[ 'false', false ],
+			[ 'a number', 12345 ],
+		] )( 'should return FALSE when %s is passed', ( _, webDataStreamID ) => {
+			expect( isValidWebDataStreamSelection( webDataStreamID ) ).toBe( false );
 		} );
 	} );
 } );
