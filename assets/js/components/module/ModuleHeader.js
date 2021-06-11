@@ -39,6 +39,11 @@ function ModuleHeader( { moduleSlug } ) {
 	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleSlug ) );
 	const moduleStatus = moduleConnected ? 'connected' : 'not-connected';
 	const ModuleIcon = useSelect( ( select ) => select( CORE_MODULES ).getModuleIcon( moduleSlug ) );
+
+	if ( ! name || ! ModuleIcon ) {
+		return null;
+	}
+
 	const moduleStatusText = sprintf(
 		/* translators: %s: module name. */
 		__( '%s is connected', 'google-site-kit' ),
