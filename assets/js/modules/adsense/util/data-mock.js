@@ -19,6 +19,11 @@
 /**
  * External dependencies
  */
+import castArray from 'lodash/castArray';
+
+/**
+ * External dependencies
+ */
 import faker from 'faker';
 import md5 from 'md5';
 import { range } from 'rxjs';
@@ -172,8 +177,8 @@ export function getAdSenseMockResponse( args ) {
 		faker.seed( argsHash );
 	}
 
-	const metrics = ( Array.isArray( args.metrics ) ? args.metrics : [ args.metrics ] ).filter( ( metric ) => !! metric );
-	const dimensions = ( Array.isArray( args.dimensions ) ? args.dimensions : [ args.dimensions ] ).filter( ( dimension ) => !! dimension );
+	const metrics = castArray( args.metrics ).filter( ( metric ) => !! metric );
+	const dimensions = castArray( args.dimensions ).filter( ( dimension ) => !! dimension );
 
 	const data = {
 		kind: 'adsense#report',

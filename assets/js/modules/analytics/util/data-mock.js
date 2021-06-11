@@ -21,6 +21,7 @@
  */
 import md5 from 'md5';
 import faker from 'faker';
+import castArray from 'lodash/castArray';
 import { zip, from, Observable } from 'rxjs';
 import { map, reduce, take } from 'rxjs/operators';
 import { STORE_NAME } from '../datastore/constants';
@@ -141,7 +142,7 @@ function generateMetricValues( validMetrics, count ) {
 function sortRows( rows, metrics, orderby ) {
 	let sorted = rows;
 
-	const orders = Array.isArray( orderby ) ? orderby : [ orderby ];
+	const orders = castArray( orderby );
 	for ( const order of orders ) {
 		const direction = order?.sortOrder === 'DESCENDING' ? -1 : 1;
 		const index = metrics.findIndex( ( metric ) => getMetricKey( metric ) === order?.fieldName );
@@ -212,7 +213,7 @@ export function getAnalyticsMockResponse( args ) {
 	// dimension set in the combined stream (array). We need to use array of streams because report arguments may
 	// have 0 or N dimensions (N > 1) which means that in the each row of the report data we will have an array
 	// of dimension values.
-	const dimensions = Array.isArray( args.dimensions ) ? args.dimensions : [ args.dimensions ];
+	const dimensions = castArray( args.dimensions );
 	dimensions.forEach( ( dimension ) => {
 		if ( dimension === 'ga:date' ) {
 			// Generates a stream (an array) of dates when the dimension is ga:date.
@@ -254,7 +255,7 @@ export function getAnalyticsMockResponse( args ) {
 	const ops = [
 		// Convert a dimension value to a row object and generate metric values.
 		map( ( dimensionValue ) => ( {
-			dimensions: Array.isArray( dimensionValue ) ? dimensionValue : [ dimensionValue ],
+			dimensions: castArray( dimensionValue ),
 			metrics: generateMetricValues( validMetrics, metricValuesCount ),
 		} ) ),
 		// Make sure we take the appropriate number of rows.
