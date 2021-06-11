@@ -26,7 +26,6 @@ use Google\Site_Kit\Tests\TestCase;
  * @group Modules
  */
 class Idea_HubTest extends TestCase {
-	use Module_With_Settings_ContractTests;
 
 	/**
 	 * Context instance.
