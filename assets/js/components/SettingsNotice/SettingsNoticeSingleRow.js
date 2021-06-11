@@ -1,5 +1,5 @@
 /**
- * Survey component.
+ * Settings notice SettingsNoticeSingleRow component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,10 +16,36 @@
  * limitations under the License.
  */
 
-const Survey = () => {
-	return (
-		<p>Scaffolded Survey component</p>
-	);
-};
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
 
-export default Survey;
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+export default function SettingsNoticeSingleRow( {
+	notice,
+	LearnMore,
+} ) {
+	return (
+		<Fragment>
+			<div className="googlesitekit-settings-notice__text">
+				{ notice }
+			</div>
+
+			{ LearnMore && (
+				<div className="googlesitekit-settings-notice__learn-more">
+					<LearnMore />
+				</div>
+			) }
+		</Fragment>
+	);
+}
+
+SettingsNoticeSingleRow.propTypes = {
+	notice: PropTypes.node.isRequired,
+	LearnMore: PropTypes.elementType,
+};

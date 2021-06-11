@@ -42,10 +42,6 @@ const WidgetContextRenderer = ( props ) => {
 		return null;
 	} );
 
-	if ( ! widgetAreas?.length ) {
-		return null;
-	}
-
 	return (
 		<div className={ classnames( 'googlesitekit-widget-context', className ) }>
 			{ Header && (
@@ -57,8 +53,14 @@ const WidgetContextRenderer = ( props ) => {
 					</Row>
 				</Grid>
 			) }
-			{ widgetAreas.map( ( area ) => {
-				return <WidgetAreaRenderer slug={ area.slug } key={ area.slug } totalAreas={ widgetAreas.length } />;
+			{ widgetAreas && widgetAreas.map( ( area ) => {
+				return (
+					<WidgetAreaRenderer
+						key={ area.slug }
+						slug={ area.slug }
+						totalAreas={ widgetAreas.length }
+					/>
+				);
 			} ) }
 			{ Footer && (
 				<Grid>
