@@ -50,7 +50,7 @@ const Stats = ( {
 	};
 
 	const options = {
-		curveType: 'line',
+		curveType: 'function',
 		height: 270,
 		width: '100%',
 		chartArea: {
