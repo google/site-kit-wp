@@ -24,11 +24,9 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Post_Meta;
-use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
-use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -40,7 +38,7 @@ use WP_Error;
  * @ignore
  */
 final class Idea_Hub extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets {
+	implements Module_With_Scopes, Module_With_Assets {
 	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
@@ -127,55 +125,12 @@ final class Idea_Hub extends Module
 	}
 
 	/**
-	 * Checks whether the module is connected.
-	 *
-	 * A module being connected means that all steps required as part of its activation are completed.
-	 *
-	 * @since 1.32.0
-	 *
-	 * @return bool True if module is connected, false otherwise.
-	 */
-	public function is_connected() {
-		$required_keys = array(
-			'ideaLocale',
-		);
-
-		$options = $this->get_settings()->get();
-		foreach ( $required_keys as $required_key ) {
-			if ( empty( $options[ $required_key ] ) ) {
-				return false;
-			}
-		}
-
-		return parent::is_connected();
-	}
-
-	/**
 	 * Cleans up when the module is deactivated.
 	 *
 	 * @since 1.32.0
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
-	}
-
-	/**
-	 * Gets an array of debug field definitions.
-	 *
-	 * @since 1.32.0
-	 *
-	 * @return array
-	 */
-	public function get_debug_fields() {
-		$settings = $this->get_settings()->get();
-
-		return array(
-			'idea_hub_idea_locale' => array(
-				'label' => __( 'Idea Hub idea locale', 'google-site-kit' ),
-				'value' => $settings['ideaLocale'],
-				'debug' => Debug_Data::redact_debug_value( $settings['ideaLocale'] ),
-			),
-		);
 	}
 
 	/**
