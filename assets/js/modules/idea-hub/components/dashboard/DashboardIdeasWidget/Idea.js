@@ -67,9 +67,9 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 		global.console.log( `Unpinned: ${ name }` );
 	}, [ name ] );
 
-	const handleCreate = useCallback( () => {
+	const handleCreate = useCallback( async () => {
 		setIsProcessing( true );
-		createIdeaDraftPost( { name, text, topics } );
+		await createIdeaDraftPost( { name, text, topics } );
 		setIsProcessing( false );
 	}, [ name, text, topics, createIdeaDraftPost ] );
 
