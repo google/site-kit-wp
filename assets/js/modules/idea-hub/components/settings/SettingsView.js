@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights Settings View component
+ * Idea Hub Settings View component
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -34,7 +34,7 @@ export default function SettingsView() {
 
 	const content = sprintf(
 		/* translators: %s is the URL to the Site Kit dashboard. */
-		__( 'To view insights, <a href="%s">visit the dashboard</a>', 'google-site-kit' ),
+		__( 'To view ideas for new content, <a href="%s">visit the dashboard</a>', 'google-site-kit' ),
 		dashboardPermalink
 	);
 
