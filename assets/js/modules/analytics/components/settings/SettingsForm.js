@@ -41,7 +41,6 @@ import {
 } from '../common';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import GA4Notice from '../common/GA4Notice';
 import {
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
