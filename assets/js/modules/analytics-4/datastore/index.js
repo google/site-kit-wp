@@ -27,11 +27,13 @@ import baseModuleStore from './base';
 import properties from './properties';
 import tags from './tags';
 import webdatastreams from './webdatastreams';
+import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
 
 const store = Data.combineStores(
 	accounts,
 	api,
 	baseModuleStore,
+	createSnapshotStore( STORE_NAME ),
 	properties,
 	tags,
 	webdatastreams,
