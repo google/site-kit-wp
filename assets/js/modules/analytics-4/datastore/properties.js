@@ -27,7 +27,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME, PROPERTY_CREATE, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
+import { STORE_NAME, PROPERTY_CREATE, MAX_WEBDATASTREAMS_PER_BATCH, WEBDATASTREAM_CREATE } from './constants';
 import { normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
@@ -168,6 +168,8 @@ const baseActions = {
 			if ( webdatastream ) {
 				registry.dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._id );
 				registry.dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
+			} else {
+				registry.dispatch( STORE_NAME ).setWebDataStreamID( WEBDATASTREAM_CREATE );
 			}
 		}
 	),

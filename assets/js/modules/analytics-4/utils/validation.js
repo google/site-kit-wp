@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { PROPERTY_CREATE } from '../datastore/constants';
+import { PROPERTY_CREATE, WEBDATASTREAM_CREATE } from '../datastore/constants';
 
 /**
  * Checks whether the given property ID appears to be valid.
@@ -59,6 +59,22 @@ export function isValidPropertySelection( value ) {
  */
 export function isValidWebDataStreamID( webDataStreamID ) {
 	return typeof webDataStreamID === 'string' && /^\d+$/.test( webDataStreamID );
+}
+
+/**
+ * Checks whether the given web data stream is a valid selection.
+ *
+ * @since n.e.x.t
+ *
+ * @param {?string} webDataStreamID Web data stream to check.
+ * @return {boolean} TRUE if the web data stream selection is valid, otherwise FALSE.
+ */
+export function isValidWebDataStreamSelection( webDataStreamID ) {
+	if ( webDataStreamID === WEBDATASTREAM_CREATE ) {
+		return true;
+	}
+
+	return isValidWebDataStreamID( webDataStreamID );
 }
 
 /**

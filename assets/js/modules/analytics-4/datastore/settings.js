@@ -26,10 +26,10 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
-import { isValidPropertySelection, isValidWebDataStreamID } from '../utils/validation';
+import { isValidPropertySelection, isValidWebDataStreamID, isValidWebDataStreamSelection } from '../utils/validation';
 import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
-import { STORE_NAME, PROPERTY_CREATE } from './constants';
+import { STORE_NAME, PROPERTY_CREATE, WEBDATASTREAM_CREATE } from './constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION = 'a valid propertyID is required to submit changes';
@@ -52,7 +52,7 @@ export async function submitChanges( { select, dispatch } ) {
 	}
 
 	const webDataStreamID = select( STORE_NAME ).getWebDataStreamID();
-	if ( ! isValidWebDataStreamID( webDataStreamID ) ) {
+	if ( webDataStreamID === WEBDATASTREAM_CREATE || ! isValidWebDataStreamID( webDataStreamID ) ) {
 		const { response: webdatastream, error } = await dispatch( STORE_NAME ).createWebDataStream( propertyID );
 		if ( error ) {
 			return { error };
@@ -94,6 +94,6 @@ export function validateCanSubmitChanges( select ) {
 	const propertyID = getPropertyID();
 	invariant( isValidPropertySelection( propertyID ), INVARIANT_INVALID_PROPERTY_SELECTION );
 	if ( propertyID !== PROPERTY_CREATE ) {
-		invariant( isValidWebDataStreamID( getWebDataStreamID() ), INVARIANT_INVALID_WEBDATASTREAM_ID );
+		invariant( isValidWebDataStreamSelection( getWebDataStreamID() ), INVARIANT_INVALID_WEBDATASTREAM_ID );
 	}
 }
