@@ -122,16 +122,6 @@ class Idea_HubTest extends TestCase {
 		$this->assertEquals( $post_states3, array( 'draft' => 'Draft' ) );
 	}
 
-	public function test_on_deactivation() {
-		$options = new Options( $this->context );
-		$options->set( Settings::OPTION, 'test-value' );
-
-		$idea_hub = new Idea_Hub( $this->context, $options );
-		$idea_hub->on_deactivation();
-
-		$this->assertOptionNotExists( Settings::OPTION );
-	}
-
 	public function test_get_datapoints() {
 		$this->assertEqualSets(
 			array(
@@ -261,13 +251,6 @@ class Idea_HubTest extends TestCase {
 	 * @return Module_With_Scopes
 	 */
 	protected function get_module_with_scopes() {
-		return new Idea_Hub( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-	}
-
-	/**
-	 * @return Module_With_Settings
-	 */
-	protected function get_module_with_settings() {
 		return new Idea_Hub( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 }
