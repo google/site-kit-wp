@@ -163,12 +163,17 @@ const baseActions = {
 
 			if ( ! uaProperty ) {
 				uaProperty = {
-					id: PROPERTY_CREATE,
+					id: uaProperties.length === 0 ? PROPERTY_CREATE : '', // Create a new property only if the selected account has no UA properties.
 					internalWebPropertyId: '', // eslint-disable-line sitekit/acronym-case
 				};
 			}
 
-			yield propertyActions.selectProperty( uaProperty?.id, uaProperty?.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
+			if ( uaProperty?.id ) {
+				yield propertyActions.selectProperty( uaProperty?.id, uaProperty?.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
+			} else {
+				registry.dispatch( STORE_NAME ).setPropertyID( '' );
+				registry.dispatch( STORE_NAME ).setProfileID( '' );
+			}
 
 			if ( ! isFeatureEnabled( 'ga4setup' ) ) {
 				return;
@@ -329,7 +334,7 @@ const baseResolvers = {
 
 		// Try to find a new matched ga4 property if the current one has a different accountID.
 		if ( ga4Property?._accountID !== accountID ) {
-			yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).matchAndSelectProperty( accountID ) );
+			yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).matchAndSelectProperty( accountID, GA4_PROPERTY_CREATE ) );
 		}
 	},
 };
