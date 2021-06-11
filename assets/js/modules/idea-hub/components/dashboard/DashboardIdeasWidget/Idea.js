@@ -70,8 +70,6 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 	const handleCreate = useCallback( () => {
 		setIsProcessing( true );
 		createIdeaDraftPost( { name, text, topics } );
-		// @TODO: Implement callback.
-		global.console.log( `Created: ${ name }` );
 		setIsProcessing( false );
 	}, [ name, text, topics, createIdeaDraftPost ] );
 
