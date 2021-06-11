@@ -34,7 +34,7 @@ const LearnMore = () => (
 		external
 		inherit
 	>
-		Learn more here
+		Learn more
 	</Link>
 );
 
@@ -46,12 +46,12 @@ storiesOf( 'Global/Notices', module )
 	.add( 'Settings info notice single line', () => (
 		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore } notice="This is an information." />
 	) )
-	.add( 'Settings info notice multi line', () => (
+	.add( 'Settings info notice with a long notice', () => (
 		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore } notice={ new Array( 10 ).fill( 'This is an information. ' ) } />
 	) )
 	.add( 'Settings info notice with children', () => (
 		<SettingsNotice type={ TYPE_INFO } LearnMore={ LearnMore } notice={ new Array( 5 ).fill( 'This is an information. ' ) }>
-			 { new Array( 10 ).fill( 'This is an information. ' ) }
+			<p>This is more information about the information!</p>
 		</SettingsNotice>
 	) )
 	.add( 'Settings info notice no LearnMore', () => (

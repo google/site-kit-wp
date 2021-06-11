@@ -22,49 +22,38 @@
 import PropTypes from 'prop-types';
 
 /**
- * Internal dependencies
+ * WordPress dependencies
  */
-import { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION, getIconFromType } from './utils';
+import { Fragment } from '@wordpress/element';
 
-const SettingsNoticeMultiRow = ( {
+export default function SettingsNoticeMultiRow( {
 	notice,
-	type,
-	Icon,
 	LearnMore,
 	children,
-} ) => {
+} ) {
 	return (
-		<div className="googlesitekit-settings-notice__row">
-			<div className="googlesitekit-settings-notice__icon">
-				{ Icon ? <Icon /> : getIconFromType( type ) }
+		<Fragment>
+			<div className="googlesitekit-settings-notice__text">
+				{ notice }
 			</div>
-			<div>
-				<div className="googlesitekit-settings-notice__text">
-					{ notice }
-				</div>
-				<div className="googlesitekit-settings-notice--multi-row__inner-row">
-					<div className="googlesitekit-settings-notice__children-container">
-						{ children }
-					</div>
-					{ LearnMore && (
-						<div
-							className="googlesitekit-settings-notice__learn-more--multi-row"
-						>
-							<LearnMore />
-						</div>
-					) }
-				</div>
-			</div>
-		</div>
-	);
-};
 
-export default SettingsNoticeMultiRow;
+			<div className="googlesitekit-settings-notice__inner-row">
+				<div className="googlesitekit-settings-notice__children-container">
+					{ children }
+				</div>
+
+				{ LearnMore && (
+					<div className="googlesitekit-settings-notice__learn-more">
+						<LearnMore />
+					</div>
+				) }
+			</div>
+		</Fragment>
+	);
+}
 
 SettingsNoticeMultiRow.propTypes = {
 	children: PropTypes.node.isRequired,
 	notice: PropTypes.node.isRequired,
-	type: PropTypes.oneOf( [ TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION ] ),
-	Icon: PropTypes.elementType,
 	LearnMore: PropTypes.elementType,
 };

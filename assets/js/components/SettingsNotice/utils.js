@@ -22,20 +22,18 @@
 import InfoIcon from '../../../svg/info-icon.svg';
 import SuggestionIcon from '../../../svg/suggestion-icon.svg';
 import WarningIcon from '../../../svg/warning-icon.svg';
+import Null from '../Null';
 
 export const TYPE_WARNING = 'warning';
 export const TYPE_INFO = 'info';
 export const TYPE_SUGGESTION = 'suggestion';
 
+const typeIconMap = {
+	[ TYPE_INFO ]: InfoIcon,
+	[ TYPE_WARNING ]: WarningIcon,
+	[ TYPE_SUGGESTION ]: SuggestionIcon,
+};
+
 export const getIconFromType = ( type ) => {
-	switch ( type ) {
-		case TYPE_WARNING:
-			return <WarningIcon />;
-		case TYPE_INFO:
-			return <InfoIcon />;
-		case TYPE_SUGGESTION:
-			return <SuggestionIcon />;
-		default:
-			return null;
-	}
+	return typeIconMap[ type ] || Null;
 };

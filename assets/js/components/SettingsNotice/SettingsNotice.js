@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -26,17 +27,35 @@ import PropTypes from 'prop-types';
  */
 import SettingsNoticeSingleRow from './SettingsNoticeSingleRow';
 import SettingsNoticeMultiRow from './SettingsNoticeMultiRow';
-import { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION } from './utils';
+import { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION, getIconFromType } from './utils';
 
 export default function SettingsNotice( props ) {
-	const { children, type } = props;
+	const {
+		children,
+		type,
+		Icon = getIconFromType( type ),
+	} = props;
+
+	const Layout = children ? SettingsNoticeMultiRow : SettingsNoticeSingleRow;
 
 	return (
-		<div className={ `googlesitekit-settings-notice googlesitekit-settings-notice--${ type }` } >
-			{ !! children && <SettingsNoticeMultiRow { ...props } /> }
-			{ ! children && (
-				<SettingsNoticeSingleRow { ...props } />
+		<div
+			className={ classnames(
+				'googlesitekit-settings-notice',
+				`googlesitekit-settings-notice--${ type }`,
+				{
+					'googlesitekit-settings-notice--single-row': ! children,
+					'googlesitekit-settings-notice--multi-row': children,
+				}
 			) }
+		>
+			<div className="googlesitekit-settings-notice__icon">
+				<Icon width="20" height="20" />
+			</div>
+
+			<div className="googlesitekit-settings-notice__body">
+				<Layout { ...props } />
+			</div>
 		</div>
 	);
 }
@@ -45,7 +64,11 @@ export default function SettingsNotice( props ) {
 SettingsNotice.propTypes = {
 	children: PropTypes.node,
 	notice: PropTypes.node.isRequired,
-	type: PropTypes.oneOf( [ TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION ] ),
+	type: PropTypes.oneOf( [
+		TYPE_INFO,
+		TYPE_WARNING,
+		TYPE_SUGGESTION,
+	] ),
 	Icon: PropTypes.elementType,
 	LearnMore: PropTypes.elementType,
 };
