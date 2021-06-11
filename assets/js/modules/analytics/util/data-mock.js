@@ -109,16 +109,16 @@ function generateMetricValues( validMetrics, count ) {
 		validMetrics.forEach( ( validMetric ) => {
 			switch ( getMetricType( validMetric ) ) {
 				case 'INTEGER':
-					values.push( faker.random.number( { min: 0, max: 100 } ).toString() );
+					values.push( faker.datatype.number( { min: 0, max: 100 } ).toString() );
 					break;
 				case 'PERCENT':
-					values.push( faker.random.float( { min: 0, max: 100 } ).toString() );
+					values.push( faker.datatype.float( { min: 0, max: 100 } ).toString() );
 					break;
 				case 'TIME':
-					values.push( faker.random.number( { min: 0, max: 3600 } ).toString() ); // 1 hour max.
+					values.push( faker.datatype.number( { min: 0, max: 3600 } ).toString() ); // 1 hour max.
 					break;
 				case 'CURRENCY':
-					values.push( faker.random.float( { min: 0, max: 10000 } ).toString() ); // $10k max.
+					values.push( faker.datatype.float( { min: 0, max: 10000 } ).toString() ); // $10k max.
 					break;
 			}
 		} );

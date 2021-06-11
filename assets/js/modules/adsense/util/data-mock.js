@@ -19,15 +19,16 @@
 /**
  * External dependencies
  */
-import castArray from 'lodash/castArray';
-
-/**
- * External dependencies
- */
 import faker from 'faker';
 import md5 from 'md5';
 import { range } from 'rxjs';
 import { map, reduce } from 'rxjs/operators';
+import castArray from 'lodash/castArray';
+
+/**
+ * Internal dependencies
+ */
+import { getDateString } from '../../../util';
 
 const METRIC_RATIO = 'METRIC_RATIO';
 const METRIC_TALLY = 'METRIC_TALLY';
@@ -40,119 +41,134 @@ const ADSENSE_METRIC_TYPES = {
 	PAGE_VIEWS_CTR: METRIC_RATIO,
 };
 
-/**
- * Generates and returns report headers.
- *
- * @since n.e.x.t
- *
- * @param {Array.<string>} metrics    Metircs list.
- * @param {Array.<string>} dimensions Dimensions list.
- * @return {Array.<Object>} Headers list.
- */
-function generateHeaders( metrics, dimensions ) {
-	const headers = [];
+class DataFactory {
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 */
+	constructor() {
+		this.metricMemory = {};
+	}
 
-	dimensions.forEach( ( dimension ) => {
-		headers.push( {
-			currency: null,
-			name: dimension.toUpperCase(),
-			type: 'DIMENSION',
+	/**
+	 * Generates and returns report headers.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array.<string>} metrics    Metrics list.
+	 * @param {Array.<string>} dimensions Dimensions list.
+	 * @return {Array.<Object>} Headers list.
+	 */
+	createHeaders( metrics, dimensions ) {
+		const headers = [];
+
+		dimensions.forEach( ( dimension ) => {
+			headers.push( {
+				currency: null,
+				name: dimension.toUpperCase(),
+				type: 'DIMENSION',
+			} );
 		} );
-	} );
 
-	metrics.forEach( ( metric ) => {
-		const ucMetric = metric.toUpperCase();
-		headers.push( {
-			currency: ADSENSE_METRIC_TYPES[ ucMetric ] === METRIC_CURRENCY ? 'USD' : null,
-			name: ucMetric,
-			type: ADSENSE_METRIC_TYPES[ ucMetric ],
+		metrics.forEach( ( metric ) => {
+			const ucMetric = metric.toUpperCase();
+			headers.push( {
+				currency: ADSENSE_METRIC_TYPES[ ucMetric ] === METRIC_CURRENCY ? 'USD' : null,
+				name: ucMetric,
+				type: ADSENSE_METRIC_TYPES[ ucMetric ],
+			} );
 		} );
-	} );
 
-	return headers;
-}
-
-/**
- * Generates and returns metric values.
- *
- * @since n.e.x.t
- *
- * @param {string}         date    The current date.
- * @param {Array.<string>} metrics Metrics list.
- * @return {Array.<string>} Array of metric values.
- */
-function generateMetricValues( date, metrics ) {
-	if ( typeof generateMetricValues.memory === 'undefined' ) {
-		generateMetricValues.memory = {};
+		return headers;
 	}
 
-	const values = [];
-	const delta = .30;
+	/**
+	 * Generates and returns metric values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}         date    The current date.
+	 * @param {Array.<string>} metrics Metrics list.
+	 * @return {Array.<string>} Array of metric values.
+	 */
+	createMetricValues( date, metrics ) {
+		const values = [];
+		const delta = .15;
 
-	for ( const metric of metrics ) {
-		const lastValue = generateMetricValues.memory[ metric ];
+		for ( const metric of metrics ) {
+			const lastValue = this.metricMemory[ metric ];
+			const min = lastValue * ( 1 - delta );
+			const max = lastValue * ( 1 + delta );
 
-		switch ( ADSENSE_METRIC_TYPES[ metric.toUpperCase() ] ) {
-			case METRIC_TALLY: {
-				const newValue = faker.random.number( {
-					min: lastValue ? Math.floor( lastValue * ( 1 - delta ) ) : faker.random.number( { min: 100, max: 900 } ),
-					max: lastValue ? Math.ceil( lastValue * ( 1 + delta ) ) : 1000,
-				} );
+			switch ( ADSENSE_METRIC_TYPES[ metric.toUpperCase() ] ) {
+				case METRIC_TALLY: {
+					const options = lastValue === undefined
+						? { min: 500, max: 700 }
+						: {
+							min: Math.floor( min ),
+							max: Math.ceil( max ),
+						};
 
-				values.push( newValue.toString() );
-				generateMetricValues.memory[ metric ] = newValue;
-				break;
+					const newValue = faker.datatype.number( options );
+					values.push( newValue.toString() );
+					this.metricMemory[ metric ] = newValue;
+					break;
+				}
+				case METRIC_CURRENCY: {
+					const options = lastValue === undefined
+						? { min: 500, max: 700 }
+						: { min, max };
+
+					const newValue = faker.datatype.float( options );
+					values.push( newValue.toFixed( 2 ) );
+					this.metricMemory[ metric ] = newValue;
+					break;
+				}
+				case METRIC_RATIO: {
+					const options = lastValue === undefined
+						? { min: .4, max: .6 }
+						: {
+							min,
+							max: Math.min( max, 1 ),
+						};
+
+					const newValue = faker.datatype.float( options );
+					values.push( newValue.toFixed( 2 ) );
+					this.metricMemory[ metric ] = newValue;
+					break;
+				}
+				default:
+					values.push( '' );
+					break;
 			}
-			case METRIC_CURRENCY: {
-				const newValue = faker.random.float( {
-					min: lastValue ? Math.floor( lastValue * ( 1 - delta ) ) : faker.random.number( { min: 100, max: 400 } ),
-					max: lastValue ? Math.ceil( lastValue * ( 1 + delta ) ) : 500,
-				} );
-
-				values.push( newValue.toFixed( 2 ) );
-				generateMetricValues.memory[ metric ] = newValue;
-				break;
-			}
-			case METRIC_RATIO: {
-				const newValue = faker.random.float( {
-					min: lastValue ? lastValue * ( 1 - delta ) : faker.random.number( { min: .1, max: .9 } ),
-					max: lastValue ? Math.min( lastValue * ( 1 + delta ), 1 ) : 1,
-				} );
-
-				values.push( newValue.toFixed( 2 ) );
-				generateMetricValues.memory[ metric ] = newValue;
-				break;
-			}
-			default:
-				values.push( '' );
-				break;
 		}
+
+		return values;
 	}
 
-	return values;
-}
+	/**
+	 * Generates and returns dimension values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}         date       The current date.
+	 * @param {Array.<string>} dimensions Dimensions list.
+	 * @return {Array.<string>} Array of dimension values.
+	 */
+	createDimensionValues( date, dimensions ) {
+		const values = [];
 
-/**
- * Generates and returns dimension values.
- *
- * @since n.e.x.t
- *
- * @param {string}         date       The current date.
- * @param {Array.<string>} dimensions Dimensions list.
- * @return {Array.<string>} Array of dimension values.
- */
-function generateDimensionValues( date, dimensions ) {
-	const values = [];
-
-	for ( const dimension of dimensions ) {
-		switch ( dimension.toUpperCase() ) {
-			case 'DATE':
-				values.push( date );
-				break;
+		for ( const dimension of dimensions ) {
+			switch ( dimension.toUpperCase() ) {
+				case 'DATE':
+					values.push( date );
+					break;
+			}
 		}
-	}
 
-	return values;
+		return values;
+	}
 }
 
 /**
@@ -177,6 +193,7 @@ export function getAdSenseMockResponse( args ) {
 		faker.seed( argsHash );
 	}
 
+	const factory = new DataFactory();
 	const metrics = castArray( args.metrics ).filter( ( metric ) => !! metric );
 	const dimensions = castArray( args.dimensions ).filter( ( dimension ) => !! dimension );
 
@@ -185,7 +202,7 @@ export function getAdSenseMockResponse( args ) {
 		startDate: args.startDate,
 		endDate: args.endDate,
 		totalMatchedRows: '0',
-		headers: generateHeaders( metrics, dimensions ),
+		headers: factory.createHeaders( metrics, dimensions ),
 		totals: [],
 		averages: [],
 		rows: [],
@@ -199,9 +216,12 @@ export function getAdSenseMockResponse( args ) {
 	// This is the list of operations that we will apply to the range (array) of numbers.
 	const ops = [
 		// Converts range number to a date string.
-		map( ( item ) => ( new Date( startDate.getTime() + ( dayInMilliseconds * item ) ) ).toISOString().split( 'T' )[ 0 ] ),
+		map( ( item ) => getDateString( new Date( startDate ).setDate( startDate.getDate() + item ) ) ),
 		// Add dimension and metric values.
-		map( ( date ) => [ ...generateDimensionValues( date, dimensions ), ...generateMetricValues( date, metrics ) ] ),
+		map( ( date ) => [
+			...factory.createDimensionValues( date, dimensions ),
+			...factory.createMetricValues( date, metrics ),
+		] ),
 		// Accumulate all rows into a single array.
 		reduce( ( rows, row ) => [ ...rows, row ], [] ),
 	];
