@@ -28,6 +28,7 @@ import castArray from 'lodash/castArray';
 /**
  * Internal dependencies
  */
+import { STORE_NAME } from '../datastore/constants';
 import { getDateString } from '../../../util';
 
 const METRIC_RATIO = 'METRIC_RATIO';
@@ -243,4 +244,17 @@ export function getAdSenseMockResponse( args ) {
 	faker.seed( originalSeedValue );
 
 	return data;
+}
+
+/**
+ * Generates mock response for AdSense reports.
+ *
+ * @since n.e.x.t
+ *
+ * @param {wp.data.registry} registry Registry with all available stores registered.
+ * @param {Object}           options  Report options.
+ */
+export function provideAdSenseMockReport( registry, options ) {
+	registry.dispatch( STORE_NAME ).receiveGetReport( getAdSenseMockResponse( options ), { options } );
+	registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ options ] );
 }

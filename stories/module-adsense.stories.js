@@ -39,7 +39,7 @@ import {
 	UserProfile,
 	SiteSteps,
 } from '../assets/js/modules/adsense/components/common';
-import { getAdSenseMockResponse } from '../assets/js/modules/adsense/util/data-mock';
+import { provideAdSenseMockReport } from '../assets/js/modules/adsense/util/data-mock';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
@@ -179,13 +179,13 @@ storiesOf( 'AdSense Module', module )
 		);
 	} )
 	.add( 'Performance', () => {
-		const setupRegistry = ( { dispatch, select } ) => {
+		const setupRegistry = ( registry ) => {
 			const {
 				startDate,
 				endDate,
 				compareStartDate,
 				compareEndDate,
-			} = select( CORE_USER ).getDateRangeDates( { compare: true } );
+			} = registry.select( CORE_USER ).getDateRangeDates( { compare: true } );
 
 			const currentStatsArgs = {
 				startDate,
@@ -224,15 +224,10 @@ storiesOf( 'AdSense Module', module )
 				endDate: compareEndDate,
 			};
 
-			dispatch( STORE_NAME ).receiveGetReport( getAdSenseMockResponse( currentStatsArgs ), { options: currentStatsArgs } );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ currentStatsArgs ] );
-			dispatch( STORE_NAME ).receiveGetReport( getAdSenseMockResponse( prevStatsArgs ), { options: prevStatsArgs } );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ prevStatsArgs ] );
-
-			dispatch( STORE_NAME ).receiveGetReport( getAdSenseMockResponse( currentSummaryArgs ), { options: currentSummaryArgs } );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ currentSummaryArgs ] );
-			dispatch( STORE_NAME ).receiveGetReport( getAdSenseMockResponse( prevSummaryArgs ), { options: prevSummaryArgs } );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ prevSummaryArgs ] );
+			provideAdSenseMockReport( registry, currentStatsArgs );
+			provideAdSenseMockReport( registry, prevStatsArgs );
+			provideAdSenseMockReport( registry, currentSummaryArgs );
+			provideAdSenseMockReport( registry, prevSummaryArgs );
 		};
 
 		return (

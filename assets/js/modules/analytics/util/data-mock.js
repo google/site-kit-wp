@@ -306,9 +306,9 @@ export function getAnalyticsMockResponse( args ) {
  * @param {wp.data.registry} registry Registry with all available stores registered.
  * @param {Object}           options  Report options.
  */
-export const provideAnalyticsMockReport = ( registry, options ) => {
+export function provideAnalyticsMockReport( registry, options ) {
 	registry.dispatch( STORE_NAME ).receiveGetReport(
 		getAnalyticsMockResponse( options ),
 		{ options }
 	);
-};
+}
