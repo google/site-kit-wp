@@ -81,7 +81,7 @@ export default function LegacyAdSenseDashboardWidgetSiteStats( props ) {
 	}
 
 	const options = {
-		curveType: 'line',
+		curveType: 'function',
 		height: 270,
 		width: '100%',
 		chartArea: {
