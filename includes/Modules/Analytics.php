@@ -120,6 +120,7 @@ final class Analytics extends Module
 	 */
 	protected function is_tracking_disabled() {
 		$settings = $this->get_settings()->get();
+		// This filter is documented in Tag_Manager::filter_analytics_allow_tracking_disabled.
 		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] ) ) {
 			return false;
 		}
