@@ -156,12 +156,12 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
 		// The test for this behaviour depends on a constant value which can
 		// only be redefined if PECL extension runkit7 is installed.
+		if ( ! extension_loaded( 'runkit7' ) ) {
+			$this->markTestSkipped( 'The runkit7 extension is not available.' );
+		}
+        
 		if ( defined( 'GOOGLESITEKIT_PROXY_URL' ) ) {
-			if ( function_exists( 'runkit7_constant_remove' ) ) {
-				runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
-			} else {
-				return;
-			}
+			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
 		}
 		define( 'GOOGLESITEKIT_PROXY_URL', Google_Proxy::STAGING_BASE_URL );
 		$url = $this->google_proxy->url();
