@@ -617,7 +617,7 @@ final class OAuth_Client {
 	 *
 	 * @since 1.0.0
 	 * @since 1.9.0 Added $additional_scopes parameter.
-	 * @since n.e.x.t Updated handling of $additional_scopes to restore rewritten scope.
+	 * @since 1.34.1 Updated handling of $additional_scopes to restore rewritten scope.
 	 *
 	 * @param string   $redirect_url      Redirect URL after authentication.
 	 * @param string[] $additional_scopes List of additional scopes to request.
