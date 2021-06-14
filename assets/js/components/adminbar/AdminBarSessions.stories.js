@@ -26,8 +26,8 @@ import AdminBarSessions from './AdminBarSessions';
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )( AdminBarSessions );
 
-const Template = ( { setupRegistry, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry ? setupRegistry : () => {} }>
+const Template = ( { setupRegistry = () => {}, ...args } ) => (
+	<WithRegistrySetup func={ setupRegistry }>
 		<WidgetWithComponentProps { ...args } />
 	</WithRegistrySetup>
 );
@@ -39,7 +39,7 @@ Ready.args = {
 };
 
 export const DataUnavailable = Template.bind( {} );
-DataUnavailable.storyName = 'DataUnavailable';
+DataUnavailable.storyName = 'Data Unavailable';
 
 export default {
 	title: 'Views/AdminBarApp/AdminBarSessions',

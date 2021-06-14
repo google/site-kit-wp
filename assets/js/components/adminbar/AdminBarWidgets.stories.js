@@ -24,8 +24,8 @@ import { setupSearchConsoleAnalyticsMockReports, setupAnalyticsMockReports, setu
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
 
-const Template = ( { setupRegistry, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry ? setupRegistry : () => {} }>
+const Template = ( { setupRegistry = () => {}, ...args } ) => (
+	<WithRegistrySetup func={ setupRegistry }>
 		<AdminBarWidgets { ...args } />
 	</WithRegistrySetup>
 );
@@ -62,7 +62,7 @@ Ready.decorators = [
 ];
 
 export const DataUnavailable = Template.bind( {} );
-DataUnavailable.storyName = 'DataUnavailable';
+DataUnavailable.storyName = 'Data Unavailable';
 DataUnavailable.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -90,7 +90,7 @@ DataUnavailable.decorators = [
 ];
 
 export const AnalyticsDataUnavailable = Template.bind( {} );
-AnalyticsDataUnavailable.storyName = 'AnalyticsDataUnavailable';
+AnalyticsDataUnavailable.storyName = 'Data Unavailable: Analytics';
 AnalyticsDataUnavailable.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -121,7 +121,7 @@ AnalyticsDataUnavailable.decorators = [
 ];
 
 export const AnalyticsInactive = Template.bind( {} );
-AnalyticsInactive.storyName = 'AnalyticsInactive';
+AnalyticsInactive.storyName = 'Inactive: Analytics';
 AnalyticsInactive.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -146,7 +146,7 @@ AnalyticsInactive.decorators = [
 ];
 
 export const SearchConsoleDataUnavailable = Template.bind( {} );
-SearchConsoleDataUnavailable.storyName = 'SearchConsoleDataUnavailable';
+SearchConsoleDataUnavailable.storyName = 'Data Unavailable: Search Console';
 SearchConsoleDataUnavailable.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -182,7 +182,7 @@ export default {
 				} );
 
 				// Call story-specific setup.
-				if ( args?.setupRegistry && typeof args?.setupRegistry === 'function' ) {
+				if ( typeof args?.setupRegistry === 'function' ) {
 					args.setupRegistry( registry );
 				}
 			};

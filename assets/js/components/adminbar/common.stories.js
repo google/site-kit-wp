@@ -82,7 +82,7 @@ export const setupBaseRegistry = ( registry, args ) => {
 	] );
 
 	// Call story-specific setup.
-	if ( args?.setupRegistry && typeof args?.setupRegistry === 'function' ) {
+	if ( typeof args?.setupRegistry === 'function' ) {
 		args.setupRegistry( registry );
 	}
 };

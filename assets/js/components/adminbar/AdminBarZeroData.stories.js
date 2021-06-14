@@ -24,7 +24,7 @@ import AdminBarZeroData from './AdminBarZeroData';
 const Template = ( args ) => <AdminBarZeroData { ...args } />;
 
 export const Ready = Template.bind( {} );
-Ready.storyName = 'Ready';
+Ready.storyName = 'Data Unavailable';
 
 export default {
 	title: 'Views/AdminBarApp/AdminBarZeroData',

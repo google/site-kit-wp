@@ -23,8 +23,8 @@ import { setupBaseRegistry, setupSearchConsoleAnalyticsMockReports } from './com
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarApp from './AdminBarApp';
 
-const Template = ( { setupRegistry, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry ? setupRegistry : () => {} }>
+const Template = ( { setupRegistry = () => {}, ...args } ) => (
+	<WithRegistrySetup func={ setupRegistry }>
 		<AdminBarApp { ...args } />
 	</WithRegistrySetup>
 );
@@ -36,7 +36,7 @@ Ready.args = {
 };
 
 export const DataUnavailable = Template.bind( {} );
-DataUnavailable.storyName = 'DataUnavailable';
+DataUnavailable.storyName = 'Data Unavailable';
 
 export default {
 	title: 'Views/AdminBarApp/AdminBarApp',
