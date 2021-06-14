@@ -12,14 +12,10 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Modules\Module;
-use Google\Site_Kit\Core\Modules\Module_Settings;
-use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
-use Google\Site_Kit\Core\Modules\Module_With_Settings;
-use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
@@ -41,7 +37,6 @@ final class Idea_Hub extends Module
 	implements Module_With_Scopes, Module_With_Assets {
 	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
-	use Module_With_Settings_Trait;
 
 	/**
 	 * Module slug name.
@@ -122,15 +117,6 @@ final class Idea_Hub extends Module
 		return array(
 			'https://www.googleapis.com/auth/ideahub.read',
 		);
-	}
-
-	/**
-	 * Cleans up when the module is deactivated.
-	 *
-	 * @since 1.32.0
-	 */
-	public function on_deactivation() {
-		$this->get_settings()->delete();
 	}
 
 	/**
@@ -413,17 +399,6 @@ final class Idea_Hub extends Module
 			'order'       => 7,
 			'homepage'    => 'https://www.google.com',
 		);
-	}
-
-	/**
-	 * Sets up the module's settings instance.
-	 *
-	 * @since 1.32.0
-	 *
-	 * @return Module_Settings
-	 */
-	protected function setup_settings() {
-		return new Settings( $this->options );
 	}
 
 	/**
