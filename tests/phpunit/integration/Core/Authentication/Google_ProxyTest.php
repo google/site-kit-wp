@@ -165,8 +165,7 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( $url, Google_Proxy::STAGING_BASE_URL );
 		if ( function_exists( 'runkit7_constant_remove' ) ) {
 			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
-		}
-		if ( function_exists( 'runkit_constant_remove' ) ) {
+		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
 			runkit_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
 		}
 	}
@@ -182,8 +181,7 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
 		if ( function_exists( 'runkit7_constant_remove' ) ) {
 			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
-		}
-		if ( function_exists( 'runkit_constant_remove' ) ) {
+		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
 			runkit_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
 		}
 	}
