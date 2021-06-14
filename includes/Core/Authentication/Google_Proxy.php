@@ -176,7 +176,9 @@ class Google_Proxy {
 	 * @return string Complete proxy URL.
 	 */
 	public function url( $path = '' ) {
-		$url = defined( 'GOOGLESITEKIT_PROXY_URL' ) && self::STAGING_BASE_URL === GOOGLESITEKIT_PROXY_URL ? self::STAGING_BASE_URL : self::PRODUCTION_BASE_URL;
+		$url = defined( 'GOOGLESITEKIT_PROXY_URL' ) && self::STAGING_BASE_URL === GOOGLESITEKIT_PROXY_URL
+			? self::STAGING_BASE_URL
+			: self::PRODUCTION_BASE_URL;
 
 		$url = untrailingslashit( $url );
 
