@@ -296,7 +296,7 @@ export const selectors = {
 	 * Gets a URL for (re)connecting via OAuth, with optional additional scopes.
 	 *
 	 * @since 1.9.0
-	 * @since n.e.x.t Updated resulting URL when additional scopes are provided.
+	 * @since 1.34.1 Updated resulting URL when additional scopes are provided.
 	 *
 	 * @param {Object}   state                   Data store's state.
 	 * @param {Object}   [args]                  Optional arguments for the resulting URL.
