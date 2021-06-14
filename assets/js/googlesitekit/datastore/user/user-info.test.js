@@ -146,6 +146,27 @@ describe( 'core/user userInfo', () => {
 				} );
 			} );
 
+			it( 'only rewrites additional scopes that are URLs', () => {
+				registry.dispatch( STORE_NAME ).receiveConnectURL( userData.connectURL );
+				const additionalScopes = [
+					'http://example.com/test/scope/a',
+					'https://example.com/test/scope/b',
+					'openid',
+					'http',
+					'example.com/test/scope/a',
+				];
+				const connectURL = registry.select( STORE_NAME ).getConnectURL( { additionalScopes } );
+
+				// Note: scopes that are in the form of a URL are rewritten to start with gttp.
+				expect( connectURL ).toMatchQueryParameters( {
+					'additional_scopes[0]': 'gttp://example.com/test/scope/a',
+					'additional_scopes[1]': 'gttps://example.com/test/scope/b',
+					'additional_scopes[2]': 'openid',
+					'additional_scopes[3]': 'http',
+					'additional_scopes[4]': 'example.com/test/scope/a',
+				} );
+			} );
+
 			it( 'accepts an optional redirectURL to add as a query parameter', () => {
 				registry.dispatch( STORE_NAME ).receiveConnectURL( userData.connectURL );
 				const redirectURL = 'http://example.com/test/redirect/';
