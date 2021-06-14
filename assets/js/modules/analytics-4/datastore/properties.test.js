@@ -115,7 +115,7 @@ describe( 'modules/analytics-4 properties', () => {
 				await registry.dispatch( STORE_NAME ).selectProperty( PROPERTY_CREATE );
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
-				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( WEBDATASTREAM_CREATE );
 				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( '' );
 			} );
 
@@ -179,7 +179,7 @@ describe( 'modules/analytics-4 properties', () => {
 				const promise = registry.dispatch( STORE_NAME ).selectProperty( propertyID );
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
-				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( WEBDATASTREAM_CREATE );
 				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( '' );
 
 				resolveResponse();
