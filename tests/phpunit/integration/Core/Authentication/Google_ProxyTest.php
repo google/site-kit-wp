@@ -159,7 +159,7 @@ class Google_ProxyTest extends TestCase {
 		if ( ! extension_loaded( 'runkit7' ) ) {
 			$this->markTestSkipped( 'The runkit7 extension is not available.' );
 		}
-        
+
 		if ( defined( 'GOOGLESITEKIT_PROXY_URL' ) ) {
 			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
 		}
@@ -171,12 +171,11 @@ class Google_ProxyTest extends TestCase {
 	public function test_url_ignores_invalid_values() {
 		// The test for this behaviour depends on a constant value which can
 		// only be redefined if PECL extension runkit7 is installed.
+		if ( ! extension_loaded( 'runkit7' ) ) {
+			$this->markTestSkipped( 'The runkit7 extension is not available.' );
+		}
 		if ( defined( 'GOOGLESITEKIT_PROXY_URL' ) ) {
-			if ( function_exists( 'runkit7_constant_remove' ) ) {
-				runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
-			} else {
-				return;
-			}
+			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
 		}
 		define( 'GOOGLESITEKIT_PROXY_URL', 'https://example.com' );
 		$url = $this->google_proxy->url();
