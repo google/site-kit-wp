@@ -160,12 +160,10 @@ class Google_ProxyTest extends TestCase {
 			$this->markTestSkipped( 'The runkit7 extension is not available.' );
 		}
 
-		if ( defined( 'GOOGLESITEKIT_PROXY_URL' ) ) {
-			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
-		}
 		define( 'GOOGLESITEKIT_PROXY_URL', Google_Proxy::STAGING_BASE_URL );
 		$url = $this->google_proxy->url();
 		$this->assertEquals( $url, Google_Proxy::STAGING_BASE_URL );
+		runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
 	}
 
 	public function test_url_ignores_invalid_values() {
@@ -174,12 +172,10 @@ class Google_ProxyTest extends TestCase {
 		if ( ! extension_loaded( 'runkit7' ) ) {
 			$this->markTestSkipped( 'The runkit7 extension is not available.' );
 		}
-		if ( defined( 'GOOGLESITEKIT_PROXY_URL' ) ) {
-			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
-		}
 		define( 'GOOGLESITEKIT_PROXY_URL', 'https://example.com' );
 		$url = $this->google_proxy->url();
 		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
+		runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
 	}
 
 	public function test_get_user_fields() {
