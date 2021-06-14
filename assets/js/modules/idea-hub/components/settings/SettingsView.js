@@ -25,25 +25,29 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { sanitizeHTML } from '../../../../util';
 import { STORE_NAME } from '../../datastore/constants';
+import Link from '../../../../components/Link';
+import { createInterpolateElement } from '@wordpress/element';
 const { useSelect } = Data;
 
 export default function SettingsView() {
 	const dashboardPermalink = useSelect( ( select ) => select( STORE_NAME ).getAdminScreenURL() );
 
-	const content = sprintf(
-		/* translators: %s is the URL to the Site Kit dashboard. */
-		__( 'To view ideas for new content, <a href="%s">visit the dashboard</a>', 'google-site-kit' ),
-		dashboardPermalink
-	);
-
 	return (
-		<p
-			dangerouslySetInnerHTML={ sanitizeHTML( content, {
-				ALLOWED_TAGS: [ 'a' ],
-				ALLOWED_ATTR: [ 'href' ],
-			} ) }
-		/>
+		createInterpolateElement(
+			sprintf(
+				/* translators: %s is the URL to the Site Kit dashboard. */
+				__( 'To view ideas for new content, <a href="%s">visit the dashboard</a>', 'google-site-kit' ),
+				dashboardPermalink
+			),
+			{
+				a: <Link
+					key="link"
+					href={ 'https://policies.google.com/privacy' }
+					external
+					inherit
+				/>,
+			}
+		)
 	);
 }
