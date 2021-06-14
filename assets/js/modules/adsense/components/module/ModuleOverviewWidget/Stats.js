@@ -50,12 +50,13 @@ const Stats = ( {
 	};
 
 	const options = {
-		curveType: 'line',
+		curveType: 'function',
 		height: 270,
 		width: '100%',
 		chartArea: {
 			height: '80%',
-			width: '87%',
+			width: '100%',
+			left: 60,
 		},
 		legend: {
 			position: 'top',
