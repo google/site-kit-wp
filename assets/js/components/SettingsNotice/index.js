@@ -1,5 +1,5 @@
 /**
- * AdSense Site performance widget styles.
+ * Settings notice component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,22 +16,8 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
-
-	.googlesitekit-adsense-performance-overview {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-evenly;
-		padding: $grid-gap-phone;
-
-		@media (min-width: $bp-desktop) {
-			padding: $grid-gap-desktop;
-		}
-
-		.googlesitekit-data-block--button {
-			min-width: 25%;
-			padding-left: 20px;
-			padding-right: 20px;
-		}
-	}
-}
+/**
+ * Internal dependencies
+ */
+export { default } from './SettingsNotice';
+export { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION } from './utils';
