@@ -97,7 +97,7 @@ SiteStats.options = {
 	chart: {
 		title: '',
 	},
-	curveType: 'line',
+	curveType: 'function',
 	height: 270,
 	width: '100%',
 	chartArea: {
