@@ -139,9 +139,10 @@ describe( 'core/user userInfo', () => {
 				const additionalScopes = [ 'http://example.com/test/scope/a', 'http://example.com/test/scope/b' ];
 				const connectURL = registry.select( STORE_NAME ).getConnectURL( { additionalScopes } );
 
+				// Note: scopes that are in the form of a URL are rewritten to start with gttp.
 				expect( connectURL ).toMatchQueryParameters( {
-					'additional_scopes[0]': 'http://example.com/test/scope/a',
-					'additional_scopes[1]': 'http://example.com/test/scope/b',
+					'additional_scopes[0]': 'gttp://example.com/test/scope/a',
+					'additional_scopes[1]': 'gttp://example.com/test/scope/b',
 				} );
 			} );
 
