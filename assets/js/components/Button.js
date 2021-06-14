@@ -58,19 +58,20 @@ const Button = forwardRef( ( {
 	const SemanticButton = ( href && ! disabled ) ? 'a' : 'button';
 
 	const getAriaLabel = () => {
-		let label = ariaLabel;
+		const label = ariaLabel;
+		const newTabText = _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' );
 
 		if ( target === '_blank' ) {
-			return label;
-		} else if ( typeof children === 'string' ) {
-			label = label || children;
+			return label ? `${ label } ${ newTabText }` : `${ newTabText }`;
 		}
 
-		const newTabText = _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' );
 		if ( label ) {
-			return `${ label } ${ newTabText }`;
+			return label;
 		}
-		return newTabText;
+
+		if ( typeof children === 'string' ) {
+			return children;
+		}
 	};
 
 	return (
