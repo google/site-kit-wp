@@ -28,6 +28,9 @@ class Context {
 	/**
 	 * Primary "standard" AMP website mode.
 	 *
+	 * This mode is currently unused due to Tag Manager setup not showing the Web Container dropdown
+	 * when AMP is in standard mode and some urls have AMP disabled.
+	 *
 	 * @since 1.0.0
 	 * @var string
 	 */
