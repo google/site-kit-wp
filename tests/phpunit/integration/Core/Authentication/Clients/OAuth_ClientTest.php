@@ -347,6 +347,7 @@ class OAuth_ClientTest extends TestCase {
 			'openid',
 			'http',
 			'example.com/test/scope/a',
+			'https://example.com/test/scope/c',
 		);
 
 		$authentication_url = $client->get_authentication_url( '', $additional_scopes );
@@ -360,6 +361,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'openid', $requested_scopes );
 		$this->assertContains( 'http', $requested_scopes );
 		$this->assertContains( 'example.com/test/scope/a', $requested_scopes );
+		$this->assertContains( 'https://example.com/test/scope/c', $requested_scopes );
 	}
 
 	public function test_authorize_user() {
