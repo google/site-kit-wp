@@ -326,6 +326,12 @@ const baseResolvers = {
 
 		let ga4Property;
 		const ga4PropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		// Bail out if the analytics-4 propertyID is already set to create a new property.
+		if ( ga4PropertyID === GA4_PROPERTY_CREATE ) {
+			return;
+		}
+
 		if ( ga4PropertyID ) {
 			ga4Property = yield Data.commonActions.await(
 				registry.__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty( ga4PropertyID )
