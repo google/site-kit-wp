@@ -155,7 +155,7 @@ const baseActions = {
 			const registry = yield Data.commonActions.getRegistry();
 
 			registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
-			registry.dispatch( STORE_NAME ).setWebDataStreamID( '' );
+			registry.dispatch( STORE_NAME ).setWebDataStreamID( WEBDATASTREAM_CREATE );
 			registry.dispatch( STORE_NAME ).setMeasurementID( '' );
 
 			if ( PROPERTY_CREATE === propertyID ) {
@@ -168,8 +168,6 @@ const baseActions = {
 			if ( webdatastream ) {
 				registry.dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._id );
 				registry.dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
-			} else {
-				registry.dispatch( STORE_NAME ).setWebDataStreamID( WEBDATASTREAM_CREATE );
 			}
 		}
 	),
