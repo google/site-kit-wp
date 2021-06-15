@@ -24,23 +24,32 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
+import SurveyHeader from './SurveyHeader';
 import SurveyQuestionRatingChoice from './SurveyQuestionRatingChoice';
 
-export default function SurveyQuestionRating( { choices, answerQuestion } ) {
-	return (
-		<div className="googlesitekit-survey__choices">
-			{ choices.map( ( choice, index ) => (
-				<SurveyQuestionRatingChoice
-					key={ index }
-					choice={ choice }
-					answerQuestion={ answerQuestion }
-				/>
-			) ) }
+const SurveyQuestionRating = ( { question, choices, answerQuestion, dismissSurvey } ) => (
+	<div className="googlesitekit-survey__question-rating">
+		<SurveyHeader
+			title={ question }
+			dismissSurvey={ dismissSurvey }
+		/>
+
+		<div className="googlesitekit-survey__body">
+			<div className="googlesitekit-survey__choices">
+				{ choices.map( ( choice, index ) => (
+					<SurveyQuestionRatingChoice
+						key={ index }
+						choice={ choice }
+						answerQuestion={ answerQuestion }
+					/>
+				) ) }
+			</div>
 		</div>
-	);
-}
+	</div>
+);
 
 SurveyQuestionRating.propTypes = {
+	question: PropTypes.string.isRequired,
 	choices: PropTypes.arrayOf(
 		PropTypes.shape( {
 			answer_ordinal: PropTypes.oneOfType( [
@@ -51,4 +60,7 @@ SurveyQuestionRating.propTypes = {
 		} ),
 	).isRequired,
 	answerQuestion: PropTypes.func.isRequired,
+	dismissSurvey: PropTypes.func.isRequired,
 };
+
+export default SurveyQuestionRating;
