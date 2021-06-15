@@ -29,6 +29,7 @@ import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import SurveyCompletion from './SurveyCompletion';
 import SurveyQuestionRating from './SurveyQuestionRating';
+import SurveyHeader from './SurveyHeader';
 const { useDispatch, useSelect } = Data;
 
 const ComponentMap = {
@@ -133,7 +134,6 @@ export default function CurrentSurvey() {
 
 	const dismissSurvey = useCallback( () => {
 		sendSurveyEvent( 'survey_closed' );
-
 		setValues( formName, { hideSurvey: true } );
 	}, [ formName, sendSurveyEvent, setValues ] );
 
@@ -168,21 +168,27 @@ export default function CurrentSurvey() {
 	}
 
 	// eslint-disable-next-line camelcase
-	const SurveyQuestionComponent = ComponentMap[ currentQuestion?.question_type ];
-
+	const type = currentQuestion?.question_type;
+	const SurveyQuestionComponent = ComponentMap[ type ];
 	if ( ! SurveyQuestionComponent ) {
 		return null;
 	}
 
 	return (
 		<div className="googlesitekit-survey">
-			<SurveyQuestionComponent
-				answerQuestion={ answerQuestion }
-				choices={ currentQuestion.question.answer_choice }
-				dismissSurvey={ dismissSurvey }
-				key={ currentQuestion.question_ordinal }
-				question={ currentQuestion.question_text }
-			/>
+			<div className={ `googlesitekit-survey__question-${ type }` }>
+				<SurveyHeader
+					title={ currentQuestion.question_text }
+					dismissSurvey={ dismissSurvey }
+				/>
+
+				<div className="googlesitekit-survey__body">
+					<SurveyQuestionComponent
+						answerQuestion={ answerQuestion }
+						choices={ currentQuestion.question.answer_choice }
+					/>
+				</div>
+			</div>
 		</div>
 	);
 }
