@@ -35,10 +35,17 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
 function ModuleHeader( { moduleSlug } ) {
-	const { name } = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) ) || {};
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleSlug ) );
 	const moduleStatus = moduleConnected ? 'connected' : 'not-connected';
 	const ModuleIcon = useSelect( ( select ) => select( CORE_MODULES ).getModuleIcon( moduleSlug ) );
+
+	if ( ! module ) {
+		return null;
+	}
+
+	const { name } = module;
+
 	const moduleStatusText = sprintf(
 		/* translators: %s: module name. */
 		__( '%s is connected', 'google-site-kit' ),
@@ -49,7 +56,7 @@ function ModuleHeader( { moduleSlug } ) {
 		<PageHeader
 			title={ name }
 			icon={
-				<ModuleIcon
+				ModuleIcon && <ModuleIcon
 					className="googlesitekit-page-header__icon"
 					height="21"
 					width="23"
