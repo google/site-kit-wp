@@ -29,18 +29,6 @@ import SettingsActiveModule from '.';
 import { render, fireEvent, createTestRegistry, provideModules } from '../../../../../tests/js/test-utils';
 
 describe( 'SettingsModule', () => {
-	// const mockAnalyticsModule = {
-	// 	active: true,
-	// 	autoActivate: true,
-	// 	dependantModulesText: '',
-	// 	description: 'Analytics test module description',
-	// 	homepage: '#',
-	// 	name: 'Analytics',
-	// 	provides: [ 'foo', 'bar' ],
-	// 	setupComplete: false,
-	// 	slug: 'analytics',
-	// };
-
 	const SettingsModuleWithWrapper = () => (
 		<Switch>
 			<Route path={ [ '/connected-services/:moduleSlug/:action', '/connected-services/:moduleSlug', '/connected-services' ] }>
