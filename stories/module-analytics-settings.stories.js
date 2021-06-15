@@ -201,7 +201,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			permission: true,
 		}, { propertyID: existingTag.propertyID } );
 
-		return <Settings registry={ registry } route="/connected-services/analytics" />;
+		return <Settings registry={ registry } route="/connected-services/analytics/edit" />;
 	}, {
 		decorators: [
 			withRegistry,

@@ -48,6 +48,7 @@ export default function SettingsActiveModules( props ) {
 			if ( _hideExcept.includes( moduleSlug ) ) {
 				return;
 			}
+
 			modules[ moduleSlug ].active = false;
 			modules[ moduleSlug ].forceActive = false;
 		} );
