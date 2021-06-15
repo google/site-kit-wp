@@ -12,17 +12,23 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Post_Meta;
+use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
+use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -34,9 +40,10 @@ use WP_Error;
  * @ignore
  */
 final class Idea_Hub extends Module
-	implements Module_With_Scopes, Module_With_Assets {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets {
 	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
+	use Module_With_Settings_Trait;
 
 	/**
 	 * Module slug name.
@@ -117,6 +124,50 @@ final class Idea_Hub extends Module
 		return array(
 			'https://www.googleapis.com/auth/ideahub.read',
 		);
+	}
+
+	/**
+	 * Checks whether the module is connected.
+	 *
+	 * A module being connected means that all steps required as part of its activation are completed.
+	 *
+	 * @since 1.32.0
+	 *
+	 * @return bool True if module is connected, false otherwise.
+	 */
+	public function is_connected() {
+		$required_keys = array();
+
+		$options = $this->get_settings()->get();
+		foreach ( $required_keys as $required_key ) {
+			if ( empty( $options[ $required_key ] ) ) {
+				return false;
+			}
+		}
+
+		return parent::is_connected();
+	}
+
+	/**
+	 * Cleans up when the module is deactivated.
+	 *
+	 * @since 1.32.0
+	 */
+	public function on_deactivation() {
+		$this->get_settings()->delete();
+	}
+
+	/**
+	 * Gets an array of debug field definitions.
+	 *
+	 * @since 1.32.0
+	 *
+	 * @return array
+	 */
+	public function get_debug_fields() {
+		$settings = $this->get_settings()->get();
+
+		return array();
 	}
 
 	/**
@@ -399,6 +450,17 @@ final class Idea_Hub extends Module
 			'order'       => 7,
 			'homepage'    => 'https://www.google.com',
 		);
+	}
+
+	/**
+	 * Sets up the module's settings instance.
+	 *
+	 * @since 1.32.0
+	 *
+	 * @return Module_Settings
+	 */
+	protected function setup_settings() {
+		return new Settings( $this->options );
 	}
 
 	/**
