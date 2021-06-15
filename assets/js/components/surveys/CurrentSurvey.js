@@ -30,7 +30,6 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import SurveyCompletion from './SurveyCompletion';
 import SurveyQuestionRating from './SurveyQuestionRating';
 import SurveyHeader from './SurveyHeader';
-import SurveyTerms from './SurveyTerms';
 const { useDispatch, useSelect } = Data;
 
 const ComponentMap = {
@@ -168,7 +167,8 @@ export default function CurrentSurvey() {
 		);
 	}
 
-	const type = currentQuestion?.question_type; // eslint-disable-line camelcase
+	// eslint-disable-next-line camelcase
+	const type = currentQuestion?.question_type;
 	const SurveyQuestionComponent = ComponentMap[ type ];
 	if ( ! SurveyQuestionComponent ) {
 		return null;
@@ -177,19 +177,17 @@ export default function CurrentSurvey() {
 	return (
 		<div className="googlesitekit-survey">
 			<div className={ `googlesitekit-survey__question-${ type }` }>
-				<div className="googlesitekit-survey__header">
-					<SurveyHeader title={ currentQuestion.question_text } dismissSurvey={ dismissSurvey } />
-				</div>
+				<SurveyHeader
+					title={ currentQuestion.question_text }
+					dismissSurvey={ dismissSurvey }
+				/>
 
 				<div className="googlesitekit-survey__body">
-					<SurveyQuestionComponent answerQuestion={ answerQuestion } choices={ currentQuestion.question.answer_choice } />
+					<SurveyQuestionComponent
+						answerQuestion={ answerQuestion }
+						choices={ currentQuestion.question.answer_choice }
+					/>
 				</div>
-
-				{ ( isTrackingEnabled === false && currentQuestion?.question_ordinal === 1 ) && ( // eslint-disable-line camelcase
-					<div className="googlesitekit-survey__footer">
-						<SurveyTerms />
-					</div>
-				) }
 			</div>
 		</div>
 	);
