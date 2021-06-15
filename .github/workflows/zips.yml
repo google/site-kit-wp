@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - main
+      - 'release/**'
     tags: ['**']
   pull_request:
     branches:

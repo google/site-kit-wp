@@ -1,5 +1,5 @@
 /**
- * `modules/analytics-4` data store constants.
+ * Admin Bar Zero Data Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,10 +16,25 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/analytics-4';
-export { STORE_NAME as MODULES_ANALYTICS_4 };
+/**
+ * Internal dependencies
+ */
+import AdminBarZeroData from './AdminBarZeroData';
 
-export const PROPERTY_CREATE = 'property_create';
-export const WEBDATASTREAM_CREATE = 'webdatastream_create';
+const Template = ( args ) => <AdminBarZeroData { ...args } />;
 
-export const MAX_WEBDATASTREAMS_PER_BATCH = 10;
+export const Ready = Template.bind( {} );
+Ready.storyName = 'Data Unavailable';
+
+export default {
+	title: 'Views/AdminBarApp/AdminBarZeroData',
+	decorators: [
+		( Story ) => (
+			<div className="googlesitekit-widget">
+				<div className="googlesitekit-widget__body">
+					<Story />
+				</div>
+			</div>
+		),
+	],
+};

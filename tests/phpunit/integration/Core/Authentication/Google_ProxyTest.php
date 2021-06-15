@@ -151,6 +151,41 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( $failure_response_data, false );
 	}
 
+	public function test_url_handles_staging() {
+		$url = $this->google_proxy->url();
+		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
+		// The test for this behaviour depends on a constant value which can
+		// only be redefined if PECL extension runkit/7 is installed.
+		if ( ! extension_loaded( 'runkit7' ) && ! extension_loaded( 'runkit' ) ) {
+			$this->markTestSkipped( 'The runkit7 or runkit extension is not available.' );
+		}
+
+		define( 'GOOGLESITEKIT_PROXY_URL', Google_Proxy::STAGING_BASE_URL );
+		$url = $this->google_proxy->url();
+		$this->assertEquals( $url, Google_Proxy::STAGING_BASE_URL );
+		if ( function_exists( 'runkit7_constant_remove' ) ) {
+			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
+		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
+			runkit_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
+		}
+	}
+
+	public function test_url_ignores_invalid_values() {
+		// The test for this behaviour depends on a constant value which can
+		// only be redefined if PECL extension runkit/7 is installed.
+		if ( ! extension_loaded( 'runkit7' ) && ! extension_loaded( 'runkit' ) ) {
+			$this->markTestSkipped( 'The runkit7 or runkit extension is not available.' );
+		}
+		define( 'GOOGLESITEKIT_PROXY_URL', 'https://example.com' );
+		$url = $this->google_proxy->url();
+		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
+		if ( function_exists( 'runkit7_constant_remove' ) ) {
+			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
+		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
+			runkit_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
+		}
+	}
+
 	public function test_get_user_fields() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
