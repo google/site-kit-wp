@@ -22,6 +22,11 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-evenly;
+		padding: $grid-gap-phone;
+
+		@media (min-width: $bp-desktop) {
+			padding: $grid-gap-desktop;
+		}
 
 		.googlesitekit-data-block--button {
 			min-width: 25%;
