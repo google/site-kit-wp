@@ -304,10 +304,11 @@ exports[`CurrentSurvey should render the completed survey component if all quest
         class="googlesitekit-survey__footer"
       >
         <a
+          aria-label="Get help (opens in a new tab)"
           class="mdc-button mdc-button--raised"
           href="#new-url-2"
           role="button"
-          target="_self"
+          target="_blank"
         >
           <span
             class="mdc-button__label"
@@ -373,10 +374,11 @@ exports[`CurrentSurvey should trigger the first completion when no matching trig
         class="googlesitekit-survey__footer"
       >
         <a
+          aria-label="Let’s go (opens in a new tab)"
           class="mdc-button mdc-button--raised"
           href="#new-url"
           role="button"
-          target="_self"
+          target="_blank"
         >
           <span
             class="mdc-button__label"
