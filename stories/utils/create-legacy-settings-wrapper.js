@@ -21,7 +21,7 @@
  */
 import SettingsActiveModule from '../../assets/js/components/settings/SettingsActiveModule';
 import SettingsModules from '../../assets/js/components/settings/SettingsModules';
-import { WithTestRegistry } from '../../tests/js/utils';
+import { provideModules, WithTestRegistry } from '../../tests/js/utils';
 
 /**
  * Creates a legacy settings wrapper component for the given module.
@@ -42,10 +42,26 @@ export default function createLegacySettingsWrapper( moduleSlug ) {
 			route,
 		} = props;
 
+		// HACK: This removes Search Console from appearing in stories for
+		// individual module's settings screens. It's a bit of a hack because
+		// Search Console _should_ also be enabled, but works for now.
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				active: false,
+				connected: true,
+			},
+			{
+				slug: moduleSlug,
+				active: true,
+				connected: true,
+			},
+		] );
+
 		return (
 			<WithTestRegistry registry={ registry } callback={ callback } route={ route }>
 				<div style={ { background: 'white' } }>
-					<SettingsModules _hideExcept={ [ moduleSlug ] }>
+					<SettingsModules>
 						<SettingsActiveModule slug={ moduleSlug } />
 					</SettingsModules>
 				</div>

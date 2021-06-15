@@ -34,8 +34,7 @@ import SettingsAdmin from './SettingsAdmin';
 import SettingsActiveModules from './SettingsActiveModules';
 import SettingsInactiveModules from './SettingsInactiveModules';
 
-function SettingsModules( props ) {
-	const { _hideExcept } = props;
+function SettingsModules() {
 	const modulesData = getModulesData();
 
 	const history = useHistory();
@@ -54,13 +53,13 @@ function SettingsModules( props ) {
 		<Switch>
 			{ /* Settings Module Routes */ }
 			<Route path="/connected-services/:moduleSlug/:action">
-				<SettingsActiveModules _hideExcept={ _hideExcept } />
+				<SettingsActiveModules />
 			</Route>
 			<Route path="/connected-services/:moduleSlug">
-				<SettingsActiveModules _hideExcept={ _hideExcept } />
+				<SettingsActiveModules />
 			</Route>
 			<Route path="/connected-services">
-				<SettingsActiveModules _hideExcept={ _hideExcept } />
+				<SettingsActiveModules />
 			</Route>
 			<Route path="/connect-more-services">
 				<SettingsInactiveModules />

@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { useState, useEffect } from '@wordpress/element';
@@ -35,24 +30,12 @@ import Layout from '../layout/Layout';
 import SettingsActiveModule from './SettingsActiveModule';
 const { useSelect } = Data;
 
-export default function SettingsActiveModules( props ) {
-	const { _hideExcept } = props;
+export default function SettingsActiveModules() {
 	// We store `initialActiveSlugs` separately to avoid
 	// layout shifts when deactivating a module as it would otherwise
 	// cause the module to be removed upon deactivation.
 	const [ initialActiveSlugs, setInitialActiveSlugs ] = useState();
 	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
-
-	if ( _hideExcept ) {
-		Object.keys( modules ).forEach( ( moduleSlug ) => {
-			if ( _hideExcept.includes( moduleSlug ) ) {
-				return;
-			}
-
-			modules[ moduleSlug ].active = false;
-			modules[ moduleSlug ].forceActive = false;
-		} );
-	}
 
 	useEffect( () => {
 		// Only set initialActiveSlugs once, as soon as modules are available.
@@ -86,7 +69,3 @@ export default function SettingsActiveModules( props ) {
 		</Layout>
 	);
 }
-
-SettingsActiveModules.propTypes = {
-	_hideExcept: PropTypes.arrayOf( PropTypes.string ),
-};
