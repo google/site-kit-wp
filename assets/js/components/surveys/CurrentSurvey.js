@@ -35,18 +35,21 @@ const ComponentMap = {
 	rating: SurveyQuestionRating,
 };
 
-export default function CurrentSurvey() {
+const CurrentSurvey = () => {
 	const [ hasSentSurveyShownEvent, setHasSentSurveyShownEvent ] = useState( false );
 	const [ hasSentCompletionEvent, setHasSentCompletionEvent ] = useState( false );
 
 	const completions = useSelect( ( select ) => select( CORE_USER ).getCurrentSurveyCompletions() );
 	const questions = useSelect( ( select ) => select( CORE_USER ).getCurrentSurveyQuestions() );
 	const surveySession = useSelect( ( select ) => select( CORE_USER ).getCurrentSurveySession() );
-	const isTrackingEnabled = useSelect( ( select ) => select( CORE_USER ).isTrackingEnabled() );
 
 	const formName = surveySession ? `survey-${ surveySession.session_id }` : null;
-	const shouldHide = useSelect( ( select ) => select( CORE_FORMS ).getValue( formName, 'hideSurvey' ) );
+
 	const answers = useSelect( ( select ) => select( CORE_FORMS ).getValue( formName, 'answers' ) );
+
+	const currentQuestionOrdinal = Math.max( 0, ...( answers || [] ).map( ( a ) => a.question_ordinal ) ) + 1;
+
+	const shouldHide = useSelect( ( select ) => select( CORE_FORMS ).getValue( formName, 'hideSurvey' ) );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { sendSurveyEvent } = useDispatch( CORE_USER );
@@ -58,8 +61,9 @@ export default function CurrentSurvey() {
 		}
 	}, [ questions, hasSentSurveyShownEvent, sendSurveyEvent ] );
 
-	const currentQuestionOrdinal = Math.max( 0, ...( answers || [] ).map( ( a ) => a.question_ordinal ) ) + 1;
-	const currentQuestion = questions?.find( ( { question_ordinal: questionOrdinal } ) => questionOrdinal === currentQuestionOrdinal );
+	const currentQuestion = questions?.find( ( question ) => {
+		return question.question_ordinal === currentQuestionOrdinal;
+	} );
 
 	const answerQuestion = useCallback( ( answer ) => {
 		sendSurveyEvent( 'question_answered', {
@@ -147,7 +151,7 @@ export default function CurrentSurvey() {
 		}
 	}, [ hasSentCompletionEvent, sendSurveyEvent, triggeredCompletion ] );
 
-	if ( shouldHide || ! questions || ! completions || isTrackingEnabled === undefined ) {
+	if ( shouldHide || ! questions || ! completions ) {
 		return null;
 	}
 
@@ -185,4 +189,8 @@ export default function CurrentSurvey() {
 			/>
 		</div>
 	);
-}
+};
+
+CurrentSurvey.propTypes = {};
+
+export default CurrentSurvey;
