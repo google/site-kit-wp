@@ -26,7 +26,6 @@ use Google\Site_Kit\Tests\TestCase;
  * @group Modules
  */
 class Idea_HubTest extends TestCase {
-	use Module_With_Settings_ContractTests;
 
 	/**
 	 * Context instance.
@@ -73,16 +72,6 @@ class Idea_HubTest extends TestCase {
 	public function test_is_connected() {
 		$options  = new Options( $this->context );
 		$idea_hub = new Idea_Hub( $this->context, $options );
-
-		$this->assertFalse( $idea_hub->is_connected() );
-
-		$options->set(
-			Settings::OPTION,
-			array(
-				'ideaLocale' => 'en_US',
-			)
-		);
-
 		$this->assertTrue( $idea_hub->is_connected() );
 	}
 
@@ -105,13 +94,6 @@ class Idea_HubTest extends TestCase {
 		// Connect the module
 		$options  = new Options( $this->context );
 		$idea_hub = new Idea_Hub( $this->context, $options );
-
-		$options->set(
-			Settings::OPTION,
-			array(
-				'ideaLocale' => 'en_US',
-			)
-		);
 
 		// Create the post
 		$post2 = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
@@ -137,16 +119,6 @@ class Idea_HubTest extends TestCase {
 		$this->assertEquals( $post_states1, array( 'draft' => 'Idea Hub Draft “Using Site Kit to analyze your success”' ) );
 		$this->assertEquals( $post_states2, array( 'draft' => 'Idea Hub Draft “Why Penguins are guanotelic?”' ) );
 		$this->assertEquals( $post_states3, array( 'draft' => 'Draft' ) );
-	}
-
-	public function test_on_deactivation() {
-		$options = new Options( $this->context );
-		$options->set( Settings::OPTION, 'test-value' );
-
-		$idea_hub = new Idea_Hub( $this->context, $options );
-		$idea_hub->on_deactivation();
-
-		$this->assertOptionNotExists( Settings::OPTION );
 	}
 
 	public function test_get_datapoints() {
@@ -278,13 +250,6 @@ class Idea_HubTest extends TestCase {
 	 * @return Module_With_Scopes
 	 */
 	protected function get_module_with_scopes() {
-		return new Idea_Hub( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-	}
-
-	/**
-	 * @return Module_With_Settings
-	 */
-	protected function get_module_with_settings() {
 		return new Idea_Hub( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 }

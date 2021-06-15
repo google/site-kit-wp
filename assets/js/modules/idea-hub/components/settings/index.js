@@ -1,5 +1,5 @@
 /**
- * `modules/idea-hub` base data store
+ * Idea Hub Insights Settings components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,15 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './constants';
-
-const baseModuleStore = Modules.createModuleStore( 'idea-hub', {
-	storeName: STORE_NAME,
-	requiresSetup: false,
-} );
-
-export default baseModuleStore;
+export { default as SettingsView } from './SettingsView';
