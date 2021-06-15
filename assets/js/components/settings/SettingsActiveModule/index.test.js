@@ -56,7 +56,7 @@ describe( 'SettingsModule', () => {
 		} ] );
 	} );
 
-	it( 'should display SettingsViewComponent when on module view route.', async () => {
+	it( 'should display SettingsViewComponent when on module view route', async () => {
 		history.push( '/connected-services/analytics' );
 
 		const { queryByTestID } = render( <SettingsModuleWithWrapper />, { history, registry } );
@@ -64,7 +64,7 @@ describe( 'SettingsModule', () => {
 		expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should display SettingsEditComponent when on module view route.', async () => {
+	it( 'should display SettingsEditComponent when on module edit route', async () => {
 		history.push( '/connected-services/analytics/edit' );
 
 		const { queryByTestID } = render( <SettingsModuleWithWrapper />, { history, registry } );
@@ -72,7 +72,7 @@ describe( 'SettingsModule', () => {
 		expect( queryByTestID( 'edit-component' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should change route when "Edit" link is clicked and switch to SettingsEditComponent.', async () => {
+	it( 'should change route when "Edit" link is clicked and switch to SettingsEditComponent', async () => {
 		history.push( '/connected-services/analytics' );
 
 		const { getByRole, queryByTestID } = render( <SettingsModuleWithWrapper />, { history, registry } );
@@ -83,7 +83,7 @@ describe( 'SettingsModule', () => {
 		expect( queryByTestID( 'edit-component' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should change route when "Cancel" link is clicked and switch to SettingsViewComponent.', async () => {
+	it( 'should change route when "Cancel" link is clicked and switch to SettingsViewComponent', async () => {
 		history.push( '/connected-services/analytics/edit' );
 
 		const { getByRole, queryByTestID } = render( <SettingsModuleWithWrapper />, { history, registry } );
@@ -94,7 +94,7 @@ describe( 'SettingsModule', () => {
 		expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should open accordion on click and change route & DOM correctly', async () => {
+	it( 'should open accordion on click and change route and DOM correctly', async () => {
 		history.push( '/connected-services' );
 
 		const { getByRole, queryByTestID } = render( <SettingsModuleWithWrapper />, { history, registry } );

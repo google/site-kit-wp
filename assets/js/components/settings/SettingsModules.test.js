@@ -88,7 +88,7 @@ describe( 'SettingsModules', () => {
 		expect( global.location.hash ).toEqual( '#/connected-services' );
 	} );
 
-	it( 'should redirect from #settings/analytics/view to #/connected-services/analytics', async () => {
+	it( 'should redirect from #settings/:moduleSlug/view to #/connected-services/:moduleSlug', async () => {
 		history.push( '/settings/analytics/view' );
 
 		render( <SettingsModules />, { history, registry } );
@@ -96,7 +96,7 @@ describe( 'SettingsModules', () => {
 		expect( global.location.hash ).toEqual( '#/connected-services/analytics' );
 	} );
 
-	it( 'should redirect from #settings/adsense/edit to #/connected-services/adsense/edit', async () => {
+	it( 'should redirect from #settings/:moduleSlug/edit to #/connected-services/:moduleSlug/edit', async () => {
 		history.push( '/settings/adsense/edit' );
 
 		render( <SettingsModules />, { history, registry } );
