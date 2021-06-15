@@ -74,7 +74,12 @@ SurveyAnsweredPositiveStory.args = {
 			`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
 			{
 				answers: [
-					{ question_ordinal: 1, answer_ordinal: 5 },
+					{
+						question_ordinal: 1,
+						answer: {
+							answer: { answer_ordinal: 5 },
+						},
+					},
 				],
 			}
 		);
