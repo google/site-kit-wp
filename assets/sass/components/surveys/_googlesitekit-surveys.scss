@@ -56,6 +56,16 @@
 		@media (min-width: $bp-desktop) {
 			padding: 0 $grid-gap-desktop $grid-gap-desktop;
 		}
+
+		p {
+			border-top: 1px solid $c-iron;
+			color: $c-boulder;
+			font-family: $f-primary;
+			font-size: 0.75rem;
+			margin: 12px 0 0;
+			padding-top: 12px;
+			text-align: left;
+		}
 	}
 
 	.googlesitekit-survey__choice {
