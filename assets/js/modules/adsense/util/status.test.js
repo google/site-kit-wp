@@ -90,7 +90,7 @@ const otherAlert = {
 	name: 'accounts/pub-2833782679114991/alerts/e38f3957-be27-31cc-8d33-ba4b1f6e84c2',
 	severity: 'SEVERE',
 	message: 'Please fix the problems with the ads.txt file to avoid negative impact on revenue.',
-	type: 'ADS_TXT_ISSUES',
+	type: 'ads-txt-issues',
 };
 
 const exampleURLChannelA = {
