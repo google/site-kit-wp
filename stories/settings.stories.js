@@ -139,9 +139,7 @@ storiesOf( 'Settings', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry } >
 				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<SettingsAdmin />
-					</div>
+					<SettingsAdmin />
 				</div>
 			</WithTestRegistry>
 		);
