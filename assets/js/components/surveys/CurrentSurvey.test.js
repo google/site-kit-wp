@@ -21,7 +21,7 @@
  */
 import CurrentSurvey from './CurrentSurvey';
 import { render, fireEvent, createTestRegistry } from '../../../../tests/js/test-utils';
-import { CORE_USER, STORE_NAME } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import * as fixtures from './__fixtures__';
 
@@ -30,7 +30,7 @@ describe( 'CurrentSurvey', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( STORE_NAME ).receiveGetTracking( { enabled: true } );
+		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
 	} );
 
 	it( 'should render a survey when one exists in the datastore', async () => {

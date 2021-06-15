@@ -33,28 +33,28 @@ import { Icon, closeSmall } from '@wordpress/icons';
 import Button from '../../components/Button';
 import Logo from '../../../svg/logo-g.svg';
 
-export default function SurveyHeader( { title, dismissSurvey } ) {
-	return (
-		<div className="googlesitekit-survey__header">
-			<div className="googlesitekit-survey__header-logo">
-				<Logo width={ 24 } height={ 24 } />
-			</div>
-
-			<div className="googlesitekit-survey__header-details">
-				<h3>{ title }</h3>
-
-				<Button
-					aria-label={ __( 'Dismiss this survey', 'google-site-kit' ) }
-					icon={ <Icon icon={ closeSmall } size={ 40 } /> }
-					onClick={ dismissSurvey }
-					className="googlesitekit-survey__header-close"
-				/>
-			</div>
+const SurveyHeader = ( { title, dismissSurvey } ) => (
+	<div className="googlesitekit-survey__header">
+		<div className="googlesitekit-survey__header-logo">
+			<Logo width={ 24 } height={ 24 } />
 		</div>
-	);
-}
+
+		<div className="googlesitekit-survey__header-details">
+			<h3>{ title }</h3>
+
+			<Button
+				aria-label={ __( 'Dismiss this survey', 'google-site-kit' ) }
+				icon={ <Icon icon={ closeSmall } size={ 40 } /> }
+				onClick={ dismissSurvey }
+				className="googlesitekit-survey__header-close"
+			/>
+		</div>
+	</div>
+);
 
 SurveyHeader.propTypes = {
 	title: PropTypes.string.isRequired,
 	dismissSurvey: PropTypes.func.isRequired,
 };
+
+export default SurveyHeader;
