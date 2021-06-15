@@ -36,7 +36,10 @@ describe( 'core/user surveys', () => {
 
 	const survey = {
 		survey_payload: 'foo',
-		session: 'bar',
+		session: {
+			session_id: 'bar',
+			session_token: '1234',
+		},
 	};
 	const surveyTriggerEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/;
 	const surveyEventEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/;

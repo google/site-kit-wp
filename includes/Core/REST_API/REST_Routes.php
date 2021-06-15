@@ -317,30 +317,33 @@ final class REST_Routes {
 						'permission_callback' => $can_authenticate,
 						'args'                => array(
 							'data' => array(
-								'type'     => 'object',
-								'required' => true,
-								'settings' => array(
-									'type'       => 'object',
-									'properties' => array(
-										'role'          => array(
-											'type'  => 'array',
-											'items' => array( 'type' => 'string' ),
-										),
-										'postFrequency' => array(
-											'type'  => 'array',
-											'items' => array( 'type' => 'string' ),
-										),
-										'goals'         => array(
-											'type'  => 'array',
-											'items' => array( 'type' => 'string' ),
-										),
-										'helpNeeded'    => array(
-											'type'  => 'array',
-											'items' => array( 'type' => 'string' ),
-										),
-										'searchTerms'   => array(
-											'type'  => 'array',
-											'items' => array( 'type' => 'string' ),
+								'type'       => 'object',
+								'required'   => true,
+								'properties' => array(
+									'settings' => array(
+										'type'       => 'object',
+										'required'   => true,
+										'properties' => array(
+											'role'        => array(
+												'type'  => 'array',
+												'items' => array( 'type' => 'string' ),
+											),
+											'postFrequency' => array(
+												'type'  => 'array',
+												'items' => array( 'type' => 'string' ),
+											),
+											'goals'       => array(
+												'type'  => 'array',
+												'items' => array( 'type' => 'string' ),
+											),
+											'helpNeeded'  => array(
+												'type'  => 'array',
+												'items' => array( 'type' => 'string' ),
+											),
+											'searchTerms' => array(
+												'type'  => 'array',
+												'items' => array( 'type' => 'string' ),
+											),
 										),
 									),
 								),

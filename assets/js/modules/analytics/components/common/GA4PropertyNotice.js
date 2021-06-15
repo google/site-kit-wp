@@ -32,22 +32,27 @@ import { __ } from '@wordpress/i18n';
 import SettingsNotice, { TYPE_INFO } from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
 
-export default function GA4PropertyNotice( { notice } ) {
+export default function GA4PropertyNotice( { notice, children } ) {
 	return (
-		<SettingsNotice type={ TYPE_INFO }>
-			{ notice }
-			{ ' ' }
-			<Link
-				href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
-				external
-				inherit
-			>
-				{ __( 'Learn more here.', 'google-site-kit' ) }
-			</Link>
+		<SettingsNotice
+			type={ TYPE_INFO }
+			LearnMore={ () => (
+				<Link
+					href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
+					external
+					inherit
+				>
+					{ __( 'Learn more', 'google-site-kit' ) }
+				</Link>
+			) }
+			notice={ notice }
+		>
+			{ children }
 		</SettingsNotice>
 	);
 }
 
 GA4PropertyNotice.propTypes = { // eslint-disable-line sitekit/acronym-case
+	children: PropTypes.node,
 	notice: PropTypes.string.isRequired,
 };

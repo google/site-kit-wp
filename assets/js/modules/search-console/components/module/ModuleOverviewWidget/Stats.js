@@ -39,12 +39,13 @@ const Stats = ( { data, metrics, selectedStats, dateRangeLength } ) => {
 		chart: {
 			title: __( 'Search Traffic Summary', 'google-site-kit' ),
 		},
-		curveType: 'line',
+		curveType: 'function',
 		height: 270,
 		width: '100%',
 		chartArea: {
-			height: '77%',
-			width: '87%',
+			height: '80%',
+			width: '100%',
+			left: 60,
 		},
 		legend: {
 			position: 'top',

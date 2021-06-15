@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME, PROPERTY_CREATE } from './constants';
+import { STORE_NAME, PROPERTY_CREATE, WEBDATASTREAM_CREATE } from './constants';
 import { createTestRegistry, muteFetch, provideSiteInfo, unsubscribeFromAll, untilResolved } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -115,7 +115,7 @@ describe( 'modules/analytics-4 properties', () => {
 				await registry.dispatch( STORE_NAME ).selectProperty( PROPERTY_CREATE );
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
-				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( WEBDATASTREAM_CREATE );
 				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( '' );
 			} );
 
@@ -134,7 +134,7 @@ describe( 'modules/analytics-4 properties', () => {
 				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
-				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( WEBDATASTREAM_CREATE );
 				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( '' );
 			} );
 
@@ -179,7 +179,7 @@ describe( 'modules/analytics-4 properties', () => {
 				const promise = registry.dispatch( STORE_NAME ).selectProperty( propertyID );
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
-				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( WEBDATASTREAM_CREATE );
 				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( '' );
 
 				resolveResponse();

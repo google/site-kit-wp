@@ -514,19 +514,33 @@ abstract class Module {
 			throw new Invalid_Datapoint_Exception();
 		}
 
-		if ( empty( $definitions[ $datapoint_key ]['scopes'] ) ) {
+		if ( ! $this instanceof Module_With_Scopes ) {
 			return;
 		}
 
-		$datapoint = $definitions[ $datapoint_key ];
+		$datapoint    = $definitions[ $datapoint_key ];
+		$oauth_client = $this->authentication->get_oauth_client();
 
-		// If the datapoint requires specific scopes, ensure they are satisfied.
-		if ( ! $this->authentication->get_oauth_client()->has_sufficient_scopes( $datapoint['scopes'] ) ) {
-			$request_scopes_message = ! empty( $datapoint['request_scopes_message'] )
+		if ( ! empty( $datapoint['scopes'] ) && ! $oauth_client->has_sufficient_scopes( $datapoint['scopes'] ) ) {
+			// Otherwise, if the datapoint doesn't rely on a service but requires
+			// specific scopes, ensure they are satisfied.
+			$message = ! empty( $datapoint['request_scopes_message'] )
 				? $datapoint['request_scopes_message']
 				: __( 'You’ll need to grant Site Kit permission to do this.', 'google-site-kit' );
 
-			throw new Insufficient_Scopes_Exception( $request_scopes_message, 0, null, $datapoint['scopes'] );
+			throw new Insufficient_Scopes_Exception( $message, 0, null, $datapoint['scopes'] );
+		}
+
+		$requires_service = ! empty( $datapoint['service'] );
+
+		if ( $requires_service && ! $oauth_client->has_sufficient_scopes( $this->get_scopes() ) ) {
+			// If the datapoint relies on a service which requires scopes and
+			// these have not been granted, fail the request with a permissions
+			// error (see issue #3227).
+
+			/* translators: %s: module name */
+			$message = sprintf( __( 'Site Kit can’t access the relevant data from %s because you haven’t granted all permissions requested during setup.', 'google-site-kit' ), $this->name );
+			throw new Insufficient_Scopes_Exception( $message, 0, null, $this->get_scopes() );
 		}
 	}
 
@@ -665,12 +679,13 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 Now returns Google_Site_Kit_Client instance.
+	 * @since n.e.x.t Updated to be public.
 	 *
 	 * @return Google_Site_Kit_Client Google client instance.
 	 *
 	 * @throws Exception Thrown when the module did not correctly set up the client.
 	 */
-	final protected function get_client() {
+	final public function get_client() {
 		if ( null === $this->google_client ) {
 			$client = $this->setup_client();
 			if ( ! $client instanceof Google_Site_Kit_Client ) {

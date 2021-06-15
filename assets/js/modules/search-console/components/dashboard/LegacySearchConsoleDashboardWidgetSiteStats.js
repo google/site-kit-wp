@@ -54,7 +54,7 @@ class LegacySearchConsoleDashboardWidgetSiteStats extends Component {
 			chart: {
 				title,
 			},
-			curveType: 'line',
+			curveType: 'function',
 			height: 270,
 			width: '100%',
 			chartArea: {

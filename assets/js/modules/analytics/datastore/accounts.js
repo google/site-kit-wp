@@ -326,6 +326,12 @@ const baseResolvers = {
 
 		let ga4Property;
 		const ga4PropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		// Bail out if the analytics-4 propertyID is already set to create a new property.
+		if ( ga4PropertyID === GA4_PROPERTY_CREATE ) {
+			return;
+		}
+
 		if ( ga4PropertyID ) {
 			ga4Property = yield Data.commonActions.await(
 				registry.__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty( ga4PropertyID )
@@ -334,7 +340,7 @@ const baseResolvers = {
 
 		// Try to find a new matched ga4 property if the current one has a different accountID.
 		if ( ga4Property?._accountID !== accountID ) {
-			yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).matchAndSelectProperty( accountID ) );
+			yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).matchAndSelectProperty( accountID, GA4_PROPERTY_CREATE ) );
 		}
 	},
 };

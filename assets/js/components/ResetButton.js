@@ -30,7 +30,7 @@ import { useDebounce } from '../hooks/useDebounce';
 import Data from 'googlesitekit-data';
 import { clearWebStorage } from '../util';
 import Dialog from './Dialog';
-import Modal from './Modal';
+import Portal from './Portal';
 import Link from './Link';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
@@ -106,7 +106,7 @@ function ResetButton( { children } ) {
 			>
 				{ children || __( 'Reset Site Kit', 'google-site-kit' ) }
 			</Link>
-			<Modal>
+			<Portal>
 				<Dialog
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
@@ -121,7 +121,7 @@ function ResetButton( { children } ) {
 					danger
 					inProgress={ inProgress }
 				/>
-			</Modal>
+			</Portal>
 		</Fragment>
 	);
 }

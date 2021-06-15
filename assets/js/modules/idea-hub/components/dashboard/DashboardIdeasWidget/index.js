@@ -36,6 +36,7 @@ import { useState, useRef, useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../../datastore/constants';
 import whenActive from '../../../../../util/when-active';
+import DashboardCTA from '../DashboardCTA';
 import EmptyIcon from '../../../../../../svg/idea-hub-empty-new-ideas.svg';
 import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
@@ -163,4 +164,7 @@ DashboardIdeasWidget.defaultProps = {
 	defaultActiveTabIndex: 0,
 };
 
-export default whenActive( { moduleName: 'idea-hub' } )( DashboardIdeasWidget );
+export default whenActive( {
+	moduleName: 'idea-hub',
+	FallbackComponent: DashboardCTA,
+} )( DashboardIdeasWidget );
