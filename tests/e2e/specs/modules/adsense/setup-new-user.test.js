@@ -70,19 +70,21 @@ const datapointHandlers = {
 };
 
 const ADSENSE_ACCOUNT = {
-	id: 'pub-123456789',
-	kind: 'adsense#account',
-	name: 'pub-123456789',
-	premium: false,
-	timezone: 'America/Chicago',
+	name: 'accounts/pub-123456789',
+	displayName: 'pub-123456789',
+	timezone: {
+		id: 'America/Chicago',
+	},
+	createTime: '2013-10-17T15:51:03.000Z',
+	_id: 'pub-123456789',
 };
 
 const ADSENSE_CLIENT = {
-	arcOptIn: false,
-	id: `ca-${ ADSENSE_ACCOUNT.id }`,
-	kind: 'adsense#adClient',
+	name: `accounts/${ ADSENSE_ACCOUNT._id }/adclients/ca-${ ADSENSE_ACCOUNT._id }`,
+	reportingDimensionId: `ca-${ ADSENSE_ACCOUNT._id }`, // eslint-disable-line sitekit/acronym-case
 	productCode: 'AFC',
-	supportsReporting: true,
+	_id: `ca-${ ADSENSE_ACCOUNT._id }`,
+	_accountID: ADSENSE_ACCOUNT._id,
 };
 
 describe( 'setting up the AdSense module', () => {
@@ -151,28 +153,16 @@ describe( 'setting up the AdSense module', () => {
 				status: 200,
 				body: JSON.stringify( [
 					{
-						id: 'BILLINGLESS_ACCOUNT',
-						isDismissible: false,
-						kind: 'adsense#alert',
+						name: `accounts/${ ADSENSE_ACCOUNT._id }/alerts/e38f3957-be27-31cc-8d33-ba4b1f6e84c2`,
+						severity: 'SEVERE',
 						message: "Your ad units are not displaying ads because you haven't provided your account payments information yet.",
-						severity: 'SEVERE',
-						type: 'BILLINGLESS_ACCOUNT',
+						type: 'billingless-account',
 					},
 					{
-						id: 'graylisted-publisher',
-						isDismissible: false,
-						kind: 'adsense#alert',
+						name: `accounts/${ ADSENSE_ACCOUNT._id }/alerts/ef158442-c283-3866-a3af-5f9cf7e190f3`,
+						severity: 'SEVERE',
 						message: 'Your AdSense application is still under review. You will only see blank ads until your account has been fully approved or disapproved.',
-						severity: 'SEVERE',
 						type: 'graylisted-publisher',
-					},
-					{
-						id: 'ALERT_TYPE_GLOBAL_BETTER_ADS_STANDARD',
-						isDismissible: false,
-						kind: 'adsense#alert',
-						message: "Global Better Ads Standards. Google Chrome will support the Better Ads Standards globally from July 9th. Ads may be filtered on Chrome browsers if you don't comply with the standard.",
-						severity: 'INFO',
-						type: 'ALERT_TYPE_GLOBAL_BETTER_ADS_STANDARD',
 					},
 				] ),
 			} );
@@ -303,13 +293,7 @@ describe( 'setting up the AdSense module', () => {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( [
-						{
-							arcOptIn: false,
-							id: `ca-${ ADSENSE_ACCOUNT.id }`,
-							kind: 'adsense#adClient',
-							productCode: 'AFC',
-							supportsReporting: true,
-						},
+						ADSENSE_CLIENT,
 					] ),
 				} );
 			};
@@ -333,13 +317,7 @@ describe( 'setting up the AdSense module', () => {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( [
-						{
-							arcOptIn: false,
-							id: `ca-${ ADSENSE_ACCOUNT.id }`,
-							kind: 'adsense#adClient',
-							productCode: 'AFC',
-							supportsReporting: true,
-						},
+						ADSENSE_CLIENT,
 					] ),
 				} );
 			};
