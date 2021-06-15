@@ -89,8 +89,7 @@ export function determineAccountStatus( data ) {
 		return alertsErrorToStatus( alertsError );
 	}
 
-	// TODO: Check what the v2 API uses instead of 'GRAYLISTED_PUBLISHER'.
-	const hasGraylistedAlert = alerts.some( ( alert ) => 'GRAYLISTED_PUBLISHER' === alert.type );
+	const hasGraylistedAlert = alerts.some( ( alert ) => 'graylisted-publisher' === alert.type );
 	if ( hasGraylistedAlert ) {
 		return ACCOUNT_STATUS_GRAYLISTED;
 	}

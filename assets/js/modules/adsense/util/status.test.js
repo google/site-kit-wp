@@ -83,7 +83,7 @@ const graylistedAlert = {
 	name: 'accounts/pub-2833782679114991/alerts/ef158442-c283-3866-a3af-5f9cf7e190f3',
 	severity: 'SEVERE',
 	message: 'Your account has been graylisted. Please fix the issues in your AdSense panel.',
-	type: 'GRAYLISTED_PUBLISHER',
+	type: 'graylisted-publisher',
 };
 
 const otherAlert = {
@@ -145,7 +145,7 @@ describe( 'determineAccountStatus', () => {
 			accounts: [ accountA, accountB ],
 			previousAccountID: '',
 		} ],
-		[ 'graylisted when there is a GRAYLISTED_PUBLISHER alert', ACCOUNT_STATUS_GRAYLISTED, {
+		[ 'graylisted when there is a graylisted-publisher alert', ACCOUNT_STATUS_GRAYLISTED, {
 			accounts: [ accountA ],
 			alerts: [ graylistedAlert, otherAlert ],
 			clients: [],

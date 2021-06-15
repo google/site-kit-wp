@@ -159,12 +159,12 @@ describe( 'setting up the AdSense module', () => {
 						type: 'BILLINGLESS_ACCOUNT',
 					},
 					{
-						id: 'GRAYLISTED_PUBLISHER',
+						id: 'graylisted-publisher',
 						isDismissible: false,
 						kind: 'adsense#alert',
 						message: 'Your AdSense application is still under review. You will only see blank ads until your account has been fully approved or disapproved.',
 						severity: 'SEVERE',
-						type: 'GRAYLISTED_PUBLISHER',
+						type: 'graylisted-publisher',
 					},
 					{
 						id: 'ALERT_TYPE_GLOBAL_BETTER_ADS_STANDARD',
