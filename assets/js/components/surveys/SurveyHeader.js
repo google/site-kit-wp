@@ -26,7 +26,6 @@ import PropTypes from 'prop-types';
  */
 import { __ } from '@wordpress/i18n';
 import { Icon, closeSmall } from '@wordpress/icons';
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,7 +35,7 @@ import Logo from '../../../svg/logo-g.svg';
 
 export default function SurveyHeader( { title, dismissSurvey } ) {
 	return (
-		<Fragment>
+		<div className="googlesitekit-survey__header">
 			<div className="googlesitekit-survey__header-logo">
 				<Logo width={ 24 } height={ 24 } />
 			</div>
@@ -51,7 +50,7 @@ export default function SurveyHeader( { title, dismissSurvey } ) {
 					className="googlesitekit-survey__header-close"
 				/>
 			</div>
-		</Fragment>
+		</div>
 	);
 }
 
