@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -27,7 +28,6 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import Link from '../../../../components/Link';
-import { createInterpolateElement } from '@wordpress/element';
 const { useSelect } = Data;
 
 export default function SettingsView() {
