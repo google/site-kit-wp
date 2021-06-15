@@ -28,7 +28,11 @@ class Context {
 	/**
 	 * Primary "standard" AMP website mode.
 	 *
-	 * @since 1.0.0
+	 * This mode is currently unused due to Tag Manager setup not showing the Web Container dropdown
+	 * when AMP is in standard mode and some urls have AMP disabled.
+	 *
+	 * @since 1.0.0 Originally introduced.
+	 * @since n.e.x.t Marked as unused, see description.
 	 * @var string
 	 */
 	const AMP_MODE_PRIMARY = 'primary';
@@ -348,27 +352,7 @@ class Context {
 				&& $exposes_support_mode;
 		}
 
-		if ( $exposes_support_mode ) {
-			// If recent version, we can properly detect the mode.
-			if ( $amp_plugin_version_2_or_higher ) {
-				$mode = AMP_Options_Manager::get_option( 'theme_support' );
-			} else {
-				$mode = AMP_Theme_Support::get_support_mode();
-			}
-
-			if ( AMP_Theme_Support::STANDARD_MODE_SLUG === $mode ) {
-				return self::AMP_MODE_PRIMARY;
-			}
-
-			if ( in_array( $mode, array( AMP_Theme_Support::TRANSITIONAL_MODE_SLUG, AMP_Theme_Support::READER_MODE_SLUG ), true ) ) {
-				return self::AMP_MODE_SECONDARY;
-			}
-		} elseif ( function_exists( 'amp_is_canonical' ) ) {
-			// On older versions, if it is not primary AMP, it is definitely secondary AMP (transitional or reader mode).
-			if ( amp_is_canonical() ) {
-				return self::AMP_MODE_PRIMARY;
-			}
-
+		if ( $exposes_support_mode || function_exists( 'amp_is_canonical' ) ) {
 			return self::AMP_MODE_SECONDARY;
 		}
 
