@@ -29,27 +29,26 @@ import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import SurveyCompletion from './SurveyCompletion';
 import SurveyQuestionRating from './SurveyQuestionRating';
+import SurveyHeader from './SurveyHeader';
+import SurveyTerms from './SurveyTerms';
 const { useDispatch, useSelect } = Data;
 
 const ComponentMap = {
 	rating: SurveyQuestionRating,
 };
 
-const CurrentSurvey = () => {
+export default function CurrentSurvey() {
 	const [ hasSentSurveyShownEvent, setHasSentSurveyShownEvent ] = useState( false );
 	const [ hasSentCompletionEvent, setHasSentCompletionEvent ] = useState( false );
 
 	const completions = useSelect( ( select ) => select( CORE_USER ).getCurrentSurveyCompletions() );
 	const questions = useSelect( ( select ) => select( CORE_USER ).getCurrentSurveyQuestions() );
 	const surveySession = useSelect( ( select ) => select( CORE_USER ).getCurrentSurveySession() );
+	const isTrackingEnabled = useSelect( ( select ) => select( CORE_USER ).isTrackingEnabled() );
 
 	const formName = surveySession ? `survey-${ surveySession.session_id }` : null;
-
-	const answers = useSelect( ( select ) => select( CORE_FORMS ).getValue( formName, 'answers' ) );
-
-	const currentQuestionOrdinal = Math.max( 0, ...( answers || [] ).map( ( a ) => a.question_ordinal ) ) + 1;
-
 	const shouldHide = useSelect( ( select ) => select( CORE_FORMS ).getValue( formName, 'hideSurvey' ) );
+	const answers = useSelect( ( select ) => select( CORE_FORMS ).getValue( formName, 'answers' ) );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { sendSurveyEvent } = useDispatch( CORE_USER );
@@ -61,9 +60,8 @@ const CurrentSurvey = () => {
 		}
 	}, [ questions, hasSentSurveyShownEvent, sendSurveyEvent ] );
 
-	const currentQuestion = questions?.find( ( question ) => {
-		return question.question_ordinal === currentQuestionOrdinal;
-	} );
+	const currentQuestionOrdinal = Math.max( 0, ...( answers || [] ).map( ( a ) => a.question_ordinal ) ) + 1;
+	const currentQuestion = questions?.find( ( { question_ordinal: questionOrdinal } ) => questionOrdinal === currentQuestionOrdinal );
 
 	const answerQuestion = useCallback( ( answer ) => {
 		sendSurveyEvent( 'question_answered', {
@@ -137,7 +135,6 @@ const CurrentSurvey = () => {
 
 	const dismissSurvey = useCallback( () => {
 		sendSurveyEvent( 'survey_closed' );
-
 		setValues( formName, { hideSurvey: true } );
 	}, [ formName, sendSurveyEvent, setValues ] );
 
@@ -151,7 +148,7 @@ const CurrentSurvey = () => {
 		}
 	}, [ hasSentCompletionEvent, sendSurveyEvent, triggeredCompletion ] );
 
-	if ( shouldHide || ! questions || ! completions ) {
+	if ( shouldHide || ! questions || ! completions || isTrackingEnabled === undefined ) {
 		return null;
 	}
 
@@ -171,26 +168,29 @@ const CurrentSurvey = () => {
 		);
 	}
 
-	// eslint-disable-next-line camelcase
-	const SurveyQuestionComponent = ComponentMap[ currentQuestion?.question_type ];
-
+	const type = currentQuestion?.question_type; // eslint-disable-line camelcase
+	const SurveyQuestionComponent = ComponentMap[ type ];
 	if ( ! SurveyQuestionComponent ) {
 		return null;
 	}
 
 	return (
 		<div className="googlesitekit-survey">
-			<SurveyQuestionComponent
-				answerQuestion={ answerQuestion }
-				choices={ currentQuestion.question.answer_choice }
-				dismissSurvey={ dismissSurvey }
-				key={ currentQuestion.question_ordinal }
-				question={ currentQuestion.question_text }
-			/>
+			<div className={ `googlesitekit-survey__question-${ type }` }>
+				<div className="googlesitekit-survey__header">
+					<SurveyHeader title={ currentQuestion.question_text } dismissSurvey={ dismissSurvey } />
+				</div>
+
+				<div className="googlesitekit-survey__body">
+					<SurveyQuestionComponent answerQuestion={ answerQuestion } choices={ currentQuestion.question.answer_choice } />
+				</div>
+
+				{ ( isTrackingEnabled === false && currentQuestion?.question_ordinal === 1 ) && ( // eslint-disable-line camelcase
+					<div className="googlesitekit-survey__footer">
+						<SurveyTerms />
+					</div>
+				) }
+			</div>
 		</div>
 	);
-};
-
-CurrentSurvey.propTypes = {};
-
-export default CurrentSurvey;
+}
