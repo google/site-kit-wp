@@ -26,6 +26,7 @@ import {
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
+	ACCOUNT_CREATE,
 } from './constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { isFeatureEnabled } from '../../../features';
@@ -67,7 +68,7 @@ const baseSelectors = {
 
 		// If no accountID exists then no account is selected. This means we should
 		// use the UA setup flow.
-		if ( ! accountID ) {
+		if ( ! accountID || accountID === ACCOUNT_CREATE ) {
 			return SETUP_FLOW_MODE_UA;
 		}
 

@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { HashRouter } from 'react-router-dom';
 
 /**
  * Internal dependencies
@@ -33,6 +32,8 @@ import PermissionsModal from '../PermissionsModal';
 import RestoreSnapshots from '../RestoreSnapshots';
 import CollectModuleData from '../data/collect-module-data';
 import { FeatureToursDesktop } from '../FeatureToursDesktop';
+import { useFeature } from '../../hooks/useFeature';
+import CurrentSurveyPortal from '../surveys/CurrentSurveyPortal';
 
 export default function Root( {
 	children,
@@ -42,24 +43,26 @@ export default function Root( {
 	dataAPIContext,
 	dataAPIModuleArgs,
 } ) {
+	const userFeedbackEnabled = useFeature( 'userFeedback' );
+
 	return (
 		<Data.RegistryProvider value={ registry }>
 			<FeaturesProvider value={ enabledFeatures }>
 				<ErrorHandler viewContext={ viewContext }>
 					<RestoreSnapshots>
-						<HashRouter>
-							{ children }
-							{ /*
-								TODO: Replace `FeatureToursDesktop` with `FeatureTours`
-								once tour conflicts in smaller viewports are resolved.
-								@see https://github.com/google/site-kit-wp/issues/3003
-							*/ }
-							{ viewContext && <FeatureToursDesktop viewContext={ viewContext } /> }
-							{ dataAPIContext && (
-							// Legacy dataAPI support.
-								<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
-							) }
-						</HashRouter>
+						{ children }
+						{ /*
+							TODO: Replace `FeatureToursDesktop` with `FeatureTours`
+							once tour conflicts in smaller viewports are resolved.
+							@see https://github.com/google/site-kit-wp/issues/3003
+						*/ }
+						{ viewContext && <FeatureToursDesktop viewContext={ viewContext } /> }
+						{ dataAPIContext && (
+						// Legacy dataAPI support.
+							<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
+						) }
+
+						{ userFeedbackEnabled && <CurrentSurveyPortal /> }
 					</RestoreSnapshots>
 					<PermissionsModal />
 				</ErrorHandler>

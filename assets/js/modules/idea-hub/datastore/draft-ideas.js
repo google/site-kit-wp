@@ -37,7 +37,9 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 	reducerCallback: ( state, ideaDraftPost ) => {
 		return {
 			...state,
-			ideaDraftPost,
+			draftPostIdeas: [ ...( state.draftPostIdeas || [] ), ideaDraftPost ],
+			newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== ideaDraftPost.name ),
+			savedIdeas: ( state.savedIdeas || [] ).filter( ( { name } ) => name !== ideaDraftPost.name ),
 		};
 	},
 	argsToParams: ( idea ) => {
@@ -55,17 +57,13 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 	},
 } );
 
-const baseInitialState = {
-	ideaDraftPost: null,
-};
-
 const baseActions = {
 	/**
 	 * Creates a new Idea Hub Draft Post
 	 *
 	 * Creates a new draft post and attaches an idea to it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @param {Object} idea Idea Hub Idea.
 	 * @return {Object} Object with `response` and `error`.
@@ -79,7 +77,6 @@ const baseActions = {
 const store = Data.combineStores(
 	fetchCreateIdeaDraftPostStore,
 	{
-		initialState: baseInitialState,
 		actions: baseActions,
 	}
 );

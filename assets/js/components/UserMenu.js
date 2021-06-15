@@ -36,7 +36,7 @@ import { clearWebStorage } from '../util';
 import Dialog from './Dialog';
 import Button from './Button';
 import Menu from './Menu';
-import Modal from './Modal';
+import Portal from './Portal';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
@@ -152,7 +152,7 @@ function UserMenu() {
 					onSelected={ handleMenuItemSelect }
 					id="user-menu" />
 			</div>
-			<Modal>
+			<Portal>
 				<Dialog
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
@@ -162,7 +162,7 @@ function UserMenu() {
 					confirmButton={ __( 'Disconnect', 'google-site-kit' ) }
 					danger
 				/>
-			</Modal>
+			</Portal>
 		</Fragment>
 
 	);

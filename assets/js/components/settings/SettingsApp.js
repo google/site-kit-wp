@@ -21,12 +21,11 @@
  */
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { withRouter, Link, useLocation } from 'react-router-dom';
+import { HashRouter, withRouter, Link, useLocation } from 'react-router-dom';
 
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -51,7 +50,7 @@ function SettingsApp() {
 	const activeTab = SettingsApp.basePathToTabIndex[ basePath ];
 
 	return (
-		<Fragment>
+		<HashRouter>
 			<Header>
 				{ helpVisibilityEnabled && <HelpMenu /> }
 			</Header>
@@ -88,7 +87,7 @@ function SettingsApp() {
 					</Row>
 				</Grid>
 			</div>
-		</Fragment>
+		</HashRouter>
 	);
 }
 

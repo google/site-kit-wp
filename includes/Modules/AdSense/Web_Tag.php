@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules\AdSense;
 
 use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
 
 /**
  * Class for Web tag.
@@ -22,7 +23,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  */
 class Web_Tag extends Module_Web_Tag {
 
-	use Method_Proxy_Trait;
+	use Method_Proxy_Trait, Tag_With_DNS_Prefetch_Trait;
 
 	/**
 	 * Registers tag hooks.
@@ -31,6 +32,14 @@ class Web_Tag extends Module_Web_Tag {
 	 */
 	public function register() {
 		add_action( 'wp_head', $this->get_method_proxy_once( 'render' ) );
+
+		add_filter(
+			'wp_resource_hints',
+			$this->get_dns_prefetch_hints_callback( '//pagead2.googlesyndication.com' ),
+			10,
+			2
+		);
+
 		$this->do_init_tag_action();
 	}
 

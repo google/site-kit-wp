@@ -30,7 +30,7 @@ import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME, PROPERTY_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
-import { isValidAccountID } from '../../util';
+import { isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
@@ -68,6 +68,10 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID, selectProperty ] );
 
+	if ( ! isValidAccountSelection( accountID ) ) {
+		return null;
+	}
+
 	if ( ! hasResolvedAccounts || isResolvingProperties ) {
 		return <ProgressBar small />;
 	}
@@ -78,7 +82,7 @@ export default function PropertySelect() {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || hasGTMPropertyID || ! isValidAccountID( accountID ) }
+			disabled={ hasExistingTag || hasGTMPropertyID }
 			enhanced
 			outlined
 		>
