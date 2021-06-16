@@ -373,7 +373,6 @@ final class AdSense extends Module
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			// Intentional fallthrough.
 			case 'GET:accounts':
 				return array_map( array( self::class, 'filter_account_with_ids' ), $response->getAccounts() );
 			case 'GET:adunits':
@@ -521,16 +520,19 @@ final class AdSense extends Module
 			return new WP_Error( 'account_id_not_set', __( 'AdSense account ID not set.', 'google-site-kit' ) );
 		}
 
+		list( $start_year, $start_month, $start_day ) = explode( '-', $args['start_date'] );
+		list( $end_year, $end_month, $end_day )       = explode( '-', $args['end_date'] );
+
 		$opt_params = array(
 			// In the AdSense API v2, date parameters require the individual pieces to be specified as integers.
 			// See https://developers.google.com/adsense/management/reference/rest/v2/accounts.reports/generate.
 			'dateRange'       => 'CUSTOM',
-			'startDate.year'  => (int) substr( $args['start_date'], 0, 4 ),
-			'startDate.month' => (int) substr( $args['start_date'], 5, 2 ),
-			'startDate.day'   => (int) substr( $args['start_date'], 8, 2 ),
-			'endDate.year'    => (int) substr( $args['end_date'], 0, 4 ),
-			'endDate.month'   => (int) substr( $args['end_date'], 5, 2 ),
-			'endDate.day'     => (int) substr( $args['end_date'], 8, 2 ),
+			'startDate.year'  => (int) $start_year,
+			'startDate.month' => (int) $start_month,
+			'startDate.day'   => (int) $start_day,
+			'endDate.year'    => (int) $end_year,
+			'endDate.month'   => (int) $end_month,
+			'endDate.day'     => (int) $end_day,
 			'languageCode'    => $this->context->get_locale( 'site', 'language-code' ),
 			// Include default metrics only for backward-compatibility.
 			'metrics'         => array( 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ),
