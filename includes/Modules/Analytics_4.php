@@ -255,6 +255,15 @@ final class Analytics_4 extends Module
 	private function handle_provisioning_callback( $account_id ) {
 		// TODO: remove this try/catch once GA4 API stabilizes.
 		try {
+			// Reset the current GA4 settings.
+			$this->get_settings()->merge(
+				array(
+					'propertyID'      => '',
+					'webDataStreamID' => '',
+					'measurementID'   => '',
+				)
+			);
+
 			$property = $this->create_property( $account_id );
 			$property = self::filter_property_with_ids( $property );
 			if ( empty( $property->_id ) ) {

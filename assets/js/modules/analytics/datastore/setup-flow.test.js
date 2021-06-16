@@ -128,14 +128,12 @@ describe( 'modules/analytics setup-flow', () => {
 				);
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( false );
-
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_LEGACY );
 			} );
 
-			it( 'should return undefined if isAdminAPIWorking() returns undefined ', () => {
-				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( undefined );
-
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
+			it( 'should not return undefined if isAdminAPIWorking() returns undefined ', () => {
+				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBeUndefined();
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).not.toBeUndefined();
 			} );
 
 			it( 'should return undefined if settings are still loading', () => {
@@ -152,21 +150,19 @@ describe( 'modules/analytics setup-flow', () => {
 				);
 
 				registry = createTestRegistry();
-
 				populateAnalytics4Datastore( registry );
+
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-
-				expect( registry.select( MODULES_ANALYTICS ).getSettings() ).toBe( undefined );
-
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
+				expect( registry.select( MODULES_ANALYTICS ).getSettings() ).toBeUndefined();
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBeUndefined();
 			} );
 
 			it( 'should return "ua" if there is no account selected', () => {
-				expect( registry.select( MODULES_ANALYTICS ).getAccountID( accountID ) ).toBe( undefined );
+				expect( registry.select( MODULES_ANALYTICS ).getAccountID( accountID ) ).toBeUndefined();
 
 				populateAnalytics4Datastore( registry );
-				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 
+				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_UA );
 			} );
 
@@ -174,9 +170,8 @@ describe( 'modules/analytics setup-flow', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 				populateAnalyticsDatastore( registry );
 
-				expect( registry.select( MODULES_ANALYTICS ).getProperties() ).toBe( undefined );
-
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
+				expect( registry.select( MODULES_ANALYTICS ).getProperties() ).toBeUndefined();
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBeUndefined();
 			} );
 
 			it( 'should return "ua" if selected account returns an empty array from GA4 getProperties selector', () => {
@@ -230,7 +225,6 @@ describe( 'modules/analytics setup-flow', () => {
 				);
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_UA );
 			} );
 
@@ -240,8 +234,7 @@ describe( 'modules/analytics setup-flow', () => {
 				populateAnalytics4Datastore( registry );
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBeUndefined();
 			} );
 
 			it( 'should return "ga4" if selected account returns an empty array from UA getProperties selector', () => {
@@ -254,7 +247,6 @@ describe( 'modules/analytics setup-flow', () => {
 				);
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_GA4 );
 			} );
 
@@ -264,7 +256,6 @@ describe( 'modules/analytics setup-flow', () => {
 				populateAnalyticsDatastore( registry );
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_GA4_TRANSITIONAL );
 			} );
 		} );
