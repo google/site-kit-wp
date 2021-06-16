@@ -205,7 +205,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Creates a new property for provided account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.35.0
 	 *
 	 * @param string $account_id Account ID.
 	 * @return Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty A new property.
@@ -227,7 +227,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Creates a new web data stream for provided property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.35.0
 	 *
 	 * @param string $property_id Property ID.
 	 * @return Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream A new web data stream.
@@ -248,7 +248,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Provisions new GA4 property and web data stream for provided account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.35.0
 	 *
 	 * @param string $account_id Account ID.
 	 */

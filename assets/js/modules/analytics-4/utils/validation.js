@@ -64,7 +64,7 @@ export function isValidWebDataStreamID( webDataStreamID ) {
 /**
  * Checks whether the given web data stream is a valid selection.
  *
- * @since n.e.x.t
+ * @since 1.35.0
  *
  * @param {?string} webDataStreamID Web data stream to check.
  * @return {boolean} TRUE if the web data stream selection is valid, otherwise FALSE.
@@ -80,7 +80,7 @@ export function isValidWebDataStreamSelection( webDataStreamID ) {
 /**
  * Checks whether the given measurementID appears to be valid.
  *
- * @since n.e.x.t
+ * @since 1.35.0
  *
  * @param {*} measurementID Web data stream measurementID to check.
  * @return {boolean} TRUE if the measurementID is valid, otherwise FALSE.
