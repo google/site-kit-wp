@@ -78,16 +78,22 @@ export function validateCanSubmitChanges( select ) {
 		return;
 	}
 
-	const strictSelect = createStrictSelect( select );
 	const {
-		haveSettingsChanged,
+		haveSettingsChanged: haveGA4SettingsChanged,
 		isDoingSubmitChanges,
 		getPropertyID,
 		getWebDataStreamID,
-	} = strictSelect( STORE_NAME );
+	} = createStrictSelect( select )( STORE_NAME );
 
-	// Note: these error messages are referenced in test assertions.
-	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+	const {
+		haveSettingsChanged: haveUASettingsChanged,
+	} = createStrictSelect( select )( MODULES_ANALYTICS );
+
+	// Check if we have GA4 settings changed only if we are sure that there is no UA changes.
+	if ( ! haveUASettingsChanged() ) {
+		invariant( haveGA4SettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+	}
+
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 
 	const propertyID = getPropertyID();
