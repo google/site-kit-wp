@@ -19,69 +19,65 @@
 /**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+const { useSelect } = Data;
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import Notification from './notification';
 import {
-	getNotifications,
 	acceptNotification,
 	dismissNotification,
 } from './site';
-import Notification from './notification';
 
-class DashboardCoreSiteAlerts extends Component {
-	constructor( props ) {
-		super( props );
+const DashboardCoreSiteAlerts = () => {
+	const [ display, setDisplay ] = useState( false );
+	const surveys = useSelect( ( select ) => select( CORE_USER ).getCurrentSurvey() );
+	const notifications = useSelect( ( select ) => select( CORE_SITE ).getNotifications() );
 
-		this.state = {
-			notifications: false,
-		};
+	useEffect(
+		() => {
+			const timer = setTimeout( () => setDisplay( true ), 5 * 1000 );
+
+			return () => {
+				clearTimeout( timer );
+			};
+		},
+		[]
+	);
+
+	if ( ! Array.isArray( notifications ) || ! display || !! surveys ) {
+		return null;
 	}
 
-	async componentDidMount() {
-		try {
-			const notifications = await getNotifications();
-			this.setState( { notifications } );
-		} catch ( error ) {
-			// eslint-disable-next-line no-console
-			console.warn( 'Error caught while fetching notifications', error );
-		}
-	}
-
-	render() {
-		const { notifications } = this.state;
-
-		if ( ! Array.isArray( notifications ) ) {
-			return null;
-		}
-
-		return notifications.map(
-			( notification ) => (
-				<Notification
-					key={ notification.id }
-					id={ notification.id }
-					title={ notification.title || '' }
-					description={ notification.content || '' }
-					learnMoreURL={ notification.learnMoreURL || '' }
-					learnMoreLabel={ notification.learnMoreLabel || '' }
-					ctaLink={ notification.ctaURL || '' }
-					ctaLabel={ notification.ctaLabel || '' }
-					ctaTarget={ notification.ctaTarget || '' }
-					dismiss={ notification.dismissLabel || __( 'OK, Got it!', 'google-site-kit' ) }
-					isDismissable={ notification.dismissible }
-					onCTAClick={ async () => {
-						await acceptNotification( notification.id );
-					} }
-					onDismiss={ async () => {
-						await dismissNotification( notification.id );
-					} }
-				/>
-			)
-		);
-	}
-}
+	return notifications.map(
+		( notification ) => (
+			<Notification
+				key={ notification.id }
+				id={ notification.id }
+				title={ notification.title || '' }
+				description={ notification.content || '' }
+				learnMoreURL={ notification.learnMoreURL || '' }
+				learnMoreLabel={ notification.learnMoreLabel || '' }
+				ctaLink={ notification.ctaURL || '' }
+				ctaLabel={ notification.ctaLabel || '' }
+				ctaTarget={ notification.ctaTarget || '' }
+				dismiss={ notification.dismissLabel || __( 'OK, Got it!', 'google-site-kit' ) }
+				isDismissable={ notification.dismissible }
+				onCTAClick={ async () => {
+					await acceptNotification( notification.id );
+				} }
+				onDismiss={ async () => {
+					await dismissNotification( notification.id );
+				} }
+			/>
+		)
+	);
+};
 
 export default DashboardCoreSiteAlerts;
