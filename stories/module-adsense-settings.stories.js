@@ -53,8 +53,8 @@ const defaultSettings = {
 
 const completeSettings = {
 	...defaultSettings,
-	accountID: fixtures.accounts[ 0 ].id,
-	clientID: fixtures.clients[ 0 ].id,
+	accountID: fixtures.accounts[ 0 ]._id,
+	clientID: fixtures.clients[ 0 ]._id,
 	accountStatus: ACCOUNT_STATUS_APPROVED,
 	siteStatus: SITE_STATUS_ADDED,
 	accountSetupComplete: true,
@@ -66,8 +66,8 @@ const completeSettings = {
 const Settings = createLegacySettingsWrapper( 'adsense' );
 
 const setUpAdUnits = ( registry ) => {
-	const accountID = fixtures.accounts[ 0 ].id;
-	const clientID = fixtures.clients[ 0 ].id;
+	const accountID = fixtures.accounts[ 0 ]._id;
+	const clientID = fixtures.clients[ 0 ]._id;
 	registry.dispatch( STORE_NAME ).receiveGetAdUnits( fixtures.adunits, { accountID, clientID } );
 	registry.dispatch( STORE_NAME ).finishResolution( 'getAdUnits', [ accountID, clientID ] );
 };

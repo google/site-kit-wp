@@ -26,7 +26,6 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
-import { parseAccountID } from '../util';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense clients', () => {
@@ -60,7 +59,7 @@ describe( 'modules/adsense clients', () => {
 					{ body: fixtures.clients, status: 200 }
 				);
 
-				const accountID = parseAccountID( fixtures.clients[ 0 ].id );
+				const accountID = fixtures.clients[ 0 ]._accountID;
 
 				const initialClients = registry.select( STORE_NAME ).getClients( accountID );
 
@@ -78,7 +77,7 @@ describe( 'modules/adsense clients', () => {
 			} );
 
 			it( 'does not make a network request if clients for this account are already present', async () => {
-				const accountID = parseAccountID( fixtures.clients[ 0 ].id );
+				const accountID = fixtures.clients[ 0 ]._accountID;
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.

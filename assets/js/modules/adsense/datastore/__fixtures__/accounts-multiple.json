@@ -1,18 +1,20 @@
 [
   {
-    "creationTime":"1382025063000",
-    "id":"pub-2833782679114991",
-    "kind":"adsense#account",
-    "name":"Test Account",
-    "premium":false,
-    "timezone":"Europe/Berlin"
+    "name": "accounts/pub-2833782679114991",
+    "displayName": "Test Account",
+    "timeZone": {
+      "id": "Europe/Berlin"
+    },
+    "createTime": "2013-10-17T15:51:03.000Z",
+    "_id": "pub-2833782679114991"
   },
   {
-    "creationTime":"1382025063000",
-    "id":"pub-3772192679115192",
-    "kind":"adsense#account",
-    "name":"Additional Account",
-    "premium":false,
-    "timezone":"Europe/Berlin"
+    "name": "accounts/pub-3772192679115192",
+    "displayName": "Additional Account",
+    "timeZone": {
+      "id": "Europe/Berlin"
+    },
+    "createTime": "2013-10-17T15:51:03.000Z",
+    "_id": "pub-3772192679115192"
   }
 ]

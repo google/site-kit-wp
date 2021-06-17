@@ -119,6 +119,12 @@ final class Analytics extends Module
 	 * @return bool
 	 */
 	protected function is_tracking_disabled() {
+		$settings = $this->get_settings()->get();
+		// This filter is documented in Tag_Manager::filter_analytics_allow_tracking_disabled.
+		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] ) ) {
+			return false;
+		}
+
 		$option = $this->get_settings()->get();
 
 		$disable_logged_in_users  = in_array( 'loggedinUsers', $option['trackingDisabled'], true ) && is_user_logged_in();
