@@ -77,7 +77,6 @@ generateReportBasedWidgetStories( {
 	},
 	data: [
 		{
-			kind: 'adsense#report',
 			totalMatchedRows: '1',
 			headers: [
 				{
@@ -116,7 +115,6 @@ generateReportBasedWidgetStories( {
 			endDate: '2020-09-12',
 		},
 		{
-			kind: 'adsense#report',
 			totalMatchedRows: '1',
 			headers: [
 				{ name: 'EARNINGS', type: 'METRIC_CURRENCY', currency: 'USD' },
@@ -135,7 +133,6 @@ generateReportBasedWidgetStories( {
 			endDate: '2020-09-11',
 		},
 		{
-			kind: 'adsense#report',
 			totalMatchedRows: '32',
 			headers: [
 				{ name: 'DATE', type: 'DIMENSION' },
@@ -193,7 +190,6 @@ const topEarningPagesArgs = {
 // These components make a simple AdSense report query to determine the
 // currency that should be displayed in the report table.
 const getCurrencyFromReport = {
-	kind: 'adsense#report',
 	totalMatchedRows: '1',
 	headers: [
 		{ name: 'EARNINGS', type: 'METRIC_CURRENCY', currency: 'USD' },

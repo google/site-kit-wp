@@ -89,7 +89,7 @@ export function determineAccountStatus( data ) {
 		return alertsErrorToStatus( alertsError );
 	}
 
-	const hasGraylistedAlert = alerts.some( ( alert ) => 'GRAYLISTED_PUBLISHER' === alert.type );
+	const hasGraylistedAlert = alerts.some( ( alert ) => 'graylisted-publisher' === alert.type );
 	if ( hasGraylistedAlert ) {
 		return ACCOUNT_STATUS_GRAYLISTED;
 	}
@@ -136,7 +136,7 @@ export const determineSiteStatus = ( {
 
 	const lowerSiteURL = siteURL.toLowerCase();
 	const hasSiteURL = urlChannels.some( ( urlChannel ) => {
-		return 0 <= lowerSiteURL.indexOf( urlChannel.urlPattern.toLowerCase() );
+		return 0 <= lowerSiteURL.indexOf( urlChannel.uriPattern.toLowerCase() );
 	} );
 	if ( ! hasSiteURL ) {
 		return SITE_STATUS_NONE;
@@ -176,7 +176,7 @@ export const determineAccountID = ( { accounts, previousAccountID } ) => {
 
 		// Ensure the passed account ID is actually available.
 		return accounts.reduce( ( acc, account ) => {
-			if ( account.id === previousAccountID ) {
+			if ( account._id === previousAccountID ) {
 				return previousAccountID;
 			}
 			return acc;
@@ -184,7 +184,7 @@ export const determineAccountID = ( { accounts, previousAccountID } ) => {
 	}
 
 	// Choose the only account that the user has.
-	return accounts[ 0 ].id;
+	return accounts[ 0 ]._id;
 };
 
 /**
@@ -217,7 +217,7 @@ export const determineClientID = ( { clients, previousClientID } ) => {
 	// If multiple AFC clients and client ID was already known, try looking it up.
 	if ( afcClients.length > 1 && previousClientID ) {
 		const clientID = afcClients.reduce( ( acc, client ) => {
-			if ( client.id === previousClientID ) {
+			if ( client._id === previousClientID ) {
 				return previousClientID;
 			}
 			return acc;
@@ -228,7 +228,7 @@ export const determineClientID = ( { clients, previousClientID } ) => {
 	}
 
 	// Otherwise, just pick the first AFC client. There should only ever be one anyway.
-	return afcClients[ 0 ].id;
+	return afcClients[ 0 ]._id;
 };
 
 /**

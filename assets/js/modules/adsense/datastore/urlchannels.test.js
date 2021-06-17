@@ -60,7 +60,7 @@ describe( 'modules/adsense URL channels', () => {
 				);
 
 				const accountID = 'pub-12345';
-				const clientID = fixtures.clients[ 0 ].id;
+				const clientID = fixtures.clients[ 0 ]._id;
 
 				const initialURLChannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
 
@@ -75,7 +75,7 @@ describe( 'modules/adsense URL channels', () => {
 
 			it( 'does not make a network request if urlchannels for this account + client are already present', async () => {
 				const accountID = 'pub-12345';
-				const clientID = fixtures.clients[ 0 ].id;
+				const clientID = fixtures.clients[ 0 ]._id;
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.

@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+import { Slide } from '@material-ui/core';
+
+/**
  * WordPress dependencies
  */
 import { useCallback, useEffect, useState } from '@wordpress/element';
@@ -38,6 +44,7 @@ const ComponentMap = {
 const CurrentSurvey = () => {
 	const [ hasSentSurveyShownEvent, setHasSentSurveyShownEvent ] = useState( false );
 	const [ hasSentCompletionEvent, setHasSentCompletionEvent ] = useState( false );
+	const [ animateSurvey, setAnimateSurvey ] = useState( false );
 
 	const completions = useSelect( ( select ) => select( CORE_USER ).getCurrentSurveyCompletions() );
 	const questions = useSelect( ( select ) => select( CORE_USER ).getCurrentSurveyQuestions() );
@@ -138,8 +145,12 @@ const CurrentSurvey = () => {
 	const dismissSurvey = useCallback( () => {
 		sendSurveyEvent( 'survey_closed' );
 
+		setAnimateSurvey( false );
+	}, [ sendSurveyEvent ] );
+
+	const handleAnimationOnExited = useCallback( () => {
 		setValues( formName, { hideSurvey: true } );
-	}, [ formName, sendSurveyEvent, setValues ] );
+	}, [ formName, setValues ] );
 
 	useEffect( () => {
 		if ( triggeredCompletion && ! hasSentCompletionEvent ) {
@@ -151,23 +162,29 @@ const CurrentSurvey = () => {
 		}
 	}, [ hasSentCompletionEvent, sendSurveyEvent, triggeredCompletion ] );
 
+	useMount( () => {
+		setAnimateSurvey( true );
+	} );
+
 	if ( shouldHide || ! questions || ! completions ) {
 		return null;
 	}
 
 	if ( triggeredCompletion ) {
 		return (
-			<div className="googlesitekit-survey">
-				<SurveyCompletion
-					dismissSurvey={ dismissSurvey }
-					ctaOnClick={ ctaOnClick }
-					ctaText={ triggeredCompletion.follow_up_text }
-					ctaURL={ triggeredCompletion.follow_up_url }
-					title={ triggeredCompletion.completion_title }
-				>
-					{ triggeredCompletion.completion_text }
-				</SurveyCompletion>
-			</div>
+			<Slide direction="up" in={ animateSurvey } onExited={ handleAnimationOnExited }>
+				<div className="googlesitekit-survey">
+					<SurveyCompletion
+						dismissSurvey={ dismissSurvey }
+						ctaOnClick={ ctaOnClick }
+						ctaText={ triggeredCompletion.follow_up_text }
+						ctaURL={ triggeredCompletion.follow_up_url }
+						title={ triggeredCompletion.completion_title }
+					>
+						{ triggeredCompletion.completion_text }
+					</SurveyCompletion>
+				</div>
+			</Slide>
 		);
 	}
 
@@ -179,15 +196,17 @@ const CurrentSurvey = () => {
 	}
 
 	return (
-		<div className="googlesitekit-survey">
-			<SurveyQuestionComponent
-				answerQuestion={ answerQuestion }
-				choices={ currentQuestion.question.answer_choice }
-				dismissSurvey={ dismissSurvey }
-				key={ currentQuestion.question_ordinal }
-				question={ currentQuestion.question_text }
-			/>
-		</div>
+		<Slide direction="up" in={ animateSurvey } onExited={ handleAnimationOnExited }>
+			<div className="googlesitekit-survey">
+				<SurveyQuestionComponent
+					answerQuestion={ answerQuestion }
+					choices={ currentQuestion.question.answer_choice }
+					dismissSurvey={ dismissSurvey }
+					key={ currentQuestion.question_ordinal }
+					question={ currentQuestion.question_text }
+				/>
+			</div>
+		</Slide>
 	);
 };
 
