@@ -173,11 +173,11 @@ const baseActions = {
 	),
 
 	/**
-	 * Gets an ID of an account that has a matching property.
+	 * Finds a matching property and returns it.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {string} The account ID on success, otherwise NULL.
+	 * @return {Object|null} Matching property on success, otherwise NULL.
 	 */
 	*findMatchedProperty() {
 		const registry = yield commonActions.getRegistry();
