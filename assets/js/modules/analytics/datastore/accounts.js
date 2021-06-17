@@ -328,8 +328,6 @@ const baseResolvers = {
 		if ( ! matchedProperty && ! accountID ) {
 			const matchedGA4Property = yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).findMatchedProperty() );
 			if ( matchedGA4Property?._accountID ) {
-				accountID = matchedGA4Property?._accountID;
-
 				registry.dispatch( STORE_NAME ).setAccountID( matchedGA4Property?._accountID );
 				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
 
