@@ -34,11 +34,13 @@ import { ExistingTagError, ExistingTagNotice } from '../common';
 import { useFeature } from '../../../../hooks/useFeature';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
+import VisuallyHidden from '../../../../components/VisuallyHidden';
 const { useSelect } = Data;
 
 export default function SettingsView() {
 	const isGA4Enabled = useFeature( 'ga4setup' );
 	const ga4PropertyID = useSelect( ( select ) => isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getPropertyID() : '' );
+	const ga4MeasurementID = useSelect( ( select ) => isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getMeasurementID() : '' );
 
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
@@ -101,6 +103,17 @@ export default function SettingsView() {
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting value={ ga4PropertyID } />
+						</p>
+					</div>
+					<div className="googlesitekit-settings-module__meta-item">
+						<h5 className="googlesitekit-settings-module__meta-item-type">
+							<VisuallyHidden>
+								{ __( 'Google Analytics 4', 'google-site-kit' ) }
+							</VisuallyHidden>
+							{ __( 'Measurement ID', 'google-site-kit' ) }
+						</h5>
+						<p className="googlesitekit-settings-module__meta-item-data">
+							<DisplaySetting value={ ga4MeasurementID } />
 						</p>
 					</div>
 				</div>
