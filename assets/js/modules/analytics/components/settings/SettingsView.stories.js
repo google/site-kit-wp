@@ -1,5 +1,5 @@
 /**
- * SetupFormGA4 component stories.
+ * Analytics SettingsView component stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
