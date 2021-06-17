@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights Settings View component
+ * Idea Hub Settings View component
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,31 +19,27 @@
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { sanitizeHTML } from '../../../../util';
 import { STORE_NAME } from '../../datastore/constants';
+import Link from '../../../../components/Link';
 const { useSelect } = Data;
 
 export default function SettingsView() {
 	const dashboardPermalink = useSelect( ( select ) => select( STORE_NAME ).getAdminScreenURL() );
 
-	const content = sprintf(
-		/* translators: %s is the URL to the Site Kit dashboard. */
-		__( 'To view insights, <a href="%s">visit the dashboard</a>', 'google-site-kit' ),
-		dashboardPermalink
-	);
-
 	return (
-		<p
-			dangerouslySetInnerHTML={ sanitizeHTML( content, {
-				ALLOWED_TAGS: [ 'a' ],
-				ALLOWED_ATTR: [ 'href' ],
-			} ) }
-		/>
+		createInterpolateElement(
+			/* translators: %s is the URL to the Site Kit dashboard. */
+			__( 'To view ideas for new content, <a>visit the dashboard</a>', 'google-site-kit' ),
+			{
+				a: <Link href={ dashboardPermalink } inherit />,
+			}
+		)
 	);
 }

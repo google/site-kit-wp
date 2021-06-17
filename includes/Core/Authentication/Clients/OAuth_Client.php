@@ -617,6 +617,7 @@ final class OAuth_Client {
 	 *
 	 * @since 1.0.0
 	 * @since 1.9.0 Added $additional_scopes parameter.
+	 * @since 1.34.1 Updated handling of $additional_scopes to restore rewritten scope.
 	 *
 	 * @param string   $redirect_url      Redirect URL after authentication.
 	 * @param string[] $additional_scopes List of additional scopes to request.
@@ -626,7 +627,16 @@ final class OAuth_Client {
 		if ( empty( $redirect_url ) ) {
 			$redirect_url = $this->context->admin_url( 'splash' );
 		}
-		if ( ! is_array( $additional_scopes ) ) {
+		if ( is_array( $additional_scopes ) ) {
+			// Rewrite each scope to convert `gttp` -> `http`, if it starts with this placeholder scheme.
+			// This restores the original scope rewritten by getConnectURL.
+			$additional_scopes = array_map(
+				function ( $scope ) {
+					return preg_replace( '/^gttp(s)?:/', 'http$1:', $scope );
+				},
+				$additional_scopes
+			);
+		} else {
 			$additional_scopes = array();
 		}
 

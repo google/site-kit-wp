@@ -1,5 +1,5 @@
 /**
- * `modules/idea-hub` base data store
+ * Admin Bar Zero Data Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,12 +19,22 @@
 /**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './constants';
+import AdminBarZeroData from './AdminBarZeroData';
 
-const baseModuleStore = Modules.createModuleStore( 'idea-hub', {
-	storeName: STORE_NAME,
-	requiresSetup: false,
-} );
+const Template = ( args ) => <AdminBarZeroData { ...args } />;
 
-export default baseModuleStore;
+export const Ready = Template.bind( {} );
+Ready.storyName = 'Data Unavailable';
+
+export default {
+	title: 'Views/AdminBarApp/AdminBarZeroData',
+	decorators: [
+		( Story ) => (
+			<div className="googlesitekit-widget">
+				<div className="googlesitekit-widget__body">
+					<Story />
+				</div>
+			</div>
+		),
+	],
+};

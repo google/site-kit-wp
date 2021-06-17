@@ -1,12 +1,12 @@
 [
   {
-    "id":"ca-pub-2833782679114991:example.com",
-    "kind":"adsense#urlChannel",
-    "urlPattern":"example.com"
+    "name": "accounts/pub-2833782679114991/adclients/ca-pub-2833782679114991/urlchannels/example.com",
+    "reportingDimensionId": "ca-pub-2833782679114991:example.com",
+    "uriPattern": "example.com"
   },
   {
-    "id":"ca-pub-2833782679114991:example-site.org",
-    "kind":"adsense#urlChannel",
-    "urlPattern":"example-site.org"
+    "name": "accounts/pub-2833782679114991/adclients/ca-pub-2833782679114991/urlchannels/example-site.org",
+    "reportingDimensionId": "ca-pub-2833782679114991:example-site.org",
+    "uriPattern": "example-site.org"
   }
 ]

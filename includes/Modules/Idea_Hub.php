@@ -136,9 +136,7 @@ final class Idea_Hub extends Module
 	 * @return bool True if module is connected, false otherwise.
 	 */
 	public function is_connected() {
-		$required_keys = array(
-			'ideaLocale',
-		);
+		$required_keys = array();
 
 		$options = $this->get_settings()->get();
 		foreach ( $required_keys as $required_key ) {
@@ -169,13 +167,7 @@ final class Idea_Hub extends Module
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		return array(
-			'idea_hub_idea_locale' => array(
-				'label' => __( 'Idea Hub idea locale', 'google-site-kit' ),
-				'value' => $settings['ideaLocale'],
-				'debug' => Debug_Data::redact_debug_value( $settings['ideaLocale'] ),
-			),
-		);
+		return array();
 	}
 
 	/**

@@ -74,13 +74,9 @@ class Idea_HubTest extends TestCase {
 		$options  = new Options( $this->context );
 		$idea_hub = new Idea_Hub( $this->context, $options );
 
-		$this->assertFalse( $idea_hub->is_connected() );
-
 		$options->set(
 			Settings::OPTION,
-			array(
-				'ideaLocale' => 'en_US',
-			)
+			array()
 		);
 
 		$this->assertTrue( $idea_hub->is_connected() );
@@ -108,9 +104,7 @@ class Idea_HubTest extends TestCase {
 
 		$options->set(
 			Settings::OPTION,
-			array(
-				'ideaLocale' => 'en_US',
-			)
+			array()
 		);
 
 		// Create the post

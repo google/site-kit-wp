@@ -80,7 +80,7 @@ storiesOf( 'AdSense Module', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetSettings( {
-				accountID: accounts[ 0 ].id,
+				accountID: accounts[ 0 ]._id,
 			} );
 		};
 
@@ -154,7 +154,7 @@ storiesOf( 'AdSense Module', module )
 	} )
 	.add( 'Site Steps', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setAccountID( fixtures.accounts[ 0 ].id );
+			registry.dispatch( STORE_NAME ).setAccountID( fixtures.accounts[ 0 ]._id );
 		};
 
 		return (
@@ -167,7 +167,7 @@ storiesOf( 'AdSense Module', module )
 	} )
 	.add( 'Dashboard Zero Data', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setAccountID( fixtures.accounts[ 0 ].id );
+			registry.dispatch( STORE_NAME ).setAccountID( fixtures.accounts[ 0 ]._id );
 		};
 
 		return (
