@@ -1192,7 +1192,7 @@ final class Analytics extends Module
 		?>
 		<!-- <?php esc_html_e( 'Google Analytics user opt-out added via Site Kit by Google', 'google-site-kit' ); ?> -->
 		<?php if ( $this->context->is_amp() ) : ?>
-			<script type="application/ld+json" id="__gaOptOutExtension"></script>
+			<meta name="ga-opt-out" content="" id="__gaOptOutExtension">
 		<?php else : ?>
 			<script type="text/javascript">window["_gaUserPrefs"] = { ioo : function() { return true; } }</script>
 		<?php endif; ?>
