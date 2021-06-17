@@ -199,7 +199,7 @@ export function getAdSenseMockResponse( args ) {
 	const dimensions = castArray( args.dimensions ).filter( ( dimension ) => !! dimension );
 
 	const data = {
-		kind: 'adsense#report',
+		warnings: [],
 		startDate: args.startDate,
 		endDate: args.endDate,
 		totalMatchedRows: '0',
