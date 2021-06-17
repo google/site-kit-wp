@@ -324,6 +324,19 @@ const baseResolvers = {
 			return;
 		}
 
+		// If there are no matching UA property and no accountID, we need to try to find matching GA4 property.
+		if ( ! matchedProperty && ! accountID ) {
+			const matchedGA4Property = yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).findMatchedProperty() );
+			if ( matchedGA4Property?._accountID ) {
+				registry.dispatch( STORE_NAME ).setAccountID( matchedGA4Property?._accountID );
+				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
+
+				yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( matchedGA4Property._id ) );
+
+				return;
+			}
+		}
+
 		let ga4Property;
 		const ga4PropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
 
@@ -339,7 +352,7 @@ const baseResolvers = {
 		}
 
 		// Try to find a new matched ga4 property if the current one has a different accountID.
-		if ( ga4Property?._accountID !== accountID ) {
+		if ( accountID && ga4Property?._accountID !== accountID ) {
 			yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).matchAndSelectProperty( accountID, GA4_PROPERTY_CREATE ) );
 		}
 	},
