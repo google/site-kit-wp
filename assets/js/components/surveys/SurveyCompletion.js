@@ -43,6 +43,7 @@ const SurveyCompletion = ( { title, children, ctaText, ctaURL, ctaOnClick, dismi
 				<Button
 					href={ ctaURL }
 					onClick={ ctaOnClick }
+					target="_blank"
 				>
 					{ ctaText }
 				</Button>
