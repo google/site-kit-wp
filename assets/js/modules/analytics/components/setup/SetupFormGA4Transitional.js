@@ -70,8 +70,8 @@ export default function SetupFormGA4Transitional() {
 	] );
 
 	const notice = propertyType === PROPERTY_TYPE_UA
-		? __( 'You’ll need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property.', 'google-site-kit' )
-		: __( 'You’ll need to connect the Universal Analytics property that’s associated with this Google Analytics 4 property.', 'google-site-kit' );
+		? __( 'You need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property.', 'google-site-kit' )
+		: __( 'You need to connect the Universal Analytics property that’s associated with this Google Analytics 4 property.', 'google-site-kit' );
 
 	return (
 		<Fragment>
