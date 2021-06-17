@@ -28,9 +28,6 @@ import { Link as RouterLink } from 'react-router-dom';
  */
 import { _x } from '@wordpress/i18n';
 
-const ARIA_TEXT_DISABLED = _x( '(disabled)', 'screen reader text', 'google-site-kit' );
-const ARIA_TEXT_EXTERNAL = _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' );
-
 const BUTTON = 'BUTTON';
 const BUTTON_DISABLED = 'BUTTON_DISABLED';
 const EXTERNAL_LINK = 'EXTERNAL_LINK';
@@ -56,35 +53,14 @@ function Link( {
 	to,
 	...otherProps
 } ) {
-	const hasStringAsChild = typeof children === 'string';
-
-	// Append `aria-label` with text if label exists, otherwise return text.
-	const getLabelWithText = ( text ) => {
-		const shouldUseChildrenAsLabel = hasStringAsChild && ! ariaLabelProp;
-		const ariaLabel = shouldUseChildrenAsLabel ? children : ariaLabelProp;
-
-		return ariaLabel
-			? `${ ariaLabel } ${ text }`
-			: text;
-	};
-
-	// Do not create `aria-label` value if it would be identical to `children`,
-	// redundant label (bad a11y).
-	const getNonIdenticalLabel = () => {
-		const childIsIdenticalValue = hasStringAsChild && children === ariaLabelProp;
-
-		return childIsIdenticalValue ? undefined : ariaLabelProp;
-	};
-
 	const getType = () => {
 		// Force button element if `onClick` prop is passed.
 		if ( onClick ) {
-			return BUTTON;
-		}
+			if ( disabled ) {
+				return BUTTON_DISABLED;
+			}
 
-		// Disabled attribute does not alter behavior of anchors or links.
-		if ( disabled ) {
-			return BUTTON_DISABLED;
+			return BUTTON;
 		}
 
 		// Only `RouterLink` uses the `to` prop.
@@ -102,7 +78,9 @@ function Link( {
 		return LINK;
 	};
 
-	const getLinkComponent = ( type ) => {
+	const type = getType();
+
+	const getLinkComponent = () => {
 		if ( type === BUTTON || type === BUTTON_DISABLED ) {
 			return 'button';
 		}
@@ -114,21 +92,41 @@ function Link( {
 		return 'a';
 	};
 
-	const getAriaLabel = ( type ) => {
+	const getAriaLabel = () => {
+		// Otherwise, create an ARIA label if the link opens in a new window
+		// or is disabled, to add extra context to the link.
+		let labelSuffix;
+
 		if ( type === EXTERNAL_LINK ) {
-			return getLabelWithText( ARIA_TEXT_EXTERNAL );
+			labelSuffix = _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' );
 		}
 
 		if ( type === BUTTON_DISABLED ) {
-			return getLabelWithText( ARIA_TEXT_DISABLED );
+			labelSuffix = _x( '(disabled)', 'screen reader text', 'google-site-kit' );
 		}
 
-		return getNonIdenticalLabel();
+		if ( ! labelSuffix ) {
+			return ariaLabelProp;
+		}
+
+		// If an ARIA label was supplied, use that.
+		if ( ariaLabelProp ) {
+			return `${ ariaLabelProp } ${ labelSuffix }`;
+		}
+
+		// Otherwise, use the children prop if it's a string.
+		if ( typeof children === 'string' ) {
+			return `${ children } ${ labelSuffix }`;
+		}
+
+		// If there isn't a string we can use to create the label, we shouldn't
+		// make one; otherwise we'll only create an ARIA label that says
+		// "(opens in a new tab)", which is not good.
+		return undefined;
 	};
 
-	const type = getType();
-	const LinkComponent = getLinkComponent( type );
-	const ariaLabel = getAriaLabel( type );
+	const LinkComponent = getLinkComponent();
+	const ariaLabel = getAriaLabel();
 
 	return (
 		<LinkComponent
