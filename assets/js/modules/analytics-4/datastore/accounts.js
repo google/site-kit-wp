@@ -21,10 +21,8 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-const { commonActions } = Data;
 
 const fetchGetAccountSummariesStore = createFetchStore( {
 	baseName: 'getAccountSummaries',
@@ -43,35 +41,6 @@ const baseInitialState = {
 };
 
 const baseActions = {
-	/**
-	 * Gets an ID of an account that has a matching property.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {string} The account ID on success, otherwise NULL.
-	 */
-	*matchAccountID() {
-		const registry = yield commonActions.getRegistry();
-		const accounts = yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( STORE_NAME ).getAccountSummaries()
-		);
-
-		if ( ! Array.isArray( accounts ) || accounts.length === 0 ) {
-			return null;
-		}
-
-		const url = registry.select( CORE_SITE ).getReferenceSiteURL();
-		const ga4PropertyIDs = ( Array.isArray( accounts ) ? accounts : [] ).reduce(
-			( acc, { propertySummaries } ) => [ ...acc, ...propertySummaries.map( ( { _id } ) => _id ) ],
-			[],
-		);
-
-		const property = yield Data.commonActions.await(
-			registry.dispatch( STORE_NAME ).matchPropertyByURL( ga4PropertyIDs, url )
-		);
-
-		return property?._accountID;
-	},
 };
 
 const baseControls = {
@@ -87,7 +56,7 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getAccountSummaries() {
-		const registry = yield commonActions.getRegistry();
+		const registry = yield Data.commonActions.getRegistry();
 		const summaries = registry.select( STORE_NAME ).getAccountSummaries();
 		if ( summaries === undefined ) {
 			yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries();

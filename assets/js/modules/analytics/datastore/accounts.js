@@ -326,10 +326,16 @@ const baseResolvers = {
 
 		// If there are no matching UA property and no accountID, we need to try to find matching GA4 property.
 		if ( ! matchedProperty && ! accountID ) {
-			accountID = yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).matchAccountID() );
-			if ( accountID ) {
-				registry.dispatch( STORE_NAME ).setAccountID( accountID );
+			const matchedGA4Property = yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).findMatchedProperty() );
+			if ( matchedGA4Property?._accountID ) {
+				accountID = matchedGA4Property?._accountID;
+
+				registry.dispatch( STORE_NAME ).setAccountID( matchedGA4Property?._accountID );
 				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
+
+				yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( matchedGA4Property._id ) );
+
+				return;
 			}
 		}
 
