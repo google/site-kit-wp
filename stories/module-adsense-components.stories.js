@@ -122,6 +122,7 @@ generateReportBasedWidgetStories( {
 		registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
 		provideAdSenseMockReport( registry, getCurrencyFromReportOptions );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
 	},
 	Component: DashboardTopEarningPagesWidget,
 	wrapWidget: false,
@@ -148,6 +149,7 @@ generateReportBasedWidgetStories( {
 	setup: ( registry, variantName ) => {
 		registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
 		provideAdSenseMockReport( registry, getCurrencyFromReportOptions );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
 	},
 	group: 'AdSense Module/Components/Module/Top Earning Pages Widget',
 	referenceDate: '2020-09-12',

@@ -255,6 +255,10 @@ export function getAdSenseMockResponse( args ) {
  * @param {Object}           options  Report options.
  */
 export function provideAdSenseMockReport( registry, options ) {
-	registry.dispatch( STORE_NAME ).receiveGetReport( getAdSenseMockResponse( options ), { options } );
-	registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ options ] );
+	registry.dispatch( STORE_NAME ).receiveGetReport(
+		getAdSenseMockResponse( options ),
+		{
+			options,
+		},
+	);
 }
