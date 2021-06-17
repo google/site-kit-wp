@@ -511,13 +511,6 @@ class AnalyticsTest extends TestCase {
 				true,
 				$assert_contains_opt_out,
 			),
-			// Tracking is not active if snippet is disabled for logged in users,
-			// but opt-out is not added because tracking is not disabled.
-			array(
-				array_merge( $base_settings, array( 'useSnippet' => false ) ),
-				true,
-				$assert_contains_opt_out,
-			),
 			// Tracking is active for logged-in users if enabled via settings.
 			array(
 				array_merge( $base_settings, array( 'trackingDisabled' => array() ) ),
