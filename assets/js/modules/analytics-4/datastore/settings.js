@@ -51,7 +51,7 @@ export async function submitChanges( { select, dispatch } ) {
 	}
 
 	const webDataStreamID = select( STORE_NAME ).getWebDataStreamID();
-	if ( webDataStreamID === WEBDATASTREAM_CREATE || ! isValidWebDataStreamID( webDataStreamID ) ) {
+	if ( propertyID && ( webDataStreamID === WEBDATASTREAM_CREATE || ! isValidWebDataStreamID( webDataStreamID ) ) ) {
 		const { response: webdatastream, error } = await dispatch( STORE_NAME ).createWebDataStream( propertyID );
 		if ( error ) {
 			return { error };
