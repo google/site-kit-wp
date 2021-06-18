@@ -27,7 +27,7 @@ import isPlainObject from 'lodash/isPlainObject';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-// import { STORE_NAME } from './constants';
+import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchPostUpdateIdeaStateStore = createFetchStore( {
@@ -47,16 +47,17 @@ const baseActions = {
 	 *
 	 * @param {Object}  ideaState           Idea Hub Idea state.
 	 * @param {string}  ideaState.name      Idea Hub Idea name.
-	 * @param {boolean} ideaState.saved     Whether the Idea is saved.
-	 * @param {boolean} ideaState.dismissed Whether the Idea is dismissed.
+	 * @param {boolean} ideaState.saved     Whether the Idea is saved [optional].
+	 * @param {boolean} ideaState.dismissed Whether the Idea is dismissed [optional].
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*updateIdeaState( ideaState ) {
 		invariant( isPlainObject( ideaState ), 'ideaState must be an object.' );
 		invariant( typeof ideaState.name === 'string', 'ideaState.name must be a string.' );
-		invariant( typeof ideaState.saved === 'boolean', 'ideaState.saved must be a boolean.' );
-		invariant( typeof ideaState.dismissed === 'boolean', 'ideaState.dismissed must be a boolean.' );
-		return {};
+
+		const response = yield fetchPostUpdateIdeaStateStore.actions.fetchUpdateIdeaState( ideaState );
+
+		return response;
 	},
 	/**
 	 * Saves an Idea.
@@ -68,7 +69,14 @@ const baseActions = {
 	 */
 	*saveIdea( ideaName ) {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
-		return {};
+
+		const registry = yield Data.commonActions.getRegistry();
+		const response = yield registry.dispatch( STORE_NAME ).updateIdeaState( {
+			name: ideaName,
+			saved: true,
+		} );
+
+		return response;
 	},
 	/**
 	 * Unsaves an Idea.
@@ -80,7 +88,13 @@ const baseActions = {
 	 */
 	*unsaveIdea( ideaName ) {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
-		return {};
+		const registry = yield Data.commonActions.getRegistry();
+		const response = yield registry.dispatch( STORE_NAME ).updateIdeaState( {
+			name: ideaName,
+			saved: false,
+		} );
+
+		return response;
 	},
 	/**
 	 * Dismisses an Idea.
@@ -92,7 +106,13 @@ const baseActions = {
 	 */
 	*dismissIdea( ideaName ) {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
-		return {};
+		const registry = yield Data.commonActions.getRegistry();
+		const response = yield registry.dispatch( STORE_NAME ).updateIdeaState( {
+			name: ideaName,
+			dismissed: true,
+		} );
+
+		return response;
 	},
 };
 
