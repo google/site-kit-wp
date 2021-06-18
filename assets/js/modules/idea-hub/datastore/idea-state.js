@@ -17,11 +17,17 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+import isPlainObject from 'lodash/isPlainObject';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+// import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchPostUpdateIdeaStateStore = createFetchStore( {
@@ -32,4 +38,76 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 } );
 
 const baseInitialState = {};
-const baseActions = {};
+
+const baseActions = {
+	/**
+	 * Updates a given Idea's state.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}  ideaState           Idea Hub Idea state.
+	 * @param {string}  ideaState.name      Idea Hub Idea name.
+	 * @param {boolean} ideaState.saved     Whether the Idea is saved.
+	 * @param {boolean} ideaState.dismissed Whether the Idea is dismissed.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*updateIdeaState( ideaState ) {
+		invariant( isPlainObject( ideaState ), 'ideaState must be an object.' );
+		invariant( typeof ideaState.name === 'string', 'ideaState.name must be a string.' );
+		invariant( typeof ideaState.saved === 'boolean', 'ideaState.saved must be a boolean.' );
+		invariant( typeof ideaState.dismissed === 'boolean', 'ideaState.dismissed must be a boolean.' );
+		return {};
+	},
+	/**
+	 * Saves an Idea.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} ideaName Idea Hub Idea name.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*saveIdea( ideaName ) {
+		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
+		return {};
+	},
+	/**
+	 * Unsaves an Idea.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} ideaName Idea Hub Idea name.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*unsaveIdea( ideaName ) {
+		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
+		return {};
+	},
+	/**
+	 * Dismisses an Idea.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} ideaName Idea Hub Idea name.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*dismissIdea( ideaName ) {
+		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
+		return {};
+	},
+};
+
+const store = Data.combineStores(
+	fetchPostUpdateIdeaStateStore,
+	{
+		actions: baseActions,
+		initialState: baseInitialState,
+	} );
+
+export const initialState = store.initialState;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;
