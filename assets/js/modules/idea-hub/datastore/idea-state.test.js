@@ -64,6 +64,24 @@ describe( 'modules/idea-hub idea-state', () => {
 
 				expect( response ).toEqual( ideaStateFixture );
 			} );
+
+			it( 'dispatches an error if the request fails', async () => {
+				const errorResponse = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
+					{ body: errorResponse, status: 500 }
+				);
+
+				const { response, error } = await registry.dispatch( STORE_NAME ).updateIdeaState( ideaStateFixture );
+				expect( console ).toHaveErrored();
+				expect( error ).toEqual( errorResponse );
+				expect( response ).toEqual( undefined );
+			} );
 		} );
 
 		describe( 'saveIdea', () => {
