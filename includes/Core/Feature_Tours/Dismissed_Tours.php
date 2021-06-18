@@ -92,4 +92,5 @@ class Dismissed_Tours extends User_Setting {
 				: $this->get();
 		};
 	}
+
 }
