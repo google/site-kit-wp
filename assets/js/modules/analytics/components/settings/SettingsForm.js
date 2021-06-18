@@ -41,14 +41,8 @@ import {
 } from '../common';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import {
-	SETUP_FLOW_MODE_GA4,
-	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
-	SETUP_FLOW_MODE_LEGACY,
-	SETUP_FLOW_MODE_UA,
-	STORE_NAME,
-	PROFILE_CREATE,
-} from '../../datastore/constants';
+import { SETUP_FLOW_MODE_LEGACY, STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
@@ -58,6 +52,7 @@ export default function SettingsForm() {
 	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 
 	const useAnalyticsSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const useTagManagerSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
@@ -86,16 +81,12 @@ export default function SettingsForm() {
 				</div>
 			) }
 
-			{ ( isGA4Enabled && ( SETUP_FLOW_MODE_GA4_TRANSITIONAL === setupFlowMode || SETUP_FLOW_MODE_GA4 === setupFlowMode ) ) && (
-				<GA4PropertyNotice notice={ __( 'You’ll need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property.', 'google-site-kit' ) }>
+			{ ( isGA4Enabled && !! ga4PropertyID ) && (
+				<GA4PropertyNotice notice={ __( 'You need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property.', 'google-site-kit' ) }>
 					<div className="googlesitekit-setup-module__inputs">
 						<GA4PropertySelect />
 					</div>
 				</GA4PropertyNotice>
-			) }
-
-			{ ( isGA4Enabled && SETUP_FLOW_MODE_UA === setupFlowMode ) && (
-				<GA4PropertyNotice notice={ __( 'A Google Analytics 4 property will also be created.', 'google-site-kit' ) } />
 			) }
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
