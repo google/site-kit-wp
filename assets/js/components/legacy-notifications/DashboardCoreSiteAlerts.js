@@ -35,14 +35,23 @@ import {
 	dismissNotification,
 } from './site';
 
+const MAX_SECONDS_FOR_SURVEY = 5;
+
 const DashboardCoreSiteAlerts = () => {
-	const [ display, setDisplay ] = useState( false );
+	const [ ready, setReady ] = useState( false );
+	const [ hasSurveys, setHasSurveys ] = useState( false );
+	const [ startTime, setStartTime ] = useState( false );
 	const surveys = useSelect( ( select ) => select( CORE_USER ).getCurrentSurvey() );
 	const notifications = useSelect( ( select ) => select( CORE_SITE ).getNotifications() );
 
 	useEffect(
 		() => {
-			const timer = setTimeout( () => setDisplay( true ), 5 * 1000 );
+			setStartTime( Date.now() );
+			const timer = setTimeout( () => {
+				if ( ! hasSurveys ) {
+					setReady( true );
+				}
+			}, MAX_SECONDS_FOR_SURVEY * 1000 );
 
 			return () => {
 				clearTimeout( timer );
@@ -51,7 +60,17 @@ const DashboardCoreSiteAlerts = () => {
 		[]
 	);
 
-	if ( ! Array.isArray( notifications ) || ! display || !! surveys ) {
+	useEffect(
+		() => {
+			const secondsElapsed = Math.floor( ( Date.now() - startTime ) / 1000 );
+			// Surveys that were received in time prevent the render, all the rest are ignored.
+			if ( secondsElapsed < MAX_SECONDS_FOR_SURVEY && surveys ) {
+				setHasSurveys( true );
+			}
+		}
+	);
+
+	if ( ! Array.isArray( notifications ) || ! ready || hasSurveys ) {
 		return null;
 	}
 
