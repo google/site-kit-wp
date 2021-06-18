@@ -30,6 +30,7 @@ describe( 'CurrentSurvey', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
 	} );
 
 	it( 'should render a survey when one exists in the datastore', async () => {
