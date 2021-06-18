@@ -20,7 +20,7 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "google/apiclient": "^2.9.1",
-    "google/apiclient-services": "^0.157",
+    "google/apiclient-services": "^0.180",
     "guzzlehttp/guzzle": "^5.3.3"
   },
   "replace": {

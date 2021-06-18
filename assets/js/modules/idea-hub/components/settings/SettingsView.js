@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
 
 /**
@@ -35,18 +35,10 @@ export default function SettingsView() {
 
 	return (
 		createInterpolateElement(
-			sprintf(
-				/* translators: %s is the URL to the Site Kit dashboard. */
-				__( 'To view ideas for new content, <a href="%s">visit the dashboard</a>', 'google-site-kit' ),
-				dashboardPermalink
-			),
+			/* translators: %s is the URL to the Site Kit dashboard. */
+			__( 'To view ideas for new content, <a>visit the dashboard</a>', 'google-site-kit' ),
 			{
-				a: <Link
-					key="link"
-					href={ 'https://policies.google.com/privacy' }
-					external
-					inherit
-				/>,
+				a: <Link href={ dashboardPermalink } inherit />,
 			}
 		)
 	);
