@@ -180,6 +180,8 @@ storiesOf( 'AdSense Module', module )
 	} )
 	.add( 'Performance', () => {
 		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).setReferenceDate( '2021-06-18' );
+
 			const {
 				startDate,
 				endDate,
