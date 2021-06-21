@@ -1,0 +1,85 @@
+/**
+ * User Feedback Header styles.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-survey__header-logo {
+		margin: 0 $grid-gap-phone 0 0;
+		width: 24px;
+
+		@media (min-width: $bp-desktop) {
+			margin-right: $grid-gap-desktop;
+		}
+
+		svg {
+			display: block;
+		}
+	}
+
+	.googlesitekit-survey__header-close {
+		position: absolute;
+		right: -12px;
+		top: -12px;
+
+		svg {
+			fill: $c-device-icon-gray;
+		}
+	}
+
+	.googlesitekit-survey__header {
+		display: flex;
+		flex-wrap: nowrap;
+		padding: $grid-gap-phone $grid-gap-phone 8px;
+		position: relative;
+
+		@media (min-width: $bp-desktop) {
+			padding: $grid-gap-desktop $grid-gap-desktop 8px;
+		}
+
+		.mdc-button:not(:disabled) {
+			background-color: transparent;
+			border-radius: 50%;
+			box-shadow: none;
+			height: 40px;
+			min-width: 40px;
+			padding: 0;
+			transition: background $t-default ease-in-out;
+			width: 40px;
+
+			&:hover,
+			&:focus {
+				background-color: $c-gallery;
+			}
+		}
+
+		h3 {
+			color: $c-black;
+			font-family: $f-secondary;
+			font-size: 1rem;
+			font-weight: $fw-secondary-medium;
+			line-height: 1.31;
+			margin: 0;
+		}
+	}
+
+	.googlesitekit-survey__header-details {
+		flex: 1 0;
+		padding: 0 ($grid-gap-phone * 2) 0 0;
+		position: relative;
+	}
+}

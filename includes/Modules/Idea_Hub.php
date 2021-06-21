@@ -136,9 +136,7 @@ final class Idea_Hub extends Module
 	 * @return bool True if module is connected, false otherwise.
 	 */
 	public function is_connected() {
-		$required_keys = array(
-			'ideaLocale',
-		);
+		$required_keys = array();
 
 		$options = $this->get_settings()->get();
 		foreach ( $required_keys as $required_key ) {
@@ -169,13 +167,7 @@ final class Idea_Hub extends Module
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		return array(
-			'idea_hub_idea_locale' => array(
-				'label' => __( 'Idea Hub idea locale', 'google-site-kit' ),
-				'value' => $settings['ideaLocale'],
-				'debug' => Debug_Data::redact_debug_value( $settings['ideaLocale'] ),
-			),
-		);
+		return array();
 	}
 
 	/**
@@ -251,9 +243,9 @@ final class Idea_Hub extends Module
 				return function() use ( $idea ) {
 					// Allows us to create a blank post.
 					add_filter( 'wp_insert_post_empty_content', '__return_false' );
-
 					$post_id = wp_insert_post( array(), false );
 					remove_filter( 'wp_insert_post_empty_content', '__return_false' );
+
 					if ( 0 === $post_id ) {
 						return new WP_Error(
 							'unable_to_draft_post',
@@ -394,7 +386,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Parses a response for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @param Data_Request $data     Data request object.
 	 * @param mixed        $response Request response.
@@ -402,20 +394,23 @@ final class Idea_Hub extends Module
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
+		$filter_draft_post_response = function( $post_id ) {
+			return array_merge(
+				array(
+					'postID'      => $post_id,
+					'postEditURL' => get_edit_post_link( $post_id ),
+				),
+				$this->get_post_idea( $post_id )
+			);
+		};
+
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:draft-post-ideas':
 			case 'POST:create-idea-draft-post':
+				return $filter_draft_post_response( $response );
+			case 'GET:draft-post-ideas':
 				return array_filter(
 					array_map(
-						function( $post_id ) {
-							return array_merge(
-								array(
-									'postID'      => $post_id,
-									'postEditURL' => get_edit_post_link( $post_id ),
-								),
-								$this->get_post_idea( $post_id )
-							);
-						},
+						$filter_draft_post_response,
 						is_array( $response ) ? $response : array( $response )
 					)
 				);

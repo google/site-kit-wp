@@ -26,10 +26,10 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
-import { isValidPropertySelection, isValidWebDataStreamID } from '../utils/validation';
+import { isValidPropertySelection, isValidWebDataStreamID, isValidWebDataStreamSelection } from '../utils/validation';
 import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
-import { STORE_NAME, PROPERTY_CREATE } from './constants';
+import { STORE_NAME, PROPERTY_CREATE, WEBDATASTREAM_CREATE } from './constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION = 'a valid propertyID is required to submit changes';
@@ -41,38 +41,30 @@ export async function submitChanges( { select, dispatch } ) {
 		const accountID = select( MODULES_ANALYTICS ).getAccountID();
 		const { response: property, error } = await dispatch( STORE_NAME ).createProperty( accountID );
 		if ( error ) {
-			return {
-				// @TODO: uncomment the following line once GA4 API is stabilized
-				// error,
-			};
+			return { error };
 		}
 
 		propertyID = property._id;
-		await dispatch( STORE_NAME ).setPropertyID( propertyID );
-		// We set an empty string for the webDataStreamID to make sure that a new web data stream will be created below.
-		await dispatch( STORE_NAME ).setWebDataStreamID( '' );
+		dispatch( STORE_NAME ).setPropertyID( propertyID );
+		dispatch( STORE_NAME ).setWebDataStreamID( WEBDATASTREAM_CREATE );
+		dispatch( STORE_NAME ).setMeasurementID( '' );
 	}
 
 	const webDataStreamID = select( STORE_NAME ).getWebDataStreamID();
-	if ( ! isValidWebDataStreamID( webDataStreamID ) ) {
+	if ( webDataStreamID === WEBDATASTREAM_CREATE || ! isValidWebDataStreamID( webDataStreamID ) ) {
 		const { response: webdatastream, error } = await dispatch( STORE_NAME ).createWebDataStream( propertyID );
 		if ( error ) {
-			return {
-				// @TODO: uncomment the following line once GA4 API is stabilized
-				// error,
-			};
+			return { error };
 		}
 
-		await dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._id );
+		dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._id );
+		dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
 	}
 
 	if ( select( STORE_NAME ).haveSettingsChanged() ) {
 		const { error } = await dispatch( STORE_NAME ).saveSettings();
 		if ( error ) {
-			return {
-				// @TODO: uncomment the following line once GA4 API is stabilized
-				// error,
-			};
+			return { error };
 		}
 	}
 
@@ -86,18 +78,27 @@ export function validateCanSubmitChanges( select ) {
 		return;
 	}
 
-	const strictSelect = createStrictSelect( select );
 	const {
-		haveSettingsChanged,
+		haveSettingsChanged: haveGA4SettingsChanged,
 		isDoingSubmitChanges,
 		getPropertyID,
 		getWebDataStreamID,
-	} = strictSelect( STORE_NAME );
+	} = createStrictSelect( select )( STORE_NAME );
 
-	// Note: these error messages are referenced in test assertions.
-	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+	const {
+		haveSettingsChanged: haveUASettingsChanged,
+	} = createStrictSelect( select )( MODULES_ANALYTICS );
+
+	// Check if we have GA4 settings changed only if we are sure that there is no UA changes.
+	if ( ! haveUASettingsChanged() ) {
+		invariant( haveGA4SettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+	}
+
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 
-	invariant( isValidPropertySelection( getPropertyID() ), INVARIANT_INVALID_PROPERTY_SELECTION );
-	invariant( isValidWebDataStreamID( getWebDataStreamID() ), INVARIANT_INVALID_WEBDATASTREAM_ID );
+	const propertyID = getPropertyID();
+	invariant( isValidPropertySelection( propertyID ), INVARIANT_INVALID_PROPERTY_SELECTION );
+	if ( propertyID !== PROPERTY_CREATE ) {
+		invariant( isValidWebDataStreamSelection( getWebDataStreamID() ), INVARIANT_INVALID_WEBDATASTREAM_ID );
+	}
 }

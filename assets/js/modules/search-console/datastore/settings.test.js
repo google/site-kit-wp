@@ -23,6 +23,7 @@ import API from 'googlesitekit-api';
 import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 import { validateCanSubmitChanges, INVARIANT_INVALID_PROPERTY_SELECTION } from './settings';
+import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 
 describe( 'modules/search-console settings', () => {
 	let registry;
@@ -90,7 +91,27 @@ describe( 'modules/search-console settings', () => {
 				propertyID: 'http://example.com/',
 			} );
 
-			expect( () => validateCanSubmitChanges( registry.select ) ).not.toThrow();
+			expect( () => validateCanSubmitChanges( registry.select ) ).not.toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
+		} );
+
+		it( 'should throw if there are no changes to the form', () => {
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+				propertyID: 'http://example.com/',
+			} );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow( INVARIANT_SETTINGS_NOT_CHANGED );
+		} );
+
+		it( 'should not throw if there are changes to the form', () => {
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+				propertyID: 'http://example.com/',
+			} );
+
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+				propertyID: 'http://sitekit.google.com/',
+			} );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).not.toThrow( INVARIANT_SETTINGS_NOT_CHANGED );
 		} );
 	} );
 } );

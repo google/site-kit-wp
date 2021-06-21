@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { PROPERTY_CREATE } from '../datastore/constants';
+import { PROPERTY_CREATE, WEBDATASTREAM_CREATE } from '../datastore/constants';
 
 /**
  * Checks whether the given property ID appears to be valid.
@@ -58,5 +58,33 @@ export function isValidPropertySelection( value ) {
  * @return {boolean} TRUE if the web data stream ID is valid, otherwise FALSE.
  */
 export function isValidWebDataStreamID( webDataStreamID ) {
-	return typeof webDataStreamID === 'string' && /\d+/.test( webDataStreamID );
+	return typeof webDataStreamID === 'string' && /^\d+$/.test( webDataStreamID );
+}
+
+/**
+ * Checks whether the given web data stream is a valid selection.
+ *
+ * @since n.e.x.t
+ *
+ * @param {?string} webDataStreamID Web data stream to check.
+ * @return {boolean} TRUE if the web data stream selection is valid, otherwise FALSE.
+ */
+export function isValidWebDataStreamSelection( webDataStreamID ) {
+	if ( webDataStreamID === WEBDATASTREAM_CREATE ) {
+		return true;
+	}
+
+	return isValidWebDataStreamID( webDataStreamID );
+}
+
+/**
+ * Checks whether the given measurementID appears to be valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} measurementID Web data stream measurementID to check.
+ * @return {boolean} TRUE if the measurementID is valid, otherwise FALSE.
+ */
+export function isValidMeasurementID( measurementID ) {
+	return typeof measurementID === 'string' && /^[a-zA-Z0-9]+$/.test( measurementID );
 }

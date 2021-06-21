@@ -194,12 +194,13 @@ class SettingsTest extends SettingsTestCase {
 
 	public function test_adsense_linked_is_true_if_adsense_is_active_and_connected_once_analytics_report_with_adsense_metrics_is_requested() {
 		remove_all_filters( 'googlesitekit_analytics_adsense_linked' );
+		$user_id  = $this->factory()->user->create();
 		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$settings = new Settings( new Options( $context ) );
 		$settings->register();
 		$options        = new Options( $context );
-		$user_options   = new User_Options( $context );
-		$authentication = new Authentication( $context );
+		$user_options   = new User_Options( $context, $user_id );
+		$authentication = new Authentication( $context, $options, $user_options );
 		$adsense        = new AdSense( $context, $options, $user_options, $authentication );
 		$analytics      = new Analytics( $context, $options, $user_options, $authentication );
 		$authentication->get_oauth_client()->get_client()->setHttpClient(
@@ -220,6 +221,10 @@ class SettingsTest extends SettingsTestCase {
 
 		// Request requires Analytics settings.
 		$settings->merge( array( 'profileID' => '987654' ) );
+		// Grant scopes so request doesn't fail.
+		$authentication->get_oauth_client()->set_granted_scopes(
+			$analytics->get_scopes()
+		);
 		// Any expression starting with `ga:adsense` should trigger the linking.
 		$data = $analytics->get_data(
 			'report',

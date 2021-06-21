@@ -26,9 +26,7 @@ class SettingsTest extends SettingsTestCase {
 		$settings->register();
 
 		$this->assertEqualSetsWithIndex(
-			array(
-				'ideaLocale' => '',
-			),
+			array(),
 			get_option( Settings::OPTION )
 		);
 	}

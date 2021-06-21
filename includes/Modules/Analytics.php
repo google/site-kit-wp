@@ -119,6 +119,12 @@ final class Analytics extends Module
 	 * @return bool
 	 */
 	protected function is_tracking_disabled() {
+		$settings = $this->get_settings()->get();
+		// This filter is documented in Tag_Manager::filter_analytics_allow_tracking_disabled.
+		if ( ! apply_filters( 'googlesitekit_allow_tracking_disabled', $settings['useSnippet'] ) ) {
+			return false;
+		}
+
 		$option = $this->get_settings()->get();
 
 		$disable_logged_in_users  = in_array( 'loggedinUsers', $option['trackingDisabled'], true ) && is_user_logged_in();
@@ -282,13 +288,23 @@ final class Analytics extends Module
 			exit;
 		}
 
+		$internal_web_property_id = $web_property->getInternalWebPropertyId();
+
 		$this->get_settings()->merge(
 			array(
 				'accountID'             => $account_id,
 				'propertyID'            => $web_property_id,
 				'profileID'             => $profile_id,
-				'internalWebPropertyID' => $web_property->getInternalWebPropertyId(),
+				'internalWebPropertyID' => $internal_web_property_id,
 			)
+		);
+
+		do_action(
+			'googlesitekit_analytics_handle_provisioning_callback',
+			$account_id,
+			$web_property_id,
+			$internal_web_property_id,
+			$profile_id
 		);
 
 		wp_safe_redirect(
@@ -1182,7 +1198,7 @@ final class Analytics extends Module
 		?>
 		<!-- <?php esc_html_e( 'Google Analytics user opt-out added via Site Kit by Google', 'google-site-kit' ); ?> -->
 		<?php if ( $this->context->is_amp() ) : ?>
-			<script type="application/ld+json" id="__gaOptOutExtension"></script>
+			<meta name="ga-opt-out" content="" id="__gaOptOutExtension">
 		<?php else : ?>
 			<script type="text/javascript">window["_gaUserPrefs"] = { ioo : function() { return true; } }</script>
 		<?php endif; ?>
