@@ -36,7 +36,7 @@ describe( 'SettingsEdit', () => {
 		provideModules( registry, [
 			{
 				slug: 'analytics',
-				activate: true,
+				active: true,
 				connected: true,
 			},
 		] );

@@ -489,12 +489,12 @@ describe( 'modules/analytics accounts', () => {
 					provideModules( registry, [
 						{
 							slug: 'analytics',
-							activate: true,
+							active: true,
 							connected: false,
 						},
 						{
 							slug: 'analytics-4',
-							activate: true,
+							active: true,
 							connected: false,
 						},
 					] );
