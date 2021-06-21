@@ -104,10 +104,8 @@ const Button = forwardRef( ( {
 
 	if ( icon && ariaLabel && ! children ) {
 		return (
-			<Tooltip title={ ariaLabel }>
-				<span>
-					{ ButtonComponent }
-				</span>
+			<Tooltip title={ ariaLabel } classes={ { tooltip: 'googlesitekit-tooltip' } }>
+				{ ButtonComponent }
 			</Tooltip>
 		);
 	}
