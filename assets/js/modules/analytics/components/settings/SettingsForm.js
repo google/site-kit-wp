@@ -49,6 +49,7 @@ import {
 	STORE_NAME,
 	PROFILE_CREATE,
 } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
@@ -57,6 +58,11 @@ export default function SettingsForm() {
 	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+
+	const useAnalyticsSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
+	const useTagManagerSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
+	const analyticsSinglePropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
+	const shouldShowTrackingExclusionSwitches = useAnalyticsSnippet || ( useTagManagerSnippet && analyticsSinglePropertyID );
 
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
@@ -95,7 +101,7 @@ export default function SettingsForm() {
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
 				<UseSnippetSwitch />
 				<AnonymizeIPSwitch />
-				<TrackingExclusionSwitches />
+				{ shouldShowTrackingExclusionSwitches && <TrackingExclusionSwitches /> }
 				<AdsConversionIDTextField />
 			</div>
 		</div>

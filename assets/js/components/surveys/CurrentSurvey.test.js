@@ -30,6 +30,7 @@ describe( 'CurrentSurvey', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
 	} );
 
 	it( 'should render a survey when one exists in the datastore', async () => {
@@ -273,6 +274,8 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( 'should render nothing if the survey is dismissed', () => {
+		jest.useFakeTimers();
+
 		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'jestSurvey' } );
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
@@ -281,7 +284,11 @@ describe( 'CurrentSurvey', () => {
 
 		fireEvent.click( getByLabelText( 'Dismiss this survey' ) );
 
-		expect( container ).toBeEmptyDOMElement();
+		setTimeout( () => {
+			expect( container ).toBeEmptyDOMElement();
+		}, 1000 );
+
+		jest.runAllTimers();
 	} );
 
 	it( 'should render the completed survey component if all questions have been answered', () => {
