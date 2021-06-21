@@ -1,5 +1,5 @@
 /**
- * Analytics-4 datastore test factories.
+ * Idea Hub Insights Settings components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 
-export * from './html-with-tag';
+export { default as SettingsView } from './SettingsView';

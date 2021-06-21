@@ -26,6 +26,7 @@ import { AREA_DASHBOARD_ACQUISITION } from '../../googlesitekit/widgets/default-
 
 import DashboardIdeasWidget from './components/dashboard/DashboardIdeasWidget';
 import IdeaHubIcon from '../../../svg/idea-hub.svg';
+import { SettingsView } from './components/settings';
 
 const ifIdeaHubIsEnabled = ( func ) => ( ...args ) => {
 	if ( isFeatureEnabled( 'ideaHubModule' ) ) {
@@ -40,6 +41,7 @@ export const registerModule = ifIdeaHubIsEnabled( ( modules ) => {
 		'idea-hub',
 		{
 			storeName: STORE_NAME,
+			SettingsViewComponent: SettingsView,
 			Icon: IdeaHubIcon,
 		}
 	);

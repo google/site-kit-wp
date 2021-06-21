@@ -27,7 +27,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME, PROPERTY_CREATE, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
+import { STORE_NAME, PROPERTY_CREATE, MAX_WEBDATASTREAMS_PER_BATCH, WEBDATASTREAM_CREATE } from './constants';
 import { normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
@@ -155,7 +155,7 @@ const baseActions = {
 			const registry = yield Data.commonActions.getRegistry();
 
 			registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
-			registry.dispatch( STORE_NAME ).setWebDataStreamID( '' );
+			registry.dispatch( STORE_NAME ).setWebDataStreamID( WEBDATASTREAM_CREATE );
 			registry.dispatch( STORE_NAME ).setMeasurementID( '' );
 
 			if ( PROPERTY_CREATE === propertyID ) {
@@ -171,6 +171,34 @@ const baseActions = {
 			}
 		}
 	),
+
+	/**
+	 * Finds a matching property and returns it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object|null} Matching property on success, otherwise NULL.
+	 */
+	*findMatchedProperty() {
+		const registry = yield commonActions.getRegistry();
+		const accounts = yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( STORE_NAME ).getAccountSummaries()
+		);
+
+		if ( ! Array.isArray( accounts ) || accounts.length === 0 ) {
+			return null;
+		}
+
+		const url = registry.select( CORE_SITE ).getReferenceSiteURL();
+		const propertyIDs = accounts.reduce(
+			( acc, { propertySummaries: properties } ) => [ ...acc, ...( properties || [] ).map( ( { _id } ) => _id ) ],
+			[],
+		);
+
+		return yield Data.commonActions.await(
+			registry.dispatch( STORE_NAME ).matchPropertyByURL( propertyIDs, url )
+		);
+	},
 
 	/**
 	 * Matches and selects a property for provided accountID.

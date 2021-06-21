@@ -66,12 +66,12 @@ describe( 'modules/adsense Ad Units', () => {
 				const adunits = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( adunits ).toEqual( fixtures.adunits.items );
+				expect( adunits ).toEqual( fixtures.adunits );
 			} );
 
 			it( 'does not make a network request if adunits for this account + client are already present', async () => {
 				const accountID = 'pub-12345';
-				const clientID = fixtures.clients[ 0 ].id;
+				const clientID = fixtures.clients[ 0 ]._id;
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
@@ -82,7 +82,7 @@ describe( 'modules/adsense Ad Units', () => {
 				await untilResolved( registry, STORE_NAME ).getAdUnits( accountID, clientID );
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( adunits ).toEqual( fixtures.adunits.items );
+				expect( adunits ).toEqual( fixtures.adunits );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {

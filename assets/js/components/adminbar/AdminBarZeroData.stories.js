@@ -1,5 +1,5 @@
 /**
- * Survey component.
+ * Admin Bar Zero Data Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,10 +16,25 @@
  * limitations under the License.
  */
 
-const Survey = () => {
-	return (
-		<p>Scaffolded Survey component</p>
-	);
-};
+/**
+ * Internal dependencies
+ */
+import AdminBarZeroData from './AdminBarZeroData';
 
-export default Survey;
+const Template = ( args ) => <AdminBarZeroData { ...args } />;
+
+export const Ready = Template.bind( {} );
+Ready.storyName = 'Data Unavailable';
+
+export default {
+	title: 'Views/AdminBarApp/AdminBarZeroData',
+	decorators: [
+		( Story ) => (
+			<div className="googlesitekit-widget">
+				<div className="googlesitekit-widget__body">
+					<Story />
+				</div>
+			</div>
+		),
+	],
+};

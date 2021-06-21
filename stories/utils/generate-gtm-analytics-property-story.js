@@ -26,6 +26,7 @@ import {
 	provideModules,
 	provideModuleRegistrations,
 } from '../../tests/js/utils';
+import WithRegistrySetup from '../../tests/js/WithRegistrySetup';
 import { createBuildAndReceivers } from '../../assets/js/modules/tagmanager/datastore/__factories__/utils';
 
 /**
@@ -49,7 +50,7 @@ export function generateGTMAnalyticsPropertyStory( {
 	gtmPermission = false,
 	setUp = () => {},
 } ) {
-	return ( args, decorators ) => {
+	return ( args ) => {
 		const setupRegistry = ( registry ) => {
 			setUp( registry );
 
@@ -140,6 +141,10 @@ export function generateGTMAnalyticsPropertyStory( {
 			} );
 		};
 
-		return <Component callback={ setupRegistry } registry={ decorators.registry } />;
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Component { ...args } />
+			</WithRegistrySetup>
+		);
 	};
 }

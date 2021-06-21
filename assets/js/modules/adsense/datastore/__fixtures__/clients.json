@@ -1,9 +1,9 @@
 [
   {
-    "arcOptIn":false,
-    "id":"ca-pub-2833782679114991",
-    "kind":"adsense#adClient",
-    "productCode":"AFC",
-    "supportsReporting":true
+    "name": "accounts/pub-2833782679114991/adclients/ca-pub-2833782679114991",
+    "reportingDimensionId": "ca-pub-2833782679114991",
+    "productCode": "AFC",
+    "_id": "ca-pub-2833782679114991",
+    "_accountID": "pub-2833782679114991"
   }
 ]

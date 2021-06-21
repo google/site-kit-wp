@@ -20,7 +20,10 @@
 
 	.googlesitekit-survey {
 		background-color: $c-white;
-		box-shadow: 0 0 3px rgba($c-black, 0.25);
+		border-radius: 8px;
+		// The following is the same shadow used by surveys in
+		// other Google services so we're using the same style here.
+		box-shadow: rgb(0 0 0 / 14%) 0 16px 24px 2px, rgb(0 0 0 / 12%) 0 6px 30px 5px, rgb(0 0 0 / 20%) 0 8px 10px -5px;
 		max-width: 400px;
 	}
 
@@ -54,8 +57,14 @@
 			padding: 0 $grid-gap-desktop $grid-gap-desktop;
 		}
 
-		.mdc-button {
-			text-transform: none;
+		p {
+			border-top: 1px solid $c-iron;
+			color: $c-boulder;
+			font-family: $f-primary;
+			font-size: 0.75rem;
+			margin: 12px 0 0;
+			padding-top: 12px;
+			text-align: left;
 		}
 	}
 
