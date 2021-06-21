@@ -39,6 +39,8 @@ import WPDashboardIdeaHub from './WPDashboardIdeaHub';
 import ActivateModuleCTA from '../ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
+import { SPECIAL_WIDGET_STATES } from '../../googlesitekit/widgets/util/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 const { useSelect } = Data;
 
@@ -60,6 +62,15 @@ const WPDashboardWidgets = () => {
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
 
+	const searchConsoleHasSpecialState = useSelect( ( select ) => {
+		const impressionsWidgetState = select( CORE_WIDGETS ).getWidgetState( WIDGET_IMPRESSIONS )?.Component;
+		const clicksWidgetState = select( CORE_WIDGETS ).getWidgetState( WIDGET_CLICKS )?.Component;
+		const hasSpecialState = SPECIAL_WIDGET_STATES.includes( impressionsWidgetState ) &&
+			SPECIAL_WIDGET_STATES.includes( clicksWidgetState );
+
+		return impressionsWidgetState === clicksWidgetState && hasSpecialState;
+	} );
+
 	return (
 		<div className={ classnames(
 			'googlesitekit-wp-dashboard-stats',
@@ -72,8 +83,15 @@ const WPDashboardWidgets = () => {
 					<WPDashboardSessionDurationWidget />
 				</Fragment>
 			) }
-			<WPDashboardImpressionsWidget />
-			<WPDashboardClicksWidget />
+			{ // Both widgets are in a special state (e.g. zero report), so we need only render one.
+				searchConsoleHasSpecialState ? (
+					<WPDashboardImpressionsWidget />
+				) : (
+					<Fragment>
+						<WPDashboardImpressionsWidget />
+						<WPDashboardClicksWidget />
+					</Fragment>
+				) }
 			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 				<div className="googlesitekit-wp-dashboard-stats__cta">
 					{ ! analyticsModuleActive && (
