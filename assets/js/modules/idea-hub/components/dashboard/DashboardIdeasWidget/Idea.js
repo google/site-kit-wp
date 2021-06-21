@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -30,6 +25,7 @@ import { useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import Button from '../../../../../components/Button';
 import { Grid, Cell, Row } from '../../../../../material-components';
@@ -49,23 +45,40 @@ import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
 const { useDispatch } = Data;
 
 const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
-	const { createIdeaDraftPost } = useDispatch( STORE_NAME );
+	const {
+		createIdeaDraftPost,
+		fetchGetNewIdeas,
+		fetchGetSavedIdeas,
+		saveIdea,
+		unsaveIdea,
+	} = useDispatch( STORE_NAME );
 	const [ isProcessing, setIsProcessing ] = useState( false );
+
+	const refreshNewSavedIdeas = useCallback( async () => {
+		await API.invalidateCache( 'modules', 'idea-hub', 'new-ideas' );
+		await API.invalidateCache( 'modules', 'idea-hub', 'saved-ideas' );
+		fetchGetNewIdeas();
+		fetchGetSavedIdeas();
+	}, [ fetchGetNewIdeas, fetchGetSavedIdeas ] );
 
 	const handleDelete = useCallback( () => {
 		// @TODO: Implement callback.
 		global.console.log( `Deleted: ${ name }` );
 	}, [ name ] );
 
-	const handlePin = useCallback( () => {
-		// @TODO: Implement callback.
-		global.console.log( `Pinned: ${ name }` );
-	}, [ name ] );
+	const handlePin = useCallback( async () => {
+		setIsProcessing( true );
+		await saveIdea( name );
+		await refreshNewSavedIdeas();
+		setIsProcessing( false );
+	}, [ refreshNewSavedIdeas, name, saveIdea ] );
 
-	const handleUnpin = useCallback( () => {
-		// @TODO: Implement callback.
-		global.console.log( `Unpinned: ${ name }` );
-	}, [ name ] );
+	const handleUnpin = useCallback( async () => {
+		setIsProcessing( true );
+		await unsaveIdea( name );
+		await refreshNewSavedIdeas();
+		setIsProcessing( false );
+	}, [ refreshNewSavedIdeas, name, unsaveIdea ] );
 
 	const handleCreate = useCallback( async () => {
 		setIsProcessing( true );
@@ -130,21 +143,6 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 			</Row>
 		</Grid>
 	);
-};
-
-Idea.propTypes = {
-	postID: PropTypes.number,
-	postEditURL: PropTypes.string,
-	postURL: PropTypes.string,
-	name: PropTypes.string.isRequired,
-	text: PropTypes.string.isRequired,
-	topics: PropTypes.arrayOf(
-		PropTypes.shape( {
-			display_name: PropTypes.string,
-			mid: PropTypes.string,
-		} )
-	).isRequired,
-	buttons: PropTypes.arrayOf( PropTypes.string ).isRequired,
 };
 
 export default Idea;

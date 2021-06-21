@@ -52,6 +52,10 @@ const mockEndpoints = ( args ) => {
 		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
 		{ body: args?.draftPostIdeas || draftPostIdeas, status: 200 }
 	);
+	fetchMock.post(
+		/google-site-kit\/v1\/modules\/idea-hub\/data\/create-idea-draft-post/,
+		{ body: {}, status: 200 }
+	);
 };
 const bootstrapRegistry = () => {
 	const registry = createTestRegistry();
