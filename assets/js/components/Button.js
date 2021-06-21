@@ -22,6 +22,7 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import useMergedRef from '@react-hook/merged-ref';
+import { Tooltip } from '@material-ui/core';
 
 /**
  * WordPress dependencies
@@ -44,7 +45,7 @@ const Button = forwardRef( ( {
 	target,
 	icon,
 	trailingIcon,
-	ariaLabel,
+	'aria-label': ariaLabel,
 	...extraProps
 }, ref ) => {
 	const buttonRef = useCallback( ( el ) => {
@@ -77,7 +78,7 @@ const Button = forwardRef( ( {
 		return newTabText;
 	};
 
-	return (
+	const ButtonComponent = (
 		<SemanticButton
 			className={ classnames(
 				'mdc-button',
@@ -100,6 +101,18 @@ const Button = forwardRef( ( {
 			{ trailingIcon }
 		</SemanticButton>
 	);
+
+	if ( icon && ariaLabel && ! children ) {
+		return (
+			<Tooltip title={ ariaLabel }>
+				<span>
+					{ ButtonComponent }
+				</span>
+			</Tooltip>
+		);
+	}
+
+	return ButtonComponent;
 } );
 
 Button.displayName = 'Button';
