@@ -23,30 +23,26 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
           <h3>
             Based on your experience so far, how satisfied are you with Site Kit?
           </h3>
-          <span
-            class=""
+          <button
+            aria-label="Dismiss"
+            class="mdc-button googlesitekit-survey__header-close mdc-button--raised"
+            target="_self"
             title="Dismiss"
           >
-            <button
-              aria-label="Dismiss"
-              class="mdc-button googlesitekit-survey__header-close mdc-button--raised"
-              target="_self"
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              height="40"
+              role="img"
+              viewBox="0 0 24 24"
+              width="40"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-hidden="true"
-                focusable="false"
-                height="40"
-                role="img"
-                viewBox="0 0 24 24"
-                width="40"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
-                />
-              </svg>
-            </button>
-          </span>
+              <path
+                d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+              />
+            </svg>
+          </button>
         </div>
       </div>
       <div
@@ -58,18 +54,14 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
           <div
             class="googlesitekit-survey__choice"
           >
-            <span
-              class=""
+            <button
+              aria-label="Unhappy"
+              class="mdc-button mdc-button--raised"
+              target="_self"
               title="Unhappy"
             >
-              <button
-                aria-label="Unhappy"
-                class="mdc-button mdc-button--raised"
-                target="_self"
-              >
-                <svg />
-              </button>
-            </span>
+              <svg />
+            </button>
             <p>
               Unhappy
             </p>
@@ -77,18 +69,14 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
           <div
             class="googlesitekit-survey__choice"
           >
-            <span
-              class=""
+            <button
+              aria-label="Dissatisfied"
+              class="mdc-button mdc-button--raised"
+              target="_self"
               title="Dissatisfied"
             >
-              <button
-                aria-label="Dissatisfied"
-                class="mdc-button mdc-button--raised"
-                target="_self"
-              >
-                <svg />
-              </button>
-            </span>
+              <svg />
+            </button>
             <p>
               Dissatisfied
             </p>
@@ -96,18 +84,14 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
           <div
             class="googlesitekit-survey__choice"
           >
-            <span
-              class=""
+            <button
+              aria-label="Neutral"
+              class="mdc-button mdc-button--raised"
+              target="_self"
               title="Neutral"
             >
-              <button
-                aria-label="Neutral"
-                class="mdc-button mdc-button--raised"
-                target="_self"
-              >
-                <svg />
-              </button>
-            </span>
+              <svg />
+            </button>
             <p>
               Neutral
             </p>
@@ -115,18 +99,14 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
           <div
             class="googlesitekit-survey__choice"
           >
-            <span
-              class=""
+            <button
+              aria-label="Satisfied"
+              class="mdc-button mdc-button--raised"
+              target="_self"
               title="Satisfied"
             >
-              <button
-                aria-label="Satisfied"
-                class="mdc-button mdc-button--raised"
-                target="_self"
-              >
-                <svg />
-              </button>
-            </span>
+              <svg />
+            </button>
             <p>
               Satisfied
             </p>
@@ -134,18 +114,14 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
           <div
             class="googlesitekit-survey__choice"
           >
-            <span
-              class=""
+            <button
+              aria-label="Delighted"
+              class="mdc-button mdc-button--raised"
+              target="_self"
               title="Delighted"
             >
-              <button
-                aria-label="Delighted"
-                class="mdc-button mdc-button--raised"
-                target="_self"
-              >
-                <svg />
-              </button>
-            </span>
+              <svg />
+            </button>
             <p>
               Delighted
             </p>
@@ -180,30 +156,26 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
           <h3>
             Based on your experience so far, how satisfied are you with Site Kit?
           </h3>
-          <span
-            class=""
+          <button
+            aria-label="Dismiss"
+            class="mdc-button googlesitekit-survey__header-close mdc-button--raised"
+            target="_self"
             title="Dismiss"
           >
-            <button
-              aria-label="Dismiss"
-              class="mdc-button googlesitekit-survey__header-close mdc-button--raised"
-              target="_self"
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              height="40"
+              role="img"
+              viewBox="0 0 24 24"
+              width="40"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-hidden="true"
-                focusable="false"
-                height="40"
-                role="img"
-                viewBox="0 0 24 24"
-                width="40"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
-                />
-              </svg>
-            </button>
-          </span>
+              <path
+                d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+              />
+            </svg>
+          </button>
         </div>
       </div>
       <div
@@ -215,18 +187,14 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
           <div
             class="googlesitekit-survey__choice"
           >
-            <span
-              class=""
+            <button
+              aria-label="Unhappy"
+              class="mdc-button mdc-button--raised"
+              target="_self"
               title="Unhappy"
             >
-              <button
-                aria-label="Unhappy"
-                class="mdc-button mdc-button--raised"
-                target="_self"
-              >
-                <svg />
-              </button>
-            </span>
+              <svg />
+            </button>
             <p>
               Unhappy
             </p>
@@ -234,18 +202,14 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
           <div
             class="googlesitekit-survey__choice"
           >
-            <span
-              class=""
+            <button
+              aria-label="Dissatisfied"
+              class="mdc-button mdc-button--raised"
+              target="_self"
               title="Dissatisfied"
             >
-              <button
-                aria-label="Dissatisfied"
-                class="mdc-button mdc-button--raised"
-                target="_self"
-              >
-                <svg />
-              </button>
-            </span>
+              <svg />
+            </button>
             <p>
               Dissatisfied
             </p>
@@ -253,18 +217,14 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
           <div
             class="googlesitekit-survey__choice"
           >
-            <span
-              class=""
+            <button
+              aria-label="Neutral"
+              class="mdc-button mdc-button--raised"
+              target="_self"
               title="Neutral"
             >
-              <button
-                aria-label="Neutral"
-                class="mdc-button mdc-button--raised"
-                target="_self"
-              >
-                <svg />
-              </button>
-            </span>
+              <svg />
+            </button>
             <p>
               Neutral
             </p>
@@ -272,18 +232,14 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
           <div
             class="googlesitekit-survey__choice"
           >
-            <span
-              class=""
+            <button
+              aria-label="Satisfied"
+              class="mdc-button mdc-button--raised"
+              target="_self"
               title="Satisfied"
             >
-              <button
-                aria-label="Satisfied"
-                class="mdc-button mdc-button--raised"
-                target="_self"
-              >
-                <svg />
-              </button>
-            </span>
+              <svg />
+            </button>
             <p>
               Satisfied
             </p>
@@ -291,18 +247,14 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
           <div
             class="googlesitekit-survey__choice"
           >
-            <span
-              class=""
+            <button
+              aria-label="Delighted"
+              class="mdc-button mdc-button--raised"
+              target="_self"
               title="Delighted"
             >
-              <button
-                aria-label="Delighted"
-                class="mdc-button mdc-button--raised"
-                target="_self"
-              >
-                <svg />
-              </button>
-            </span>
+              <svg />
+            </button>
             <p>
               Delighted
             </p>
@@ -337,30 +289,26 @@ exports[`CurrentSurvey should render the completed survey component if all quest
           <h3>
             Thanks for sharing your thoughts!
           </h3>
-          <span
-            class=""
+          <button
+            aria-label="Dismiss"
+            class="mdc-button googlesitekit-survey__header-close mdc-button--raised"
+            target="_self"
             title="Dismiss"
           >
-            <button
-              aria-label="Dismiss"
-              class="mdc-button googlesitekit-survey__header-close mdc-button--raised"
-              target="_self"
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              height="40"
+              role="img"
+              viewBox="0 0 24 24"
+              width="40"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-hidden="true"
-                focusable="false"
-                height="40"
-                role="img"
-                viewBox="0 0 24 24"
-                width="40"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
-                />
-              </svg>
-            </button>
-          </span>
+              <path
+                d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+              />
+            </svg>
+          </button>
         </div>
       </div>
       <div
@@ -413,30 +361,26 @@ exports[`CurrentSurvey should trigger the first completion when no matching trig
           <h3>
             Thanks for sharing your thoughts!
           </h3>
-          <span
-            class=""
+          <button
+            aria-label="Dismiss"
+            class="mdc-button googlesitekit-survey__header-close mdc-button--raised"
+            target="_self"
             title="Dismiss"
           >
-            <button
-              aria-label="Dismiss"
-              class="mdc-button googlesitekit-survey__header-close mdc-button--raised"
-              target="_self"
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              height="40"
+              role="img"
+              viewBox="0 0 24 24"
+              width="40"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-hidden="true"
-                focusable="false"
-                height="40"
-                role="img"
-                viewBox="0 0 24 24"
-                width="40"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
-                />
-              </svg>
-            </button>
-          </span>
+              <path
+                d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+              />
+            </svg>
+          </button>
         </div>
       </div>
       <div

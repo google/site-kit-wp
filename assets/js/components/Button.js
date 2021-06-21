@@ -46,6 +46,7 @@ const Button = forwardRef( ( {
 	icon,
 	trailingIcon,
 	'aria-label': ariaLabel,
+	title,
 	...extraProps
 }, ref ) => {
 	const buttonRef = useCallback( ( el ) => {
@@ -102,9 +103,9 @@ const Button = forwardRef( ( {
 		</SemanticButton>
 	);
 
-	if ( icon && ariaLabel && ! children ) {
+	if ( icon && ( title || ariaLabel ) && children === undefined ) {
 		return (
-			<Tooltip title={ ariaLabel } classes={ { tooltip: 'googlesitekit-tooltip' } }>
+			<Tooltip title={ title || ariaLabel } classes={ { tooltip: 'googlesitekit-tooltip' } }>
 				{ ButtonComponent }
 			</Tooltip>
 		);
@@ -125,6 +126,7 @@ Button.propTypes = {
 	disabled: PropTypes.bool,
 	icon: PropTypes.element,
 	trailingIcon: PropTypes.element,
+	title: PropTypes.string,
 };
 
 Button.defaultProps = {
@@ -136,6 +138,7 @@ Button.defaultProps = {
 	disabled: false,
 	icon: null,
 	trailingIcon: null,
+	title: null,
 };
 
 export default Button;
