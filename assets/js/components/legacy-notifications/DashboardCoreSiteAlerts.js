@@ -57,7 +57,7 @@ const DashboardCoreSiteAlerts = () => {
 				clearTimeout( timer );
 			};
 		},
-		[]
+		[ hasSurveys ]
 	);
 
 	useEffect(
@@ -67,7 +67,8 @@ const DashboardCoreSiteAlerts = () => {
 			if ( secondsElapsed < MAX_SECONDS_FOR_SURVEY && surveys ) {
 				setHasSurveys( true );
 			}
-		}
+		},
+		[ startTime, surveys, setHasSurveys ]
 	);
 
 	if ( ! Array.isArray( notifications ) || ! ready || hasSurveys ) {
