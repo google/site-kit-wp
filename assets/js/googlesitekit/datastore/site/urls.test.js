@@ -60,14 +60,14 @@ describe( 'core/site site info', () => {
 		describe( 'getGooglePrivacyPolicyURL', () => {
 			it( 'should return the correct privacy policy URL', () => {
 				const url = registry.select( STORE_NAME ).getGooglePrivacyPolicyURL();
-				expect( url ).toBe( 'https://myaccount.google.com/privacypolicy?hl=en' );
+				expect( url ).toBe( 'https://myaccount.google.com/privacypolicy?hl=en-US' );
 			} );
 		} );
 
 		describe( 'getGoogleTermsURL', () => {
 			it( 'should return the correct terms URL', () => {
 				const url = registry.select( STORE_NAME ).getGoogleTermsURL();
-				expect( url ).toBe( 'https://policies.google.com/terms?hl=en' );
+				expect( url ).toBe( 'https://policies.google.com/terms?hl=en-US' );
 			} );
 		} );
 

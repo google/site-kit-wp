@@ -21,7 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { getLocale, getLocaleLanguage } from '../../../util';
+import { getLocale } from '../../../util';
 const { createRegistrySelector } = Data;
 
 export const selectors = {
@@ -70,12 +70,11 @@ export const selectors = {
 	 *
 	 * @since 1.24.0
 	 *
-	 * @param {Object} state         Data store's state.
-	 * @param {Object} [args]        Optional arguments for the resulting URL.
-	 * @param {string} [args.path]   URL path to build complete URL with starting slash.
-	 * @param {Object} [args.query]  Object to append query to the URL.
-	 * @param {string} [args.hash]   Optional hash.
-	 * @param {string} [args.locale] Optional locale.
+	 * @param {Object} state        Data store's state.
+	 * @param {Object} [args]       Optional arguments for the resulting URL.
+	 * @param {string} [args.path]  URL path to build complete URL with starting slash.
+	 * @param {Object} [args.query] Object to append query to the URL.
+	 * @param {string} [args.hash]  Optional hash.
 	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
 	 */
 	getGoogleSupportURL: createRegistrySelector( ( select ) => ( state, args ) => {
@@ -97,7 +96,7 @@ export const selectors = {
 		return select( STORE_NAME ).getGoogleLocaleAwareURL( {
 			website: 'https://myaccount.google.com',
 			path: '/privacypolicy',
-			locale: getLocaleLanguage(),
+			locale: ( getLocale() || '' ).substr( 0, 5 ),
 		} );
 	} ),
 
@@ -113,7 +112,7 @@ export const selectors = {
 		return select( STORE_NAME ).getGoogleLocaleAwareURL( {
 			website: 'https://policies.google.com',
 			path: '/terms',
-			locale: getLocaleLanguage(),
+			locale: ( getLocale() || '' ).substr( 0, 5 ),
 		} );
 	} ),
 };
