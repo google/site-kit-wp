@@ -445,6 +445,9 @@ final class Modules {
 
 		if ( is_callable( array( $module, 'on_activation' ) ) ) {
 			call_user_func( array( $module, 'on_activation' ) );
+			if ( Analytics::MODULE_SLUG === $slug ) {
+				$this->call_analytics_4_hook( 'on_activation' );
+			}
 		}
 
 		return true;
