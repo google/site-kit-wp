@@ -29,6 +29,8 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+const { receiveError, clearError } = errorStoreActions;
 
 const fetchPostUpdateIdeaStateStore = createFetchStore( {
 	baseName: 'updateIdeaState',
@@ -75,12 +77,19 @@ const baseActions = {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
 		const registry = yield Data.commonActions.getRegistry();
-		const response = yield registry.dispatch( STORE_NAME ).updateIdeaState( {
+
+		yield clearError( 'saveIdea', [] );
+
+		const { response, error } = yield registry.dispatch( STORE_NAME ).updateIdeaState( {
 			name: ideaName,
 			saved: true,
 		} );
 
-		return response;
+		if ( error ) {
+			yield receiveError( error, 'saveIdea', [] );
+		}
+
+		return { response, error };
 	},
 	/**
 	 * Unsaves an Idea.
@@ -92,13 +101,21 @@ const baseActions = {
 	 */
 	*unsaveIdea( ideaName ) {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
+
 		const registry = yield Data.commonActions.getRegistry();
-		const response = yield registry.dispatch( STORE_NAME ).updateIdeaState( {
+
+		yield clearError( 'unsaveIdea', [] );
+
+		const { response, error } = yield registry.dispatch( STORE_NAME ).updateIdeaState( {
 			name: ideaName,
 			saved: false,
 		} );
 
-		return response;
+		if ( error ) {
+			yield receiveError( error, 'unsaveIdea', [] );
+		}
+
+		return { response, error };
 	},
 	/**
 	 * Dismisses an Idea.
@@ -110,13 +127,21 @@ const baseActions = {
 	 */
 	*dismissIdea( ideaName ) {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
+
 		const registry = yield Data.commonActions.getRegistry();
-		const response = yield registry.dispatch( STORE_NAME ).updateIdeaState( {
+
+		yield clearError( 'dismissIdea', [] );
+
+		const { response, error } = yield registry.dispatch( STORE_NAME ).updateIdeaState( {
 			name: ideaName,
 			dismissed: true,
 		} );
 
-		return response;
+		if ( error ) {
+			yield receiveError( error, 'dismissIdea', [] );
+		}
+
+		return { response, error };
 	},
 };
 
