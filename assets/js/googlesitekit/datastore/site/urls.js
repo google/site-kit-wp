@@ -39,7 +39,7 @@ export const selectors = {
 	 * @param {string} [args.locale]  Optional locale.
 	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
 	 */
-	getGoogleURL( state, args ) {
+	getGoogleLocaleAwareURL( state, args ) {
 		const {
 			website,
 			path,
@@ -79,7 +79,7 @@ export const selectors = {
 	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
 	 */
 	getGoogleSupportURL: createRegistrySelector( ( select ) => ( state, args ) => {
-		return select( STORE_NAME ).getGoogleURL( {
+		return select( STORE_NAME ).getGoogleLocaleAwareURL( {
 			...args,
 			website: 'https://support.google.com',
 		} );
@@ -94,7 +94,7 @@ export const selectors = {
 	 * @return {string} The Google privacy policy URL.
 	 */
 	getGooglePrivacyPolicyURL: createRegistrySelector( ( select ) => () => {
-		return select( STORE_NAME ).getGoogleURL( {
+		return select( STORE_NAME ).getGoogleLocaleAwareURL( {
 			website: 'https://myaccount.google.com',
 			path: '/privacypolicy',
 			locale: getLocaleLanguage(),
@@ -102,7 +102,7 @@ export const selectors = {
 	} ),
 
 	/**
-	 * Gets the Google terms URL.
+	 * Gets the Google terms of service URL.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -110,7 +110,7 @@ export const selectors = {
 	 * @return {string} The Google terms URL.
 	 */
 	getGoogleTermsURL: createRegistrySelector( ( select ) => () => {
-		return select( STORE_NAME ).getGoogleURL( {
+		return select( STORE_NAME ).getGoogleLocaleAwareURL( {
 			website: 'https://policies.google.com',
 			path: '/terms',
 			locale: getLocaleLanguage(),

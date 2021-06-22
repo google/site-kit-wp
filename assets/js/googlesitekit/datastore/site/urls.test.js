@@ -34,6 +34,29 @@ describe( 'core/site site info', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getGoogleLocaleAwareURL', () => {
+			it( 'should return the correct URL', () => {
+				const url = registry.select( STORE_NAME ).getGoogleLocaleAwareURL( {
+					website: 'https://myaccount.google.com/',
+					path: '/test-page',
+					hash: 'test-hash',
+					locale: 'pt-BR',
+				} );
+
+				expect( url ).toBe( 'https://myaccount.google.com/test-page?hl=pt-BR#test-hash' );
+			} );
+
+			it( 'should return NULL if the path is omitted', () => {
+				const url = registry.select( STORE_NAME ).getGoogleLocaleAwareURL( {
+					website: 'https://myaccount.google.com/',
+					hash: 'test-hash',
+					locale: 'pt-BR',
+				} );
+
+				expect( url ).toBeNull();
+			} );
+		} );
+
 		describe( 'getGooglePrivacyPolicyURL', () => {
 			it( 'should return the correct privacy policy URL', () => {
 				const url = registry.select( STORE_NAME ).getGooglePrivacyPolicyURL();
