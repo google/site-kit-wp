@@ -31,8 +31,8 @@ import Link from '../Link';
 const { useSelect } = Data;
 
 export default function SurveyTerms() {
-	const privacy = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( { website: 'https://myaccount.google.com', path: '/privacypolicy' } ) );
-	const terms = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( { path: '/terms' } ) );
+	const privacy = useSelect( ( select ) => select( CORE_SITE ).getGooglePrivacyPolicyURL() );
+	const terms = useSelect( ( select ) => select( CORE_SITE ).getGoogleTermsURL() );
 
 	return (
 		<p className="googlesitekit-survey__terms">
