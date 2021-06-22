@@ -74,7 +74,7 @@ NotificationCTAWithSurveyShortDelay.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_SITE ).receiveGetNotifications( [ notification1 ], {} );
 		setTimeout( () => {
-			// Remote triggered survey arrives after three seconds, so the notification WILL NOT be displayed.
+			// Remote triggered survey arrives in three seconds, so the notification WILL NOT be displayed.
 			registry.dispatch( CORE_USER ).receiveTriggerSurvey( { survey_payload: { ab2: true }, session: {} }, { triggerID: 'storybook' } );
 		}, 3 * 1000 );
 	},
