@@ -43,6 +43,18 @@ const notification1 = {
 	dismissLabel: 'Dismiss this message',
 };
 
+/**
+ * DashboardCoreSiteAlerts renders notifications after a five second timeout
+ * and only if there has been no survey available in that time period.
+ *
+ * We have several seemingly similar stories and backstop scenarios to catch
+ * potential regressions in our render logic.
+ *
+ * The title 'Not Displayed' in the story indicates the component won't be
+ * rendered. For the ones that are 'Displayed', the component renders only AFTER
+ * the five second timeout has passed.
+ */
+
 export const NotificationCTA = Template.bind( {} );
 NotificationCTA.storyName = 'Has Notifications - Displayed';
 NotificationCTA.args = {
