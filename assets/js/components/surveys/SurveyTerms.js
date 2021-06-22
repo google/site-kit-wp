@@ -35,13 +35,13 @@ export default function SurveyTerms() {
 	const terms = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( { path: '/terms' } ) );
 
 	return (
-		<p>
+		<p className="googlesitekit-survey__terms">
 			{
 				createInterpolateElement(
 					__( 'By continuing, you agree Google uses your answers and account info to improve services, per our <privacy>Privacy</privacy> & <terms>Terms</terms>.', 'google-site-kit' ),
 					{
-						privacy: <Link href={ privacy } inherit />,
-						terms: <Link href={ terms } inherit />,
+						privacy: <Link href={ privacy } inherit external />,
+						terms: <Link href={ terms } inherit external />,
 					},
 				)
 			}
