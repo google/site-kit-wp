@@ -63,6 +63,8 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 				<DashboardPageSpeedWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} )
 	.add( 'Dashboard widget (loading)', () => {
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/ );
@@ -88,6 +90,8 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 				<DashboardPageSpeedWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} )
 	.add( 'Dashboard widget (Field Data Unavailable)', () => {
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
@@ -115,6 +119,8 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 				<DashboardPageSpeedWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} )
 	.add( 'Dashboard widget (Errors for Mobile and Desktop)', () => {
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
@@ -148,6 +154,8 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 				<DashboardPageSpeedWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} )
 	.add( 'Dashboard widget (CTA)', () => {
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
@@ -172,5 +180,7 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 				<DashboardPageSpeedWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} )
 ;
