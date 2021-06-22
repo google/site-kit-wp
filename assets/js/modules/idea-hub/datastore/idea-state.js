@@ -150,7 +150,8 @@ const store = Data.combineStores(
 	{
 		actions: baseActions,
 		initialState: baseInitialState,
-	} );
+	}
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;
