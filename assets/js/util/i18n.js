@@ -340,3 +340,16 @@ export const getLocale = ( _global = global ) => {
 
 	return _global.navigator.language;
 };
+
+/**
+ * Gets the current locale language.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} _global The global window object.
+ * @return {string} Current locale language.
+ */
+export function getLocaleLanguage( _global = global ) {
+	const locale = getLocale( _global );
+	return locale.substr( 0, 2 );
+}

@@ -23,25 +23,6 @@ import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/
 import { STORE_NAME } from './constants';
 
 describe( 'core/site site info', () => {
-	const baseInfoVar = '_googlesitekitBaseData';
-	const baseInfo = {
-		adminURL: 'http://something.test/wp-admin',
-		ampMode: 'reader',
-		homeURL: 'http://something.test/homepage',
-		referenceSiteURL: 'http://example.com',
-		proxyPermissionsURL: '', // not available until site is authenticated
-		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/', // params omitted
-		siteName: 'Something Test',
-		timezone: 'America/Denver',
-		usingProxy: true,
-	};
-	const entityInfoVar = '_googlesitekitEntityData';
-	const entityInfo = {
-		currentEntityURL: 'http://something.test',
-		currentEntityType: 'post',
-		currentEntityTitle: 'Something Witty',
-		currentEntityID: '4',
-	};
 	let registry;
 
 	beforeEach( () => {
@@ -49,28 +30,40 @@ describe( 'core/site site info', () => {
 	} );
 
 	afterEach( () => {
-		delete global[ baseInfoVar ];
-		delete global[ entityInfoVar ];
 		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getGooglePrivacyPolicyURL', () => {
+			it( 'should return the correct privacy policy URL', () => {
+				const url = registry.select( STORE_NAME ).getGooglePrivacyPolicyURL();
+				expect( url ).toBe( 'https://myaccount.google.com/privacypolicy?hl=en' );
+			} );
+		} );
+
+		describe( 'getGoogleTermsURL', () => {
+			it( 'should return the correct terms URL', () => {
+				const url = registry.select( STORE_NAME ).getGoogleTermsURL();
+				expect( url ).toBe( 'https://support.google.com/terms?hl=en' );
+			} );
+		} );
+
 		describe( 'getGoogleSupportURL', () => {
 			it.each( [
 				[
-					'returns null if no arguments are supplied',
+					'null if no arguments are supplied',
 					undefined,
 					null,
 				],
 				[
-					'returns null if no path is supplied or is empty',
+					'null if no path is supplied or is empty',
 					{
 						path: '',
 					},
 					null,
 				],
 				[
-					'returns the path, hash and the user locale',
+					'the path, hash and the user locale',
 					{
 						path: '/analytics/answer/1032415',
 						hash: 'hash_value',
@@ -78,7 +71,7 @@ describe( 'core/site site info', () => {
 					'https://support.google.com/analytics/answer/1032415?hl=en-US#hash_value',
 				],
 				[
-					'returns the path, query and the user locale',
+					'the path, query and the user locale',
 					{
 						path: '/analytics/answer/1032415',
 						query: {
@@ -89,14 +82,14 @@ describe( 'core/site site info', () => {
 					'https://support.google.com/analytics/answer/1032415?param=value&param2=value2&hl=en-US',
 				],
 				[
-					'returns the path with the user locale',
+					'the path with the user locale',
 					{
 						path: '/analytics/answer/1032415',
 					},
 					'https://support.google.com/analytics/answer/1032415?hl=en-US',
 				],
 				[
-					'returns the path, query, hash and the user locale',
+					'the path, query, hash and the user locale',
 					{
 						path: '/analytics/answer/1032415',
 						query: {
@@ -107,24 +100,20 @@ describe( 'core/site site info', () => {
 					},
 					'https://support.google.com/analytics/answer/1032415?param=value&param2=value2&hl=en-US#hash_value',
 				],
-			] )( '%s', async ( _, args, expected ) => {
-				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
-				const supportURL = registry.select( STORE_NAME ).getGoogleSupportURL( args );
-				expect( supportURL ).toEqual( expected );
+			] )( 'should return %s', ( _, args, expected ) => {
+				const url = registry.select( STORE_NAME ).getGoogleSupportURL( args );
+				expect( url ).toBe( expected );
 			} );
 
-			it( 'returns the path with a predefined locale', async () => {
-				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
-
+			it( 'should return the path with a predefined locale', () => {
 				if ( ! global._googlesitekitLegacyData ) {
 					global._googlesitekitLegacyData = {};
 				}
+
 				global._googlesitekitLegacyData.locale = 'de';
 
-				const supportURL = registry.select( STORE_NAME ).getGoogleSupportURL( {
-					path: '/analytics/answer/1032415',
-				} );
-				expect( supportURL ).toEqual( 'https://support.google.com/analytics/answer/1032415?hl=de' );
+				const url = registry.select( STORE_NAME ).getGoogleSupportURL( { path: '/analytics/answer/1032415' } );
+				expect( url ).toBe( 'https://support.google.com/analytics/answer/1032415?hl=de' );
 			} );
 		} );
 	} );

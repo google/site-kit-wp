@@ -17,14 +17,9 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { addQueryArgs } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
-import { getLocale } from '../../../util';
+import { getLocale, getLocaleLanguage } from '../../../util';
 
 export const initialState = {};
 
@@ -50,6 +45,7 @@ export const selectors = {
 	 * @param {string} [args.path]    URL path to build complete URL with starting slash.
 	 * @param {Object} [args.query]   Object to append query to the URL.
 	 * @param {string} [args.hash]    Optional hash.
+	 * @param {string} [args.locale]  Optional locale.
 	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
 	 */
 	getGoogleURL( state, args ) {
@@ -58,14 +54,22 @@ export const selectors = {
 			path,
 			query,
 			hash,
+			locale = getLocale(),
 		} = args || {};
 
 		if ( ! path ) {
 			return null;
 		}
 
-		const url = new URL( addQueryArgs( `${ website }${ path }`, { ...query, hl: getLocale() } ) );
+		const url = new URL( website );
+
+		url.pathname = path;
 		url.hash = hash || '';
+
+		const params = { ...query, hl: locale };
+		for ( const key in params ) {
+			url.searchParams.set( key, params[ key ] );
+		}
 
 		return url.toString();
 	},
@@ -75,11 +79,12 @@ export const selectors = {
 	 *
 	 * @since 1.24.0
 	 *
-	 * @param {Object} state        Data store's state.
-	 * @param {Object} [args]       Optional arguments for the resulting URL.
-	 * @param {string} [args.path]  URL path to build complete URL with starting slash.
-	 * @param {Object} [args.query] Object to append query to the URL.
-	 * @param {string} [args.hash]  Optional hash.
+	 * @param {Object} state         Data store's state.
+	 * @param {Object} [args]        Optional arguments for the resulting URL.
+	 * @param {string} [args.path]   URL path to build complete URL with starting slash.
+	 * @param {Object} [args.query]  Object to append query to the URL.
+	 * @param {string} [args.hash]   Optional hash.
+	 * @param {string} [args.locale] Optional locale.
 	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
 	 */
 	getGoogleSupportURL( state, args ) {
@@ -98,6 +103,7 @@ export const selectors = {
 		return selectors.getGoogleURL( state, {
 			website: 'https://myaccount.google.com',
 			path: '/privacypolicy',
+			locale: getLocaleLanguage(),
 		} );
 	},
 
@@ -112,6 +118,7 @@ export const selectors = {
 	getGoogleTermsURL( state ) {
 		return selectors.getGoogleSupportURL( state, {
 			path: '/terms',
+			locale: getLocaleLanguage(),
 		} );
 	},
 };
