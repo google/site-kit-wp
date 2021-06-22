@@ -19,19 +19,10 @@
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from './constants';
 import { getLocale, getLocaleLanguage } from '../../../util';
-
-export const initialState = {};
-
-export const actions = {};
-
-export const controls = {};
-
-export function reducer( state ) {
-	return state;
-}
-
-export const resolvers = {};
+const { createRegistrySelector } = Data;
 
 export const selectors = {
 	/**
@@ -87,9 +78,12 @@ export const selectors = {
 	 * @param {string} [args.locale] Optional locale.
 	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
 	 */
-	getGoogleSupportURL( state, args ) {
-		return selectors.getGoogleURL( state, { ...args, website: 'https://support.google.com' } );
-	},
+	getGoogleSupportURL: createRegistrySelector( ( select ) => ( state, args ) => {
+		return select( STORE_NAME ).getGoogleURL( {
+			...args,
+			website: 'https://support.google.com',
+		} );
+	} ),
 
 	/**
 	 * Gets the Google privacy policy URL.
@@ -99,13 +93,13 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {string} The Google privacy policy URL.
 	 */
-	getGooglePrivacyPolicyURL( state ) {
-		return selectors.getGoogleURL( state, {
+	getGooglePrivacyPolicyURL: createRegistrySelector( ( select ) => () => {
+		return select( STORE_NAME ).getGoogleURL( {
 			website: 'https://myaccount.google.com',
 			path: '/privacypolicy',
 			locale: getLocaleLanguage(),
 		} );
-	},
+	} ),
 
 	/**
 	 * Gets the Google terms URL.
@@ -115,20 +109,15 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {string} The Google terms URL.
 	 */
-	getGoogleTermsURL( state ) {
-		return selectors.getGoogleURL( state, {
+	getGoogleTermsURL: createRegistrySelector( ( select ) => () => {
+		return select( STORE_NAME ).getGoogleURL( {
 			website: 'https://policies.google.com',
 			path: '/terms',
 			locale: getLocaleLanguage(),
 		} );
-	},
+	} ),
 };
 
 export default {
-	initialState,
-	actions,
-	controls,
-	reducer,
-	resolvers,
 	selectors,
 };
