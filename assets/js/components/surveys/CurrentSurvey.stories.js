@@ -39,6 +39,7 @@ SurveySingleQuestionStory.args = {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
 		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'storybookSurvey' } );
+		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
 	},
 };
 
@@ -49,6 +50,7 @@ SurveyMultipleQuestionsStory.args = {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
 		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.multiQuestionSurvey, { triggerID: 'storybookSurvey' } );
+		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
 	},
 };
 
@@ -59,6 +61,7 @@ SurveyNotAnsweredNoFollowUpStory.args = {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
 		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurveyWithNoFollowUp, { triggerID: 'storybookSurvey' } );
+		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
 	},
 };
 
@@ -69,6 +72,7 @@ SurveyAnsweredPositiveStory.args = {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
 		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'storybookSurvey' } );
+		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
 
 		registry.dispatch( CORE_FORMS ).setValues(
 			`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
@@ -83,6 +87,17 @@ SurveyAnsweredPositiveStory.args = {
 				],
 			}
 		);
+	},
+};
+
+export const SurveyWithTermsStory = Template.bind( {} );
+SurveyWithTermsStory.storyName = 'With Terms';
+SurveyWithTermsStory.args = {
+	setupRegistry: ( registry ) => {
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
+
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'storybookSurvey' } );
+		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: false } );
 	},
 };
 

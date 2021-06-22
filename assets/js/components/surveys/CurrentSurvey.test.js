@@ -30,6 +30,7 @@ describe( 'CurrentSurvey', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
 	} );
 
 	it( 'should render a survey when one exists in the datastore', async () => {
@@ -106,7 +107,7 @@ describe( 'CurrentSurvey', () => {
 
 		const { getByLabelText } = render( <CurrentSurvey />, { registry } );
 
-		fireEvent.click( getByLabelText( 'Delighted icon' ) );
+		fireEvent.click( getByLabelText( 'Delighted' ) );
 
 		expect( fetchMock ).toHaveFetched(
 			'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
@@ -141,7 +142,7 @@ describe( 'CurrentSurvey', () => {
 
 		const { getByLabelText, getByText } = render( <CurrentSurvey />, { registry } );
 
-		fireEvent.click( getByLabelText( 'Unhappy icon' ) );
+		fireEvent.click( getByLabelText( 'Unhappy' ) );
 
 		expect( fetchMock ).toHaveFetched(
 			'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
@@ -180,7 +181,7 @@ describe( 'CurrentSurvey', () => {
 
 		// Even though the fixtures have a `trigger_completion` for this answer to
 		// this question, it should not be shown until all questions are answered.
-		fireEvent.click( getByLabelText( 'Delighted icon' ) );
+		fireEvent.click( getByLabelText( 'Delighted' ) );
 
 		expect( () => {
 			getByText( 'You answered positively!' );
@@ -200,10 +201,10 @@ describe( 'CurrentSurvey', () => {
 		const { getByLabelText, getByText } = render( <CurrentSurvey />, { registry } );
 
 		// Answering with this value causes the completion trigger to be met.
-		fireEvent.click( getByLabelText( 'Delighted icon' ) );
+		fireEvent.click( getByLabelText( 'Delighted' ) );
 
 		// Answer the second question.
-		fireEvent.click( getByLabelText( 'Neutral icon' ) );
+		fireEvent.click( getByLabelText( 'Neutral' ) );
 
 		expect( getByText( 'You answered positively!' ) ).toBeVisible();
 	} );
@@ -215,7 +216,7 @@ describe( 'CurrentSurvey', () => {
 
 		const { getByLabelText } = render( <CurrentSurvey />, { registry } );
 
-		fireEvent.click( getByLabelText( 'Delighted icon' ) );
+		fireEvent.click( getByLabelText( 'Delighted' ) );
 
 		expect(
 			registry
@@ -249,7 +250,7 @@ describe( 'CurrentSurvey', () => {
 
 		const { getByLabelText } = render( <CurrentSurvey />, { registry } );
 
-		fireEvent.click( getByLabelText( 'Dismiss this survey' ) );
+		fireEvent.click( getByLabelText( 'Dismiss' ) );
 
 		expect( fetchMock ).toHaveFetched(
 			'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
@@ -281,7 +282,7 @@ describe( 'CurrentSurvey', () => {
 
 		const { container, getByLabelText } = render( <CurrentSurvey />, { registry } );
 
-		fireEvent.click( getByLabelText( 'Dismiss this survey' ) );
+		fireEvent.click( getByLabelText( 'Dismiss' ) );
 
 		setTimeout( () => {
 			expect( container ).toBeEmptyDOMElement();
