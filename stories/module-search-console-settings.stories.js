@@ -58,6 +58,7 @@ const storyOptions = {
 			return <Story registry={ registry } />;
 		},
 	],
+	padding: 0,
 };
 
 storiesOf( 'Search Console Module/Settings', module )
