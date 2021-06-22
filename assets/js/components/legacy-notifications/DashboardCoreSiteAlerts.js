@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect, useState, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -40,13 +40,12 @@ const MAX_SECONDS_FOR_SURVEY = 5;
 const DashboardCoreSiteAlerts = () => {
 	const [ ready, setReady ] = useState( false );
 	const [ hasSurveys, setHasSurveys ] = useState( false );
-	const [ startTime, setStartTime ] = useState( false );
+	const startTime = useRef( Date.now() );
 	const surveys = useSelect( ( select ) => select( CORE_USER ).getCurrentSurvey() );
 	const notifications = useSelect( ( select ) => select( CORE_SITE ).getNotifications() );
 
 	useEffect(
 		() => {
-			setStartTime( Date.now() );
 			const timer = setTimeout( () => {
 				if ( ! hasSurveys ) {
 					setReady( true );
@@ -62,7 +61,7 @@ const DashboardCoreSiteAlerts = () => {
 
 	useEffect(
 		() => {
-			const secondsElapsed = Math.floor( ( Date.now() - startTime ) / 1000 );
+			const secondsElapsed = Math.floor( ( Date.now() - startTime.current ) / 1000 );
 			// Surveys that were received in time prevent the render, surveys loaded
 			// after a set amount of time do not prevent notifications from rendering.
 			if ( secondsElapsed < MAX_SECONDS_FOR_SURVEY && surveys ) {
