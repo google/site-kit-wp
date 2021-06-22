@@ -42,7 +42,7 @@ import {
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { SETUP_FLOW_MODE_LEGACY, STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
+import { SETUP_FLOW_MODE_LEGACY, STORE_NAME, PROFILE_CREATE, SETUP_FLOW_MODE_UA } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
@@ -87,6 +87,10 @@ export default function SettingsForm() {
 						<GA4PropertySelect />
 					</div>
 				</GA4PropertyNotice>
+			) }
+
+			{ ( isGA4Enabled && SETUP_FLOW_MODE_UA === setupFlowMode && isGA4Connected ) && (
+				<GA4PropertyNotice notice={ __( 'A Google Analytics 4 property will be created.', 'google-site-kit' ) } />
 			) }
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
