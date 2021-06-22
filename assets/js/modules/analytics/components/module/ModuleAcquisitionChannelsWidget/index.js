@@ -118,7 +118,7 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 					<Cell lgSize={ 4 } mdSize={ 4 } smSize={ 4 }>
 						<PieChart report={ report } hasFinishedResolution={ hasFinishedResolution } />
 					</Cell>
-					<Cell lgSize={ 8 } mdSize={ 4 } smSize={ 4 }>
+					<Cell lgSize={ 8 } mdSize={ 8 } smSize={ 4 }>
 						<AcquisitionChannelsTable report={ report } hasFinishedResolution={ hasFinishedResolution } />
 					</Cell>
 				</Row>
