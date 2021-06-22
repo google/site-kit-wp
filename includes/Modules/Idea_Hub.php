@@ -31,6 +31,7 @@ use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_Ideahub;
+use Google\Site_Kit_Dependencies\Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -376,10 +377,21 @@ final class Idea_Hub extends Module
 					return array();
 				};
 			case 'POST:update-idea-state':
-				// @TODO implementation
-				return function() {
-					return null;
-				};
+				if ( ! isset( $data['name'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'name' ), array( 'status' => 400 ) );
+				}
+
+				$body = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState();
+				$body->setName( $data['name'] );
+
+				if ( isset( $data['saved'] ) ) {
+					$body->setSaved( filter_var( $data['saved'], FILTER_VALIDATE_BOOL ) );
+				} elseif ( isset( $data['dismissed'] ) ) {
+					$body->setDismissed( filter_var( $data['dismissed'], FILTER_VALIDATE_BOOL ) );
+				}
+
+				return $this->get_service( 'ideahub' )->platforms_properties_ideaStates->patch( $data['name'] );
 		}
 
 		return parent::create_data_request( $data );
