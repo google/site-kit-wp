@@ -30,6 +30,7 @@ import { useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import Button from '../../../../../components/Button';
 import { Grid, Cell, Row } from '../../../../../material-components';
@@ -49,13 +50,27 @@ import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
 const { useDispatch } = Data;
 
 const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
-	const { createIdeaDraftPost } = useDispatch( STORE_NAME );
+	const {
+		createIdeaDraftPost,
+		fetchGetNewIdeas,
+		fetchGetSavedIdeas,
+		dismissIdea,
+	} = useDispatch( STORE_NAME );
 	const [ isProcessing, setIsProcessing ] = useState( false );
 
-	const handleDelete = useCallback( () => {
-		// @TODO: Implement callback.
-		global.console.log( `Deleted: ${ name }` );
-	}, [ name ] );
+	const refreshNewSavedIdeas = useCallback( async () => {
+		await API.invalidateCache( 'modules', 'idea-hub', 'new-ideas' );
+		await API.invalidateCache( 'modules', 'idea-hub', 'saved-ideas' );
+		fetchGetNewIdeas();
+		fetchGetSavedIdeas();
+	}, [ fetchGetNewIdeas, fetchGetSavedIdeas ] );
+
+	const handleDelete = useCallback( async () => {
+		setIsProcessing( true );
+		await dismissIdea( name );
+		await refreshNewSavedIdeas();
+		setIsProcessing( false );
+	}, [ name, refreshNewSavedIdeas, dismissIdea ] );
 
 	const handlePin = useCallback( () => {
 		// @TODO: Implement callback.
