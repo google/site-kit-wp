@@ -116,7 +116,8 @@ export const selectors = {
 	 * @return {string} The Google terms URL.
 	 */
 	getGoogleTermsURL( state ) {
-		return selectors.getGoogleSupportURL( state, {
+		return selectors.getGoogleURL( state, {
+			website: 'https://policies.google.com',
 			path: '/terms',
 			locale: getLocaleLanguage(),
 		} );

@@ -44,7 +44,7 @@ describe( 'core/site site info', () => {
 		describe( 'getGoogleTermsURL', () => {
 			it( 'should return the correct terms URL', () => {
 				const url = registry.select( STORE_NAME ).getGoogleTermsURL();
-				expect( url ).toBe( 'https://support.google.com/terms?hl=en' );
+				expect( url ).toBe( 'https://policies.google.com/terms?hl=en' );
 			} );
 		} );
 
