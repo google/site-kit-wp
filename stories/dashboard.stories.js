@@ -68,6 +68,8 @@ storiesOf( 'Dashboard', module )
 				<PostSearcher />
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} )
 	.add( 'URL Search Widget', () => {
 		const setupRegistry = ( registry ) => provideSiteInfo( registry );
@@ -78,6 +80,8 @@ storiesOf( 'Dashboard', module )
 				<URLSearchWidget { ...widgetComponentProps } />
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} )
 	.add( 'Search Funnel Analytics Inactive', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
@@ -135,7 +139,9 @@ storiesOf( 'Dashboard', module )
 			</WithTestRegistry>
 		);
 	},
-	{ options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' } } )
+	{ options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' },
+		padding: 0,
+	} )
 	.add( 'Search Funnel', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
@@ -194,4 +200,5 @@ storiesOf( 'Dashboard', module )
 		options: {
 			readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
 		},
+		padding: 0,
 	} );
