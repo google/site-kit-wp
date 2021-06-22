@@ -39,4 +39,6 @@ storiesOf( 'Global', module )
 				<ModulesList />
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} );
