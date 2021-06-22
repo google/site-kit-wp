@@ -57,4 +57,6 @@ storiesOf( 'Global', module )
 				/>
 			</p>
 		</div>;
+	}, {
+		padding: 0,
 	} );
