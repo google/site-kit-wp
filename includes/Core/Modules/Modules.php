@@ -483,9 +483,35 @@ final class Modules {
 
 		if ( is_callable( array( $module, 'on_deactivation' ) ) ) {
 			call_user_func( array( $module, 'on_deactivation' ) );
+			if ( Analytics::MODULE_SLUG === $slug ) {
+				$this->call_analytics_4_hook( 'on_deactivation' );
+			}
 		}
 
 		return true;
+	}
+
+	/**
+	 * Calls a Analytics_4 module hook.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param string $hook Method name to call.
+	 */
+	private function call_analytics_4_hook( $hook ) {
+		try {
+			$method = array(
+				$this->get_module( Analytics_4::MODULE_SLUG ),
+				$hook,
+			);
+
+			if ( is_callable( $method ) ) {
+				call_user_func( $method );
+			}
+		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// Do nothing.
+		}
 	}
 
 	/**
