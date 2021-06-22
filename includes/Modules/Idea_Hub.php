@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
@@ -29,6 +30,7 @@ use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
+use Google\Site_Kit_Dependencies\Google_Service_Ideahub;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -181,10 +183,10 @@ final class Idea_Hub extends Module
 		return array(
 			'POST:create-idea-draft-post' => array( 'service' => '' ),
 			'GET:draft-post-ideas'        => array( 'service' => '' ),
-			'GET:new-ideas'               => array( 'service' => '' ),
+			'GET:new-ideas'               => array( 'service' => 'ideahub' ),
 			'GET:published-post-ideas'    => array( 'service' => '' ),
-			'GET:saved-ideas'             => array( 'service' => '' ),
-			'POST:update-idea-state'      => array( 'service' => '' ),
+			'GET:saved-ideas'             => array( 'service' => 'ideahub' ),
+			'POST:update-idea-state'      => array( 'service' => 'ideahub' ),
 		);
 	}
 
@@ -486,6 +488,23 @@ final class Idea_Hub extends Module
 					),
 				)
 			),
+		);
+	}
+
+	/**
+	 * Sets up the Google services the module should use.
+	 *
+	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
+	 * for the first time.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Site_Kit_Client $client Google client instance.
+	 * @return array Google services as $identifier => $service_instance pairs.
+	 */
+	protected function setup_services( Google_Site_Kit_Client $client ) {
+		return array(
+			'ideahub' => new Google_Service_Ideahub( $client ),
 		);
 	}
 
