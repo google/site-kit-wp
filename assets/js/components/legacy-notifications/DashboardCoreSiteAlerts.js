@@ -63,7 +63,8 @@ const DashboardCoreSiteAlerts = () => {
 	useEffect(
 		() => {
 			const secondsElapsed = Math.floor( ( Date.now() - startTime ) / 1000 );
-			// Surveys that were received in time prevent the render, all the rest are ignored.
+			// Surveys that were received in time prevent the render, surveys loaded
+			// after a set amount of time do not prevent notifications from rendering.
 			if ( secondsElapsed < MAX_SECONDS_FOR_SURVEY && surveys ) {
 				setHasSurveys( true );
 			}
