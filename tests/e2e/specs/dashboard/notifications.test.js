@@ -52,7 +52,6 @@ describe( 'core site notifications', () => {
 
 			// Go to the main dashboard and wait for notifications to be requested.
 			await Promise.all( [
-				page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/core/site/data/notifications' ) ),
 				goToSiteKitDashboard(),
 			] );
 
@@ -77,7 +76,6 @@ describe( 'core site notifications', () => {
 
 			// Refresh the page, and make sure that notifications are refetched and does not include the dismissed notification.
 			await Promise.all( [
-				page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/core/site/data/notifications' ) ),
 				page.reload(),
 			] );
 
@@ -109,7 +107,6 @@ describe( 'core site notifications', () => {
 
 			// Go to the main dashboard and wait for notifications to be requested.
 			await Promise.all( [
-				page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/core/site/data/notifications' ) ),
 				goToSiteKitDashboard(),
 			] );
 
