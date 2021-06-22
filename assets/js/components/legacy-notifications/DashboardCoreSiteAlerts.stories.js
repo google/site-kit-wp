@@ -32,15 +32,15 @@ const Template = ( { setupRegistry } ) => (
 
 const notification1 = {
 	id: 'test-notification',
-	title: 'test-title',
-	content: 'test-content',
-	ctaURL: 'test-cta-url',
-	ctaLabel: 'test-cta-label',
-	ctaTarget: 'test-cta-target',
-	learnMoreURL: 'test-learn-more-url',
-	learnMoreLabel: 'test-learn-more-label',
+	title: 'Google Analytics 5 Beta',
+	content: 'Upgrade to the latest and greatest version of Analytics!',
+	ctaURL: '#ga5-upgrade',
+	ctaLabel: 'Upgrade to GA5!',
+	ctaTarget: '_blank',
+	learnMoreURL: '#learn-more',
+	learnMoreLabel: 'Learn more',
 	dismissible: true,
-	dismissLabel: 'test-dismiss-label',
+	dismissLabel: 'Dismiss this message',
 };
 
 export const NotificationCTA = Template.bind( {} );
