@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -107,10 +108,12 @@ export default function SettingsView() {
 					</div>
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
-							<VisuallyHidden>
-								{ __( 'Google Analytics 4', 'google-site-kit' ) }
-							</VisuallyHidden>
-							{ __( 'Measurement ID', 'google-site-kit' ) }
+							{ createInterpolateElement(
+								__( '<VisuallyHidden>Google Analytics 4</VisuallyHidden> Measurement ID', 'google-site-kit' ),
+								{
+									VisuallyHidden: <VisuallyHidden />,
+								}
+							) }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting value={ ga4MeasurementID } />
