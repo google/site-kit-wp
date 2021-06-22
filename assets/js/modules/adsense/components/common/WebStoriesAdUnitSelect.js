@@ -67,12 +67,12 @@ export default function WebStoriesAdUnitSelect() {
 			>
 				{ __( 'Select ad unit', 'google-site-kit' ) }
 			</Option>
-			{ ( adunits || [] ).map( ( { id, name } ) => (
+			{ ( adunits || [] ).map( ( { _id, displayName } ) => (
 				<Option
-					key={ id }
-					value={ id }
+					key={ _id }
+					value={ _id }
 				>
-					{ name }
+					{ displayName }
 				</Option>
 			) ) }
 		</Select>

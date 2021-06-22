@@ -95,6 +95,8 @@ final class Tag_Manager extends Module
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 		// Filter the Analytics `canUseSnippet` value.
 		add_action( 'googlesitekit_analytics_can_use_snippet', $this->get_method_proxy( 'can_analytics_use_snippet' ) );
+		// Filter whether certain users can be excluded from tracking.
+		add_action( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
 	}
 
 	/**
@@ -531,13 +533,9 @@ final class Tag_Manager extends Module
 		return array(
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Tag Manager', 'Service name', 'google-site-kit' ),
-			'description' => __( 'Tag Manager creates an easy to manage way to create tags on your site without updating code.', 'google-site-kit' ),
-			'cta'         => __( 'Tag management made simple.', 'google-site-kit' ),
+			'description' => __( 'Tag Manager creates an easy to manage way to create tags on your site without updating code', 'google-site-kit' ),
 			'order'       => 6,
 			'homepage'    => __( 'https://tagmanager.google.com/', 'google-site-kit' ),
-			'learn_more'  => __( 'https://marketingplatform.google.com/about/tag-manager/', 'google-site-kit' ),
-			'group'       => __( 'Marketing Platform', 'google-site-kit' ),
-			'tags'        => array( 'marketing' ),
 		);
 	}
 
@@ -641,6 +639,31 @@ final class Tag_Manager extends Module
 		}
 
 		return $original_value;
+	}
+
+	/**
+	 * Filters whether or not the option to exclude certain users from tracking should be displayed.
+	 *
+	 * If Site Kit does not place the Analytics snippet (neither via Analytics nor via Tag Manager),
+	 * the option to exclude certain users from tracking should not be displayed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param boolean $allowed Whether to allow tracking exclusion.
+	 * @return boolean Filtered value.
+	 */
+	private function filter_analytics_allow_tracking_disabled( $allowed ) {
+		if ( $allowed ) {
+			return true;
+		}
+
+		$settings = $this->get_settings()->get();
+
+		if ( ! empty( $settings['gaPropertyID'] ) && $settings['useSnippet'] ) {
+			return true;
+		}
+
+		return $allowed;
 	}
 
 }

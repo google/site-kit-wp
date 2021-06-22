@@ -26,28 +26,24 @@ import {
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
+	ACCOUNT_CREATE,
 } from './constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import { isFeatureEnabled } from '../../../features';
 
 const { createRegistrySelector } = Data;
 
 const baseSelectors = {
 	getSetupFlowMode: createRegistrySelector( ( select ) => () => {
-		// The Google Analytics 4 datastore hasn't been loaded, so we have
+		// The Google Analytics 4 is not enabled, so we have
 		// to use the legacy implementation.
-		if ( ! select( MODULES_ANALYTICS_4 ) ) {
+		if ( ! isFeatureEnabled( 'ga4setup' ) ) {
 			return SETUP_FLOW_MODE_LEGACY;
 		}
 
-		// Check to see if the Admin API is working—if it's `undefined` the request
-		// is loading, but if it's `false` we should also use the legacy analytics
-		// because the API isn't working properly.
+		// Check to see if the Admin API is working—if it's `false` we should also use
+		// the legacy analytics because the API isn't working properly.
 		const isAdminAPIWorking = select( MODULES_ANALYTICS_4 ).isAdminAPIWorking();
-
-		if ( isAdminAPIWorking === undefined ) {
-			return undefined;
-		}
-
 		if ( isAdminAPIWorking === false ) {
 			return SETUP_FLOW_MODE_LEGACY;
 		}
@@ -66,7 +62,7 @@ const baseSelectors = {
 
 		// If no accountID exists then no account is selected. This means we should
 		// use the UA setup flow.
-		if ( ! accountID ) {
+		if ( ! accountID || accountID === ACCOUNT_CREATE ) {
 			return SETUP_FLOW_MODE_UA;
 		}
 
@@ -98,11 +94,9 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores(
-	{
-		selectors: baseSelectors,
-	}
-);
+const store = Data.combineStores( {
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

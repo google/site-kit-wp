@@ -35,8 +35,12 @@ const { useSelect } = Data;
 const WidgetContextRenderer = ( props ) => {
 	const { slug, className, Header, Footer } = props;
 
-	const widgetAreas = useSelect( ( select ) => select( STORE_NAME ).getWidgetAreas( slug ) );
-	const widgetAreasLength = widgetAreas?.length;
+	const widgetAreas = useSelect( ( select ) => {
+		if ( slug ) {
+			return select( STORE_NAME ).getWidgetAreas( slug );
+		}
+		return null;
+	} );
 
 	return (
 		<div className={ classnames( 'googlesitekit-widget-context', className ) }>
@@ -49,8 +53,14 @@ const WidgetContextRenderer = ( props ) => {
 					</Row>
 				</Grid>
 			) }
-			{ widgetAreas.map( ( area ) => {
-				return <WidgetAreaRenderer slug={ area.slug } key={ area.slug } totalAreas={ widgetAreasLength } />;
+			{ widgetAreas && widgetAreas.map( ( area ) => {
+				return (
+					<WidgetAreaRenderer
+						key={ area.slug }
+						slug={ area.slug }
+						totalAreas={ widgetAreas.length }
+					/>
+				);
 			} ) }
 			{ Footer && (
 				<Grid>
@@ -66,7 +76,7 @@ const WidgetContextRenderer = ( props ) => {
 };
 
 WidgetContextRenderer.propTypes = {
-	slug: PropTypes.string.isRequired,
+	slug: PropTypes.string,
 	className: PropTypes.string,
 	Header: PropTypes.elementType,
 	Footer: PropTypes.elementType,

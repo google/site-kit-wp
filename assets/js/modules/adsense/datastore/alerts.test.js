@@ -59,7 +59,7 @@ describe( 'modules/adsense alerts', () => {
 					{ body: fixtures.alerts, status: 200 }
 				);
 
-				const accountID = fixtures.accounts[ 0 ].id;
+				const accountID = fixtures.accounts[ 0 ]._id;
 
 				const initialAlerts = registry.select( STORE_NAME ).getAlerts( accountID );
 
@@ -77,7 +77,7 @@ describe( 'modules/adsense alerts', () => {
 			} );
 
 			it( 'does not make a network request if alerts for this account are already present', async () => {
-				const accountID = fixtures.accounts[ 0 ].id;
+				const accountID = fixtures.accounts[ 0 ]._id;
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.

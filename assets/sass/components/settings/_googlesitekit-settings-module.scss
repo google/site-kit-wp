@@ -158,6 +158,15 @@
 		}
 	}
 
+	.googlesitekit-settings-module__inline-items {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.googlesitekit-settings-module__inline-item {
+		margin: 0 1rem 1rem 0;
+	}
+
 	.googlesitekit-settings-module__meta-item-type {
 		color: $c-primary;
 		font-size: 0.75rem;

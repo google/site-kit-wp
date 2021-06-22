@@ -59,10 +59,10 @@ describe( 'AccountSelect', () => {
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.
-		fireEvent.click( getByText( selectedAccount.name ) );
+		fireEvent.click( getByText( selectedAccount.displayName ) );
 
 		const newAccountID = registry.select( STORE_NAME ).getAccountID();
 		expect( originalAccountID ).not.toEqual( newAccountID );
-		expect( newAccountID ).toEqual( selectedAccount.id );
+		expect( newAccountID ).toEqual( selectedAccount._id );
 	} );
 } );

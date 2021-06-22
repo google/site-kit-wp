@@ -110,6 +110,7 @@
 @import "components/global/googlesitekit-table";
 @import "components/global/googlesitekit-table-overflow";
 @import "components/global/googlesitekit-text-field-icon";
+@import "components/global/googlesitekit-tooltip";
 
 // Dashboard
 @import "components/dashboard/googlesitekit-signin-box";
@@ -149,6 +150,12 @@
 
 // Tour Tooltip
 @import "components/tour-tooltip/googlesitekit-tour-tooltip";
+
+// Idea Hub
+@import "components/idea-hub";
+
+// User Feedback
+@import "components/surveys";
 
 // Widget Styles
 @import "widgets/widget-area";

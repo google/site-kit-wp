@@ -32,7 +32,7 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
-import { getLocale, normalizeURL } from '../../../util';
+import { getLocale, normalizeURL, untrailingslashit } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
@@ -479,21 +479,27 @@ export const selectors = {
 	 *
 	 * @since 1.24.0
 	 *
-	 * @param {Object} state        Data store's state.
-	 * @param {Object} [args]       Optional arguments for the resulting URL.
-	 * @param {string} [args.path]  Base URL to build complete URL with starting slash.
-	 * @param {Object} [args.query] Object to append query to the URL.
-	 * @param {string} [args.hash]  Optional hash.
+	 * @param {Object} state          Data store's state.
+	 * @param {Object} [args]         Optional arguments for the resulting URL.
+	 * @param {string} [args.website] Base URL hostname and schema.
+	 * @param {string} [args.path]    URL path to build complete URL with starting slash.
+	 * @param {Object} [args.query]   Object to append query to the URL.
+	 * @param {string} [args.hash]    Optional hash.
 	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
 	 */
 	getGoogleSupportURL: ( state, args ) => {
-		const { path, query, hash } = args || {};
+		const {
+			website = 'https://support.google.com',
+			path,
+			query,
+			hash,
+		} = args || {};
 
 		if ( ! path ) {
 			return null;
 		}
 
-		const url = new URL( addQueryArgs( `https://support.google.com${ path }`, { ...query, hl: getLocale() } ) );
+		const url = new URL( addQueryArgs( `${ website }${ path }`, { ...query, hl: getLocale() } ) );
 		url.hash = hash || '';
 
 		return url.toString();
@@ -520,6 +526,35 @@ export const selectors = {
 	isSiteURLMatch: createRegistrySelector( ( select ) => ( state, url ) => {
 		const referenceURL = select( STORE_NAME ).getReferenceSiteURL();
 		return normalizeURL( referenceURL ) === normalizeURL( url );
+	} ),
+
+	/**
+	 * Gets an array with site URL permutations.
+	 *
+	 * @since 1.34.0
+	 *
+	 * @return {Array.<string>} An array with permutations.
+	 */
+	getSiteURLPermutations: createRegistrySelector( ( select ) => () => {
+		const referenceURL = select( STORE_NAME ).getReferenceSiteURL();
+		const permutations = [];
+
+		const url = new URL( referenceURL );
+		url.hostname = url.hostname.replace( /^www\./i, '' );
+
+		url.protocol = 'http';
+		permutations.push( untrailingslashit( url ) );
+
+		url.protocol = 'https';
+		permutations.push( untrailingslashit( url ) );
+
+		url.hostname = 'www.' + url.hostname;
+		permutations.push( untrailingslashit( url ) );
+
+		url.protocol = 'http';
+		permutations.push( untrailingslashit( url ) );
+
+		return permutations;
 	} ),
 };
 

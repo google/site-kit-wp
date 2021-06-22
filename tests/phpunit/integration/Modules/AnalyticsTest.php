@@ -408,6 +408,7 @@ class AnalyticsTest extends TestCase {
 			$method->invokeArgs( $analytics, array() );
 			$this->fail( 'Expected redirect to module page with "authentication_success" notification' );
 		} catch ( RedirectException $redirect ) {
+			$this->assertEquals( 1, did_action( 'googlesitekit_analytics_handle_provisioning_callback' ) );
 			$this->assertEquals(
 				add_query_arg(
 					array(
@@ -507,13 +508,6 @@ class AnalyticsTest extends TestCase {
 			// Tracking is not active for logged-in users by default (opt-out expected).
 			array(
 				$base_settings,
-				true,
-				$assert_contains_opt_out,
-			),
-			// Tracking is not active if snippet is disabled for logged in users,
-			// but opt-out is not added because tracking is not disabled.
-			array(
-				array_merge( $base_settings, array( 'useSnippet' => false ) ),
 				true,
 				$assert_contains_opt_out,
 			),

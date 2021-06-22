@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { createRegistry } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -33,8 +28,8 @@ import {
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
 } from './constants';
 import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
-import * as modulesAnalytics from '../';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import { enabledFeatures } from '../../../features';
 
 const accountID = 'pub-12345678';
 
@@ -107,6 +102,8 @@ describe( 'modules/analytics setup-flow', () => {
 		registry = createTestRegistry();
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+
+		enabledFeatures.add( 'ga4setup' );
 	} );
 
 	afterAll( () => {
@@ -119,14 +116,8 @@ describe( 'modules/analytics setup-flow', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getSetupFlowMode', () => {
-			it( 'returns "legacy" if the modules/analytics-4 store is not available ', async () => {
-				// Create a new registry with only the Analytics Module enabled;
-				// the GA4 datastore won't be loaded at all.
-				registry = createRegistry();
-
-				modulesAnalytics.registerStore( registry );
-				// Receive empty settings to prevent unexpected fetch by resolver.
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			it( 'returns "legacy" if the feature flag ga4setup is disabled ', async () => {
+				enabledFeatures.delete( 'ga4setup' );
 
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_LEGACY );
 			} );
@@ -137,14 +128,12 @@ describe( 'modules/analytics setup-flow', () => {
 				);
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( false );
-
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_LEGACY );
 			} );
 
-			it( 'should return undefined if isAdminAPIWorking() returns undefined ', () => {
-				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( undefined );
-
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
+			it( 'should not return undefined if isAdminAPIWorking() returns undefined ', () => {
+				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBeUndefined();
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).not.toBeUndefined();
 			} );
 
 			it( 'should return undefined if settings are still loading', () => {
@@ -161,21 +150,19 @@ describe( 'modules/analytics setup-flow', () => {
 				);
 
 				registry = createTestRegistry();
-
 				populateAnalytics4Datastore( registry );
+
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-
-				expect( registry.select( MODULES_ANALYTICS ).getSettings() ).toBe( undefined );
-
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
+				expect( registry.select( MODULES_ANALYTICS ).getSettings() ).toBeUndefined();
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBeUndefined();
 			} );
 
 			it( 'should return "ua" if there is no account selected', () => {
-				expect( registry.select( MODULES_ANALYTICS ).getAccountID( accountID ) ).toBe( undefined );
+				expect( registry.select( MODULES_ANALYTICS ).getAccountID( accountID ) ).toBeUndefined();
 
 				populateAnalytics4Datastore( registry );
-				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 
+				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_UA );
 			} );
 
@@ -183,9 +170,8 @@ describe( 'modules/analytics setup-flow', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 				populateAnalyticsDatastore( registry );
 
-				expect( registry.select( MODULES_ANALYTICS ).getProperties() ).toBe( undefined );
-
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
+				expect( registry.select( MODULES_ANALYTICS ).getProperties() ).toBeUndefined();
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBeUndefined();
 			} );
 
 			it( 'should return "ua" if selected account returns an empty array from GA4 getProperties selector', () => {
@@ -239,7 +225,6 @@ describe( 'modules/analytics setup-flow', () => {
 				);
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_UA );
 			} );
 
@@ -249,8 +234,7 @@ describe( 'modules/analytics setup-flow', () => {
 				populateAnalytics4Datastore( registry );
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( undefined );
+				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBeUndefined();
 			} );
 
 			it( 'should return "ga4" if selected account returns an empty array from UA getProperties selector', () => {
@@ -263,7 +247,6 @@ describe( 'modules/analytics setup-flow', () => {
 				);
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_GA4 );
 			} );
 
@@ -273,7 +256,6 @@ describe( 'modules/analytics setup-flow', () => {
 				populateAnalyticsDatastore( registry );
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_GA4_TRANSITIONAL );
 			} );
 		} );
