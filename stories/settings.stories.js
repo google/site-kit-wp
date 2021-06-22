@@ -68,6 +68,7 @@ storiesOf( 'Settings', module )
 		options: {
 			delay: 3000, // Wait for tabs to animate.
 		},
+		padding: 0,
 	} )
 	.add( 'Connected Services', () => {
 		const setupRegistry = ( registry ) => {
@@ -95,6 +96,7 @@ storiesOf( 'Settings', module )
 		options: {
 			delay: 100, // Wait for screen to render.
 		},
+		padding: 0,
 	} )
 	.add( 'Connect More Services', () => {
 		const setupRegistry = async ( registry ) => {
@@ -118,6 +120,8 @@ storiesOf( 'Settings', module )
 				</div>
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} )
 	.add( 'Admin Settings', () => {
 		global._googlesitekitLegacyData = settingsData;
@@ -142,4 +146,6 @@ storiesOf( 'Settings', module )
 				</div>
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} );
