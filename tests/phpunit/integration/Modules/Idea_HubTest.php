@@ -133,6 +133,42 @@ class Idea_HubTest extends TestCase {
 		$this->assertEquals( $post_states3, array( 'draft' => 'Draft' ) );
 	}
 
+	public function test_is_idea_post() {
+		// Ensure we don't have the filter set
+		remove_all_filters( 'wp_insert_post_empty_content' );
+
+		// Create an empty post that we can't trash
+		add_filter( 'wp_insert_post_empty_content', '__return_false' );
+		$post_id = wp_insert_post( array(), false );
+		remove_filter( 'wp_insert_post_empty_content', '__return_false' );
+
+		$this->assertFalse( has_filter( 'wp_insert_post_empty_content' ) );
+
+		// Connect the module
+		$this->idea_hub->register();
+		$this->assertTrue( has_filter( 'wp_insert_post_empty_content' ) );
+
+		wp_trash_post( $post_id ); // This fails silently
+
+		// Ensure that we couldn't trash the empty post
+		$this->assertEquals( get_post_status( $post_id ), 'draft' );
+
+		$idea = array(
+			'name'   => 'ideas/17450692223393508734',
+			'text'   => 'Why Penguins are guanotelic?',
+			'topics' => array(
+				'/m/05z6w' => 'Penguins',
+			),
+		);
+
+		$this->idea_hub->set_post_idea( $post_id, $idea );
+
+		wp_trash_post( $post_id ); // This succeeds as the post is an idea post now.
+
+		// Ensure that we can trash an empty ideahub post
+		$this->assertEquals( get_post_status( $post_id ), 'trash' );
+	}
+
 	public function test_on_deactivation() {
 		$options = new Options( $this->context );
 		$options->set( Settings::OPTION, 'test-value' );
