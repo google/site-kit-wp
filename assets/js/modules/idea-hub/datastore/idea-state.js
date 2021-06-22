@@ -32,8 +32,15 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 
 const fetchPostUpdateIdeaStateStore = createFetchStore( {
 	baseName: 'updateIdeaState',
-	controlCallback: () => {
-		return API.set( 'modules', 'idea-hub', 'update-idea-state' );
+	controlCallback: ( { ideaState } ) => {
+		return API.set( 'modules', 'idea-hub', 'update-idea-state', { ideaState } );
+	},
+	argsToParams( ideaState ) {
+		return { ideaState };
+	},
+	validateParams( { ideaState } = {} ) {
+		invariant( isPlainObject( ideaState ), 'ideaState must be an object.' );
+		invariant( typeof ideaState.name === 'string', 'ideaState.name must be a string.' );
 	},
 } );
 
@@ -52,9 +59,6 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*updateIdeaState( ideaState ) {
-		invariant( isPlainObject( ideaState ), 'ideaState must be an object.' );
-		invariant( typeof ideaState.name === 'string', 'ideaState.name must be a string.' );
-
 		const response = yield fetchPostUpdateIdeaStateStore.actions.fetchUpdateIdeaState( ideaState );
 
 		return response;
