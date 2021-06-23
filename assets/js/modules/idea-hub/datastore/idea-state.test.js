@@ -58,7 +58,7 @@ describe( 'modules/idea-hub idea-state', () => {
 			it( "updates a given idea's state", async () => {
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
-					ideaStateFixture
+					{ body: ideaStateFixture }
 				);
 				const { response } = await registry.dispatch( STORE_NAME ).updateIdeaState( ideaStateFixture );
 
@@ -93,7 +93,7 @@ describe( 'modules/idea-hub idea-state', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
-					updatedIdeaState,
+					{ body: updatedIdeaState, status: 200 },
 				);
 
 				const { response } = await registry.dispatch( STORE_NAME ).saveIdea( ideaStateFixture.name );
@@ -111,7 +111,7 @@ describe( 'modules/idea-hub idea-state', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
-					updatedIdeaState,
+					{ body: updatedIdeaState, status: 200 },
 				);
 
 				const { response } = await registry.dispatch( STORE_NAME ).unsaveIdea( ideaStateFixture.name );
@@ -129,7 +129,7 @@ describe( 'modules/idea-hub idea-state', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
-					updatedIdeaState,
+					{ body: updatedIdeaState },
 				);
 
 				const { response } = await registry.dispatch( STORE_NAME ).dismissIdea( ideaStateFixture.name );

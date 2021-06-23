@@ -26,7 +26,6 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 const { receiveError, clearError } = errorStoreActions;
@@ -41,7 +40,6 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 		} else {
 			params.dismissed = dismissed;
 		}
-
 		return API.set( 'modules', 'idea-hub', 'update-idea-state', params );
 	},
 	argsToParams( { name, saved, dismissed } ) {
@@ -83,11 +81,9 @@ const baseActions = {
 	*saveIdea( ideaName ) {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
-		const registry = yield Data.commonActions.getRegistry();
-
 		yield clearError( 'saveIdea', [ ideaName ] );
 
-		const { response, error } = yield registry.dispatch( STORE_NAME ).updateIdeaState( {
+		const { response, error } = yield baseActions.updateIdeaState( {
 			name: ideaName,
 			saved: true,
 		} );
@@ -109,11 +105,9 @@ const baseActions = {
 	*unsaveIdea( ideaName ) {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
-		const registry = yield Data.commonActions.getRegistry();
-
 		yield clearError( 'unsaveIdea', [ ideaName ] );
 
-		const { response, error } = yield registry.dispatch( STORE_NAME ).updateIdeaState( {
+		const { response, error } = yield baseActions.updateIdeaState( {
 			name: ideaName,
 			saved: false,
 		} );
@@ -135,11 +129,9 @@ const baseActions = {
 	*dismissIdea( ideaName ) {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
-		const registry = yield Data.commonActions.getRegistry();
-
 		yield clearError( 'dismissIdea', [ ideaName ] );
 
-		const { response, error } = yield registry.dispatch( STORE_NAME ).updateIdeaState( {
+		const { response, error } = yield baseActions.updateIdeaState( {
 			name: ideaName,
 			dismissed: true,
 		} );
