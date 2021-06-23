@@ -85,7 +85,7 @@ const baseActions = {
 
 		const registry = yield Data.commonActions.getRegistry();
 
-		yield clearError( 'saveIdea', [] );
+		yield clearError( 'saveIdea', [ ideaName ] );
 
 		const { response, error } = yield registry.dispatch( STORE_NAME ).updateIdeaState( {
 			name: ideaName,
@@ -111,7 +111,7 @@ const baseActions = {
 
 		const registry = yield Data.commonActions.getRegistry();
 
-		yield clearError( 'unsaveIdea', [] );
+		yield clearError( 'unsaveIdea', [ ideaName ] );
 
 		const { response, error } = yield registry.dispatch( STORE_NAME ).updateIdeaState( {
 			name: ideaName,
@@ -137,7 +137,7 @@ const baseActions = {
 
 		const registry = yield Data.commonActions.getRegistry();
 
-		yield clearError( 'dismissIdea', [] );
+		yield clearError( 'dismissIdea', [ ideaName ] );
 
 		const { response, error } = yield registry.dispatch( STORE_NAME ).updateIdeaState( {
 			name: ideaName,
