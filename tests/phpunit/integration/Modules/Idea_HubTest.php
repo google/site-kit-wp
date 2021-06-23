@@ -148,7 +148,9 @@ class Idea_HubTest extends TestCase {
 		$this->idea_hub->register();
 		$this->assertTrue( has_filter( 'wp_insert_post_empty_content' ) );
 
-		// Trashing this post fails silently.
+		// Trashing this post fails silently, because it isn't an Idea Hub
+		// post and it has no content.
+		// See: https://github.com/google/site-kit-wp/issues/3514.
 		wp_trash_post( $post_id );
 
 		// Ensure that we couldn't trash the empty post.
