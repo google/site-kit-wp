@@ -18,7 +18,7 @@ use WP_REST_Server;
 /**
  * Class for handling user survey rest routes.
  *
- * @since n.e.x.t
+ * @since 1.35.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class REST_User_Surveys_Controller {
 	/**
 	 * Authentication instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.35.0
 	 * @var Authentication
 	 */
 	protected $authentication;
@@ -35,7 +35,7 @@ class REST_User_Surveys_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.35.0
 	 *
 	 * @param Authentication $authentication Authentication instance.
 	 */
@@ -46,7 +46,7 @@ class REST_User_Surveys_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.35.0
 	 */
 	public function register() {
 		add_filter(
@@ -61,7 +61,7 @@ class REST_User_Surveys_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.35.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */

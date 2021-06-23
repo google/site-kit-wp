@@ -34,7 +34,6 @@ import { numFmt } from '../../../../../util';
 import MiniChart from '../../../../../components/MiniChart';
 import ReportTable from '../../../../../components/ReportTable';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
 
 export default function AcquisitionChannelsTable( { report } ) {
@@ -94,12 +93,10 @@ export default function AcquisitionChannelsTable( { report } ) {
 
 	return (
 		<div className="googlesitekit-details-widget">
-			<TableOverflowContainer>
-				<ReportTable
-					rows={ report[ 0 ].data.rows }
-					columns={ tableColumns }
-				/>
-			</TableOverflowContainer>
+			<ReportTable
+				rows={ report[ 0 ].data.rows }
+				columns={ tableColumns }
+			/>
 		</div>
 	);
 }
