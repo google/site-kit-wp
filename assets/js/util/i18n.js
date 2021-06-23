@@ -285,8 +285,35 @@ export const numFmt = ( number, options = {} ) => {
  */
 export const numberFormat = ( number, options = {} ) => {
 	const { locale = getLocale(), ...formatOptions } = options;
-
-	return new Intl.NumberFormat( locale, formatOptions ).format( number );
+	let hasWarned = false;
+	while ( true ) {
+		try {
+			/**
+			 * Per https://github.com/google/site-kit-wp/issues/3255 there have been issues with some versions of Safari
+			 * on some operating systems throwing issues with some parameters in the formatOptions.
+			 *
+			 * If an error is thrown, we delete a key from the formatOptions until no errors are thrown.
+			 *
+			 * This allows us to degrade somewhat gracefully without breaking the dashboard for users of affected browsers.
+			 */
+			return new Intl.NumberFormat( locale, formatOptions ).format( number );
+		} catch ( e ) {
+			if ( ! hasWarned ) {
+				// eslint-disable-next-line no-console
+				console.warn( `Unable to: new Intl.NumberFormat( ${ JSON.stringify( locale ) }, ${ JSON.stringify( formatOptions ) } ).format( ${ number } );` );
+				hasWarned = true;
+			}
+			const formatKey = Object.keys( formatOptions ).pop(); // We're not concerned with which key we remove from formatOptions.
+			delete formatOptions[ formatKey ];
+		}
+		if ( ! Object.keys( formatOptions ).length ) {
+			/*
+			 * If for some reason we can not call Intl.NumberFormat with no formatOptions,
+			 * just return the number to avoid an infinite loop.
+			 */
+			return number;
+		}
+	}
 };
 
 /**

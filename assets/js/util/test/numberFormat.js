@@ -87,6 +87,7 @@ describe( 'numberFormat', () => {
 		expect(
 			numberFormat( 123456789.87, { locale: 'de-DE' } )
 		).toStrictEqual( '123.456.789,87' );
+		expect( console ).not.toHaveWarned();
 	} );
 
 	afterEach( () => {
@@ -115,5 +116,6 @@ describe( 'numberFormat', () => {
 	it.each( siteKitLocales )( 'formats numbers correctly with locale variant %s', ( locale, value, expected ) => {
 		setupGoogleSiteKit( locale );
 		expect( numberFormat( value ) ).toStrictEqual( expected );
+		expect( console ).not.toHaveWarned();
 	} );
 } );
