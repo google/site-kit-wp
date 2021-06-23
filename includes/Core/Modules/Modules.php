@@ -443,8 +443,8 @@ final class Modules {
 
 		$this->set_active_modules_option( $option );
 
-		if ( is_callable( array( $module, 'on_activation' ) ) ) {
-			call_user_func( array( $module, 'on_activation' ) );
+		if ( $module instanceof Module_With_Activation ) {
+			$module->on_activation();
 		}
 
 		return true;
@@ -481,8 +481,8 @@ final class Modules {
 
 		$this->set_active_modules_option( array_values( $option ) );
 
-		if ( is_callable( array( $module, 'on_deactivation' ) ) ) {
-			call_user_func( array( $module, 'on_deactivation' ) );
+		if ( $module instanceof Module_With_Deactivation ) {
+			$module->on_deactivation();
 		}
 
 		return true;
