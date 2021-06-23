@@ -433,6 +433,13 @@ final class Modules {
 			return false;
 		}
 
+		// TODO: Remove this hack.
+		if ( Analytics::MODULE_SLUG === $slug ) {
+			// GA4 needs to be handled first to pass conditions below
+			// due to special handling in active modules option.
+			$this->activate_module( Analytics_4::MODULE_SLUG );
+		}
+
 		$option = $this->get_active_modules_option();
 
 		if ( in_array( $slug, $option, true ) ) {
@@ -463,6 +470,13 @@ final class Modules {
 			$module = $this->get_module( $slug );
 		} catch ( Exception $e ) {
 			return false;
+		}
+
+		// TODO: Remove this hack.
+		if ( Analytics::MODULE_SLUG === $slug ) {
+			// GA4 needs to be handled first to pass conditions below
+			// due to special handling in active modules option.
+			$this->deactivate_module( Analytics_4::MODULE_SLUG );
 		}
 
 		$option = $this->get_active_modules_option();
