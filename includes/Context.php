@@ -324,6 +324,12 @@ class Context {
 	 */
 	public function get_amp_mode() {
 		if ( ! class_exists( 'AMP_Theme_Support' ) ) {
+			// If the AMP plugin isn't enabled but this page/post is a web
+			// story, use AMP Secondary mode.
+			if ( is_singular( 'web-story' ) ) {
+				return self::AMP_MODE_SECONDARY;
+			}
+
 			return false;
 		}
 
@@ -373,10 +379,7 @@ class Context {
 			) {
 				return self::AMP_MODE_SECONDARY;
 			}
-		} elseif (
-			function_exists( 'amp_is_canonical' ) ||
-			is_singular( 'web-story' )
-		) {
+		} elseif ( function_exists( 'amp_is_canonical' ) ) {
 			return self::AMP_MODE_SECONDARY;
 		}
 
