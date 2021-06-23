@@ -373,7 +373,10 @@ class Context {
 			) {
 				return self::AMP_MODE_SECONDARY;
 			}
-		} elseif ( function_exists( 'amp_is_canonical' ) ) {
+		} elseif (
+			function_exists( 'amp_is_canonical' ) ||
+			is_singular( 'web-story' )
+		) {
 			return self::AMP_MODE_SECONDARY;
 		}
 
