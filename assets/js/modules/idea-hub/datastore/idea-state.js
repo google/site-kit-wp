@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * Internal dependencies
@@ -34,15 +33,23 @@ const { receiveError, clearError } = errorStoreActions;
 
 const fetchPostUpdateIdeaStateStore = createFetchStore( {
 	baseName: 'updateIdeaState',
-	controlCallback: ( { ideaState } ) => {
-		return API.set( 'modules', 'idea-hub', 'update-idea-state', { ideaState } );
+	controlCallback: ( { name, saved, dismissed } ) => {
+		const params = { name };
+
+		if ( saved !== undefined ) {
+			params.saved = saved;
+		} else {
+			params.dismissed = dismissed;
+		}
+
+		return API.set( 'modules', 'idea-hub', 'update-idea-state', params );
 	},
-	argsToParams( ideaState ) {
-		return { ideaState };
+	argsToParams( { name, saved, dismissed } ) {
+		return { name, saved, dismissed };
 	},
-	validateParams( { ideaState } = {} ) {
-		invariant( isPlainObject( ideaState ), 'ideaState must be an object.' );
-		invariant( typeof ideaState.name === 'string', 'ideaState.name must be a string.' );
+	validateParams( { name, saved, dismissed } = {} ) {
+		invariant( typeof name === 'string' && name.length > 0, 'name must be a non empty string' );
+		invariant( saved !== undefined || dismissed !== undefined, 'either saved or dimissed property must be set' );
 	},
 } );
 
