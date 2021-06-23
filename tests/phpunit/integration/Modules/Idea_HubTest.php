@@ -134,23 +134,24 @@ class Idea_HubTest extends TestCase {
 	}
 
 	public function test_is_idea_post() {
-		// Ensure we don't have the filter set
+		// Ensure we don't have the filter set.
 		remove_all_filters( 'wp_insert_post_empty_content' );
 
-		// Create an empty post that we can't trash
+		// Create an empty post that we can't trash.
 		add_filter( 'wp_insert_post_empty_content', '__return_false' );
 		$post_id = wp_insert_post( array(), false );
 		remove_filter( 'wp_insert_post_empty_content', '__return_false' );
 
 		$this->assertFalse( has_filter( 'wp_insert_post_empty_content' ) );
 
-		// Connect the module
+		// Connect the Idea Hub module.
 		$this->idea_hub->register();
 		$this->assertTrue( has_filter( 'wp_insert_post_empty_content' ) );
 
-		wp_trash_post( $post_id ); // This fails silently
+		// Trashing this post fails silently.
+		wp_trash_post( $post_id );
 
-		// Ensure that we couldn't trash the empty post
+		// Ensure that we couldn't trash the empty post.
 		$this->assertEquals( get_post_status( $post_id ), 'draft' );
 
 		$idea = array(
@@ -163,9 +164,10 @@ class Idea_HubTest extends TestCase {
 
 		$this->idea_hub->set_post_idea( $post_id, $idea );
 
-		wp_trash_post( $post_id ); // This succeeds as the post is an idea post now.
+		// This succeeds as the post is now an idea post.
+		wp_trash_post( $post_id );
 
-		// Ensure that we can trash an empty ideahub post
+		// Ensure that we can trash an empty Idea Hub post.
 		$this->assertEquals( get_post_status( $post_id ), 'trash' );
 	}
 
