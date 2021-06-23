@@ -93,7 +93,7 @@ const baseActions = {
 		} );
 
 		if ( error ) {
-			yield receiveError( error, 'saveIdea', [] );
+			yield receiveError( error, 'saveIdea', [ ideaName ] );
 		}
 
 		return { response, error };
@@ -119,7 +119,7 @@ const baseActions = {
 		} );
 
 		if ( error ) {
-			yield receiveError( error, 'unsaveIdea', [] );
+			yield receiveError( error, 'unsaveIdea', [ ideaName ] );
 		}
 
 		return { response, error };
@@ -145,7 +145,7 @@ const baseActions = {
 		} );
 
 		if ( error ) {
-			yield receiveError( error, 'dismissIdea', [] );
+			yield receiveError( error, 'dismissIdea', [ ideaName ] );
 		}
 
 		return { response, error };
