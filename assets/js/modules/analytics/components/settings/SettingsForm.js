@@ -82,11 +82,9 @@ export default function SettingsForm() {
 			) }
 
 			{ ( isGA4Enabled && isGA4Connected ) && (
-				<GA4PropertyNotice notice={ __( 'You need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property.', 'google-site-kit' ) }>
-					<div className="googlesitekit-setup-module__inputs">
-						<GA4PropertySelect />
-					</div>
-				</GA4PropertyNotice>
+				<div className="googlesitekit-setup-module__inputs">
+					<GA4PropertySelect label={ __( 'Google Analytics 4 Property', 'google-site-kit' ) } />
+				</div>
 			) }
 
 			{ ( isGA4Enabled && SETUP_FLOW_MODE_UA === setupFlowMode && isGA4Connected ) && (
