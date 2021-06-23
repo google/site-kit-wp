@@ -19,7 +19,7 @@
 /**
  * Returns GA4 tag matchers.
  *
- * @since n.e.x.t
+ * @since 1.35.0
  *
  * @return {Array.<RegExp>} Array of RegExp objects.
  */

@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Tags;
 /**
  * Trait for adding the dns-prefetch directive to a url.
  *
- * @since n.e.x.t
+ * @since 1.35.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ trait Tag_With_DNS_Prefetch_Trait {
 	/**
 	 * Gets a callback that can be used for the wp_resource_hints filter to set the dns-prefetch directive for a specified URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.35.0
 	 *
 	 * @param string $url URL to which the dns-prefetch directive should be added.
 	 * @return array List of urls.
