@@ -16,10 +16,19 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+const { useSelect } = Data;
+
 export default function SetupForm() {
+	const { description } = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'idea-hub' ) );
+
 	return (
 		<form className="googlesitekit-idea-hub-setup__form">
-			<p>Idea Hub description</p>
+			<p>{ description }</p>
 		</form>
 	);
 }
