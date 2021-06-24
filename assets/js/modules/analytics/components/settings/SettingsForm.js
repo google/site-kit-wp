@@ -82,7 +82,7 @@ export default function SettingsForm() {
 			) }
 
 			{ ( isGA4Enabled && isGA4Connected ) && (
-				<div className="googlesitekit-setup-module__inputs">
+				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--collapsed">
 					<GA4PropertySelect label={ __( 'Google Analytics 4 Property', 'google-site-kit' ) } />
 				</div>
 			) }
