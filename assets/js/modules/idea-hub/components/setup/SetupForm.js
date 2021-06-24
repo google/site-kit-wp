@@ -30,6 +30,7 @@ import { STORE_NAME } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import Checkbox from '../../../../components/Checkbox';
 import Button from '../../../../components/Button';
+import SettingsNotice from '../../../../components/SettingsNotice';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm() {
@@ -43,8 +44,11 @@ export default function SetupForm() {
 	}, [ setTosAccepted ] );
 
 	return (
-		<form className="googlesitekit-idea-hub-setup__form">
+		<form className="googlesitekit-ideahub-setup__form">
 			<p>{ description }</p>
+
+			<SettingsNotice notice={ __( 'Idea Hub is only available in the US for now', 'google-site-kit' ) } />
+
 			<Checkbox
 				name="tosAccepted"
 				id="tosAccepted"
