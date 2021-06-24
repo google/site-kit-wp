@@ -352,12 +352,36 @@ storiesOf( 'Analytics Module/Setup', module )
 		],
 		padding: 0,
 	} )
-	.add( 'No Tag, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: true } ) )
-	.add( 'No Tag, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: false } ) )
-	.add( 'Existing Tag w/ access, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: true } ) )
-	.add( 'Existing Tag w/ access, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: true } ) )
-	.add( 'Existing Tag w/o access, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: false } ) )
-	.add( 'Existing Tag w/o access, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: false } ) )
+	.add(
+		'No Tag, GTM property w/ access',
+		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: true } ),
+		{ padding: 0 }
+	)
+	.add(
+		'No Tag, GTM property w/o access',
+		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: false } ),
+		{ padding: 0 }
+	)
+	.add(
+		'Existing Tag w/ access, GTM property w/ access',
+		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: true } ),
+		{ padding: 0 }
+	)
+	.add(
+		'Existing Tag w/ access, GTM property w/o access',
+		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: true } ),
+		{ padding: 0 }
+	)
+	.add(
+		'Existing Tag w/o access, GTM property w/ access',
+		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: false } ),
+		{ padding: 0 }
+	)
+	.add(
+		'Existing Tag w/o access, GTM property w/o access',
+		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: false } ),
+		{ padding: 0 }
+	)
 	.add( 'Nothing selected', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
