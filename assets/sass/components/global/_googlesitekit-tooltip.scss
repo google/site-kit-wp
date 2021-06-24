@@ -19,3 +19,7 @@
 .googlesitekit-tooltip.MuiTooltip-tooltipPlacementBottom {
 	margin-top: 0;
 }
+
+.googlesitekit-tooltip-popper.MuiTooltip-popper {
+	z-index: 99999;
+}
