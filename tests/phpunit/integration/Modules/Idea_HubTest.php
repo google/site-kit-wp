@@ -76,7 +76,7 @@ class Idea_HubTest extends TestCase {
 
 		$options->set(
 			Settings::OPTION,
-			array()
+			array( 'tosAccepted' => true )
 		);
 
 		$this->assertTrue( $idea_hub->is_connected() );
@@ -104,7 +104,7 @@ class Idea_HubTest extends TestCase {
 
 		$options->set(
 			Settings::OPTION,
-			array()
+			array( 'tosAccepted' => true )
 		);
 
 		// Create the post
