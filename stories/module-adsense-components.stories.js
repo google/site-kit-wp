@@ -85,6 +85,7 @@ generateReportBasedWidgetStories( {
 			options: [],
 		},
 	},
+	padding: 0,
 } );
 
 const topEarningPagesArgs = {
@@ -136,6 +137,7 @@ generateReportBasedWidgetStories( {
 			options: [],
 		},
 	},
+	padding: 0,
 } );
 
 const moduleTopEarningPagesWidgetOptions = {
@@ -162,6 +164,7 @@ generateReportBasedWidgetStories( {
 			options: moduleTopEarningPagesWidgetOptions,
 		},
 	},
+	padding: 0,
 } );
 
 generateReportBasedWidgetStories( {
@@ -219,4 +222,5 @@ generateReportBasedWidgetStories( {
 	] ),
 	Component: ModuleOverviewWidget,
 	wrapWidget: false,
+	padding: 0,
 } );
