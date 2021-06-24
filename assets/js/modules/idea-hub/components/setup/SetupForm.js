@@ -17,18 +17,34 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import Checkbox from '../../../../components/Checkbox';
 const { useSelect } = Data;
 
 export default function SetupForm() {
 	const { description } = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'idea-hub' ) );
+	const tosAccepted = useSelect( ( select ) => select( STORE_NAME ).getTosAccepted() );
 
 	return (
 		<form className="googlesitekit-idea-hub-setup__form">
 			<p>{ description }</p>
+			<Checkbox
+				name="tosAccepted"
+				id="tosAccepted"
+				value="1"
+				checked={ tosAccepted }
+				onChange={ () => {} }
+			>
+				{ __( 'I agree that Idea Hub will track my usage of the feature in order to provide a better idea suggestions', 'google-site-kit' ) }
+			</Checkbox>
 		</form>
 	);
 }

@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { STORE_NAME } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import SetupMain from './SetupMain';
@@ -53,8 +54,8 @@ DefaultSetup.decorators = [
 			homepage: 'https://www.google.com/webmasters/verification/home',
 			internal: true,
 			order: 0,
-			active: true,
-			connected: true,
+			active: false,
+			connected: false,
 			dependencies: [],
 			dependants: [],
 			owner: null,
@@ -63,6 +64,7 @@ DefaultSetup.decorators = [
 
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( CORE_MODULES ).receiveGetModules( moduleFixture );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( { tosAccepted: true } );
 		};
 
 		return (
