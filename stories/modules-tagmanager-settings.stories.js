@@ -319,6 +319,7 @@ storiesOf( 'Tag Manager Module/Settings/Primary AMP', module )
 		decorators: [
 			withRegistryPrimaryAMP,
 		],
+		padding: 0,
 	} )
 ;
 
@@ -345,6 +346,7 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 		decorators: [
 			withRegistrySecondaryAMP,
 		],
+		padding: 0,
 	} )
 	.add( 'Edit, with "Set up a new container"', ( args, { registry } ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
@@ -363,6 +365,7 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 		decorators: [
 			withRegistrySecondaryAMP,
 		],
+		padding: 0,
 	} )
 	.add( 'Edit, with a non-unique new containers', ( args, { registry } ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
@@ -385,5 +388,6 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 		decorators: [
 			withRegistrySecondaryAMP,
 		],
+		padding: 0,
 	} )
 ;
