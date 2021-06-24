@@ -74,8 +74,6 @@ storiesOf( 'AdSense Module', module )
 				</SetupWrap>
 			</WithTestRegistry>
 		);
-	}, {
-		padding: 0,
 	} )
 	.add( 'Account Select, selected', () => {
 		const accounts = fixtures.accountsMultiple;
