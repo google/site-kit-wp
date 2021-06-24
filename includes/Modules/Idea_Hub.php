@@ -555,7 +555,7 @@ final class Idea_Hub extends Module
 	 * @since n.e.x.t
 	 *
 	 * @param int $post_id Post ID.
-	 * @return bool True if the post with supplied ID is an idea hub post.
+	 * @return bool True if the post with supplied ID is an Idea Hub post.
 	 */
 	private function is_idea_post( $post_id ) {
 		return is_array( $this->get_post_idea( $post_id ) );
