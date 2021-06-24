@@ -137,7 +137,7 @@ final class Idea_Hub extends Module
 	 * @return bool True if module is connected, false otherwise.
 	 */
 	public function is_connected() {
-		$required_keys = array();
+		$required_keys = array( 'tosAccepted' );
 
 		$options = $this->get_settings()->get();
 		foreach ( $required_keys as $required_key ) {
