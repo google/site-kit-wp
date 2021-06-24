@@ -12,12 +12,15 @@ namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Modules\Module_With_Activation;
+use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
 
-class FakeModule extends Module {
+class FakeModule extends Module
+	implements Module_With_Activation, Module_With_Deactivation {
 
 	/**
 	 * Whether or not the module has been registered.
