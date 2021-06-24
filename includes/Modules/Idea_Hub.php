@@ -550,7 +550,7 @@ final class Idea_Hub extends Module
 	}
 
 	/**
-	 * Checks whether the post is an idea hub post.
+	 * Checks whether the post is an Idea Hub post.
 	 *
 	 * @since n.e.x.t
 	 *
