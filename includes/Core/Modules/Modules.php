@@ -433,6 +433,13 @@ final class Modules {
 			return false;
 		}
 
+		// TODO: Remove this hack.
+		if ( Analytics::MODULE_SLUG === $slug ) {
+			// GA4 needs to be handled first to pass conditions below
+			// due to special handling in active modules option.
+			$this->activate_module( Analytics_4::MODULE_SLUG );
+		}
+
 		$option = $this->get_active_modules_option();
 
 		if ( in_array( $slug, $option, true ) ) {
@@ -443,8 +450,8 @@ final class Modules {
 
 		$this->set_active_modules_option( $option );
 
-		if ( is_callable( array( $module, 'on_activation' ) ) ) {
-			call_user_func( array( $module, 'on_activation' ) );
+		if ( $module instanceof Module_With_Activation ) {
+			$module->on_activation();
 		}
 
 		return true;
@@ -465,6 +472,13 @@ final class Modules {
 			return false;
 		}
 
+		// TODO: Remove this hack.
+		if ( Analytics::MODULE_SLUG === $slug ) {
+			// GA4 needs to be handled first to pass conditions below
+			// due to special handling in active modules option.
+			$this->deactivate_module( Analytics_4::MODULE_SLUG );
+		}
+
 		$option = $this->get_active_modules_option();
 
 		$key = array_search( $slug, $option, true );
@@ -481,8 +495,8 @@ final class Modules {
 
 		$this->set_active_modules_option( array_values( $option ) );
 
-		if ( is_callable( array( $module, 'on_deactivation' ) ) ) {
-			call_user_func( array( $module, 'on_deactivation' ) );
+		if ( $module instanceof Module_With_Deactivation ) {
+			$module->on_deactivation();
 		}
 
 		return true;
