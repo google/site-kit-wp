@@ -54,7 +54,7 @@ export default function PropertySelectIncludingGA4() {
 
 	const propertyID = primaryPropertyType === PROPERTY_TYPE_GA4 ? ga4PropertyID : uaPropertyID;
 
-	const onChange = useCallback( ( index, item ) => {
+	const onChange = useCallback( async ( index, item ) => {
 		const newPropertyID = item.dataset.value;
 		const internalID = item.dataset.internalId; // eslint-disable-line sitekit/acronym-case
 		if ( propertyID === newPropertyID ) {
@@ -67,9 +67,16 @@ export default function PropertySelectIncludingGA4() {
 			uaDispatch.selectProperty( newPropertyID, internalID );
 			uaDispatch.setPrimaryPropertyType( PROPERTY_TYPE_UA );
 
-			ga4Dispatch.setPropertyID( '' );
-			ga4Dispatch.setWebDataStreamID( '' );
-			ga4Dispatch.setMeasurementID( '' );
+			const ga4Property = await ga4Dispatch.matchAccountProperty( accountID );
+
+			let webdatastream;
+			if ( ga4Property?._id ) {
+				webdatastream = await ga4Dispatch.matchWebDataStream( ga4Property._id );
+			}
+
+			ga4Dispatch.setPropertyID( ga4Property?._id || '' );
+			ga4Dispatch.setWebDataStreamID( webdatastream?._id || '' );
+			ga4Dispatch.setMeasurementID( webdatastream?.measurementId || '' ); // eslint-disable-line sitekit/acronym-case
 		} else {
 			ga4Dispatch.selectProperty( newPropertyID );
 			uaDispatch.setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
@@ -78,7 +85,7 @@ export default function PropertySelectIncludingGA4() {
 			uaDispatch.setInternalWebPropertyID( '' );
 			uaDispatch.setProfileID( '' );
 		}
-	}, [ propertyID, ga4Dispatch, uaDispatch ] );
+	}, [ accountID, propertyID, ga4Dispatch, uaDispatch ] );
 
 	if ( ! isValidAccountID( accountID ) ) {
 		return null;

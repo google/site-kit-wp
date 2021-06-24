@@ -201,6 +201,30 @@ const baseActions = {
 	},
 
 	/**
+	 * Matches properties for provided accountID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} accountID GA4 account ID.
+	 * @return {Object|null} Matched property object on success, otherwise NULL.
+	 */
+	*matchAccountProperty( accountID ) {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield baseActions.waitForProperties( accountID );
+
+		const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
+		const properties = registry.select( STORE_NAME ).getProperties( accountID );
+
+		const property = yield baseActions.matchPropertyByURL(
+			( properties || [] ).map( ( { _id } ) => _id ),
+			referenceURL,
+		);
+
+		return property;
+	},
+
+	/**
 	 * Matches and selects a property for provided accountID.
 	 *
 	 * @since 1.34.0
@@ -210,17 +234,7 @@ const baseActions = {
 	 * @return {Object|null} Matched property object on success, otherwise NULL.
 	 */
 	*matchAndSelectProperty( accountID, fallbackPropertyID = '' ) {
-		const registry = yield Data.commonActions.getRegistry();
-
-		yield baseActions.waitForProperties( accountID );
-
-		const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
-		const properties = registry.select( STORE_NAME ).getProperties( accountID );
-		const property = yield baseActions.matchPropertyByURL(
-			( properties || [] ).map( ( { _id } ) => _id ),
-			referenceURL,
-		);
-
+		const property = yield baseActions.matchAccountProperty( accountID );
 		const propertyID = property?._id || fallbackPropertyID;
 		if ( propertyID ) {
 			yield baseActions.selectProperty( propertyID );
