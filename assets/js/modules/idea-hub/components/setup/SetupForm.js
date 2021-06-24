@@ -49,17 +49,25 @@ export default function SetupForm() {
 
 			<SettingsNotice notice={ __( 'Idea Hub is only available in the US for now', 'google-site-kit' ) } />
 
-			<Checkbox
-				name="tosAccepted"
-				id="tosAccepted"
-				value="1"
-				checked={ tosAccepted }
-				onChange={ onChange }
-			>
-				{ __( 'I agree that Idea Hub will track my usage of the feature in order to provide a better idea suggestions', 'google-site-kit' ) }
-			</Checkbox>
+			<div className="googlesitekit-ideahub-setup__checkbox">
+				<Checkbox
+					name="tosAccepted"
+					id="tosAccepted"
+					value="1"
+					checked={ tosAccepted }
+					onChange={ onChange }
+				>
+					{ __( 'I agree that Idea Hub will track my usage of the feature in order to provide better idea suggestions', 'google-site-kit' ) }
+				</Checkbox>
+			</div>
 
-			<Button disabled={ ! tosAccepted }>Continue</Button>
+			<Button
+				className="googlesitekit-ideahub-setup__button"
+				disabled={ ! tosAccepted }
+			>{
+					__( 'Continue', 'google-site-kit' )
+				}</Button>
+
 		</form>
 	);
 }

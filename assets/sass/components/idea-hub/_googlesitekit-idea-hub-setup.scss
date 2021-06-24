@@ -1,5 +1,5 @@
 /**
- * Idea Hub styles.
+ * Idea Hub setup component styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,8 +16,24 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-idea-hub-dashboard-ideas-widget";
-@import "googlesitekit-idea-hub-empty";
-@import "googlesitekit-idea-hub-pagination";
-@import "googlesitekit-idea-hub-dashboard-cta";
-@import "googlesitekit-idea-hub-setup.scss";
+.googlesitekit-ideahub-setup__button {
+	margin-top: $grid-gap-phone;
+
+	@media (min-width: $bp-desktop) {
+		margin-top: $grid-gap-desktop;
+	}
+}
+
+.googlesitekit-ideahub-setup__checkbox {
+
+	/*
+	 * The MDC Checkbox has 11px padding, so this brings the edge
+	 * of the checkbox in line with the rest of the content.
+	 */
+	margin-left: -11px;
+
+	label[for="tosAccepted"] {
+
+		@include responsive-text("body2", "body2");
+	}
+}
