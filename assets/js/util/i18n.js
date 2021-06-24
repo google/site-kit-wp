@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { get, isFinite, isPlainObject } from 'lodash';
+import memize from 'memize';
 
 /**
  * WordPress dependencies
@@ -272,6 +273,9 @@ export const numFmt = ( number, options = {} ) => {
 	return numberFormat( number, formatOptions );
 };
 
+// Log once for a given message.
+const logOnce = memize( console.warn ); // eslint-disable-line no-console
+
 /**
  * Formats a number using the JS Internationalization Number Format API.
  *
@@ -285,33 +289,41 @@ export const numFmt = ( number, options = {} ) => {
  */
 export const numberFormat = ( number, options = {} ) => {
 	const { locale = getLocale(), ...formatOptions } = options;
-	let hasWarned = false;
-	while ( true ) {
-		try {
-			/**
-			 * Per https://github.com/google/site-kit-wp/issues/3255 there have been issues with some versions of Safari
-			 * on some operating systems throwing issues with some parameters in the formatOptions.
-			 *
-			 * If an error is thrown, we delete a key from the formatOptions until no errors are thrown.
-			 *
-			 * This allows us to degrade somewhat gracefully without breaking the dashboard for users of affected browsers.
-			 */
-			return new Intl.NumberFormat( locale, formatOptions ).format( number );
-		} catch ( e ) {
-			if ( ! hasWarned ) {
-				// eslint-disable-next-line no-console
-				console.warn( `Unable to: new Intl.NumberFormat( ${ JSON.stringify( locale ) }, ${ JSON.stringify( formatOptions ) } ).format( ${ number } );` );
-				hasWarned = true;
+	try {
+		/**
+		 * Per https://github.com/google/site-kit-wp/issues/3255 there have been issues with some versions of Safari
+		 * on some operating systems throwing issues with some parameters in the formatOptions.
+		 *
+		 * If an error is thrown, we remove some troublesome params from the formatOptions object and fallback to no formatting.
+		 *
+		 * This allows us to degrade somewhat gracefully without breaking the dashboard for users of unaffected browsers.
+		 */
+		return new Intl.NumberFormat( locale, formatOptions ).format( number );
+	} catch ( error ) {
+		logOnce( `Unable to: new Intl.NumberFormat( ${ JSON.stringify( locale ) }, ${ JSON.stringify( formatOptions ) } ).format( ${ number } );`, 'warn' );
+
+		// Remove these key/values from formatOptions and try again.
+		const removeFormatOptions = {
+			currencyDisplay: 'narrow',
+			currencySign: 'accounting',
+			style: 'unit',
+			signDisplay: '*', // * denotes any value.
+			compactDisplay: '*',
+		};
+
+		const reducedFormatOptions = {};
+
+		for ( const [ key, value ] of Object.entries( formatOptions ) ) {
+			if ( removeFormatOptions[ key ] && [ value, '*' ].includes( removeFormatOptions[ key ] ) ) {
+				continue;
 			}
-			const formatKey = Object.keys( formatOptions ).pop(); // We're not concerned with which key we remove from formatOptions.
-			delete formatOptions[ formatKey ];
+			reducedFormatOptions[ key ] = value;
 		}
-		if ( ! Object.keys( formatOptions ).length ) {
-			/*
-			 * If for some reason we can not call Intl.NumberFormat with no formatOptions,
-			 * just return the number to avoid an infinite loop.
-			 */
-			return number;
+
+		try {
+			return new Intl.NumberFormat( locale, reducedFormatOptions ).format( number );
+		} catch ( error2 ) {
+			return new Intl.NumberFormat( locale ).format( number );
 		}
 	}
 };
