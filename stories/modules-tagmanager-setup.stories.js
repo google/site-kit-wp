@@ -286,6 +286,7 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 		decorators: [
 			withRegistryPrimaryAMP,
 		],
+		padding: 0,
 	} )
 	.add( 'Selected', ( args, { registry } ) => {
 		// eslint-disable-next-line sitekit/acronym-case
@@ -304,6 +305,7 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 		decorators: [
 			withRegistryPrimaryAMP,
 		],
+		padding: 0,
 	} )
 	.add( 'Container with property ID, Analytics inactive', ( args, { registry } ) => {
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
@@ -321,6 +323,7 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 		decorators: [
 			withRegistryPrimaryAMP,
 		],
+		padding: 0,
 	} )
 	// Multiple property IDs are only possible with secondary AMP.
 	.add( 'Container with property ID, Analytics active, ID match', ( rargs, { registry } ) => {
@@ -343,6 +346,7 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 		decorators: [
 			withRegistryPrimaryAMP,
 		],
+		padding: 0,
 	} )
 	.add( 'Container with property ID, Analytics active, ID mismatch error', ( args, { registry } ) => {
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
@@ -363,6 +367,7 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 		decorators: [
 			withRegistryPrimaryAMP,
 		],
+		padding: 0,
 	} )
 ;
 
@@ -377,6 +382,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 		decorators: [
 			withRegistrySecondaryAMP,
 		],
+		padding: 0,
 	} )
 	.add( 'Selected', ( args, { registry } ) => {
 		// eslint-disable-next-line sitekit/acronym-case
@@ -400,6 +406,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 		decorators: [
 			withRegistrySecondaryAMP,
 		],
+		padding: 0,
 	} )
 	.add( 'Singular property ID, Analytics inactive', ( args, { registry } ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
@@ -422,6 +429,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 		decorators: [
 			withRegistrySecondaryAMP,
 		],
+		padding: 0,
 	} )
 	.add( 'Multiple property IDs, Analytics inactive', ( args, { registry } ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
@@ -444,6 +452,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 		decorators: [
 			withRegistrySecondaryAMP,
 		],
+		padding: 0,
 	} )
 	.add( 'Multiple property IDs, Analytics active', ( args, { registry } ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
@@ -468,6 +477,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 		decorators: [
 			withRegistrySecondaryAMP,
 		],
+		padding: 0,
 	} )
 	.add( 'Singular property ID, Analytics active, ID match', ( args, { registry } ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
@@ -494,6 +504,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 		decorators: [
 			withRegistrySecondaryAMP,
 		],
+		padding: 0,
 	} )
 	.add( 'Singular property ID, Analytics active, ID mismatch error', ( args, { registry } ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
@@ -519,6 +530,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 		decorators: [
 			withRegistrySecondaryAMP,
 		],
+		padding: 0,
 	} )
 	.add( 'Set up a new container', ( args, { registry } ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
@@ -537,6 +549,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 		decorators: [
 			withRegistrySecondaryAMP,
 		],
+		padding: 0,
 	} )
 	.add( 'Set up with a non-unique container names', ( args, { registry } ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
@@ -559,5 +572,6 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 		decorators: [
 			withRegistrySecondaryAMP,
 		],
+		padding: 0,
 	} )
 ;
