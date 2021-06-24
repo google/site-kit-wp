@@ -40,12 +40,13 @@ export const selectors = {
 	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
 	 */
 	getGoogleLocaleAwareURL( state, args ) {
+		const currentLocale = getLocale();
 		const {
 			website,
 			path,
 			query,
 			hash,
-			locale = getLocale(),
+			locale = currentLocale.match( /^([a-zA-Z]+[-_]?[a-zA-Z]*)/ )?.[ 0 ] || currentLocale,
 		} = args || {};
 
 		if ( ! path ) {
@@ -96,7 +97,6 @@ export const selectors = {
 		return select( STORE_NAME ).getGoogleLocaleAwareURL( {
 			website: 'https://myaccount.google.com',
 			path: '/privacypolicy',
-			locale: ( getLocale() || '' ).substr( 0, 5 ),
 		} );
 	} ),
 
@@ -112,7 +112,6 @@ export const selectors = {
 		return select( STORE_NAME ).getGoogleLocaleAwareURL( {
 			website: 'https://policies.google.com',
 			path: '/terms',
-			locale: ( getLocale() || '' ).substr( 0, 5 ),
 		} );
 	} ),
 };
