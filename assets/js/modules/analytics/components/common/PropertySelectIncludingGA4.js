@@ -64,9 +64,6 @@ export default function PropertySelectIncludingGA4() {
 		trackEvent( 'analytics_setup', 'property_change', newPropertyID );
 
 		if ( !! internalID || newPropertyID === PROPERTY_CREATE ) {
-			uaDispatch.selectProperty( newPropertyID, internalID );
-			uaDispatch.setPrimaryPropertyType( PROPERTY_TYPE_UA );
-
 			const ga4Property = await ga4Dispatch.matchAccountProperty( accountID );
 
 			let webdatastream;
@@ -74,15 +71,20 @@ export default function PropertySelectIncludingGA4() {
 				webdatastream = await ga4Dispatch.matchWebDataStream( ga4Property._id );
 			}
 
+			uaDispatch.selectProperty( newPropertyID, internalID );
+			uaDispatch.setPrimaryPropertyType( PROPERTY_TYPE_UA );
+
 			ga4Dispatch.setPropertyID( ga4Property?._id || '' );
 			ga4Dispatch.setWebDataStreamID( webdatastream?._id || '' );
 			ga4Dispatch.setMeasurementID( webdatastream?.measurementId || '' ); // eslint-disable-line sitekit/acronym-case
 		} else {
+			const uaProperty = await uaDispatch.findMatchedProperty( accountID );
+
 			ga4Dispatch.selectProperty( newPropertyID );
 			uaDispatch.setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
 
-			uaDispatch.setPropertyID( '' );
-			uaDispatch.setInternalWebPropertyID( '' );
+			uaDispatch.setPropertyID( uaProperty.id || '' );
+			uaDispatch.setInternalWebPropertyID( uaProperty.internalWebPropertyId || '' ); // eslint-disable-line sitekit/acronym-case
 			uaDispatch.setProfileID( '' );
 		}
 	}, [ accountID, propertyID, ga4Dispatch, uaDispatch ] );
