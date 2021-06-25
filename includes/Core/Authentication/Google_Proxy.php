@@ -24,7 +24,8 @@ use Exception;
  */
 class Google_Proxy {
 
-	const BASE_URL                = 'https://sitekit.withgoogle.com';
+	const PRODUCTION_BASE_URL     = 'https://sitekit.withgoogle.com';
+	const STAGING_BASE_URL        = 'https://site-kit-dev.appspot.com';
 	const OAUTH2_SITE_URI         = '/o/oauth2/site/';
 	const OAUTH2_REVOKE_URI       = '/o/oauth2/revoke/';
 	const OAUTH2_TOKEN_URI        = '/o/oauth2/token/';
@@ -34,6 +35,8 @@ class Google_Proxy {
 	const PERMISSIONS_URI         = '/site-management/permissions/';
 	const USER_INPUT_SETTINGS_URI = '/site-management/settings/';
 	const FEATURES_URI            = '/site-management/features/';
+	const SURVEY_TRIGGER_URI      = '/survey/trigger/';
+	const SURVEY_EVENT_URI        = '/survey/event/';
 	const ACTION_SETUP            = 'googlesitekit_proxy_setup';
 	const ACTION_PERMISSIONS      = 'googlesitekit_proxy_permissions';
 
@@ -173,11 +176,9 @@ class Google_Proxy {
 	 * @return string Complete proxy URL.
 	 */
 	public function url( $path = '' ) {
-		if ( defined( 'GOOGLESITEKIT_PROXY_URL' ) && GOOGLESITEKIT_PROXY_URL ) {
-			$url = GOOGLESITEKIT_PROXY_URL;
-		} else {
-			$url = self::BASE_URL;
-		}
+		$url = defined( 'GOOGLESITEKIT_PROXY_URL' ) && self::STAGING_BASE_URL === GOOGLESITEKIT_PROXY_URL
+			? self::STAGING_BASE_URL
+			: self::PRODUCTION_BASE_URL;
 
 		$url = untrailingslashit( $url );
 
@@ -446,6 +447,59 @@ class Google_Proxy {
 				'body' => array(
 					'platform' => 'wordpress/google-site-kit',
 					'version'  => GOOGLESITEKIT_VERSION,
+				),
+			)
+		);
+	}
+
+	/**
+	 * Sends survey trigger ID to the proxy.
+	 *
+	 * @since 1.35.0
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @param string      $access_token Access token.
+	 * @param string      $trigger_id   Token ID.
+	 * @return array|WP_Error Response of the wp_remote_post request.
+	 */
+	public function send_survey_trigger( Credentials $credentials, $access_token, $trigger_id ) {
+		return $this->request(
+			self::SURVEY_TRIGGER_URI,
+			$credentials,
+			array(
+				'access_token' => $access_token,
+				'json_request' => true,
+				'body'         => array(
+					'trigger_context' => array(
+						'trigger_id' => $trigger_id,
+						'language'   => get_user_locale(),
+					),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Sends survey event to the proxy.
+	 *
+	 * @since 1.35.0
+	 *
+	 * @param Credentials     $credentials  Credentials instance.
+	 * @param string          $access_token Access token.
+	 * @param array|\stdClass $session      Session object.
+	 * @param array|\stdClass $event        Event object.
+	 * @return array|WP_Error Response of the wp_remote_post request.
+	 */
+	public function send_survey_event( Credentials $credentials, $access_token, $session, $event ) {
+		return $this->request(
+			self::SURVEY_EVENT_URI,
+			$credentials,
+			array(
+				'access_token' => $access_token,
+				'json_request' => true,
+				'body'         => array(
+					'session' => $session,
+					'event'   => $event,
 				),
 			)
 		);

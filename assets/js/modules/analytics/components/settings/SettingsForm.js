@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -31,39 +36,65 @@ import {
 	UseSnippetSwitch,
 	ProfileNameTextField,
 	ExistingGTMPropertyNotice,
+	GA4Notice,
+	GA4PropertyNotice,
 } from '../common';
+import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import GA4Notice from '../common/GA4Notice';
-import { STORE_NAME } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { SETUP_FLOW_MODE_LEGACY, STORE_NAME, PROFILE_CREATE, SETUP_FLOW_MODE_UA } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
+	const isGA4Enabled = useFeature( 'ga4setup' );
+	const isGA4Connected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) );
+	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+
+	const useAnalyticsSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
+	const useTagManagerSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
+	const analyticsSinglePropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
+	const shouldShowTrackingExclusionSwitches = useAnalyticsSnippet || ( useTagManagerSnippet && analyticsSinglePropertyID );
 
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
-			<GA4Notice />
+			{ SETUP_FLOW_MODE_LEGACY === setupFlowMode && (
+				<GA4Notice />
+			) }
+
 			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
 			<ExistingTagNotice />
 			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
-
 				<PropertySelect />
-
 				<ProfileSelect />
 			</div>
 
+			{ ( profileID === PROFILE_CREATE ) && (
+				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+					<ProfileNameTextField />
+				</div>
+			) }
+
+			{ ( isGA4Enabled && isGA4Connected ) && (
+				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--collapsed">
+					<GA4PropertySelect label={ __( 'Google Analytics 4 Property', 'google-site-kit' ) } />
+				</div>
+			) }
+
+			{ ( isGA4Enabled && SETUP_FLOW_MODE_UA === setupFlowMode && isGA4Connected ) && (
+				<GA4PropertyNotice notice={ __( 'A Google Analytics 4 property will be created.', 'google-site-kit' ) } />
+			) }
+
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-				<ProfileNameTextField />
-
 				<UseSnippetSwitch />
-
 				<AnonymizeIPSwitch />
-
-				<TrackingExclusionSwitches />
-
+				{ shouldShowTrackingExclusionSwitches && <TrackingExclusionSwitches /> }
 				<AdsConversionIDTextField />
 			</div>
 		</div>

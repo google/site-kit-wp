@@ -26,26 +26,23 @@ import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 
-export const Ready = () => <ModuleSetup moduleSlug="analytics" />;
-Ready.storyName = 'SetupFormUA';
-Ready.decorators = [
+const features = [ 'ga4setup' ];
+
+function Template() {
+	return <ModuleSetup moduleSlug="analytics" />;
+}
+
+export const WithoutExistingTag = Template.bind( null );
+WithoutExistingTag.storyName = 'Without Existing Tag';
+WithoutExistingTag.parameters = { features };
+
+export const WithExistingTag = Template.bind( null );
+WithExistingTag.storyName = 'With Existing Tag';
+WithExistingTag.parameters = { features };
+WithExistingTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-			const accountID = accounts[ 0 ].id;
-			const propertyID = properties[ 0 ].id;
-
-			registry.dispatch( STORE_NAME ).receiveGetSettings( { adsConversionID: '' } );
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts.slice( 0, 1 ) );
-			registry.dispatch( STORE_NAME ).receiveGetProperties(
-				// eslint-disable-next-line sitekit/acronym-case
-				properties.slice( 0, 1 ).map( ( property ) => ( { ...property, websiteUrl: 'http://example.com' } ) ),
-				{ accountID },
-			);
-			registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], { accountID } );
-			registry.dispatch( STORE_NAME ).selectAccount( accountID );
+			registry.dispatch( STORE_NAME ).receiveGetExistingTag( fixtures.accountsPropertiesProfiles.properties[ 0 ].id );
 		};
 
 		return (
@@ -55,17 +52,16 @@ Ready.decorators = [
 		);
 	},
 ];
-Ready.parameters = {
-	features: [
-		'ga4setup',
-	],
-};
 
 export default {
 	title: 'Modules/Analytics/Setup/SetupFormUA',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+				const accountID = accounts[ 0 ].id;
+				const propertyID = properties[ 0 ].id;
+
 				provideModules( registry, [
 					{
 						slug: 'analytics',
@@ -81,6 +77,18 @@ export default {
 
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
+
+				registry.dispatch( STORE_NAME ).receiveGetSettings( { adsConversionID: '' } );
+				registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts.slice( 0, 1 ) );
+				registry.dispatch( STORE_NAME ).receiveGetProperties(
+					// eslint-disable-next-line sitekit/acronym-case
+					properties.slice( 0, 1 ).map( ( property ) => ( { ...property, websiteUrl: 'http://example.com' } ) ),
+					{ accountID },
+				);
+				registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], { accountID } );
+				registry.dispatch( STORE_NAME ).selectAccount( accountID );
 			};
 
 			return (

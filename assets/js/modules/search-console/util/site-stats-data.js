@@ -30,19 +30,22 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { getLocale, numFmt, calculateChange, getChartDifferenceArrow } from '../../../util';
+import { getPreviousDate } from '../../../util/date-range/get-previous-date';
 
 /**
  * Gets data for a Google chart from a Search Console report.
  *
  * @since 1.30.0
+ * @since 1.34.0 Added `dateRangeLength` parameter.
  *
- * @param {Array}  current        Report rows for the current period.
- * @param {Array}  previous       Report rows for the previous period.
- * @param {string} label          Metric label.
- * @param {number} selectedColumn Selected column index.
+ * @param {Array}  current         Report rows for the current period.
+ * @param {Array}  previous        Report rows for the previous period.
+ * @param {string} label           Metric label.
+ * @param {number} selectedColumn  Selected column index.
+ * @param {number} dateRangeLength Date range length.
  * @return {Array.<Array.<number|string>>} Data array.
  */
-export const getSiteStatsDataForGoogleChart = ( current, previous, label, selectedColumn ) => {
+export const getSiteStatsDataForGoogleChart = ( current, previous, label, selectedColumn, dateRangeLength ) => {
 	const dataMap = [
 		[
 			{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
@@ -62,9 +65,13 @@ export const getSiteStatsDataForGoogleChart = ( current, previous, label, select
 
 	current.forEach( ( currentDay, index ) => {
 		const currentMonth = currentDay[ selectedColumn ];
-		const prevMonth = previous[ index ][ selectedColumn ];
 		const currentDate = currentDay.keys[ 0 ];
-		const previousDate = previous[ index ].keys[ 0 ];
+		// Search Console does not provide rows from before the property was added
+		// so we need to provide fallback values for the previous range which may not exist.
+		const prevMonth = previous[ index ]?.[ selectedColumn ] || 0;
+		const previousDate = previous[ index ]?.keys[ 0 ] ||
+			getPreviousDate( currentDate, dateRangeLength );
+
 		const dateRange = sprintf(
 			/* translators: 1: date for user stats, 2: previous date for user stats comparison */
 			_x( '%1$s vs %2$s', 'Date range for chart tooltip', 'google-site-kit' ),

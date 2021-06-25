@@ -63,7 +63,7 @@ class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 			chart: {
 				title: pageTitle,
 			},
-			curveType: 'line',
+			curveType: 'function',
 			height: 270,
 			width: '100%',
 			chartArea: {

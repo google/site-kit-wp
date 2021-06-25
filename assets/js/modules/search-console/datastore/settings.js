@@ -29,6 +29,7 @@ import { TYPE_MODULES } from '../../../components/data/constants';
 import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isValidPropertyID } from '../util';
+import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import { STORE_NAME } from './constants';
 
 // Invariant error messages.
@@ -53,6 +54,8 @@ export async function submitChanges( { select, dispatch } ) {
 
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
-	const { getPropertyID } = strictSelect( STORE_NAME );
+	const { getPropertyID, haveSettingsChanged } = strictSelect( STORE_NAME );
+
 	invariant( isValidPropertyID( getPropertyID() ), INVARIANT_INVALID_PROPERTY_SELECTION );
+	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 }
