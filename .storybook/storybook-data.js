@@ -134,34 +134,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'dashboard--search-funnel-analytics-inactive',
-		kind: 'Dashboard',
-		name: 'Search Funnel Analytics Inactive',
-		story: 'Search Funnel Analytics Inactive',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
-		id: 'dashboard--search-funnel',
-		kind: 'Dashboard',
-		name: 'Search Funnel',
-		story: 'Search Funnel',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
 		id: 'global--data-table',
 		kind: 'Global',
 		name: 'Data Table',
