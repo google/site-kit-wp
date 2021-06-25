@@ -48,11 +48,10 @@ export default function PropertySelectIncludingGA4() {
 	} );
 
 	const primaryPropertyType = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPrimaryPropertyType() );
+	const propertyID = primaryPropertyType === PROPERTY_TYPE_GA4 ? ga4PropertyID : uaPropertyID;
 
 	const ga4Dispatch = useDispatch( MODULES_ANALYTICS_4 );
 	const uaDispatch = useDispatch( MODULES_ANALYTICS );
-
-	const propertyID = primaryPropertyType === PROPERTY_TYPE_GA4 ? ga4PropertyID : uaPropertyID;
 
 	const onChange = useCallback( async ( index, item ) => {
 		const newPropertyID = item.dataset.value;
@@ -122,9 +121,9 @@ export default function PropertySelectIncludingGA4() {
 					id: PROPERTY_CREATE,
 					name: __( 'Set up a new property', 'google-site-kit' ),
 				} )
-				.map( ( { id, name, internalWebPropertyId }, index ) => ( // eslint-disable-line sitekit/acronym-case
+				.map( ( { id, name, internalWebPropertyId } ) => ( // eslint-disable-line sitekit/acronym-case
 					<Option
-						key={ index }
+						key={ id }
 						value={ id }
 						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
 					>

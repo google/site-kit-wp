@@ -25,7 +25,7 @@ import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 import { provideSiteInfo } from '../../../../../../tests/js/utils';
-import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
+import { act, render } from '../../../../../../tests/js/test-utils';
 import { enabledFeatures } from '../../../../features';
 
 const {
@@ -118,61 +118,5 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( 1 );
 		expect( listItems[ 0 ].textContent ).toMatch( /set up a new property/i );
-	} );
-
-	it( 'should change between UA and GA4 properties', () => {
-		const { getAllByRole, container, registry } = render( <PropertySelectIncludingGA4 />, { setupRegistry } );
-		const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
-		// the selector getPropertiesIncludingGA4 sorts so this is rendered second in the select
-		const ga4TargetProperty = ga4Properties[ 0 ];
-
-		expect( container.querySelector( '.mdc-select__selected-text' ) ).toHaveTextContent( '' );
-
-		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
-
-		// The selected property is a GA4 property
-		expect( registry.select( MODULES_ANALYTICS ).getPrimaryPropertyType() ).toBe( 'ga4' );
-		const newGA4PropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
-		expect( ga4TargetProperty._id ).toEqual( newGA4PropertyID );
-
-		expect( container.querySelector( '.mdc-select__selected-text' ) )
-			.toHaveTextContent( `${ ga4TargetProperty.displayName } (${ ga4TargetProperty._id })` );
-		expect( container.querySelector( '.mdc-select__selected-text' ) )
-			.toHaveTextContent( 'Test GA4 Property (1000)' );
-
-		// the modules/analytics store's getPropertyID action should be reset
-		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe( '' );
-
-		// Select a UA property
-		const uaProperties = registry.select( MODULES_ANALYTICS ).getProperties( accountID );
-
-		const uaTargetProperty = uaProperties[ 0 ];
-
-		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 7 ] );
-
-		expect( registry.select( MODULES_ANALYTICS ).getPrimaryPropertyType() ).toBe( 'ua' );
-
-		const newUAPropertyID = registry.select( MODULES_ANALYTICS ).getPropertyID();
-
-		expect( uaTargetProperty.id ).toEqual( newUAPropertyID );
-
-		expect( container.querySelector( '.mdc-select__selected-text' ) )
-			.toHaveTextContent( `${ uaTargetProperty.name } (${ uaTargetProperty.id })` );
-		expect( container.querySelector( '.mdc-select__selected-text' ) ).toHaveTextContent( 'wegweg (UA-152925174-1)' );
-
-		expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( '' );
-
-		// Select a GA4 property again
-		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
-
-		expect( container.querySelector( '.mdc-select__selected-text' ) )
-			.toHaveTextContent( `${ ga4TargetProperty.displayName } (${ ga4TargetProperty._id })` );
-		expect( container.querySelector( '.mdc-select__selected-text' ) )
-			.toHaveTextContent( 'Test GA4 Property (1000)' );
-
-		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe( '' );
 	} );
 } );
