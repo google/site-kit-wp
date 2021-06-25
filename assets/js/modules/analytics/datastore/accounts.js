@@ -149,11 +149,11 @@ const baseActions = {
 				return;
 			}
 
-			const uaProperties = registry.select( STORE_NAME ).getProperties( accountID );
 			let uaProperty = yield propertyActions.findMatchedProperty( accountID );
 			const uaPropertyID = uaProperty?.id;
 
 			if ( ! uaProperty ) {
+				const uaProperties = registry.select( STORE_NAME ).getProperties( accountID );
 				uaProperty = {
 					id: uaProperties.length === 0 ? PROPERTY_CREATE : '', // Create a new property only if the selected account has no UA properties.
 					internalWebPropertyId: '', // eslint-disable-line sitekit/acronym-case
