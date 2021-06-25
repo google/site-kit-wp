@@ -27,27 +27,16 @@ import { addFilter } from '@wordpress/hooks';
 import { createAddToFilter } from '../../util/helpers';
 import PostSearcher from '../../components/PostSearcher';
 import GoogleSitekitSearchConsoleDashboardWidget from './components/dashboard/GoogleSitekitSearchConsoleDashboardWidget';
-import LegacySearchConsoleDashboardWidgetTopLevel from './components/dashboard/LegacySearchConsoleDashboardWidgetTopLevel';
-import LegacyDashboardWidgetPopularKeywordsTable from './components/dashboard/LegacyDashboardWidgetPopularKeywordsTable';
 
 const slug = 'search-console';
 
 const addGoogleSitekitSearchConsoleDashboardWidget = createAddToFilter( <GoogleSitekitSearchConsoleDashboardWidget /> );
-const addLegacySearchConsoleDashboardWidgetTopLevel = createAddToFilter( <LegacySearchConsoleDashboardWidgetTopLevel /> );
 
-const addLegacyDashboardWidgetPopularKeywordsTable = createAddToFilter( <LegacyDashboardWidgetPopularKeywordsTable /> );
 const addPostSearcher = createAddToFilter( <PostSearcher /> );
 
 /**
  * Add components to the Site Kit Dashboard.
  */
-addFilter( 'googlesitekit.DashboardSearchFunnel',
-	'googlesitekit.SearchConsoleSearchFunnel',
-	addLegacySearchConsoleDashboardWidgetTopLevel );
-
-addFilter( 'googlesitekit.DashboardPopularity',
-	'googlesitekit.SearchConsoleDashboardPopularity',
-	addLegacyDashboardWidgetPopularKeywordsTable );
 addFilter( 'googlesitekit.DashboardPopularity',
 	'googlesitekit.DashboardPPostSearcherModule',
 	addPostSearcher, 30 );

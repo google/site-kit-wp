@@ -19,10 +19,4 @@
 export { default as DashboardClicksWidget } from './DashboardClicksWidget';
 export { default as DashboardImpressionsWidget } from './DashboardImpressionsWidget';
 export { default as DashboardPopularKeywordsWidget } from './DashboardPopularKeywordsWidget';
-export { default as LegacyDashboardPopularityInner } from './LegacyDashboardPopularityInner';
-export { default as LegacyDashboardWidgetPopularKeywordsTable } from './LegacyDashboardWidgetPopularKeywordsTable';
 export { default as GoogleSitekitSearchConsoleDashboardWidget } from './GoogleSitekitSearchConsoleDashboardWidget';
-export { default as LegacySearchConsoleDashboardWidgetTopLevel } from './LegacySearchConsoleDashboardWidgetTopLevel';
-export { default as LegacySearchConsoleDashboardWidgetKeywordTable } from './LegacySearchConsoleDashboardWidgetKeywordTable';
-export { default as LegacySearchConsoleDashboardWidgetOverview } from './LegacySearchConsoleDashboardWidgetOverview';
-export { default as LegacySearchConsoleDashboardWidgetSiteStats } from './LegacySearchConsoleDashboardWidgetSiteStats';

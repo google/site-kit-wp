@@ -25,53 +25,12 @@ import { addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import { getModulesData } from '../../util';
-import { createAddToFilter } from '../../util/helpers';
-import LegacyAnalyticsDashboardWidget from './components/dashboard/LegacyAnalyticsDashboardWidget';
-import LegacyAnalyticsDashboardWidgetTopLevel from './components/dashboard/LegacyAnalyticsDashboardWidgetTopLevel';
-import LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable from './components/dashboard/LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable';
-import LegacyAnalyticsDashboardWidgetPopularPagesTable from './components/dashboard/LegacyAnalyticsDashboardWidgetPopularPagesTable';
-import LegacyAdSenseDashboardWidgetTopPagesTableSmall from './components/dashboard/LegacyAdSenseDashboardWidgetTopPagesTableSmall';
 
 const slug = 'analytics';
 
 const modulesData = getModulesData();
 
 if ( modulesData.analytics.active ) {
-	const addAnalyticsDashboardWidget = createAddToFilter( <LegacyAnalyticsDashboardWidget /> );
-	const addLegacyAnalyticsDashboardWidgetTopLevel = createAddToFilter( <LegacyAnalyticsDashboardWidgetTopLevel /> );
-	const addAnalyticsAdSenseTopPagesWidget = createAddToFilter( <LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable /> );
-	const addLegacyAnalyticsDashboardWidgetPopularPagesTable = createAddToFilter( <LegacyAnalyticsDashboardWidgetPopularPagesTable /> );
-	const addLegacyAdSenseDashboardWidgetTopPagesTableSmall = createAddToFilter( <LegacyAdSenseDashboardWidgetTopPagesTableSmall /> );
-
-	/**
-	 * Add components to the Site Kit Dashboard.
-	 */
-	addFilter( 'googlesitekit.DashboardSearchFunnel',
-		'googlesitekit.Analytics',
-		addLegacyAnalyticsDashboardWidgetTopLevel, 11 );
-	addFilter( 'googlesitekit.DashboardPopularity',
-		'googlesitekit.Analytics',
-		addLegacyAnalyticsDashboardWidgetPopularPagesTable, 20 );
-	addFilter( 'googlesitekit.AnalyticsAdSenseTopPagesTableSmall',
-		'googlesitekit.Analytics',
-		addLegacyAdSenseDashboardWidgetTopPagesTableSmall, 20 );
-
-	if ( modulesData[ slug ].setupComplete ) {
-		/**
-		 * Add components to the module detail page.
-		 */
-		addFilter( 'googlesitekit.ModuleApp-' + slug,
-			'googlesitekit.Analytics',
-			addAnalyticsDashboardWidget );
-	}
-
-	/**
-	 * Add components to the AdSense Dashboard.
-	 */
-	addFilter( 'googlesitekit.AnalyticsAdSenseTopPagesTable',
-		'googlesitekit.Analytics',
-		addAnalyticsAdSenseTopPagesWidget, 11 );
-
 	addFilter( `googlesitekit.showDateRangeSelector-${ slug }`,
 		'googlesitekit.analyticsShowDateRangeSelector',
 		() => true );
