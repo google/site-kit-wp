@@ -134,21 +134,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'global--data-table',
-		kind: 'Global',
-		name: 'Data Table',
-		story: 'Data Table',
-		parameters: {
-			fileName: './stories/data-table.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-table-overflow',
-				delay: 2000,
-			},
-		},
-	},
-	{
 		id: 'global--plugin-header',
 		kind: 'Global',
 		name: 'Plugin Header',
@@ -232,40 +217,12 @@ module.exports = [
 		},
 	},
 	{
-		id: 'adsense-module--performance',
-		kind: 'AdSense Module',
-		name: 'Performance',
-		story: 'Performance',
-		parameters: {
-			fileName: './stories/module-adsense.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				delay: 1000,
-			},
-		},
-	},
-	{
 		id: 'adsense-module-components-module-overview-widget--loaded',
 		kind: 'AdSense Module',
 		name: 'Overview Widget',
 		story: 'Loaded',
 		parameters: {
 			fileName: './stories/module-adsense-components.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
-		id: 'analytics-module--audience-overview-chart',
-		kind: 'Analytics Module',
-		name: 'Audience Overview Chart',
-		story: 'Audience Overview Chart',
-		parameters: {
-			fileName: './stories/module-analytics.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
@@ -288,40 +245,12 @@ module.exports = [
 		},
 	},
 	{
-		id: 'analytics-module--top-acquisition-pie-chart',
-		kind: 'Analytics Module',
-		name: 'Top Acquisition Pie Chart',
-		story: 'Top Acquisition Pie Chart',
-		parameters: {
-			fileName: './stories/module-analytics.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
 		id: 'search-console-module-components-module-page-overview-widget--loaded',
 		kind: 'Search Console Module',
 		name: 'Overview Widget',
 		story: 'Loaded',
 		parameters: {
 			fileName: './stories/module-search-console-components.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
-		id: 'search-console-module--overview-chart',
-		kind: 'Search Console Module',
-		name: 'Overview Chart',
-		story: 'Overview Chart',
-		parameters: {
-			fileName: './stories/module-search-console.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
