@@ -33,7 +33,7 @@ import {
 	ProfileSelect,
 	PropertySelect,
 	TrackingExclusionSwitches,
-	UseSnippetSwitch,
+	UseUASnippetSwitch,
 	ProfileNameTextField,
 	ExistingGTMPropertyNotice,
 	GA4Notice,
@@ -92,7 +92,7 @@ export default function SettingsForm() {
 			) }
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-				<UseSnippetSwitch />
+				<UseUASnippetSwitch />
 				<AnonymizeIPSwitch />
 				{ shouldShowTrackingExclusionSwitches && <TrackingExclusionSwitches /> }
 				<AdsConversionIDTextField />
