@@ -55,7 +55,17 @@ export default function UseUAandGA4SnippetSwitches() {
 		return null;
 	}
 
-	const message = '';
+	let message;
+
+	if ( useUASnippet && useGA4Snippet ) {
+		message = 'Site Kit will add the Universal Analytics and Google Analytics 4 codes automatically';
+	} else if ( useUASnippet && ! useGA4Snippet ) {
+		message = 'Site Kit will add the Universal Analytics code automatically';
+	} else if ( ! useUASnippet && useGA4Snippet ) {
+		message = 'Site Kit will add the Google Analytics 4 code automatically';
+	} else {
+		message = 'Site Kit will not add the code to your site';
+	}
 
 	return (
 		<div className="googlesitekit-analytics-usesnippet">
