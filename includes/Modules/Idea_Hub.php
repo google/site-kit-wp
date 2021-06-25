@@ -291,7 +291,7 @@ final class Idea_Hub extends Module
 				$reference_url = $this->context->get_reference_site_url();
 				$reference_url = rawurlencode( $reference_url );
 
-				$parent = "publishers/sitekit/properties/{$reference_url}";
+				$parent = "platforms/sitekit/properties/{$reference_url}";
 
 				return $this->get_service( 'ideahub' )->platforms_properties_ideas->listPlatformsPropertiesIdeas(
 					$parent,
