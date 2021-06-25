@@ -35,10 +35,52 @@ const { useSelect, useDispatch } = Data;
 export default function UseUAandGA4SnippetSwitches() {
 	const useUASnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const canUseUASnippet = useSelect( ( select ) => select( STORE_NAME ).getCanUseSnippet() );
-	const useGA4Snippet = useSelect( select( MODULES_ANALYTICS_4 ).getUseSnippet() );
+	const useGA4Snippet = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getUseSnippet() );
 	const canUseGA4Snippet = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getCanUseSnippet() );
+
+	const { setUseSnippet: setUseUASnippet } = useDispatch( STORE_NAME );
+	const { setUseSnippet: setUseGA4Snippet } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const onUAChange = useCallback( () => {
+		setUseUASnippet( ! useUASnippet );
+		trackEvent( 'analytics_setup', useUASnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled' );
+	}, [ useUASnippet, setUseUASnippet ] );
+
+	const onGA4Change = useCallback( () => {
+		setUseGA4Snippet( ! useGA4Snippet );
+		// ...
+	}, [ useGA4Snippet, setUseGA4Snippet ] );
 
 	if ( useGA4Snippet === undefined || useUASnippet === undefined ) {
 		return null;
 	}
+
+	const message = '';
+
+	return (
+		<div className="googlesitekit-analytics-usesnippet">
+			<div className="googlesitekit-settings-module__inline-items">
+				<div className="googlesitekit-settings-module__inline-item">
+					<Switch
+						label={ __( 'Let Site Kit place code on your site', 'google-site-kit' ) }
+						checked={ useUASnippet }
+						onClick={ onUAChange }
+						hideLabel={ false }
+						disabled={ ! canUseUASnippet }
+					/>
+				</div>
+				<div className="googlesitekit-settings-module__inline-item">
+					<Switch
+						label={ __( 'Let Site Kit place code on your site', 'google-site-kit' ) }
+						checked={ useGA4Snippet }
+						onClick={ onGA4Change }
+						hideLabel={ false }
+						disabled={ ! canUseGA4Snippet }
+					/>
+				</div>
+			</div>
+
+			<p className="googlesitekit-margin-top-0">{ message }</p>
+		</div>
+	);
 }
