@@ -17,4 +17,3 @@
  */
 
 export { default as DashboardDetailsSearchFunnel } from './DashboardDetailsSearchFunnel';
-export { default as DashboardDetailsWidgetKeywordsTable } from './DashboardDetailsWidgetKeywordsTable';
