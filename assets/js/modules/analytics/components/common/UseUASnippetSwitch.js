@@ -48,7 +48,7 @@ export default function UseUASnippetSwitch() {
 	return (
 		<div className="googlesitekit-analytics-usesnippet">
 			<Switch
-				label={ __( 'Let Site Kit place code on your site', 'google-site-kit' ) }
+				label={ __( 'Place Universal Analytics code', 'google-site-kit' ) }
 				checked={ useSnippet }
 				onClick={ onChange }
 				hideLabel={ false }
