@@ -80,12 +80,17 @@ export default function PropertySelectIncludingGA4() {
 		} else {
 			const uaProperty = await uaDispatch.findMatchedProperty( accountID );
 
+			let uaProfile;
+			if ( uaProperty?.id ) {
+				uaProfile = await uaDispatch.findPropertyProfile( accountID, uaProperty.id, uaProperty.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
+			}
+
 			ga4Dispatch.selectProperty( newPropertyID );
 			uaDispatch.setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
 
-			uaDispatch.setPropertyID( uaProperty.id || '' );
-			uaDispatch.setInternalWebPropertyID( uaProperty.internalWebPropertyId || '' ); // eslint-disable-line sitekit/acronym-case
-			uaDispatch.setProfileID( '' );
+			uaDispatch.setPropertyID( uaProperty?.id || '' );
+			uaDispatch.setInternalWebPropertyID( uaProperty?.internalWebPropertyId || '' ); // eslint-disable-line sitekit/acronym-case
+			uaDispatch.setProfileID( uaProfile?.id || '' );
 		}
 	}, [ accountID, propertyID, ga4Dispatch, uaDispatch ] );
 
