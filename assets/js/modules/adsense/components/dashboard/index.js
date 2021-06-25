@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-export { default as AdSenseDashboardWidget } from './AdSenseDashboardWidget';
 export { default as DashboardAdSenseTopPages } from './DashboardAdSenseTopPages';
 export { default as DashboardZeroData } from './DashboardZeroData';
 export { default as DashboardSummaryWidget } from './DashboardSummaryWidget';
