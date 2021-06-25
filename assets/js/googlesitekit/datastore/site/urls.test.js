@@ -138,6 +138,28 @@ describe( 'core/site site info', () => {
 				const url = registry.select( STORE_NAME ).getGoogleSupportURL( { path: '/analytics/answer/1032415' } );
 				expect( url ).toBe( 'https://support.google.com/analytics/answer/1032415?hl=de' );
 			} );
+
+			it( 'should return the path with a "complex" locale', () => {
+				if ( ! global._googlesitekitLegacyData ) {
+					global._googlesitekitLegacyData = {};
+				}
+
+				global._googlesitekitLegacyData.locale = 'zh_tw';
+
+				const url = registry.select( STORE_NAME ).getGoogleSupportURL( { path: '/analytics/answer/1032415' } );
+				expect( url ).toBe( 'https://support.google.com/analytics/answer/1032415?hl=zh-tw' );
+			} );
+
+			it( 'should return locale sections after the first two sections', () => {
+				if ( ! global._googlesitekitLegacyData ) {
+					global._googlesitekitLegacyData = {};
+				}
+
+				global._googlesitekitLegacyData.locale = 'zh_tw-abc	';
+
+				const url = registry.select( STORE_NAME ).getGoogleSupportURL( { path: '/analytics/answer/1032415' } );
+				expect( url ).toBe( 'https://support.google.com/analytics/answer/1032415?hl=zh-tw' );
+			} );
 		} );
 	} );
 } );
