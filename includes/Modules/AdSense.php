@@ -536,7 +536,7 @@ final class AdSense extends Module
 			'endDate.day'     => (int) $end_day,
 			'languageCode'    => $this->context->get_locale( 'site', 'language-code' ),
 			// Include default metrics only for backward-compatibility.
-			'metrics'         => array( 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ),
+			'metrics'         => array( 'TOTAL_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ),
 		);
 
 		if ( ! empty( $args['dimensions'] ) ) {

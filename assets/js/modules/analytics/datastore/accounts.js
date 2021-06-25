@@ -29,6 +29,8 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../util';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	STORE_NAME,
 	ACCOUNT_CREATE,
@@ -37,18 +39,14 @@ import {
 	PROPERTY_TYPE_UA,
 	PROPERTY_TYPE_GA4,
 } from './constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { MODULES_ANALYTICS_4, PROPERTY_CREATE as GA4_PROPERTY_CREATE } from '../../analytics-4/datastore/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { actions as tagActions } from './tags';
 import { actions as propertyActions } from './properties';
-import {
-	MODULES_ANALYTICS_4,
-	PROPERTY_CREATE as GA4_PROPERTY_CREATE,
-} from '../../analytics-4/datastore/constants';
 import { isFeatureEnabled } from '../../../features';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { matchPropertyByURL } from '../util/property';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 const { createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
 
@@ -321,6 +319,12 @@ const baseResolvers = {
 
 		// Bail out if the analytics-4 module is not enabled.
 		if ( ! isFeatureEnabled( 'ga4setup' ) ) {
+			return;
+		}
+
+		// Do not try to find a matching GA4 property if the module has already been connected.
+		const connected = registry.select( CORE_MODULES ).isModuleConnected( 'analytics' );
+		if ( connected ) {
 			return;
 		}
 
