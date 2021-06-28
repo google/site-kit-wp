@@ -129,21 +129,33 @@ export default function ModulePopularPagesWidget( { Widget, WidgetReportError, W
 			title: __( 'Pageviews', 'google-site-kit' ),
 			description: __( 'Pageviews', 'google-site-kit' ),
 			field: 'metrics.0.values.0',
-			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+			Component: ( { fieldValue } ) => (
+				<span>
+					{ numFmt( fieldValue, { style: 'decimal' } ) }
+				</span>
+			),
 		},
 		{
 			title: __( 'Unique Pageviews', 'google-site-kit' ),
 			description: __( 'Unique Pageviews', 'google-site-kit' ),
 			hideOnMobile: true,
 			field: 'metrics.0.values.1',
-			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+			Component: ( { fieldValue } ) => (
+				<span>
+					{ numFmt( fieldValue, { style: 'decimal' } ) }
+				</span>
+			),
 		},
 		{
 			title: __( 'Bounce Rate', 'google-site-kit' ),
 			description: __( 'Bounce Rate', 'google-site-kit' ),
 			hideOnMobile: true,
 			field: 'metrics.0.values.2',
-			Component: ( { fieldValue } ) => numFmt( Number( fieldValue ) / 100, '%' ),
+			Component: ( { fieldValue } ) => (
+				<span>
+					{ numFmt( Number( fieldValue ) / 100, '%' ) }
+				</span>
+			),
 		},
 	];
 
