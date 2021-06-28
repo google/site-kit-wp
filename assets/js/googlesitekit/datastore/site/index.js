@@ -25,6 +25,7 @@ import errors from './errors';
 import html from './html';
 import info from './info';
 import reset from './reset';
+import urls from './urls';
 import developerPlugin from './developer-plugin';
 import { STORE_NAME } from './constants';
 import notifications from './notifications';
@@ -39,6 +40,7 @@ const store = Data.combineStores(
 	info,
 	developerPlugin,
 	reset,
+	urls,
 	notifications,
 	registryKey,
 	createErrorStore(),

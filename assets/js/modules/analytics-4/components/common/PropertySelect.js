@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -34,7 +39,7 @@ import { isValidAccountID } from '../../../analytics/util';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
-export default function PropertySelect() {
+export default function PropertySelect( { label } ) {
 	// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
 	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
 	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) || [] );
@@ -65,7 +70,7 @@ export default function PropertySelect() {
 	return (
 		<Select
 			className="googlesitekit-analytics__select-property"
-			label={ __( 'Property', 'google-site-kit' ) }
+			label={ label || __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
 			disabled={ ! isValidAccountID( accountID ) }
@@ -96,3 +101,7 @@ export default function PropertySelect() {
 		</Select>
 	);
 }
+
+PropertySelect.propTypes = {
+	label: PropTypes.string,
+};
