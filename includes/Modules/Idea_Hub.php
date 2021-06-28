@@ -25,7 +25,6 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Post_Meta;
-use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
@@ -98,6 +97,21 @@ final class Idea_Hub extends Module
 					/* translators: %s: Idea Hub Idea Title */
 					$post_states['draft'] = sprintf( __( 'Idea Hub Draft “%s”', 'google-site-kit' ), $idea['text'] );
 					return $post_states;
+				},
+				10,
+				2
+			);
+
+			/**
+			 * Allows us to trash / modify empty idea posts.
+			 */
+			add_filter(
+				'wp_insert_post_empty_content',
+				function( $maybe_empty, $postarr ) {
+					if ( isset( $postarr['ID'] ) && $this->is_idea_post( $postarr['ID'] ) ) {
+						return false;
+					}
+					return $maybe_empty;
 				},
 				10,
 				2
@@ -534,6 +548,18 @@ final class Idea_Hub extends Module
 			'text'   => $text,
 			'topics' => $topics,
 		);
+	}
+
+	/**
+	 * Checks whether the post is an Idea Hub post.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $post_id Post ID.
+	 * @return bool True if the post with supplied ID is an Idea Hub post.
+	 */
+	private function is_idea_post( $post_id ) {
+		return is_array( $this->get_post_idea( $post_id ) );
 	}
 
 }
