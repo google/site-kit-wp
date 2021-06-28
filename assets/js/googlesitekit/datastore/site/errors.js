@@ -25,16 +25,14 @@ import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 
 const fetchErrorStore = createFetchStore( {
-	baseName: 'error',
+	baseName: 'internalServerError',
 	controlCallback: () => {
-		return API.get( 'core', 'site', 'error', undefined, {
-			useCache: false,
-		} );
+		return API.get( 'core', 'site', 'internalServerError' );
 	},
-	reducerCallback: ( state, error ) => {
+	reducerCallback: ( state, internalServerError ) => {
 		return {
 			...state,
-			error,
+			internalServerError,
 		};
 	},
 } );
@@ -44,27 +42,27 @@ const SET_SERVER_ERROR = 'SET_SERVER_ERROR';
 const CLEAR_SERVER_ERROR = 'CLEAR_SERVER_ERROR';
 
 const baseInitialState = {
-	error: undefined,
+	internalServerError: undefined,
 };
 
 const baseActions = {
 	/**
-	 * Sets the error.
+	 * Sets the internal server error.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} error Error object.
+	 * @param {Object} internalServerError Internal server error object.
 	 * @return {Object} Redux-style action.
 	 */
-	setInternalServerError( error ) {
+	setInternalServerError( internalServerError ) {
 		return {
 			type: SET_SERVER_ERROR,
-			payload: { error },
+			payload: { internalServerError },
 		};
 	},
 
 	/**
-	 * Clears the authentication error, if one was previously set.
+	 * Clears the internal server error, if one was previously set.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -83,14 +81,14 @@ export const baseReducer = ( state, { type, payload } ) => {
 		case SET_SERVER_ERROR: {
 			return {
 				...state,
-				error: payload.error,
+				internalServerError: payload.internalServerError,
 			};
 		}
 
 		case CLEAR_SERVER_ERROR: {
 			return {
 				...state,
-				error: null,
+				internalServerError: null,
 			};
 		}
 
@@ -121,8 +119,8 @@ const baseSelectors = {
 	 * @return {(Object|undefined)} Error info.
 	 */
 	getInternalServerError( state ) {
-		const { error } = state;
-		return error;
+		const { internalServerError } = state;
+		return internalServerError;
 	},
 };
 

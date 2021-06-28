@@ -31,11 +31,8 @@ import { addAction, applyFilters, doAction, addFilter, removeFilter, hasAction }
 /**
  * Internal dependencies
  */
-import { fillFilterWithComponent } from '../../util/helpers';
 import { getQueryParameter } from '../../util/standalone';
 import { isWPError } from '../../util/errors';
-import AuthError from '../notifications/AuthError';
-import UnsatisfiedScopesAlert from '../notifications/UnsatisfiedScopesAlert';
 import { getCacheKey, getCache, setCache } from './cache';
 import { TYPE_CORE, TYPE_MODULES } from './constants';
 import { invalidateCacheGroup } from './invalidate-cache-group';
@@ -186,22 +183,7 @@ const dataAPI = {
 			return;
 		}
 
-		let addedNoticeCount = 0;
-
-		// Add insufficient scopes warning.
-		if ( [ 'authError', 'insufficientPermissions' ].includes( data.reason ) ) {
-			addFilter( 'googlesitekit.ErrorNotification',
-				'googlesitekit.AuthNotification',
-				fillFilterWithComponent( UnsatisfiedScopesAlert ), 1 );
-			addedNoticeCount++;
-		}
-
-		if ( data.reconnectURL ) {
-			addFilter( 'googlesitekit.ErrorNotification',
-				'googlesitekit.AuthNotification',
-				fillFilterWithComponent( AuthError ), 1 );
-			addedNoticeCount++;
-		}
+		const addedNoticeCount = 0;
 
 		if ( addedNoticeCount ) {
 			addFilter( 'googlesitekit.TotalNotifications',

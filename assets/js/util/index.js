@@ -25,14 +25,12 @@ import unescape from 'lodash/unescape';
 /**
  * WordPress dependencies
  */
-import { addFilter } from '@wordpress/hooks';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import { trackEvent } from './tracking';
-import { fillFilterWithComponent } from './helpers';
 export { trackEvent };
 export * from './sanitize';
 export * from './stringify';
@@ -257,20 +255,6 @@ export const validateJSON = ( stringToValidate ) => {
  */
 export const validateOptimizeID = ( stringToValidate ) => {
 	return ( stringToValidate.match( /^(GTM|OPT)-[a-zA-Z\d]{7}$/ ) );
-};
-
-/**
- * Triggers an error notification on top of the page.
- *
- * @since 1.0.0
- *
- * @param {WPElement} ErrorComponent The error component to render in place.
- * @param {Object}    props          The props to pass down to the error component. Optional.
- */
-export const showErrorNotification = ( ErrorComponent, props = {} ) => {
-	addFilter( 'googlesitekit.ErrorNotification',
-		'googlesitekit.ErrorNotification',
-		fillFilterWithComponent( ErrorComponent, props ), 1 );
 };
 
 /**
