@@ -26,8 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
-import { render, createTestRegistry } from '../../../../../tests/js/utils';
-import InternalServerError from '../../../components/notifications/InternalServerError';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 
 describe( 'core/site errors', () => {
 	const internalServerError = {
@@ -72,16 +71,6 @@ describe( 'core/site errors', () => {
 			expect( store.getState() ).toMatchObject( { internalServerError } );
 			registry.dispatch( STORE_NAME ).clearInternalServerError();
 			expect( store.getState().internalServerError ).toBeNull();
-		} );
-	} );
-
-	describe( 'getInternalServerError', () => {
-		test( 'displays the error', () => {
-			registry.dispatch( STORE_NAME ).setInternalServerError( internalServerError );
-
-			const { container } = render( <InternalServerError />, { registry } );
-
-			expect( container ).toMatchSnapshot();
 		} );
 	} );
 } );
