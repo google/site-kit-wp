@@ -273,8 +273,8 @@ export const numFmt = ( number, options = {} ) => {
 	return numberFormat( number, formatOptions );
 };
 
-// Log once for a given message.
-const logOnce = memize( console.warn ); // eslint-disable-line no-console
+// Warn once for a given message.
+const warnOnce = memize( console.warn ); // eslint-disable-line no-console
 
 /**
  * Formats a number using the JS Internationalization Number Format API.
