@@ -41,34 +41,23 @@ import {
 } from '../common';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import {
-	SETUP_FLOW_MODE_GA4,
-	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
-	SETUP_FLOW_MODE_LEGACY,
-	SETUP_FLOW_MODE_UA,
-	STORE_NAME,
-	PROFILE_CREATE,
-} from '../../datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { SETUP_FLOW_MODE_LEGACY, STORE_NAME, PROFILE_CREATE, SETUP_FLOW_MODE_UA } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
 	const isGA4Enabled = useFeature( 'ga4setup' );
-	useSelect( ( select ) => {
-		if ( ! isGA4Enabled ) {
-			return;
-		}
-
-		// We need to call getProperties for getSetupFlowMode to work.
-		const accountID = select( STORE_NAME ).getAccountID();
-		return select( MODULES_ANALYTICS_4 ).getProperties( accountID );
-	} );
-
+	const isGA4Connected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) );
 	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+
+	const useAnalyticsSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
+	const useTagManagerSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
+	const analyticsSinglePropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
+	const shouldShowTrackingExclusionSwitches = useAnalyticsSnippet || ( useTagManagerSnippet && analyticsSinglePropertyID );
 
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
@@ -92,22 +81,20 @@ export default function SettingsForm() {
 				</div>
 			) }
 
-			{ ( isGA4Enabled && ( SETUP_FLOW_MODE_GA4_TRANSITIONAL === setupFlowMode || SETUP_FLOW_MODE_GA4 === setupFlowMode ) ) && (
-				<GA4PropertyNotice notice={ __( 'You’ll need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property.', 'google-site-kit' ) }>
-					<div className="googlesitekit-setup-module__inputs">
-						<GA4PropertySelect />
-					</div>
-				</GA4PropertyNotice>
+			{ ( isGA4Enabled && isGA4Connected ) && (
+				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--collapsed">
+					<GA4PropertySelect label={ __( 'Google Analytics 4 Property', 'google-site-kit' ) } />
+				</div>
 			) }
 
-			{ ( isGA4Enabled && SETUP_FLOW_MODE_UA === setupFlowMode ) && (
-				<GA4PropertyNotice notice={ __( 'A Google Analytics 4 property will also be created.', 'google-site-kit' ) } />
+			{ ( isGA4Enabled && SETUP_FLOW_MODE_UA === setupFlowMode && isGA4Connected ) && (
+				<GA4PropertyNotice notice={ __( 'A Google Analytics 4 property will be created.', 'google-site-kit' ) } />
 			) }
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
 				<UseSnippetSwitch />
 				<AnonymizeIPSwitch />
-				<TrackingExclusionSwitches />
+				{ shouldShowTrackingExclusionSwitches && <TrackingExclusionSwitches /> }
 				<AdsConversionIDTextField />
 			</div>
 		</div>

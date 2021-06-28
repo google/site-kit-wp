@@ -52,7 +52,7 @@ const LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		const adsenseData = select( MODULES_ADSENSE ).getReport( {
 			startDate,
 			endDate,
-			metrics: 'EARNINGS',
+			metrics: 'TOTAL_EARNINGS',
 		} );
 
 		return getCurrencyFormat( adsenseData );

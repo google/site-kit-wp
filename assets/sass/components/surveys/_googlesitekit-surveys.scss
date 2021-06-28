@@ -24,7 +24,10 @@
 		// The following is the same shadow used by surveys in
 		// other Google services so we're using the same style here.
 		box-shadow: rgb(0 0 0 / 14%) 0 16px 24px 2px, rgb(0 0 0 / 12%) 0 6px 30px 5px, rgb(0 0 0 / 20%) 0 8px 10px -5px;
-		max-width: 400px;
+
+		@media (min-width: 400px) {
+			max-width: 400px;
+		}
 	}
 
 	.googlesitekit-survey__body {
@@ -55,6 +58,26 @@
 
 		@media (min-width: $bp-desktop) {
 			padding: 0 $grid-gap-desktop $grid-gap-desktop;
+		}
+
+		p {
+			border-top: 1px solid $c-iron;
+			color: $c-boulder;
+			font-family: $f-primary;
+			font-size: 0.75rem;
+			margin: 12px 0 0;
+			padding-top: 12px;
+			text-align: left;
+		}
+
+		.googlesitekit-survey__terms {
+			margin: 0 0 -12px;
+			padding-top: 12px;
+
+			.googlesitekit-cta-link--external {
+				background: none;
+				padding-right: 0;
+			}
 		}
 	}
 

@@ -74,13 +74,9 @@ class Idea_HubTest extends TestCase {
 		$options  = new Options( $this->context );
 		$idea_hub = new Idea_Hub( $this->context, $options );
 
-		$this->assertFalse( $idea_hub->is_connected() );
-
 		$options->set(
 			Settings::OPTION,
-			array(
-				'ideaLocale' => 'en_US',
-			)
+			array()
 		);
 
 		$this->assertTrue( $idea_hub->is_connected() );
@@ -108,9 +104,7 @@ class Idea_HubTest extends TestCase {
 
 		$options->set(
 			Settings::OPTION,
-			array(
-				'ideaLocale' => 'en_US',
-			)
+			array()
 		);
 
 		// Create the post
@@ -137,6 +131,46 @@ class Idea_HubTest extends TestCase {
 		$this->assertEquals( $post_states1, array( 'draft' => 'Idea Hub Draft “Using Site Kit to analyze your success”' ) );
 		$this->assertEquals( $post_states2, array( 'draft' => 'Idea Hub Draft “Why Penguins are guanotelic?”' ) );
 		$this->assertEquals( $post_states3, array( 'draft' => 'Draft' ) );
+	}
+
+	public function test_is_idea_post() {
+		// Ensure we don't have the filter set.
+		remove_all_filters( 'wp_insert_post_empty_content' );
+
+		// Create an empty post that we can't trash.
+		add_filter( 'wp_insert_post_empty_content', '__return_false' );
+		$post_id = wp_insert_post( array(), false );
+		remove_filter( 'wp_insert_post_empty_content', '__return_false' );
+
+		$this->assertFalse( has_filter( 'wp_insert_post_empty_content' ) );
+
+		// Connect the Idea Hub module.
+		$this->idea_hub->register();
+		$this->assertTrue( has_filter( 'wp_insert_post_empty_content' ) );
+
+		// Trashing this post fails silently, because it isn't an Idea Hub
+		// post and it has no content.
+		// See: https://github.com/google/site-kit-wp/issues/3514.
+		wp_trash_post( $post_id );
+
+		// Ensure that we couldn't trash the empty post.
+		$this->assertEquals( get_post_status( $post_id ), 'draft' );
+
+		$idea = array(
+			'name'   => 'ideas/17450692223393508734',
+			'text'   => 'Why Penguins are guanotelic?',
+			'topics' => array(
+				'/m/05z6w' => 'Penguins',
+			),
+		);
+
+		$this->idea_hub->set_post_idea( $post_id, $idea );
+
+		// This succeeds as the post is now an idea post.
+		wp_trash_post( $post_id );
+
+		// Ensure that we can trash an empty Idea Hub post.
+		$this->assertEquals( get_post_status( $post_id ), 'trash' );
 	}
 
 	public function test_on_deactivation() {

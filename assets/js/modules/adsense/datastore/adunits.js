@@ -41,7 +41,7 @@ const fetchGetAdUnitsStore = createFetchStore( {
 			...state,
 			adunits: {
 				...state.adunits,
-				[ `${ accountID }::${ clientID }` ]: adunits.items,
+				[ `${ accountID }::${ clientID }` ]: adunits,
 			},
 		};
 	},
