@@ -121,6 +121,9 @@ describe( 'numberFormat', () => {
 
 	const NumberFormat = Intl.NumberFormat;
 
+	// Error message that browser throws on error.
+	const errorMessage = 'TypeError: Failed to initialize NumberFormat since used feature is not supported in the linked ICU version';
+
 	/*
 	 * This function mocks the implementation of certain errors identified in
 	 * https://github.com/google/site-kit-wp/issues/3255
@@ -140,7 +143,7 @@ describe( 'numberFormat', () => {
 			};
 			for ( const [ key, value ] of Object.entries( options ) ) {
 				if ( optionsThatError[ key ] && [ value, '*' ].includes( optionsThatError[ key ] ) ) {
-					throw new Error( 'Implementation error' );
+					throw new TypeError( errorMessage );
 				}
 			}
 
@@ -167,7 +170,7 @@ describe( 'numberFormat', () => {
 		} ) ).toStrictEqual( '-1.2%' );
 
 		const expectedWarning = 'Site Kit numberFormat error: Intl.NumberFormat( "en-US", {"signDisplay":"never","style":"percent","maximumFractionDigits":1} ).format( number )';
-		expect( console ).toHaveWarnedWith( expectedWarning, 'Implementation error' );
+		expect( console ).toHaveWarnedWith( expectedWarning, errorMessage );
 
 		// Call the same function again to ensure we don't warn again.
 		numberFormat( -0.0123, {
@@ -205,7 +208,7 @@ describe( 'numberFormat', () => {
 		} ) ).toStrictEqual( '22' );
 
 		const expectedWarning = 'Site Kit numberFormat error: Intl.NumberFormat( "en-US", {"unitDisplay":"narrow","style":"unit","unit":"second"} ).format( number )';
-		expect( console ).toHaveWarnedWith( expectedWarning, 'Implementation error' );
+		expect( console ).toHaveWarnedWith( expectedWarning, errorMessage );
 
 		// Restore the regular behaviour.
 		Intl.NumberFormat = NumberFormat;
