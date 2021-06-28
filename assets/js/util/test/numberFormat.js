@@ -118,4 +118,96 @@ describe( 'numberFormat', () => {
 		expect( numberFormat( value ) ).toStrictEqual( expected );
 		expect( console ).not.toHaveWarned();
 	} );
+
+	const NumberFormat = Intl.NumberFormat;
+
+	/*
+	 * This function mocks the implementation of certain errors identified in
+	 * https://github.com/google/site-kit-wp/issues/3255
+	 * so that we can test that we've properly handled them.
+	 */
+	const mockNumberFormat = () => {
+		global.Intl.NumberFormat = ( locales, options ) => {
+			if ( undefined === options ) {
+				return NumberFormat( locales, options );
+			}
+			const optionsThatError = {
+				currencyDisplay: 'narrow',
+				currencySign: 'accounting',
+				style: 'unit',
+				signDisplay: '*', // * denotes any value.
+				compactDisplay: '*',
+			};
+			for ( const [ key, value ] of Object.entries( options ) ) {
+				if ( optionsThatError[ key ] && [ value, '*' ].includes( optionsThatError[ key ] ) ) {
+					throw new Error( 'Implementation error' );
+				}
+			}
+
+			return NumberFormat( locales, options );
+		};
+	};
+
+	it( 'degrades gracefully when signDisplay is encountered in certain scenarios', () => {
+		// Regular implementation.
+		expect( numberFormat( -0.0123, {
+			locale: 'en-US',
+			signDisplay: 'never',
+			style: 'percent',
+			maximumFractionDigits: 1,
+		} ) ).toStrictEqual( '1.2%' );
+
+		mockNumberFormat();
+
+		expect( numberFormat( -0.0123, {
+			locale: 'en-US',
+			signDisplay: 'never', // This parameter will be removed.
+			style: 'percent',
+			maximumFractionDigits: 1,
+		} ) ).toStrictEqual( '-1.2%' );
+
+		const expectedWarning = 'Site Kit numberFormat error: Intl.NumberFormat( "en-US", {"signDisplay":"never","style":"percent","maximumFractionDigits":1} ).format( number )';
+		expect( console ).toHaveWarnedWith( expectedWarning, 'Implementation error' );
+
+		// Call the same function again to ensure we don't warn again.
+		numberFormat( -0.0123, {
+			locale: 'en-US',
+			signDisplay: 'never', // This parameter will be removed.
+			style: 'percent',
+			maximumFractionDigits: 1,
+		} );
+
+		// Ensure we don't log more than once.
+		expect( console.warn ).toHaveBeenCalledTimes( 1 ); // eslint-disable-line no-console
+
+		// Restore the regular behaviour.
+		Intl.NumberFormat = NumberFormat;
+	} );
+
+	it( 'degrades gracefully when style:unit is encountered in certain scenarios', () => {
+		// Regular implementation.
+		expect( numberFormat( 22, {
+			locale: 'en-US',
+			unitDisplay: 'narrow',
+			style: 'unit',
+			unit: 'second',
+		} ) ).toStrictEqual( '22s' );
+
+		expect( console ).not.toHaveWarned();
+
+		mockNumberFormat();
+
+		expect( numberFormat( 22, {
+			locale: 'en-US',
+			unitDisplay: 'narrow',
+			style: 'unit',
+			unit: 'second',
+		} ) ).toStrictEqual( '22' );
+
+		const expectedWarning = 'Site Kit numberFormat error: Intl.NumberFormat( "en-US", {"unitDisplay":"narrow","style":"unit","unit":"second"} ).format( number )';
+		expect( console ).toHaveWarnedWith( expectedWarning, 'Implementation error' );
+
+		// Restore the regular behaviour.
+		Intl.NumberFormat = NumberFormat;
+	} );
 } );
