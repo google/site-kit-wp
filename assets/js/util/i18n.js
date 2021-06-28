@@ -289,6 +289,7 @@ const warnOnce = memize( console.warn ); // eslint-disable-line no-console
  */
 export const numberFormat = ( number, options = {} ) => {
 	const { locale = getLocale(), ...formatOptions } = options;
+
 	try {
 		/**
 		 * Per https://github.com/google/site-kit-wp/issues/3255 there have been issues with some versions of Safari
@@ -301,37 +302,37 @@ export const numberFormat = ( number, options = {} ) => {
 		return new Intl.NumberFormat( locale, formatOptions ).format( number );
 	} catch ( error ) {
 		warnOnce( `Site Kit numberFormat error: Intl.NumberFormat( ${ JSON.stringify( locale ) }, ${ JSON.stringify( formatOptions ) } ).format( ${ typeof number } )`, error.message );
+	}
 
-		// Remove these key/values from formatOptions.
-		const unstableFormatOptionValues = {
-			currencyDisplay: 'narrow',
-			currencySign: 'accounting',
-			style: 'unit',
-		};
+	// Remove these key/values from formatOptions.
+	const unstableFormatOptionValues = {
+		currencyDisplay: 'narrow',
+		currencySign: 'accounting',
+		style: 'unit',
+	};
 
-		// Remove these keys from formatOptions irrespective of value.
-		const unstableFormatOptions = [
-			'signDisplay',
-			'compactDisplay',
-		];
+	// Remove these keys from formatOptions irrespective of value.
+	const unstableFormatOptions = [
+		'signDisplay',
+		'compactDisplay',
+	];
 
-		const reducedFormatOptions = {};
+	const reducedFormatOptions = {};
 
-		for ( const [ key, value ] of Object.entries( formatOptions ) ) {
-			if ( unstableFormatOptionValues[ key ] && value === unstableFormatOptionValues[ key ] ) {
-				continue;
-			}
-			if ( unstableFormatOptions.includes( key ) ) {
-				continue;
-			}
-			reducedFormatOptions[ key ] = value;
+	for ( const [ key, value ] of Object.entries( formatOptions ) ) {
+		if ( unstableFormatOptionValues[ key ] && value === unstableFormatOptionValues[ key ] ) {
+			continue;
 		}
-
-		try {
-			return new Intl.NumberFormat( locale, reducedFormatOptions ).format( number );
-		} catch {
-			return new Intl.NumberFormat( locale ).format( number );
+		if ( unstableFormatOptions.includes( key ) ) {
+			continue;
 		}
+		reducedFormatOptions[ key ] = value;
+	}
+
+	try {
+		return new Intl.NumberFormat( locale, reducedFormatOptions ).format( number );
+	} catch {
+		return new Intl.NumberFormat( locale ).format( number );
 	}
 };
 
