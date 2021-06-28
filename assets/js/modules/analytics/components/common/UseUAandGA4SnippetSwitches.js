@@ -36,7 +36,6 @@ export default function UseUAandGA4SnippetSwitches() {
 	const useUASnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const canUseUASnippet = useSelect( ( select ) => select( STORE_NAME ).getCanUseSnippet() );
 	const useGA4Snippet = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getUseSnippet() );
-	const canUseGA4Snippet = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getCanUseSnippet() );
 
 	const { setUseSnippet: setUseUASnippet } = useDispatch( STORE_NAME );
 	const { setUseSnippet: setUseGA4Snippet } = useDispatch( MODULES_ANALYTICS_4 );
@@ -71,7 +70,7 @@ export default function UseUAandGA4SnippetSwitches() {
 			<div className="googlesitekit-settings-module__inline-items">
 				<div className="googlesitekit-settings-module__inline-item">
 					<Switch
-						label={ __( 'Let Site Kit place code on your site', 'google-site-kit' ) }
+						label={ __( 'Place Universal Analytics code', 'google-site-kit' ) }
 						checked={ useUASnippet }
 						onClick={ onUAChange }
 						hideLabel={ false }
@@ -80,11 +79,10 @@ export default function UseUAandGA4SnippetSwitches() {
 				</div>
 				<div className="googlesitekit-settings-module__inline-item">
 					<Switch
-						label={ __( 'Let Site Kit place code on your site', 'google-site-kit' ) }
+						label={ __( 'Place Google Analytics 4 code', 'google-site-kit' ) }
 						checked={ useGA4Snippet }
 						onClick={ onGA4Change }
 						hideLabel={ false }
-						disabled={ ! canUseGA4Snippet }
 					/>
 				</div>
 			</div>
