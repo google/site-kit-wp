@@ -300,21 +300,28 @@ export const numberFormat = ( number, options = {} ) => {
 		 */
 		return new Intl.NumberFormat( locale, formatOptions ).format( number );
 	} catch ( error ) {
-		logOnce( `Site Kit numberFormat error: Intl.NumberFormat( ${ JSON.stringify( locale ) }, ${ JSON.stringify( formatOptions ) } ).format( ${ typeof number } )`, error.message );
+		warnOnce( `Site Kit numberFormat error: Intl.NumberFormat( ${ JSON.stringify( locale ) }, ${ JSON.stringify( formatOptions ) } ).format( ${ typeof number } )`, error.message );
 
-		// Remove these key/values from formatOptions and try again.
-		const removeFormatOptions = {
+		// Remove these key/values from formatOptions.
+		const unstableFormatOptionValues = {
 			currencyDisplay: 'narrow',
 			currencySign: 'accounting',
 			style: 'unit',
-			signDisplay: '*', // * denotes any value.
-			compactDisplay: '*',
 		};
+
+		// Remove these keys from formatOptions irrespective of value.
+		const unstableFormatOptions = [
+			'signDisplay',
+			'compactDisplay',
+		];
 
 		const reducedFormatOptions = {};
 
 		for ( const [ key, value ] of Object.entries( formatOptions ) ) {
-			if ( removeFormatOptions[ key ] && [ value, '*' ].includes( removeFormatOptions[ key ] ) ) {
+			if ( unstableFormatOptionValues[ key ] && value === unstableFormatOptionValues[ key ] ) {
+				continue;
+			}
+			if ( unstableFormatOptions.includes( key ) ) {
 				continue;
 			}
 			reducedFormatOptions[ key ] = value;
