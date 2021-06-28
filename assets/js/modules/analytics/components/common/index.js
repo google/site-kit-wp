@@ -33,4 +33,5 @@ export { default as PropertySelect } from './PropertySelect';
 export { default as PropertySelectIncludingGA4 } from './PropertySelectIncludingGA4';
 export { default as TrackingExclusionSwitches } from './TrackingExclusionSwitches';
 export { default as UseUASnippetSwitch } from './UseUASnippetSwitch';
+export { default as UseUAandGA4SnippetSwitches } from './UseUAandGA4SnippetSwitches';
 export { default as GA4PropertyNotice } from './GA4PropertyNotice';

@@ -48,7 +48,6 @@ export default function UseUAandGA4SnippetSwitches() {
 
 	const onGA4Change = useCallback( () => {
 		setUseGA4Snippet( ! useGA4Snippet );
-		// ...
 	}, [ useGA4Snippet, setUseGA4Snippet ] );
 
 	if ( useGA4Snippet === undefined || useUASnippet === undefined ) {

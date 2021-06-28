@@ -34,6 +34,7 @@ import {
 	PropertySelect,
 	TrackingExclusionSwitches,
 	UseUASnippetSwitch,
+	UseUAandGA4SnippetSwitches,
 	ProfileNameTextField,
 	ExistingGTMPropertyNotice,
 	GA4Notice,
@@ -44,6 +45,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { SETUP_FLOW_MODE_LEGACY, STORE_NAME, PROFILE_CREATE, SETUP_FLOW_MODE_UA } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
@@ -53,11 +55,16 @@ export default function SettingsForm() {
 	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const hasExistingGA4Property = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 
 	const useAnalyticsSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const useTagManagerSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
 	const analyticsSinglePropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
 	const shouldShowTrackingExclusionSwitches = useAnalyticsSnippet || ( useTagManagerSnippet && analyticsSinglePropertyID );
+
+	const SnippetSwitchComponent = ( isGA4Enabled && hasExistingGA4Property )
+		? UseUAandGA4SnippetSwitches
+		: UseUASnippetSwitch;
 
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
@@ -92,7 +99,13 @@ export default function SettingsForm() {
 			) }
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-				<UseUASnippetSwitch />
+				<fieldset>
+					<legend className="googlesitekit-setup-module__text">
+						{ __( 'Let Site Kit place the Analytics code on your site', 'google-site-kit' ) }
+					</legend>
+					<SnippetSwitchComponent />
+				</fieldset>
+
 				<AnonymizeIPSwitch />
 				{ shouldShowTrackingExclusionSwitches && <TrackingExclusionSwitches /> }
 				<AdsConversionIDTextField />
