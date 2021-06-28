@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Button from './Button';
+import HelpIcon from '../../svg/help.svg';
 
 const Template = ( args ) => <Button { ...args } />;
 
@@ -56,6 +57,13 @@ DisabledButton.storyName = 'Disabled Button';
 DisabledButton.args = {
 	children: 'Disabled Button',
 	disabled: true,
+};
+
+export const IconButton = Template.bind( {} );
+IconButton.storyName = 'Icon Button with Tooltip';
+IconButton.args = {
+	icon: <HelpIcon width="20" height="20" />,
+	'aria-label': 'Help',
 };
 
 export const VRTStory = () => (

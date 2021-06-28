@@ -38,6 +38,7 @@ import {
 	unsubscribeFromAll,
 	untilResolved,
 	provideSiteInfo,
+	provideModules,
 } from '../../../../../tests/js/utils';
 import { enabledFeatures } from '../../../features';
 import * as factories from './__factories__';
@@ -485,6 +486,18 @@ describe( 'modules/analytics accounts', () => {
 					} );
 
 					provideSiteInfo( registry );
+					provideModules( registry, [
+						{
+							slug: 'analytics',
+							active: true,
+							connected: false,
+						},
+						{
+							slug: 'analytics-4',
+							active: true,
+							connected: false,
+						},
+					] );
 
 					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 					registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );

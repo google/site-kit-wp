@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
@@ -31,7 +32,7 @@ use WP_Error;
  * @ignore
  */
 final class PageSpeed_Insights extends Module
-	implements Module_With_Scopes, Module_With_Assets {
+	implements Module_With_Scopes, Module_With_Assets, Module_With_Deactivation {
 	use Module_With_Scopes_Trait, Module_With_Assets_Trait;
 
 	/**

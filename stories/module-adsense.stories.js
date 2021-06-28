@@ -180,6 +180,8 @@ storiesOf( 'AdSense Module', module )
 	} )
 	.add( 'Performance', () => {
 		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).setReferenceDate( '2021-06-18' );
+
 			const {
 				startDate,
 				endDate,
@@ -194,7 +196,7 @@ storiesOf( 'AdSense Module', module )
 					'DATE',
 				],
 				metrics: [
-					'EARNINGS',
+					'TOTAL_EARNINGS',
 					'PAGE_VIEWS_RPM',
 					'IMPRESSIONS',
 					'PAGE_VIEWS_CTR',
@@ -211,7 +213,7 @@ storiesOf( 'AdSense Module', module )
 				startDate,
 				endDate,
 				metrics: [
-					'EARNINGS',
+					'TOTAL_EARNINGS',
 					'PAGE_VIEWS_RPM',
 					'IMPRESSIONS',
 					'PAGE_VIEWS_CTR',
