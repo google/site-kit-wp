@@ -322,7 +322,7 @@ export const numberFormat = ( number, options = {} ) => {
 
 		try {
 			return new Intl.NumberFormat( locale, reducedFormatOptions ).format( number );
-		} catch ( error2 ) {
+		} catch {
 			return new Intl.NumberFormat( locale ).format( number );
 		}
 	}
