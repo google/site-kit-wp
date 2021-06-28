@@ -30,12 +30,9 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	showErrorNotification,
-} from '../util';
 import CTA from './legacy-notifications/cta';
 import Data from 'googlesitekit-data';
-import GenericError from './legacy-notifications/generic-error';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
@@ -47,6 +44,7 @@ const ActivateModuleCTA = ( { moduleSlug, title, description } ) => {
 
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { setInternalServerError } = useDispatch( CORE_SITE );
 
 	const onCTAClick = useCallback( async () => {
 		const { error, response } = await activateModule( moduleSlug );
@@ -54,7 +52,7 @@ const ActivateModuleCTA = ( { moduleSlug, title, description } ) => {
 		if ( ! error ) {
 			navigateTo( response.moduleReauthURL );
 		} else {
-			showErrorNotification( GenericError, {
+			setInternalServerError( {
 				id: `${ moduleSlug }-setup-error`,
 				title: __( 'Internal Server Error', 'google-site-kit' ),
 				description: error.message,
@@ -62,7 +60,7 @@ const ActivateModuleCTA = ( { moduleSlug, title, description } ) => {
 				type: 'win-error',
 			} );
 		}
-	}, [ activateModule, navigateTo, moduleSlug ] );
+	}, [ activateModule, moduleSlug, navigateTo, setInternalServerError ] );
 
 	if ( ! module?.name || ! canManageOptions ) {
 		return null;
