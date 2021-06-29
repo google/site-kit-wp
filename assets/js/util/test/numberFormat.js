@@ -134,35 +134,18 @@ describe( 'numberFormat', () => {
 		// Error message that browser throws on error.
 		const errorMessage = 'TypeError: Failed to initialize NumberFormat since used feature is not supported in the linked ICU version';
 
-		/**
-		 * This function mocks the implementation of certain errors identified in
-		 * https://github.com/google/site-kit-wp/issues/3255
-		 * so that we can test that we've properly handled them.
-		 */
-		const mockNumberFormat = () => {
-			NumberFormatSpy.mockImplementation( ( locales, options ) => {
-				if ( undefined === options ) {
-					return NumberFormat( locales, options );
-				}
-				const optionsThatError = {
-					currencyDisplay: 'narrow',
-					currencySign: 'accounting',
-					style: 'unit',
-					signDisplay: '*', // * denotes any value.
-					compactDisplay: '*',
-				};
-				for ( const [ key, value ] of Object.entries( options ) ) {
-					if ( optionsThatError[ key ] && [ value, '*' ].includes( optionsThatError[ key ] ) ) {
-						throw new TypeError( errorMessage );
-					}
-				}
-
-				return NumberFormat( locales, options );
-			} );
+		// Replicate a browser behaviour to throw errors when certain option key/values are encountered.
+		const createThrowIfOptionMatch = ( key, value ) => ( locales, options = {} ) => {
+			if ( options[ key ] && (
+				value === options[ key ] || value === undefined
+			) ) {
+				throw new TypeError( errorMessage );
+			}
+			return NumberFormat( locales, options );
 		};
 
 		it( 'degrades gracefully when `signDisplay` has any value other than the default of `auto`', () => {
-		// Regular implementation.
+			// Regular implementation.
 			expect( numberFormat( -0.0123, {
 				locale: 'en-US',
 				signDisplay: 'never',
@@ -170,7 +153,12 @@ describe( 'numberFormat', () => {
 				maximumFractionDigits: 1,
 			} ) ).toStrictEqual( '1.2%' );
 
-			mockNumberFormat();
+			/*
+			 * Option of `signDisplay: never` causes issues in some browser/os combinations.
+			 *
+			 * @see https://github.com/google/site-kit-wp/issues/3255
+			 */
+			NumberFormatSpy.mockImplementation( createThrowIfOptionMatch( 'signDisplay', 'never' ) );
 
 			expect( numberFormat( -0.0123, {
 				locale: 'en-US',
@@ -205,7 +193,12 @@ describe( 'numberFormat', () => {
 
 			expect( console ).not.toHaveWarned();
 
-			mockNumberFormat();
+			/*
+			 * Option of `style: unit` causes issues in some browser/os combinations.
+			 *
+			 * @see https://github.com/google/site-kit-wp/issues/3255
+			 */
+			NumberFormatSpy.mockImplementation( createThrowIfOptionMatch( 'style', 'unit' ) );
 
 			expect( numberFormat( 22, {
 				locale: 'en-US',
