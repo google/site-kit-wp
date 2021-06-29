@@ -148,7 +148,7 @@ describe( 'numberFormat', () => {
 		};
 	};
 
-	it( 'degrades gracefully when signDisplay is encountered in certain scenarios', () => {
+	it( 'degrades gracefully when `signDisplay` has any value other than the default of `auto`', () => {
 		// Regular implementation.
 		expect( numberFormat( -0.0123, {
 			locale: 'en-US',
