@@ -36,11 +36,11 @@ import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
 import WPDashboardSessionDuration from './WPDashboardSessionDuration';
 import WPDashboardPopularPages from './WPDashboardPopularPages';
 import WPDashboardIdeaHub from './WPDashboardIdeaHub';
-import ActivateModuleCTA from '../ActivateModuleCTA';
-import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
+// import ActivateModuleCTA from '../ActivateModuleCTA';
+// import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
-import { SPECIAL_WIDGET_STATES } from '../../googlesitekit/widgets/util/constants';
+import { SPECIAL_WIDGET_STATES, HIDDEN_CLASS } from '../../googlesitekit/widgets/util/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 const { useSelect } = Data;
 
@@ -50,17 +50,41 @@ const WIDGET_CLICKS = 'wpDashboardClicks';
 const WIDGET_VISITORS = 'wpDashboardUniqueVisitors';
 const WIDGET_SESSION_DURATION = 'wpDashboardSessionDuration';
 const WIDGET_POPULAR_PAGES = 'wpDashboardPopularPages';
+
 // Search Console widgets.
 const WPDashboardImpressionsWidget = withWidgetComponentProps( WIDGET_IMPRESSIONS )( WPDashboardImpressions );
 const WPDashboardClicksWidget = withWidgetComponentProps( WIDGET_CLICKS )( WPDashboardClicks );
+
 // Analytics Widgets.
 const WPDashboardUniqueVisitorsWidget = withWidgetComponentProps( WIDGET_VISITORS )( WPDashboardUniqueVisitors );
 const WPDashboardSessionDurationWidget = withWidgetComponentProps( WIDGET_SESSION_DURATION )( WPDashboardSessionDuration );
 const WPDashboardPopularPagesWidget = withWidgetComponentProps( WIDGET_POPULAR_PAGES )( WPDashboardPopularPages );
 
+const [
+	ActivateModuleCTA,
+	CompleteModuleActivationCTA,
+	ReportZero,
+] = SPECIAL_WIDGET_STATES;
+
 const WPDashboardWidgets = () => {
-	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
-	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
+	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ) ).isModuleActive( 'analytics' );
+	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ) ).isModuleConnected( 'analytics' );
+
+	// The two Analytics widgets at the top can be combined if they are both in the same special state.
+	const shouldCombineAnalyticsArea1 = useSelect( ( select ) =>
+			select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )?.Component === ReportZero &&
+			select( CORE_WIDGETS ).getWidgetState( WIDGET_SESSION_DURATION )?.Component === ReportZero
+	);
+
+	// The Analytics widget at the bottom can be combined if it shares the same special state as one
+	// of the two at the top.
+	const shouldCombineAnalyticsArea2 = useSelect( ( select ) => (
+			select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )?.Component === ReportZero &&
+			select( CORE_WIDGETS ).getWidgetState( WIDGET_POPULAR_PAGES )?.Component === ReportZero
+	) || (
+				select( CORE_WIDGETS ).getWidgetState( WIDGET_SESSION_DURATION )?.Component === ReportZero &&
+				select( CORE_WIDGETS ).getWidgetState( WIDGET_POPULAR_PAGES )?.Component === ReportZero
+	) );
 
 	const searchConsoleHasSpecialState = useSelect( ( select ) => {
 		const impressionsWidgetState = select( CORE_WIDGETS ).getWidgetState( WIDGET_IMPRESSIONS )?.Component;
@@ -77,21 +101,7 @@ const WPDashboardWidgets = () => {
 			{ 'googlesitekit-wp-dashboard-stats--fourup': analyticsModuleActive && analyticsModuleConnected }
 		) }>
 			<WPDashboardIdeaHub />
-			{ analyticsModuleActive && analyticsModuleConnected && (
-				<Fragment>
-					<WPDashboardUniqueVisitorsWidget />
-					<WPDashboardSessionDurationWidget />
-				</Fragment>
-			) }
-			{ // Both widgets are in a special state (e.g. zero report), so we need only render one.
-				searchConsoleHasSpecialState ? (
-					<WPDashboardImpressionsWidget />
-				) : (
-					<Fragment>
-						<WPDashboardImpressionsWidget />
-						<WPDashboardClicksWidget />
-					</Fragment>
-				) }
+
 			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 				<div className="googlesitekit-wp-dashboard-stats__cta">
 					{ ! analyticsModuleActive && (
@@ -102,8 +112,34 @@ const WPDashboardWidgets = () => {
 					) }
 				</div>
 			) }
+
 			{ analyticsModuleActive && analyticsModuleConnected && (
-				<WPDashboardPopularPagesWidget />
+				<Fragment>
+					<WPDashboardUniqueVisitorsWidget />
+					<span className={ classnames( {
+						[ HIDDEN_CLASS ]: shouldCombineAnalyticsArea1,
+					} ) }>
+						<WPDashboardSessionDurationWidget />
+					</span>
+				</Fragment>
+			) }
+
+			{ // Both widgets are in a special state (e.g. zero report), so we need only render one.
+				searchConsoleHasSpecialState ? (
+					<WPDashboardImpressionsWidget />
+				) : (
+					<Fragment>
+						<WPDashboardImpressionsWidget />
+						<WPDashboardClicksWidget />
+					</Fragment>
+				) }
+
+			{ analyticsModuleActive && analyticsModuleConnected && (
+				<span className={ classnames( {
+					[ HIDDEN_CLASS ]: shouldCombineAnalyticsArea2,
+				} ) }>
+					<WPDashboardPopularPagesWidget />
+				</span>
 			) }
 		</div>
 	);
