@@ -1,5 +1,5 @@
 /**
- * `modules/idea-hub` base data store
+ * Idea Hub setup component styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,18 +16,24 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './constants';
+.googlesitekit-ideahub-setup__button {
+	margin-top: $grid-gap-phone;
 
-const baseModuleStore = Modules.createModuleStore( 'idea-hub', {
-	storeName: STORE_NAME,
-	requiresSetup: false,
-	settingSlugs: [
-		'tosAccepted',
-	],
-} );
+	@media (min-width: $bp-desktop) {
+		margin-top: $grid-gap-desktop;
+	}
+}
 
-export default baseModuleStore;
+.googlesitekit-ideahub-setup__checkbox {
+
+	/*
+	 * The MDC Checkbox has 11px padding, so this brings the edge
+	 * of the checkbox in line with the rest of the content.
+	 */
+	margin-left: -11px;
+
+	label[for="tosAccepted"] {
+
+		@include responsive-text("body2", "body2");
+	}
+}

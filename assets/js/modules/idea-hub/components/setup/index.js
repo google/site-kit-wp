@@ -1,5 +1,5 @@
 /**
- * `modules/idea-hub` base data store
+ * Idea Hub Setup Form components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,18 +16,5 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './constants';
-
-const baseModuleStore = Modules.createModuleStore( 'idea-hub', {
-	storeName: STORE_NAME,
-	requiresSetup: false,
-	settingSlugs: [
-		'tosAccepted',
-	],
-} );
-
-export default baseModuleStore;
+export { default as SetupMain } from './SetupMain';
+export { default as SetupForm } from './SetupForm';
