@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -55,6 +60,8 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setInternalServerError( internalServerError ) {
+		invariant( internalServerError, 'internalServerError is required.' );
+
 		return {
 			type: SET_SERVER_ERROR,
 			payload: { internalServerError },

@@ -1,5 +1,5 @@
 /**
- * SettingsApp component tests.
+ * InternalServerError component tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,32 +17,35 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import InternalServerError from './InternalServerError';
 import { render, createTestRegistry } from '../../../../tests/js/test-utils';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
-describe( 'SettingsApp', () => {
+describe( 'InternalServerError', () => {
 	const registry = createTestRegistry();
 	//const store = registry.stores[ CORE_SITE ].store;
 
 	const internalServerError = {
 		id: `module-setup-error`,
-		title: __( 'Internal Server Error', 'google-site-kit' ),
+		title: 'Internal Server Error',
 		description: 'Test error message',
 		format: 'small',
 		type: 'win-error',
 	};
 
 	describe( 'getInternalServerError', () => {
-		test( 'displays the error', () => {
+		test( 'should display the notification when the internal server error is set', () => {
 			registry.dispatch( CORE_SITE ).setInternalServerError( internalServerError );
+
+			const { container } = render( <InternalServerError />, { registry } );
+
+			expect( container ).toMatchSnapshot();
+		} );
+
+		test( 'renders nothing if the internal server error is not set', () => {
+			registry.dispatch( CORE_SITE ).setInternalServerError();
 
 			const { container } = render( <InternalServerError />, { registry } );
 
