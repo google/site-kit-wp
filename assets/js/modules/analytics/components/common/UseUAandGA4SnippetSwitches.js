@@ -47,6 +47,7 @@ export default function UseUAandGA4SnippetSwitches() {
 
 	const onGA4Change = useCallback( () => {
 		setUseGA4Snippet( ! useGA4Snippet );
+		trackEvent( 'analytics_setup', useGA4Snippet ? 'analytics4_tag_enabled' : 'analytics4_tag_disabled' );
 	}, [ useGA4Snippet, setUseGA4Snippet ] );
 
 	if ( useGA4Snippet === undefined || useUASnippet === undefined ) {
