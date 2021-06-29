@@ -39,8 +39,8 @@ export default function SetupForm() {
 	const { setTosAccepted } = useDispatch( STORE_NAME );
 
 	const onChange = useCallback( ( event ) => {
-		const { checked: accept } = event.target;
-		setTosAccepted( accept );
+		const { checked } = event.target;
+		setTosAccepted( checked );
 	}, [ setTosAccepted ] );
 
 	return (
