@@ -323,13 +323,13 @@ class Context {
 	 *                     false if AMP not active, or unknown mode
 	 */
 	public function get_amp_mode() {
-		if ( ! class_exists( 'AMP_Theme_Support' ) ) {
-			// If the AMP plugin isn't enabled but this page/post is a web
-			// story, use AMP Secondary mode.
-			if ( is_singular( 'web-story' ) ) {
-				return self::AMP_MODE_SECONDARY;
-			}
+		// If the Web Stories plugin is enabled, consider the site to be running
+		// in Secondary AMP mode.
+		if ( defined( 'WEBSTORIES_VERSION' ) ) {
+			return self::AMP_MODE_SECONDARY;
+		}
 
+		if ( ! class_exists( 'AMP_Theme_Support' ) ) {
 			return false;
 		}
 
