@@ -120,12 +120,15 @@ describe( 'numberFormat', () => {
 	} );
 
 	describe( 'graceful degradation for problematic options in some browsers', () => {
+		const NumberFormat = Intl.NumberFormat;
 		let NumberFormatSpy;
 
+		beforeEach( () => {
+			NumberFormatSpy = jest.spyOn( global.Intl, 'NumberFormat' );
+		} );
+
 		afterEach( () => {
-			if ( NumberFormatSpy.mockRestore ) {
-				NumberFormatSpy.mockRestore();
-			}
+			NumberFormatSpy.mockRestore();
 		} );
 
 		// Error message that browser throws on error.
@@ -137,8 +140,6 @@ describe( 'numberFormat', () => {
 		 * so that we can test that we've properly handled them.
 		 */
 		const mockNumberFormat = () => {
-			const NumberFormat = Intl.NumberFormat;
-			NumberFormatSpy = jest.spyOn( global.Intl, 'NumberFormat' );
 			NumberFormatSpy.mockImplementation( ( locales, options ) => {
 				if ( undefined === options ) {
 					return NumberFormat( locales, options );
