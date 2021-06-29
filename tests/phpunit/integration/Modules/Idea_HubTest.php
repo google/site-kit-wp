@@ -145,15 +145,15 @@ class Idea_HubTest extends TestCase {
 		$this->assertFalse( has_filter( 'wp_insert_post_empty_content' ) );
 
 		// Connect the Idea Hub module.
-		$options  = new Options( $this->context );
-		$idea_hub = new Idea_Hub( $this->context, $options );
-
-		$idea_hub->register();
-
+		$options = new Options( $this->context );
 		$options->set(
 			Settings::OPTION,
 			array( 'tosAccepted' => true )
 		);
+		$idea_hub = new Idea_Hub( $this->context, $options );
+
+		$idea_hub->register();
+
 		$this->assertTrue( has_filter( 'wp_insert_post_empty_content' ) );
 
 		// Trashing this post fails silently, because it isn't an Idea Hub
