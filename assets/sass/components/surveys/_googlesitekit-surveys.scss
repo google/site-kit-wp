@@ -69,6 +69,16 @@
 			padding-top: 12px;
 			text-align: left;
 		}
+
+		.googlesitekit-survey__terms {
+			margin: 0 0 -12px;
+			padding-top: 12px;
+
+			.googlesitekit-cta-link--external {
+				background: none;
+				padding-right: 0;
+			}
+		}
 	}
 
 	.googlesitekit-survey__choice {
