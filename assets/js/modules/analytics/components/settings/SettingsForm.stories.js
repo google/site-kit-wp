@@ -58,7 +58,7 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				const accounts = fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
+				const account = fixtures.accountsPropertiesProfiles.accounts[ 0 ];
 				const properties = [
 					{
 						...fixtures.accountsPropertiesProfiles.properties[ 0 ],
@@ -69,7 +69,7 @@ export default {
 					},
 				];
 
-				const accountID = accounts[ 0 ].id;
+				const accountID = account.id;
 
 				provideModules( registry, [
 					{
@@ -96,7 +96,7 @@ export default {
 					useSnippet: true,
 					canUseSnippet: true,
 				} );
-				registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+				registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 				registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
 				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID: properties[ 0 ].id } );
 				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID: properties[ 1 ].id } );
