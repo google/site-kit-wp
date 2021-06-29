@@ -38,7 +38,6 @@ import PreviewTable from '../../../../components/PreviewTable';
 import MiniChart from '../../../../components/MiniChart';
 import { trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../../util';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
 
 function LegacyAnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
@@ -115,9 +114,7 @@ function LegacyAnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 
 	return (
 		<div className="googlesitekit-details-widget">
-			<TableOverflowContainer>
-				{ dataTable }
-			</TableOverflowContainer>
+			{ dataTable }
 		</div>
 	);
 }

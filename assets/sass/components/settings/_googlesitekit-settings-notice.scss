@@ -24,6 +24,7 @@
 	font-size: 0.875rem;
 	line-height: 1.42;
 	margin: 1.5em 0;
+	max-width: 1098px;
 	padding: $grid-gap-phone;
 
 	@media (min-width: $bp-desktop) {
