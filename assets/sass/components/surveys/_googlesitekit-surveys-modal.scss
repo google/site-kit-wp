@@ -17,16 +17,14 @@
  */
 
 .googlesitekit-portal-survey {
-	bottom: 0;
+	bottom: 24px;
 	position: fixed;
-	right: 0;
+	right: 24px;
 	z-index: 99999;
 
-	// The max-width of the survey element is 400px, so we allow it to break
-	// away from being "centered" after 400px.
-	@media (min-width: $width-xsmall + px) {
-		bottom: 24px;
-		right: 24px;
+	@media (max-width: $bp-xsmallOnly) {
+		bottom: 0;
+		right: 0;
 	}
 
 	@media (min-width: $bp-xlarge) {
