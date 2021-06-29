@@ -184,7 +184,7 @@ describe( 'numberFormat', () => {
 		Intl.NumberFormat = NumberFormat;
 	} );
 
-	it( 'degrades gracefully when style:unit is encountered in certain scenarios', () => {
+	it( 'degrades gracefully when the `style:unit` option is provided', () => {
 		// Regular implementation.
 		expect( numberFormat( 22, {
 			locale: 'en-US',
