@@ -119,98 +119,102 @@ describe( 'numberFormat', () => {
 		expect( console ).not.toHaveWarned();
 	} );
 
-	const NumberFormat = Intl.NumberFormat;
+	describe( 'graceful degradation for problematic options in some browsers', () => {
+		let NumberFormatSpy;
 
-	// Error message that browser throws on error.
-	const errorMessage = 'TypeError: Failed to initialize NumberFormat since used feature is not supported in the linked ICU version';
-
-	/*
-	 * This function mocks the implementation of certain errors identified in
-	 * https://github.com/google/site-kit-wp/issues/3255
-	 * so that we can test that we've properly handled them.
-	 */
-	const mockNumberFormat = () => {
-		global.Intl.NumberFormat = ( locales, options ) => {
-			if ( undefined === options ) {
-				return NumberFormat( locales, options );
+		afterEach( () => {
+			if ( NumberFormatSpy.mockRestore ) {
+				NumberFormatSpy.mockRestore();
 			}
-			const optionsThatError = {
-				currencyDisplay: 'narrow',
-				currencySign: 'accounting',
-				style: 'unit',
-				signDisplay: '*', // * denotes any value.
-				compactDisplay: '*',
-			};
-			for ( const [ key, value ] of Object.entries( options ) ) {
-				if ( optionsThatError[ key ] && [ value, '*' ].includes( optionsThatError[ key ] ) ) {
-					throw new TypeError( errorMessage );
-				}
-			}
-
-			return NumberFormat( locales, options );
-		};
-	};
-
-	it( 'degrades gracefully when `signDisplay` has any value other than the default of `auto`', () => {
-		// Regular implementation.
-		expect( numberFormat( -0.0123, {
-			locale: 'en-US',
-			signDisplay: 'never',
-			style: 'percent',
-			maximumFractionDigits: 1,
-		} ) ).toStrictEqual( '1.2%' );
-
-		mockNumberFormat();
-
-		expect( numberFormat( -0.0123, {
-			locale: 'en-US',
-			signDisplay: 'never', // This parameter will be removed.
-			style: 'percent',
-			maximumFractionDigits: 1,
-		} ) ).toStrictEqual( '-1.2%' );
-
-		const expectedWarning = 'Site Kit numberFormat error: Intl.NumberFormat( "en-US", {"signDisplay":"never","style":"percent","maximumFractionDigits":1} ).format( number )';
-		expect( console ).toHaveWarnedWith( expectedWarning, errorMessage );
-
-		// Call the same function again to ensure we don't warn again.
-		numberFormat( -0.0123, {
-			locale: 'en-US',
-			signDisplay: 'never', // This parameter will be removed.
-			style: 'percent',
-			maximumFractionDigits: 1,
 		} );
 
-		// Ensure we don't log more than once.
-		expect( console.warn ).toHaveBeenCalledTimes( 1 ); // eslint-disable-line no-console
+		// Error message that browser throws on error.
+		const errorMessage = 'TypeError: Failed to initialize NumberFormat since used feature is not supported in the linked ICU version';
 
-		// Restore the regular behaviour.
-		Intl.NumberFormat = NumberFormat;
-	} );
+		/**
+		 * This function mocks the implementation of certain errors identified in
+		 * https://github.com/google/site-kit-wp/issues/3255
+		 * so that we can test that we've properly handled them.
+		 */
+		const mockNumberFormat = () => {
+			const NumberFormat = Intl.NumberFormat;
+			NumberFormatSpy = jest.spyOn( global.Intl, 'NumberFormat' );
+			NumberFormatSpy.mockImplementation( ( locales, options ) => {
+				if ( undefined === options ) {
+					return NumberFormat( locales, options );
+				}
+				const optionsThatError = {
+					currencyDisplay: 'narrow',
+					currencySign: 'accounting',
+					style: 'unit',
+					signDisplay: '*', // * denotes any value.
+					compactDisplay: '*',
+				};
+				for ( const [ key, value ] of Object.entries( options ) ) {
+					if ( optionsThatError[ key ] && [ value, '*' ].includes( optionsThatError[ key ] ) ) {
+						throw new TypeError( errorMessage );
+					}
+				}
 
-	it( 'degrades gracefully when the `style:unit` option is provided', () => {
+				return NumberFormat( locales, options );
+			} );
+		};
+
+		it( 'degrades gracefully when `signDisplay` has any value other than the default of `auto`', () => {
 		// Regular implementation.
-		expect( numberFormat( 22, {
-			locale: 'en-US',
-			unitDisplay: 'narrow',
-			style: 'unit',
-			unit: 'second',
-		} ) ).toStrictEqual( '22s' );
+			expect( numberFormat( -0.0123, {
+				locale: 'en-US',
+				signDisplay: 'never',
+				style: 'percent',
+				maximumFractionDigits: 1,
+			} ) ).toStrictEqual( '1.2%' );
 
-		expect( console ).not.toHaveWarned();
+			mockNumberFormat();
 
-		mockNumberFormat();
+			expect( numberFormat( -0.0123, {
+				locale: 'en-US',
+				signDisplay: 'never', // This parameter will be removed.
+				style: 'percent',
+				maximumFractionDigits: 1,
+			} ) ).toStrictEqual( '-1.2%' );
 
-		expect( numberFormat( 22, {
-			locale: 'en-US',
-			unitDisplay: 'narrow',
-			style: 'unit',
-			unit: 'second',
-		} ) ).toStrictEqual( '22' );
+			const expectedWarning = 'Site Kit numberFormat error: Intl.NumberFormat( "en-US", {"signDisplay":"never","style":"percent","maximumFractionDigits":1} ).format( number )';
+			expect( console ).toHaveWarnedWith( expectedWarning, errorMessage );
 
-		const expectedWarning = 'Site Kit numberFormat error: Intl.NumberFormat( "en-US", {"unitDisplay":"narrow","style":"unit","unit":"second"} ).format( number )';
-		expect( console ).toHaveWarnedWith( expectedWarning, errorMessage );
+			// Call the same function again to ensure we don't warn again.
+			numberFormat( -0.0123, {
+				locale: 'en-US',
+				signDisplay: 'never', // This parameter will be removed.
+				style: 'percent',
+				maximumFractionDigits: 1,
+			} );
 
-		// Restore the regular behaviour.
-		Intl.NumberFormat = NumberFormat;
+			// Ensure we don't log more than once.
+			expect( console.warn ).toHaveBeenCalledTimes( 1 ); // eslint-disable-line no-console
+		} );
+
+		it( 'degrades gracefully when the `style:unit` option is provided', () => {
+			// Regular implementation.
+			expect( numberFormat( 22, {
+				locale: 'en-US',
+				unitDisplay: 'narrow',
+				style: 'unit',
+				unit: 'second',
+			} ) ).toStrictEqual( '22s' );
+
+			expect( console ).not.toHaveWarned();
+
+			mockNumberFormat();
+
+			expect( numberFormat( 22, {
+				locale: 'en-US',
+				unitDisplay: 'narrow',
+				style: 'unit',
+				unit: 'second',
+			} ) ).toStrictEqual( '22' );
+
+			const expectedWarning = 'Site Kit numberFormat error: Intl.NumberFormat( "en-US", {"unitDisplay":"narrow","style":"unit","unit":"second"} ).format( number )';
+			expect( console ).toHaveWarnedWith( expectedWarning, errorMessage );
+		} );
 	} );
 } );
