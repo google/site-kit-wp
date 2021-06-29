@@ -148,6 +148,8 @@ class Idea_HubTest extends TestCase {
 		$options  = new Options( $this->context );
 		$idea_hub = new Idea_Hub( $this->context, $options );
 
+		$idea_hub->register();
+
 		$options->set(
 			Settings::OPTION,
 			array( 'tosAccepted' => true )
