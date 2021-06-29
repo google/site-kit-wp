@@ -64,9 +64,9 @@ export default function SetupForm() {
 			<Button
 				className="googlesitekit-ideahub-setup__button"
 				disabled={ ! tosAccepted }
-			>{
-					__( 'Continue', 'google-site-kit' )
-				}</Button>
+			>
+				{ __( 'Continue', 'google-site-kit' ) }
+			</Button>
 
 		</form>
 	);
