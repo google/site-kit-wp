@@ -57,7 +57,7 @@ export default function SetupForm() {
 					checked={ tosAccepted }
 					onChange={ onChange }
 				>
-					{ __( 'I agree that Idea Hub will track my usage of the feature (e.g. creating a draft; saving/dismiss ideas) in order to provide better idea suggestions, 'google-site-kit' ) }
+					{ __( 'I agree that Idea Hub will track my usage of the feature (e.g. creating a draft; saving/dismiss ideas) in order to provide better idea suggestions', 'google-site-kit' ) }
 				</Checkbox>
 			</div>
 
