@@ -56,13 +56,13 @@ export default function UseUAandGA4SnippetSwitches() {
 	let message;
 
 	if ( useUASnippet && useGA4Snippet ) {
-		message = 'Site Kit will add the Universal Analytics and Google Analytics 4 codes automatically';
+		message = __( 'Site Kit will add the Universal Analytics and Google Analytics 4 codes automatically', 'google-site-kit' );
 	} else if ( useUASnippet && ! useGA4Snippet ) {
-		message = 'Site Kit will add the Universal Analytics code automatically';
+		message = __( 'Site Kit will add the Universal Analytics code automatically', 'google-site-kit' );
 	} else if ( ! useUASnippet && useGA4Snippet ) {
-		message = 'Site Kit will add the Google Analytics 4 code automatically';
+		message = __( 'Site Kit will add the Google Analytics 4 code automatically', 'google-site-kit' );
 	} else {
-		message = 'Site Kit will not add the code to your site';
+		message = __( 'Site Kit will not add the code to your site', 'google-site-kit' );
 	}
 
 	return (
