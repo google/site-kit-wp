@@ -24,7 +24,7 @@
 
 	// The max-width of the survey element is 400px, so we allow it to break
 	// away from being "centered" after 400px.
-	@media (min-width: 400px) {
+	@media (min-width: 448px) {
 		bottom: 24px;
 		right: 24px;
 	}
