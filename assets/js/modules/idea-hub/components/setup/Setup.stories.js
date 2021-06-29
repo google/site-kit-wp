@@ -43,7 +43,7 @@ function Template() {
 }
 
 export const DefaultSetup = Template.bind( null );
-DefaultSetup.storyName = 'Set up form';
+DefaultSetup.storyName = 'Setup form';
 DefaultSetup.parameters = { features };
 DefaultSetup.decorators = [
 	( Story ) => {
@@ -64,7 +64,7 @@ DefaultSetup.decorators = [
 
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( CORE_MODULES ).receiveGetModules( moduleFixture );
-			registry.dispatch( STORE_NAME ).receiveGetSettings( { tosAccepted: true } );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( { tosAccepted: false } );
 		};
 
 		return (
