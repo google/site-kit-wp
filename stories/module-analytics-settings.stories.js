@@ -76,7 +76,6 @@ storiesOf( 'Analytics Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'View, open with all settings', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -92,7 +91,6 @@ storiesOf( 'Analytics Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'View, open with all settings, no snippet with existing tag', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -114,7 +112,6 @@ storiesOf( 'Analytics Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, open with all settings', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
@@ -142,7 +139,6 @@ storiesOf( 'Analytics Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, open when creating new view', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
@@ -174,7 +170,6 @@ storiesOf( 'Analytics Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, open with no accounts', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
@@ -185,7 +180,6 @@ storiesOf( 'Analytics Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, with existing tag w/ access', ( args, { registry } ) => {
 		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
@@ -213,7 +207,6 @@ storiesOf( 'Analytics Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, with existing tag w/o access', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
@@ -241,36 +234,29 @@ storiesOf( 'Analytics Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add(
 		'No Tag, GTM property w/ access',
 		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: true } ),
-		{ padding: 0 }
 	)
 	.add(
 		'No Tag, GTM property w/o access',
 		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: false } ),
-		{ padding: 0 }
 	)
 	.add(
 		'Existing Tag w/ access, GTM property w/ access',
 		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: true } ),
-		{ padding: 0 }
 	)
 	.add(
 		'Existing Tag w/ access, GTM property w/o access',
 		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: true } ),
-		{ padding: 0 }
 	)
 	.add(
 		'Existing Tag w/o access, GTM property w/ access',
 		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: false } ),
-		{ padding: 0 }
 	)
 	.add(
 		'Existing Tag w/o access, GTM property w/o access',
 		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: false } ),
-		{ padding: 0 }
 	)
 ;

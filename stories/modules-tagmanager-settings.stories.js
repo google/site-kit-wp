@@ -110,7 +110,6 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'View, open with all settings', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -126,7 +125,6 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'View, open with all settings, with existing tag (with access)', ( args, { registry } ) => {
 		const accountID = '123456789';
@@ -145,7 +143,6 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'View, open with all settings, with existing tag (no access)', ( args, { registry } ) => {
 		const accountID = '123456789';
@@ -164,7 +161,6 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, Loading', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -175,7 +171,6 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, with all settings', ( args, { registry } ) => {
 		// eslint-disable-next-line sitekit/acronym-case
@@ -195,7 +190,6 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, with no accounts', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
@@ -206,7 +200,6 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, with "Set up a new account"', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
@@ -218,7 +211,6 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, with "Set up a new container"', ( args, { registry } ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
@@ -235,7 +227,6 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, with a non-unique new container', ( args, { registry } ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
@@ -253,7 +244,6 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, with all settings, with existing tag (with access)', ( args, { registry } ) => {
 		// eslint-disable-next-line sitekit/acronym-case
@@ -275,7 +265,6 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, with all settings, with existing tag (no access)', ( args, { registry } ) => {
 		// eslint-disable-next-line sitekit/acronym-case
@@ -297,7 +286,6 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 ;
 
@@ -319,7 +307,6 @@ storiesOf( 'Tag Manager Module/Settings/Primary AMP', module )
 		decorators: [
 			withRegistryPrimaryAMP,
 		],
-		padding: 0,
 	} )
 ;
 
@@ -346,7 +333,6 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 		decorators: [
 			withRegistrySecondaryAMP,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, with "Set up a new container"', ( args, { registry } ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
@@ -365,7 +351,6 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 		decorators: [
 			withRegistrySecondaryAMP,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, with a non-unique new containers', ( args, { registry } ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
@@ -388,6 +373,5 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 		decorators: [
 			withRegistrySecondaryAMP,
 		],
-		padding: 0,
 	} )
 ;
