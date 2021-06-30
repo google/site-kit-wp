@@ -55,7 +55,7 @@ export default function SettingsForm() {
 	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const hasExistingGA4Property = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
+	const hasExistingGA4Property = useSelect( ( select ) => isGA4Enabled && select( MODULES_ANALYTICS_4 ).getPropertyID() );
 
 	const useAnalyticsSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const useTagManagerSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
