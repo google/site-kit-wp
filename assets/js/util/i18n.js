@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { get, isFinite, isPlainObject } from 'lodash';
+import memize from 'memize';
 
 /**
  * WordPress dependencies
@@ -272,6 +273,9 @@ export const numFmt = ( number, options = {} ) => {
 	return numberFormat( number, formatOptions );
 };
 
+// Warn once for a given message.
+const warnOnce = memize( console.warn ); // eslint-disable-line no-console
+
 /**
  * Formats a number using the JS Internationalization Number Format API.
  *
@@ -286,7 +290,50 @@ export const numFmt = ( number, options = {} ) => {
 export const numberFormat = ( number, options = {} ) => {
 	const { locale = getLocale(), ...formatOptions } = options;
 
-	return new Intl.NumberFormat( locale, formatOptions ).format( number );
+	try {
+		/**
+		 * Per https://github.com/google/site-kit-wp/issues/3255 there have been issues with some versions of Safari
+		 * on some operating systems throwing issues with some parameters in the formatOptions.
+		 *
+		 * If an error is thrown, we remove some troublesome params from the formatOptions object and fallback to no formatting.
+		 *
+		 * This allows us to degrade somewhat gracefully without breaking the dashboard for users of unaffected browsers.
+		 */
+		return new Intl.NumberFormat( locale, formatOptions ).format( number );
+	} catch ( error ) {
+		warnOnce( `Site Kit numberFormat error: Intl.NumberFormat( ${ JSON.stringify( locale ) }, ${ JSON.stringify( formatOptions ) } ).format( ${ typeof number } )`, error.message );
+	}
+
+	// Remove these key/values from formatOptions.
+	const unstableFormatOptionValues = {
+		currencyDisplay: 'narrow',
+		currencySign: 'accounting',
+		style: 'unit',
+	};
+
+	// Remove these keys from formatOptions irrespective of value.
+	const unstableFormatOptions = [
+		'signDisplay',
+		'compactDisplay',
+	];
+
+	const reducedFormatOptions = {};
+
+	for ( const [ key, value ] of Object.entries( formatOptions ) ) {
+		if ( unstableFormatOptionValues[ key ] && value === unstableFormatOptionValues[ key ] ) {
+			continue;
+		}
+		if ( unstableFormatOptions.includes( key ) ) {
+			continue;
+		}
+		reducedFormatOptions[ key ] = value;
+	}
+
+	try {
+		return new Intl.NumberFormat( locale, reducedFormatOptions ).format( number );
+	} catch {
+		return new Intl.NumberFormat( locale ).format( number );
+	}
 };
 
 /**

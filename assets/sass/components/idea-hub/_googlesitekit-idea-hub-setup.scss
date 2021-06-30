@@ -1,5 +1,5 @@
 /**
- * Tooltip styles.
+ * Idea Hub setup component styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,11 +16,24 @@
  * limitations under the License.
  */
 
-.googlesitekit-tooltip.MuiTooltip-tooltipPlacementBottom {
-	margin-top: 0;
+.googlesitekit-ideahub-setup__button {
+	margin-top: $grid-gap-phone;
+
+	@media (min-width: $bp-desktop) {
+		margin-top: $grid-gap-desktop;
+	}
 }
 
-// High z-index since the survey modal has a high z-index as well
-.googlesitekit-tooltip-popper.MuiTooltip-popper {
-	z-index: 99999;
+.googlesitekit-ideahub-setup__checkbox {
+
+	/*
+	 * The MDC Checkbox has 11px padding, so this brings the edge
+	 * of the checkbox in line with the rest of the content.
+	 */
+	margin-left: -11px;
+
+	label[for="tosAccepted"] {
+
+		@include responsive-text("body2", "body2");
+	}
 }

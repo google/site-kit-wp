@@ -25,6 +25,9 @@ import { STORE_NAME } from './constants';
 const baseModuleStore = Modules.createModuleStore( 'idea-hub', {
 	storeName: STORE_NAME,
 	requiresSetup: false,
+	settingSlugs: [
+		'tosAccepted',
+	],
 } );
 
 export default baseModuleStore;
