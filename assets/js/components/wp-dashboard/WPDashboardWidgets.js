@@ -67,10 +67,12 @@ const [
 ] = SPECIAL_WIDGET_STATES;
 
 const WPDashboardWidgets = () => {
-	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ) ).isModuleActive( 'analytics' );
-	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ) ).isModuleConnected( 'analytics' );
+	const analyticsModule = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'analytics' ) );
+	const analyticsModuleActive = analyticsModule?.active;
+	const analyticsModuleConnected = analyticsModule?.connected;
 
-	// The two Analytics widgets at the top can be combined if they are both in the same special state.
+	// The two Analytics widgets at the top can be combined (i.e. one can be hidden)
+	// if they are both in the same special state.
 	const shouldCombineAnalyticsArea1 = useSelect( ( select ) =>
 			select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )?.Component === ReportZero &&
 			select( CORE_WIDGETS ).getWidgetState( WIDGET_SESSION_DURATION )?.Component === ReportZero
@@ -86,7 +88,7 @@ const WPDashboardWidgets = () => {
 				select( CORE_WIDGETS ).getWidgetState( WIDGET_POPULAR_PAGES )?.Component === ReportZero
 	) );
 
-	const searchConsoleHasSpecialState = useSelect( ( select ) => {
+	const shouldCombineSearchConsoleWidgets = useSelect( ( select ) => {
 		const impressionsWidgetState = select( CORE_WIDGETS ).getWidgetState( WIDGET_IMPRESSIONS )?.Component;
 		const clicksWidgetState = select( CORE_WIDGETS ).getWidgetState( WIDGET_CLICKS )?.Component;
 		const hasSpecialState = SPECIAL_WIDGET_STATES.includes( impressionsWidgetState ) &&
@@ -124,15 +126,14 @@ const WPDashboardWidgets = () => {
 				</Fragment>
 			) }
 
-			{ // Both widgets are in a special state (e.g. zero report), so we need only render one.
-				searchConsoleHasSpecialState ? (
-					<WPDashboardImpressionsWidget />
-				) : (
-					<Fragment>
-						<WPDashboardImpressionsWidget />
-						<WPDashboardClicksWidget />
-					</Fragment>
-				) }
+			<Fragment>
+				<WPDashboardImpressionsWidget />
+				<span className={ classnames( {
+					[ HIDDEN_CLASS ]: shouldCombineSearchConsoleWidgets,
+				} ) }>
+					<WPDashboardClicksWidget />
+				</span>
+			</Fragment>
 
 			{ analyticsModuleActive && analyticsModuleConnected && (
 				<span className={ classnames( {
