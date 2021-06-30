@@ -235,28 +235,10 @@ storiesOf( 'Analytics Module/Settings', module )
 			withRegistry,
 		],
 	} )
-	.add(
-		'No Tag, GTM property w/ access',
-		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: true } ),
-	)
-	.add(
-		'No Tag, GTM property w/o access',
-		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: false } ),
-	)
-	.add(
-		'Existing Tag w/ access, GTM property w/ access',
-		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: true } ),
-	)
-	.add(
-		'Existing Tag w/ access, GTM property w/o access',
-		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: true } ),
-	)
-	.add(
-		'Existing Tag w/o access, GTM property w/ access',
-		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: false } ),
-	)
-	.add(
-		'Existing Tag w/o access, GTM property w/o access',
-		usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: false } ),
-	)
+	.add( 'No Tag, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: true } ) )
+	.add( 'No Tag, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: false } ) )
+	.add( 'Existing Tag w/ access, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: true } ) )
+	.add( 'Existing Tag w/ access, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: true } ) )
+	.add( 'Existing Tag w/o access, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: false } ) )
+	.add( 'Existing Tag w/o access, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: false } ) )
 ;

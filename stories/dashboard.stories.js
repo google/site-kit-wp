@@ -135,11 +135,7 @@ storiesOf( 'Dashboard', module )
 			</WithTestRegistry>
 		);
 	},
-	{
-		options: {
-			readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
-		},
-	} )
+	{ options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' } } )
 	.add( 'Search Funnel', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
@@ -198,5 +194,4 @@ storiesOf( 'Dashboard', module )
 		options: {
 			readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
 		},
-	}
-	);
+	} );

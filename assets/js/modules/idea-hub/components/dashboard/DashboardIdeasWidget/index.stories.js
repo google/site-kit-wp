@@ -202,5 +202,4 @@ export default {
 			);
 		},
 	],
-	parameters: { padding: 0 },
 };

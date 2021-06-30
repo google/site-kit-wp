@@ -384,7 +384,6 @@ generateAnalyticsWidgetStories( {
 	Component: ModulePopularPagesWidget,
 	wrapWidget: false,
 } );
-
 generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Module Page/Acquisition Channels Widget',
 	referenceDate: '2021-01-06',

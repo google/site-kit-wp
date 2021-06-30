@@ -164,8 +164,6 @@ storiesOf( 'AdSense Module', module )
 				</SetupWrap>
 			</WithTestRegistry>
 		);
-	}, {
-		padding: 0,
 	} )
 	.add( 'Dashboard Zero Data', () => {
 		const setupRegistry = ( registry ) => {
