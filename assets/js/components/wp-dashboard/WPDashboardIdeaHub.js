@@ -45,11 +45,18 @@ function WPDashboardIdeaHub() {
 		if ( ! isIdeaHubEnabled ) {
 			return {};
 		}
+
+		const isActive = select( CORE_MODULES ).isModuleActive( 'idea-hub' );
+		if ( ! isActive ) {
+			return {};
+		}
+
 		const savedIdeas = select( MODULES_IDEA_HUB ).getSavedIdeas();
 		const adminURL = select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' );
+
 		return {
-			isModuleActive: select( CORE_MODULES ).isModuleActive( 'idea-hub' ),
-			hasSavedIdeas: savedIdeas && savedIdeas.length,
+			isModuleActive: isActive,
+			hasSavedIdeas: savedIdeas?.length > 0,
 			dashboardURL: `${ adminURL }#saved-ideas`,
 		};
 	} );
