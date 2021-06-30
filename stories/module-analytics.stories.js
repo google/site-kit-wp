@@ -313,7 +313,6 @@ storiesOf( 'Analytics Module', module )
 	// 'Analytics Module/Components/Module Page/Acquisition Channels Widget'.
 	{
 		options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' },
-		padding: 0,
 	} )
 	.add( 'Top Acquisition Pie Chart', () => {
 		global._googlesitekitLegacyData = analyticsData;
@@ -363,5 +362,4 @@ storiesOf( 'Analytics Module', module )
 	},
 	{
 		options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' },
-		padding: 0,
 	} );

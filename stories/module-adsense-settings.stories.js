@@ -98,7 +98,6 @@ storiesOf( 'AdSense Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'View, open with setup incomplete', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -119,7 +118,6 @@ storiesOf( 'AdSense Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'View, open with all settings', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
@@ -129,7 +127,6 @@ storiesOf( 'AdSense Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, open', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
@@ -140,7 +137,6 @@ storiesOf( 'AdSense Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, open with existing tag (same account)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
@@ -152,7 +148,6 @@ storiesOf( 'AdSense Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, open with existing tag (different account)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
@@ -164,6 +159,5 @@ storiesOf( 'AdSense Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 ;

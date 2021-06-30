@@ -103,5 +103,4 @@ SurveyWithTermsStory.args = {
 
 export default {
 	title: 'Components/Surveys/CurrentSurvey',
-	parameters: { padding: 0 },
 };

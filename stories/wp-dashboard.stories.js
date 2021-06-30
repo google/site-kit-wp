@@ -158,7 +158,6 @@ storiesOf( 'WordPress', module )
 			readySelector: '.googlesitekit-data-block',
 			delay: 2000, // Wait for table overlay to animate.
 		},
-		padding: 0,
 	} )
 	.add( 'WordPress Dashboard (Analytics inactive)', ( args, { registry } ) => {
 		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive() );

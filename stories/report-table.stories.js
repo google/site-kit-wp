@@ -73,6 +73,4 @@ storiesOf( 'Global/ReportTable', module )
 				/>
 			</Layout>
 		);
-	}, {
-		padding: 0,
 	} );

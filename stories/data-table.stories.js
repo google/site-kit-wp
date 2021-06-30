@@ -77,5 +77,4 @@ storiesOf( 'Global', module )
 			readySelector: '.googlesitekit-table-overflow',
 			delay: 2000, // Wait for table overflow to animate.
 		},
-		padding: 0,
 	} );

@@ -90,5 +90,4 @@ storiesOf( 'Search Console Module', module )
 	},
 	{
 		options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' },
-		padding: 0,
 	} );

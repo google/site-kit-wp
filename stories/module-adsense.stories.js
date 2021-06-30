@@ -179,8 +179,6 @@ storiesOf( 'AdSense Module', module )
 				</Layout>
 			</WithTestRegistry>
 		);
-	}, {
-		padding: 0,
 	} )
 	.add( 'Performance', () => {
 		const setupRegistry = ( registry ) => {
@@ -251,7 +249,5 @@ storiesOf( 'AdSense Module', module )
 				</Layout>
 			</WithTestRegistry>
 		);
-	}, {
-		padding: 0,
 	} )
 ;
