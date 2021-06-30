@@ -301,7 +301,7 @@ export const numberFormat = ( number, options = {} ) => {
 		 */
 		return new Intl.NumberFormat( locale, formatOptions ).format( number );
 	} catch ( error ) {
-		warnOnce( `Site Kit numberFormat error: Intl.NumberFormat( ${ JSON.stringify( locale ) }, ${ JSON.stringify( formatOptions ) } ).format( ${ typeof number } )`, error.message );
+		warnOnce( `Site Kit numberFormat error: Intl.NumberFormat( ${ JSON.stringify( locale ) }, ${ JSON.stringify( formatOptions ) } ).format( ${ number } )`, error.message );
 	}
 
 	// Remove these key/values from formatOptions.
