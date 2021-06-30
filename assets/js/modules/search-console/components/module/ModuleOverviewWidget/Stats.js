@@ -81,6 +81,9 @@ const Stats = ( { data, metrics, selectedStats, dateRangeLength } ) => {
 				fontSize: 12,
 				italic: false,
 			},
+			viewWindow: {
+				min: 0,
+			},
 		},
 		series: {
 			0: {

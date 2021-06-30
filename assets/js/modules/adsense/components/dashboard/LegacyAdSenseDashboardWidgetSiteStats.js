@@ -122,6 +122,9 @@ export default function LegacyAdSenseDashboardWidgetSiteStats( props ) {
 				fontSize: 12,
 				italic: false,
 			},
+			viewWindow: {
+				min: 0,
+			},
 		},
 		focusTarget: 'category',
 		crosshair: {

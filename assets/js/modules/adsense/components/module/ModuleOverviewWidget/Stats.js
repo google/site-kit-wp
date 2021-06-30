@@ -92,6 +92,9 @@ const Stats = ( {
 				fontSize: 12,
 				italic: false,
 			},
+			viewWindow: {
+				min: 0,
+			},
 		},
 		focusTarget: 'category',
 		crosshair: {
