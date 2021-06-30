@@ -76,7 +76,6 @@ storiesOf( 'Optimize Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'View, open with all settings', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -89,7 +88,6 @@ storiesOf( 'Optimize Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, open with all settings', ( args, { registry } ) => {
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
@@ -104,7 +102,6 @@ storiesOf( 'Optimize Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, open with no optimize ID', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -115,7 +112,6 @@ storiesOf( 'Optimize Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, open with all settings and AMP Experiment JSON Field', ( args, { registry } ) => {
 		provideSiteInfo( registry, { ampMode: AMP_MODE_PRIMARY } );
@@ -131,6 +127,5 @@ storiesOf( 'Optimize Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 ;

@@ -54,7 +54,6 @@ storiesOf( 'PageSpeed Insights Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'View, open with all settings', ( args, { registry } ) => {
 		return <Settings isOpen={ true } registry={ registry } />;
@@ -62,7 +61,6 @@ storiesOf( 'PageSpeed Insights Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 	.add( 'Edit, open with all settings', ( args, { registry } ) => {
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
@@ -70,6 +68,5 @@ storiesOf( 'PageSpeed Insights Module/Settings', module )
 		decorators: [
 			withRegistry,
 		],
-		padding: 0,
 	} )
 ;

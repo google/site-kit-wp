@@ -145,7 +145,6 @@ generateAnalyticsWidgetStories( {
 		},
 	},
 	wrapWidget: false,
-	padding: 0,
 } );
 
 generateAnalyticsWidgetStories( {
@@ -208,7 +207,6 @@ generateAnalyticsWidgetStories( {
 	] ),
 	Component: DashboardAllTrafficWidget,
 	wrapWidget: false,
-	padding: 0,
 } );
 
 generateAnalyticsWidgetStories( {
@@ -229,7 +227,6 @@ generateAnalyticsWidgetStories( {
 		url: 'https://www.sitekit.com/',
 	} ),
 	Component: DashboardBounceRateWidget,
-	padding: 0,
 } );
 
 generateAnalyticsWidgetStories( {
@@ -288,7 +285,6 @@ generateAnalyticsWidgetStories( {
 		Loaded: ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
 		DataUnavailable: ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
 	},
-	padding: 0,
 } );
 
 generateAnalyticsWidgetStories( {
@@ -317,7 +313,6 @@ generateAnalyticsWidgetStories( {
 	} ),
 	Component: DashboardPopularPagesWidget,
 	wrapWidget: false,
-	padding: 0,
 } );
 
 generateAnalyticsWidgetStories( {
@@ -352,7 +347,6 @@ generateAnalyticsWidgetStories( {
 	] ),
 	Component: ModuleOverviewWidget,
 	wrapWidget: false,
-	padding: 0,
 } );
 
 generateAnalyticsWidgetStories( {
@@ -389,8 +383,8 @@ generateAnalyticsWidgetStories( {
 	} ),
 	Component: ModulePopularPagesWidget,
 	wrapWidget: false,
-	padding: 0,
 } );
+
 generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Module Page/Acquisition Channels Widget',
 	referenceDate: '2021-01-06',
@@ -424,5 +418,4 @@ generateAnalyticsWidgetStories( {
 	),
 	Component: ModuleAcquisitionChannelsWidget,
 	wrapWidget: false,
-	padding: 0,
 } );

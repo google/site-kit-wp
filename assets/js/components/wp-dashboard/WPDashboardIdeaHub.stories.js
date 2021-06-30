@@ -67,5 +67,4 @@ export default {
 			return <Story />;
 		},
 	],
-	parameters: { padding: 0 },
 };

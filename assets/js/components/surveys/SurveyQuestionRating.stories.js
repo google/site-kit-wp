@@ -66,5 +66,4 @@ export default {
 			</div>
 		),
 	],
-	parameters: { padding: 0 },
 };
