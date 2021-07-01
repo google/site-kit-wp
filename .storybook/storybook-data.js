@@ -121,19 +121,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'dashboard--post-searcher',
-		kind: 'Dashboard',
-		name: 'Post Searcher',
-		story: 'Post Searcher',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
 		id: 'global--plugin-header',
 		kind: 'Global',
 		name: 'Plugin Header',
