@@ -51,6 +51,7 @@ import { getWidgetComponentProps } from '../../assets/js/googlesitekit/widgets/u
  * @param {Array}       [args.additionalVariants]         Optional. Additional story variants.
  * @param {Array}       [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants.
  * @param {Function}    [args.setup]                      Optional. Setup function to be run for all Stories being generated.
+ * @param {number}      [args.padding]                    Optional. Can be used to alter padding around component (nomrally to set to 0).
  * @return {Story} Generated story.
  */
 export function generateReportBasedWidgetStories( {
@@ -65,6 +66,7 @@ export function generateReportBasedWidgetStories( {
 	additionalVariants = {},
 	additionalVariantCallbacks = {},
 	setup = () => {},
+	padding,
 } ) {
 	const stories = storiesOf( group, module );
 
@@ -254,6 +256,7 @@ export function generateReportBasedWidgetStories( {
 			decorators: [
 				withRegistry( variant ),
 			],
+			padding,
 		} );
 	} );
 

@@ -52,7 +52,7 @@ const LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		const adsenseData = select( MODULES_ADSENSE ).getReport( {
 			startDate,
 			endDate,
-			metrics: 'EARNINGS',
+			metrics: 'TOTAL_EARNINGS',
 		} );
 
 		return getCurrencyFormat( adsenseData );
@@ -99,25 +99,31 @@ const LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 			title: __( 'Earnings', 'google-site-kit' ),
 			description: __( 'Earnings', 'google-site-kit' ),
 			field: 'metrics.0.values.0',
-			Component: ( { fieldValue } ) => numFmt(
-				fieldValue,
-				currencyFormat,
+			Component: ( { fieldValue } ) => (
+				<span>
+					{ numFmt( fieldValue, currencyFormat ) }
+				</span>
 			),
 		},
 		{
 			title: __( 'Page RPM', 'google-site-kit' ),
 			description: __( 'Page RPM', 'google-site-kit' ),
 			field: 'metrics.0.values.1',
-			Component: ( { fieldValue } ) => numFmt(
-				fieldValue,
-				currencyFormat,
+			Component: ( { fieldValue } ) => (
+				<span>
+					{ numFmt( fieldValue, currencyFormat ) }
+				</span>
 			),
 		},
 		{
 			title: __( 'Impressions', 'google-site-kit' ),
 			description: __( 'Impressions', 'google-site-kit' ),
 			field: 'metrics.0.values.2',
-			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+			Component: ( { fieldValue } ) => (
+				<span>
+					{ numFmt( fieldValue, { style: 'decimal' } ) }
+				</span>
+			),
 		},
 	];
 	return (

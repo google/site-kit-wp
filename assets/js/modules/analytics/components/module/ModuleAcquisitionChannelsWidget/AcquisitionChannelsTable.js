@@ -34,7 +34,6 @@ import { numFmt } from '../../../../../util';
 import MiniChart from '../../../../../components/MiniChart';
 import ReportTable from '../../../../../components/ReportTable';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
 
 export default function AcquisitionChannelsTable( { report } ) {
@@ -47,13 +46,17 @@ export default function AcquisitionChannelsTable( { report } ) {
 		{
 			title: __( 'Channel', 'google-site-kit' ),
 			tooltip: __( 'Channel refers to where your traffic originated from', 'google-site-kit' ),
-			Component: ( { row } ) => row.dimensions[ 0 ],
+			Component: ( { row } ) => <span>{ row.dimensions[ 0 ] }</span>,
 		},
 		{
 			title: __( 'Users', 'google-site-kit' ),
 			tooltip: __( 'Number of users that originated from that traffic', 'google-site-kit' ),
 			field: 'metrics.0.values.0',
-			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+			Component: ( { fieldValue } ) => (
+				<span>
+					{ numFmt( fieldValue, { style: 'decimal' } ) }
+				</span>
+			),
 		},
 		{
 			title: __( 'New Users', 'google-site-kit' ),
@@ -63,7 +66,11 @@ export default function AcquisitionChannelsTable( { report } ) {
 				dateRangeNumberOfDays,
 			),
 			field: 'metrics.0.values.1',
-			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+			Component: ( { fieldValue } ) => (
+				<span>
+					{ numFmt( fieldValue, { style: 'decimal' } ) }
+				</span>
+			),
 		},
 		{
 			title: __( 'Sessions', 'google-site-kit' ),
@@ -73,7 +80,11 @@ export default function AcquisitionChannelsTable( { report } ) {
 				dateRangeNumberOfDays,
 			),
 			field: 'metrics.0.values.2',
-			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+			Component: ( { fieldValue } ) => (
+				<span>
+					{ numFmt( fieldValue, { style: 'decimal' } ) }
+				</span>
+			),
 		},
 		{
 			title: __( 'Percentage', 'google-site-kit' ),
@@ -94,12 +105,10 @@ export default function AcquisitionChannelsTable( { report } ) {
 
 	return (
 		<div className="googlesitekit-details-widget">
-			<TableOverflowContainer>
-				<ReportTable
-					rows={ report[ 0 ].data.rows }
-					columns={ tableColumns }
-				/>
-			</TableOverflowContainer>
+			<ReportTable
+				rows={ report[ 0 ].data.rows }
+				columns={ tableColumns }
+			/>
 		</div>
 	);
 }

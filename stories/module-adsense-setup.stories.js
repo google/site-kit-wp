@@ -87,6 +87,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'AdBlocker active', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -105,6 +106,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'No account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -124,6 +126,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'No account (existing tag)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -143,6 +146,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Multiple accounts', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -170,6 +174,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Disapproved account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -189,6 +194,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Graylisted account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -207,6 +213,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Pending account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -232,6 +239,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Account without AFC client (AdMob)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -246,6 +254,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Newly approved account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -269,6 +278,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Newly approved account (existing tag with permission)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -296,6 +306,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Newly approved account (existing tag without permission)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -323,6 +334,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Already approved account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -341,6 +353,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Already approved account (existing tag with permission)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -363,6 +376,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Already approved account (existing tag without permission)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -385,6 +399,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Site not added', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( accountCompleteSettings );
@@ -403,6 +418,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Site added', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( accountCompleteSettings );
@@ -424,5 +440,6 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 ;
