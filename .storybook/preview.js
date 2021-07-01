@@ -39,13 +39,19 @@ bootstrapFetchMocks();
 
 // Decorators run from last added to first. (Eg. In reverse order as listed.)
 export const decorators = [
-	( Story ) => (
-		<div className="googlesitekit-plugin-preview js">
-			<div className="googlesitekit-plugin">
-				<Story />
+	( Story, { parameters } ) => {
+		const { padding = 50 } = parameters || {};
+		return (
+			<div
+				className="googlesitekit-plugin-preview js"
+				style={ { padding } }
+			>
+				<div className="googlesitekit-plugin">
+					<Story />
+				</div>
 			</div>
-		</div>
-	),
+		);
+	},
 	// Features must be set up before test registry is initialized.
 	( Story, { parameters } ) => {
 		const { features = [] } = parameters;
