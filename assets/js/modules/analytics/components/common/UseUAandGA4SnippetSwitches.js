@@ -44,7 +44,7 @@ export default function UseUAandGA4SnippetSwitches() {
 	const { setUseSnippet: setUseGA4Snippet } = useDispatch( MODULES_ANALYTICS_4 );
 
 	useEffect( () => {
-		if ( ga4MeasurementID === `G-${ ga4ExistingTag }` ) {
+		if ( ga4MeasurementID === ga4ExistingTag ) {
 			setUseGA4Snippet( false );
 		}
 	}, [ ga4ExistingTag, setUseGA4Snippet, ga4MeasurementID ] );
