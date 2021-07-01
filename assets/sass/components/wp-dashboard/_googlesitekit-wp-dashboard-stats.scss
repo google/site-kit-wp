@@ -27,7 +27,8 @@
 		box-sizing: border-box;
 	}
 
-	> .googlesitekit-wp-dashboard-stats__data-table {
+	> .googlesitekit-wp-dashboard-stats__data-table,
+	> .googlesitekit-wp-dashboard-stats__area-wrapper {
 		align-self: flex-end;
 		width: 48%;
 
@@ -44,7 +45,8 @@
 		}
 	}
 
-	&--fourup > .googlesitekit-wp-dashboard-stats__data-table {
+	&--fourup > .googlesitekit-wp-dashboard-stats__data-table,
+	&--fourup > .googlesitekit-wp-dashboard-stats__area {
 
 		@media (min-width: $bp-tablet) {
 			width: auto;
@@ -101,5 +103,10 @@
 	// Regular CTA shows up when data is zero
 	.googlesitekit-cta + .googlesitekit-wp-dashboard-stats__cta {
 		width: 100%;
+	}
+
+	.googlesitekit-wp-dashboard-stats__area-wrapper .googlesitekit-wp-dashboard-stats__data-table,
+	.googlesitekit-wp-dashboard-stats__area-wrapper .googlesitekit-preview-block {
+		width: 100% !important;
 	}
 }
