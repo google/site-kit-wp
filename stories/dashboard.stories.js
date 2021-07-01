@@ -29,9 +29,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import DashboardModuleHeader from '../assets/js/components/dashboard/DashboardModuleHeader';
-import PostSearcher from '../assets/js/components/PostSearcher';
 import URLSearchWidget from '../assets/js/googlesitekit/widgets/components/URLSearchWidget';
-import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 import { getWidgetComponentProps } from '../assets/js/googlesitekit/widgets/util';
 
@@ -42,23 +40,6 @@ storiesOf( 'Dashboard', module )
 			description={ __( 'Description of Module', 'google-site-kit' ) }
 		/>
 	) )
-	.add( 'Post Searcher', () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {
-				usingProxy: true,
-				referenceSiteURL: 'http://example.com',
-				adminURL: 'http://example.com/wp-admin',
-				timezone: 'America/Detroit',
-				siteName: 'My Site Name',
-			} );
-		};
-
-		return (
-			<WithTestRegistry callback={ setupRegistry } >
-				<PostSearcher />
-			</WithTestRegistry>
-		);
-	} )
 	.add( 'URL Search Widget', () => {
 		const setupRegistry = ( registry ) => provideSiteInfo( registry );
 		const widgetComponentProps = getWidgetComponentProps( 'urlSearch' );
