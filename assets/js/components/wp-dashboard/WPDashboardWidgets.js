@@ -36,8 +36,6 @@ import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
 import WPDashboardSessionDuration from './WPDashboardSessionDuration';
 import WPDashboardPopularPages from './WPDashboardPopularPages';
 import WPDashboardIdeaHub from './WPDashboardIdeaHub';
-// import ActivateModuleCTA from '../ActivateModuleCTA';
-// import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { SPECIAL_WIDGET_STATES, HIDDEN_CLASS } from '../../googlesitekit/widgets/util/constants';
@@ -60,6 +58,7 @@ const WPDashboardUniqueVisitorsWidget = withWidgetComponentProps( WIDGET_VISITOR
 const WPDashboardSessionDurationWidget = withWidgetComponentProps( WIDGET_SESSION_DURATION )( WPDashboardSessionDuration );
 const WPDashboardPopularPagesWidget = withWidgetComponentProps( WIDGET_POPULAR_PAGES )( WPDashboardPopularPages );
 
+// Special widget states.
 const [
 	ActivateModuleCTA,
 	CompleteModuleActivationCTA,
@@ -71,15 +70,15 @@ const WPDashboardWidgets = () => {
 	const analyticsModuleActive = analyticsModule?.active;
 	const analyticsModuleConnected = analyticsModule?.connected;
 
-	// The two Analytics widgets at the top can be combined (i.e. one can be hidden)
-	// if they are both in the same special state.
+	// The two Analytics widgets at the top can be combined (i.e. the second can be hidden)
+	// if they are both ReportZero.
 	const shouldCombineAnalyticsArea1 = useSelect( ( select ) =>
 			select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )?.Component === ReportZero &&
 			select( CORE_WIDGETS ).getWidgetState( WIDGET_SESSION_DURATION )?.Component === ReportZero
 	);
 
-	// The Analytics widget at the bottom can be combined if it shares the same special state as one
-	// of the two at the top.
+	// The Analytics widget at the bottom can be combined / hidden if one of the two at the top
+	// is also ReportZero.
 	const shouldCombineAnalyticsArea2 = useSelect( ( select ) => (
 			select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )?.Component === ReportZero &&
 			select( CORE_WIDGETS ).getWidgetState( WIDGET_POPULAR_PAGES )?.Component === ReportZero
@@ -88,14 +87,12 @@ const WPDashboardWidgets = () => {
 				select( CORE_WIDGETS ).getWidgetState( WIDGET_POPULAR_PAGES )?.Component === ReportZero
 	) );
 
-	const shouldCombineSearchConsoleWidgets = useSelect( ( select ) => {
-		const impressionsWidgetState = select( CORE_WIDGETS ).getWidgetState( WIDGET_IMPRESSIONS )?.Component;
-		const clicksWidgetState = select( CORE_WIDGETS ).getWidgetState( WIDGET_CLICKS )?.Component;
-		const hasSpecialState = SPECIAL_WIDGET_STATES.includes( impressionsWidgetState ) &&
-			SPECIAL_WIDGET_STATES.includes( clicksWidgetState );
-
-		return impressionsWidgetState === clicksWidgetState && hasSpecialState;
-	} );
+	// The Search Console widgets can be combined (i.e. the second is hidden) if they are both
+	// ReportZero.
+	const shouldCombineSearchConsoleWidgets = useSelect( ( select ) => (
+		select( CORE_WIDGETS ).getWidgetState( WIDGET_IMPRESSIONS )?.Component === ReportZero &&
+		select( CORE_WIDGETS ).getWidgetState( WIDGET_CLICKS )?.Component === ReportZero
+	) );
 
 	return (
 		<div className={ classnames(
