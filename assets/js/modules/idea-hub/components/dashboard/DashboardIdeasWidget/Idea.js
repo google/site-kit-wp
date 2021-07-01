@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -136,6 +141,21 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 			</Row>
 		</Grid>
 	);
+};
+
+Idea.propTypes = {
+	postID: PropTypes.number,
+	postEditURL: PropTypes.string,
+	postURL: PropTypes.string,
+	name: PropTypes.string.isRequired,
+	text: PropTypes.string.isRequired,
+	topics: PropTypes.arrayOf(
+		PropTypes.shape( {
+			display_name: PropTypes.string,
+			mid: PropTypes.string,
+		} )
+	).isRequired,
+	buttons: PropTypes.arrayOf( PropTypes.string ).isRequired,
 };
 
 export default Idea;
