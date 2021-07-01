@@ -72,32 +72,6 @@
 	> .googlesitekit-wp-dashboard-stats__cta {
 		padding-top: 12px;
 		width: 100%;
-
-		@media (min-width: $bp-tablet) {
-			width: 50%;
-		}
-
-		@media (min-width: $bp-wpdb1) {
-			width: 100%;
-		}
-
-		@media (min-width: $bp-wpdb2) {
-			width: 50%;
-		}
-
-		// Two side by side CTA's
-		+ .googlesitekit-wp-dashboard-stats__cta {
-
-			@media (min-width: $bp-tablet) {
-				margin-left: 1px;
-				margin-right: -1px;
-			}
-
-			@media (min-width: $bp-wpdb2) {
-				margin-left: 1px;
-				margin-right: -1px;
-			}
-		}
 	}
 
 	// Regular CTA shows up when data is zero
