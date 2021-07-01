@@ -49,6 +49,7 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 		createIdeaDraftPost,
 		saveIdea,
 		unsaveIdea,
+		dismissIdea,
 	} = useDispatch( STORE_NAME );
 	const [ isProcessing, setIsProcessing ] = useState( false );
 
@@ -57,10 +58,10 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 		await API.invalidateCache( 'modules', 'idea-hub', 'saved-ideas' );
 	}, [] );
 
-	const handleDelete = useCallback( () => {
-		// @TODO: Implement callback.
-		global.console.log( `Deleted: ${ name }` );
-	}, [ name ] );
+	const handleDelete = useCallback( async () => {
+		await dismissIdea( name );
+		await refreshNewSavedIdeas();
+	}, [ name, refreshNewSavedIdeas, dismissIdea ] );
 
 	const handlePin = useCallback( async () => {
 		await saveIdea( name );
