@@ -31,12 +31,9 @@ import { __, sprintf, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { getLocale } from '../../../util/i18n';
-import calculateOverviewData from './calculateOverviewData';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
 import { convertSecondsToArray, numFmt, getChartDifferenceArrow } from '../../../util';
 import { partitionReport } from '../../../util/partition-report';
-
-export { calculateOverviewData };
 
 export { default as parsePropertyID } from './parse-property-id';
 export * from './is-zero-report';
@@ -365,85 +362,6 @@ export const translateAnalyticsError = ( status, message ) => {
 	return translatedMessage;
 };
 
-export const getAnalyticsErrorMessageFromData = ( data ) => {
-	// Specific Analytics API errors (legacy?).
-	if ( data.error && data.error.status ) {
-		return translateAnalyticsError( data.error.status, data.error.message );
-	}
-
-	// Regular WP error handling.
-	if ( data.code && data.message && data.data?.status ) {
-		return data.message;
-	}
-
-	return false;
-};
-
-/**
- * Checks for Zero data from Analytics API.
- *
- * @since 1.0.0
- *
- * @param {Object} data The data returned from the Analytics API call.
- * @return {boolean} Indicates if zero data returned from Analytics API call or not.
- */
-export const isDataZeroForReporting = ( data ) => {
-	// Handle empty data.
-	if ( ! data || ! data.length ) {
-		return true;
-	}
-
-	if ( data && data[ 0 ] && data[ 0 ].data && data[ 0 ].data.totals && data[ 0 ].data.totals[ 0 ] ) {
-		const { values } = data[ 0 ].data.totals[ 0 ];
-
-		// Are all the data points zeros?
-		let allZeros = true;
-		each( values, ( value ) => {
-			if ( 0 !== parseInt( value, 10 ) ) {
-				allZeros = false;
-			}
-		} );
-		return allZeros;
-	}
-
-	return false;
-};
-
-/**
- * Default data object for making Analytics adsense requests.
- *
- * @since 1.0.0
- *
- * @type {Object}
- */
-export const analyticsAdsenseReportDataDefaults = {
-	dimensions: [
-		'ga:pageTitle',
-		'ga:pagePath',
-	].join( ',' ),
-	metrics: [
-		{
-			expression: 'ga:adsenseRevenue',
-			alias: 'Earnings',
-		},
-		{
-			expression: 'ga:adsenseECPM',
-			alias: 'Page RPM',
-		},
-		{
-			expression: 'ga:adsensePageImpressions',
-			alias: 'Impressions',
-		},
-	],
-	orderby: [
-		{
-			fieldName: 'ga:adsenseRevenue',
-			sortOrder: 'DESCENDING',
-		},
-	],
-	limit: 10,
-};
-
 /**
  * Default data object for making Analytics site analytics report requests.
  *
@@ -480,62 +398,6 @@ export const siteAnalyticsReportDataDefaults = {
 };
 
 /**
- * Default data object for making Analytics site analytics report requests.
- *
- * @since 1.0.0
- *
- * @type {Object}
- */
-export const overviewReportDataDefaults = {
-	multiDateRange: 1,
-	dimensions: 'ga:date',
-	metrics: [
-		{
-			expression: 'ga:users',
-			alias: 'Users',
-		},
-		{
-			expression: 'ga:sessions',
-			alias: 'Sessions',
-		},
-		{
-			expression: 'ga:bounceRate',
-			alias: 'Bounce Rate',
-		},
-		{
-			expression: 'ga:avgSessionDuration',
-			alias: 'Average Session Duration',
-		},
-		{
-			expression: 'ga:goalCompletionsAll',
-			alias: 'Goal Completions',
-		},
-		{
-			expression: 'ga:pageviews',
-			alias: 'Pageviews',
-		},
-	],
-	limit: 10,
-};
-
-/**
- * Default data object for making Analytics user report requests.
- *
- * @since 1.0.0
- *
- * @type {Object}
- */
-export const userReportDataDefaults = {
-	multiDateRange: 1,
-	metrics: [
-		{
-			expression: 'ga:users',
-			alias: 'Total Users',
-		},
-	],
-};
-
-/**
  * Default data object for making Analytics traffic sources report requests.
  *
  * @since 1.0.0
@@ -565,58 +427,4 @@ export const trafficSourcesReportDataDefaults = {
 		},
 	],
 	limit: 10,
-};
-
-/**
- * Returns the default data object for making Analytics top pages report requests.
- *
- * @since 1.0.0
- *
- * @return {Object} Request data object defaults.
- */
-export const getTopPagesReportDataDefaults = () => {
-	const metrics = [
-		{
-			expression: 'ga:pageviews',
-			alias: 'Pageviews',
-		},
-		{
-			expression: 'ga:uniquePageviews',
-			alias: 'Unique Pageviews',
-		},
-		{
-			expression: 'ga:bounceRate',
-			alias: 'Bounce rate',
-		},
-	];
-
-	return {
-		dimensions: [
-			'ga:pageTitle',
-			'ga:pagePath',
-		].join( ',' ),
-		metrics,
-		orderby: [
-			{
-				fieldName: 'ga:pageviews',
-				sortOrder: 'DESCENDING',
-			},
-		],
-		limit: 10,
-	};
-};
-
-/**
- * Returns the extracted total and past user data.
- *
- * @since 1.14.0
- *
- * @param {Array} data The data returned from the Analytics API call.
- * @return {Object} The extracted user data in the form { totalUsers, previousTotalUsers }.
- */
-export const parseTotalUsersData = ( data ) => {
-	return {
-		totalUsers: data?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],
-		previousTotalUsers: data?.[ 0 ]?.data?.totals?.[ 1 ]?.values?.[ 0 ],
-	};
 };
