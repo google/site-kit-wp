@@ -47,6 +47,7 @@ addFilter( 'googlesitekit.DashboardNotifications',
 	addCoreSiteNotifications, 10 );
 
 if ( setup.needReauthenticate ) {
+	// TODO: This filter needs replacing with the store action setInternalServerError
 	addFilter( 'googlesitekit.ErrorNotification',
 		'googlesitekit.AuthNotification',
 		addAuthNotification, 1 );

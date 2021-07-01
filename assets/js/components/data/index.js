@@ -190,6 +190,7 @@ const dataAPI = {
 
 		// Add insufficient scopes warning.
 		if ( [ 'authError', 'insufficientPermissions' ].includes( data.reason ) ) {
+			// TODO: This filter needs replacing with the store action setInternalServerError
 			addFilter( 'googlesitekit.ErrorNotification',
 				'googlesitekit.AuthNotification',
 				fillFilterWithComponent( UnsatisfiedScopesAlert ), 1 );
@@ -197,6 +198,7 @@ const dataAPI = {
 		}
 
 		if ( data.reconnectURL ) {
+			// TODO: This filter needs replacing with the store action setInternalServerError
 			addFilter( 'googlesitekit.ErrorNotification',
 				'googlesitekit.AuthNotification',
 				fillFilterWithComponent( AuthError ), 1 );

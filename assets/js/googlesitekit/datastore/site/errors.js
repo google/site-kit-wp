@@ -26,7 +26,6 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 
 const fetchErrorStore = createFetchStore( {
@@ -47,7 +46,7 @@ const SET_SERVER_ERROR = 'SET_SERVER_ERROR';
 const CLEAR_SERVER_ERROR = 'CLEAR_SERVER_ERROR';
 
 const baseInitialState = {
-	internalServerError: undefined,
+	internalServerError: {},
 };
 
 const baseActions = {
@@ -105,15 +104,7 @@ export const baseReducer = ( state, { type, payload } ) => {
 	}
 };
 
-const baseResolvers = {
-	*getError() {
-		const { select } = yield Data.commonActions.getRegistry();
-
-		if ( ! select( STORE_NAME ).getError() ) {
-			yield fetchErrorStore.actions.fetchGetInternalServerError();
-		}
-	},
-};
+const baseResolvers = {};
 
 const baseSelectors = {
 	/**

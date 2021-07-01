@@ -25,7 +25,6 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 describe( 'InternalServerError', () => {
 	const registry = createTestRegistry();
-	//const store = registry.stores[ CORE_SITE ].store;
 
 	const internalServerError = {
 		id: `module-setup-error`,

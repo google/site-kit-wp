@@ -24,7 +24,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import { createTestRegistry } from '../../../../../tests/js/utils';
 
@@ -40,37 +39,48 @@ describe( 'core/site errors', () => {
 	let registry;
 	let store;
 
-	beforeAll( () => {
-		API.setUsingCache( false );
-	} );
-
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
 	} );
 
-	afterAll( () => {
-		API.setUsingCache( true );
-	} );
+	describe( 'actions', () => {
+		describe( 'setInternalServerError', () => {
+			it( 'should require the internalServerError param', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).setInternalServerError();
+				} ).toThrow( 'internalServerError is required.' );
+			} );
 
-	describe( 'setInternalServerError', () => {
-		test( 'returns undefined if nothing is passed', () => {
-			registry.dispatch( STORE_NAME ).setInternalServerError();
-			expect( store.getState().internalServerError ).toBeUndefined();
+			it( 'adds error to the state', () => {
+				registry.dispatch( STORE_NAME ).setInternalServerError( internalServerError );
+				expect( store.getState() ).toMatchObject( { internalServerError } );
+			} );
 		} );
 
-		test( 'adds error to the state', () => {
-			registry.dispatch( STORE_NAME ).setInternalServerError( internalServerError );
-			expect( store.getState() ).toMatchObject( { internalServerError } );
+		describe( 'clearInternalServerError', () => {
+			it( 'clears the error', () => {
+				registry.dispatch( STORE_NAME ).setInternalServerError( internalServerError );
+				expect( store.getState() ).toMatchObject( { internalServerError } );
+				registry.dispatch( STORE_NAME ).clearInternalServerError();
+				expect( store.getState().internalServerError ).toBeNull();
+			} );
 		} );
 	} );
 
-	describe( 'clearInternalServerError', () => {
-		test( 'clears the error', () => {
-			registry.dispatch( STORE_NAME ).setInternalServerError( internalServerError );
-			expect( store.getState() ).toMatchObject( { internalServerError } );
-			registry.dispatch( STORE_NAME ).clearInternalServerError();
-			expect( store.getState().internalServerError ).toBeNull();
+	describe( 'selectors', () => {
+		describe( 'getInternalServerError', () => {
+			it( 'should return the internal server error once set', () => {
+				registry.dispatch( STORE_NAME ).setInternalServerError( internalServerError );
+
+				expect( registry.select( STORE_NAME ).getInternalServerError() )
+					.toEqual( internalServerError );
+			} );
+
+			it( 'should return an empty object when no internal server error is set', () => {
+				expect( registry.select( STORE_NAME ).getInternalServerError() )
+					.toEqual( {} );
+			} );
 		} );
 	} );
 } );

@@ -24,12 +24,13 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getModulesData } from '../../util';
+import { showErrorNotification, getModulesData } from '../../util';
 import { isInsufficientPermissionsError } from '../../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../../util/insufficient-permissions-error-description';
 import ErrorText from '../ErrorText';
 import CTA from './cta';
 import ctaWrapper from './cta-wrapper';
+import InvalidCredentialsWarning from './invalid-credentials-warning';
 
 /**
  * Creates a CTA component when there's a data error. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
@@ -61,6 +62,12 @@ function getDataErrorComponent( moduleSlug, errorMessage, inGrid = false, fullWi
 	const reconnectURL = errorObj?.data?.reconnectURL;
 	const description = reconnectURL ? <ErrorText message={ message } reconnectURL={ reconnectURL } /> : message;
 	const cta = <CTA title={ title } description={ description } error />;
+
+	// This is to handle token expired error specifically.
+	if ( 'Invalid Credentials' === errorMessage ) {
+		// TODO: This call needs replacing with the store action setInternalServerError
+		showErrorNotification( InvalidCredentialsWarning );
+	}
 
 	return ctaWrapper( cta, inGrid, fullWidth, createGrid );
 }
