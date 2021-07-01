@@ -49,6 +49,35 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 		invariant( typeof name === 'string' && name.length > 0, 'name must be a non empty string' );
 		invariant( saved !== undefined || dismissed !== undefined, 'either saved or dimissed property must be set' );
 	},
+	reducerCallback: ( state, idea ) => {
+		if ( idea.dismissed === true ) {
+			return {
+				...state,
+				newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
+			};
+		}
+
+		if ( idea.saved === true ) {
+			const ideaDetails = ( state.newIdeas || [] ).filter( ( { name } ) => name === idea.name );
+
+			if ( ! ideaDetails.length ) {
+				return state;
+			}
+
+			return {
+				...state,
+				newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
+				savedIdeas: [ ...( state.savedIdeas || [] ), ...ideaDetails ],
+			};
+		}
+
+		if ( idea.saved === false ) {
+			return {
+				...state,
+				savedIdeas: ( state.savedIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
+			};
+		}
+	},
 } );
 
 const baseInitialState = {};

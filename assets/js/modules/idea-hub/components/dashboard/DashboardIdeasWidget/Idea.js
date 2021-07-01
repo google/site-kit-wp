@@ -47,8 +47,6 @@ const { useDispatch } = Data;
 const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 	const {
 		createIdeaDraftPost,
-		fetchGetNewIdeas,
-		fetchGetSavedIdeas,
 		saveIdea,
 		unsaveIdea,
 	} = useDispatch( STORE_NAME );
@@ -57,9 +55,7 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 	const refreshNewSavedIdeas = useCallback( async () => {
 		await API.invalidateCache( 'modules', 'idea-hub', 'new-ideas' );
 		await API.invalidateCache( 'modules', 'idea-hub', 'saved-ideas' );
-		fetchGetNewIdeas();
-		fetchGetSavedIdeas();
-	}, [ fetchGetNewIdeas, fetchGetSavedIdeas ] );
+	}, [] );
 
 	const handleDelete = useCallback( () => {
 		// @TODO: Implement callback.
@@ -67,17 +63,13 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 	}, [ name ] );
 
 	const handlePin = useCallback( async () => {
-		setIsProcessing( true );
 		await saveIdea( name );
 		await refreshNewSavedIdeas();
-		setIsProcessing( false );
 	}, [ refreshNewSavedIdeas, name, saveIdea ] );
 
 	const handleUnpin = useCallback( async () => {
-		setIsProcessing( true );
 		await unsaveIdea( name );
 		await refreshNewSavedIdeas();
-		setIsProcessing( false );
 	}, [ refreshNewSavedIdeas, name, unsaveIdea ] );
 
 	const handleCreate = useCallback( async () => {
