@@ -131,8 +131,7 @@ const WPDashboardWidgets = () => {
 			<Fragment>
 				<WPDashboardImpressionsWidget />
 				<div className={ classnames(
-					'googlesitekit-data-block',
-					'googlesitekit-wp-dashboard-stats__data-table',
+					'googlesitekit-wp-dashboard-stats__area-wrapper',
 					{
 						[ HIDDEN_CLASS ]: shouldCombineSearchConsoleWidgets,
 					} ) }>
@@ -141,9 +140,11 @@ const WPDashboardWidgets = () => {
 			</Fragment>
 
 			{ analyticsModuleActive && analyticsModuleConnected && (
-				<div className={ classnames( {
-					[ HIDDEN_CLASS ]: shouldCombineAnalyticsArea2,
-				} ) }>
+				<div className={ classnames(
+					'googlesitekit-wp-dashboard-stats__area-wrapper--fullwidth',
+					{
+						[ HIDDEN_CLASS ]: shouldCombineAnalyticsArea2,
+					} ) }>
 					<WPDashboardPopularPagesWidget />
 				</div>
 			) }

@@ -46,7 +46,7 @@
 	}
 
 	&--fourup > .googlesitekit-wp-dashboard-stats__data-table,
-	&--fourup > .googlesitekit-wp-dashboard-stats__area {
+	&--fourup > .googlesitekit-wp-dashboard-stats__area-wrapper {
 
 		@media (min-width: $bp-tablet) {
 			width: auto;
@@ -105,8 +105,19 @@
 		width: 100%;
 	}
 
-	.googlesitekit-wp-dashboard-stats__area-wrapper .googlesitekit-wp-dashboard-stats__data-table,
-	.googlesitekit-wp-dashboard-stats__area-wrapper .googlesitekit-preview-block {
-		width: 100% !important;
+	// Widgets that can be hidden (i.e. if they are in the same state
+	// as another widget) are wrapped in this class, which will take up the
+	// widths defined above instead of the widget iteself. Therefore the child
+	// widgets need to be 100% width.
+	.googlesitekit-wp-dashboard-stats__area-wrapper {
+
+		.googlesitekit-wp-dashboard-stats__data-table,
+		.googlesitekit-preview-block {
+			width: 100% !important;
+		}
+	}
+
+	.googlesitekit-wp-dashboard-stats__area-wrapper--fullwidth {
+		width: 100%;
 	}
 }
