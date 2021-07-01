@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-export { default as AnalyticsAdSenseDashboardWidgetLayout } from './AnalyticsAdSenseDashboardWidgetLayout';
 export { default as DashboardAllTrafficWidget } from './DashboardAllTrafficWidget';
 export { default as DashboardPopularPagesWidget } from './DashboardPopularPagesWidget';
 export { default as DashboardBounceRateWidget } from './DashboardBounceRateWidget';
