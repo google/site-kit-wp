@@ -245,4 +245,3 @@ storiesOf( 'Analytics Module', module )
 			</SetupWrap>
 		);
 	} );
-

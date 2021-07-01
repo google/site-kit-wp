@@ -45,6 +45,8 @@ storiesOf( 'Dashboard Details', module )
 				<DashboardDetailsApp />
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} )
 	.add( 'Not Found Entity', () => {
 		const setupRegistry = ( registry ) => {
@@ -59,5 +61,7 @@ storiesOf( 'Dashboard Details', module )
 				<DashboardDetailsApp />
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} )
 ;

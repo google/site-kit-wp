@@ -142,4 +142,6 @@ storiesOf( 'Settings', module )
 				</div>
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} );
