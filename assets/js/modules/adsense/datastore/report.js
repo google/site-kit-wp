@@ -107,7 +107,7 @@ const baseSelectors = {
 	 *
 	 * The report generated will include the following metrics:
 	 *
-	 * * 'TOTAL_EARNINGS'
+	 * * 'ESTIMATED_EARNINGS'
 	 * * 'PAGE_VIEWS_RPM'
 	 * * 'IMPRESSIONS'
 	 *

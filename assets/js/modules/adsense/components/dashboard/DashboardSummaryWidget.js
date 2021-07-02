@@ -58,13 +58,13 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 		const previousPeriodArgs = {
 			startDate: compareStartDate,
 			endDate: compareEndDate,
-			metrics: [ 'TOTAL_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
+			metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
 		};
 
 		const periodArgs = {
 			startDate,
 			endDate,
-			metrics: [ 'TOTAL_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
+			metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
 		};
 
 		const dailyArgs = {
