@@ -116,11 +116,11 @@ export default function LegacyAdSenseDashboardWidgetOverview( props ) {
 				stat={ 0 }
 				className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-1"
 				title={ metrics[ headers[ 0 ].name ] }
-				datapoint={ totals.cells[ 0 ].value }
+				datapoint={ totals?.cells[ 0 ].value || 0 }
 				datapointUnit={ headers[ 0 ]?.currencyCode }
 				change={ calculateChange(
-					previousTotals.cells[ 0 ].value,
-					totals.cells[ 0 ].value
+					previousTotals?.cells[ 0 ].value || 0,
+					totals?.cells[ 0 ].value || 0
 				) }
 				changeDataUnit="%"
 				context="button"
@@ -132,11 +132,11 @@ export default function LegacyAdSenseDashboardWidgetOverview( props ) {
 				stat={ 1 }
 				className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-2"
 				title={ metrics[ headers[ 1 ].name ] }
-				datapoint={ totals.cells[ 1 ].value }
+				datapoint={ totals?.cells[ 1 ].value || 0 }
 				datapointUnit={ headers[ 1 ]?.currencyCode }
 				change={ calculateChange(
-					previousTotals.cells[ 1 ].value,
-					totals.cells[ 1 ].value
+					previousTotals?.cells[ 1 ].value || 0,
+					totals?.cells[ 1 ].value || 0
 				) }
 				changeDataUnit="%"
 				context="button"
@@ -148,10 +148,10 @@ export default function LegacyAdSenseDashboardWidgetOverview( props ) {
 				stat={ 2 }
 				className="googlesitekit-data-block--impression googlesitekit-data-block--button-3"
 				title={ metrics[ headers[ 2 ].name ] }
-				datapoint={ totals.cells[ 2 ].value }
+				datapoint={ totals?.cells[ 2 ].value || 0 }
 				change={ calculateChange(
-					previousTotals.cells[ 2 ].value,
-					totals.cells[ 2 ].value
+					previousTotals?.cells[ 2 ].value || 0,
+					totals?.cells[ 2 ].value || 0
 				) }
 				changeDataUnit="%"
 				context="button"
@@ -163,11 +163,11 @@ export default function LegacyAdSenseDashboardWidgetOverview( props ) {
 				stat={ 3 }
 				className="googlesitekit-data-block--impression googlesitekit-data-block--button-4"
 				title={ metrics[ headers[ 3 ].name ] }
-				datapoint={ totals.cells[ 3 ].value }
+				datapoint={ totals?.cells[ 3 ].value || 0 }
 				datapointUnit={ '%' }
 				change={ calculateChange(
-					previousTotals.cells[ 3 ].value,
-					totals.cells[ 3 ].value
+					previousTotals?.cells[ 3 ].value || 0,
+					totals?.cells[ 3 ].value || 0
 				) }
 				changeDataUnit="%"
 				context="button"

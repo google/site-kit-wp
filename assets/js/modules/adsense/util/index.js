@@ -70,7 +70,7 @@ export const isDataZeroAdSense = ( adSenseData, datapoint, dataRequest ) => {
 		return false;
 	}
 
-	return adSenseData.totals.cells.some(
+	return !! adSenseData.totals?.cells.some(
 		( cell ) => cell.value > 0
 	);
 };

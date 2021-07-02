@@ -144,9 +144,9 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 					<DataBlock
 						className="overview-adsense-rpm"
 						title={ __( 'Page RPM', 'google-site-kit' ) }
-						datapoint={ period.totals.cells[ 1 ].value }
+						datapoint={ period.totals?.cells[ 1 ].value || 0 }
 						datapointUnit={ currencyCode }
-						change={ period.totals.cells[ 1 ].value - previousPeriod.totals.cells[ 1 ].value }
+						change={ period.totals?.cells[ 1 ].value || 0 - previousPeriod.totals?.cells[ 1 ].value || 0 }
 						changeDataUnit={ currencyCode }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
@@ -167,14 +167,14 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 					<DataBlock
 						className="overview-adsense-earnings"
 						title={ __( 'Total Earnings', 'google-site-kit' ) }
-						datapoint={ period.totals.cells[ 0 ].value }
+						datapoint={ period.totals?.cells[ 0 ].value || 0 }
 						datapointUnit={ currencyCode }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 							link: earningsURL,
 							external: true,
 						} }
-						change={ period.totals.cells[ 0 ].value - previousPeriod.totals.cells[ 0 ].value }
+						change={ period.totals?.cells[ 0 ].value || 0 - previousPeriod.totals?.cells[ 0 ].value || 0 }
 						changeDataUnit={ currencyCode }
 						sparkline={ daily &&
 							<Sparkline
@@ -190,8 +190,8 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 					<DataBlock
 						className="overview-adsense-impressions"
 						title={ __( 'Ad Impressions', 'google-site-kit' ) }
-						datapoint={ period.totals.cells[ 2 ].value }
-						change={ period.totals.cells[ 2 ].value - previousPeriod.totals.cells[ 2 ].value }
+						datapoint={ period.totals?.cells[ 2 ].value || 0 }
+						change={ period.totals?.cells[ 2 ].value || 0 - previousPeriod.totals?.cells[ 2 ].value || 0 }
 						changeDataUnit
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
