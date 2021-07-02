@@ -52,9 +52,9 @@ const Overview = ( {
 						stat={ 0 }
 						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-1"
 						title={ metrics[ headers[ 0 ].name ] }
-						datapoint={ totals[ 0 ] }
+						datapoint={ totals.cells[ 0 ].value }
 						datapointUnit={ headers[ 0 ]?.currencyCode }
-						change={ calculateChange( previousTotals[ 0 ], totals[ 0 ] ) }
+						change={ calculateChange( previousTotals.cells[ 0 ].value, totals.cells[ 0 ].value ) }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 0 }
@@ -67,9 +67,9 @@ const Overview = ( {
 						stat={ 1 }
 						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-2"
 						title={ metrics[ headers[ 1 ].name ] }
-						datapoint={ totals[ 1 ] }
+						datapoint={ totals.cells[ 1 ].value }
 						datapointUnit={ headers[ 1 ]?.currencyCode }
-						change={ calculateChange( previousTotals[ 1 ], totals[ 1 ] ) }
+						change={ calculateChange( previousTotals.cells[ 1 ].value, totals.cells[ 1 ].value ) }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 1 }
@@ -82,8 +82,8 @@ const Overview = ( {
 						stat={ 2 }
 						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-3"
 						title={ metrics[ headers[ 2 ].name ] }
-						datapoint={ totals[ 2 ] }
-						change={ calculateChange( previousTotals[ 2 ], totals[ 2 ] ) }
+						datapoint={ totals.cells[ 2 ].value }
+						change={ calculateChange( previousTotals.cells[ 2 ].value, totals.cells[ 2 ].value ) }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 2 }
@@ -96,9 +96,9 @@ const Overview = ( {
 						stat={ 3 }
 						className="googlesitekit-data-block--impression googlesitekit-data-block--button-4"
 						title={ metrics[ headers[ 3 ].name ] }
-						datapoint={ totals[ 3 ] }
+						datapoint={ totals.cells[ 3 ].value }
 						datapointUnit="%"
-						change={ calculateChange( previousTotals[ 3 ], totals[ 3 ] ) }
+						change={ calculateChange( previousTotals.cells[ 3 ].value, totals.cells[ 3 ].value ) }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 3 }
