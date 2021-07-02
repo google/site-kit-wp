@@ -31,7 +31,6 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Layout from '../assets/js/components/layout/Layout';
-import LegacyAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetOverview';
 import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
@@ -259,10 +258,6 @@ storiesOf( 'Analytics Module', module )
 	.add( 'Audience Overview Chart', () => {
 		global._googlesitekitLegacyData = analyticsData;
 
-		const selectedStats = [
-			0,
-		];
-
 		// Load the datacache with data.
 		setTimeout( () => {
 			doAction(
@@ -279,10 +274,6 @@ storiesOf( 'Analytics Module', module )
 					headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
 					headerCTALink="http://analytics.google.com"
 				>
-					<LegacyAnalyticsDashboardWidgetOverview
-						selectedStats={ selectedStats }
-						handleDataError={ () => {} }
-					/>
 				</Layout>
 			</WithTestRegistry>
 		);
