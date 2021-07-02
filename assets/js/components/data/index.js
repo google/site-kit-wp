@@ -26,20 +26,17 @@ import { each, sortBy } from 'lodash';
  */
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
-import { addAction, applyFilters, doAction, addFilter, removeFilter, hasAction } from '@wordpress/hooks';
+import { addAction, applyFilters, doAction, hasAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
  */
-import { fillFilterWithComponent } from '../../util/helpers';
 import { getQueryParameter } from '../../util/standalone';
 import { isWPError } from '../../util/errors';
 import { getCacheKey, getCache, setCache } from './cache';
 import { TYPE_CORE, TYPE_MODULES } from './constants';
 import { invalidateCacheGroup } from './invalidate-cache-group';
 import { trackAPIError } from '../../util/api';
-import AuthError from '../notifications/AuthError';
-import UnsatisfiedScopesAlert from '../notifications/UnsatisfiedScopesAlert';
 
 export { TYPE_CORE, TYPE_MODULES };
 
@@ -176,43 +173,16 @@ const dataAPI = {
 
 	handleWPError( { method, datapoint, type, identifier, error } ) {
 		// eslint-disable-next-line no-console
-		console.warn( 'WP Error in data response', `method:${ method }`, `type:${ type }`, `identifier:${ identifier }`, `datapoint:${ datapoint }`, `error:"${ error.message }"` );
+		console.warn(
+			'WP Error in data response',
+			`method:${ method }`,
+			`type:${ type }`,
+			`identifier:${ identifier }`,
+			`datapoint:${ datapoint }`,
+			`error:"${ error.message }"`,
+		);
 
 		trackAPIError( { method, datapoint, type, identifier, error } );
-
-		const { data } = error;
-
-		if ( ! data || ( ! data.reason && ! data.reconnectURL ) ) {
-			return;
-		}
-
-		let addedNoticeCount = 0;
-
-		// Add insufficient scopes warning.
-		if ( [ 'authError', 'insufficientPermissions' ].includes( data.reason ) ) {
-			// TODO: This filter needs replacing with the store action setInternalServerError
-			addFilter( 'googlesitekit.ErrorNotification',
-				'googlesitekit.AuthNotification',
-				fillFilterWithComponent( UnsatisfiedScopesAlert ), 1 );
-			addedNoticeCount++;
-		}
-
-		if ( data.reconnectURL ) {
-			// TODO: This filter needs replacing with the store action setInternalServerError
-			addFilter( 'googlesitekit.ErrorNotification',
-				'googlesitekit.AuthNotification',
-				fillFilterWithComponent( AuthError ), 1 );
-			addedNoticeCount++;
-		}
-
-		if ( addedNoticeCount ) {
-			addFilter( 'googlesitekit.TotalNotifications',
-				'googlesitekit.AuthCountIncrease', ( count ) => {
-					// Only run once.
-					removeFilter( 'googlesitekit.TotalNotifications', 'googlesitekit.AuthCountIncrease' );
-					return count + addedNoticeCount;
-				} );
-		}
 	},
 
 	/**
