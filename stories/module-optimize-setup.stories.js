@@ -75,6 +75,7 @@ storiesOf( 'Optimize Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Start with AMP Experiment JSON Field', ( args, { registry } ) => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
@@ -86,6 +87,7 @@ storiesOf( 'Optimize Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Start with invalid values', ( args, { registry } ) => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
@@ -100,5 +102,6 @@ storiesOf( 'Optimize Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 ;

@@ -175,7 +175,7 @@ const baseActions = {
 	/**
 	 * Finds a matching property and returns it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @return {Object|null} Matching property on success, otherwise NULL.
 	 */

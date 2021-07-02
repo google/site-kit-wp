@@ -35,9 +35,9 @@ storiesOf( 'User Input', module )
 				// Don't mark the user input as completed in this story.
 				registry.dispatch( CORE_USER ).receiveUserInputState( 'missing' );
 			} } features={ [ 'userInput' ] }>
-				<div className="-googlesitekit-plugin-preview">
-					<UserInputApp />
-				</div>
+				<UserInputApp />
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} );

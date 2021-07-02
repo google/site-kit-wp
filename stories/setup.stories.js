@@ -59,6 +59,7 @@ storiesOf( 'Setup / Using GCP', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} );
 
 storiesOf( 'Setup / Using Proxy', module )
@@ -75,6 +76,7 @@ storiesOf( 'Setup / Using Proxy', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Start – with error', ( args, { registry } ) => {
 		provideSiteConnection( registry, {
@@ -90,6 +92,7 @@ storiesOf( 'Setup / Using Proxy', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Start [User Input]', ( args, { registry } ) => {
 		provideSiteConnection( registry, {
@@ -107,6 +110,7 @@ storiesOf( 'Setup / Using Proxy', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Start – with error [User Input]', ( args, { registry } ) => {
 		provideSiteConnection( registry, {
@@ -125,6 +129,7 @@ storiesOf( 'Setup / Using Proxy', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Disconnected - URL Mismatch', ( args, { registry } ) => {
 		provideSiteConnection( registry, {
@@ -143,6 +148,7 @@ storiesOf( 'Setup / Using Proxy', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Disconnected - URL Mismatch [User Input]', ( args, { registry } ) => {
 		provideSiteConnection( registry, {
@@ -164,5 +170,6 @@ storiesOf( 'Setup / Using Proxy', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 ;
