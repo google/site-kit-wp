@@ -179,7 +179,7 @@ class DataFactory {
 /**
  * Creates a row object from an array of values.
  *
- * @since n.e.x.t
+ * @since 1.36.0
  *
  * @param {Array} array Array.
  * @return {Object} Row.

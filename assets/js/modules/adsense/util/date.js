@@ -17,7 +17,7 @@
  */
 
 /**
- * @since n.e.x.t
+ * @since 1.36.0
  * @see (@link https://developers.google.com/adsense/management/reference/rest/v2/Date)
  *
  * @typedef {Object} AdSenseDate
@@ -29,7 +29,7 @@
 /**
  * Converts an AdSense date to Date instance.
  *
- * @since n.e.x.t
+ * @since 1.36.0
  *
  * @param {AdSenseDate} adsenseDate AdSense date object.
  * @return {Date} Date instance.
@@ -41,7 +41,7 @@ export function adsenseDateToInstance( { year = 0, month = 1, day = 0 } = {} ) {
 /**
  * Creates an AdSense date object from a Date instance.
  *
- * @since n.e.x.t
+ * @since 1.36.0
  *
  * @param {Date} date Date instance.
  * @return {AdSenseDate} AdSense date object.

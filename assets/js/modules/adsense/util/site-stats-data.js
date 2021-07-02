@@ -36,7 +36,7 @@ import { adsenseDateToInstance } from './date';
  * Gets data for a Google Chart from an AdSense report.
  *
  * @since 1.23.0
- * @since n.e.x.t Updated for API v2 report format.
+ * @since 1.36.0 Updated for API v2 report format.
  *
  * @param {Object} current        A report object for the current period.
  * @param {Object} previous       A report object for the previous period.

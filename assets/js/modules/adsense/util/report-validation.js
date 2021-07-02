@@ -118,7 +118,7 @@ const VALID_DIMENSIONS = [
 /**
  * Validates the given metrics are valid to be used in a request.
  *
- * @since n.e.x.t
+ * @since 1.36.0
  *
  * @param {(Array|string)} metrics Metric(s) to validate.
  */
