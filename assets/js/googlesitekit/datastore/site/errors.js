@@ -24,22 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { createFetchStore } from '../../data/create-fetch-store';
-
-const fetchErrorStore = createFetchStore( {
-	baseName: 'internalServerError',
-	controlCallback: () => {
-		return API.get( 'core', 'site', 'internalServerError' );
-	},
-	reducerCallback: ( state, internalServerError ) => {
-		return {
-			...state,
-			internalServerError,
-		};
-	},
-} );
 
 // Actions
 const SET_SERVER_ERROR = 'SET_SERVER_ERROR';
@@ -123,7 +108,6 @@ const baseSelectors = {
 };
 
 const store = Data.combineStores(
-	fetchErrorStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
