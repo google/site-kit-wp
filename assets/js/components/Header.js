@@ -63,6 +63,7 @@ const Header = ( { children } ) => {
 					</div>
 				</section>
 			</header>
+
 			<ErrorNotifications />
 		</Fragment>
 	);

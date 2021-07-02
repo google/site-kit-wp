@@ -26,12 +26,14 @@ import { Fragment } from '@wordpress/element';
  */
 import AuthError from './AuthError';
 import UnsatisfiedScopesAlert from './UnsatisfiedScopesAlert';
+import InternalServerError from './InternalServerError';
 
 export default function ErrorNotifications() {
 	return (
 		<Fragment>
 			<AuthError />
 			<UnsatisfiedScopesAlert />
+			<InternalServerError />
 		</Fragment>
 	);
 }
