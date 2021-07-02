@@ -21,10 +21,11 @@
  */
 import faker from 'faker';
 import invariant from 'invariant';
+import castArray from 'lodash/castArray';
+import isPlainObject from 'lodash/isPlainObject';
 import md5 from 'md5';
 import { range } from 'rxjs';
 import { map, reduce } from 'rxjs/operators';
-import castArray from 'lodash/castArray';
 
 /**
  * Internal dependencies
@@ -32,7 +33,6 @@ import castArray from 'lodash/castArray';
 import { STORE_NAME } from '../datastore/constants';
 import { getDateString, isValidDateString } from '../../../util';
 import { validateMetrics } from './report-validation';
-import { isPlainObject } from 'lodash';
 
 const METRIC_RATIO = 'METRIC_RATIO';
 const METRIC_TALLY = 'METRIC_TALLY';
