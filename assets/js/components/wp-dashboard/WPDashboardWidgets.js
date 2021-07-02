@@ -101,17 +101,6 @@ const WPDashboardWidgets = () => {
 		) }>
 			<WPDashboardIdeaHub />
 
-			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
-				<div className="googlesitekit-wp-dashboard-stats__cta">
-					{ ! analyticsModuleActive && (
-						<ActivateModuleCTA moduleSlug="analytics" />
-					) }
-					{ analyticsModuleActive && (
-						<CompleteModuleActivationCTA moduleSlug="analytics" />
-					) }
-				</div>
-			) }
-
 			{ analyticsModuleActive && analyticsModuleConnected && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsWidget />
@@ -135,6 +124,17 @@ const WPDashboardWidgets = () => {
 					<WPDashboardClicksWidget />
 				</div>
 			</Fragment>
+
+			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+				<div className="googlesitekit-wp-dashboard-stats__cta">
+					{ ! analyticsModuleActive && (
+						<ActivateModuleCTA moduleSlug="analytics" />
+					) }
+					{ analyticsModuleActive && (
+						<CompleteModuleActivationCTA moduleSlug="analytics" />
+					) }
+				</div>
+			) }
 
 			{ analyticsModuleActive && analyticsModuleConnected && (
 				<div className={ classnames(
