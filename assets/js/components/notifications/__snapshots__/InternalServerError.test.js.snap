@@ -1,8 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`InternalServerError getInternalServerError renders nothing if the internal server error is not set 1`] = `<div />`;
-
-exports[`InternalServerError getInternalServerError should display the notification when the internal server error is set 1`] = `
+exports[`InternalServerError should display the notification when the internal server error is set 1`] = `
 <div>
   <section
     class="googlesitekit-publisher-win googlesitekit-publisher-win--small googlesitekit-publisher-win--win-error googlesitekit-publisher-win--is-open"
@@ -57,3 +55,5 @@ exports[`InternalServerError getInternalServerError should display the notificat
   </section>
 </div>
 `;
+
+exports[`InternalServerError should render nothing if the internal server error is not set 1`] = `<div />`;

@@ -26,29 +26,20 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 describe( 'InternalServerError', () => {
 	const registry = createTestRegistry();
 
-	const internalServerError = {
-		id: `module-setup-error`,
-		title: 'Internal Server Error',
-		description: 'Test error message',
-		format: 'small',
-		type: 'win-error',
-	};
-
-	describe( 'getInternalServerError', () => {
-		test( 'should display the notification when the internal server error is set', () => {
-			registry.dispatch( CORE_SITE ).setInternalServerError( internalServerError );
-
-			const { container } = render( <InternalServerError />, { registry } );
-
-			expect( container ).toMatchSnapshot();
+	it( 'should display the notification when the internal server error is set', () => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: `module-setup-error`,
+			description: 'Test error message',
 		} );
 
-		test( 'renders nothing if the internal server error is not set', () => {
-			registry.dispatch( CORE_SITE ).setInternalServerError();
+		const { container } = render( <InternalServerError />, { registry } );
+		expect( container ).toMatchSnapshot();
+	} );
 
-			const { container } = render( <InternalServerError />, { registry } );
+	it( 'should render nothing if the internal server error is not set', () => {
+		registry.dispatch( CORE_SITE ).clearInternalServerError();
 
-			expect( container ).toMatchSnapshot();
-		} );
+		const { container } = render( <InternalServerError />, { registry } );
+		expect( container ).toMatchSnapshot();
 	} );
 } );

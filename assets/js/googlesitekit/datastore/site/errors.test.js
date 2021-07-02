@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { STORE_NAME } from './constants';
@@ -30,7 +25,7 @@ import { createTestRegistry } from '../../../../../tests/js/utils';
 describe( 'core/site errors', () => {
 	const internalServerError = {
 		id: `module-setup-error`,
-		title: __( 'Internal Server Error', 'google-site-kit' ),
+		title: 'Internal Server Error',
 		description: 'Test error message',
 		format: 'small',
 		type: 'win-error',
@@ -73,13 +68,11 @@ describe( 'core/site errors', () => {
 			it( 'should return the internal server error once set', () => {
 				registry.dispatch( STORE_NAME ).setInternalServerError( internalServerError );
 
-				expect( registry.select( STORE_NAME ).getInternalServerError() )
-					.toEqual( internalServerError );
+				expect( registry.select( STORE_NAME ).getInternalServerError() ).toEqual( internalServerError );
 			} );
 
 			it( 'should return an empty object when no internal server error is set', () => {
-				expect( registry.select( STORE_NAME ).getInternalServerError() )
-					.toEqual( {} );
+				expect( registry.select( STORE_NAME ).getInternalServerError() ).toEqual( {} );
 			} );
 		} );
 	} );

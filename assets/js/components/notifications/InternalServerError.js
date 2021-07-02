@@ -31,12 +31,6 @@ export default function InternalServerError() {
 	}
 
 	return (
-		<Notification
-			id={ error.id }
-			title={ error.title }
-			description={ error.description }
-			format={ error.format }
-			type={ error.type }
-		/>
+		<Notification { ...error } />
 	);
 }
