@@ -20,6 +20,7 @@
  * External dependencies
  */
 import faker from 'faker';
+import invariant from 'invariant';
 import md5 from 'md5';
 import { range } from 'rxjs';
 import { map, reduce } from 'rxjs/operators';
@@ -29,7 +30,9 @@ import castArray from 'lodash/castArray';
  * Internal dependencies
  */
 import { STORE_NAME } from '../datastore/constants';
-import { getDateString } from '../../../util';
+import { getDateString, isValidDateString } from '../../../util';
+import { validateMetrics } from './report-validation';
+import { isPlainObject } from 'lodash';
 
 const METRIC_RATIO = 'METRIC_RATIO';
 const METRIC_TALLY = 'METRIC_TALLY';
@@ -181,6 +184,11 @@ class DataFactory {
  * @return {Array.<Object>} An array with generated report.
  */
 export function getAdSenseMockResponse( args ) {
+	invariant( isPlainObject( args ), 'report options are required to generate a mock response.' );
+	invariant( isValidDateString( args.startDate ), 'a valid startDate is required.' );
+	invariant( isValidDateString( args.endDate ), 'a valid endDate is required.' );
+	validateMetrics( args.metrics );
+
 	const originalSeedValue = faker.seedValue;
 	const argsHash = parseInt(
 		md5( JSON.stringify( args ) ).substring( 0, 10 ),
