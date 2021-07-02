@@ -31,7 +31,6 @@ import DashboardCoreSiteAlerts from './DashboardCoreSiteAlerts';
 import DashboardSetupAlerts from './dashboard-setup-alerts';
 import DashboardModulesAlerts from './dashboard-modules-alerts';
 import UserInputPromptNotification from '../notifications/UserInputPromptNotification';
-import UnsatisfiedScopesAlert from '../notifications/UnsatisfiedScopesAlert';
 
 const { setup } = global._googlesitekitLegacyData;
 const notification = getQueryParameter( 'notification' );
@@ -40,18 +39,10 @@ const addCoreSiteNotifications = createAddToFilter( <DashboardCoreSiteAlerts /> 
 const addSetupNotifications = createAddToFilter( <DashboardSetupAlerts /> );
 const addModulesNotifications = createAddToFilter( <DashboardModulesAlerts /> );
 const addUserInputPrompt = createAddToFilter( <UserInputPromptNotification /> );
-const addAuthNotification = createAddToFilter( <UnsatisfiedScopesAlert /> );
 
 addFilter( 'googlesitekit.DashboardNotifications',
 	'googlesitekit.SetupNotification',
 	addCoreSiteNotifications, 10 );
-
-if ( setup.needReauthenticate ) {
-	// TODO: This filter needs replacing with the store action setInternalServerError
-	addFilter( 'googlesitekit.ErrorNotification',
-		'googlesitekit.AuthNotification',
-		addAuthNotification, 1 );
-}
 
 if ( isFeatureEnabled( 'userInput' ) ) {
 	addFilter( 'googlesitekit.DashboardNotifications',
