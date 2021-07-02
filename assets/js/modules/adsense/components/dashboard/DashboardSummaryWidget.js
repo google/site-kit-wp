@@ -144,9 +144,9 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 					<DataBlock
 						className="overview-adsense-rpm"
 						title={ __( 'Page RPM', 'google-site-kit' ) }
-						datapoint={ period.totals[ 1 ] }
+						datapoint={ period.totals.cells[ 1 ].value }
 						datapointUnit={ currencyCode }
-						change={ period.totals[ 1 ] - previousPeriod.totals[ 1 ] }
+						change={ period.totals.cells[ 1 ].value - previousPeriod.totals.cells[ 1 ].value }
 						changeDataUnit={ currencyCode }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
@@ -167,14 +167,14 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 					<DataBlock
 						className="overview-adsense-earnings"
 						title={ __( 'Total Earnings', 'google-site-kit' ) }
-						datapoint={ period.totals[ 0 ] }
+						datapoint={ period.totals.cells[ 0 ].value }
 						datapointUnit={ currencyCode }
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 							link: earningsURL,
 							external: true,
 						} }
-						change={ period.totals[ 0 ] - previousPeriod.totals[ 0 ] }
+						change={ period.totals.cells[ 0 ].value - previousPeriod.totals.cells[ 0 ].value }
 						changeDataUnit={ currencyCode }
 						sparkline={ daily &&
 							<Sparkline
@@ -190,8 +190,8 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 					<DataBlock
 						className="overview-adsense-impressions"
 						title={ __( 'Ad Impressions', 'google-site-kit' ) }
-						datapoint={ period.totals[ 2 ] }
-						change={ period.totals[ 2 ] - previousPeriod.totals[ 2 ] }
+						datapoint={ period.totals.cells[ 2 ].value }
+						change={ period.totals.cells[ 2 ].value - previousPeriod.totals.cells[ 2 ].value }
 						changeDataUnit
 						source={ {
 							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
