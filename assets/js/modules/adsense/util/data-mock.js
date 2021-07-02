@@ -69,7 +69,7 @@ class DataFactory {
 
 		dimensions.forEach( ( dimension ) => {
 			headers.push( {
-				currency: null,
+				currencyCode: null,
 				name: dimension.toUpperCase(),
 				type: 'DIMENSION',
 			} );
@@ -78,7 +78,7 @@ class DataFactory {
 		metrics.forEach( ( metric ) => {
 			const ucMetric = metric.toUpperCase();
 			headers.push( {
-				currency: ADSENSE_METRIC_TYPES[ ucMetric ] === METRIC_CURRENCY ? 'USD' : null,
+				currencyCode: ADSENSE_METRIC_TYPES[ ucMetric ] === METRIC_CURRENCY ? 'USD' : null,
 				name: ucMetric,
 				type: ADSENSE_METRIC_TYPES[ ucMetric ],
 			} );
