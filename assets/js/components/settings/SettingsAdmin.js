@@ -38,6 +38,7 @@ import ResetButton from '../ResetButton';
 import UserInputPreview from '../user-input/UserInputPreview';
 import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
 import UserInputSettings from '../notifications/UserInputSettings';
+import SettingsAdminSharing from './SettingsAdminSharing';
 import { useFeature } from '../../hooks/useFeature';
 import { trackEvent } from '../../util';
 const { useSelect, useDispatch } = Data;
@@ -105,6 +106,11 @@ const SettingsAdmin = () => {
 					) }
 				</Cell>
 			) }
+			<Cell size={ 12 }>
+				<Layout>
+					<SettingsAdminSharing />
+				</Layout>
+			</Cell>
 			<div className="
 				mdc-layout-grid__cell
 				mdc-layout-grid__cell--span-12
