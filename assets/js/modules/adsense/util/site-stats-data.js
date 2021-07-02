@@ -30,11 +30,13 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { getLocale, numFmt, getChartDifferenceArrow } from '../../../util';
+import { adsenseDateToInstance } from './date';
 
 /**
  * Gets data for a Google Chart from an AdSense report.
  *
  * @since 1.23.0
+ * @since n.e.x.t Updated for API v2 report format.
  *
  * @param {Object} current        A report object for the current period.
  * @param {Object} previous       A report object for the previous period.
@@ -53,13 +55,17 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 		],
 	];
 
+	const nextDate = ( date ) => {
+		const next = new Date( date );
+		next.setDate( date.getDate() + 1 );
+		return next;
+	};
 	const stringToDate = ( dateString ) => new Date( `${ dateString } 00:00:00` );
-	const findRowByDate = ( searchDate ) => ( ( [ rowDate ] ) => searchDate.getTime() === stringToDate( rowDate ).getTime() );
+	const findRowByDate = ( searchDate ) => ( row ) => searchDate.getTime() === stringToDate( row.cells[ 0 ].value ).getTime();
 
-	const currentDate = stringToDate( current.startDate );
-	const previousDate = stringToDate( previous.startDate );
-
-	const ends = stringToDate( current.endDate );
+	let currentDate = adsenseDateToInstance( current.startDate );
+	let previousDate = adsenseDateToInstance( previous.startDate );
+	const endDate = adsenseDateToInstance( current.endDate );
 
 	const locale = getLocale();
 	const localeDateOptions = {
@@ -68,9 +74,13 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 		day: 'numeric',
 	};
 
-	while ( +currentDate <= +ends ) {
-		const currentMonth = parseFloat( ( current?.rows || [] ).find( findRowByDate( currentDate ) )?.[ selectedColumn ] || 0 );
-		const prevMonth = parseFloat( ( previous?.rows || [] ).find( findRowByDate( previousDate ) )?.[ selectedColumn ] || 0 );
+	while ( currentDate <= endDate ) {
+		const currentMonth = parseFloat(
+			( current?.rows || [] ).find( findRowByDate( currentDate ) )?.cells?.[ selectedColumn ]?.value || 0
+		);
+		const prevMonth = parseFloat(
+			( previous?.rows || [] ).find( findRowByDate( previousDate ) )?.cells?.[ selectedColumn ]?.value || 0
+		);
 
 		const difference = prevMonth !== 0
 			? ( currentMonth / prevMonth ) - 1
@@ -98,7 +108,7 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 		);
 
 		dataMap.push( [
-			new Date( currentDate ), // Copy the current date.
+			currentDate,
 			`<div class="${ classnames( 'googlesitekit-visualization-tooltip', {
 				'googlesitekit-visualization-tooltip--up': difference > 0,
 				'googlesitekit-visualization-tooltip--down': difference < 0,
@@ -110,8 +120,8 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 			prevMonth,
 		] );
 
-		currentDate.setDate( currentDate.getDate() + 1 );
-		previousDate.setDate( previousDate.getDate() + 1 );
+		currentDate = nextDate( currentDate );
+		previousDate = nextDate( previousDate );
 	}
 
 	return dataMap;
