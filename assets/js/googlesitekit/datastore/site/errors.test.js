@@ -41,24 +41,25 @@ describe( 'core/site errors', () => {
 
 	describe( 'actions', () => {
 		describe( 'setInternalServerError', () => {
-			it( 'should require the internalServerError param', () => {
+			it( 'should require the internalServerError param to be a plain object', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).setInternalServerError();
 				} ).toThrow( 'internalServerError is required.' );
 			} );
 
-			it( 'adds error to the state', () => {
+			it( 'should set the error to the state', () => {
 				registry.dispatch( STORE_NAME ).setInternalServerError( internalServerError );
-				expect( store.getState() ).toMatchObject( { internalServerError } );
+				expect( store.getState().internalServerError ).toEqual( internalServerError );
 			} );
 		} );
 
 		describe( 'clearInternalServerError', () => {
-			it( 'clears the error', () => {
+			it( 'should remove the error from the store', () => {
 				registry.dispatch( STORE_NAME ).setInternalServerError( internalServerError );
-				expect( store.getState() ).toMatchObject( { internalServerError } );
+				expect( store.getState().internalServerError ).toEqual( internalServerError );
+
 				registry.dispatch( STORE_NAME ).clearInternalServerError();
-				expect( store.getState().internalServerError ).toBeNull();
+				expect( store.getState().internalServerError ).toBeUndefined();
 			} );
 		} );
 	} );
@@ -68,11 +69,13 @@ describe( 'core/site errors', () => {
 			it( 'should return the internal server error once set', () => {
 				registry.dispatch( STORE_NAME ).setInternalServerError( internalServerError );
 
-				expect( registry.select( STORE_NAME ).getInternalServerError() ).toEqual( internalServerError );
+				const error = registry.select( STORE_NAME ).getInternalServerError();
+				expect( error ).toEqual( internalServerError );
 			} );
 
-			it( 'should return an empty object when no internal server error is set', () => {
-				expect( registry.select( STORE_NAME ).getInternalServerError() ).toEqual( {} );
+			it( 'should return undefined when no internal server error is set yet', () => {
+				const error = registry.select( STORE_NAME ).getInternalServerError();
+				expect( error ).toBeUndefined();
 			} );
 		} );
 	} );
