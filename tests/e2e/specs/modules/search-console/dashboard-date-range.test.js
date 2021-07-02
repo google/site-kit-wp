@@ -44,11 +44,7 @@ async function getTotalImpressions() {
 	return await page.$eval( datapointSelector, ( el ) => el.textContent );
 }
 
-// Failing because doesn't get data
-// TODO
-// - run slow and interactive and check console
-// - run in browser
-describe.skip( 'date range filtering on dashboard views', () => {
+describe( 'date range filtering on dashboard views', () => {
 	beforeAll( async () => {
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await setSiteVerification();
