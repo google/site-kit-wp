@@ -136,15 +136,15 @@ export function validateMetrics( metrics ) {
 /**
  * Validates the given dimensions are valid to be used in a request.
  *
- * @since n.e.x.t
+ * @since 1.36.0
  *
- * @param {Array} dimensions Dimensions to validate.
+ * @param {(Array|string)} dimensions Dimension(s) to validate.
  */
 export function validateDimensions( dimensions ) {
-	invariant( Array.isArray( dimensions ), 'dimensions must be an array.' );
-	invariant( dimensions.length, 'at least one dimension is required.' );
+	const dimensionsArray = castArray( dimensions );
+	invariant( dimensionsArray.length, 'at least one dimension is required.' );
 
-	const invalidDimensions = dimensions.filter(
+	const invalidDimensions = dimensionsArray.filter(
 		( metric ) => ! VALID_DIMENSIONS.includes( metric )
 	);
 

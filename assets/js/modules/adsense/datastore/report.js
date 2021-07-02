@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import castArray from 'lodash/castArray';
 import isPlainObject from 'lodash/isPlainObject';
 
 /**
@@ -63,14 +62,14 @@ const fetchGetReportStore = createFetchStore( {
 			isValidStringularItems( metrics ),
 			'Metrics for an AdSense report must be either a string or an array of strings.',
 		);
-		validateMetrics( castArray( metrics ) );
+		validateMetrics( metrics );
 
 		if ( dimensions ) {
 			invariant(
 				isValidStringularItems( dimensions ),
 				'Dimensions for an AdSense report must be either a string or an array of strings.',
 			);
-			validateDimensions( castArray( dimensions ) );
+			validateDimensions( dimensions );
 		}
 
 		if ( orderby ) {
