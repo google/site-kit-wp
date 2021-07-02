@@ -40,12 +40,15 @@ bootstrapFetchMocks();
 // Decorators run from last added to first. (Eg. In reverse order as listed.)
 export const decorators = [
 	( Story, { parameters } ) => {
-		const { padding = 50 } = parameters || {};
+		const styles = {};
+
+		const { padding } = parameters || {};
+		if ( padding !== undefined ) {
+			styles.padding = padding;
+		}
+
 		return (
-			<div
-				className="googlesitekit-plugin-preview js"
-				style={ { padding } }
-			>
+			<div className="googlesitekit-plugin-preview js" style={ styles }>
 				<div className="googlesitekit-plugin">
 					<Story />
 				</div>
