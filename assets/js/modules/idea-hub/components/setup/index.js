@@ -1,5 +1,5 @@
 /**
- * Tooltip styles.
+ * Idea Hub Setup Form components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,11 +16,5 @@
  * limitations under the License.
  */
 
-.googlesitekit-tooltip.MuiTooltip-tooltipPlacementBottom {
-	margin-top: 0;
-}
-
-// High z-index since the survey modal has a high z-index as well
-.googlesitekit-tooltip-popper.MuiTooltip-popper {
-	z-index: 99999;
-}
+export { default as SetupMain } from './SetupMain';
+export { default as SetupForm } from './SetupForm';

@@ -648,7 +648,7 @@ final class Tag_Manager extends Module
 	 * If Site Kit does not place the Analytics snippet (neither via Analytics nor via Tag Manager),
 	 * the option to exclude certain users from tracking should not be displayed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param boolean $allowed Whether to allow tracking exclusion.
 	 * @return boolean Filtered value.
