@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import CurrentSurvey from './CurrentSurvey';
-import { render, fireEvent, createTestRegistry } from '../../../../tests/js/test-utils';
+import { render, fireEvent, createTestRegistry, waitFor } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import * as fixtures from './__fixtures__';
@@ -105,7 +105,7 @@ describe( 'CurrentSurvey', () => {
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { getByLabelText } = render( <CurrentSurvey />, { registry } );
+		const { getByLabelText, findByText } = render( <CurrentSurvey />, { registry } );
 
 		fireEvent.click( getByLabelText( 'Delighted' ) );
 
@@ -133,6 +133,8 @@ describe( 'CurrentSurvey', () => {
 				method: 'POST',
 			}
 		);
+
+		await findByText( 'Thanks for sharing your thoughts!' );
 	} );
 
 	it( 'should advance to the next question when a question is answered in a multi-question survey', async () => {
@@ -140,7 +142,7 @@ describe( 'CurrentSurvey', () => {
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { getByLabelText, getByText } = render( <CurrentSurvey />, { registry } );
+		const { getByLabelText, getByText, findByText } = render( <CurrentSurvey />, { registry } );
 
 		fireEvent.click( getByLabelText( 'Unhappy' ) );
 
@@ -169,6 +171,8 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
+		await findByText( 'Another question: how do you feel when it rains?' );
+
 		expect( getByText( 'Another question: how do you feel when it rains?' ) ).toBeVisible();
 	} );
 
@@ -177,7 +181,7 @@ describe( 'CurrentSurvey', () => {
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { getByLabelText, getByText } = render( <CurrentSurvey />, { registry } );
+		const { getByLabelText, getByText, findByText } = render( <CurrentSurvey />, { registry } );
 
 		// Even though the fixtures have a `trigger_completion` for this answer to
 		// this question, it should not be shown until all questions are answered.
@@ -188,6 +192,8 @@ describe( 'CurrentSurvey', () => {
 		} ).toThrow( /Unable to find an element with the text/ );
 
 		// The second question should appear after the first is answered.
+		await findByText( 'Another question: how do you feel when it rains?' );
+
 		expect(
 			getByText( 'Another question: how do you feel when it rains?' )
 		).toBeVisible();
@@ -198,13 +204,19 @@ describe( 'CurrentSurvey', () => {
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		const { getByLabelText, getByText } = render( <CurrentSurvey />, { registry } );
+		const { getByLabelText, getByText, findByText } = render( <CurrentSurvey />, { registry } );
 
 		// Answering with this value causes the completion trigger to be met.
 		fireEvent.click( getByLabelText( 'Delighted' ) );
 
-		// Answer the second question.
+		await findByText( 'Another question: how do you feel when it rains?' );
 		fireEvent.click( getByLabelText( 'Neutral' ) );
+		await findByText( 'Another question: how do you feel when it is sunny?' );
+		fireEvent.click( getByLabelText( 'Neutral' ) );
+		await findByText( 'Another question: how do you feel when it is overcast?' );
+		fireEvent.click( getByLabelText( 'Neutral' ) );
+
+		await findByText( 'You answered positively!' );
 
 		expect( getByText( 'You answered positively!' ) ).toBeVisible();
 	} );
@@ -218,7 +230,7 @@ describe( 'CurrentSurvey', () => {
 
 		fireEvent.click( getByLabelText( 'Delighted' ) );
 
-		expect(
+		await waitFor( () =>	expect(
 			registry
 				.select( CORE_FORMS )
 				.getValue(
@@ -234,7 +246,7 @@ describe( 'CurrentSurvey', () => {
 					},
 				},
 			]
-		);
+		) );
 	} );
 
 	it( 'should render nothing if no survey exists', () => {
