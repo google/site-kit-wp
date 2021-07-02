@@ -32,7 +32,6 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Layout from '../assets/js/components/layout/Layout';
 import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
-import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import {
 	AccountSelect,
@@ -321,7 +320,6 @@ storiesOf( 'Analytics Module', module )
 								mdc-layout-grid__cell--span-8-tablet
 								mdc-layout-grid__cell--span-4-phone
 							">
-								<LegacyAnalyticsDashboardWidgetTopAcquisitionSources />
 							</div>
 						</div>
 					</div>

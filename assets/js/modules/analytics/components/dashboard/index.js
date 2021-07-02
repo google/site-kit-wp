@@ -26,7 +26,6 @@ export { default as DashboardGoalsWidget } from './DashboardGoalsWidget';
 export { default as DashboardSearchVisitorsWidget } from './DashboardSearchVisitorsWidget';
 export { default as LegacyAdSenseDashboardWidgetTopPagesTableSmall } from './LegacyAdSenseDashboardWidgetTopPagesTableSmall';
 export { default as LegacyAnalyticsDashboardWidgetPopularPagesTable } from './LegacyAnalyticsDashboardWidgetPopularPagesTable';
-export { default as LegacyAnalyticsDashboardWidgetTopAcquisitionSources } from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 export { default as LegacyAnalyticsDashboardWidgetTopLevel } from './LegacyAnalyticsDashboardWidgetTopLevel';
 export { default as LegacyDashboardAcquisitionPieChart } from './LegacyDashboardAcquisitionPieChart';
 
