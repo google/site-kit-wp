@@ -568,8 +568,12 @@ final class AdSense extends Module
 			)
 		);
 
-		$service = $this->get_service( 'adsense' );
-		return $service->accounts_reports->generate( self::normalize_account_id( $account_id ), $opt_params );
+		return $this->get_service( 'adsense' )
+			->accounts_reports
+			->generate(
+				self::normalize_account_id( $account_id ),
+				$opt_params
+			);
 	}
 
 	/**
