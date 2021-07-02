@@ -134,8 +134,8 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 
 	const processedData = reduceAdSenseData( daily.rows );
 
-	const currencyHeader = period.headers.find( ( header ) => null !== header.currency && 0 < header.currency.length );
-	const currencyCode = currencyHeader ? currencyHeader.currency : false;
+	const currencyHeader = period.headers.find( ( header ) => null !== header.currencyCode && 0 < header.currencyCode.length );
+	const currencyCode = currencyHeader ? currencyHeader.currencyCode : false;
 
 	return (
 		<Widget className="googlesitekit-dashboard-adsense-stats mdc-layout-grid">

@@ -93,7 +93,7 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 			previousDate.toLocaleDateString( locale, localeDateOptions ),
 		);
 
-		let tooltipData = numFmt( currentMonth, metadata?.currency );
+		let tooltipData = numFmt( currentMonth, metadata?.currencyCode );
 		if ( metadata?.type === 'METRIC_RATIO' ) {
 			tooltipData = numFmt( currentMonth, '%' );
 		}
