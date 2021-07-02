@@ -536,7 +536,7 @@ final class AdSense extends Module
 			'endDate.day'     => (int) $end_day,
 			'languageCode'    => $this->context->get_locale( 'site', 'language-code' ),
 			// Include default metrics only for backward-compatibility.
-			'metrics'         => array( 'TOTAL_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ),
+			'metrics'         => array( 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ),
 		);
 
 		if ( ! empty( $args['dimensions'] ) ) {
@@ -555,17 +555,25 @@ final class AdSense extends Module
 			$opt_params['limit'] = (int) $args['limit'];
 		}
 
-		$opt_params['filters'] = array_unique(
-			array_map(
-				function ( $site_url ) {
-					return 'DOMAIN_NAME==' . wp_parse_url( $site_url, PHP_URL_HOST );
-				},
-				$this->permute_site_url( $this->context->get_reference_site_url() )
+		// @see https://developers.google.com/adsense/management/reporting/filtering?hl=en#OR
+		$opt_params['filters'] = join(
+			',',
+			array_unique(
+				array_map(
+					function ( $site_url ) {
+						return 'DOMAIN_NAME==' . wp_parse_url( $site_url, PHP_URL_HOST );
+					},
+					$this->permute_site_url( $this->context->get_reference_site_url() )
+				)
 			)
 		);
 
-		$service = $this->get_service( 'adsense' );
-		return $service->accounts_reports->generate( self::normalize_account_id( $account_id ), $opt_params );
+		return $this->get_service( 'adsense' )
+			->accounts_reports
+			->generate(
+				self::normalize_account_id( $account_id ),
+				$opt_params
+			);
 	}
 
 	/**
