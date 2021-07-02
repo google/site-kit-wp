@@ -33,6 +33,7 @@ import { map, reduce } from 'rxjs/operators';
 import { STORE_NAME } from '../datastore/constants';
 import { getDateString, isValidDateString } from '../../../util';
 import { validateMetrics } from './report-validation';
+import { dateInstanceToAdSenseDate } from './date';
 
 const METRIC_RATIO = 'METRIC_RATIO';
 const METRIC_TALLY = 'METRIC_TALLY';
@@ -190,22 +191,6 @@ function rowFromArray( array ) {
 }
 
 /**
- * Creates an AdSense date object from a Date instance.
- *
- * @since n.e.x.t
- *
- * @param {Date} date Date instance.
- * @return {Object} AdSense Date object.
- */
-function dateToDateObject( date ) {
-	return {
-		year: date?.getFullYear() ?? 0,
-		month: date?.getMonth() + 1 ?? 0,
-		day: date?.getDate() ?? 0,
-	};
-}
-
-/**
  * Generates mock data for AdSense reports.
  *
  * @since 1.36.0
@@ -287,8 +272,8 @@ export function getAdSenseMockResponse( args ) {
 		rows: data.rows.map( ( rowArray ) => rowFromArray( rowArray ) ),
 		totals: rowFromArray( data.totals ),
 		averages: rowFromArray( data.averages ),
-		startDate: dateToDateObject( startDate ),
-		endDate: dateToDateObject( endDate ),
+		startDate: dateInstanceToAdSenseDate( startDate ),
+		endDate: dateInstanceToAdSenseDate( endDate ),
 	};
 }
 

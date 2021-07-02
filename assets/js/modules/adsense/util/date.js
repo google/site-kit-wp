@@ -37,3 +37,19 @@
 export function adsenseDateToInstance( { year = 0, month = 1, day = 0 } = {} ) {
 	return new Date( year, month - 1, day );
 }
+
+/**
+ * Creates an AdSense date object from a Date instance.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Date} date Date instance.
+ * @return {AdSenseDate} AdSense date object.
+ */
+export function dateInstanceToAdSenseDate( date ) {
+	return {
+		year: date?.getFullYear() ?? 0,
+		month: date?.getMonth() + 1 ?? 0,
+		day: date?.getDate() ?? 0,
+	};
+}
