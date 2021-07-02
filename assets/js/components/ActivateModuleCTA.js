@@ -54,10 +54,7 @@ const ActivateModuleCTA = ( { moduleSlug, title, description } ) => {
 		} else {
 			setInternalServerError( {
 				id: `${ moduleSlug }-setup-error`,
-				title: __( 'Internal Server Error', 'google-site-kit' ),
 				description: error.message,
-				format: 'small',
-				type: 'win-error',
 			} );
 		}
 	}, [ activateModule, moduleSlug, navigateTo, setInternalServerError ] );

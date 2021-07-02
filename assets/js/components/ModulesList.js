@@ -54,10 +54,7 @@ function ModulesList( { moduleSlugs } ) {
 		if ( error ) {
 			setInternalServerError( {
 				id: 'setup-module-error',
-				title: __( 'Internal Server Error', 'google-site-kit' ),
 				description: error.message,
-				format: 'small',
-				type: 'win-error',
 			} );
 			return null;
 		}

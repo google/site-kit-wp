@@ -61,10 +61,7 @@ export default function SetupModule( {
 		} else {
 			setInternalServerError( {
 				id: 'activate-module-error',
-				title: __( 'Internal Server Error', 'google-site-kit' ),
 				description: error.message,
-				format: 'small',
-				type: 'win-error',
 			} );
 			setIsSaving( false );
 		}

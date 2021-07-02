@@ -20,6 +20,12 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import isPlainObject from 'lodash/isPlainObject';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -31,7 +37,7 @@ const SET_SERVER_ERROR = 'SET_SERVER_ERROR';
 const CLEAR_SERVER_ERROR = 'CLEAR_SERVER_ERROR';
 
 const baseInitialState = {
-	internalServerError: {},
+	internalServerError: undefined,
 };
 
 const baseActions = {
@@ -44,11 +50,25 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setInternalServerError( internalServerError ) {
-		invariant( internalServerError, 'internalServerError is required.' );
+		invariant( isPlainObject( internalServerError ), 'internalServerError is required.' );
+
+		const {
+			title = __( 'Internal Server Error', 'google-site-kit' ),
+			format = 'small',
+			type = 'win-error',
+			...props
+		} = internalServerError;
 
 		return {
 			type: SET_SERVER_ERROR,
-			payload: { internalServerError },
+			payload: {
+				internalServerError: {
+					title,
+					format,
+					type,
+					...props,
+				},
+			},
 		};
 	},
 
@@ -62,7 +82,6 @@ const baseActions = {
 	clearInternalServerError() {
 		return {
 			type: CLEAR_SERVER_ERROR,
-			payload: {},
 		};
 	},
 };
@@ -79,7 +98,7 @@ export const baseReducer = ( state, { type, payload } ) => {
 		case CLEAR_SERVER_ERROR: {
 			return {
 				...state,
-				internalServerError: null,
+				internalServerError: undefined,
 			};
 		}
 
@@ -102,8 +121,7 @@ const baseSelectors = {
 	 * @return {(Object|undefined)} Error info.
 	 */
 	getInternalServerError( state ) {
-		const { internalServerError } = state;
-		return internalServerError;
+		return state.internalServerError;
 	},
 };
 

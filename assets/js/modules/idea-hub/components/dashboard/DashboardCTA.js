@@ -49,10 +49,7 @@ function DashboardCTA( { Widget } ) {
 		} else {
 			setInternalServerError( {
 				id: 'idea-hub-setup-error',
-				title: __( 'Internal Server Error', 'google-site-kit' ),
 				description: error.message,
-				format: 'small',
-				type: 'win-error',
 			} );
 		}
 	}, [ activateModule, navigateTo, setInternalServerError ] );
