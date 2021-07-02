@@ -48,9 +48,11 @@ export const decorators = [
 		}
 
 		return (
-			<div className="googlesitekit-plugin-preview js" style={ styles }>
-				<div className="googlesitekit-plugin">
-					<Story />
+			<div className="googlesitekit-plugin-preview js mdc-layout-grid" style={ styles }>
+				<div className="mdc-layout-grid__inner">
+					<div className="googlesitekit-plugin mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+						<Story />
+					</div>
 				</div>
 			</div>
 		);
