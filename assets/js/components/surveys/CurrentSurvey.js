@@ -195,6 +195,7 @@ export default function CurrentSurvey() {
 		<Slide direction="up" in={ animateSurvey } onExited={ handleAnimationOnExited }>
 			<div className="googlesitekit-survey">
 				<SurveyQuestionComponent
+					key={ currentQuestion.question_text }
 					answerQuestion={ answerQuestion }
 					choices={ currentQuestion.question.answer_choice }
 					dismissSurvey={ dismissSurvey }
