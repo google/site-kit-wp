@@ -22,24 +22,15 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { doAction } from '@wordpress/hooks';
-import { __, _x } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import Layout from '../assets/js/components/layout/Layout';
-import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
-import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import {
 	AccountSelect,
 	PropertySelect,
 	PropertySelectIncludingGA4,
 	ProfileSelect,
 	AnonymizeIPSwitch,
-	UseSnippetSwitch,
+	UseUASnippetSwitch as UseSnippetSwitch,
 	TrackingExclusionSwitches,
 	GA4Notice,
 } from '../assets/js/modules/analytics/components/common';
@@ -253,80 +244,4 @@ storiesOf( 'Analytics Module', module )
 				<GA4Notice />
 			</SetupWrap>
 		);
-	} )
-	.add( 'Audience Overview Chart', () => {
-		global._googlesitekitLegacyData = analyticsData;
-
-		// Load the datacache with data.
-		setTimeout( () => {
-			doAction(
-				'googlesitekit.moduleLoaded',
-				'Single'
-			);
-		}, 250 );
-
-		return (
-			<WithTestRegistry>
-				<Layout
-					header
-					title={ __( 'Audience overview for the last 28 days', 'google-site-kit' ) }
-					headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-					headerCTALink="http://analytics.google.com"
-				>
-				</Layout>
-			</WithTestRegistry>
-		);
-	},
-	// This uses the legacy widget, the new one is in:
-	// 'Analytics Module/Components/Module Page/Acquisition Channels Widget'.
-	{
-		options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' },
-	} )
-	.add( 'Top Acquisition Pie Chart', () => {
-		global._googlesitekitLegacyData = analyticsData;
-
-		// Load the datacache with data.
-		setTimeout( () => {
-			doAction(
-				'googlesitekit.moduleLoaded',
-				'Single'
-			);
-		}, 250 );
-
-		return (
-			<WithTestRegistry>
-				<Layout
-					header
-					footer
-					title={ __( 'Top acquisition channels over the last 28 days', 'google-site-kit' ) }
-					headerCTALink="https://analytics.google.com"
-					headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-					footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					footerCTALink="https://analytics.google.com"
-				>
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-4-desktop
-								mdc-layout-grid__cell--span-8-tablet
-								mdc-layout-grid__cell--span-4-phone
-							">
-								<LegacyDashboardAcquisitionPieChart />
-							</div>
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-8-desktop
-								mdc-layout-grid__cell--span-8-tablet
-								mdc-layout-grid__cell--span-4-phone
-							">
-							</div>
-						</div>
-					</div>
-				</Layout>
-			</WithTestRegistry>
-		);
-	},
-	{
-		options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' },
 	} );
