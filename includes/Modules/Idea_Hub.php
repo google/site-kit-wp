@@ -121,7 +121,7 @@ final class Idea_Hub extends Module
 		$this->post_name_setting = new Post_Idea_Name( $post_meta );
 		$this->post_name_setting->register();
 
-		$this->post_text_setting = new Post_Idea_Text( $post_meta );
+		$this->post_text_setting = new Post_Idea_Text( $post_meta, array( 'show_in_rest' => true ) );
 		$this->post_text_setting->register();
 
 		$this->post_topic_setting = new Post_Idea_Topics( $post_meta );
@@ -498,6 +498,18 @@ final class Idea_Hub extends Module
 						'googlesitekit-data',
 						'googlesitekit-modules',
 					),
+				)
+			),
+			new Script(
+				'googlesitekit-idea-hub-notice',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-idea-hub-notice.js',
+					'dependencies'  => array(
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+						'googlesitekit-data',
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
 			),
 		);

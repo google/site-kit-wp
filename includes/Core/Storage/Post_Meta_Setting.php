@@ -34,14 +34,25 @@ abstract class Post_Meta_Setting {
 	protected $post_meta;
 
 	/**
+	 * Arguments for `register_meta` call.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	protected $args = array();
+
+	/**
 	 * Post_Meta_Setting constructor.
 	 *
-	 * @since 1.33.0
+	 * @since 1.33.0 Function introduced.
+	 * @since n.e.x.t Added the $args option.
 	 *
 	 * @param Post_Meta_Interface $post_meta Post_Meta_Interface instance.
+	 * @param array               $args      Options to pass to `register_meta`.
 	 */
-	public function __construct( Post_Meta_Interface $post_meta ) {
+	public function __construct( Post_Meta_Interface $post_meta, $args = array() ) {
 		$this->post_meta = $post_meta;
+		$this->args      = $args;
 	}
 
 	/**
@@ -53,10 +64,13 @@ abstract class Post_Meta_Setting {
 		register_meta(
 			'post',
 			static::META_KEY,
-			array(
-				'type'              => $this->get_type(),
-				'sanitize_callback' => $this->get_sanitize_callback(),
-				'single'            => true,
+			wp_parse_args(
+				$this->args,
+				array(
+					'type'              => $this->get_type(),
+					'sanitize_callback' => $this->get_sanitize_callback(),
+					'single'            => true,
+				)
 			)
 		);
 	}
