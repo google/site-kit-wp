@@ -176,6 +176,36 @@ class DataFactory {
 }
 
 /**
+ * Creates a row object from an array of values.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array} array Array.
+ * @return {Object} Row.
+ */
+function rowFromArray( array ) {
+	return {
+		cells: array.map( ( value ) => ( { value } ) ),
+	};
+}
+
+/**
+ * Creates an AdSense date object from a Date instance.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Date} date Date instance.
+ * @return {Object} AdSense Date object.
+ */
+function dateToDateObject( date ) {
+	return {
+		year: date?.getFullYear() ?? 0,
+		month: date?.getMonth() + 1 ?? 0,
+		day: date?.getDate() ?? 0,
+	};
+}
+
+/**
  * Generates mock data for AdSense reports.
  *
  * @since 1.36.0
@@ -251,7 +281,15 @@ export function getAdSenseMockResponse( args ) {
 	// Set the original seed value for the faker.
 	faker.seed( originalSeedValue );
 
-	return data;
+	return {
+		...data,
+		// v2 transforms.
+		rows: data.rows.map( ( rowArray ) => rowFromArray( rowArray ) ),
+		totals: rowFromArray( data.totals ),
+		averages: rowFromArray( data.averages ),
+		startDate: dateToDateObject( startDate ),
+		endDate: dateToDateObject( endDate ),
+	};
 }
 
 /**
