@@ -33,7 +33,7 @@ import PreviewBlock from '../PreviewBlock';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
-const WPDashboardSessionDuration = ( { WidgetReportZero, WidgetReportError } ) => {
+const WPDashboardSessionDuration = ( { WidgetReportZero, WidgetReportError, className } ) => {
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
@@ -64,7 +64,7 @@ const WPDashboardSessionDuration = ( { WidgetReportZero, WidgetReportError } ) =
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <WidgetReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero className={ className } moduleSlug="analytics" />;
 	}
 
 	const { totals } = data[ 0 ].data;

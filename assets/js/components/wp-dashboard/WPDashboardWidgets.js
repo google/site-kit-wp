@@ -104,25 +104,17 @@ const WPDashboardWidgets = () => {
 			{ analyticsModuleActive && analyticsModuleConnected && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsWidget />
-					<div className={ classnames(
-						'googlesitekit-wp-dashboard-stats__area-wrapper',
-						{
-							[ HIDDEN_CLASS ]: shouldCombineAnalyticsArea1,
-						} ) }>
-						<WPDashboardSessionDurationWidget />
-					</div>
+					<WPDashboardSessionDurationWidget className={ classnames( {
+						[ HIDDEN_CLASS ]: shouldCombineAnalyticsArea1,
+					} ) } />
 				</Fragment>
 			) }
 
 			<Fragment>
 				<WPDashboardImpressionsWidget />
-				<div className={ classnames(
-					'googlesitekit-wp-dashboard-stats__area-wrapper',
-					{
-						[ HIDDEN_CLASS ]: shouldCombineSearchConsoleWidgets,
-					} ) }>
-					<WPDashboardClicksWidget />
-				</div>
+				<WPDashboardClicksWidget className={ classnames( {
+					[ HIDDEN_CLASS ]: shouldCombineSearchConsoleWidgets,
+				} ) } />
 			</Fragment>
 
 			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
@@ -137,13 +129,9 @@ const WPDashboardWidgets = () => {
 			) }
 
 			{ analyticsModuleActive && analyticsModuleConnected && (
-				<div className={ classnames(
-					'googlesitekit-wp-dashboard-stats__area-wrapper--fullwidth',
-					{
-						[ HIDDEN_CLASS ]: shouldCombineAnalyticsArea2,
-					} ) }>
-					<WPDashboardPopularPagesWidget />
-				</div>
+				<WPDashboardPopularPagesWidget className={ classnames( {
+					[ HIDDEN_CLASS ]: shouldCombineAnalyticsArea2,
+				} ) } />
 			) }
 		</div>
 	);

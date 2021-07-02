@@ -34,11 +34,13 @@ const CTA = ( {
 	ctaLabel,
 	error,
 	onClick,
+	className,
 	'aria-label': ariaLabel,
 } ) => (
 	<div
 		className={ classnames(
 			'googlesitekit-cta',
+			className,
 			{ 'googlesitekit-cta--error': error }
 		) }
 	>

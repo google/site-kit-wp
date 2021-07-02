@@ -36,7 +36,7 @@ import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 const { useSelect } = Data;
 
-const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
+const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError, className } ) => {
 	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
@@ -68,7 +68,7 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <WidgetReportZero moduleSlug="search-console" />;
+		return <WidgetReportZero className={ className } moduleSlug="search-console" />;
 	}
 
 	const { compareRange, currentRange } = partitionReport( data, { dateRangeLength } );

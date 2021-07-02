@@ -35,7 +35,7 @@ import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
 const { useSelect } = Data;
 
-const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
+const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError, className } ) => {
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
@@ -75,7 +75,7 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 	}
 
 	if ( isZeroReport( data ) ) {
-		return <WidgetReportZero moduleSlug="analytics" />;
+		return <WidgetReportZero className={ className } moduleSlug="analytics" />;
 	}
 
 	return (
