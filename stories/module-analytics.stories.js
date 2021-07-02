@@ -32,7 +32,6 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Layout from '../assets/js/components/layout/Layout';
 import LegacyAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetOverview';
-import LegacyAnalyticsDashboardWidgetSiteStats from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetSiteStats';
 import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
@@ -263,22 +262,6 @@ storiesOf( 'Analytics Module', module )
 		const selectedStats = [
 			0,
 		];
-		const series = {
-			0: {
-				color: '#4285f4',
-				targetAxisIndex: 0,
-			},
-			1: {
-				color: '#4285f4',
-				targetAxisIndex: 0,
-				lineDashStyle: [
-					3,
-					3,
-				],
-				lineWidth: 1,
-			},
-		};
-		const vAxes = null;
 
 		// Load the datacache with data.
 		setTimeout( () => {
@@ -299,11 +282,6 @@ storiesOf( 'Analytics Module', module )
 					<LegacyAnalyticsDashboardWidgetOverview
 						selectedStats={ selectedStats }
 						handleDataError={ () => {} }
-					/>
-					<LegacyAnalyticsDashboardWidgetSiteStats
-						selectedStats={ selectedStats }
-						series={ series }
-						vAxes={ vAxes }
 					/>
 				</Layout>
 			</WithTestRegistry>
