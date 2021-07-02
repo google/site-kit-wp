@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import castArray from 'lodash/castArray';
 import isPlainObject from 'lodash/isPlainObject';
 
 /**
@@ -31,6 +32,7 @@ import { STORE_NAME } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidDateRange, isValidOrders, isValidStringularItems } from '../../../util/report-validation';
+import { validateDimensions, validateMetrics } from '../util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -61,12 +63,14 @@ const fetchGetReportStore = createFetchStore( {
 			isValidStringularItems( metrics ),
 			'Metrics for an AdSense report must be either a string or an array of strings.',
 		);
+		validateMetrics( castArray( metrics ) );
 
 		if ( dimensions ) {
 			invariant(
 				isValidStringularItems( dimensions ),
 				'Dimensions for an AdSense report must be either a string or an array of strings.',
 			);
+			validateDimensions( castArray( dimensions ) );
 		}
 
 		if ( orderby ) {
