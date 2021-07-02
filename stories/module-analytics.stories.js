@@ -42,7 +42,7 @@ import {
 	PropertySelectIncludingGA4,
 	ProfileSelect,
 	AnonymizeIPSwitch,
-	UseSnippetSwitch,
+	UseUASnippetSwitch as UseSnippetSwitch,
 	TrackingExclusionSwitches,
 	GA4Notice,
 } from '../assets/js/modules/analytics/components/common';
