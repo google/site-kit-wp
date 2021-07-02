@@ -767,7 +767,7 @@ final class AdSense extends Module
 	/**
 	 * Parses account ID, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param Google_Model $account Account model.
 	 * @param string       $id_key  Attribute name that contains account ID.
@@ -787,7 +787,7 @@ final class AdSense extends Module
 	/**
 	 * Parses account and client IDs, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param Google_Model $client Client model.
 	 * @param string       $id_key Attribute name that contains client ID.
@@ -808,7 +808,7 @@ final class AdSense extends Module
 	/**
 	 * Parses account, client and ad unit IDs, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param Google_Model $adunit Ad unit model.
 	 * @param string       $id_key Attribute name that contains ad unit ID.
@@ -830,7 +830,7 @@ final class AdSense extends Module
 	/**
 	 * Normalizes account ID and returns it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param string $account_id Account ID.
 	 * @return string Updated account ID with "accounts/" prefix.
@@ -842,7 +842,7 @@ final class AdSense extends Module
 	/**
 	 * Normalizes ad client ID and returns it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param string $account_id Account ID.
 	 * @param string $client_id  Ad client ID.
