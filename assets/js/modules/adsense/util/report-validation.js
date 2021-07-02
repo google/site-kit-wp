@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import castArray from 'lodash/castArray';
+
+/**
  * Internal dependencies
  */
 import invariant from 'invariant';
@@ -115,13 +120,13 @@ const VALID_DIMENSIONS = [
  *
  * @since n.e.x.t
  *
- * @param {Array} metrics Metrics to validate.
+ * @param {(Array|string)} metrics Metric(s) to validate.
  */
 export function validateMetrics( metrics ) {
-	invariant( Array.isArray( metrics ), 'metrics must be an array.' );
-	invariant( metrics.length, 'at least one metric is required.' );
+	const metricsArray = castArray( metrics );
+	invariant( metricsArray.length, 'at least one metric is required.' );
 
-	const invalidMetrics = metrics.filter(
+	const invalidMetrics = metricsArray.filter(
 		( metric ) => ! VALID_METRICS.includes( metric )
 	);
 
