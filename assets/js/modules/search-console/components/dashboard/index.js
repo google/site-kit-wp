@@ -22,7 +22,6 @@ export { default as DashboardPopularKeywordsWidget } from './DashboardPopularKey
 export { default as LegacyDashboardPopularity } from './LegacyDashboardPopularity';
 export { default as LegacyDashboardPopularityInner } from './LegacyDashboardPopularityInner';
 export { default as LegacyDashboardWidgetPopularKeywordsTable } from './LegacyDashboardWidgetPopularKeywordsTable';
-export { default as GoogleSitekitSearchConsoleDashboardWidget } from './GoogleSitekitSearchConsoleDashboardWidget';
 export { default as LegacyDashboardSearchFunnel } from './LegacyDashboardSearchFunnel';
 export { default as LegacyDashboardSearchFunnelInner } from './LegacyDashboardSearchFunnelInner';
 export { default as LegacySearchConsoleDashboardWidgetTopLevel } from './LegacySearchConsoleDashboardWidgetTopLevel';
