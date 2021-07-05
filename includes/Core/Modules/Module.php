@@ -652,21 +652,35 @@ abstract class Module {
 	 * @return array List of permutations.
 	 */
 	final protected function permute_site_url( $site_url ) {
-		$urls = array();
+		$urls  = array();
+		$hosts = array();
 
 		// Get host url.
-		$host = wp_parse_url( $site_url, PHP_URL_HOST );
+		$hostname = wp_parse_url( $site_url, PHP_URL_HOST );
+		$hosts[]  = $hostname;
 
-		// Add http:// and https:// to host.
-		$urls[] = 'https://' . $host;
-		$urls[] = 'http://' . $host;
-
-		if ( 0 === strpos( $host, 'www.' ) ) {
-			$urls[] = 'https://' . substr( $host, 4 );
-			$urls[] = 'http://' . substr( $host, 4 );
+		if ( strpos( $hostname, 'xn--' ) !== false ) {
+			$converted_host = idn_to_utf8( $hostname, 0, INTL_IDNA_VARIANT_UTS46 );
 		} else {
-			$urls[] = 'https://www.' . $host;
-			$urls[] = 'http://www.' . $host;
+			$converted_host = idn_to_ascii( $hostname, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46 );
+		}
+
+		if ( ! in_array( $converted_host, $hosts, true ) ) {
+			$hosts[] = $converted_host;
+		}
+
+		foreach ( $hosts as $host ) {
+			// Add http:// and https:// to host.
+			$urls[] = 'https://' . $host;
+			$urls[] = 'http://' . $host;
+
+			if ( 0 === strpos( $host, 'www.' ) ) {
+				$urls[] = 'https://' . substr( $host, 4 );
+				$urls[] = 'http://' . substr( $host, 4 );
+			} else {
+				$urls[] = 'https://www.' . $host;
+				$urls[] = 'http://www.' . $host;
+			}
 		}
 
 		return $urls;
