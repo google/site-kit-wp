@@ -54,6 +54,22 @@
 
 	}
 
+
+	.mdc-text-field:not(.mdc-text-field--disabled) {
+
+		.mdc-text-field__input {
+			color: $c-text-notice-info-selected-text;
+		}
+
+		.mdc-notched-outline__leading,
+		.mdc-notched-outline__notch,
+		.mdc-notched-outline__trailing {
+			border-color: $c-border-brand;
+		}
+
+	}
+
+
 	// TODO: decouple select styles from type-specific colors.
 	.mdc-select:not(.mdc-select--disabled) {
 
