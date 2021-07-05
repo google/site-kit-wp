@@ -49,23 +49,25 @@ import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
 const { useDispatch } = Data;
 
 const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
-	const { createIdeaDraftPost } = useDispatch( STORE_NAME );
+	const {
+		createIdeaDraftPost,
+		saveIdea,
+		unsaveIdea,
+		dismissIdea,
+	} = useDispatch( STORE_NAME );
 	const [ isProcessing, setIsProcessing ] = useState( false );
 
-	const handleDelete = useCallback( () => {
-		// @TODO: Implement callback.
-		global.console.log( `Deleted: ${ name }` );
-	}, [ name ] );
+	const handleDelete = useCallback( async () => {
+		await dismissIdea( name );
+	}, [ name, dismissIdea ] );
 
-	const handlePin = useCallback( () => {
-		// @TODO: Implement callback.
-		global.console.log( `Pinned: ${ name }` );
-	}, [ name ] );
+	const handlePin = useCallback( async () => {
+		await saveIdea( name );
+	}, [ name, saveIdea ] );
 
-	const handleUnpin = useCallback( () => {
-		// @TODO: Implement callback.
-		global.console.log( `Unpinned: ${ name }` );
-	}, [ name ] );
+	const handleUnpin = useCallback( async () => {
+		await unsaveIdea( name );
+	}, [ name, unsaveIdea ] );
 
 	const handleCreate = useCallback( async () => {
 		setIsProcessing( true );
