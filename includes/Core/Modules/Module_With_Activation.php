@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 /**
  * Interface for a module that has additional behavior when activated.
  *
- * @since n.e.x.t
+ * @since 1.36.0
  * @access private
  * @ignore
  */
@@ -21,7 +21,7 @@ interface Module_With_Activation {
 	/**
 	 * Handles module activation.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 */
 	public function on_activation();
 }

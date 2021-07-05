@@ -86,7 +86,7 @@ const baseActions = {
 	/**
 	 * Updates a given Idea's state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param {Object}  ideaState           Idea Hub Idea state.
 	 * @param {string}  ideaState.name      Idea Hub Idea name.
@@ -102,7 +102,7 @@ const baseActions = {
 	/**
 	 * Saves an Idea.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param {string} ideaName Idea Hub Idea name.
 	 * @return {Object} Object with `response` and `error`.
@@ -126,7 +126,7 @@ const baseActions = {
 	/**
 	 * Unsaves an Idea.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param {string} ideaName Idea Hub Idea name.
 	 * @return {Object} Object with `response` and `error`.
@@ -150,7 +150,7 @@ const baseActions = {
 	/**
 	 * Dismisses an Idea.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param {string} ideaName Idea Hub Idea name.
 	 * @return {Object} Object with `response` and `error`.
