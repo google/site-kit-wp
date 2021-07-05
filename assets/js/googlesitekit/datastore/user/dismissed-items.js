@@ -82,7 +82,8 @@ const baseActions = {
 const baseResolvers = {
 	*getDismissedItems() {
 		const { select } = yield getRegistry();
-		if ( ! select( STORE_NAME ).getDismissedFeatureTourSlugs() ) {
+		const dismissedItems = select( STORE_NAME ).getDismissedItems();
+		if ( dismissedItems === undefined ) {
 			yield fetchGetDismissedItemsStore.actions.fetchGetDismissedItems();
 		}
 	},
