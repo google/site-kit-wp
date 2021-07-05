@@ -270,9 +270,13 @@ class Debug_Data {
 	 * @return array
 	 */
 	private function get_verification_status_field() {
+		$is_verified = $this->authentication->verification()->get();
+
 		return array(
 			'label' => __( 'Verification Status', 'google-site-kit' ),
-			'value' => 'value',
+			'value' => $is_verified
+				? 'verified'
+				: __( 'Not verified', 'google-site-kit' ),
 			'debug' => 'debug',
 		);
 	}
