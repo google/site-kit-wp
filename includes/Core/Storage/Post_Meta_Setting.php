@@ -34,25 +34,14 @@ abstract class Post_Meta_Setting {
 	protected $post_meta;
 
 	/**
-	 * Arguments for `register_meta` call.
-	 *
-	 * @since n.e.x.t
-	 * @var array
-	 */
-	protected $args = array();
-
-	/**
 	 * Post_Meta_Setting constructor.
 	 *
-	 * @since 1.33.0 Function introduced.
-	 * @since n.e.x.t Added the $args option.
+	 * @since 1.33.0
 	 *
 	 * @param Post_Meta_Interface $post_meta Post_Meta_Interface instance.
-	 * @param array               $args      Options to pass to `register_meta`.
 	 */
-	public function __construct( Post_Meta_Interface $post_meta, $args = array() ) {
+	public function __construct( Post_Meta_Interface $post_meta ) {
 		$this->post_meta = $post_meta;
-		$this->args      = $args;
 	}
 
 	/**
@@ -64,13 +53,11 @@ abstract class Post_Meta_Setting {
 		register_meta(
 			'post',
 			static::META_KEY,
-			wp_parse_args(
-				$this->args,
-				array(
-					'type'              => $this->get_type(),
-					'sanitize_callback' => $this->get_sanitize_callback(),
-					'single'            => true,
-				)
+			array(
+				'type'              => $this->get_type(),
+				'sanitize_callback' => $this->get_sanitize_callback(),
+				'single'            => true,
+				'show_in_rest'      => $this->get_show_in_rest(),
 			)
 		);
 	}
@@ -118,6 +105,17 @@ abstract class Post_Meta_Setting {
 	 */
 	protected function get_sanitize_callback() {
 		return null;
+	}
+
+	/**
+	 * Gets the `show_in_rest` value for this postmeta setting value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool|Array Any valid value for the `show_in_rest`
+	 */
+	protected function get_show_in_rest() {
+		return false;
 	}
 
 	/**
