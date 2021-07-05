@@ -270,15 +270,41 @@ class Debug_Data {
 	 * @return array
 	 */
 	private function get_verification_status_field() {
-		$is_verified = $this->authentication->verification()->get();
+		$label = __( 'Verification Status', 'google-site-kit' );
+
+		$is_verified               = $this->authentication->verification()->get();
+		$is_verified_by_file_token = $this->authentication->verification_file()->get();
+
+		if ( ! $is_verified ) {
+			return array(
+				'label' => $label,
+				'value' => __( 'Not verified', 'google-site-kit' ),
+				'debug' => 'debug',
+			);
+		}
+
+		if ( $is_verified_by_file_token ) {
+			return array(
+				'label' => $label,
+				'value' => __( 'Verified through file', 'google-site-kit' ),
+				'debug' => 'debug',
+			);
+		}
+
+		if ( $is_verified_by_file_token ) {
+			return array(
+				'label' => $label,
+				'value' => __( 'Verified through meta tag', 'google-site-kit' ),
+				'debug' => 'debug',
+			);
+		}
 
 		return array(
-			'label' => __( 'Verification Status', 'google-site-kit' ),
-			'value' => $is_verified
-				? 'verified'
-				: __( 'Not verified', 'google-site-kit' ),
+			'label' => $label,
+			'value' => __( 'Verified outside of Site Kit', 'google-site-kit' ),
 			'debug' => 'debug',
 		);
+
 	}
 
 
