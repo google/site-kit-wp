@@ -90,7 +90,7 @@ class REST_Dismissals_Controller {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => function () {
-						return new WP_REST_Response( $this->dismissed_items->get() );
+						return new WP_REST_Response( $this->dismissed_items->get_dismissed_items() );
 					},
 					'permission_callback' => $can_authenticate,
 				)
