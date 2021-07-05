@@ -230,7 +230,7 @@ describe( 'CurrentSurvey', () => {
 
 		fireEvent.click( getByLabelText( 'Delighted' ) );
 
-		await waitFor( () =>	expect(
+		await waitFor( () => expect(
 			registry
 				.select( CORE_FORMS )
 				.getValue(
