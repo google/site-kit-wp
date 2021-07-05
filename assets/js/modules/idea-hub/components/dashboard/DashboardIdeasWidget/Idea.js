@@ -30,7 +30,6 @@ import { useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import Button from '../../../../../components/Button';
 import { Grid, Cell, Row } from '../../../../../material-components';
@@ -58,25 +57,17 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 	} = useDispatch( STORE_NAME );
 	const [ isProcessing, setIsProcessing ] = useState( false );
 
-	const refreshNewSavedIdeas = useCallback( async () => {
-		await API.invalidateCache( 'modules', 'idea-hub', 'new-ideas' );
-		await API.invalidateCache( 'modules', 'idea-hub', 'saved-ideas' );
-	}, [] );
-
 	const handleDelete = useCallback( async () => {
 		await dismissIdea( name );
-		await refreshNewSavedIdeas();
-	}, [ name, refreshNewSavedIdeas, dismissIdea ] );
+	}, [ name, dismissIdea ] );
 
 	const handlePin = useCallback( async () => {
 		await saveIdea( name );
-		await refreshNewSavedIdeas();
-	}, [ refreshNewSavedIdeas, name, saveIdea ] );
+	}, [ name, saveIdea ] );
 
 	const handleUnpin = useCallback( async () => {
 		await unsaveIdea( name );
-		await refreshNewSavedIdeas();
-	}, [ refreshNewSavedIdeas, name, unsaveIdea ] );
+	}, [ name, unsaveIdea ] );
 
 	const handleCreate = useCallback( async () => {
 		setIsProcessing( true );
