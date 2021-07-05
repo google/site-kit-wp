@@ -169,6 +169,7 @@ class Debug_Data {
 			'amp_mode'             => $this->get_amp_mode_field(),
 			'site_status'          => $this->get_site_status_field(),
 			'user_status'          => $this->get_user_status_field(),
+			'verification_status'  => $this->get_verification_status_field(),
 			'connected_user_count' => $this->get_connected_user_count_field(),
 			'active_modules'       => $this->get_active_modules_field(),
 			'required_scopes'      => $this->get_required_scopes_field(),
@@ -260,6 +261,22 @@ class Debug_Data {
 			'debug' => $is_connected ? 'authenticated' : 'not authenticated',
 		);
 	}
+
+	/**
+	 * Gets the field definition for the verification_status field.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	private function get_verification_status_field() {
+		return array(
+			'label' => __( 'Verification Status', 'google-site-kit' ),
+			'value' => 'value',
+			'debug' => 'debug',
+		);
+	}
+
 
 	/**
 	 * Gets the number of users with a Site Kit token.
