@@ -274,12 +274,13 @@ class Debug_Data {
 
 		$is_verified               = $this->authentication->verification()->get();
 		$is_verified_by_file_token = $this->authentication->verification_file()->get();
+		$is_verified_by_meta_tag   = $this->authentication->verification_meta()->get();
 
 		if ( ! $is_verified ) {
 			return array(
 				'label' => $label,
 				'value' => __( 'Not verified', 'google-site-kit' ),
-				'debug' => 'debug',
+				'debug' => 'not-verified',
 			);
 		}
 
@@ -287,22 +288,22 @@ class Debug_Data {
 			return array(
 				'label' => $label,
 				'value' => __( 'Verified through file', 'google-site-kit' ),
-				'debug' => 'debug',
+				'debug' => 'verified-file',
 			);
 		}
 
-		if ( $is_verified_by_file_token ) {
+		if ( $is_verified_by_meta_tag ) {
 			return array(
 				'label' => $label,
 				'value' => __( 'Verified through meta tag', 'google-site-kit' ),
-				'debug' => 'debug',
+				'debug' => 'verified-meta',
 			);
 		}
 
 		return array(
 			'label' => $label,
 			'value' => __( 'Verified outside of Site Kit', 'google-site-kit' ),
-			'debug' => 'debug',
+			'debug' => 'verified-non-site-kit',
 		);
 
 	}
