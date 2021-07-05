@@ -504,11 +504,6 @@ final class Idea_Hub extends Module
 				'googlesitekit-idea-hub-notice',
 				array(
 					'src'           => $base_url . 'js/googlesitekit-idea-hub-notice.js',
-					'dependencies'  => array(
-						'googlesitekit-vendor',
-						'googlesitekit-api',
-						'googlesitekit-data',
-					),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
 			),
