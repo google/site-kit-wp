@@ -26,23 +26,24 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { getItem, setItem } from './googlesitekit/api/cache';
 
-const shownNotices = [];
-
 const editorNoticeKey = ( postID ) => {
 	return `modules::idea-hub::dismissed-editor-notice-${ postID }`;
 };
 
 const loadIdeaHubNotices = async ( _global = global ) => {
 	const { wp } = _global;
+	const shownNotices = [];
 
 	const hasNotice = ( postID ) => {
 		const notices = wp.data.select( 'core/notices' ).getNotices();
+
 		if ( notices === undefined ) {
 			return undefined;
 		}
 
-		const key = editorNoticeKey( postID );
-		return notices.some( ( { id } ) => id === key );
+		const noticeKey = editorNoticeKey( postID );
+
+		return notices.some( ( { id } ) => id === noticeKey );
 	};
 
 	const listener = async () => {
@@ -53,47 +54,52 @@ const loadIdeaHubNotices = async ( _global = global ) => {
 			return;
 		}
 
-		const { cacheHit } = await getItem( editorNoticeKey( postID ) );
+		const noticeKey = editorNoticeKey( postID );
+
+		const { cacheHit } = await getItem( noticeKey );
 
 		if ( hasNotice( postID ) !== false ) {
 			return;
 		}
-			// We've already shown this notice, so when it's hidden, mark it as shown
-			// so it doesn't appear again.
-			if ( shownNotices.includes( editorNoticeKey( postID ) ) ) {
-				setItem(
-					editorNoticeKey( postID ),
-					postMeta.googlesitekitpersistent_idea_text,
-					{ ttl: 108000 } // Don't show this notice for another 90 days.
-				);
-				unsubscribeFromListener();
-				return;
-			}
 
-			// We've already shown this notice on a previous visit to this page in
-			// the editor, so don't show it again.
-			if ( cacheHit ) {
-				unsubscribeFromListener();
-				return;
-			}
+		// We've already shown this notice, so when it's hidden, mark it as shown
+		// so it doesn't appear again.
+		if ( shownNotices.includes( noticeKey ) ) {
+			setItem(
+				noticeKey,
+				postMeta.googlesitekitpersistent_idea_text,
+				{ ttl: 108000 } // Don't show this notice for another 90 days.
+			);
+			unsubscribeFromListener();
+			return;
+		}
 
-			// We haven't shown any notice for this post before, so let's check for
-			// Idea Hub postmeta.
-			const postMeta = wp.data.select( 'core/editor' ).getEditedPostAttribute( 'meta' );
+		// We've already shown this notice on a previous visit to this page in
+		// the editor, so don't show it again.
+		if ( cacheHit ) {
+			unsubscribeFromListener();
+			return;
+		}
 
-			// eslint-disable-next-line camelcase
-			if ( postMeta?.googlesitekitpersistent_idea_text ) {
-				wp.data.dispatch( 'core/notices' ).createInfoNotice(
+		// We haven't shown any notice for this post before, so let's check for
+		// Idea Hub postmeta.
+		const postMeta = wp.data.select( 'core/editor' ).getEditedPostAttribute( 'meta' );
+
+		// eslint-disable-next-line camelcase
+		if ( postMeta?.googlesitekitpersistent_idea_text ) {
+			wp.data.dispatch( 'core/notices' ).createInfoNotice(
+				sprintf(
 					/* translators: %s: Idea post name */
-					sprintf( __( 'This post was created from an idea you picked in Site Kit’s Idea Hub: %s', 'google-site-kit' ), postMeta.googlesitekitpersistent_idea_text ),
-					{ id: editorNoticeKey( postID ) }
-				);
+					__( 'This post was created from an idea you picked in Site Kit’s Idea Hub: %s', 'google-site-kit' ),
+					postMeta.googlesitekitpersistent_idea_text
+				),
+				{ id: noticeKey }
+			);
 
-				// Mark the notice as shown locally, so if it is no longer marked as
-				// visible, we known it was dismissed (rather than having yet to be
-				// displayed).
-				shownNotices.push( editorNoticeKey( postID ) );
-			}
+			// Mark the notice as shown locally, so if it is no longer marked as
+			// visible, we known it was dismissed (rather than having yet to be
+			// displayed).
+			shownNotices.push( noticeKey );
 		}
 	};
 
