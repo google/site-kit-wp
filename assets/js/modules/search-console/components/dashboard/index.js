@@ -28,4 +28,3 @@ export { default as LegacyDashboardSearchFunnelInner } from './LegacyDashboardSe
 export { default as LegacySearchConsoleDashboardWidgetTopLevel } from './LegacySearchConsoleDashboardWidgetTopLevel';
 export { default as LegacySearchConsoleDashboardWidgetKeywordTable } from './LegacySearchConsoleDashboardWidgetKeywordTable';
 export { default as LegacySearchConsoleDashboardWidgetOverview } from './LegacySearchConsoleDashboardWidgetOverview';
-export { default as LegacySearchConsoleDashboardWidgetSiteStats } from './LegacySearchConsoleDashboardWidgetSiteStats';

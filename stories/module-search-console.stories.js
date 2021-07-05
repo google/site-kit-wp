@@ -33,7 +33,6 @@ import { __ } from '@wordpress/i18n';
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import Layout from '../assets/js/components/layout/Layout';
 import LegacySearchConsoleDashboardWidgetOverview from '../assets/js/modules/search-console/components/dashboard/LegacySearchConsoleDashboardWidgetOverview';
-import LegacySearchConsoleDashboardWidgetSiteStats from '../assets/js/modules/search-console/components/dashboard/LegacySearchConsoleDashboardWidgetSiteStats';
 import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Search Console Module', module )
@@ -43,24 +42,6 @@ storiesOf( 'Search Console Module', module )
 		const selectedStats = [
 			0,
 			1,
-		];
-		const series = [
-			{
-				color: '#4285f4',
-				targetAxisIndex: 0,
-			},
-			{
-				color: '#27bcd4',
-				targetAxisIndex: 1,
-			},
-		];
-		const vAxes = [
-			{
-				title: 'Clicks',
-			},
-			{
-				title: 'Impressions',
-			},
 		];
 
 		// Load the datacache with data.
@@ -83,7 +64,6 @@ storiesOf( 'Search Console Module', module )
 						selectedStats={ selectedStats }
 						handleDataError={ () => {} } // Required prop.
 					/>
-					<LegacySearchConsoleDashboardWidgetSiteStats selectedStats={ selectedStats } series={ series } vAxes={ vAxes } />
 				</Layout>
 			</WithTestRegistry>
 		);
