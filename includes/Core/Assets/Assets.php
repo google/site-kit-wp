@@ -80,7 +80,7 @@ final class Assets {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since 1.0.0 Function introduced.
+	 * @since 1.0.0
 	 * @since n.e.x.t Enqueues Block Editor assets.
 	 */
 	public function register() {

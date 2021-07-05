@@ -33,7 +33,7 @@ interface Module_With_Assets {
 	/**
 	 * Enqueues all assets necessary for the module.
 	 *
-	 * @since 1.7.0 Function introduced.
+	 * @since 1.7.0
 	 * @since n.e.x.t Added the $asset_context argument.
 	 *
 	 * @param string $asset_context Context for page, see `Asset::CONTEXT_*` constants.

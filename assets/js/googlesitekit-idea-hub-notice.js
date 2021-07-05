@@ -36,13 +36,13 @@ const loadIdeaHubNotices = async ( _global = global ) => {
 	const { wp } = _global;
 
 	const hasNotice = ( postID ) => {
-		if ( wp.data.select( 'core/notices' ).getNotices() === undefined ) {
+		const notices = wp.data.select( 'core/notices' ).getNotices();
+		if ( notices === undefined ) {
 			return undefined;
 		}
 
-		return wp.data.select( 'core/notices' ).getNotices().some( ( notice ) => {
-			return notice.id === editorNoticeKey( postID );
-		} );
+		const key = editorNoticeKey( postID );
+		return notices.some( ( { id } ) => id === key );
 	};
 
 	const listener = async () => {
@@ -55,7 +55,9 @@ const loadIdeaHubNotices = async ( _global = global ) => {
 
 		const { cacheHit } = await getItem( editorNoticeKey( postID ) );
 
-		if ( hasNotice( postID ) === false ) {
+		if ( hasNotice( postID ) !== false ) {
+			return;
+		}
 			// We've already shown this notice, so when it's hidden, mark it as shown
 			// so it doesn't appear again.
 			if ( shownNotices.includes( editorNoticeKey( postID ) ) ) {

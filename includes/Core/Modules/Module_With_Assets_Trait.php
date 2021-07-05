@@ -50,7 +50,7 @@ trait Module_With_Assets_Trait {
 	 * This default implementation simply enqueues all assets that the module
 	 * has registered.
 	 *
-	 * @since 1.7.0 Function introduced.
+	 * @since 1.7.0
 	 * @since n.e.x.t Added the $asset_context argument; only enqueue assets in the correct context.
 	 *
 	 * @param string $asset_context The page context to load this asset, see `Asset::CONTEXT_*` constants.
