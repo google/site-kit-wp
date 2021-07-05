@@ -57,6 +57,10 @@
 
 	.mdc-text-field:not(.mdc-text-field--disabled) {
 
+		.mdc-floating-label {
+			color: $c-text-notice-info-selected-text;
+		}
+
 		.mdc-text-field__input {
 			color: $c-text-notice-info-selected-text;
 		}
@@ -67,6 +71,18 @@
 			border-color: $c-border-brand;
 		}
 
+
+		&:not(.mdc-text-field--focused) {
+
+			.mdc-text-field__input:hover ~ .mdc-notched-outline {
+
+				.mdc-notched-outline__leading,
+				.mdc-notched-outline__notch,
+				.mdc-notched-outline__trailing {
+					border-color: $c-border-notice-info-hover;
+				}
+			}
+		}
 	}
 
 
