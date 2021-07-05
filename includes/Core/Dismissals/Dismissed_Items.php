@@ -55,29 +55,7 @@ class Dismissed_Items extends User_Setting {
 	 */
 	public function get() {
 		$value = parent::get();
-		return is_array( $value ) ? $value : $this->get_default();
-	}
-
-	/**
-	 * Sets the value of the setting.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $value The array of items.
-	 * @return bool True on success, false on failure.
-	 */
-	public function set( $value ) {
-		$items = array();
-
-		if ( is_array( $value ) ) {
-			foreach ( $value as $item => $ttl ) {
-				if ( self::DISMISS_ITEM_PERMANENTLY === $ttl || $ttl < time() ) {
-					$items[ $item ] = $ttl;
-				}
-			}
-		}
-
-		return parent::set( $item );
+		return is_array( $value ) ? array_keys( $value ) : $this->get_default();
 	}
 
 	/**
@@ -111,9 +89,17 @@ class Dismissed_Items extends User_Setting {
 	 */
 	protected function get_sanitize_callback() {
 		return function ( $value ) {
-			return is_array( $value )
-				? array_values( array_unique( $value ) )
-				: $this->get();
+			$items = array();
+
+			if ( is_array( $value ) ) {
+				foreach ( $value as $item => $ttl ) {
+					if ( self::DISMISS_ITEM_PERMANENTLY === $ttl || $ttl < time() ) {
+						$items[ $item ] = $ttl;
+					}
+				}
+			}
+
+			return $items;
 		};
 	}
 
