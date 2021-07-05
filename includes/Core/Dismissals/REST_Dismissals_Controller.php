@@ -118,7 +118,7 @@ class REST_Dismissals_Controller {
 
 						$this->dismissed_items->add( $data['slug'], $expiration );
 
-						return new WP_REST_Response( $this->dismissed_items->get() );
+						return new WP_REST_Response( $this->dismissed_items->get_dismissed_items() );
 					},
 					'permission_callback' => $can_authenticate,
 					'args'                => array(

@@ -55,7 +55,7 @@ class Dismissed_Items extends User_Setting {
 	 */
 	public function get() {
 		$value = parent::get();
-		return is_array( $value ) ? array_keys( $value ) : $this->get_default();
+		return is_array( $value ) ? $value : $this->get_default();
 	}
 
 	/**
@@ -88,18 +88,8 @@ class Dismissed_Items extends User_Setting {
 	 * @return callable Sanitize callback.
 	 */
 	protected function get_sanitize_callback() {
-		return function ( $value ) {
-			$items = array();
-
-			if ( is_array( $value ) ) {
-				foreach ( $value as $item => $ttl ) {
-					if ( self::DISMISS_ITEM_PERMANENTLY === $ttl || $ttl < time() ) {
-						$items[ $item ] = $ttl;
-					}
-				}
-			}
-
-			return $items;
+		return function ( $items ) {
+			return $this->filter_dismissed_items( $items );
 		};
 	}
 
@@ -133,12 +123,28 @@ class Dismissed_Items extends User_Setting {
 	 * @return array Dismissed items array.
 	 */
 	public function get_dismissed_items() {
-		$dismissed = array();
-		$items     = $this->get();
+		$dismissed_items = $this->get();
+		$dismissed_items = $this->filter_dismissed_items( $dismissed_items );
 
-		foreach ( $items as $item => $ttl ) {
-			if ( self::DISMISS_ITEM_PERMANENTLY === $ttl || $ttl > time() ) {
-				$dismissed[] = $item;
+		return array_keys( $dismissed_items );
+	}
+
+	/**
+	 * Filters dismissed items.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $items Dismissed items list.
+	 * @return array Filtered dismissed items.
+	 */
+	private function filter_dismissed_items( $items ) {
+		$dismissed = array();
+
+		if ( is_array( $items ) ) {
+			foreach ( $items as $item => $ttl ) {
+				if ( self::DISMISS_ITEM_PERMANENTLY === $ttl || $ttl > time() ) {
+					$dismissed[ $item ] = $ttl;
+				}
 			}
 		}
 
