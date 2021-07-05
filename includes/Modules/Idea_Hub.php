@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
@@ -30,6 +31,7 @@ use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_Error;
 
 /**
@@ -44,6 +46,7 @@ final class Idea_Hub extends Module
 	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
+	use Method_Proxy_Trait;
 
 	/**
 	 * Module slug name.
@@ -116,6 +119,11 @@ final class Idea_Hub extends Module
 				10,
 				2
 			);
+
+			/**
+			 * Show admin notices on the posts page if we have saved / new ideas.
+			 */
+			add_filter( 'googlesitekit_admin_notices', $this->get_method_proxy( 'googlesitekit_admin_notices' ) );
 		}
 
 		$this->post_name_setting = new Post_Idea_Name( $post_meta );
@@ -126,6 +134,72 @@ final class Idea_Hub extends Module
 
 		$this->post_topic_setting = new Post_Idea_Topics( $post_meta );
 		$this->post_topic_setting->register();
+	}
+
+	/**
+	 * Shows admin notification for idea hub ideas on post list screen.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $notices Array of admin notices.
+	 *
+	 * @return array Array of admin notices.
+	 */
+	private function googlesitekit_admin_notices( $notices ) {
+		if ( 'edit-post' !== get_current_screen()->id ) {
+			return $notices;
+		}
+		$notice_settings = array(
+			'saved' => array(
+				'text' => esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ),
+				'cta'  => esc_html__( 'See saved ideas', 'google-site-kit' ),
+				'link' => admin_url( 'admin.php?page=googlesitekit-dashboard#new-ideas' ),
+			),
+			'new'   => array(
+				'text' => esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub', 'google-site-kit' ),
+				'cta'  => esc_html__( 'See new ideas', 'google-site-kit' ),
+				'link' => admin_url( 'admin.php?page=googlesitekit-dashboard#saved-ideas' ),
+			),
+		);
+
+		$dismissed_items = array(); // @TODO update following https://github.com/google/site-kit-wp/pull/3640/files
+		$saved_ideas     = $this->get_data( 'saved-ideas' );
+		$new_ideas       = $this->get_data( 'saved-ideas' );
+
+		$has_saved_ideas = false; // @TODO fix this logic once above is in place
+		$has_new_ideas   = true; // @TODO fix this logic once above is in place
+
+		if ( $has_saved_ideas ) {
+			$type = 'saved';
+		} elseif ( $has_new_ideas ) {
+			$type = 'new';
+		} else {
+			return $notices;
+		}
+		$active_notice = $notice_settings[ $type ];
+
+		$notices[] = new Notice(
+			$type,
+			array(
+				'content'         => function() use ( $active_notice ) {
+					ob_start();
+					?>
+					<p>
+						<?php echo esc_html( $active_notice['text'] ); ?>
+						<a href="<?php echo esc_url( $active_notice['link'] ); ?>"
+						><?php echo esc_html( $active_notice['cta'] ); ?></a>
+					</p>
+					<?php
+					return ob_get_clean();
+				},
+				'type'            => Notice::TYPE_INFO,
+				'active_callback' => function() {
+					return true;
+				},
+				'dismissible'     => true,
+			)
+		);
+		return $notices;
 	}
 
 	/**
@@ -497,6 +571,19 @@ final class Idea_Hub extends Module
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-idea-hub-post-list-notice',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-idea-hub-post-list-notice.js',
+					// 'context'	   => CONTEXT_ADMIN_POSTS, // @TODO 3272
+					'dependencies' => array(
+						'googlesitekit-datastore-user',
+						'googlesitekit-api', // @TODO do we need these?
+						'googlesitekit-data', // @TODO do we need these?
+						'googlesitekit-wp-dashboard', // @TODO do we need these? how else to window.googlesitekit.data.stores
 					),
 				)
 			),
