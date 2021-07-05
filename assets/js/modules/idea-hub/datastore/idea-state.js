@@ -32,7 +32,7 @@ const { receiveError, clearError } = errorStoreActions;
 
 const fetchPostUpdateIdeaStateStore = createFetchStore( {
 	baseName: 'updateIdeaState',
-	controlCallback: ( { name, saved, dismissed } ) => {
+	controlCallback: ( { name, saved, dismissed } ) => new Promise( async ( resolve ) => {
 		const params = { name };
 
 		if ( saved !== undefined ) {
@@ -40,8 +40,13 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 		} else {
 			params.dismissed = dismissed;
 		}
-		return API.set( 'modules', 'idea-hub', 'update-idea-state', params );
-	},
+
+		const results = await API.set( 'modules', 'idea-hub', 'update-idea-state', params );
+		await API.invalidateCache( 'modules', 'idea-hub', 'new-ideas' );
+		await API.invalidateCache( 'modules', 'idea-hub', 'saved-ideas' );
+
+		resolve( results );
+	} ),
 	argsToParams( { name, saved, dismissed } ) {
 		return { name, saved, dismissed };
 	},
@@ -77,6 +82,8 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 				savedIdeas: ( state.savedIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
 			};
 		}
+
+		return state;
 	},
 } );
 
