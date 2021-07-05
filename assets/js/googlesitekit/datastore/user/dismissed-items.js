@@ -29,18 +29,27 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
-const { getRegistry } = Data.commonActions;
+
+const { createRegistrySelector, commonActions } = Data;
+const { getRegistry } = commonActions;
+
+function reducerCallback( state, dismissedItems ) {
+	return {
+		...state,
+		dismissedItems: Array.isArray( dismissedItems ) ? dismissedItems : [],
+	};
+}
 
 const fetchGetDismissedItemsStore = createFetchStore( {
 	baseName: 'getDismissedItems',
 	controlCallback: () => API.get( 'core', 'user', 'dismissed-items', {}, { useCache: false } ),
-	reducerCallback: ( state, dismissedItems ) => ( { ...state, dismissedItems } ),
+	reducerCallback,
 } );
 
 const fetchDismissItemStore = createFetchStore( {
 	baseName: 'dismissItem',
 	controlCallback: ( { slug } ) => API.set( 'core', 'user', 'dismiss-item', { slug } ),
-	reducerCallback: ( state, dismissedItems ) => ( { ...state, dismissedItems } ),
+	reducerCallback,
 	argsToParams: ( slug ) => ( { slug } ),
 	validateParams: ( { slug } = {} ) => {
 		invariant( slug, 'slug is required.' );
@@ -91,6 +100,19 @@ const baseSelectors = {
 	getDismissedItems( state ) {
 		return state.dismissedItems;
 	},
+
+	/**
+	 * Determines whether the item is dismissed or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Item slug.
+	 * @return {(boolean|undefined)} TRUE if dismissed, otherwise FALSE, `undefined` if not resolved yet.
+	 */
+	isItemDismissed: createRegistrySelector( ( select ) => ( state, slug ) => {
+		return select( STORE_NAME ).getDismissedItems()?.includes( slug );
+	} ),
 };
 
 export const {
