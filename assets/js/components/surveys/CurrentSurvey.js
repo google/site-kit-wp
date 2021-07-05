@@ -73,30 +73,31 @@ export default function CurrentSurvey() {
 	const currentQuestion = questions?.find( ( { question_ordinal: questionOrdinal } ) => questionOrdinal === currentQuestionOrdinal );
 
 	const answerQuestion = useCallback( ( answer ) => {
-		if ( ! hasAnsweredQuestion ) {
-			setHasAnsweredQuestion( true );
+		if ( hasAnsweredQuestion ) {
+			return;
+		}
+		setHasAnsweredQuestion( true );
 
-			sendSurveyEvent( 'question_answered', {
-				// eslint-disable-next-line camelcase
-				question_ordinal: currentQuestion?.question_ordinal,
-				answer,
+		sendSurveyEvent( 'question_answered', {
+			// eslint-disable-next-line camelcase
+			question_ordinal: currentQuestion?.question_ordinal,
+			answer,
+		} );
+
+		setTimeout( () => {
+			setValues( formName, {
+				answers: [
+					...answers || [],
+					{
+						// eslint-disable-next-line camelcase
+						question_ordinal: currentQuestion?.question_ordinal,
+						answer,
+					},
+				],
 			} );
 
-			setTimeout( () => {
-				setValues( formName, {
-					answers: [
-						...answers || [],
-						{
-							// eslint-disable-next-line camelcase
-							question_ordinal: currentQuestion?.question_ordinal,
-							answer,
-						},
-					],
-				} );
-
-				setHasAnsweredQuestion( false );
-			}, SURVEY_ANSWER_DELAY_MS );
-		}
+			setHasAnsweredQuestion( false );
+		}, SURVEY_ANSWER_DELAY_MS );
 	}, [ answers, currentQuestion, formName, sendSurveyEvent, setValues, hasAnsweredQuestion ] );
 
 	// Check to see if a completion trigger has been met.
