@@ -32,7 +32,7 @@ const { receiveError, clearError } = errorStoreActions;
 
 const fetchPostUpdateIdeaStateStore = createFetchStore( {
 	baseName: 'updateIdeaState',
-	controlCallback: async ( { name, saved, dismissed } ) => {
+	controlCallback: ( { name, saved, dismissed } ) => {
 		const params = { name };
 
 		if ( saved !== undefined ) {
