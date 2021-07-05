@@ -22,6 +22,7 @@
 		align-items: center;
 		background-color: $c-white;
 		height: 100%;
+		position: relative;
 
 		@media (min-width: $bp-tablet) {
 			display: flex;
@@ -72,5 +73,18 @@
 		align-items: center;
 		display: flex;
 		font-size: 14px;
+	}
+
+	.googlesitekit-idea-hub__dashboard-cta__close-button {
+		height: auto;
+		min-width: auto;
+		padding: 0;
+		position: absolute;
+		right: 0;
+		top: 0;
+
+		& svg path {
+			fill: $c-fiord;
+		}
 	}
 }
