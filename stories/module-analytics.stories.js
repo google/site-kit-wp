@@ -30,7 +30,7 @@ import {
 	PropertySelectIncludingGA4,
 	ProfileSelect,
 	AnonymizeIPSwitch,
-	UseUASnippetSwitch as UseSnippetSwitch,
+	UseUASnippetSwitch,
 	TrackingExclusionSwitches,
 	GA4Notice,
 } from '../assets/js/modules/analytics/components/common';
@@ -181,7 +181,7 @@ storiesOf( 'Analytics Module', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
-					<UseSnippetSwitch />
+					<UseUASnippetSwitch />
 				</SetupWrap>
 			</WithTestRegistry>
 		);
@@ -194,7 +194,7 @@ storiesOf( 'Analytics Module', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
-					<UseSnippetSwitch />
+					<UseUASnippetSwitch />
 				</SetupWrap>
 			</WithTestRegistry>
 		);
