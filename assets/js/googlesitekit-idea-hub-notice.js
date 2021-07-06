@@ -58,22 +58,18 @@ const loadIdeaHubNotices = async ( _global = global ) => {
 
 		const { cacheHit } = await getItem( noticeKey );
 
-		if ( hasNotice( postID ) !== false ) {
+		// We've already shown this notice on a previous visit to this page in
+		// the editor, so don't show it again.
+		if ( cacheHit ) {
+			unsubscribeFromListener();
 			return;
 		}
 
 		// We've already shown this notice, so when it's hidden, mark it as shown
 		// so it doesn't appear again.
-		if ( shownNotices.includes( noticeKey ) ) {
+		if ( hasNotice( postID ) === false && shownNotices.includes( noticeKey ) ) {
 			// Don't show this notice for another 90 days.
 			setItem( noticeKey, true, { ttl: 108000 } );
-			unsubscribeFromListener();
-			return;
-		}
-
-		// We've already shown this notice on a previous visit to this page in
-		// the editor, so don't show it again.
-		if ( cacheHit ) {
 			unsubscribeFromListener();
 			return;
 		}
@@ -94,8 +90,7 @@ const loadIdeaHubNotices = async ( _global = global ) => {
 			);
 
 			// Mark the notice as shown locally, so if it is no longer marked as
-			// visible, we known it was dismissed (rather than having yet to be
-			// displayed).
+			// visible, we know it was dismissed.
 			shownNotices.push( noticeKey );
 		}
 	};
