@@ -92,7 +92,7 @@ const baseActions = {
 };
 
 export const baseReducer = ( state, { type, payload } ) => {
-	const { idea } = payload;
+	const { idea } = payload || {};
 	switch ( type ) {
 		case REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS: {
 			return {
