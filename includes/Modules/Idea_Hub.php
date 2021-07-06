@@ -552,7 +552,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Checks whether the post is an Idea Hub post.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param int $post_id Post ID.
 	 * @return bool True if the post with supplied ID is an Idea Hub post.
