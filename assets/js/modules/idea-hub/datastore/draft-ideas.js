@@ -40,9 +40,9 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 		return {
 			...state,
 			draftPostIdeas: [ ...( state.draftPostIdeas || [] ), ideaDraftPost ],
-			// Try to stop errors
-			newIdeas: ( state.newIdeas || [] ),
-			savedIdeas: ( state.savedIdeas || [] ),
+			// Try to stop errors.
+			// newIdeas: ( state.newIdeas || [] ),
+			// savedIdeas: ( state.savedIdeas || [] ),
 		};
 	},
 	argsToParams: ( idea ) => {
