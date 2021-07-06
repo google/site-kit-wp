@@ -88,7 +88,9 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 	},
 } );
 
-const baseInitialState = {};
+const baseInitialState = {
+	activities: {},
+};
 
 const baseActions = {
 	/**
