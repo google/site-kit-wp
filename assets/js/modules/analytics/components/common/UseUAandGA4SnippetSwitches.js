@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -35,10 +35,19 @@ const { useSelect, useDispatch } = Data;
 export default function UseUAandGA4SnippetSwitches() {
 	const useUASnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const canUseUASnippet = useSelect( ( select ) => select( STORE_NAME ).getCanUseSnippet() );
+
+	const ga4ExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
+	const ga4MeasurementID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID() );
 	const useGA4Snippet = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getUseSnippet() );
 
 	const { setUseSnippet: setUseUASnippet } = useDispatch( STORE_NAME );
 	const { setUseSnippet: setUseGA4Snippet } = useDispatch( MODULES_ANALYTICS_4 );
+
+	useEffect( () => {
+		if ( ga4MeasurementID === ga4ExistingTag ) {
+			setUseGA4Snippet( false );
+		}
+	}, [ ga4ExistingTag, setUseGA4Snippet, ga4MeasurementID ] );
 
 	const onUAChange = useCallback( () => {
 		setUseUASnippet( ! useUASnippet );
