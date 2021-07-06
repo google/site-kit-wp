@@ -22,6 +22,11 @@
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { combineReducers } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -91,6 +96,8 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 const baseInitialState = {
 	activities: {},
 };
+
+const SET_VALUE = 'SET_VALUE';
 
 const baseActions = {
 	/**
@@ -189,18 +196,43 @@ const baseActions = {
 	 *
 	 * @param {string} key   The idea name.
 	 * @param {string} value Store the current activity of the idea, i.e whether a draft is being created or has been created.
-	 * @return {Object} TBD.
+	 * @return {Object} Redux-style action.
 	 */
 	setActivity( key, value ) {
-		return { key, value };
+		invariant( key, 'key is required.' );
+
+		return {
+			payload: { key, value },
+			type: SET_VALUE,
+		};
 	},
 };
+
+export const activitiesReducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case SET_VALUE: {
+			const { key, value } = payload;
+
+			return {
+				...state,
+				[ key ]: value,
+			};
+		}
+
+		default: {
+			return state;
+		}
+	}
+};
+
+export const baseReducer = combineReducers( { activities: activitiesReducer } );
 
 const store = Data.combineStores(
 	fetchPostUpdateIdeaStateStore,
 	{
 		actions: baseActions,
 		initialState: baseInitialState,
+		reducer: baseReducer,
 	}
 );
 
