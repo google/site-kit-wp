@@ -72,6 +72,19 @@ const baseActions = {
 		const { response, error } = yield fetchCreateIdeaDraftPostStore.actions.fetchCreateIdeaDraftPost( idea );
 		return { response, error };
 	},
+
+	/**
+	 * Removes an idea from the list of newIdeas and savedIdeas state variables.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} idea Idea Hub Idea.
+	 * @return {Object} TBD.
+	 */
+	//  * @return {Object} Object with `response` and `error`.
+	removeIdeaFromNewAndSavedIdeas( idea ) {
+		return { idea };
+	},
 };
 
 const store = Data.combineStores(
