@@ -40,7 +40,13 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 		} else {
 			params.dismissed = dismissed;
 		}
-		return API.set( 'modules', 'idea-hub', 'update-idea-state', params );
+
+		return API.set( 'modules', 'idea-hub', 'update-idea-state', params ).then( async ( result ) => {
+			await API.invalidateCache( 'modules', 'idea-hub', 'new-ideas' ).catch( () => {} );
+			await API.invalidateCache( 'modules', 'idea-hub', 'saved-ideas' ).catch( () => {} );
+
+			return result;
+		} );
 	},
 	argsToParams( { name, saved, dismissed } ) {
 		return { name, saved, dismissed };
@@ -48,6 +54,37 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 	validateParams( { name, saved, dismissed } = {} ) {
 		invariant( typeof name === 'string' && name.length > 0, 'name must be a non empty string' );
 		invariant( saved !== undefined || dismissed !== undefined, 'either saved or dimissed property must be set' );
+	},
+	reducerCallback: ( state, idea ) => {
+		if ( idea.dismissed === true ) {
+			return {
+				...state,
+				newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
+			};
+		}
+
+		if ( idea.saved === true ) {
+			const ideaDetails = ( state.newIdeas || [] ).filter( ( { name } ) => name === idea.name );
+
+			if ( ! ideaDetails.length ) {
+				return state;
+			}
+
+			return {
+				...state,
+				newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
+				savedIdeas: [ ...( state.savedIdeas || [] ), ...ideaDetails ],
+			};
+		}
+
+		if ( idea.saved === false ) {
+			return {
+				...state,
+				savedIdeas: ( state.savedIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
+			};
+		}
+
+		return state;
 	},
 } );
 

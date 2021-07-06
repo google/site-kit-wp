@@ -147,6 +147,64 @@ export const multiQuestionSurvey = {
 					],
 				},
 			},
+			{
+				question_ordinal: 3,
+				question_text: 'Another question: how do you feel when it is sunny?',
+				question_type: 'rating',
+				question: {
+					answer_choice: [
+						{
+							answer_ordinal: 1,
+							text: 'Unhappy',
+						},
+						{
+							answer_ordinal: 2,
+							text: 'Dissatisfied',
+						},
+						{
+							answer_ordinal: 3,
+							text: 'Neutral',
+						},
+						{
+							answer_ordinal: 4,
+							text: 'Satisfied',
+						},
+						{
+							answer_ordinal: 5,
+							text: 'Delighted',
+						},
+					],
+				},
+			},
+			{
+				question_ordinal: 4,
+				question_text: 'Another question: how do you feel when it is overcast?',
+				question_type: 'rating',
+				question: {
+					answer_choice: [
+						{
+							answer_ordinal: 1,
+							text: 'Unhappy',
+						},
+						{
+							answer_ordinal: 2,
+							text: 'Dissatisfied',
+						},
+						{
+							answer_ordinal: 3,
+							text: 'Neutral',
+						},
+						{
+							answer_ordinal: 4,
+							text: 'Satisfied',
+						},
+						{
+							answer_ordinal: 5,
+							text: 'Delighted',
+						},
+					],
+				},
+			},
 		],
 	},
 	session: {
