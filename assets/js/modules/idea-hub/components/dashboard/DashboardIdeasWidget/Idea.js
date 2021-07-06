@@ -30,7 +30,6 @@ import { useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import Button from '../../../../../components/Button';
 import { Grid, Cell, Row } from '../../../../../material-components';
@@ -52,35 +51,23 @@ const { useDispatch } = Data;
 const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 	const {
 		createIdeaDraftPost,
-		fetchGetNewIdeas,
-		fetchGetSavedIdeas,
+		saveIdea,
+		unsaveIdea,
 		dismissIdea,
 	} = useDispatch( STORE_NAME );
 	const [ isProcessing, setIsProcessing ] = useState( false );
 
-	const refreshNewSavedIdeas = useCallback( async () => {
-		await API.invalidateCache( 'modules', 'idea-hub', 'new-ideas' );
-		await API.invalidateCache( 'modules', 'idea-hub', 'saved-ideas' );
-		fetchGetNewIdeas();
-		fetchGetSavedIdeas();
-	}, [ fetchGetNewIdeas, fetchGetSavedIdeas ] );
-
 	const handleDelete = useCallback( async () => {
-		setIsProcessing( true );
 		await dismissIdea( name );
-		await refreshNewSavedIdeas();
-		setIsProcessing( false );
-	}, [ name, refreshNewSavedIdeas, dismissIdea ] );
+	}, [ name, dismissIdea ] );
 
-	const handlePin = useCallback( () => {
-		// @TODO: Implement callback.
-		global.console.log( `Pinned: ${ name }` );
-	}, [ name ] );
+	const handlePin = useCallback( async () => {
+		await saveIdea( name );
+	}, [ name, saveIdea ] );
 
-	const handleUnpin = useCallback( () => {
-		// @TODO: Implement callback.
-		global.console.log( `Unpinned: ${ name }` );
-	}, [ name ] );
+	const handleUnpin = useCallback( async () => {
+		await unsaveIdea( name );
+	}, [ name, unsaveIdea ] );
 
 	const handleCreate = useCallback( async () => {
 		setIsProcessing( true );

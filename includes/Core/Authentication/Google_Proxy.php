@@ -455,7 +455,7 @@ class Google_Proxy {
 	/**
 	 * Sends survey trigger ID to the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.35.0
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $access_token Access token.
@@ -482,7 +482,7 @@ class Google_Proxy {
 	/**
 	 * Sends survey event to the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.35.0
 	 *
 	 * @param Credentials     $credentials  Credentials instance.
 	 * @param string          $access_token Access token.

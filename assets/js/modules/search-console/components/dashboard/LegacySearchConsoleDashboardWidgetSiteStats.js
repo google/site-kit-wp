@@ -85,6 +85,9 @@ class LegacySearchConsoleDashboardWidgetSiteStats extends Component {
 				minorGridlines: {
 					color: '#eee',
 				},
+				viewWindow: {
+					min: 0,
+				},
 			},
 		};
 

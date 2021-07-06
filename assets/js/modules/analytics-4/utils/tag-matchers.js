@@ -19,29 +19,29 @@
 /**
  * Returns GA4 tag matchers.
  *
- * @since n.e.x.t
+ * @since 1.35.0
  *
  * @return {Array.<RegExp>} Array of RegExp objects.
  */
 export function getTagMatchers() {
 	const tagMatchers = [
-		/__gaTracker\s*\(\s*['|"]create['|"]\s*,\s*['|"]G-([a-zA-Z0-9]+)['|"], ?['|"]auto['|"]\s*\)/i,
-		/_gaq\.push\s*\(\s*\[\s*['|"][^_]*_setAccount['|"]\s*,\s*['|"]G-([a-zA-Z0-9]+)['|"]\s*],?\s*\)/i,
-		/<amp-analytics\s+[^>]*type="gtag"[^>]*>[^<]*<script\s+type="application\/json">[^<]*"gtag_id"\s*:\s*"G-([a-zA-Z0-9]+)"/i,
-		/<amp-analytics\s+[^>]*type="googleanalytics"[^>]*>[^<]*<script\s+type="application\/json">[^<]*"account"\s*:\s*"G-([a-zA-Z0-9]+)"/i,
+		/__gaTracker\s*\(\s*['|"]create['|"]\s*,\s*['|"](G-[a-zA-Z0-9]+)['|"], ?['|"]auto['|"]\s*\)/i,
+		/_gaq\.push\s*\(\s*\[\s*['|"][^_]*_setAccount['|"]\s*,\s*['|"](G-[a-zA-Z0-9]+)['|"]\s*],?\s*\)/i,
+		/<amp-analytics\s+[^>]*type="gtag"[^>]*>[^<]*<script\s+type="application\/json">[^<]*"gtag_id"\s*:\s*"(G-[a-zA-Z0-9]+)"/i,
+		/<amp-analytics\s+[^>]*type="googleanalytics"[^>]*>[^<]*<script\s+type="application\/json">[^<]*"account"\s*:\s*"(G-[a-zA-Z0-9]+)"/i,
 	];
 
 	for ( const subdomain of [ '', 'www\\.' ] ) {
 		tagMatchers.push(
-			new RegExp( `<script\\s+[^>]*src=['|"]https?://${ subdomain }googletagmanager\\.com/gtag/js\\?id=G-([a-zA-Z0-9]+)['|"][^>]*></script>`, 'i' ),
-			new RegExp( `<script\\s+[^>]*src=['|"]https?://${ subdomain }googletagmanager\\.com/gtag/js\\?id=G-([a-zA-Z0-9]+)['|"][^/]*/>`, 'i' ),
+			new RegExp( `<script\\s+[^>]*src=['|"]https?://${ subdomain }googletagmanager\\.com/gtag/js\\?id=(G-[a-zA-Z0-9]+)['|"][^>]*></script>`, 'i' ),
+			new RegExp( `<script\\s+[^>]*src=['|"]https?://${ subdomain }googletagmanager\\.com/gtag/js\\?id=(G-[a-zA-Z0-9]+)['|"][^/]*/>`, 'i' ),
 		);
 	}
 
 	for ( const func of [ '__gaTracker', 'ga', 'gtag' ] ) {
 		tagMatchers.push(
-			new RegExp( `${ func }\\s*\\(\\s*['|"]create['|"]\\s*,\\s*['|"]G-([a-zA-Z0-9]+)['|"],\\s*['|"]auto['|"]\\s*\\)`, 'i' ),
-			new RegExp( `${ func }\\s*\\(\\s*['|"]config['|"]\\s*,\\s*['|"]G-([a-zA-Z0-9]+)['|"]\\s*\\)`, 'i' ),
+			new RegExp( `${ func }\\s*\\(\\s*['|"]create['|"]\\s*,\\s*['|"](G-[a-zA-Z0-9]+)['|"],\\s*['|"]auto['|"]\\s*\\)`, 'i' ),
+			new RegExp( `${ func }\\s*\\(\\s*['|"]config['|"]\\s*,\\s*['|"](G-[a-zA-Z0-9]+)['|"]\\s*\\)`, 'i' ),
 		);
 	}
 

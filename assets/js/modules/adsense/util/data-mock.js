@@ -36,7 +36,7 @@ const METRIC_TALLY = 'METRIC_TALLY';
 const METRIC_CURRENCY = 'METRIC_CURRENCY';
 
 const ADSENSE_METRIC_TYPES = {
-	EARNINGS: METRIC_CURRENCY,
+	TOTAL_EARNINGS: METRIC_CURRENCY,
 	PAGE_VIEWS_RPM: METRIC_CURRENCY,
 	IMPRESSIONS: METRIC_TALLY,
 	PAGE_VIEWS_CTR: METRIC_RATIO,
@@ -46,7 +46,7 @@ class DataFactory {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 */
 	constructor() {
 		this.metricMemory = {};
@@ -55,7 +55,7 @@ class DataFactory {
 	/**
 	 * Generates and returns report headers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param {Array.<string>} metrics    Metrics list.
 	 * @param {Array.<string>} dimensions Dimensions list.
@@ -87,7 +87,7 @@ class DataFactory {
 	/**
 	 * Generates and returns metric values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param {string}         date    The current date.
 	 * @param {Array.<string>} metrics Metrics list.
@@ -151,7 +151,7 @@ class DataFactory {
 	/**
 	 * Generates and returns dimension values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param {string}         date       The current date.
 	 * @param {Array.<string>} dimensions Dimensions list.
@@ -175,7 +175,7 @@ class DataFactory {
 /**
  * Generates mock data for AdSense reports.
  *
- * @since n.e.x.t
+ * @since 1.36.0
  *
  * @param {Object} args Report options.
  * @return {Array.<Object>} An array with generated report.
@@ -249,7 +249,7 @@ export function getAdSenseMockResponse( args ) {
 /**
  * Generates mock response for AdSense reports.
  *
- * @since n.e.x.t
+ * @since 1.36.0
  *
  * @param {wp.data.registry} registry Registry with all available stores registered.
  * @param {Object}           options  Report options.
