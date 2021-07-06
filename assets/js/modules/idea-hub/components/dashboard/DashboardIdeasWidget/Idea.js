@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useState, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -50,7 +50,7 @@ import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
 
 const DRAFT_CREATED_TIMER = 2000;
 
-const { useDispatch } = Data;
+const { useDispatch, useSelect } = Data;
 
 const Idea = ( idea ) => {
 	const { postEditURL, name, text, topics, buttons } = idea;
@@ -64,6 +64,8 @@ const Idea = ( idea ) => {
 		removeIdeaFromNewAndSavedIdeas,
 	} = useDispatch( STORE_NAME );
 	const [ isProcessing, setIsProcessing ] = useState( false );
+	const activity = useSelect( ( select ) => select( STORE_NAME ).getActivity( name ) );
+	console.log( 'activity ', activity );
 
 	const handleDelete = useCallback( async () => {
 		await dismissIdea( name );
@@ -107,45 +109,50 @@ const Idea = ( idea ) => {
 					<p className="googlesitekit-idea-hub__idea--text">{ text }</p>
 				</Cell>
 				<Cell smSize={ 4 } mdSize={ 3 } lgSize={ 3 } className="googlesitekit-idea-hub__idea--actions">
-					{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
-						<Button
-							onClick={ handleDelete }
-							icon={ <DeleteIcon /> }
-							className="googlesitekit-idea-hub__actions--delete"
-							disabled={ isProcessing }
-						/>
-					) }
+					{ activity !== IDEA_HUB_ACTIVITY_CREATING_DRAFT && (
+						<Fragment>
 
-					{ buttons.includes( IDEA_HUB_BUTTON_PIN ) && (
-						<Button
-							onClick={ handlePin }
-							icon={ <PinIcon /> }
-							className="googlesitekit-idea-hub__actions--pin"
-							disabled={ isProcessing }
-						/>
-					) }
+							{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
+								<Button
+									onClick={ handleDelete }
+									icon={ <DeleteIcon /> }
+									className="googlesitekit-idea-hub__actions--delete"
+									disabled={ isProcessing }
+								/>
+							) }
 
-					{ buttons.includes( IDEA_HUB_BUTTON_UNPIN ) && (
-						<Button
-							onClick={ handleUnpin }
-							icon={ <UnpinIcon /> }
-							className="googlesitekit-idea-hub__actions--unpin"
-							disabled={ isProcessing }
-						/>
-					) }
+							{ buttons.includes( IDEA_HUB_BUTTON_PIN ) && (
+								<Button
+									onClick={ handlePin }
+									icon={ <PinIcon /> }
+									className="googlesitekit-idea-hub__actions--pin"
+									disabled={ isProcessing }
+								/>
+							) }
 
-					{ buttons.includes( IDEA_HUB_BUTTON_CREATE ) && (
-						<Button
-							onClick={ handleCreate }
-							icon={ <CreateIcon /> }
-							disabled={ isProcessing }
-						/>
-					) }
+							{ buttons.includes( IDEA_HUB_BUTTON_UNPIN ) && (
+								<Button
+									onClick={ handleUnpin }
+									icon={ <UnpinIcon /> }
+									className="googlesitekit-idea-hub__actions--unpin"
+									disabled={ isProcessing }
+								/>
+							) }
 
-					{ buttons.includes( IDEA_HUB_BUTTON_VIEW ) && postEditURL && (
-						<Button href={ postEditURL } className="googlesitekit-idea-hub__actions--view">
-							{ __( 'View draft', 'google-site-kit' ) }
-						</Button>
+							{ buttons.includes( IDEA_HUB_BUTTON_CREATE ) && (
+								<Button
+									onClick={ handleCreate }
+									icon={ <CreateIcon /> }
+									disabled={ isProcessing }
+								/>
+							) }
+
+							{ buttons.includes( IDEA_HUB_BUTTON_VIEW ) && postEditURL && (
+								<Button href={ postEditURL } className="googlesitekit-idea-hub__actions--view">
+									{ __( 'View draft', 'google-site-kit' ) }
+								</Button>
+							) }
+						</Fragment>
 					) }
 				</Cell>
 			</Row>
