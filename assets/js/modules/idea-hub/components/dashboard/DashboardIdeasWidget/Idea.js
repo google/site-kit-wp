@@ -48,15 +48,20 @@ import CreateIcon from '../../../../../../svg/idea-hub-create.svg';
 import PinIcon from '../../../../../../svg/idea-hub-pin.svg';
 import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
 
+const DRAFT_CREATED_TIMER = 2000;
+
 const { useDispatch } = Data;
 
-const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
+const Idea = ( idea ) => {
+	const { postEditURL, name, text, topics, buttons } = idea;
 	const {
 		createIdeaDraftPost,
 		saveIdea,
 		unsaveIdea,
 		dismissIdea,
 		setActivity,
+		removeActivity,
+		removeIdeaFromNewAndSavedIdeas,
 	} = useDispatch( STORE_NAME );
 	const [ isProcessing, setIsProcessing ] = useState( false );
 
@@ -81,12 +86,13 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 
 		await setActivity( name, IDEA_HUB_ACTIVITY_DRAFT_CREATED );
 
-		// After another 2 seconds,
-		// dispatch the removeActivity action
-		// then dispatchg  removeIdeaFromNewAndSavedIdeas
+		setTimeout( () => {
+			removeActivity( name );
+			removeIdeaFromNewAndSavedIdeas( idea );
+		}, DRAFT_CREATED_TIMER );
 
 		setIsProcessing( false );
-	}, [ name, text, topics, createIdeaDraftPost, setActivity ] );
+	}, [ idea, removeActivity, removeIdeaFromNewAndSavedIdeas, createIdeaDraftPost, name, text, topics, setActivity ] );
 
 	return (
 		<Grid className="googlesitekit-idea-hub__idea--single">
