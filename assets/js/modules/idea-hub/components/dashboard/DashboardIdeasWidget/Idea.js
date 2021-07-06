@@ -40,6 +40,7 @@ import {
 	IDEA_HUB_BUTTON_UNPIN,
 	IDEA_HUB_BUTTON_DELETE,
 	IDEA_HUB_BUTTON_VIEW,
+	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
 } from '../../../datastore/constants';
 import DeleteIcon from '../../../../../../svg/idea-hub-delete.svg';
 import CreateIcon from '../../../../../../svg/idea-hub-create.svg';
@@ -54,6 +55,7 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 		saveIdea,
 		unsaveIdea,
 		dismissIdea,
+		setActivity,
 	} = useDispatch( STORE_NAME );
 	const [ isProcessing, setIsProcessing ] = useState( false );
 
@@ -71,9 +73,18 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 
 	const handleCreate = useCallback( async () => {
 		setIsProcessing( true );
+
+		await setActivity( name, IDEA_HUB_ACTIVITY_CREATING_DRAFT );
+
 		await createIdeaDraftPost( { name, text, topics } );
+		// call setActivity with the value set to ACTIVITY_DRAFT_CREATED and idea name as key.
+
+		// After another 2 seconds,
+		// dispatch the removeActivity action
+		// then dispatchg  removeIdeaFromNewAndSavedIdeas
+
 		setIsProcessing( false );
-	}, [ name, text, topics, createIdeaDraftPost ] );
+	}, [ name, text, topics, createIdeaDraftPost, setActivity ] );
 
 	return (
 		<Grid className="googlesitekit-idea-hub__idea--single">
