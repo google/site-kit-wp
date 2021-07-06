@@ -42,8 +42,6 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 		return {
 			...state,
 			draftPostIdeas: [ ...( state.draftPostIdeas || [] ), ideaDraftPost ],
-			newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== ideaDraftPost.name ),
-			savedIdeas: ( state.savedIdeas || [] ).filter( ( { name } ) => name !== ideaDraftPost.name ),
 		};
 	},
 	argsToParams: ( idea ) => {
