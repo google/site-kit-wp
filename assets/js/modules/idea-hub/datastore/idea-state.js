@@ -256,12 +256,30 @@ export const activitiesReducer = ( state, { type, payload } ) => {
 
 export const baseReducer = combineReducers( { activities: activitiesReducer } );
 
+export const baseSelectors = {
+	/**
+	 * Gets the existing activity by key.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} key   Get data stored in this key.
+	 * @return {*} Value stored in state by key. Returns `undefined` if key isn't found.
+	 */
+	getActivity( state, key ) {
+		// TODO - should this be chained up by depending on an existing selector?
+		return state.activities[ key ];
+	},
+};
+
 const store = Data.combineStores(
 	fetchPostUpdateIdeaStateStore,
 	{
 		actions: baseActions,
 		initialState: baseInitialState,
 		reducer: baseReducer,
+		selectors: baseSelectors,
 	}
 );
 
