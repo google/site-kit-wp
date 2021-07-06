@@ -29,6 +29,8 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
+const REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS = 'REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS';
+
 const fetchCreateIdeaDraftPostStore = createFetchStore( {
 	baseName: 'createIdeaDraftPost',
 	controlCallback: async ( { idea } ) => {
@@ -81,18 +83,40 @@ const baseActions = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} idea Idea Hub Idea.
-	 * @return {Object} TBD.
+	 * @return {Object} Redux-style action.
 	 */
-	//  * @return {Object} Object with `response` and `error`.
 	removeIdeaFromNewAndSavedIdeas( idea ) {
-		return { idea };
+		invariant( idea, 'idea is required.' );
+
+		return {
+			payload: { idea },
+			type: REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS,
+		};
 	},
+};
+
+export const baseReducer = ( state, { type, payload } ) => {
+	const { idea } = payload;
+	switch ( type ) {
+		case REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS: {
+			return {
+				...state,
+				newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
+				savedIdeas: ( state.savedIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
+			};
+		}
+
+		default: {
+			return state;
+		}
+	}
 };
 
 const store = Data.combineStores(
 	fetchCreateIdeaDraftPostStore,
 	{
 		actions: baseActions,
+		reducer: baseReducer,
 	}
 );
 
