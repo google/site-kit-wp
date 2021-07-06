@@ -24,7 +24,7 @@ import {
 	muteFetch,
 } from '../../../../../tests/js/utils';
 import { createCacheKey } from '../../api';
-import { setItem } from '../../api/cache';
+import { setItem, setSelectedStorageBackend } from '../../api/cache';
 import { STORE_NAME } from './constants';
 
 describe( 'core/user surveys', () => {
@@ -97,6 +97,26 @@ describe( 'core/user surveys', () => {
 				await registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey' );
 
 				expect( fetchMock ).not.toHaveFetched();
+			} );
+
+			it( 'should cache survey for provided ttl', async () => {
+				let ttl;
+				const triggerID = 'optimizeSurvey';
+
+				setSelectedStorageBackend( {
+					getItem: () => undefined,
+					setItem: ( _, options ) => {
+						try {
+							ttl = JSON.parse( options )?.ttl;
+						} catch {
+						}
+					},
+				} );
+
+				fetchMock.postOnce( surveyTriggerEndpoint, { body: { triggerID } } );
+
+				await registry.dispatch( STORE_NAME ).triggerSurvey( triggerID, { ttl: 500 } );
+				expect( ttl ).toBe( 500 );
 			} );
 		} );
 
