@@ -79,7 +79,7 @@ const loadIdeaHubNotices = async ( _global = global ) => {
 		const postMeta = wp.data.select( 'core/editor' ).getEditedPostAttribute( 'meta' );
 
 		// eslint-disable-next-line camelcase
-		if ( postMeta?.googlesitekitpersistent_idea_text ) {
+		if ( postMeta?.googlesitekitpersistent_idea_text && ! shownNotices.includes( noticeKey ) ) {
 			wp.data.dispatch( 'core/notices' ).createInfoNotice(
 				sprintf(
 					/* translators: %s: Idea post name */
