@@ -24,6 +24,7 @@ import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
@@ -90,7 +91,64 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				expect( registry.stores[ STORE_NAME ].store.getState().data ).toEqual( undefined );
 			} );
 		} );
-		// removeIdeaFromNewAndSavedIdeas
+		describe( 'removeIdeaFromNewAndSavedIdeas', () => {
+			const options = {
+				offset: 0,
+				length: 5,
+			};
+			it( 'creates and returns an idea post as a response', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
+					{ body: fixtures.newIdeas, status: 200 }
+				);
+				// fetchMock.getOnce(
+				// 	/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
+				// 	{ body: fixtures.savedIdeas, status: 200 }
+				// )
+				registry.select( STORE_NAME ).getNewIdeas( options );
+
+				await untilResolved( registry, STORE_NAME ).getNewIdeas( options );
+
+				expect( registry.stores[ STORE_NAME ].store.getState().draftPostIdeas ).toEqual( undefined );
+
+				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual( fixtures.newIdeas );
+				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual(
+					expect.arrayContaining( [
+						{
+							name: 'ideas/7612031899179595408',
+							text: 'How to speed up your WordPress site',
+							topics: [
+								{
+									mid: '/m/09kqc',
+									display_name: 'Websites',
+								},
+							],
+						},
+					] )
+				);
+				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual( undefined );
+
+				registry.dispatch( STORE_NAME ).removeIdeaFromNewAndSavedIdeas( fixtures.draftIdeas.idea );
+
+				// expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual( fixtures.newIdeas );
+				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).not.toEqual(
+					expect.arrayContaining( [
+						{
+							name: 'ideas/7612031899179595408',
+							text: 'How to speed up your WordPress site',
+							topics: [
+								{
+									mid: '/m/09kqc',
+									display_name: 'Websites',
+								},
+							],
+						},
+					] )
+				);
+				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual( [] );
+			} );
+		} );
+
 		// test whole flow. state after. actions dispatched. etc
 	} );
 } );
