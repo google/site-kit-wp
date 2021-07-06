@@ -65,11 +65,8 @@ const loadIdeaHubNotices = async ( _global = global ) => {
 		// We've already shown this notice, so when it's hidden, mark it as shown
 		// so it doesn't appear again.
 		if ( shownNotices.includes( noticeKey ) ) {
-			setItem(
-				noticeKey,
-				postMeta.googlesitekitpersistent_idea_text,
-				{ ttl: 108000 } // Don't show this notice for another 90 days.
-			);
+			// Don't show this notice for another 90 days.
+			setItem( noticeKey, true, { ttl: 108000 } );
 			unsubscribeFromListener();
 			return;
 		}
