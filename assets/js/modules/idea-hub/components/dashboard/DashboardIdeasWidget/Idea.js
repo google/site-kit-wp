@@ -41,6 +41,7 @@ import {
 	IDEA_HUB_BUTTON_DELETE,
 	IDEA_HUB_BUTTON_VIEW,
 	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
+	IDEA_HUB_ACTIVITY_DRAFT_CREATED,
 } from '../../../datastore/constants';
 import DeleteIcon from '../../../../../../svg/idea-hub-delete.svg';
 import CreateIcon from '../../../../../../svg/idea-hub-create.svg';
@@ -77,7 +78,8 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 		await setActivity( name, IDEA_HUB_ACTIVITY_CREATING_DRAFT );
 
 		await createIdeaDraftPost( { name, text, topics } );
-		// call setActivity with the value set to ACTIVITY_DRAFT_CREATED and idea name as key.
+
+		await setActivity( name, IDEA_HUB_ACTIVITY_DRAFT_CREATED );
 
 		// After another 2 seconds,
 		// dispatch the removeActivity action
