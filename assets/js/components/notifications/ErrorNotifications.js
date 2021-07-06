@@ -24,16 +24,24 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import Notification from '../legacy-notifications/notification';
 import AuthError from './AuthError';
 import UnsatisfiedScopesAlert from './UnsatisfiedScopesAlert';
-import InternalServerError from './InternalServerError';
+const { useSelect } = Data;
 
 export default function ErrorNotifications() {
+	const internalServerError = useSelect( ( select ) => select( CORE_SITE ).getInternalServerError() );
+
 	return (
 		<Fragment>
+			{ internalServerError && (
+				<Notification { ...internalServerError } />
+			) }
+
 			<AuthError />
 			<UnsatisfiedScopesAlert />
-			<InternalServerError />
 		</Fragment>
 	);
 }

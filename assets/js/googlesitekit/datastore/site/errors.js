@@ -46,18 +46,23 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} internalServerError Internal server error object.
+	 * @param {Object} error             Internal server error object.
+	 * @param {string} error.id          Error notification ID.
+	 * @param {string} [error.title]     Optional. Error notification title. Default is "Internal Server Error".
+	 * @param {string} error.description Error notification message.
+	 * @param {string} [error.format]    Optional. Error notification format. Valid values "small" and "large". Default is "small".
+	 * @param {string} [error.type]      Optional. Error notification type. Valid values "win-warning" and "win-error". Default is "win-error".
 	 * @return {Object} Redux-style action.
 	 */
-	setInternalServerError( internalServerError ) {
-		invariant( isPlainObject( internalServerError ), 'internalServerError is required.' );
+	setInternalServerError( error ) {
+		invariant( isPlainObject( error ), 'internalServerError must be a plain object.' );
 
 		const {
 			title = __( 'Internal Server Error', 'google-site-kit' ),
 			format = 'small',
 			type = 'win-error',
 			...props
-		} = internalServerError;
+		} = error;
 
 		return {
 			type: SET_SERVER_ERROR,

@@ -41,10 +41,16 @@ describe( 'core/site errors', () => {
 
 	describe( 'actions', () => {
 		describe( 'setInternalServerError', () => {
-			it( 'should require the internalServerError param to be a plain object', () => {
+			it( 'should throw an exception if the error param is not a plain object', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).setInternalServerError();
-				} ).toThrow( 'internalServerError is required.' );
+					registry.dispatch( STORE_NAME ).setInternalServerError( null );
+				} ).toThrow( 'internalServerError must be a plain object.' );
+			} );
+
+			it( 'should require a plain object to be passed', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).setInternalServerError( new Error() );
+				} ).toThrow( 'internalServerError must be a plain object.' );
 			} );
 
 			it( 'should set the error to the state', () => {
