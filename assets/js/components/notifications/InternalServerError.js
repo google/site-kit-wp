@@ -1,5 +1,5 @@
 /**
- * ErrorNotifications component.
+ * InternalServerError component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,23 +17,18 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import AuthError from './AuthError';
-import UnsatisfiedScopesAlert from './UnsatisfiedScopesAlert';
-import InternalServerError from './InternalServerError';
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import Notification from '../legacy-notifications/notification';
+const { useSelect } = Data;
 
-export default function ErrorNotifications() {
-	return (
-		<Fragment>
-			<InternalServerError />
-			<AuthError />
-			<UnsatisfiedScopesAlert />
-		</Fragment>
-	);
+export default function InternalServerError() {
+	const error = useSelect( ( select ) => select( CORE_SITE ).getInternalServerError() );
+	if ( ! error ) {
+		return null;
+	}
+
+	return <Notification { ...error } />;
 }
