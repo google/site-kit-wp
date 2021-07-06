@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useEffectOnce } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
@@ -26,13 +31,14 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { getModulesData } from '../../util';
 import { isInsufficientPermissionsError } from '../../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../../util/insufficient-permissions-error-description';
 import ErrorText from '../ErrorText';
 import CTA from './cta';
 import ctaWrapper from './cta-wrapper';
-const { dispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 /**
  * Creates a CTA component when there's a data error. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
@@ -63,17 +69,28 @@ function getDataErrorComponent( moduleSlug, errorMessage, inGrid = false, fullWi
 
 	const reconnectURL = errorObj?.data?.reconnectURL;
 	const description = reconnectURL ? <ErrorText message={ message } reconnectURL={ reconnectURL } /> : message;
-	const cta = <CTA title={ title } description={ description } error />;
+
+	let cta = <CTA title={ title } description={ description } error />;
 
 	// This is to handle token expired error specifically.
 	if ( 'Invalid Credentials' === errorMessage ) {
-		dispatch( CORE_SITE ).setInternalServerError( {
-			id: 'token-notification',
-			title: __( 'Security Token Error', 'google-site-kit' ),
-			description: __( 'We’re unable to retrieve your data because your security token is expired or revoked.', 'google-site-kit' ),
-			learnMoreURL: global._googlesitekitLegacyData.admin.connectURL,
-			learnMoreLabel: __( 'Please reauthenticate your account', 'google-site-kit' ),
-		} );
+		const CTAWithErrorEffect = () => {
+			const connectURL = useSelect( ( select ) => select( CORE_USER ).getConnectURL() );
+			const { setInternalServerError } = useDispatch( CORE_SITE );
+			useEffectOnce( () => {
+				setInternalServerError( {
+					id: 'token-notification',
+					title: __( 'Security Token Error', 'google-site-kit' ),
+					description: __( 'We’re unable to retrieve your data because your security token is expired or revoked.', 'google-site-kit' ),
+					learnMoreURL: connectURL,
+					learnMoreLabel: __( 'Please reauthenticate your account', 'google-site-kit' ),
+				} );
+			} );
+
+			return cta;
+		};
+
+		cta = <CTAWithErrorEffect />;
 	}
 
 	return ctaWrapper( cta, inGrid, fullWidth, createGrid );
