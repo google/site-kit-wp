@@ -31,8 +31,12 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 
 const fetchCreateIdeaDraftPostStore = createFetchStore( {
 	baseName: 'createIdeaDraftPost',
-	controlCallback: ( { idea } ) => {
-		return API.set( 'modules', 'idea-hub', 'create-idea-draft-post', { idea } );
+	controlCallback: async ( { idea } ) => {
+		const result = await API.set( 'modules', 'idea-hub', 'create-idea-draft-post', { idea } );
+
+		API.invalidateCache( 'modules', 'idea-hub', 'draft-post-ideas' );
+
+		return result;
 	},
 	reducerCallback: ( state, ideaDraftPost ) => {
 		return {
