@@ -97,7 +97,8 @@ const baseInitialState = {
 	activities: {},
 };
 
-const SET_VALUE = 'SET_VALUE';
+const SET_ACTIVITY = 'SET_ACTIVITY';
+const REMOVE_ACTIVITY = 'REMOVE_ACTIVITY';
 
 const baseActions = {
 	/**
@@ -203,14 +204,31 @@ const baseActions = {
 
 		return {
 			payload: { key, value },
-			type: SET_VALUE,
+			type: SET_ACTIVITY,
+		};
+	},
+
+	/**
+	 * Removes an actvity.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} key The idea name.
+	 * @return {Object} Redux-style action.
+	 */
+	removeActivity( key ) {
+		invariant( key, 'key is required.' );
+
+		return {
+			payload: { key },
+			type: REMOVE_ACTIVITY,
 		};
 	},
 };
 
 export const activitiesReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_VALUE: {
+		case SET_ACTIVITY: {
 			const { key, value } = payload;
 
 			return {
