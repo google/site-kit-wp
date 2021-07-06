@@ -96,15 +96,11 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				offset: 0,
 				length: 5,
 			};
-			it( 'creates and returns an idea post as a response', async () => {
+			it( 'removes idea from newIdeas if exists', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
 					{ body: fixtures.newIdeas, status: 200 }
 				);
-				// fetchMock.getOnce(
-				// 	/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-				// 	{ body: fixtures.savedIdeas, status: 200 }
-				// )
 				registry.select( STORE_NAME ).getNewIdeas( options );
 
 				await untilResolved( registry, STORE_NAME ).getNewIdeas( options );
@@ -114,41 +110,49 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual( fixtures.newIdeas );
 				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual(
 					expect.arrayContaining( [
-						{
-							name: 'ideas/7612031899179595408',
-							text: 'How to speed up your WordPress site',
-							topics: [
-								{
-									mid: '/m/09kqc',
-									display_name: 'Websites',
-								},
-							],
-						},
+						fixtures.draftIdeas.idea,
 					] )
 				);
 				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual( undefined );
 
 				registry.dispatch( STORE_NAME ).removeIdeaFromNewAndSavedIdeas( fixtures.draftIdeas.idea );
 
-				// expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual( fixtures.newIdeas );
 				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).not.toEqual(
 					expect.arrayContaining( [
-						{
-							name: 'ideas/7612031899179595408',
-							text: 'How to speed up your WordPress site',
-							topics: [
-								{
-									mid: '/m/09kqc',
-									display_name: 'Websites',
-								},
-							],
-						},
+						fixtures.draftIdeas.idea,
 					] )
 				);
 				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual( [] );
 			} );
-		} );
+			it( 'removes idea from savedIdeas if exists', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
+					{ body: fixtures.savedIdeas, status: 200 }
+				);
+				registry.select( STORE_NAME ).getSavedIdeas( options );
 
-		// test whole flow. state after. actions dispatched. etc
+				await untilResolved( registry, STORE_NAME ).getSavedIdeas( options );
+
+				expect( registry.stores[ STORE_NAME ].store.getState().draftPostIdeas ).toEqual( undefined );
+
+				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual( undefined );
+
+				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual( fixtures.savedIdeas );
+				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual(
+					expect.arrayContaining( [
+						fixtures.draftIdeas.idea,
+					] )
+				);
+
+				registry.dispatch( STORE_NAME ).removeIdeaFromNewAndSavedIdeas( fixtures.draftIdeas.idea );
+
+				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).not.toEqual(
+					expect.arrayContaining( [
+						fixtures.draftIdeas.idea,
+					] )
+				);
+				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual( [] );
+			} );
+		} );
 	} );
 } );
