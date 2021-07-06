@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { pick } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -235,6 +236,16 @@ export const activitiesReducer = ( state, { type, payload } ) => {
 				...state,
 				[ key ]: value,
 			};
+		}
+
+		case REMOVE_ACTIVITY: {
+			const { key } = payload;
+
+			const keysToLeave = Object.keys( state ).filter( ( k ) => k !== key );
+
+			const remainingKeys = pick( state, keysToLeave );
+
+			return remainingKeys;
 		}
 
 		default: {
