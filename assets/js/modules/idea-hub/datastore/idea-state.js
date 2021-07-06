@@ -181,6 +181,19 @@ const baseActions = {
 
 		return { response, error };
 	},
+
+	/**
+	 * Sets an actvity.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} key   The idea name.
+	 * @param {string} value Store the current activity of the idea, i.e whether a draft is being created or has been created.
+	 * @return {Object} TBD.
+	 */
+	setActivity( key, value ) {
+		return { key, value };
+	},
 };
 
 const store = Data.combineStores(
