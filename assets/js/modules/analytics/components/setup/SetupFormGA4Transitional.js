@@ -27,7 +27,7 @@ import { Fragment, useEffect } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { STORE_NAME, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 } from '../../datastore/constants';
+import { STORE_NAME, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4, PROPERTY_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import {
@@ -51,6 +51,7 @@ export default function SetupFormGA4Transitional() {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 
+	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 	const ga4ExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
 	const ga4MeasurementID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID() );
 
@@ -100,7 +101,7 @@ export default function SetupFormGA4Transitional() {
 				</div>
 			) }
 
-			<GA4PropertyNotice notice={ notice }>
+			{ ( propertyID || ga4PropertyID ) && ( ga4PropertyID !== PROPERTY_CREATE ) && <GA4PropertyNotice notice={ notice }>
 				{ propertyType === PROPERTY_TYPE_GA4 && (
 					<Fragment>
 						<div className="googlesitekit-setup-module__inputs">
@@ -120,7 +121,7 @@ export default function SetupFormGA4Transitional() {
 						<GA4PropertySelect />
 					</div>
 				) }
-			</GA4PropertyNotice>
+			</GA4PropertyNotice> }
 		</Fragment>
 	);
 }

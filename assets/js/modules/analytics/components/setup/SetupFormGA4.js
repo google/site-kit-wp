@@ -42,6 +42,7 @@ const { useSelect, useDispatch } = Data;
 export default function SetupFormGA4() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 
+	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 	const ga4HasExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).hasExistingTag() );
 	const ga4ExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
 	const ga4MeasurementID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID() );
@@ -77,9 +78,9 @@ export default function SetupFormGA4() {
 				<GA4PropertySelect />
 			</div>
 
-			<GA4PropertyNotice
+			{ ga4PropertyID && ( ga4PropertyID !== PROPERTY_CREATE ) && <GA4PropertyNotice
 				notice={ __( 'An associated Universal Analytics property will also be created.', 'google-site-kit' ) }
-			/>
+			/> }
 		</Fragment>
 	);
 }
