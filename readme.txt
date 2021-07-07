@@ -92,7 +92,7 @@ If you have some ideas to improve the plugin or to solve a bug, feel free to rai
 
 **Enhanced**
 
-* Enhance experience for sites with UA Analytics already configured before GA4 is enabled. Props bethanylang. See [#3586](https://github.com/google/site-kit-wp/issues/3586).
+* Enhance experience for sites with UA Analytics already configured before GA4 is enabled. See [#3586](https://github.com/google/site-kit-wp/issues/3586).
 * Implement Idea Hub datastore infrastructure for saving and dismissing an idea. See [#3556](https://github.com/google/site-kit-wp/issues/3556).
 * Display measurement ID for Google Analytics 4 property in Settings. See [#3545](https://github.com/google/site-kit-wp/issues/3545).
 * Update text in some Google Analytics 4 notices. See [#3544](https://github.com/google/site-kit-wp/issues/3544).
@@ -113,7 +113,7 @@ If you have some ideas to improve the plugin or to solve a bug, feel free to rai
 
 * Fix potential React error when using Google Translate and then changing the date range in a Site Kit admin screen. See [#3636](https://github.com/google/site-kit-wp/issues/3636).
 * Fix a bug where GA4 settings were not cleared when deactivating Analytics. See [#3616](https://github.com/google/site-kit-wp/issues/3616).
-* Fix AMP validation error caused by the GA opt-out snippet conditionally placed by Site Kit. Props LuckynaSan. See [#3572](https://github.com/google/site-kit-wp/issues/3572).
+* Fix AMP validation error caused by the GA opt-out snippet conditionally placed by Site Kit. See [#3572](https://github.com/google/site-kit-wp/issues/3572).
 * Ensure account and property are preselected during setup when user has a matching GA4 property only. See [#3543](https://github.com/google/site-kit-wp/issues/3543).
 * Update Analytics account creation to ensure a GA4 property is always created when GA4 is enabled. See [#3539](https://github.com/google/site-kit-wp/issues/3539).
 * Fix an infinite loading state when attempting to create a new Analytics account with GA4. See [#3537](https://github.com/google/site-kit-wp/issues/3537).

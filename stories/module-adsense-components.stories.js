@@ -38,7 +38,7 @@ const dashboardSummaryOptions = [
 		startDate: '2020-07-18',
 		endDate: '2020-08-14',
 		metrics: [
-			'TOTAL_EARNINGS',
+			'ESTIMATED_EARNINGS',
 			'PAGE_VIEWS_RPM',
 			'IMPRESSIONS',
 		],
@@ -48,7 +48,7 @@ const dashboardSummaryOptions = [
 		startDate: '2020-08-15',
 		endDate: '2020-09-11',
 		metrics: [
-			'TOTAL_EARNINGS',
+			'ESTIMATED_EARNINGS',
 			'PAGE_VIEWS_RPM',
 			'IMPRESSIONS',
 		],
@@ -58,7 +58,7 @@ const dashboardSummaryOptions = [
 		startDate: '2020-08-15',
 		endDate: '2020-09-11',
 		metrics: [
-			'TOTAL_EARNINGS',
+			'ESTIMATED_EARNINGS',
 			'PAGE_VIEWS_RPM',
 			'IMPRESSIONS',
 		],
@@ -108,7 +108,7 @@ const topEarningPagesArgs = {
 const getCurrencyFromReportOptions = {
 	startDate: '2020-08-15',
 	endDate: '2020-09-11',
-	metrics: 'TOTAL_EARNINGS',
+	metrics: 'ESTIMATED_EARNINGS',
 };
 
 generateReportBasedWidgetStories( {
@@ -172,7 +172,7 @@ generateReportBasedWidgetStories( {
 	...generateAdSenseData( [
 		{
 			metrics: [
-				'TOTAL_EARNINGS',
+				'ESTIMATED_EARNINGS',
 				'PAGE_VIEWS_RPM',
 				'IMPRESSIONS',
 				'PAGE_VIEWS_CTR',
@@ -185,7 +185,7 @@ generateReportBasedWidgetStories( {
 				'DATE',
 			],
 			metrics: [
-				'TOTAL_EARNINGS',
+				'ESTIMATED_EARNINGS',
 				'PAGE_VIEWS_RPM',
 				'IMPRESSIONS',
 				'PAGE_VIEWS_CTR',
@@ -195,7 +195,7 @@ generateReportBasedWidgetStories( {
 		},
 		{
 			metrics: [
-				'TOTAL_EARNINGS',
+				'ESTIMATED_EARNINGS',
 				'PAGE_VIEWS_RPM',
 				'IMPRESSIONS',
 				'PAGE_VIEWS_CTR',
@@ -208,7 +208,7 @@ generateReportBasedWidgetStories( {
 				'DATE',
 			],
 			metrics: [
-				'TOTAL_EARNINGS',
+				'ESTIMATED_EARNINGS',
 				'PAGE_VIEWS_RPM',
 				'IMPRESSIONS',
 				'PAGE_VIEWS_CTR',

@@ -48,7 +48,7 @@ export default function Table( { report } ) {
 		const adsenseData = select( STORE_NAME ).getReport( {
 			startDate,
 			endDate,
-			metrics: 'TOTAL_EARNINGS',
+			metrics: 'ESTIMATED_EARNINGS',
 		} );
 		return getCurrencyFormat( adsenseData );
 	} );
