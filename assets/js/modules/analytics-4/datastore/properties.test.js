@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { createTestRegistry, muteFetch, provideSiteInfo, unsubscribeFromAll, untilResolved } from '../../../../../tests/js/utils';
 import { STORE_NAME, PROPERTY_CREATE, WEBDATASTREAM_CREATE } from './constants';
-import { createTestRegistry, muteFetch, provideSiteInfo, unsubscribeFromAll, untilResolved } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 properties', () => {
@@ -30,6 +30,7 @@ describe( 'modules/analytics-4 properties', () => {
 	const createPropertyEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/create-property/;
 	const propertiesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/;
 	const propertyEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/property/;
+	const webDataStreamsBatchEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -189,6 +190,48 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
 				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( fixtures.webDataStreams[ 1 ]._id );
 				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( fixtures.webDataStreams[ 1 ].measurementId ); // eslint-disable-line sitekit/acronym-case
+			} );
+		} );
+
+		describe( 'matchAccountProperty', () => {
+			beforeEach( () => {
+				provideSiteInfo( registry );
+			} );
+
+			it( 'should return NULL if no property matches the current site', async () => {
+				const properties = [ { _id: '1001' }, { _id: '1002' }, { _id: '1003' } ];
+				fetchMock.getOnce( propertiesEndpoint, { body: properties } );
+				fetchMock.getOnce( webDataStreamsBatchEndpoint, { body: { 1001: [] } } );
+
+				const property = await registry.dispatch( STORE_NAME ).matchAccountProperty( '12345' );
+				expect( property ).toBeNull();
+			} );
+
+			it( 'should return a property object if a property matches the current site', async () => {
+				const properties = [ { _id: '1001' }, { _id: '1002' }, { _id: '1003' } ];
+				fetchMock.getOnce( propertiesEndpoint, { body: properties } );
+				fetchMock.getOnce( webDataStreamsBatchEndpoint, {
+					body: {
+						1001: [
+							{
+								defaultUri: 'http://example.net',
+							},
+							{
+								defaultUri: 'http://example.org',
+							},
+						],
+						1002: [],
+						1003: [
+							{
+								defaultUri: 'http://example.com',
+							},
+						],
+					},
+				} );
+
+				const property = await registry.dispatch( STORE_NAME ).matchAccountProperty( '12345' );
+				expect( property ).not.toBeNull();
+				expect( property._id ).toBe( '1003' );
 			} );
 		} );
 
