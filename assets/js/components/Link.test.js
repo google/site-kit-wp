@@ -78,7 +78,7 @@ describe( 'Link', () => {
 			expect( container.firstChild ).not.toHaveAttribute( 'aria-label' );
 		} );
 
-		it( 'creates an <a> attribute by default', () => {
+		it( 'creates an <a> tag by default', () => {
 			const { container } = render( <Link>text content</Link> );
 
 			expect( container.firstChild.tagName ).toEqual( 'A' );
@@ -96,7 +96,7 @@ describe( 'Link', () => {
 			expect( container.firstChild.tagName ).toEqual( 'A' );
 		} );
 
-		it( 'creates a <button> attribute when `onClick` is set', () => {
+		it( 'creates a <button> tag when `onClick` is set', () => {
 			const { container } = render( <Link onClick={ () => {} }>text content</Link> );
 
 			expect( container.firstChild.tagName ).toEqual( 'BUTTON' );
