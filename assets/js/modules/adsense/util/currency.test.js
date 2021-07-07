@@ -19,9 +19,9 @@
 import { getCurrencyFormat } from './currency';
 
 describe( 'getCurrencyFormat', () => {
-	const getMockAdsenseReportWithCurrency = ( currency ) => ( {
+	const getMockAdsenseReportWithCurrency = ( currencyCode ) => ( {
 		headers: [ {
-			currency,
+			currencyCode,
 		} ],
 	} );
 
