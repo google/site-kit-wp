@@ -196,20 +196,24 @@ describe( 'modules/analytics-4 properties', () => {
 		describe( 'matchAccountProperty', () => {
 			beforeEach( () => {
 				provideSiteInfo( registry );
+
+				fetchMock.getOnce( propertiesEndpoint, {
+					body: [
+						{ _id: '1001' },
+						{ _id: '1002' },
+						{ _id: '1003' },
+					],
+				} );
 			} );
 
-			it( 'should return NULL if no property matches the current site', async () => {
-				const properties = [ { _id: '1001' }, { _id: '1002' }, { _id: '1003' } ];
-				fetchMock.getOnce( propertiesEndpoint, { body: properties } );
+			it( 'should return NULL if no property matches the current site', () => {
 				fetchMock.getOnce( webDataStreamsBatchEndpoint, { body: { 1001: [] } } );
 
-				const property = await registry.dispatch( STORE_NAME ).matchAccountProperty( '12345' );
-				expect( property ).toBeNull();
+				return expect( registry.dispatch( STORE_NAME ).matchAccountProperty( '12345' ) )
+					.resolves.toBeNull();
 			} );
 
-			it( 'should return a property object if a property matches the current site', async () => {
-				const properties = [ { _id: '1001' }, { _id: '1002' }, { _id: '1003' } ];
-				fetchMock.getOnce( propertiesEndpoint, { body: properties } );
+			it( 'should return a property object if a property matches the current site', () => {
 				fetchMock.getOnce( webDataStreamsBatchEndpoint, {
 					body: {
 						1001: [
@@ -229,9 +233,56 @@ describe( 'modules/analytics-4 properties', () => {
 					},
 				} );
 
-				const property = await registry.dispatch( STORE_NAME ).matchAccountProperty( '12345' );
-				expect( property ).not.toBeNull();
-				expect( property._id ).toBe( '1003' );
+				return expect( registry.dispatch( STORE_NAME ).matchAccountProperty( '12345' ) )
+					.resolves.toMatchObject( { _id: '1003' } );
+			} );
+		} );
+
+		describe( 'matchAndSelectProperty', () => {
+			beforeEach( () => {
+				provideSiteInfo( registry );
+
+				fetchMock.getOnce( propertiesEndpoint, {
+					body: [
+						{
+							_id: '1001',
+						},
+					],
+				} );
+
+				fetchMock.getOnce( webDataStreamsBatchEndpoint, {
+					body: {
+						1001: [
+							{
+								_id: '2001',
+								measurementId: 'G-ABCD12345', // eslint-disable-line sitekit/acronym-case
+								defaultUri: 'http://example.com',
+							},
+						],
+					},
+				} );
+			} );
+
+			it( 'should select the fallback property if the matching property is not found', async () => {
+				provideSiteInfo( registry, { referenceSiteURL: 'http://example.net' } );
+
+				await registry.dispatch( STORE_NAME ).matchAndSelectProperty( '123', PROPERTY_CREATE );
+
+				expect( registry.select( STORE_NAME ).getSettings() ).toMatchObject( {
+					propertyID: PROPERTY_CREATE,
+					webDataStreamID: WEBDATASTREAM_CREATE,
+					measurementID: '',
+				} );
+			} );
+
+			it( 'should select the correct property ID if we can find a matching property', async () => {
+				await registry.dispatch( STORE_NAME ).matchAndSelectProperty( '123' );
+
+				expect( registry.select( STORE_NAME ).getSettings() ).toMatchObject( {
+					propertyID: '1001',
+					webDataStreamID: '2001',
+					measurementID: 'G-ABCD12345',
+				} );
 			} );
 		} );
 
