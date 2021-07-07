@@ -47,7 +47,7 @@ function SettingsApp() {
 	// Prevent pushing to hash history if it would send you to the same URL.
 	// (Without this React Router will trigger a warning.)
 	const shouldReplaceHistory = ( path ) => false && basePath === path;
-	const [ , basePath ] = location?.pathname.split( '/' );
+	const [ , basePath ] = location.pathname.split( '/' );
 	const activeTab = SettingsApp.basePathToTabIndex[ basePath ];
 
 	return (
