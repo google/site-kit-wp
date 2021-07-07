@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.7
 Requires PHP:      5.6
-Stable tag:        1.35.0
+Stable tag:        1.36.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -87,6 +87,42 @@ We plan to expand the plugin’s capabilities and integrations in the future; we
 If you have some ideas to improve the plugin or to solve a bug, feel free to raise an issue or submit a pull request in the [GitHub repository for the plugin](https://github.com/google/site-kit-wp). Please stick to the [contributing guidelines](https://github.com/google/site-kit-wp/blob/main/CONTRIBUTING.md). You can also contribute to the plugin by translating it. Simply visit [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/google-site-kit) to get started.
 
 == Changelog ==
+
+= 1.36.0 =
+
+**Enhanced**
+
+* Enhance experience for sites with UA Analytics already configured before GA4 is enabled. See [#3586](https://github.com/google/site-kit-wp/issues/3586).
+* Implement Idea Hub datastore infrastructure for saving and dismissing an idea. See [#3556](https://github.com/google/site-kit-wp/issues/3556).
+* Display measurement ID for Google Analytics 4 property in Settings. See [#3545](https://github.com/google/site-kit-wp/issues/3545).
+* Update text in some Google Analytics 4 notices. See [#3544](https://github.com/google/site-kit-wp/issues/3544).
+* Show separate UA and GA4 snippet toggles in Analytics Settings. See [#3542](https://github.com/google/site-kit-wp/issues/3542).
+* Improve Google Analytics 4 notices. See [#3540](https://github.com/google/site-kit-wp/issues/3540).
+* Improve user survey styling on mobile viewports. See [#3530](https://github.com/google/site-kit-wp/issues/3530).
+* Show Terms of Service and Privacy Policy in User Feedback survey if the user hasn't opted-in to tracking. See [#3528](https://github.com/google/site-kit-wp/issues/3528).
+* Implement a minimal settings panel for the Idea Hub module. See [#3521](https://github.com/google/site-kit-wp/issues/3521).
+* Update API client library and AdSense integration to use the new version 2 of their API. See [#3517](https://github.com/google/site-kit-wp/issues/3517).
+* Improve button tooltips across plugin. See [#3516](https://github.com/google/site-kit-wp/issues/3516).
+* Update button links to show "opens in new tab" ARIA help text, and open all User Feedback links in a new tab. See [#3510](https://github.com/google/site-kit-wp/issues/3510).
+* Don't show notifications if a user survey has already been displayed. See [#3508](https://github.com/google/site-kit-wp/issues/3508).
+* Display date range for data in the Admin Bar. See [#3202](https://github.com/google/site-kit-wp/issues/3202).
+* Remove the option to include/exclude logged-in users when the Analytics snippet is not placed via Site Kit. See [#2910](https://github.com/google/site-kit-wp/issues/2910).
+* Update error message shown to AMP users when connecting Tag Manager after Analytics. See [#2292](https://github.com/google/site-kit-wp/issues/2292).
+
+**Fixed**
+
+* Fix potential React error when using Google Translate and then changing the date range in a Site Kit admin screen. See [#3636](https://github.com/google/site-kit-wp/issues/3636).
+* Fix a bug where GA4 settings were not cleared when deactivating Analytics. See [#3616](https://github.com/google/site-kit-wp/issues/3616).
+* Fix AMP validation error caused by the GA opt-out snippet conditionally placed by Site Kit. See [#3572](https://github.com/google/site-kit-wp/issues/3572).
+* Ensure account and property are preselected during setup when user has a matching GA4 property only. See [#3543](https://github.com/google/site-kit-wp/issues/3543).
+* Update Analytics account creation to ensure a GA4 property is always created when GA4 is enabled. See [#3539](https://github.com/google/site-kit-wp/issues/3539).
+* Fix an infinite loading state when attempting to create a new Analytics account with GA4. See [#3537](https://github.com/google/site-kit-wp/issues/3537).
+* Only show a GA4 creation notice once an account is selected in Analytics setup. See [#3536](https://github.com/google/site-kit-wp/issues/3536).
+* Allow posts with Idea Hub drafts to be trashed. See [#3514](https://github.com/google/site-kit-wp/issues/3514).
+* Enhance user survey display with added animation on enter and exit. See [#3509](https://github.com/google/site-kit-wp/issues/3509).
+* Fix a bug related to localized number formatting for browsers that have limited support for formatting options. See [#3255](https://github.com/google/site-kit-wp/issues/3255).
+* Improve table views on mobile screens. See [#3138](https://github.com/google/site-kit-wp/issues/3138).
+* Fix bug where AMP mode detection would not consider the AMP plugin's template mode setting when the Web Stories plugin is active. See [#2998](https://github.com/google/site-kit-wp/issues/2998).
 
 = 1.35.0 =
 
