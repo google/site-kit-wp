@@ -302,17 +302,7 @@ final class Idea_Hub extends Module
 					);
 				};
 			case 'GET:new-ideas':
-				$reference_url = $this->context->get_reference_site_url();
-				$reference_url = rawurlencode( $reference_url );
-
-				$parent = "platforms/sitekit/properties/{$reference_url}";
-
-				return $this->get_service( 'ideahub' )->platforms_properties_ideas->listPlatformsPropertiesIdeas(
-					$parent,
-					array(
-						'filter' => 'saved(false)',
-					)
-				);
+				return $this->fetch_ideas( 'new' );
 			case 'GET:published-post-ideas':
 				return function() {
 					$wp_query = new \WP_Query();
@@ -338,10 +328,7 @@ final class Idea_Hub extends Module
 					);
 				};
 			case 'GET:saved-ideas':
-				// @TODO: Implement this with the real API endpoint.
-				return function() {
-					return array();
-				};
+				return $this->fetch_ideas( 'saved' );
 			case 'POST:update-idea-state':
 				if ( ! isset( $data['name'] ) ) {
 					/* translators: %s: Missing parameter name */
@@ -551,6 +538,33 @@ final class Idea_Hub extends Module
 	 */
 	private function is_idea_post( $post_id ) {
 		return is_array( $this->get_post_idea( $post_id ) );
+	}
+
+	/**
+	 * Fetches ideas from the Idea Hub API.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $type Ideas type. Valid values "saved", "new" or an empty string which means all ideas.
+	 * @return mixed List ideas request.
+	 */
+	private function fetch_ideas( $type ) {
+		$reference_url = $this->context->get_reference_site_url();
+		$reference_url = rawurlencode( $reference_url );
+
+		$parent = "platforms/sitekit/properties/{$reference_url}";
+		$params = array();
+
+		if ( 'saved' === $type ) {
+			$params['filter'] = 'saved(true)';
+		} elseif ( 'new' === $type ) {
+			$params['filter'] = 'saved(false)';
+		}
+
+		$service = $this->get_service( 'ideahub' );
+		$ideas   = $service->platforms_properties_ideas;
+
+		return $ideas->listPlatformsPropertiesIdeas( $parent, $params );
 	}
 
 }
