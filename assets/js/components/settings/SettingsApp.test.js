@@ -27,7 +27,6 @@ import * as fixtures from '../../modules/analytics/datastore/__fixtures__';
 describe( 'SettingsApp', () => {
 	let registry;
 
-	const features = [ 'storeErrorNotifications' ];
 	const validResponse = {
 		accountID: 'pub-12345678',
 		clientID: 'ca-pub-12345678',
@@ -83,7 +82,7 @@ describe( 'SettingsApp', () => {
 			{ body: validResponse, status: 200 }
 		);
 
-		const { getByRole, findByRole } = render( <SettingsApp />, { features, registry } );
+		const { getByRole, findByRole } = render( <SettingsApp />, { registry } );
 
 		fireEvent.click( getByRole( 'tab', { name: /analytics/i } ) );
 		expect( global.location.hash ).toEqual( '#settings/analytics/view' );
@@ -93,7 +92,7 @@ describe( 'SettingsApp', () => {
 	} );
 
 	it( 'should change location hash & DOM correctly when module accordion clicked and closed', async () => {
-		const { getByRole, findByRole, queryByRole } = render( <SettingsApp />, { features, registry } );
+		const { getByRole, findByRole, queryByRole } = render( <SettingsApp />, { registry } );
 
 		fireEvent.click( getByRole( 'tab', { name: /analytics/i } ) );
 
@@ -117,7 +116,7 @@ describe( 'SettingsApp', () => {
 			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 		);
 
-		const { getByRole, findByRole, queryByTestID } = render( <SettingsApp />, { features, registry } );
+		const { getByRole, findByRole, queryByTestID } = render( <SettingsApp />, { registry } );
 
 		fireEvent.click( getByRole( 'tab', { name: /analytics/i } ) );
 
@@ -139,7 +138,7 @@ describe( 'SettingsApp', () => {
 			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 		);
 
-		const { getByRole, findByRole } = render( <SettingsApp />, { features, registry } );
+		const { getByRole, findByRole } = render( <SettingsApp />, { registry } );
 
 		fireEvent.click( getByRole( 'tab', { name: /analytics/i } ) );
 
@@ -162,7 +161,7 @@ describe( 'SettingsApp', () => {
 			{ body: { enabled: true }, status: 200 }
 		);
 
-		const { findByText, getAllByRole } = render( <SettingsApp />, { features, registry } );
+		const { findByText, getAllByRole } = render( <SettingsApp />, { registry } );
 
 		fireEvent.click( getAllByRole( 'tab' )[ 1 ] );
 		expect( global.location.hash ).toEqual( '#connect' );

@@ -51,7 +51,7 @@ storiesOf( 'Setup / Using GCP', module )
 		} );
 
 		return (
-			<WithTestRegistry registry={ registry } features={ [ 'storeErrorNotifications' ] }>
+			<WithTestRegistry registry={ registry }>
 				<SetupUsingGCP />
 			</WithTestRegistry>
 		);
