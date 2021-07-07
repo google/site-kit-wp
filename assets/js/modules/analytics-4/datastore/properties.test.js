@@ -206,14 +206,14 @@ describe( 'modules/analytics-4 properties', () => {
 				} );
 			} );
 
-			it( 'should return NULL if no property matches the current site', () => {
+			it( 'should return NULL if no property matches the current site', async () => {
 				fetchMock.getOnce( webDataStreamsBatchEndpoint, { body: { 1001: [] } } );
 
-				return expect( registry.dispatch( STORE_NAME ).matchAccountProperty( '12345' ) )
-					.resolves.toBeNull();
+				const property = await registry.dispatch( STORE_NAME ).matchAccountProperty( '12345' );
+				expect( property ).toBeNull();
 			} );
 
-			it( 'should return a property object if a property matches the current site', () => {
+			it( 'should return a property object if a property matches the current site', async () => {
 				fetchMock.getOnce( webDataStreamsBatchEndpoint, {
 					body: {
 						1001: [
@@ -233,8 +233,8 @@ describe( 'modules/analytics-4 properties', () => {
 					},
 				} );
 
-				return expect( registry.dispatch( STORE_NAME ).matchAccountProperty( '12345' ) )
-					.resolves.toMatchObject( { _id: '1003' } );
+				const property = await registry.dispatch( STORE_NAME ).matchAccountProperty( '12345' );
+				expect( property ).toMatchObject( { _id: '1003' } );
 			} );
 		} );
 
