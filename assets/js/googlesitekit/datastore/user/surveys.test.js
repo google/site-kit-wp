@@ -117,6 +117,9 @@ describe( 'core/user surveys', () => {
 
 				await registry.dispatch( STORE_NAME ).triggerSurvey( triggerID, { ttl: 500 } );
 				expect( ttl ).toBe( 500 );
+
+				// Reset the backend storage mechanism.
+				setSelectedStorageBackend( undefined );
 			} );
 		} );
 
