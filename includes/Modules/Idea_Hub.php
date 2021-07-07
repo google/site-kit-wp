@@ -331,20 +331,35 @@ final class Idea_Hub extends Module
 				return $this->fetch_ideas( 'saved' );
 			case 'POST:update-idea-state':
 				if ( ! isset( $data['name'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'name' ), array( 'status' => 400 ) );
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'name' ),
+						array( 'status' => 400 )
+					);
 				}
 
-				$body = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState();
+				$parent = $this->get_parent_slug();
+				$body   = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState();
+
 				$body->setName( $data['name'] );
 
 				if ( isset( $data['saved'] ) ) {
+					$parent = $parent . '/ideaStates/saved';
 					$body->setSaved( filter_var( $data['saved'], FILTER_VALIDATE_BOOL ) );
 				} elseif ( isset( $data['dismissed'] ) ) {
+					$parent = $parent . '/ideaStates/dismissed';
 					$body->setDismissed( filter_var( $data['dismissed'], FILTER_VALIDATE_BOOL ) );
+				} else {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						__( 'Either "saved" or "dismissed" parameter must be provided.', 'google-site-kit' ),
+						array( 'status' => 400 )
+					);
 				}
 
-				return $this->get_service( 'ideahub' )->platforms_properties_ideaStates->patch( $data['name'] );
+				return $this->get_service( 'ideahub' )->platforms_properties_ideaStates->patch( $parent, $body );
 		}
 
 		return parent::create_data_request( $data );
@@ -541,6 +556,22 @@ final class Idea_Hub extends Module
 	}
 
 	/**
+	 * Gets the parent slug to use for Idea Hub API requests.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Parent slug.
+	 */
+	private function get_parent_slug() {
+		$reference_url = $this->context->get_reference_site_url();
+		$reference_url = rawurlencode( $reference_url );
+
+		$parent = "platforms/sitekit/properties/{$reference_url}";
+
+		return $parent;
+	}
+
+	/**
 	 * Fetches ideas from the Idea Hub API.
 	 *
 	 * @since n.e.x.t
@@ -549,10 +580,7 @@ final class Idea_Hub extends Module
 	 * @return mixed List ideas request.
 	 */
 	private function fetch_ideas( $type ) {
-		$reference_url = $this->context->get_reference_site_url();
-		$reference_url = rawurlencode( $reference_url );
-
-		$parent = "platforms/sitekit/properties/{$reference_url}";
+		$parent = $this->get_parent_slug();
 		$params = array();
 
 		if ( 'saved' === $type ) {
