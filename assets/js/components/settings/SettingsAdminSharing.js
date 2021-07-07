@@ -174,7 +174,7 @@ export default function SettingsAdminSharing() {
 							{ __( 'Delegate module data access', 'google-site-kit' ) }
 						</h4>
 						<p>
-							{ __( 'Delegate data access for the modules that you would like the above people to see in the shared Site Kit dashboard', 'google-site-kit' ) }
+							{ __( 'Delegate data access for the active modules that you would like the above people to see in the shared Site Kit dashboard', 'google-site-kit' ) }
 						</p>
 					</Cell>
 				</Row>
