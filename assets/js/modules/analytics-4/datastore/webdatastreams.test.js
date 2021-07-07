@@ -106,6 +106,26 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
+
+		describe( 'matchWebDataStream', () => {
+			beforeEach( () => {
+				provideSiteInfo( registry );
+			} );
+
+			it( 'should return NULL if no matching web data stream is found', () => {
+				fetchMock.getOnce( webDataStreamsEndpoint, { body: [ { defaultUri: 'http://example.net' } ] } );
+
+				return expect( registry.dispatch( STORE_NAME ).matchWebDataStream( '1234' ) )
+					.resolves.toBeNull();
+			} );
+
+			it( 'should return a web data stream if we find a matching one', () => {
+				fetchMock.getOnce( webDataStreamsEndpoint, { body: [ { _id: '2001', defaultUri: 'http://example.com' } ] } );
+
+				return expect( registry.dispatch( STORE_NAME ).matchWebDataStream( '1234' ) )
+					.resolves.toMatchObject( { _id: '2001' } );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
