@@ -139,7 +139,11 @@ const tableColumns = [
 	{
 		title: __( 'Views', 'google-site-kit' ),
 		field: 'metrics.0.values.0',
-		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+		Component: ( { fieldValue } ) => (
+			<span>
+				{ numFmt( fieldValue, { style: 'decimal' } ) }
+			</span>
+		),
 	},
 ];
 

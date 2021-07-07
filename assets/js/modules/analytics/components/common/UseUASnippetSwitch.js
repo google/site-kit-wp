@@ -31,7 +31,7 @@ import Switch from '../../../../components/Switch';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
-export default function UseSnippetSwitch() {
+export default function UseUASnippetSwitch() {
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const canUseSnippet = useSelect( ( select ) => select( STORE_NAME ).getCanUseSnippet() );
 
@@ -48,7 +48,7 @@ export default function UseSnippetSwitch() {
 	return (
 		<div className="googlesitekit-analytics-usesnippet">
 			<Switch
-				label={ __( 'Let Site Kit place code on your site', 'google-site-kit' ) }
+				label={ __( 'Place Universal Analytics code', 'google-site-kit' ) }
 				checked={ useSnippet }
 				onClick={ onChange }
 				hideLabel={ false }
