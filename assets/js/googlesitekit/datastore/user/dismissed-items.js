@@ -96,7 +96,7 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string[]|undefined)} Array of dismissed items, `undefined` if not resolved yet.
+	 * @return {(string[]|undefined)} Array of dismissed item slugs, `undefined` if not resolved yet.
 	 */
 	getDismissedItems( state ) {
 		return state.dismissedItems;
