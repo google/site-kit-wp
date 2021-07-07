@@ -125,12 +125,20 @@ function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero, WidgetRepor
 		{
 			title: __( 'Clicks', 'google-site-kit' ),
 			description: __( 'Number of times users clicked on your content in search results', 'google-site-kit' ),
-			Component: ( { row } ) => numFmt( row.clicks, { style: 'decimal' } ),
+			Component: ( { row } ) => (
+				<span>
+					{ numFmt( row.clicks, { style: 'decimal' } ) }
+				</span>
+			),
 		},
 		{
 			title: __( 'Impressions', 'google-site-kit' ),
 			description: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
-			Component: ( { row } ) => numFmt( row.impressions, { style: 'decimal' } ),
+			Component: ( { row } ) => (
+				<span>
+					{ numFmt( row.impressions, { style: 'decimal' } ) }
+				</span>
+			),
 		},
 	];
 

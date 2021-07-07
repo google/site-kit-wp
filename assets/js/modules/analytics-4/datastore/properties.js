@@ -173,6 +173,34 @@ const baseActions = {
 	),
 
 	/**
+	 * Finds a matching property and returns it.
+	 *
+	 * @since 1.36.0
+	 *
+	 * @return {Object|null} Matching property on success, otherwise NULL.
+	 */
+	*findMatchedProperty() {
+		const registry = yield commonActions.getRegistry();
+		const accounts = yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( STORE_NAME ).getAccountSummaries()
+		);
+
+		if ( ! Array.isArray( accounts ) || accounts.length === 0 ) {
+			return null;
+		}
+
+		const url = registry.select( CORE_SITE ).getReferenceSiteURL();
+		const propertyIDs = accounts.reduce(
+			( acc, { propertySummaries: properties } ) => [ ...acc, ...( properties || [] ).map( ( { _id } ) => _id ) ],
+			[],
+		);
+
+		return yield Data.commonActions.await(
+			registry.dispatch( STORE_NAME ).matchPropertyByURL( propertyIDs, url )
+		);
+	},
+
+	/**
 	 * Matches and selects a property for provided accountID.
 	 *
 	 * @since 1.34.0

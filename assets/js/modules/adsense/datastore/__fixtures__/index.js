@@ -26,5 +26,3 @@ export { default as alerts } from './alerts';
 export { default as alertsGraylisted } from './alerts-graylisted';
 export { default as tagPermissionAccess } from './tag-permission-access';
 export { default as tagPermissionNoAccess } from './tag-permission-no-access';
-export { default as report } from './report';
-export { default as earnings } from './earnings.json';

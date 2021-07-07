@@ -45,20 +45,20 @@ describe( 'modules/analytics tags', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getExistingTag', () => {
-			const expectedTag = '1A2BCD345E';
+			const expectedTag = 'G-1A2BCD345E';
 			const tests = {
 				'<script></script> tag': `
-					<script async src="https://googletagmanager.com/gtag/js?id=G-${ expectedTag }"></script>
+					<script async src="https://googletagmanager.com/gtag/js?id=${ expectedTag }"></script>
 				`,
 				'<script /> tag': `
 					<script
 					 	async
-						src="http://www.googletagmanager.com/gtag/js?id=G-${ expectedTag }"
+						src="http://www.googletagmanager.com/gtag/js?id=${ expectedTag }"
 					/>
 				`,
 				'__gaTracker( "create", ... ) call': `
 					<script>
-						__gaTracker ( "create", 'G-${ expectedTag }',"auto");
+						__gaTracker ( "create", '${ expectedTag }',"auto");
 					</script>
 				`,
 				'gtag("config", "...") call': `
@@ -67,14 +67,14 @@ describe( 'modules/analytics tags', () => {
 						function gtag(){dataLayer.push(arguments);}
 						gtag('js', new Date());
 						
-						gtag('config', 'G-${ expectedTag }');
+						gtag('config', '${ expectedTag }');
 					</script>
 				`,
 				'ga( "create", ... ) call': `
 					<script>
 						ga(
 							"create",
-							"G-${ expectedTag }",
+							"${ expectedTag }",
 							"auto"
 						);
 					</script>
@@ -82,14 +82,14 @@ describe( 'modules/analytics tags', () => {
 				'_gaq.push( ... ) call': `
 					<script>
 						var _gaq = _gaq || [];
-						_gaq.push(['_setAccount', 'G-${ expectedTag }']);
+						_gaq.push(['_setAccount', '${ expectedTag }']);
 						_gaq.push(['_trackPageview']);
 					</script>
 				`,
 				'_gaq.push( myTracker... ) call': `
 					<script>
 						var _gaq = _gaq || [];
-						_gaq.push(['myTracker._setAccount', 'G-${ expectedTag }']);
+						_gaq.push(['myTracker._setAccount', '${ expectedTag }']);
 						_gaq.push(['myTracker._setDomainName', 'foo.com']);
 						_gaq.push(['myTracker._trackPageview']);
 					</script>
@@ -100,7 +100,7 @@ describe( 'modules/analytics tags', () => {
 						<script type="application/json">
 							{
 								"vars" : {
-									"gtag_id": "G-${ expectedTag }",
+									"gtag_id": "${ expectedTag }",
 									"config" : {
 									  "G-${ expectedTag }": { "groups": "default" }
 									}
@@ -114,7 +114,7 @@ describe( 'modules/analytics tags', () => {
 						<script type="application/json">
 							{
 								"vars": {
-									"account": "G-${ expectedTag }"
+									"account": "${ expectedTag }"
 								}
 							}
 						</script>

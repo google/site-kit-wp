@@ -20,11 +20,12 @@
  * Internal dependencies
  */
 import { render, waitFor, createTestRegistry } from '../../../../../../tests/js/test-utils';
-import { STORE_NAME } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import SettingsEdit from './SettingsEdit';
 import * as fixtures from '../../datastore/__fixtures__';
-import { provideSiteInfo } from '../../../../../../tests/js/utils';
+import { provideModules, provideSiteInfo } from '../../../../../../tests/js/utils';
 
 describe( 'SettingsEdit', () => {
 	let registry;
@@ -32,6 +33,13 @@ describe( 'SettingsEdit', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+		] );
 	} );
 
 	it( 'sets the account ID and property ID of an existing tag when present', async () => {
@@ -49,6 +57,8 @@ describe( 'SettingsEdit', () => {
 		const { accountID, propertyID } = existingTag;
 
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );

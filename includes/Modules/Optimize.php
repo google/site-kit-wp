@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
@@ -33,7 +34,7 @@ use Google\Site_Kit\Modules\Optimize\Settings;
  * @ignore
  */
 final class Optimize extends Module
-	implements Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets, Module_With_Owner {
+	implements Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets, Module_With_Owner, Module_With_Deactivation {
 	use Module_With_Settings_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait;
 
 	/**

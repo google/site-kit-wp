@@ -29,6 +29,8 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../util';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	STORE_NAME,
 	ACCOUNT_CREATE,
@@ -37,18 +39,14 @@ import {
 	PROPERTY_TYPE_UA,
 	PROPERTY_TYPE_GA4,
 } from './constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { MODULES_ANALYTICS_4, PROPERTY_CREATE as GA4_PROPERTY_CREATE } from '../../analytics-4/datastore/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { actions as tagActions } from './tags';
 import { actions as propertyActions } from './properties';
-import {
-	MODULES_ANALYTICS_4,
-	PROPERTY_CREATE as GA4_PROPERTY_CREATE,
-} from '../../analytics-4/datastore/constants';
 import { isFeatureEnabled } from '../../../features';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { matchPropertyByURL } from '../util/property';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 const { createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
 
@@ -324,6 +322,25 @@ const baseResolvers = {
 			return;
 		}
 
+		// Do not try to find a matching GA4 property if the module has already been connected.
+		const connected = registry.select( CORE_MODULES ).isModuleConnected( 'analytics' );
+		if ( connected ) {
+			return;
+		}
+
+		// If there are no matching UA property and no accountID, we need to try to find matching GA4 property.
+		if ( ! matchedProperty && ! accountID ) {
+			const matchedGA4Property = yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).findMatchedProperty() );
+			if ( matchedGA4Property?._accountID ) {
+				registry.dispatch( STORE_NAME ).setAccountID( matchedGA4Property?._accountID );
+				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
+
+				yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).selectProperty( matchedGA4Property._id ) );
+
+				return;
+			}
+		}
+
 		let ga4Property;
 		const ga4PropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
 
@@ -339,7 +356,7 @@ const baseResolvers = {
 		}
 
 		// Try to find a new matched ga4 property if the current one has a different accountID.
-		if ( ga4Property?._accountID !== accountID ) {
+		if ( accountID && ga4Property?._accountID !== accountID ) {
 			yield Data.commonActions.await( registry.dispatch( MODULES_ANALYTICS_4 ).matchAndSelectProperty( accountID, GA4_PROPERTY_CREATE ) );
 		}
 	},

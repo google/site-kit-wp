@@ -108,7 +108,7 @@ const baseActions = {
 				}
 				if ( ttl > 0 ) {
 					// With a positive ttl we cache an empty object to avoid calling fetchTriggerSurvey() again.
-					yield Data.commonActions.await( setItem( cacheKey, {} ) );
+					yield Data.commonActions.await( setItem( cacheKey, {}, { ttl } ) );
 				}
 			}
 
@@ -173,7 +173,7 @@ const baseSelectors = {
 	/**
 	 * Gets the completion triggers for the current survey, if one exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.35.0
 	 *
 	 * @return {Array|null} Current survey's completion triggers if available; `null` if no questions/survey are found.
 	 */
@@ -186,7 +186,7 @@ const baseSelectors = {
 	/**
 	 * Gets the questions from the current survey, if one exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.35.0
 	 *
 	 * @return {Array|null} Current survey's questions if available; `null` if no questions/survey are found.
 	 */

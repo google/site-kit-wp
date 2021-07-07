@@ -146,7 +146,7 @@ ModuleOverviewWidget.propTypes = {
 };
 
 ModuleOverviewWidget.metrics = {
-	EARNINGS: __( 'Earnings', 'google-site-kit' ),
+	ESTIMATED_EARNINGS: __( 'Earnings', 'google-site-kit' ),
 	PAGE_VIEWS_RPM: __( 'Page RPM', 'google-site-kit' ),
 	IMPRESSIONS: __( 'Impressions', 'google-site-kit' ),
 	PAGE_VIEWS_CTR: __( 'Page CTR', 'google-site-kit' ),

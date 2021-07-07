@@ -26,10 +26,11 @@ import ModuleTopEarningPagesWidget from '../assets/js/modules/adsense/components
 import ModuleOverviewWidget from '../assets/js/modules/adsense/components/module/ModuleOverviewWidget';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
-import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
+import { getAdSenseMockResponse, provideAdSenseMockReport } from '../assets/js/modules/adsense/util/data-mock';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 
 const generateAnalyticsData = makeReportDataGenerator( getAnalyticsMockResponse );
+const generateAdSenseData = makeReportDataGenerator( getAdSenseMockResponse );
 
 const dashboardSummaryOptions = [
 	{
@@ -37,7 +38,7 @@ const dashboardSummaryOptions = [
 		startDate: '2020-07-18',
 		endDate: '2020-08-14',
 		metrics: [
-			'EARNINGS',
+			'ESTIMATED_EARNINGS',
 			'PAGE_VIEWS_RPM',
 			'IMPRESSIONS',
 		],
@@ -47,7 +48,7 @@ const dashboardSummaryOptions = [
 		startDate: '2020-08-15',
 		endDate: '2020-09-11',
 		metrics: [
-			'EARNINGS',
+			'ESTIMATED_EARNINGS',
 			'PAGE_VIEWS_RPM',
 			'IMPRESSIONS',
 		],
@@ -57,7 +58,7 @@ const dashboardSummaryOptions = [
 		startDate: '2020-08-15',
 		endDate: '2020-09-11',
 		metrics: [
-			'EARNINGS',
+			'ESTIMATED_EARNINGS',
 			'PAGE_VIEWS_RPM',
 			'IMPRESSIONS',
 		],
@@ -75,92 +76,7 @@ generateReportBasedWidgetStories( {
 		dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
 		dispatch( STORE_NAME ).receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
 	},
-	data: [
-		{
-			totalMatchedRows: '1',
-			headers: [
-				{
-					name: 'EARNINGS',
-					type: 'METRIC_CURRENCY',
-					currency: 'USD',
-				},
-				{
-					name: 'PAGE_VIEWS_RPM',
-					type: 'METRIC_CURRENCY',
-					currency: 'USD',
-				},
-				{
-					name: 'IMPRESSIONS',
-					type: 'METRIC_TALLY',
-				},
-			],
-			rows: [
-				[
-					'6.13',
-					'2.98',
-					'226791',
-				],
-			],
-			totals: [
-				'6.13',
-				'2.98',
-				'226791',
-			],
-			averages: [
-				'6.13',
-				null,
-				'226791',
-			],
-			startDate: '2020-09-12',
-			endDate: '2020-09-12',
-		},
-		{
-			totalMatchedRows: '1',
-			headers: [
-				{ name: 'EARNINGS', type: 'METRIC_CURRENCY', currency: 'USD' },
-				{ name: 'PAGE_VIEWS_RPM', type: 'METRIC_CURRENCY', currency: 'USD' },
-				{ name: 'IMPRESSIONS', type: 'METRIC_TALLY' },
-			],
-			rows: [
-				[ '2103.23', '1.89', '5693093' ],
-			],
-			totals: [
-				'2103.23', '1.89', '5693093' ],
-			averages: [
-				'2103.23', null, '5693093',
-			],
-			startDate: '2020-08-15',
-			endDate: '2020-09-11',
-		},
-		{
-			totalMatchedRows: '32',
-			headers: [
-				{ name: 'DATE', type: 'DIMENSION' },
-				{ name: 'EARNINGS', type: 'METRIC_CURRENCY', currency: 'USD' },
-				{ name: 'PAGE_VIEWS_RPM', type: 'METRIC_CURRENCY', currency: 'USD' },
-				{ name: 'IMPRESSIONS', type: 'METRIC_TALLY' },
-			],
-			rows: [
-				[ '2020-09-01', '18.08', '3.98', '1278373' ],
-				[ '2020-09-02', '27.02', '3.39', '1307556' ],
-				[ '2020-09-03', '35.05', '3.69', '1491923' ],
-				[ '2020-09-04', '45.43', '3.72', '1244807' ],
-				[ '2020-09-05', '44.44', '4.36', '971017' ],
-				[ '2020-09-06', '40.37', '3.77', '1014415' ],
-				[ '2020-09-07', '36.09', '3.35', '1509543' ],
-				[ '2020-09-08', '22.19', '2.96', '1591345' ],
-				[ '2020-09-09', '25.53', '3.11', '1494963' ],
-				[ '2020-09-10', '18.80', '3.23', '1249817' ],
-				[ '2020-09-11', '5.77', '2.88', '330158' ],
-				[ '2020-09-12', '6.13', '2.98', '226791' ],
-			],
-			totals: [ '', '324.90', '3.45', '12465901' ],
-			averages: [ '', '27.08', null, '1038825' ],
-			startDate: '2020-09-01',
-			endDate: '2020-09-12',
-		},
-	],
-	options: dashboardSummaryOptions,
+	...generateAdSenseData( dashboardSummaryOptions ),
 	Component: DashboardSummaryWidget,
 	wrapWidget: false,
 	additionalVariants: {
@@ -189,24 +105,10 @@ const topEarningPagesArgs = {
 
 // These components make a simple AdSense report query to determine the
 // currency that should be displayed in the report table.
-const getCurrencyFromReport = {
-	totalMatchedRows: '1',
-	headers: [
-		{ name: 'EARNINGS', type: 'METRIC_CURRENCY', currency: 'USD' },
-	],
-	rows: [
-		[ '680.67' ],
-	],
-	totals: [ '680.67' ],
-	averages: [ '680.67' ],
-	startDate: '2020-08-15',
-	endDate: '2020-09-11',
-};
-
 const getCurrencyFromReportOptions = {
 	startDate: '2020-08-15',
 	endDate: '2020-09-11',
-	metrics: 'EARNINGS',
+	metrics: 'ESTIMATED_EARNINGS',
 };
 
 generateReportBasedWidgetStories( {
@@ -216,11 +118,11 @@ generateReportBasedWidgetStories( {
 	referenceDate: '2020-09-12',
 	...generateAnalyticsData( { ...topEarningPagesArgs } ),
 	options: topEarningPagesArgs,
-	setup: ( { dispatch }, variantName ) => {
-		dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
-		dispatch( STORE_NAME ).receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
-		dispatch( STORE_NAME ).receiveGetReport( getCurrencyFromReport, { options: getCurrencyFromReportOptions } );
-		dispatch( STORE_NAME ).finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
+	setup: ( registry, variantName ) => {
+		registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
+		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
+		provideAdSenseMockReport( registry, getCurrencyFromReportOptions );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
 	},
 	Component: DashboardTopEarningPagesWidget,
 	wrapWidget: false,
@@ -244,10 +146,10 @@ const moduleTopEarningPagesWidgetOptions = {
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense', 'analytics' ],
 	datastore: MODULES_ANALYTICS,
-	setup: ( { dispatch }, variantName ) => {
-		dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
-		dispatch( STORE_NAME ).receiveGetReport( getCurrencyFromReport, { options: getCurrencyFromReportOptions } );
-		dispatch( STORE_NAME ).finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
+	setup: ( registry, variantName ) => {
+		registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
+		provideAdSenseMockReport( registry, getCurrencyFromReportOptions );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
 	},
 	group: 'AdSense Module/Components/Module/Top Earning Pages Widget',
 	referenceDate: '2020-09-12',
@@ -267,18 +169,54 @@ generateReportBasedWidgetStories( {
 	datastore: STORE_NAME,
 	group: 'AdSense Module/Components/Module/Overview Widget',
 	referenceDate: '2020-11-25',
-	data: [
-		fixtures.earnings.currentStatsData,
-		fixtures.earnings.prevStatsData,
-		fixtures.earnings.currentSummaryData,
-		fixtures.earnings.prevSummaryData,
-	],
-	options: [
-		fixtures.earnings.currentStatsArgs,
-		fixtures.earnings.prevStatsArgs,
-		fixtures.earnings.currentSummaryArgs,
-		fixtures.earnings.prevSummaryArgs,
-	],
+	...generateAdSenseData( [
+		{
+			metrics: [
+				'ESTIMATED_EARNINGS',
+				'PAGE_VIEWS_RPM',
+				'IMPRESSIONS',
+				'PAGE_VIEWS_CTR',
+			],
+			startDate: '2020-10-29',
+			endDate: '2020-11-25',
+		},
+		{
+			dimensions: [
+				'DATE',
+			],
+			metrics: [
+				'ESTIMATED_EARNINGS',
+				'PAGE_VIEWS_RPM',
+				'IMPRESSIONS',
+				'PAGE_VIEWS_CTR',
+			],
+			startDate: '2020-10-29',
+			endDate: '2020-11-25',
+		},
+		{
+			metrics: [
+				'ESTIMATED_EARNINGS',
+				'PAGE_VIEWS_RPM',
+				'IMPRESSIONS',
+				'PAGE_VIEWS_CTR',
+			],
+			startDate: '2020-10-01',
+			endDate: '2020-10-28',
+		},
+		{
+			dimensions: [
+				'DATE',
+			],
+			metrics: [
+				'ESTIMATED_EARNINGS',
+				'PAGE_VIEWS_RPM',
+				'IMPRESSIONS',
+				'PAGE_VIEWS_CTR',
+			],
+			startDate: '2020-10-01',
+			endDate: '2020-10-28',
+		},
+	] ),
 	Component: ModuleOverviewWidget,
 	wrapWidget: false,
 } );
