@@ -71,7 +71,7 @@ return array(
 					'vendor-bin',
 				)
 			)
-			->path( "#^google/apiclient-services/src/Google/Service/($google_services)/#" )
+			->path( "#^google/apiclient-services/src/($google_services)/#" )
 			->in( 'vendor' ),
 
 		// Google API service entry classes.
@@ -80,7 +80,13 @@ return array(
 			->ignoreVCS( true )
 			->name( "#^($google_services)\.php$#" )
 			->depth( '== 0' )
-			->in( 'vendor/google/apiclient-services/src/Google/Service' ),
+			->in( 'vendor/google/apiclient-services/src' ),
+		Finder::create()
+			->files()
+			->ignoreVCS( true )
+			->name( '#^autoload.php$#' )
+			->depth( '== 0' )
+			->in( 'vendor/google/apiclient-services' ),
 	),
 	'files-whitelist'            => array(
 
