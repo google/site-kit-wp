@@ -114,7 +114,7 @@ export default function SettingsAdminSharing() {
 				</Row>
 				<Row>
 					<Cell size={ 12 }>
-						<Combobox className="autocomplete__wrapper">
+						<Combobox className="autocomplete__wrapper googlesitekit-permission-autocomplete">
 							<ComboboxInput
 								className="autocomplete__input autocomplete__input--default"
 								type="text"
