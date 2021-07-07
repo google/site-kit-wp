@@ -75,7 +75,8 @@ function DashboardCTA( { Widget } ) {
 		await dismissItem( DISMISS_ITEM_IDEA_HUB_CTA );
 	}, [ dismissItem ] );
 
-	if ( dismissed ) {
+	// Don't render this component if it has been dismissed or dismissed items aren't loaded yet.
+	if ( dismissed || dismissed === undefined ) {
 		return null;
 	}
 
