@@ -109,10 +109,13 @@ const Idea = ( idea ) => {
 					<p className="googlesitekit-idea-hub__idea--text">{ text }</p>
 				</Cell>
 				<Cell smSize={ 4 } mdSize={ 3 } lgSize={ 3 } className="googlesitekit-idea-hub__idea--actions">
-					{ activity !== IDEA_HUB_ACTIVITY_CREATING_DRAFT && (
+					{ [ IDEA_HUB_ACTIVITY_CREATING_DRAFT, IDEA_HUB_ACTIVITY_DRAFT_CREATED ].includes( activity ) && (
 						<Fragment>
 							<p className="googlesitekit-idea-hub__actions--view">
-								{ __( 'Creating draft', 'google-site-kit' ) }
+								{ activity === IDEA_HUB_ACTIVITY_CREATING_DRAFT
+									? __( 'Creating draft', 'google-site-kit' )
+									: __( 'Creating draft', 'google-site-kit' )
+								}
 							</p>
 							<CircularProgress
 								style={ {
@@ -123,7 +126,7 @@ const Idea = ( idea ) => {
 							/>
 						</Fragment>
 					) }
-					{ activity !== IDEA_HUB_ACTIVITY_CREATING_DRAFT && (
+					{ ! [ IDEA_HUB_ACTIVITY_CREATING_DRAFT, IDEA_HUB_ACTIVITY_DRAFT_CREATED ].includes( activity ) && (
 						<Fragment>
 
 							{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
