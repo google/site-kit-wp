@@ -53,8 +53,8 @@ const DRAFT_CREATED_TIMER = 2000;
 
 const { useDispatch, useSelect } = Data;
 
-const Idea = ( idea ) => {
-	const { postEditURL, name, text, topics, buttons } = idea;
+const Idea = ( props ) => {
+	const { postEditURL, name, text, topics, buttons } = props;
 	const {
 		createIdeaDraftPost,
 		saveIdea,
@@ -87,9 +87,9 @@ const Idea = ( idea ) => {
 
 		setTimeout( () => {
 			removeActivity( name );
-			removeIdeaFromNewAndSavedIdeas( idea );
+			removeIdeaFromNewAndSavedIdeas( props );
 		}, DRAFT_CREATED_TIMER );
-	}, [ idea, removeActivity, removeIdeaFromNewAndSavedIdeas, createIdeaDraftPost, name, text, topics, setActivity ] );
+	}, [ props, removeActivity, removeIdeaFromNewAndSavedIdeas, createIdeaDraftPost, name, text, topics, setActivity ] );
 
 	return (
 		<Grid className="googlesitekit-idea-hub__idea--single">
