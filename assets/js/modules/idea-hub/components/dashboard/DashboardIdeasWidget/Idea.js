@@ -134,7 +134,7 @@ const Idea = ( props ) => {
 							{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
 								<Button
 									onClick={ handleDelete }
-									disable={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
+									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
 									icon={ <DeleteIcon /> }
 									className="googlesitekit-idea-hub__actions--delete"
 								/>
@@ -143,7 +143,7 @@ const Idea = ( props ) => {
 							{ buttons.includes( IDEA_HUB_BUTTON_PIN ) && (
 								<Button
 									onClick={ handlePin }
-									disable={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
+									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
 									icon={ <PinIcon /> }
 									className="googlesitekit-idea-hub__actions--pin"
 								/>
@@ -152,7 +152,7 @@ const Idea = ( props ) => {
 							{ buttons.includes( IDEA_HUB_BUTTON_UNPIN ) && (
 								<Button
 									onClick={ handleUnpin }
-									disable={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
+									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
 									icon={ <UnpinIcon /> }
 									className="googlesitekit-idea-hub__actions--unpin"
 								/>
@@ -161,7 +161,7 @@ const Idea = ( props ) => {
 							{ buttons.includes( IDEA_HUB_BUTTON_CREATE ) && (
 								<Button
 									onClick={ handleCreate }
-									disable={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
+									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
 									icon={ <CreateIcon /> }
 								/>
 							) }
@@ -170,7 +170,7 @@ const Idea = ( props ) => {
 								<Button
 									href={ postEditURL }
 									className="googlesitekit-idea-hub__actions--view"
-									disable={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
+									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
 								>
 									{ __( 'View draft', 'google-site-kit' ) }
 								</Button>
