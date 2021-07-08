@@ -36,7 +36,7 @@ const { createRegistrySelector, createRegistryControl } = Data;
 const { getRegistry } = Data.commonActions;
 
 // Feature tour cooldown period is 2 hours
-export const FEATURE_TOUR_COOLDOWN_SECONDS = 60 * 60 * 2;
+export const FEATURE_TOUR_COOLDOWN_SECONDS = 60;
 export const FEATURE_TOUR_LAST_DISMISSED_AT = 'feature_tour_last_dismissed_at';
 
 // Actions.

@@ -29,6 +29,7 @@ import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { UI_ALL_TRAFFIC_LOADED } from '../modules/analytics/datastore/constants';
 import helpVisibility from './help-visibility';
+import ideaHubModule from './idea-hub-module';
 
 const allTrafficWidget = {
 	slug: 'allTrafficWidget',
@@ -70,7 +71,7 @@ const allTrafficWidget = {
 			placement: 'top',
 		},
 		{
-			target: '.googlesitekit-header__date-range-selector-menu',
+			target: '.mdc-button.googlesitekit-header__date-range-selector-menu',
 			title: __( 'Check how your traffic changed since you last looked', 'google-site-kit' ),
 			content: __( 'Select a time frame to see the comparison with the previous time period', 'google-site-kit' ),
 		},
@@ -81,4 +82,5 @@ const allTrafficWidget = {
 export default [
 	allTrafficWidget,
 	helpVisibility,
+	ideaHubModule,
 ];

@@ -117,6 +117,7 @@ const Idea = ( { postEditURL, name, text, topics, buttons } ) => {
 						<Button
 							onClick={ handleCreate }
 							icon={ <CreateIcon /> }
+							className="googlesitekit-idea-hub__actions--create"
 							disabled={ isProcessing }
 						/>
 					) }

@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
 /*
  * Internal dependencies
  */
@@ -23,8 +28,26 @@ import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { MODULES_IDEA_HUB } from '../modules/idea-hub/datastore/constants';
 
+const STEPS = [
+	{
+		target: '.googlesitekit-idea-hub__title',
+		title: __( 'Get inspiration for new topics to write about!', 'google-site-kit' ),
+		content: __( 'These ideas are based on unanswered searches related to the content of your site. They are organised by topics and will refresh every N days.', 'google-site-kit' ),
+	},
+	{
+		target: '.googlesitekit-idea-hub__actions--create',
+		title: __( 'Start a draft', 'google-site-kit' ),
+		content: __( 'Found an interesting idea you want to write about? Create a draft! You can always get back to it later on the Posts page', 'google-site-kit' ),
+	},
+	{
+		target: '.mdc-button.googlesitekit-idea-hub__actions--pin',
+		title: 'Save for later or dismiss',
+		content: "If you're not ready to create a draft about an idea just yet, add it to your 'Saved' list and revisit later. If you don’t like an idea, you can dismiss it from your list.",
+	},
+];
+
 const ideaHubModule = {
-	slug: 'ideaHubModule',
+	slug: `ideaHubModule-${ Math.random() }`,
 	contexts: [ VIEW_CONTEXT_DASHBOARD ],
 	// TODO: change this if launch version for the feature changes.
 	version: '3.6.0',
@@ -32,14 +55,26 @@ const ideaHubModule = {
 		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
 		const isIdeaHubModuleActive = registry.select( CORE_MODULES ).isModuleActive( 'idea-hub' );
 		const isIdeaHubModuleConnected = registry.select( CORE_MODULES ).isModuleConnected( 'idea-hub' );
-		const hasNewIdeas = registry.select( MODULES_IDEA_HUB ).getNewIdeas();
+		const newIdeas = registry.select( MODULES_IDEA_HUB ).getNewIdeas() || [];
 
-		if ( ! isIdeaHubModuleActive || ! isIdeaHubModuleConnected || ! newIdeas.length ) {
-			return false;
-		}
-		return true;
+		return ( isIdeaHubModuleActive && isIdeaHubModuleConnected && !! newIdeas.length );
 	},
+	steps: STEPS,
+	gaEventCategory: 'idea_hub_module',
+	callback: ( data ) => {
+		const { type, step: { target } } = data;
+		const firstPin = `${ STEPS[ 2 ].target }:first`;
 
+		if ( type === 'step:after' && target === STEPS[ 1 ].target ) {
+			global.jQuery( firstPin ).
+				addClass( 'googlesitekit-idea-hub__actions--pin-visible' );
+		}
+
+		if ( type === 'step:after' && target === STEPS[ 2 ].target ) {
+			global.jQuery( firstPin ).
+				removeClass( 'googlesitekit-idea-hub__actions--pin-visible' );
+		}
+	},
 };
 
 export default ideaHubModule;
