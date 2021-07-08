@@ -241,11 +241,10 @@ export const baseReducer = ( state, { type, payload } ) => {
 			const { activities } = state;
 			const { key } = payload;
 
-			const keysToLeave = Object.keys( activities ).filter( ( k ) => k !== key );
-
-			const remainingKeys = pick( activities, keysToLeave );
-
-			return { ...state, activities: remainingKeys };
+			return {
+				...state,
+				activities: omit( state.activities, [ key ] ),
+			};
 		}
 
 		default: {
