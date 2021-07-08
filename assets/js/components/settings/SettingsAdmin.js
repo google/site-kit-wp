@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -70,7 +70,10 @@ const SettingsAdmin = () => {
 	return (
 		<Row>
 			{ userInputEnabled && (
-				<Fragment>
+				<div className="
+					mdc-layout-grid__cell
+					mdc-layout-grid__cell--span-12
+				">
 					{ isUserInputCompleted && (
 						<Layout>
 							<div className="
@@ -103,7 +106,7 @@ const SettingsAdmin = () => {
 					{ ! isUserInputCompleted && (
 						<UserInputSettings isDismissable={ false } />
 					) }
-				</Fragment>
+				</div>
 			) }
 			<div className="
 				mdc-layout-grid__cell
