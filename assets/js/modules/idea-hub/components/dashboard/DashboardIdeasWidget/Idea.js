@@ -65,7 +65,6 @@ const Idea = ( idea ) => {
 	} = useDispatch( STORE_NAME );
 	const [ isProcessing, setIsProcessing ] = useState( false );
 	const activity = useSelect( ( select ) => select( STORE_NAME ).getActivity( name ) );
-	console.log( 'activity ', activity );
 
 	const handleDelete = useCallback( async () => {
 		await dismissIdea( name );
