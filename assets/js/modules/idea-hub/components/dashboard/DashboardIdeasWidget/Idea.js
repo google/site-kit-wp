@@ -105,21 +105,17 @@ const Idea = ( idea ) => {
 				</Cell>
 				<Cell smSize={ 4 } mdSize={ 3 } lgSize={ 3 } className="googlesitekit-idea-hub__idea--actions">
 					{ [ IDEA_HUB_ACTIVITY_CREATING_DRAFT, IDEA_HUB_ACTIVITY_DRAFT_CREATED ].includes( activity ) && (
-						<Fragment>
-							<p className="googlesitekit-idea-hub__loading-text">
+						<div className="googlesitekit-idea-hub__loading-notice">
+							<p>
 								{ activity === IDEA_HUB_ACTIVITY_CREATING_DRAFT
 									? __( 'Creating draft', 'google-site-kit' )
 									: __( 'Draft created', 'google-site-kit' )
 								}
 							</p>
-							<CircularProgress
-								style={ {
-									marginLeft: 8,
-									width: 10,
-									height: 10,
-								} }
-							/>
-						</Fragment>
+							<div className="googlesitekit-idea-hub__loading-notice__spinner-wrapper">
+								<CircularProgress size={ 10 } />
+							</div>
+						</div>
 					) }
 					{ ! [ IDEA_HUB_ACTIVITY_CREATING_DRAFT, IDEA_HUB_ACTIVITY_DRAFT_CREATED ].includes( activity ) && (
 						<Fragment>
