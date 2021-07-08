@@ -27,9 +27,12 @@ import {
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import SourceLink from './SourceLink';
 import Link from './Link';
-import { getFullURL, getSiteKitAdminURL } from '../util';
+import { getFullURL } from '../util';
+const { useSelect } = Data;
 
 // Construct a table component from a data object.
 export const getDataTableFromData = ( data, headers, options ) => {
@@ -51,6 +54,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 		const cells = [];
 		const link = links && links[ j ];
 		const permaLink = link && link[ 0 ] === '/' ? getFullURL( global._googlesitekitLegacyData.admin.siteURL, link ) : link;
+		const adminURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink } ) );
 
 		each( row, ( cell, i ) => {
 			// Replace (none) by direct.
@@ -72,7 +76,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 						? <div className="googlesitekit-table__body-item-content">
 							<PrimaryLink
 								className="googlesitekit-table__body-item-link"
-								href={ useAdminURLs ? getSiteKitAdminURL( 'googlesitekit-dashboard', { permaLink } ) : link }
+								href={ useAdminURLs ? adminURL : link }
 								external={ ! useAdminURLs }
 								inherit
 							>
