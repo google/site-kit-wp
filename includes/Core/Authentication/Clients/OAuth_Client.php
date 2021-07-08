@@ -13,18 +13,17 @@ namespace Google\Site_Kit\Core\Authentication\Clients;
 use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Credentials;
+use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
-use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Scopes;
-use Google\Site_Kit_Dependencies\Google\Task\Runner;
-use Google\Site_Kit_Dependencies\Google_Service_PeopleService;
+use Google\Site_Kit_Dependencies\Google\Service\PeopleService;
 use WP_HTTP_Proxy;
 
 /**
@@ -787,7 +786,7 @@ final class OAuth_Client {
 	 */
 	public function refresh_profile_data( $retry_after = 0 ) {
 		try {
-			$people_service = new Google_Service_PeopleService( $this->get_client() );
+			$people_service = new PeopleService( $this->get_client() );
 			$response       = $people_service->people->get( 'people/me', array( 'personFields' => 'emailAddresses,photos' ) );
 
 			if ( isset( $response['emailAddresses'][0]['value'], $response['photos'][0]['url'] ) ) {
