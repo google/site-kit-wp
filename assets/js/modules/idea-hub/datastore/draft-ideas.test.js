@@ -24,7 +24,6 @@ import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
-	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
@@ -93,19 +92,8 @@ describe( 'modules/idea-hub draft-ideas', () => {
 		} );
 
 		describe( 'removeIdeaFromNewAndSavedIdeas', () => {
-			const options = {
-				offset: 0,
-				length: 5,
-			};
-
 			it( 'removes idea from newIdeas if exists', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-					{ body: fixtures.newIdeas, status: 200 }
-				);
-				registry.select( STORE_NAME ).getNewIdeas( options );
-
-				await untilResolved( registry, STORE_NAME ).getNewIdeas( options );
+				registry.dispatch( STORE_NAME ).receiveGetNewIdeas( fixtures.newIdeas );
 
 				expect( registry.stores[ STORE_NAME ].store.getState().draftPostIdeas ).toEqual( undefined );
 
@@ -128,13 +116,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 			} );
 
 			it( 'removes idea from savedIdeas if exists', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 }
-				);
-				registry.select( STORE_NAME ).getSavedIdeas( options );
-
-				await untilResolved( registry, STORE_NAME ).getSavedIdeas( options );
+				registry.dispatch( STORE_NAME ).receiveGetSavedIdeas( fixtures.savedIdeas );
 
 				expect( registry.stores[ STORE_NAME ].store.getState().draftPostIdeas ).toEqual( undefined );
 
