@@ -196,7 +196,7 @@ storiesOf( 'AdSense Module', module )
 					'DATE',
 				],
 				metrics: [
-					'TOTAL_EARNINGS',
+					'ESTIMATED_EARNINGS',
 					'PAGE_VIEWS_RPM',
 					'IMPRESSIONS',
 					'PAGE_VIEWS_CTR',
@@ -213,7 +213,7 @@ storiesOf( 'AdSense Module', module )
 				startDate,
 				endDate,
 				metrics: [
-					'TOTAL_EARNINGS',
+					'ESTIMATED_EARNINGS',
 					'PAGE_VIEWS_RPM',
 					'IMPRESSIONS',
 					'PAGE_VIEWS_CTR',

@@ -36,8 +36,6 @@ import HelpMenu from '../help/HelpMenu';
 import { useFeature } from '../../hooks/useFeature';
 import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
 
-const ONE_HOUR_IN_MS = 60 * 60 * 1000;
-
 export default function DashboardApp() {
 	const dashboardWidgetsEnabled = useFeature( 'widgets.dashboard' );
 	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
@@ -78,7 +76,7 @@ export default function DashboardApp() {
 					</Grid>
 				</div>
 			) }
-			{ userFeedbackEnabled && <SurveyViewTrigger triggerID="view_dashboard" ttl={ ONE_HOUR_IN_MS } /> }
+			{ userFeedbackEnabled && <SurveyViewTrigger triggerID="view_dashboard" ttl={ 3600 } /> }
 		</Fragment>
 	);
 }
