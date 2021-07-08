@@ -108,13 +108,8 @@ const baseActions = {
 				}
 				if ( ttl > 0 ) {
 					setTimeout( () => {
-						function* generator() {
-							// With a positive ttl we cache an empty object to avoid calling fetchTriggerSurvey() again after 30s.
-							yield Data.commonActions.await( setItem( cacheKey, {}, { ttl } ) );
-						}
-
-						const gen = generator();
-						gen.next();
+						// With a positive ttl we cache an empty object to avoid calling fetchTriggerSurvey() again after 30s.
+						setItem( cacheKey, {}, { ttl } );
 					}, 3000 );
 				}
 			}
