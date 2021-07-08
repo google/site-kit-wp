@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { pick } from 'lodash';
+import { omit } from 'lodash';
 
 /**
  * Internal dependencies
@@ -225,20 +225,18 @@ const baseActions = {
 export const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case SET_ACTIVITY: {
-			const { activities } = state;
 			const { key, value } = payload;
 
 			return {
 				...state,
 				activities: {
-					...activities,
+					...state.activities,
 					[ key ]: value,
 				},
 			};
 		}
 
 		case REMOVE_ACTIVITY: {
-			const { activities } = state;
 			const { key } = payload;
 
 			return {
