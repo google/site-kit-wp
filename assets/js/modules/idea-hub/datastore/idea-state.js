@@ -23,11 +23,6 @@ import invariant from 'invariant';
 import { pick } from 'lodash';
 
 /**
- * WordPress dependencies
- */
-import { combineReducers } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -227,25 +222,30 @@ const baseActions = {
 	},
 };
 
-export const activitiesReducer = ( state, { type, payload } ) => {
+export const baseReducer = ( state, { type, payload } ) => {
+	const { activities } = state;
+
 	switch ( type ) {
 		case SET_ACTIVITY: {
 			const { key, value } = payload;
 
 			return {
 				...state,
-				[ key ]: value,
+				activities: {
+					...activities,
+					[ key ]: value,
+				},
 			};
 		}
 
 		case REMOVE_ACTIVITY: {
 			const { key } = payload;
 
-			const keysToLeave = Object.keys( state ).filter( ( k ) => k !== key );
+			const keysToLeave = Object.keys( activities ).filter( ( k ) => k !== key );
 
-			const remainingKeys = pick( state, keysToLeave );
+			const remainingKeys = pick( activities, keysToLeave );
 
-			return remainingKeys;
+			return { ...state, activities: remainingKeys };
 		}
 
 		default: {
@@ -253,8 +253,6 @@ export const activitiesReducer = ( state, { type, payload } ) => {
 		}
 	}
 };
-
-export const baseReducer = combineReducers( { activities: activitiesReducer } );
 
 export const baseSelectors = {
 	/**
