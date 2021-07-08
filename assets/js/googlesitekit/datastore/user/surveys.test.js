@@ -23,6 +23,7 @@ import {
 	createTestRegistry,
 	muteFetch,
 } from '../../../../../tests/js/utils';
+import { actHook as act } from '../../../../../tests/js/test-utils';
 import { createCacheKey } from '../../api';
 import { setItem, setSelectedStorageBackend } from '../../api/cache';
 import { STORE_NAME } from './constants';
@@ -116,6 +117,7 @@ describe( 'core/user surveys', () => {
 				fetchMock.postOnce( surveyTriggerEndpoint, { body: { triggerID } } );
 
 				await registry.dispatch( STORE_NAME ).triggerSurvey( triggerID, { ttl: 500 } );
+				act( () => jest.advanceTimersByTime( 30005 ) );
 				expect( ttl ).toBe( 500 );
 
 				// Reset the backend storage mechanism.
