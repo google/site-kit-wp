@@ -97,6 +97,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				offset: 0,
 				length: 5,
 			};
+
 			it( 'removes idea from newIdeas if exists', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
