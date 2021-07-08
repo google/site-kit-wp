@@ -76,7 +76,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 		const adsenseData = select( STORE_NAME ).getReport( {
 			startDate,
 			endDate,
-			metrics: 'TOTAL_EARNINGS',
+			metrics: 'ESTIMATED_EARNINGS',
 		} );
 
 		const adSenseLinked = select( MODULES_ANALYTICS ).getAdsenseLinked();
