@@ -266,7 +266,6 @@ export const baseSelectors = {
 	 * @return {*} Value stored in state by key. Returns `undefined` if key isn't found.
 	 */
 	getActivity( state, key ) {
-		// TODO - should this be chained up by depending on an existing selector?
 		return state.activities[ key ];
 	},
 };
