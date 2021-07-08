@@ -36,9 +36,9 @@ use Google\Site_Kit\Modules\AdSense\AMP_Tag;
 use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Modules\AdSense\Tag_Guard;
 use Google\Site_Kit\Modules\AdSense\Web_Tag;
-use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
+use Google\Site_Kit_Dependencies\Google\Model;
 use Google\Site_Kit_Dependencies\Google_Service_Adsense;
-use Google\Site_Kit_Dependencies\Google_Service_Adsense_Alert;
+use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -293,7 +293,7 @@ final class AdSense extends Module
 					}
 					$alerts = array_filter(
 						$alerts,
-						function( Google_Service_Adsense_Alert $alert ) {
+						function( Alert $alert ) {
 							return 'SEVERE' === $alert->getSeverity();
 						}
 					);
@@ -777,8 +777,8 @@ final class AdSense extends Module
 	 *
 	 * @since 1.36.0
 	 *
-	 * @param Google_Model $account Account model.
-	 * @param string       $id_key  Attribute name that contains account ID.
+	 * @param Model  $account Account model.
+	 * @param string $id_key  Attribute name that contains account ID.
 	 * @return \stdClass Updated model with _id attribute.
 	 */
 	public static function filter_account_with_ids( $account, $id_key = 'name' ) {
@@ -797,8 +797,8 @@ final class AdSense extends Module
 	 *
 	 * @since 1.36.0
 	 *
-	 * @param Google_Model $client Client model.
-	 * @param string       $id_key Attribute name that contains client ID.
+	 * @param Model  $client Client model.
+	 * @param string $id_key Attribute name that contains client ID.
 	 * @return \stdClass Updated model with _id and _accountID attributes.
 	 */
 	public static function filter_client_with_ids( $client, $id_key = 'name' ) {
@@ -818,8 +818,8 @@ final class AdSense extends Module
 	 *
 	 * @since 1.36.0
 	 *
-	 * @param Google_Model $adunit Ad unit model.
-	 * @param string       $id_key Attribute name that contains ad unit ID.
+	 * @param Model  $adunit Ad unit model.
+	 * @param string $id_key Attribute name that contains ad unit ID.
 	 * @return \stdClass Updated model with _id, _clientID and _accountID attributes.
 	 */
 	public static function filter_adunit_with_ids( $adunit, $id_key = 'name' ) {
