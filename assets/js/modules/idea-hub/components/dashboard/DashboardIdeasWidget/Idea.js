@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { CircularProgress } from '@material-ui/core';
 
 /**
  * WordPress dependencies
@@ -109,9 +110,18 @@ const Idea = ( idea ) => {
 				</Cell>
 				<Cell smSize={ 4 } mdSize={ 3 } lgSize={ 3 } className="googlesitekit-idea-hub__idea--actions">
 					{ activity !== IDEA_HUB_ACTIVITY_CREATING_DRAFT && (
-						<p className="googlesitekit-idea-hub__actions--view">
-							{ __( 'Creating draft', 'google-site-kit' ) }
-						</p>
+						<Fragment>
+							<p className="googlesitekit-idea-hub__actions--view">
+								{ __( 'Creating draft', 'google-site-kit' ) }
+							</p>
+							<CircularProgress
+								style={ {
+									marginLeft: 8,
+									width: 10,
+									height: 10,
+								} }
+							/>
+						</Fragment>
 					) }
 					{ activity !== IDEA_HUB_ACTIVITY_CREATING_DRAFT && (
 						<Fragment>
