@@ -109,7 +109,7 @@ const Idea = ( idea ) => {
 							<p className="googlesitekit-idea-hub__actions--view">
 								{ activity === IDEA_HUB_ACTIVITY_CREATING_DRAFT
 									? __( 'Creating draft', 'google-site-kit' )
-									: __( 'Creating draft', 'google-site-kit' )
+									: __( 'Draft created', 'google-site-kit' )
 								}
 							</p>
 							<CircularProgress
