@@ -26,7 +26,7 @@ import { CircularProgress } from '@material-ui/core';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState, Fragment } from '@wordpress/element';
+import { useCallback, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -64,7 +64,6 @@ const Idea = ( idea ) => {
 		removeActivity,
 		removeIdeaFromNewAndSavedIdeas,
 	} = useDispatch( STORE_NAME );
-	const [ isProcessing, setIsProcessing ] = useState( false );
 	const activity = useSelect( ( select ) => select( STORE_NAME ).getActivity( name ) );
 
 	const handleDelete = useCallback( async () => {
@@ -80,8 +79,6 @@ const Idea = ( idea ) => {
 	}, [ name, unsaveIdea ] );
 
 	const handleCreate = useCallback( async () => {
-		setIsProcessing( true );
-
 		setActivity( name, IDEA_HUB_ACTIVITY_CREATING_DRAFT );
 
 		await createIdeaDraftPost( { name, text, topics } );
@@ -92,8 +89,6 @@ const Idea = ( idea ) => {
 			removeActivity( name );
 			removeIdeaFromNewAndSavedIdeas( idea );
 		}, DRAFT_CREATED_TIMER );
-
-		setIsProcessing( false );
 	}, [ idea, removeActivity, removeIdeaFromNewAndSavedIdeas, createIdeaDraftPost, name, text, topics, setActivity ] );
 
 	return (
@@ -134,7 +129,6 @@ const Idea = ( idea ) => {
 									onClick={ handleDelete }
 									icon={ <DeleteIcon /> }
 									className="googlesitekit-idea-hub__actions--delete"
-									disabled={ isProcessing }
 								/>
 							) }
 
@@ -143,7 +137,6 @@ const Idea = ( idea ) => {
 									onClick={ handlePin }
 									icon={ <PinIcon /> }
 									className="googlesitekit-idea-hub__actions--pin"
-									disabled={ isProcessing }
 								/>
 							) }
 
@@ -152,7 +145,6 @@ const Idea = ( idea ) => {
 									onClick={ handleUnpin }
 									icon={ <UnpinIcon /> }
 									className="googlesitekit-idea-hub__actions--unpin"
-									disabled={ isProcessing }
 								/>
 							) }
 
@@ -160,7 +152,6 @@ const Idea = ( idea ) => {
 								<Button
 									onClick={ handleCreate }
 									icon={ <CreateIcon /> }
-									disabled={ isProcessing }
 								/>
 							) }
 
