@@ -110,7 +110,7 @@ const baseActions = {
 					setTimeout( () => {
 						// With a positive ttl we cache an empty object to avoid calling fetchTriggerSurvey() again after 30s.
 						setItem( cacheKey, {}, { ttl } );
-					}, 3000 );
+					}, 30000 );
 				}
 			}
 

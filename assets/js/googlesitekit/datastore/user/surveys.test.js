@@ -101,6 +101,7 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'should cache survey for provided ttl', async () => {
+				jest.useFakeTimers();
 				let ttl;
 				const triggerID = 'optimizeSurvey';
 
@@ -115,13 +116,13 @@ describe( 'core/user surveys', () => {
 				} );
 
 				fetchMock.postOnce( surveyTriggerEndpoint, { body: { triggerID } } );
-
 				await registry.dispatch( STORE_NAME ).triggerSurvey( triggerID, { ttl: 500 } );
-				act( () => jest.advanceTimersByTime( 30005 ) );
+				act( () => jest.advanceTimersByTime( 40000 ) );
 				expect( ttl ).toBe( 500 );
 
 				// Reset the backend storage mechanism.
 				setSelectedStorageBackend( undefined );
+				jest.runAllTimers();
 			} );
 		} );
 
