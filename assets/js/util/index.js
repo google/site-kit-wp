@@ -47,57 +47,6 @@ export * from './chart';
 export * from './urls';
 
 /**
- * Removes a parameter from a URL string.
- *
- * Fallback for when URL is unable to handle parsedURL.searchParams.delete.
- *
- * @since 1.0.0
- *
- * @param {string} url       The URL to process.
- * @param {string} parameter The URL parameter to remove.
- * @return {string} URL without the deleted parameter.
- *
- */
-const removeURLFallBack = ( url, parameter ) => {
-	const urlparts = url.split( '?' );
-	if ( 2 <= urlparts.length ) {
-		const prefix = encodeURIComponent( parameter ) + '=';
-		const pars = urlparts[ 1 ].split( /[&;]/g );
-
-		//reverse iteration as may be destructive
-		const newPars = pars.filter( ( param ) => {
-			return -1 === param.lastIndexOf( prefix, 0 );
-		} );
-
-		url = urlparts[ 0 ] + '/' + ( 0 < newPars.length ? '?' + newPars.join( '&' ) : '' );
-		return url;
-	}
-	return url;
-};
-
-/**
- * Removes a parameter from a URL string.
- *
- * Leverages the URL object internally.
- *
- * @since 1.0.0
- *
- * @param {string} url       The URL to process.
- * @param {string} parameter The URL parameter to remove.
- * @return {string} URL without the deleted parameter.
- */
-export const removeURLParameter = ( url, parameter ) => {
-	const parsedURL = new URL( url );
-
-	// If the URL implementation doesn't support ! parsedURL.searchParams, use the fallback handler.
-	if ( ! parsedURL.searchParams || ! parsedURL.searchParams.delete ) {
-		return removeURLFallBack( url, parameter );
-	}
-	parsedURL.searchParams.delete( parameter );
-	return parsedURL.href;
-};
-
-/**
  * Transforms a period string into a number of seconds.
  *
  * @since 1.0.0
@@ -131,23 +80,6 @@ export const getTimeInSeconds = ( period ) => {
 		case 'year':
 			return year;
 	}
-};
-
-/**
- * Retrieves the number of days between 2 dates.
- *
- * @since 1.0.0
- *
- * @param {Date} dateStart Start date instance.
- * @param {Date} dateEnd   End date instance.
- * @return {number} The number of days.
- */
-export const getDaysBetweenDates = ( dateStart, dateEnd ) => {
-	const dayMs = 1000 * getTimeInSeconds( 'day' );
-	const dateStartMs = dateStart.getTime();
-	const dateEndMs = dateEnd.getTime();
-
-	return Math.round( Math.abs( dateStartMs - dateEndMs ) / dayMs );
 };
 
 /**
@@ -245,18 +177,6 @@ export const validateJSON = ( stringToValidate ) => {
 	} catch ( e ) {
 		return false;
 	}
-};
-
-/**
- * Verifies Optimize ID.
- *
- * @since 1.0.0
- *
- * @param {string} stringToValidate The string to validate.
- * @return {boolean} Indicates GTM or OPT tag is valid.
- */
-export const validateOptimizeID = ( stringToValidate ) => {
-	return ( stringToValidate.match( /^(GTM|OPT)-[a-zA-Z\d]{7}$/ ) );
 };
 
 /**
