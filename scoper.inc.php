@@ -109,10 +109,6 @@ return array(
 				$contents = str_replace( "'Google_", "'" . $prefix . '\Google_', $contents );
 				$contents = str_replace( '"Google_', '"' . $prefix . '\Google_', $contents );
 			}
-			if ( false !== strpos( $file_path, 'vendor/google/apiclient-services/' ) ) {
-				$contents = str_replace( "'Google_Service_", "'" . $prefix . '\Google_Service_', $contents );
-				$contents = str_replace( '"Google_Service_', '"' . $prefix . '\Google_Service_', $contents );
-			}
 			return $contents;
 		},
 	),
