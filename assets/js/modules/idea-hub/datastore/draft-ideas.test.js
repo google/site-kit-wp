@@ -91,6 +91,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				expect( registry.stores[ STORE_NAME ].store.getState().data ).toEqual( undefined );
 			} );
 		} );
+
 		describe( 'removeIdeaFromNewAndSavedIdeas', () => {
 			const options = {
 				offset: 0,
@@ -124,6 +125,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				);
 				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual( [] );
 			} );
+
 			it( 'removes idea from savedIdeas if exists', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
