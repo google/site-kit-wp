@@ -57,7 +57,7 @@ ActiveNotConnected.args = {
 };
 
 export default {
-	title: 'Modules/Idea Hub/Components/dashboard/DashboardCTA',
+	title: 'Modules/Idea Hub/Components/DashboardCTA',
 	parameters: {
 		features: [ 'ideaHubModule' ],
 	},

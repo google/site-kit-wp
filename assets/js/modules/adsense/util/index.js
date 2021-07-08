@@ -39,12 +39,12 @@ export function reduceAdSenseData( rows ) {
 	];
 
 	each( rows, ( row ) => {
-		const date = new Date( row[ 0 ] );
+		const date = new Date( row.cells[ 0 ].value );
 		dataMap.push( [
 			date,
-			row[ 2 ],
-			row[ 1 ],
-			row[ 3 ],
+			row.cells[ 2 ].value,
+			row.cells[ 1 ].value,
+			row.cells[ 3 ].value,
 		] );
 	} );
 
@@ -70,14 +70,7 @@ export const isDataZeroAdSense = ( adSenseData, datapoint, dataRequest ) => {
 		return false;
 	}
 
-	let totals = [];
-	if ( adSenseData.totals ) {
-		totals = adSenseData.totals;
-	}
-
-	// Look for any value > 0.
-	totals = totals.filter( ( total ) => {
-		return 0 < total;
-	} );
-	return 0 === totals.length;
+	return !! adSenseData.totals?.cells.some(
+		( cell ) => cell.value > 0
+	);
 };

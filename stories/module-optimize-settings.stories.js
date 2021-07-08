@@ -71,7 +71,7 @@ const withRegistry = ( Story ) => {
 
 storiesOf( 'Optimize Module/Settings', module )
 	.add( 'View, closed', ( args, { registry } ) => {
-		return <Settings isOpen={ false } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -83,7 +83,7 @@ storiesOf( 'Optimize Module/Settings', module )
 			optimizeID: 'OPT-1234567',
 		} );
 
-		return <Settings isOpen={ true } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/optimize" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -97,7 +97,7 @@ storiesOf( 'Optimize Module/Settings', module )
 			ampExperimentJSON: '{"experimentName":{"sticky":true,"variants":{"0":33.4,"1":33.3,"2":33.3}}}',
 		} );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/optimize/edit" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -107,7 +107,7 @@ storiesOf( 'Optimize Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/optimize/edit" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -122,7 +122,7 @@ storiesOf( 'Optimize Module/Settings', module )
 			ampExperimentJSON: '{"experimentName":{"sticky":true,"variants":{"0":33.4,"1":33.3,"2":33.3}}}',
 		} );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/optimize/edit" />;
 	}, {
 		decorators: [
 			withRegistry,
