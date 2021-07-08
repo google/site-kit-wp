@@ -42,7 +42,6 @@ const { useSelect, useDispatch } = Data;
 export default function SetupFormGA4() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 
-	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 	const ga4HasExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).hasExistingTag() );
 	const ga4ExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
 	const ga4MeasurementID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID() );
@@ -50,6 +49,8 @@ export default function SetupFormGA4() {
 	const { selectProperty } = useDispatch( STORE_NAME );
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const shouldShowAssociatedPropertyNotice = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 
 	useMount( () => {
 		selectProperty( PROPERTY_CREATE );
@@ -78,7 +79,7 @@ export default function SetupFormGA4() {
 				<GA4PropertySelect />
 			</div>
 
-			{ ga4PropertyID && ( ga4PropertyID !== PROPERTY_CREATE ) && <GA4PropertyNotice
+			{ shouldShowAssociatedPropertyNotice && <GA4PropertyNotice
 				notice={ __( 'An associated Universal Analytics property will also be created.', 'google-site-kit' ) }
 			/> }
 		</Fragment>

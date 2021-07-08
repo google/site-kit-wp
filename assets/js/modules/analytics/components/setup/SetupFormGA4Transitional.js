@@ -27,7 +27,7 @@ import { Fragment, useEffect } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { STORE_NAME, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4, PROPERTY_CREATE } from '../../datastore/constants';
+import { STORE_NAME, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import {
@@ -57,6 +57,8 @@ export default function SetupFormGA4Transitional() {
 
 	const { setUseSnippet: uaSetUseSnippet } = useDispatch( STORE_NAME );
 	const { setUseSnippet: ga4SetUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const shouldShowAssociatedPropertyNotice = propertyID || ga4PropertyID;
 
 	useEffect( () => {
 		uaSetUseSnippet( existingTag !== propertyID );
@@ -101,7 +103,7 @@ export default function SetupFormGA4Transitional() {
 				</div>
 			) }
 
-			{ ( propertyID || ga4PropertyID ) && ( ga4PropertyID !== PROPERTY_CREATE ) && <GA4PropertyNotice notice={ notice }>
+			{ shouldShowAssociatedPropertyNotice && <GA4PropertyNotice notice={ notice }>
 				{ propertyType === PROPERTY_TYPE_GA4 && (
 					<Fragment>
 						<div className="googlesitekit-setup-module__inputs">
