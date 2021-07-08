@@ -106,7 +106,7 @@ const Idea = ( idea ) => {
 				<Cell smSize={ 4 } mdSize={ 3 } lgSize={ 3 } className="googlesitekit-idea-hub__idea--actions">
 					{ [ IDEA_HUB_ACTIVITY_CREATING_DRAFT, IDEA_HUB_ACTIVITY_DRAFT_CREATED ].includes( activity ) && (
 						<Fragment>
-							<p className="googlesitekit-idea-hub__actions--view">
+							<p className="googlesitekit-idea-hub__loading-text">
 								{ activity === IDEA_HUB_ACTIVITY_CREATING_DRAFT
 									? __( 'Creating draft', 'google-site-kit' )
 									: __( 'Draft created', 'google-site-kit' )
