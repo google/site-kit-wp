@@ -223,10 +223,9 @@ const baseActions = {
 };
 
 export const baseReducer = ( state, { type, payload } ) => {
-	const { activities } = state;
-
 	switch ( type ) {
 		case SET_ACTIVITY: {
+			const { activities } = state;
 			const { key, value } = payload;
 
 			return {
@@ -239,6 +238,7 @@ export const baseReducer = ( state, { type, payload } ) => {
 		}
 
 		case REMOVE_ACTIVITY: {
+			const { activities } = state;
 			const { key } = payload;
 
 			const keysToLeave = Object.keys( activities ).filter( ( k ) => k !== key );
