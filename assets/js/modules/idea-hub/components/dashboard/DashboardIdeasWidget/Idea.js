@@ -81,11 +81,11 @@ const Idea = ( idea ) => {
 	const handleCreate = useCallback( async () => {
 		setIsProcessing( true );
 
-		await setActivity( name, IDEA_HUB_ACTIVITY_CREATING_DRAFT );
+		setActivity( name, IDEA_HUB_ACTIVITY_CREATING_DRAFT );
 
 		await createIdeaDraftPost( { name, text, topics } );
 
-		await setActivity( name, IDEA_HUB_ACTIVITY_DRAFT_CREATED );
+		setActivity( name, IDEA_HUB_ACTIVITY_DRAFT_CREATED );
 
 		setTimeout( () => {
 			removeActivity( name );
@@ -108,6 +108,11 @@ const Idea = ( idea ) => {
 					<p className="googlesitekit-idea-hub__idea--text">{ text }</p>
 				</Cell>
 				<Cell smSize={ 4 } mdSize={ 3 } lgSize={ 3 } className="googlesitekit-idea-hub__idea--actions">
+					{ activity !== IDEA_HUB_ACTIVITY_CREATING_DRAFT && (
+						<p className="googlesitekit-idea-hub__actions--view">
+							{ __( 'Creating draft', 'google-site-kit' ) }
+						</p>
+					) }
 					{ activity !== IDEA_HUB_ACTIVITY_CREATING_DRAFT && (
 						<Fragment>
 
