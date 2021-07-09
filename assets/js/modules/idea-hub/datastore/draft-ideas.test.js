@@ -105,7 +105,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				);
 				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual( undefined );
 
-				registry.dispatch( STORE_NAME ).removeIdeaFromNewAndSavedIdeas( fixtures.draftIdeas.idea );
+				registry.dispatch( STORE_NAME ).removeIdeaFromNewAndSavedIdeas( fixtures.draftIdeas.idea.name );
 
 				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).not.toEqual(
 					expect.arrayContaining( [
@@ -129,7 +129,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 					] )
 				);
 
-				registry.dispatch( STORE_NAME ).removeIdeaFromNewAndSavedIdeas( fixtures.draftIdeas.idea );
+				registry.dispatch( STORE_NAME ).removeIdeaFromNewAndSavedIdeas( fixtures.draftIdeas.idea.name );
 
 				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).not.toEqual(
 					expect.arrayContaining( [
