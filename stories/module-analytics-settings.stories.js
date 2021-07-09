@@ -26,11 +26,8 @@ import { storiesOf } from '@storybook/react';
  */
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME, PROFILE_CREATE } from '../assets/js/modules/analytics/datastore/constants';
-import {
-	createTestRegistry,
-	provideModules,
-	provideModuleRegistrations,
-} from '../tests/js/utils';
+import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
+import { createTestRegistry, provideModules, provideModuleRegistrations } from '../tests/js/utils';
 import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 import defaultSettings from '../assets/js/modules/analytics/datastore/__fixtures__/settings--default.json';
@@ -86,6 +83,48 @@ storiesOf( 'Analytics Module/Settings', module )
 		} );
 
 		return <Settings registry={ registry } route="/connected-services/analytics" />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
+	} )
+	.add( 'View, open with all settings + GA4', ( args, { registry } ) => {
+		const accountID = '1234567890';
+
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			...defaultSettings,
+			accountID,
+			propertyID: 'UA-1234567890-1',
+			internalWebPropertyID: '135791113',
+			profileID: '9999999',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: '1001',
+			webDataStreamID: '2001',
+			measurementID: 'G-12345ABCDE',
+		} );
+
+		return (
+			<Settings
+				registry={ registry }
+				features={ [ 'ga4setup' ] }
+				route="/connected-services/analytics"
+			/>
+		);
 	}, {
 		decorators: [
 			withRegistry,
