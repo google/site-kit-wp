@@ -23,7 +23,6 @@ use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Scopes;
-use Google\Site_Kit_Dependencies\Google\Task\Runner;
 use Google\Site_Kit_Dependencies\Google_Service_PeopleService;
 use WP_HTTP_Proxy;
 
@@ -180,11 +179,22 @@ final class OAuth_Client {
 	 */
 	public function get_client() {
 		if ( ! $this->google_client instanceof Google_Site_Kit_Client ) {
+			$credentials = $this->credentials->get();
+
 			$this->google_client = Client_Factory::create_client(
 				array(
-					'context'      => $this->context,
-					'options'      => $this->options,
-					'user_options' => $this->user_options,
+					'client_id'                => $credentials['oauth2_client_id'],
+					'client_secret'            => $credentials['oauth2_client_secret'],
+					'redirect_uri'             => $this->get_redirect_uri(),
+					'token'                    => $this->get_token(),
+					'token_callback'           => array( $this, 'set_token' ),
+					'token_exception_callback' => function( Exception $e ) {
+						$this->handle_fetch_token_exception( $e );
+					},
+					'required_scopes'          => $this->get_required_scopes(),
+					'login_hint_email'         => $this->profile->has() ? $this->profile->get()['email'] : '',
+					'using_proxy'              => $this->credentials->using_proxy(),
+					'proxy_url'                => $this->google_proxy->url(),
 				)
 			);
 		}
@@ -210,7 +220,7 @@ final class OAuth_Client {
 		try {
 			$token_response = $this->google_client->fetchAccessTokenWithRefreshToken( $refresh_token );
 		} catch ( \Exception $e ) {
-			Client_Factory::handle_fetch_token_exception( $this->user_options, $e );
+			$this->handle_fetch_token_exception( $e );
 			return;
 		}
 
@@ -219,7 +229,7 @@ final class OAuth_Client {
 			return;
 		}
 
-		Client_Factory::set_saved_token( $this->user_options, $token_response );
+		$this->set_token( $token_response );
 	}
 
 	/**
@@ -234,7 +244,7 @@ final class OAuth_Client {
 			// No special handling, we just need to make sure this goes through.
 		}
 
-		Client_Factory::delete_saved_token( $this->user_options );
+		$this->delete_token();
 	}
 
 	/**
@@ -310,7 +320,7 @@ final class OAuth_Client {
 	 * @return bool true if any required scopes are not satisfied, otherwise false.
 	 */
 	public function needs_reauthentication() {
-		if ( ! Client_Factory::get_saved_token( $this->user_options ) ) {
+		if ( ! $this->get_token() ) {
 			return false;
 		}
 
@@ -381,6 +391,68 @@ final class OAuth_Client {
 
 		$this->user_options->set( self::OPTION_AUTH_SCOPES, $base_scopes );
 		$this->user_options->set( self::OPTION_ADDITIONAL_AUTH_SCOPES, $extra_scopes );
+	}
+
+	/**
+	 * Gets the current user's full OAuth token data, including access token and optional refresh token.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Associative array with 'access_token', 'expires_in', 'created', and 'refresh_token' keys, or empty
+	 *               array if no token available.
+	 */
+	public function get_token() {
+		$access_token = $this->get_access_token();
+		if ( empty( $access_token ) ) {
+			return array();
+		}
+
+		$token = array(
+			'access_token' => $access_token,
+			'expires_in'   => (int) $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
+			'created'      => (int) $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
+		);
+
+		$refresh_token = $this->get_refresh_token();
+		if ( empty( $refresh_token ) ) {
+			$token['refresh_token'] = $refresh_token;
+		}
+
+		return $token;
+	}
+
+	/**
+	 * Sets the current user's full OAuth token data, including access token and optional refresh token.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $token {
+	 *     Full token data, optionally including the refresh token.
+	 *
+	 *     @type string $access_token  Required. The access token.
+	 *     @type int    $expires_in    Number of seconds in which the token expires. Default 3600 (1 hour).
+	 *     @type int    $created       Timestamp in seconds when the token was created. Default is the current time.
+	 *     @type string $refresh_token The refresh token, if relevant. If passed, it is set as well.
+	 * }
+	 */
+	public function set_token( array $token ) {
+		if ( empty( $token['access_token'] ) ) {
+			return;
+		}
+
+		$token = array_merge(
+			array(
+				'access_token' => '',
+				'expires_in'   => 0,
+				'created'      => 0,
+			),
+			$token
+		);
+		$this->set_access_token( $token['access_token'], $token['expires_in'], $token['created'] );
+
+		if ( ! empty( $token['refresh_token'] ) ) {
+			$this->set_refresh_token( $token['refresh_token'] );
+		}
 	}
 
 	/**
@@ -526,7 +598,7 @@ final class OAuth_Client {
 			wp_safe_redirect( $this->get_proxy_setup_url( $e->getAccessCode(), $e->getMessage() ) );
 			exit();
 		} catch ( Exception $e ) {
-			Client_Factory::handle_fetch_token_exception( $this->user_options, $e );
+			$this->handle_fetch_token_exception( $e );
 			wp_safe_redirect( admin_url() );
 			exit();
 		}
@@ -538,7 +610,7 @@ final class OAuth_Client {
 		}
 
 		// Update the access token and refresh token.
-		Client_Factory::set_saved_token( $this->user_options, $token_response );
+		$this->set_token( $token_response );
 
 		// Store the previously granted scopes for use in the action below before they're updated.
 		$previous_scopes = $this->get_granted_scopes();
@@ -724,7 +796,7 @@ final class OAuth_Client {
 	 *                or empty string on failure.
 	 */
 	public function get_proxy_permissions_url() {
-		$token = Client_Factory::get_saved_token( $this->user_options );
+		$token = $this->get_token();
 		if ( empty( $token['access_token'] ) ) {
 			return '';
 		}
@@ -814,5 +886,16 @@ final class OAuth_Client {
 		$this->user_options->delete( self::OPTION_REDIRECT_URL );
 		$this->user_options->delete( self::OPTION_AUTH_SCOPES );
 		$this->user_options->delete( self::OPTION_ADDITIONAL_AUTH_SCOPES );
+	}
+
+	/**
+	 * Gets the OAuth redirect URI that listens to the callback request.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string OAuth redirect URI.
+	 */
+	private function get_redirect_uri() {
+		return add_query_arg( 'oauth2callback', '1', admin_url( 'index.php' ) );
 	}
 }
