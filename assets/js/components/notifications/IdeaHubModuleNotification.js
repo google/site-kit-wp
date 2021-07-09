@@ -33,16 +33,17 @@ import Notification from '../legacy-notifications/notification';
 import IdeaHubNotificationSVG from '../../../svg/idea-hub-notification.svg';
 const { useSelect, useDispatch } = Data;
 
-const notificationID = 'idea-hub-module-notification';
+const NOTIFICATION_ID = 'idea-hub-module-notification';
+
 const IdeaHubModuleNotification = () => {
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const isActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'idea-hub' ) );
-	const isItemDismissed = useSelect( ( select ) => select( CORE_USER ).isItemDismissed( notificationID ) );
+	const isItemDismissed = useSelect( ( select ) => select( CORE_USER ).isItemDismissed( NOTIFICATION_ID ) );
 	const adminReauthURL = useSelect( ( select ) => select( MODULES_IDEA_HUB )?.getAdminReauthURL() );
 
 	const handleOnDismiss = useCallback( async () => {
-		await dismissItem( notificationID );
+		await dismissItem( NOTIFICATION_ID );
 	}, [ dismissItem ] );
 
 	if ( isActive || isItemDismissed || isItemDismissed === undefined ) {
@@ -51,7 +52,7 @@ const IdeaHubModuleNotification = () => {
 
 	return (
 		<Notification
-			id={ notificationID }
+			id={ NOTIFICATION_ID }
 			title={ __( 'Get new ideas to write about based on what people are searching for', 'google-site-kit' ) }
 			description={ __( 'Set up Idea Hub to get topic suggestions based on unanswered searches that match your site’s topic.', 'google-site-kit' ) }
 			ctaLabel={ __( 'Set up', 'google-site-kit' ) }
