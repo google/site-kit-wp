@@ -94,9 +94,9 @@ const Idea = ( props ) => {
 
 		setTimeout( () => {
 			removeActivity( name );
-			removeIdeaFromNewAndSavedIdeas( props );
+			removeIdeaFromNewAndSavedIdeas( name );
 		}, DRAFT_CREATED_TIMER );
-	}, [ props, removeActivity, removeIdeaFromNewAndSavedIdeas, createIdeaDraftPost, name, text, topics, setActivity ] );
+	}, [ removeActivity, removeIdeaFromNewAndSavedIdeas, createIdeaDraftPost, name, text, topics, setActivity ] );
 
 	return (
 		<Grid className="googlesitekit-idea-hub__idea--single">

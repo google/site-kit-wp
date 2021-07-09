@@ -82,14 +82,14 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} idea Idea Hub Idea.
+	 * @param {Object} name Idea Hub Idea name.
 	 * @return {Object} Redux-style action.
 	 */
-	removeIdeaFromNewAndSavedIdeas( idea ) {
-		invariant( idea, 'idea is required.' );
+	removeIdeaFromNewAndSavedIdeas( name ) {
+		invariant( name, 'name is required.' );
 
 		return {
-			payload: { idea },
+			payload: { name },
 			type: REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS,
 		};
 	},
@@ -98,12 +98,10 @@ const baseActions = {
 export const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS: {
-			const { idea } = payload || {};
-
 			return {
 				...state,
-				newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
-				savedIdeas: ( state.savedIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
+				newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== payload?.name ),
+				savedIdeas: ( state.savedIdeas || [] ).filter( ( { name } ) => name !== payload?.name ),
 			};
 		}
 
