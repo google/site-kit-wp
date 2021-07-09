@@ -196,7 +196,7 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setActivity( key, value ) {
-		invariant( key, 'key is required.' );
+		invariant( typeof key === 'string' && key.length > 0, 'key is required.' );
 
 		return {
 			payload: { key, value },
@@ -213,7 +213,7 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	removeActivity( key ) {
-		invariant( key, 'key is required.' );
+		invariant( typeof key === 'string' && key.length > 0, 'key is required.' );
 
 		return {
 			payload: { key },

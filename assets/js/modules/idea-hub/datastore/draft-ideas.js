@@ -82,11 +82,11 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} name Idea Hub Idea name.
+	 * @param {string} name Idea name.
 	 * @return {Object} Redux-style action.
 	 */
 	removeIdeaFromNewAndSavedIdeas( name ) {
-		invariant( name, 'name is required.' );
+		invariant( typeof name === 'string' && name.length > 0, 'name is required.' );
 
 		return {
 			payload: { name },
