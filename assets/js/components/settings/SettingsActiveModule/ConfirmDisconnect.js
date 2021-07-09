@@ -35,21 +35,30 @@ import Data from 'googlesitekit-data';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { clearWebStorage } from '../../../util';
 import Dialog from '../../Dialog';
 const { useSelect, useDispatch } = Data;
 
-export default function ConfirmDisconnect( { slug, handleDialog } ) {
+export default function ConfirmDisconnect( { slug } ) {
 	const [ isDeactivating, setIsDeactivating ] = useState( false );
+	const { setValue } = useDispatch( CORE_UI );
+
+	const dialogActiveKey = `module-${ slug }-dialogActive`;
 
 	const dependentModules = useSelect( ( select ) => select( CORE_MODULES ).getModuleDependantNames( slug ) );
 	const provides = useSelect( ( select ) => select( CORE_MODULES ).getModuleFeatures( slug ) );
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
+	const dialogActive = useSelect( ( select ) => select( CORE_UI ).getValue( dialogActiveKey ) );
+
+	const handleDialog = useCallback( () => {
+		setValue( dialogActiveKey, ! dialogActive );
+	}, [ dialogActive, dialogActiveKey, setValue ] );
 
 	useEffect( () => {
-		const onKeyPress = ( e ) => {
-			if ( ESCAPE === e.keyCode ) {
+		const onKeyPress = ( event ) => {
+			if ( ESCAPE === event.keyCode ) {
 				handleDialog();
 			}
 		};
@@ -79,7 +88,7 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 		}
 	}, [ slug, module?.forceActive, dashboardURL, deactivateModule, navigateTo ] );
 
-	if ( ! module ) {
+	if ( ! module || ! dialogActive ) {
 		return null;
 	}
 
@@ -124,5 +133,4 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 
 ConfirmDisconnect.propTypes = {
 	slug: PropTypes.string.isRequired,
-	handleDialog: PropTypes.func.isRequired,
 };

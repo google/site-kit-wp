@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -30,8 +30,8 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { Cell } from '../../material-components';
 import Layout from '../layout/Layout';
+import { Row } from '../../material-components';
 import OptIn from '../OptIn';
 import VisuallyHidden from '../VisuallyHidden';
 import ResetButton from '../ResetButton';
@@ -68,9 +68,12 @@ const SettingsAdmin = () => {
 	}, [ isUserInputCompleted ] );
 
 	return (
-		<Fragment>
+		<Row>
 			{ userInputEnabled && (
-				<Cell size={ 12 }>
+				<div className="
+					mdc-layout-grid__cell
+					mdc-layout-grid__cell--span-12
+				">
 					{ isUserInputCompleted && (
 						<Layout>
 							<div className="
@@ -103,7 +106,7 @@ const SettingsAdmin = () => {
 					{ ! isUserInputCompleted && (
 						<UserInputSettings isDismissable={ false } />
 					) }
-				</Cell>
+				</div>
 			) }
 			<div className="
 				mdc-layout-grid__cell
@@ -209,7 +212,7 @@ const SettingsAdmin = () => {
 					</div>
 				</Layout>
 			</div>
-		</Fragment>
+		</Row>
 	);
 };
 

@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -32,16 +37,23 @@ import {
 import GenericError from '../../../../components/legacy-notifications/generic-error';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import IdeaHubIcon from '../../../../../svg/idea-hub.svg';
 import BulbIcon from '../../../../../svg/bulb.svg';
+import CloseIcon from '../../../../../svg/close.svg';
 const { useSelect, useDispatch } = Data;
+
+const DISMISS_ITEM_IDEA_HUB_CTA = 'idea-hub-cta';
 
 function DashboardCTA( { Widget } ) {
 	const { connected, active } = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'idea-hub' ) );
+	const dismissed = useSelect( ( select ) => select( CORE_USER ).isItemDismissed( DISMISS_ITEM_IDEA_HUB_CTA ) );
+
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { dismissItem } = useDispatch( CORE_USER );
 
 	const onClick = useCallback( async () => {
 		const { error, response } = await activateModule( 'idea-hub' );
@@ -59,6 +71,15 @@ function DashboardCTA( { Widget } ) {
 		}
 	}, [ activateModule, navigateTo ] );
 
+	const onDismiss = useCallback( async () => {
+		await dismissItem( DISMISS_ITEM_IDEA_HUB_CTA );
+	}, [ dismissItem ] );
+
+	// Don't render this component if it has been dismissed or dismissed items aren't loaded yet.
+	if ( dismissed || dismissed === undefined ) {
+		return null;
+	}
+
 	return (
 		<Widget>
 			<div className="googlesitekit-idea-hub__dashboard-cta">
@@ -70,6 +91,7 @@ function DashboardCTA( { Widget } ) {
 					<h5>
 						{ __( 'Get new topics based on what people are searching for with Idea Hub', 'google-site-kit' ) }
 					</h5>
+
 					<p className="googlesitekit-idea-hub__dashboard-cta__learnmore-copy">
 						<BulbIcon
 							width="16"
@@ -94,11 +116,21 @@ function DashboardCTA( { Widget } ) {
 								: __( 'Set up', 'google-site-kit' )
 						}
 					</Button>
-
 				</div>
+
+				<Button
+					className="googlesitekit-idea-hub__dashboard-cta__close-button"
+					icon={ <CloseIcon width="14" height="14" /> }
+					text
+					onClick={ onDismiss }
+				/>
 			</div>
 		</Widget>
 	);
 }
+
+DashboardCTA.propTypes = {
+	Widget: PropTypes.func.isRequired,
+};
 
 export default DashboardCTA;
