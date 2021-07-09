@@ -56,7 +56,6 @@ class DashboardSetupAlerts extends Component {
 		const { canManageOptions } = global._googlesitekitLegacyData.permissions;
 
 		switch ( notification ) {
-			// for this case
 			case 'authentication_success':
 				if ( ! canManageOptions ) {
 					return null;
@@ -71,9 +70,7 @@ class DashboardSetupAlerts extends Component {
 
 				let showModuleList = true;
 
-				// when this condition is true
 				if ( slug && modulesData[ slug ] ) {
-					// get module for each module slug and check if activated. if all four are activated
 					const numberOfActivatedModules = MODULE_SLUGS
 						.map( ( moduleSlug ) => modulesData[ moduleSlug ].setupComplete )
 						.filter( ( x ) => !! x ).length;
@@ -83,12 +80,10 @@ class DashboardSetupAlerts extends Component {
 					winData.id = `${ winData.id }-${ slug }`;
 					winData.setupTitle = modulesData[ slug ].name;
 
-					// winData.description = __( 'Here are some other services you can connect to see even more stats:', 'google-site-kit' );
-
 					if ( showModuleList ) {
 						winData.description = __( 'Here are some other services you can connect to see even more stats:', 'google-site-kit' );
 					} else {
-						// need to reset this because of code above. just say "no description"
+						// Need to reset this because of default above.
 						winData.description = null;
 					}
 
