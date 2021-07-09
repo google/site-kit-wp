@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { omit } from 'lodash';
+import omit from 'lodash/omit';
 
 /**
  * Internal dependencies
