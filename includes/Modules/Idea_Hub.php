@@ -581,9 +581,7 @@ final class Idea_Hub extends Module
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POSTS ),
 					'dependencies'  => array(
 						'googlesitekit-datastore-user',
-						'googlesitekit-api', // @TODO do we need these?
-						'googlesitekit-data', // @TODO do we need these?
-						'googlesitekit-wp-dashboard', // @TODO do we need these? how else to window.googlesitekit.data.stores
+						'googlesitekit-runtime',
 					),
 				)
 			),

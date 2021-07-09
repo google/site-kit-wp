@@ -311,7 +311,6 @@ final class Assets {
 	 */
 	private function enqueue_minimal_admin_script() {
 		$this->enqueue_asset( 'googlesitekit-base' );
-		$this->enqueue_asset( 'googlesitekit-idea-hub-post-list-notice' ); // @TODO remove me when context in place
 	}
 
 	/**
