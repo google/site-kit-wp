@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Authentication\Clients\OAuth_Client
+ * Class Google\Site_Kit\Core\Authentication\Clients\Client_Factory
  *
  * @package   Google\Site_Kit
  * @copyright 2021 Google LLC

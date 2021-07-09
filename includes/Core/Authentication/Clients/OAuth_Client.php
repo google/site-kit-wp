@@ -387,25 +387,17 @@ final class OAuth_Client {
 	 * Gets the current user's OAuth access token.
 	 *
 	 * @since 1.0.0
-	 * @deprecated n.e.x.t
 	 *
 	 * @return string|bool Access token if it exists, false otherwise.
 	 */
 	public function get_access_token() {
-		_deprecated_function( __METHOD__, 'n.e.x.t', Client_Factory::class . '::get_saved_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
-		$token = Client_Factory::get_saved_token( $this->user_options );
-		if ( empty( $token['access_token'] ) ) {
-			return false;
-		}
-		return $token['access_token'];
+		return $this->encrypted_user_options->get( self::OPTION_ACCESS_TOKEN );
 	}
 
 	/**
 	 * Sets the current user's OAuth access token.
 	 *
 	 * @since 1.0.0
-	 * @deprecated n.e.x.t
 	 *
 	 * @param string $access_token New access token.
 	 * @param int    $expires_in   TTL of the access token in seconds.
@@ -413,55 +405,51 @@ final class OAuth_Client {
 	 * @return bool True on success, false on failure.
 	 */
 	public function set_access_token( $access_token, $expires_in, $created = 0 ) {
-		_deprecated_function( __METHOD__, 'n.e.x.t', Client_Factory::class . '::set_saved_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		// Bail early if nothing change.
+		if ( $this->get_access_token() === $access_token ) {
+			return true;
+		}
 
-		return Client_Factory::set_saved_token(
-			$this->user_options,
-			array(
-				'access_token' => $access_token,
-				'expires_in'   => $expires_in,
-				'created'      => $created,
-			)
-		);
+		// Use sane defaults for these fields.
+		if ( empty( $expires_in ) ) {
+			$expires_in = HOUR_IN_SECONDS;
+		}
+		if ( empty( $created ) ) {
+			$created = time();
+		}
+
+		$this->user_options->set( self::OPTION_ACCESS_TOKEN_EXPIRES_IN, $expires_in );
+		$this->user_options->set( self::OPTION_ACCESS_TOKEN_CREATED, $created );
+
+		return $this->encrypted_user_options->set( self::OPTION_ACCESS_TOKEN, $access_token );
 	}
 
 	/**
 	 * Gets the current user's OAuth refresh token.
 	 *
 	 * @since 1.0.0
-	 * @deprecated n.e.x.t
 	 *
 	 * @return string|bool Refresh token if it exists, false otherwise.
 	 */
 	public function get_refresh_token() {
-		_deprecated_function( __METHOD__, 'n.e.x.t', Client_Factory::class . '::get_saved_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
-		$token = Client_Factory::get_saved_token( $this->user_options );
-		if ( empty( $token['refresh_token'] ) ) {
-			return false;
-		}
-		return $token['refresh_token'];
+		return $this->encrypted_user_options->get( self::OPTION_REFRESH_TOKEN );
 	}
 
 	/**
 	 * Sets the current user's OAuth refresh token.
 	 *
 	 * @since 1.0.0
-	 * @deprecated n.e.x.t
 	 *
 	 * @param string $refresh_token New refresh token.
 	 * @return bool True on success, false on failure.
 	 */
 	public function set_refresh_token( $refresh_token ) {
-		_deprecated_function( __METHOD__, 'n.e.x.t', Client_Factory::class . '::set_saved_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
-		$token = Client_Factory::get_saved_token( $this->user_options );
-		if ( empty( $token ) ) {
-			return false;
+		// Bail early if nothing change.
+		if ( $this->get_refresh_token() === $refresh_token ) {
+			return true;
 		}
 
-		$token['refresh_token'] = $refresh_token;
-		return Client_Factory::set_saved_token( $this->user_options, $token );
+		return $this->encrypted_user_options->set( self::OPTION_REFRESH_TOKEN, $refresh_token );
 	}
 
 	/**
@@ -789,5 +777,42 @@ final class OAuth_Client {
 				/* translators: %s: error code from API */
 				return sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), $error_code );
 		}
+	}
+
+	/**
+	 * Handles an exception thrown when fetching an access token.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param Exception $e Exception thrown.
+	 */
+	private function handle_fetch_token_exception( Exception $e ) {
+		$error_code = $e->getMessage();
+
+		// Revoke and delete user connection data on 'invalid_grant'.
+		// This typically happens during refresh if the refresh token is invalid or expired.
+		if ( 'invalid_grant' === $error_code ) {
+			$this->delete_token();
+		}
+
+		$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
+		if ( $e instanceof Google_Proxy_Code_Exception ) {
+			$this->user_options->set( self::OPTION_PROXY_ACCESS_CODE, $e->getAccessCode() );
+		}
+	}
+
+	/**
+	 * Deletes the current user's token and all associated data.
+	 *
+	 * @since 1.0.3
+	 */
+	private function delete_token() {
+		$this->user_options->delete( self::OPTION_ACCESS_TOKEN );
+		$this->user_options->delete( self::OPTION_ACCESS_TOKEN_EXPIRES_IN );
+		$this->user_options->delete( self::OPTION_ACCESS_TOKEN_CREATED );
+		$this->user_options->delete( self::OPTION_REFRESH_TOKEN );
+		$this->user_options->delete( self::OPTION_REDIRECT_URL );
+		$this->user_options->delete( self::OPTION_AUTH_SCOPES );
+		$this->user_options->delete( self::OPTION_ADDITIONAL_AUTH_SCOPES );
 	}
 }
