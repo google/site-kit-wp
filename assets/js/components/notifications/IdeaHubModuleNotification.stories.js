@@ -28,9 +28,6 @@ const Template = ( { ...args } ) => <IdeaHubModuleNotification { ...args } />;
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
-Ready.decorators = [
-	( Story ) => <Story />,
-];
 
 export default {
 	title: 'Modules/Idea Hub/Notifications/ModuleNotification',

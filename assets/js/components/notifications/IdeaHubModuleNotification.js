@@ -36,15 +36,16 @@ const { useSelect, useDispatch } = Data;
 const notificationID = 'idea-hub-module-notification';
 const IdeaHubModuleNotification = () => {
 	const { dismissItem } = useDispatch( CORE_USER );
+
 	const isActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'idea-hub' ) );
-	// const isItemDismissed = useSelect( ( select ) => select( CORE_USER ).isItemDismissed( notificationID ) );
-	const isItemDismissed = false; // @TODO: remove and use selector.
+	const isItemDismissed = useSelect( ( select ) => select( CORE_USER ).isItemDismissed( notificationID ) );
 	const adminReauthURL = useSelect( ( select ) => select( MODULES_IDEA_HUB )?.getAdminReauthURL() );
-	const handleOnDismiss = useCallback( () => {
-		dismissItem( notificationID );
+
+	const handleOnDismiss = useCallback( async () => {
+		await dismissItem( notificationID );
 	}, [ dismissItem ] );
 
-	if ( ! isActive || isItemDismissed ) {
+	if ( isActive || isItemDismissed || isItemDismissed === undefined ) {
 		return null;
 	}
 

@@ -60,7 +60,7 @@ if ( isFeatureEnabled( 'userInput' ) ) {
 		addUserInputPrompt, 1 );
 }
 
-if ( isFeatureEnabled( 'ideaHubModule' ) && ! notification && ! setup ) {
+if ( isFeatureEnabled( 'ideaHubModule' ) && 'authentication_success' !== notification && 'authentication_failure' !== notification ) {
 	addFilter( 'googlesitekit.DashboardNotifications',
 		'googlesitekit.IdeaHubModule',
 		addIdeaHubModuleNotification, 1 );
