@@ -39,6 +39,7 @@ import {
 	UserProfile,
 	SiteSteps,
 } from '../assets/js/modules/adsense/components/common';
+import { provideAdSenseMockReport } from '../assets/js/modules/adsense/util/data-mock';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
@@ -79,7 +80,7 @@ storiesOf( 'AdSense Module', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetSettings( {
-				accountID: accounts[ 0 ].id,
+				accountID: accounts[ 0 ]._id,
 			} );
 		};
 
@@ -153,7 +154,7 @@ storiesOf( 'AdSense Module', module )
 	} )
 	.add( 'Site Steps', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setAccountID( fixtures.accounts[ 0 ].id );
+			registry.dispatch( STORE_NAME ).setAccountID( fixtures.accounts[ 0 ]._id );
 		};
 
 		return (
@@ -166,7 +167,7 @@ storiesOf( 'AdSense Module', module )
 	} )
 	.add( 'Dashboard Zero Data', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setAccountID( fixtures.accounts[ 0 ].id );
+			registry.dispatch( STORE_NAME ).setAccountID( fixtures.accounts[ 0 ]._id );
 		};
 
 		return (
@@ -178,47 +179,57 @@ storiesOf( 'AdSense Module', module )
 		);
 	} )
 	.add( 'Performance', () => {
-		const setupRegistry = ( { dispatch, select } ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).setReferenceDate( '2021-06-18' );
+
 			const {
 				startDate,
 				endDate,
 				compareStartDate,
 				compareEndDate,
-			} = select( CORE_USER ).getDateRangeDates( { compare: true } );
+			} = registry.select( CORE_USER ).getDateRangeDates( { compare: true } );
 
 			const currentStatsArgs = {
-				...fixtures.earnings.currentStatsArgs,
 				startDate,
 				endDate,
+				dimensions: [
+					'DATE',
+				],
+				metrics: [
+					'ESTIMATED_EARNINGS',
+					'PAGE_VIEWS_RPM',
+					'IMPRESSIONS',
+					'PAGE_VIEWS_CTR',
+				],
 			};
 
 			const prevStatsArgs = {
-				...fixtures.earnings.prevStatsArgs,
+				...currentStatsArgs,
 				startDate: compareStartDate,
 				endDate: compareEndDate,
 			};
 
 			const currentSummaryArgs = {
-				...fixtures.earnings.currentSummaryArgs,
 				startDate,
 				endDate,
+				metrics: [
+					'ESTIMATED_EARNINGS',
+					'PAGE_VIEWS_RPM',
+					'IMPRESSIONS',
+					'PAGE_VIEWS_CTR',
+				],
 			};
 
 			const prevSummaryArgs = {
-				...fixtures.earnings.prevSummaryArgs,
+				...currentSummaryArgs,
 				startDate: compareStartDate,
 				endDate: compareEndDate,
 			};
 
-			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.currentStatsData, { options: currentStatsArgs } );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ currentStatsArgs ] );
-			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.prevStatsData, { options: prevStatsArgs } );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ prevStatsArgs ] );
-
-			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.currentSummaryData, { options: currentSummaryArgs } );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ currentSummaryArgs ] );
-			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.prevSummaryData, { options: prevSummaryArgs } );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ prevSummaryArgs ] );
+			provideAdSenseMockReport( registry, currentStatsArgs );
+			provideAdSenseMockReport( registry, prevStatsArgs );
+			provideAdSenseMockReport( registry, currentSummaryArgs );
+			provideAdSenseMockReport( registry, prevSummaryArgs );
 		};
 
 		return (

@@ -97,7 +97,7 @@ SiteStats.options = {
 	chart: {
 		title: '',
 	},
-	curveType: 'line',
+	curveType: 'function',
 	height: 270,
 	width: '100%',
 	chartArea: {
@@ -137,6 +137,9 @@ SiteStats.options = {
 			color: '#616161',
 			fontSize: 12,
 			italic: false,
+		},
+		viewWindow: {
+			min: 0,
 		},
 	},
 	focusTarget: 'category',

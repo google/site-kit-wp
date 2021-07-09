@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useMount } from 'react-use';
+import { useEffectOnce } from 'react-use';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import useMergedRef from '@react-hook/merged-ref';
@@ -51,7 +51,7 @@ const Menu = forwardRef( ( {
 		onSelected( index, event );
 	}, [ onSelected ] );
 
-	useMount( () => {
+	useEffectOnce( () => {
 		if ( ! menuRef?.current ) {
 			return;
 		}

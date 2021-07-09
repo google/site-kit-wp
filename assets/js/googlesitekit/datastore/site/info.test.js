@@ -23,7 +23,8 @@ import {
 	createTestRegistry,
 	untilResolved,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+	provideSiteInfo,
+} from '../../../../../tests/js/utils';
 import { initialState } from './index';
 import { STORE_NAME } from './constants';
 
@@ -137,79 +138,6 @@ describe( 'core/site site info', () => {
 				const adminURL = registry.select( STORE_NAME ).getAdminURL();
 
 				expect( adminURL ).toEqual( undefined );
-			} );
-		} );
-
-		describe( 'getGoogleSupportURL', () => {
-			it.each( [
-				[
-					'returns null if no arguments are supplied',
-					undefined,
-					null,
-				],
-				[
-					'returns null if no path is supplied or is empty',
-					{
-						path: '',
-					},
-					null,
-				],
-				[
-					'returns the path, hash and the user locale',
-					{
-						path: '/analytics/answer/1032415',
-						hash: 'hash_value',
-					},
-					'https://support.google.com/analytics/answer/1032415?hl=en-US#hash_value',
-				],
-				[
-					'returns the path, query and the user locale',
-					{
-						path: '/analytics/answer/1032415',
-						query: {
-							param: 'value',
-							param2: 'value2',
-						},
-					},
-					'https://support.google.com/analytics/answer/1032415?param=value&param2=value2&hl=en-US',
-				],
-				[
-					'returns the path with the user locale',
-					{
-						path: '/analytics/answer/1032415',
-					},
-					'https://support.google.com/analytics/answer/1032415?hl=en-US',
-				],
-				[
-					'returns the path, query, hash and the user locale',
-					{
-						path: '/analytics/answer/1032415',
-						query: {
-							param: 'value',
-							param2: 'value2',
-						},
-						hash: 'hash_value',
-					},
-					'https://support.google.com/analytics/answer/1032415?param=value&param2=value2&hl=en-US#hash_value',
-				],
-			] )( '%s', async ( _, args, expected ) => {
-				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
-				const supportURL = registry.select( STORE_NAME ).getGoogleSupportURL( args );
-				expect( supportURL ).toEqual( expected );
-			} );
-
-			it( 'returns the path with a predefined locale', async () => {
-				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
-
-				if ( ! global._googlesitekitLegacyData ) {
-					global._googlesitekitLegacyData = {};
-				}
-				global._googlesitekitLegacyData.locale = 'de';
-
-				const supportURL = registry.select( STORE_NAME ).getGoogleSupportURL( {
-					path: '/analytics/answer/1032415',
-				} );
-				expect( supportURL ).toEqual( 'https://support.google.com/analytics/answer/1032415?hl=de' );
 			} );
 		} );
 
@@ -382,6 +310,52 @@ describe( 'core/site site info', () => {
 
 			it( 'should return FALSE when URL does not match the reference site URL', () => {
 				expect( registry.select( STORE_NAME ).isSiteURLMatch( 'http://example.org/' ) ).toBe( false );
+			} );
+		} );
+
+		describe( 'getSiteURLPermutations', () => {
+			it( 'should correctly process regular URL', () => {
+				provideSiteInfo( registry, { referenceSiteURL: 'http://www.example.com' } );
+
+				expect( registry.select( STORE_NAME ).getSiteURLPermutations() ).toEqual( [
+					'http://example.com',
+					'https://example.com',
+					'https://www.example.com',
+					'http://www.example.com',
+				] );
+			} );
+
+			it( 'should correctly process URL with a port number', () => {
+				provideSiteInfo( registry, { referenceSiteURL: 'http://example.com:9000/' } );
+
+				expect( registry.select( STORE_NAME ).getSiteURLPermutations() ).toEqual( [
+					'http://example.com:9000',
+					'https://example.com:9000',
+					'https://www.example.com:9000',
+					'http://www.example.com:9000',
+				] );
+			} );
+
+			it( 'should correctly process URL with basic authentication', () => {
+				provideSiteInfo( registry, { referenceSiteURL: 'http://admin:password@example.com:9000/' } );
+
+				expect( registry.select( STORE_NAME ).getSiteURLPermutations() ).toEqual( [
+					'http://admin:password@example.com:9000',
+					'https://admin:password@example.com:9000',
+					'https://admin:password@www.example.com:9000',
+					'http://admin:password@www.example.com:9000',
+				] );
+			} );
+
+			it( 'should correctly process URL with subdirectory install', () => {
+				provideSiteInfo( registry, { referenceSiteURL: 'http://www.example.com/subsite/' } );
+
+				expect( registry.select( STORE_NAME ).getSiteURLPermutations() ).toEqual( [
+					'http://example.com/subsite',
+					'https://example.com/subsite',
+					'https://www.example.com/subsite',
+					'http://www.example.com/subsite',
+				] );
 			} );
 		} );
 	} );

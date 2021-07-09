@@ -296,6 +296,7 @@ export const selectors = {
 	 * Gets a URL for (re)connecting via OAuth, with optional additional scopes.
 	 *
 	 * @since 1.9.0
+	 * @since 1.34.1 Updated resulting URL when additional scopes are provided.
 	 *
 	 * @param {Object}   state                   Data store's state.
 	 * @param {Object}   [args]                  Optional arguments for the resulting URL.
@@ -316,7 +317,14 @@ export const selectors = {
 
 		// If additional scopes are provided, pass them in the dedicated query param.
 		if ( additionalScopes?.length ) {
-			return addQueryArgs( connectURL, { ...queryArgs, additional_scopes: additionalScopes } );
+			// Some hosts with aggressive security filters block URLs with query parameters
+			// that begin with a URL. This will block these requests because most scopes
+			// are valid URLs. As a workaround, we rewrite the scheme temporarily
+			// and then restore it on the server before requesting scopes.
+			const rewrittenScopes = additionalScopes.map(
+				( scope ) => scope.replace( /^http(s)?:/, 'gttp$1:' )
+			);
+			return addQueryArgs( connectURL, { ...queryArgs, additional_scopes: rewrittenScopes } );
 		}
 
 		return addQueryArgs( connectURL, queryArgs );

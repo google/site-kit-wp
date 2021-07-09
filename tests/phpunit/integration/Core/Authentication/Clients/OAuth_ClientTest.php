@@ -338,6 +338,32 @@ class OAuth_ClientTest extends TestCase {
 		);
 	}
 
+	public function test_get_authentication_url__with_additional_scopes() {
+		$this->fake_site_connection();
+		$client            = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$additional_scopes = array(
+			'gttp://example.com/test/scope/a',
+			'gttps://example.com/test/scope/b',
+			'openid',
+			'http',
+			'example.com/test/scope/a',
+			'https://example.com/test/scope/c',
+		);
+
+		$authentication_url = $client->get_authentication_url( '', $additional_scopes );
+
+		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
+		$requested_scopes = explode( ' ', $params['scope'] );
+		$this->assertNotContains( 'gttp://example.com/test/scope/a', $requested_scopes );
+		$this->assertNotContains( 'gttps://example.com/test/scope/b', $requested_scopes );
+		$this->assertContains( 'http://example.com/test/scope/a', $requested_scopes );
+		$this->assertContains( 'https://example.com/test/scope/b', $requested_scopes );
+		$this->assertContains( 'openid', $requested_scopes );
+		$this->assertContains( 'http', $requested_scopes );
+		$this->assertContains( 'example.com/test/scope/a', $requested_scopes );
+		$this->assertContains( 'https://example.com/test/scope/c', $requested_scopes );
+	}
+
 	public function test_authorize_user() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );

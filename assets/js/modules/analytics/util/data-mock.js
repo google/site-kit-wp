@@ -21,8 +21,10 @@
  */
 import md5 from 'md5';
 import faker from 'faker';
+import castArray from 'lodash/castArray';
 import { zip, from, Observable } from 'rxjs';
 import { map, reduce, take } from 'rxjs/operators';
+import { STORE_NAME } from '../datastore/constants';
 
 const ANALYTICS_METRIC_TYPES = {
 	'ga:users': 'INTEGER',
@@ -107,16 +109,16 @@ function generateMetricValues( validMetrics, count ) {
 		validMetrics.forEach( ( validMetric ) => {
 			switch ( getMetricType( validMetric ) ) {
 				case 'INTEGER':
-					values.push( faker.random.number( { min: 0, max: 100 } ).toString() );
+					values.push( faker.datatype.number( { min: 0, max: 100 } ).toString() );
 					break;
 				case 'PERCENT':
-					values.push( faker.random.float( { min: 0, max: 100 } ).toString() );
+					values.push( faker.datatype.float( { min: 0, max: 100 } ).toString() );
 					break;
 				case 'TIME':
-					values.push( faker.random.number( { min: 0, max: 3600 } ).toString() ); // 1 hour max.
+					values.push( faker.datatype.number( { min: 0, max: 3600 } ).toString() ); // 1 hour max.
 					break;
 				case 'CURRENCY':
-					values.push( faker.random.float( { min: 0, max: 10000 } ).toString() ); // $10k max.
+					values.push( faker.datatype.float( { min: 0, max: 10000 } ).toString() ); // $10k max.
 					break;
 			}
 		} );
@@ -140,7 +142,7 @@ function generateMetricValues( validMetrics, count ) {
 function sortRows( rows, metrics, orderby ) {
 	let sorted = rows;
 
-	const orders = Array.isArray( orderby ) ? orderby : [ orderby ];
+	const orders = castArray( orderby );
 	for ( const order of orders ) {
 		const direction = order?.sortOrder === 'DESCENDING' ? -1 : 1;
 		const index = metrics.findIndex( ( metric ) => getMetricKey( metric ) === order?.fieldName );
@@ -211,7 +213,7 @@ export function getAnalyticsMockResponse( args ) {
 	// dimension set in the combined stream (array). We need to use array of streams because report arguments may
 	// have 0 or N dimensions (N > 1) which means that in the each row of the report data we will have an array
 	// of dimension values.
-	const dimensions = Array.isArray( args.dimensions ) ? args.dimensions : [ args.dimensions ];
+	const dimensions = castArray( args.dimensions );
 	dimensions.forEach( ( dimension ) => {
 		if ( dimension === 'ga:date' ) {
 			// Generates a stream (an array) of dates when the dimension is ga:date.
@@ -226,7 +228,7 @@ export function getAnalyticsMockResponse( args ) {
 
 				observer.complete();
 			} ) );
-		} else if ( dimension && typeof ANALYTICS_DIMENSION_OPTIONS?.[ dimension ] === 'function' ) {
+		} else if ( dimension && typeof ANALYTICS_DIMENSION_OPTIONS[ dimension ] === 'function' ) {
 			// Generates a stream (an array) of dimension values using a function associated with the current dimension.
 			streams.push( new Observable( ( observer ) => {
 				for ( let i = 1; i <= 90; i++ ) { // 90 is the max number of dates in the longest date range.
@@ -240,7 +242,7 @@ export function getAnalyticsMockResponse( args ) {
 
 				observer.complete();
 			} ) );
-		} else if ( dimension && Array.isArray( ANALYTICS_DIMENSION_OPTIONS?.[ dimension ] ) ) {
+		} else if ( dimension && Array.isArray( ANALYTICS_DIMENSION_OPTIONS[ dimension ] ) ) {
 			// Uses predefined array of dimension values to create a stream (an array) from.
 			streams.push( from( ANALYTICS_DIMENSION_OPTIONS[ dimension ] ) );
 		} else {
@@ -249,11 +251,11 @@ export function getAnalyticsMockResponse( args ) {
 		}
 	} );
 
-	// This is the list of operations that we apply to the cobmined stream (array) of dimension values.
+	// This is the list of operations that we apply to the combined stream (array) of dimension values.
 	const ops = [
 		// Convert a dimension value to a row object and generate metric values.
 		map( ( dimensionValue ) => ( {
-			dimensions: Array.isArray( dimensionValue ) ? dimensionValue : [ dimensionValue ],
+			dimensions: castArray( dimensionValue ),
 			metrics: generateMetricValues( validMetrics, metricValuesCount ),
 		} ) ),
 		// Make sure we take the appropriate number of rows.
@@ -294,4 +296,19 @@ export function getAnalyticsMockResponse( args ) {
 		},
 		data,
 	} ];
+}
+
+/**
+ * Generates mock response for Analytics reports.
+ *
+ * @since 1.34.0
+ *
+ * @param {wp.data.registry} registry Registry with all available stores registered.
+ * @param {Object}           options  Report options.
+ */
+export function provideAnalyticsMockReport( registry, options ) {
+	registry.dispatch( STORE_NAME ).receiveGetReport(
+		getAnalyticsMockResponse( options ),
+		{ options }
+	);
 }

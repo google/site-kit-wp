@@ -171,6 +171,7 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 								onChange={ onKeywordChange.bind( null, i ) }
 								onKeyDown={ onKeyDown.bind( null, i ) }
 								tabIndex={ ! isActive ? '-1' : undefined }
+								maxLength={ 40 }
 							/>
 						</TextField>
 

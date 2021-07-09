@@ -187,7 +187,9 @@ final class Plugin {
 				( new Core\Util\Health_Checks( $authentication ) )->register();
 				( new Core\Admin\Standalone( $this->context ) )->register();
 				( new Core\Util\Activation_Notice( $this->context, $activation_flag, $assets ) )->register();
+				( new Core\Dismissals\Dismissals( $this->context, $user_options ) )->register();
 				( new Core\Feature_Tours\Feature_Tours( $this->context, $user_options ) )->register();
+				( new Core\User_Surveys\REST_User_Surveys_Controller( $authentication ) )->register();
 				( new Core\Util\Migration_1_3_0( $this->context, $options, $user_options ) )->register();
 				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
 

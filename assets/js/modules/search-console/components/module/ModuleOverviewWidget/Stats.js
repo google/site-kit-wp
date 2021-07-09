@@ -32,18 +32,20 @@ import { __ } from '@wordpress/i18n';
 import { getSiteStatsDataForGoogleChart } from '../../../util';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import GoogleChart from '../../../../../components/GoogleChart';
+import { partitionReport } from '../../../../../util/partition-report';
 
-const Stats = ( { data, metrics, selectedStats } ) => {
+const Stats = ( { data, metrics, selectedStats, dateRangeLength } ) => {
 	const options = {
 		chart: {
 			title: __( 'Search Traffic Summary', 'google-site-kit' ),
 		},
-		curveType: 'line',
+		curveType: 'function',
 		height: 270,
 		width: '100%',
 		chartArea: {
-			height: '77%',
-			width: '87%',
+			height: '80%',
+			width: '100%',
+			left: 60,
 		},
 		legend: {
 			position: 'top',
@@ -79,6 +81,9 @@ const Stats = ( { data, metrics, selectedStats } ) => {
 				fontSize: 12,
 				italic: false,
 			},
+			viewWindow: {
+				min: 0,
+			},
 		},
 		series: {
 			0: {
@@ -105,16 +110,13 @@ const Stats = ( { data, metrics, selectedStats } ) => {
 		},
 	};
 
-	// Split the data in two chunks.
-	const half = Math.floor( data.length / 2 );
-	const latestData = data.slice( half );
-	const olderData = data.slice( 0, half );
-
+	const { compareRange, currentRange } = partitionReport( data, { dateRangeLength } );
 	const googleChartData = getSiteStatsDataForGoogleChart(
-		latestData,
-		olderData,
+		currentRange,
+		compareRange,
 		metrics[ selectedStats ].label,
 		metrics[ selectedStats ].metric,
+		dateRangeLength,
 	);
 
 	return (
@@ -135,8 +137,9 @@ const Stats = ( { data, metrics, selectedStats } ) => {
 };
 
 Stats.propTypes = {
-	data: PropTypes.arrayOf( PropTypes.object ),
-	metrics: PropTypes.arrayOf( PropTypes.object ),
+	data: PropTypes.arrayOf( PropTypes.object ).isRequired,
+	dateRangeLength: PropTypes.number.isRequired,
+	metrics: PropTypes.arrayOf( PropTypes.object ).isRequired,
 	selectedStats: PropTypes.number.isRequired,
 };
 

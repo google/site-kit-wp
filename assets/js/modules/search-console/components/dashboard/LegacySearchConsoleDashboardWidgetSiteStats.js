@@ -54,7 +54,7 @@ class LegacySearchConsoleDashboardWidgetSiteStats extends Component {
 			chart: {
 				title,
 			},
-			curveType: 'line',
+			curveType: 'function',
 			height: 270,
 			width: '100%',
 			chartArea: {
@@ -85,6 +85,9 @@ class LegacySearchConsoleDashboardWidgetSiteStats extends Component {
 				minorGridlines: {
 					color: '#eee',
 				},
+				viewWindow: {
+					min: 0,
+				},
 			},
 		};
 
@@ -112,14 +115,14 @@ class LegacySearchConsoleDashboardWidgetSiteStats extends Component {
 	}
 
 	render() {
-		const { data, selectedStats } = this.props;
+		const { data, selectedStats, dateRangeLength } = this.props;
 
 		if ( ! data || ! data.length ) {
 			return null;
 		}
 
 		const options = this.setOptions();
-		const processedData = extractSearchConsoleDashboardData( data );
+		const processedData = extractSearchConsoleDashboardData( data, dateRangeLength );
 
 		return (
 			<section className="mdc-layout-grid">

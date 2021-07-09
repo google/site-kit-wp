@@ -21,12 +21,8 @@
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
-import {
-	createTestRegistry,
-	subscribeUntil,
-	unsubscribeFromAll,
-} from 'tests/js/utils';
-import * as fixtures from './__fixtures__';
+import { createTestRegistry, subscribeUntil, unsubscribeFromAll } from '../../../../../tests/js/utils';
+import { getAdSenseMockResponse } from '../util/data-mock';
 
 describe( 'modules/adsense report', () => {
 	let registry;
@@ -54,46 +50,36 @@ describe( 'modules/adsense report', () => {
 	describe( 'selectors', () => {
 		describe( 'getReport', () => {
 			const options = {
-				dateRange: 'last-90-days',
-				metrics: 'test',
+				startDate: '2021-07-01',
+				endDate: '2021-07-28',
+				metrics: [ 'IMPRESSIONS' ],
 				dimensions: [ 'DATE' ],
 			};
 
 			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/,
-					{ body: fixtures.report, status: 200 }
-				);
+				const report = getAdSenseMockResponse( options );
 
-				const initialReport = registry.select( STORE_NAME ).getReport( options );
+				fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/, { body: report } );
 
-				expect( initialReport ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getReport( options ) !== undefined
-					),
-				);
+				expect( registry.select( STORE_NAME ).getReport( options ) ).toBeUndefined();
+				await subscribeUntil( registry, () => registry.select( STORE_NAME ).getReport( options ) !== undefined );
 
-				const report = registry.select( STORE_NAME ).getReport( options );
-
+				expect( registry.select( STORE_NAME ).getReport( options ) ).toEqual( report );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( report ).toEqual( fixtures.report );
 			} );
 
 			it( 'does not make a network request if report for given options is already present', async () => {
+				const report = getAdSenseMockResponse( options );
+
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetReport( fixtures.report, { options } );
+				registry.dispatch( STORE_NAME ).receiveGetReport( report, { options } );
 
-				const report = registry.select( STORE_NAME ).getReport( options );
-
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getReport', [ options ] )
-				);
+				const initialReport = registry.select( STORE_NAME ).getReport( options );
+				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ options ] ) );
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( report ).toEqual( fixtures.report );
+				expect( initialReport ).toEqual( report );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {

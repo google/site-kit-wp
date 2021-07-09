@@ -221,26 +221,6 @@ describe( 'Tag Manager module setup', () => {
 			await deactivatePlugin( 'amp' );
 		} );
 
-		describe( 'with Primary AMP', () => {
-			beforeAll( async () => {
-				await setAMPMode( 'primary' );
-			} );
-
-			it( 'renders only the AMP container select menu', async () => {
-				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
-				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp .mdc-floating-label', { text: 'Container' } );
-				await expect( page ).not.toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
-			} );
-
-			it( 'validates Homepage AMP for logged-in users', async () => {
-				await expect( '/' ).toHaveValidAMPForUser();
-			} );
-
-			it( 'validates Homepage AMP for non-logged-in users', async () => {
-				await expect( '/' ).toHaveValidAMPForVisitor();
-			} );
-		} );
-
 		describe( 'with Secondary AMP', () => {
 			beforeAll( async () => {
 				await setAMPMode( 'secondary' );

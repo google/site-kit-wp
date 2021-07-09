@@ -39,15 +39,19 @@ import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admi
 import {
 	AccountSelect,
 	PropertySelect,
+	PropertySelectIncludingGA4,
 	ProfileSelect,
 	AnonymizeIPSwitch,
-	UseSnippetSwitch,
+	UseUASnippetSwitch,
 	TrackingExclusionSwitches,
 	GA4Notice,
 } from '../assets/js/modules/analytics/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
+import { properties as propertiesGA4 } from '../assets/js/modules/analytics-4/datastore/__fixtures__';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
+import { enabledFeatures } from '../assets/js/features';
 
 function SetupWrap( { children } ) {
 	return (
@@ -62,19 +66,42 @@ function SetupWrap( { children } ) {
 }
 
 storiesOf( 'Analytics Module', module )
-	.add( 'Account Property Profile Select (none selected)', () => {
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+	.add( 'Account Property Profile Select', () => {
 		const setupRegistry = ( { dispatch } ) => {
+			const account = {
+				id: '1000',
+				name: 'Account A',
+			};
+
+			const propertyOne = {
+				id: 'UA-2000-1',
+				name: 'Property A',
+			};
+
+			const propertyTwo = {
+				id: 'UA-2001-1',
+				name: 'Property B',
+			};
+
+			const profile = {
+				id: '3000',
+				name: 'Profile A',
+			};
+
 			dispatch( STORE_NAME ).receiveGetSettings( {} );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/acronym-case
-				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/acronym-case
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
+
+			dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+			dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+
+			dispatch( STORE_NAME ).receiveGetProperties( [ propertyOne, propertyTwo ], { accountID: account.id } );
+			dispatch( STORE_NAME ).finishResolution( 'getProperties', [ account.id ] );
+
+			dispatch( STORE_NAME ).receiveGetProfiles( [ profile ], { accountID: account.id, propertyID: propertyOne.id } );
+			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ account.id, propertyOne.id ] );
+
+			dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID: account.id, propertyID: propertyTwo.id } );
+			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ account.id, propertyTwo.id ] );
 		};
 
 		return (
@@ -89,36 +116,42 @@ storiesOf( 'Analytics Module', module )
 			</WithTestRegistry>
 		);
 	} )
-	.add( 'Account Property Profile Select (all selected)', () => {
+	.add( 'Property Select including GA4 properties', () => {
+		enabledFeatures.add( 'ga4setup' );
+
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		/* eslint-disable sitekit/acronym-case */
+		const accountID = properties[ 0 ].accountId;
+		const propertyID = profiles[ 0 ].webPropertyId;
+		/* eslint-enable */
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+
 			// eslint-disable-next-line sitekit/acronym-case
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/acronym-case
-				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/acronym-case
-				propertyID: profiles[ 0 ].webPropertyId,
+				accountID,
+				propertyID,
 			} );
+
 			dispatch( STORE_NAME ).receiveGetSettings( {
-				// eslint-disable-next-line sitekit/acronym-case
-				accountID: profiles[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/acronym-case
-				propertyID: profiles[ 0 ].webPropertyId,
-				// eslint-disable-next-line sitekit/acronym-case
-				internalWebPropertyID: profiles[ 0 ].internalWebPropertyId,
-				profileID: profiles[ 0 ].id,
+				accountID,
 			} );
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+				propertiesGA4,
+				{ accountID }
+			);
 		};
 
 		return (
-			<WithTestRegistry callback={ setupRegistry }>
+			<WithTestRegistry
+				callback={ setupRegistry }
+				features={ [ 'ga4setup' ] }
+			>
 				<SetupWrap>
 					<div className="googlesitekit-setup-module__inputs">
-						<AccountSelect />
-						<PropertySelect />
-						<ProfileSelect />
+						<PropertySelectIncludingGA4 />
 					</div>
 				</SetupWrap>
 			</WithTestRegistry>
@@ -160,7 +193,7 @@ storiesOf( 'Analytics Module', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
-					<UseSnippetSwitch />
+					<UseUASnippetSwitch />
 				</SetupWrap>
 			</WithTestRegistry>
 		);
@@ -173,7 +206,7 @@ storiesOf( 'Analytics Module', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
-					<UseSnippetSwitch />
+					<UseUASnippetSwitch />
 				</SetupWrap>
 			</WithTestRegistry>
 		);
@@ -278,7 +311,9 @@ storiesOf( 'Analytics Module', module )
 	},
 	// This uses the legacy widget, the new one is in:
 	// 'Analytics Module/Components/Module Page/Acquisition Channels Widget'.
-	{ options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' } } )
+	{
+		options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' },
+	} )
 	.add( 'Top Acquisition Pie Chart', () => {
 		global._googlesitekitLegacyData = analyticsData;
 
@@ -325,4 +360,6 @@ storiesOf( 'Analytics Module', module )
 			</WithTestRegistry>
 		);
 	},
-	{ options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' } } );
+	{
+		options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' },
+	} );

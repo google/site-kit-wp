@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useHistory, useParams } from 'react-router-dom';
 
 /**
  * WordPress dependencies
@@ -38,40 +39,50 @@ import TrashIcon from '../../../../svg/trash.svg';
 import Button from '../../Button';
 import Spinner from '../../Spinner';
 import Link from '../../Link';
-const { useSelect } = Data;
+import { clearWebStorage } from '../../../util';
+import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+const { useDispatch, useSelect } = Data;
 
 export default function Footer( props ) {
-	const {
-		slug,
-		isSaving,
-		isEditing,
-		onConfirm,
-		onCancel,
-		onEdit,
-		handleDialog,
-	} = props;
+	const { slug } = props;
+
+	const history = useHistory();
+	const { action, moduleSlug } = useParams();
+	const isEditing = action === 'edit' && moduleSlug === slug;
+
+	const errorKey = `module-${ slug }-error`;
+	const dialogActiveKey = `module-${ slug }-dialogActive`;
+	const isSavingKey = `module-${ slug }-isSaving`;
 
 	const canSubmitChanges = useSelect( ( select ) => select( CORE_MODULES ).canSubmitChanges( slug ) );
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
 	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( slug ) );
+	const dialogActive = useSelect( ( select ) => select( CORE_UI ).getValue( dialogActiveKey ) );
+	const isSaving = useSelect( ( select ) => select( CORE_UI ).getValue( isSavingKey ) );
+
+	const { submitChanges } = useDispatch( CORE_MODULES );
+	const { setValue } = useDispatch( CORE_UI );
 
 	const hasSettings = !! module?.SettingsEditComponent;
 
-	const handleEdit = useCallback( () => {
-		onEdit( slug );
-	}, [ slug, onEdit ] );
+	const handleConfirm = useCallback( async ( event ) => {
+		event.preventDefault();
 
-	const handleCancel = useCallback( () => {
-		onCancel( slug );
-	}, [ slug, onCancel ] );
+		setValue( isSavingKey, true );
+		const { error: submissionError } = await submitChanges( slug );
+		setValue( isSavingKey, false );
 
-	const handleConfirmOrCancel = useCallback( () => {
-		if ( hasSettings && moduleConnected ) {
-			onConfirm( slug );
+		if ( submissionError ) {
+			setValue( errorKey, submissionError );
 		} else {
-			onCancel( slug );
+			history.push( `/connected-services/${ slug }` );
+			clearWebStorage();
 		}
-	}, [ slug, hasSettings, moduleConnected, onConfirm, onCancel ] );
+	}, [ setValue, isSavingKey, submitChanges, slug, errorKey, history ] );
+
+	const handleDialog = useCallback( () => {
+		setValue( dialogActiveKey, ! dialogActive );
+	}, [ dialogActive, dialogActiveKey, setValue ] );
 
 	if ( ! module ) {
 		return null;
@@ -91,14 +102,18 @@ export default function Footer( props ) {
 
 		primaryColumn = (
 			<Fragment>
-				<Button disabled={ isSaving || ! canSubmitChanges } onClick={ handleConfirmOrCancel }>
+				<Button disabled={ isSaving || ! canSubmitChanges } onClick={ handleConfirm }>
 					{ buttonText }
 				</Button>
 
 				<Spinner isSaving={ isSaving } />
 
 				{ hasSettings && (
-					<Link className="googlesitekit-settings-module__footer-cancel" onClick={ handleCancel } inherit>
+					<Link
+						className="googlesitekit-settings-module__footer-cancel"
+						inherit
+						to={ `/connected-services/${ slug }` }
+					>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Link>
 				) }
@@ -108,8 +123,8 @@ export default function Footer( props ) {
 		primaryColumn = (
 			<Link
 				className="googlesitekit-settings-module__edit-button"
-				onClick={ handleEdit }
 				inherit
+				to={ `/connected-services/${ slug }/edit` }
 			>
 				{ __( 'Edit', 'google-site-kit' ) }
 				<PencilIcon
@@ -140,7 +155,7 @@ export default function Footer( props ) {
 				/>
 			</Link>
 		);
-	} else if ( ! isEditing ) {
+	} else if ( ! isEditing && homepage ) {
 		secondaryColumn = (
 			<Link
 				href={ homepage }
@@ -174,10 +189,4 @@ export default function Footer( props ) {
 
 Footer.propTypes = {
 	slug: PropTypes.string.isRequired,
-	isSaving: PropTypes.bool.isRequired,
-	isEditing: PropTypes.bool.isRequired,
-	onConfirm: PropTypes.func.isRequired,
-	onCancel: PropTypes.func.isRequired,
-	onEdit: PropTypes.func.isRequired,
-	handleDialog: PropTypes.func.isRequired,
 };

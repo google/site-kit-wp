@@ -30,19 +30,16 @@ export function isZeroReport( report ) {
 	}
 
 	const { rows, totals } = report || {};
-	if ( ! rows || ! totals ) {
+
+	if ( ! rows?.length ) {
 		return true;
 	}
 
-	if ( rows && ( ! Array.isArray( rows ) || ! rows.length ) ) {
+	if ( ! totals?.cells?.length ) {
 		return true;
 	}
 
-	if ( totals && ( ! Array.isArray( totals ) || ! totals.length ) ) {
-		return true;
-	}
-
-	if ( ! totals.some( ( total ) => total > 0 ) ) {
+	if ( ! totals.cells.some( ( cell ) => cell?.value > 0 ) ) {
 		return true;
 	}
 

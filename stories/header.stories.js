@@ -54,6 +54,7 @@ storiesOf( 'Global', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Plugin Header with Date Selector', () => {
 		return (
@@ -65,6 +66,7 @@ storiesOf( 'Global', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Plugin Header with Help Menu', () => {
 		return (
@@ -76,6 +78,7 @@ storiesOf( 'Global', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Plugin Header with Help Menu and Date Range Selector', () => {
 		return (
@@ -88,6 +91,7 @@ storiesOf( 'Global', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Plugin Header with custom Help Menu links', () => {
 		return (
@@ -103,4 +107,5 @@ storiesOf( 'Global', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} );
