@@ -20,26 +20,15 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import DashboardModuleHeader from '../assets/js/components/dashboard/DashboardModuleHeader';
 import URLSearchWidget from '../assets/js/googlesitekit/widgets/components/URLSearchWidget';
 import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 import { getWidgetComponentProps } from '../assets/js/googlesitekit/widgets/util';
 
 storiesOf( 'Dashboard', module )
-	.add( 'Module Header', () => (
-		<DashboardModuleHeader
-			title={ __( 'Module Header', 'google-site-kit' ) }
-			description={ __( 'Description of Module', 'google-site-kit' ) }
-		/>
-	) )
 	.add( 'URL Search Widget', () => {
 		const setupRegistry = ( registry ) => provideSiteInfo( registry );
 		const widgetComponentProps = getWidgetComponentProps( 'urlSearch' );
