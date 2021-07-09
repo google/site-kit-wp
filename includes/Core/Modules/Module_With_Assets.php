@@ -34,6 +34,9 @@ interface Module_With_Assets {
 	 * Enqueues all assets necessary for the module.
 	 *
 	 * @since 1.7.0
+	 * @since n.e.x.t Added the $asset_context argument.
+	 *
+	 * @param string $asset_context Context for page, see `Asset::CONTEXT_*` constants.
 	 */
-	public function enqueue_assets();
+	public function enqueue_assets( $asset_context = Asset::CONTEXT_ADMIN_SITEKIT );
 }

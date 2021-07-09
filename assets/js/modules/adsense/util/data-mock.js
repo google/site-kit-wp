@@ -20,23 +20,27 @@
  * External dependencies
  */
 import faker from 'faker';
+import invariant from 'invariant';
+import castArray from 'lodash/castArray';
+import isPlainObject from 'lodash/isPlainObject';
 import md5 from 'md5';
 import { range } from 'rxjs';
 import { map, reduce } from 'rxjs/operators';
-import castArray from 'lodash/castArray';
 
 /**
  * Internal dependencies
  */
 import { STORE_NAME } from '../datastore/constants';
-import { getDateString } from '../../../util';
+import { getDateString, isValidDateString } from '../../../util';
+import { validateMetrics } from './report-validation';
+import { dateInstanceToAdSenseDate } from './date';
 
 const METRIC_RATIO = 'METRIC_RATIO';
 const METRIC_TALLY = 'METRIC_TALLY';
 const METRIC_CURRENCY = 'METRIC_CURRENCY';
 
 const ADSENSE_METRIC_TYPES = {
-	TOTAL_EARNINGS: METRIC_CURRENCY,
+	ESTIMATED_EARNINGS: METRIC_CURRENCY,
 	PAGE_VIEWS_RPM: METRIC_CURRENCY,
 	IMPRESSIONS: METRIC_TALLY,
 	PAGE_VIEWS_CTR: METRIC_RATIO,
@@ -66,7 +70,7 @@ class DataFactory {
 
 		dimensions.forEach( ( dimension ) => {
 			headers.push( {
-				currency: null,
+				currencyCode: null,
 				name: dimension.toUpperCase(),
 				type: 'DIMENSION',
 			} );
@@ -75,7 +79,7 @@ class DataFactory {
 		metrics.forEach( ( metric ) => {
 			const ucMetric = metric.toUpperCase();
 			headers.push( {
-				currency: ADSENSE_METRIC_TYPES[ ucMetric ] === METRIC_CURRENCY ? 'USD' : null,
+				currencyCode: ADSENSE_METRIC_TYPES[ ucMetric ] === METRIC_CURRENCY ? 'USD' : null,
 				name: ucMetric,
 				type: ADSENSE_METRIC_TYPES[ ucMetric ],
 			} );
@@ -173,6 +177,20 @@ class DataFactory {
 }
 
 /**
+ * Creates a row object from an array of values.
+ *
+ * @since 1.36.0
+ *
+ * @param {Array} array Array.
+ * @return {Object} Row.
+ */
+function rowFromArray( array ) {
+	return {
+		cells: array.map( ( value ) => ( { value } ) ),
+	};
+}
+
+/**
  * Generates mock data for AdSense reports.
  *
  * @since 1.36.0
@@ -181,6 +199,11 @@ class DataFactory {
  * @return {Array.<Object>} An array with generated report.
  */
 export function getAdSenseMockResponse( args ) {
+	invariant( isPlainObject( args ), 'report options are required to generate a mock response.' );
+	invariant( isValidDateString( args.startDate ), 'a valid startDate is required.' );
+	invariant( isValidDateString( args.endDate ), 'a valid endDate is required.' );
+	validateMetrics( args.metrics );
+
 	const originalSeedValue = faker.seedValue;
 	const argsHash = parseInt(
 		md5( JSON.stringify( args ) ).substring( 0, 10 ),
@@ -243,7 +266,15 @@ export function getAdSenseMockResponse( args ) {
 	// Set the original seed value for the faker.
 	faker.seed( originalSeedValue );
 
-	return data;
+	return {
+		...data,
+		// v2 transforms.
+		rows: data.rows.map( ( rowArray ) => rowFromArray( rowArray ) ),
+		totals: rowFromArray( data.totals ),
+		averages: rowFromArray( data.averages ),
+		startDate: dateInstanceToAdSenseDate( startDate ),
+		endDate: dateInstanceToAdSenseDate( endDate ),
+	};
 }
 
 /**

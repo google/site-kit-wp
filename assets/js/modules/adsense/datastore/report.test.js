@@ -50,8 +50,9 @@ describe( 'modules/adsense report', () => {
 	describe( 'selectors', () => {
 		describe( 'getReport', () => {
 			const options = {
-				dateRange: 'last-90-days',
-				metrics: 'test',
+				startDate: '2021-07-01',
+				endDate: '2021-07-28',
+				metrics: [ 'IMPRESSIONS' ],
 				dimensions: [ 'DATE' ],
 			};
 
