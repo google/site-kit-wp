@@ -43,7 +43,7 @@ import {
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { SETUP_FLOW_MODE_LEGACY, STORE_NAME, PROFILE_CREATE, SETUP_FLOW_MODE_UA } from '../../datastore/constants';
+import { SETUP_FLOW_MODE_LEGACY, STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
@@ -54,8 +54,9 @@ export default function SettingsForm() {
 	const isGA4Connected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) );
 	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const { accountID, profileID } = useSelect( ( select ) => select( STORE_NAME ).getSettings() );
 	const hasExistingGA4Property = useSelect( ( select ) => isGA4Enabled && select( MODULES_ANALYTICS_4 ).getPropertyID() );
+	const ga4Properties = useSelect( ( select ) => isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getProperties( accountID ) : null );
 
 	const useAnalyticsSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const useTagManagerSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
@@ -88,13 +89,13 @@ export default function SettingsForm() {
 				</div>
 			) }
 
-			{ ( isGA4Enabled && isGA4Connected ) && (
+			{ ( isGA4Enabled && isGA4Connected && Array.isArray( ga4Properties ) && ga4Properties.length > 0 ) && (
 				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--collapsed">
 					<GA4PropertySelect label={ __( 'Google Analytics 4 Property', 'google-site-kit' ) } />
 				</div>
 			) }
 
-			{ ( isGA4Enabled && SETUP_FLOW_MODE_UA === setupFlowMode && isGA4Connected ) && (
+			{ ( isGA4Enabled && isGA4Connected && Array.isArray( ga4Properties ) && ga4Properties.length === 0 ) && (
 				<GA4PropertyNotice notice={ __( 'A Google Analytics 4 property will be created.', 'google-site-kit' ) } />
 			) }
 
