@@ -423,12 +423,15 @@ class AuthenticationTest extends TestCase {
 	}
 
 	public function test_is_authenticated() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertFalse( $auth->is_authenticated() );
 
 		// Fake a valid authentication token on the client.
-		$this->force_set_property( $auth->get_oauth_client(), 'access_token', 'valid-auth-token' );
+		$auth->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
 
 		$this->assertTrue( $auth->is_authenticated() );
 	}
@@ -715,7 +718,7 @@ class AuthenticationTest extends TestCase {
 		$this->fake_proxy_site_connection();
 
 		// Emulate OAuth acccess token.
-		$this->force_set_property( $authentication->get_oauth_client(), 'access_token', 'valid-auth-token' );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
 
 		// Ensure admin user has Permissions::SETUP cap regardless of authentication.
 		add_filter(
@@ -795,7 +798,7 @@ class AuthenticationTest extends TestCase {
 		$user_options = new User_Options( $context );
 
 		$authentication = new Authentication( $context, $options, $user_options );
-		$authentication->get_oauth_client()->set_access_token( 'test-access-token', 3600 );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'test-access-token' ) );
 		$authentication->register();
 
 		// Requires 'googlesitekit_proxy_permissions' nonce.

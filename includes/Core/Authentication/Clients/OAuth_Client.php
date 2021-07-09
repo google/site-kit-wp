@@ -23,7 +23,6 @@ use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Scopes;
-use Google\Site_Kit_Dependencies\Google\Task\Runner;
 use Google\Site_Kit_Dependencies\Google_Service_PeopleService;
 use WP_HTTP_Proxy;
 
@@ -137,30 +136,6 @@ final class OAuth_Client {
 	private $owner_id;
 
 	/**
-	 * Access token for communication with Google APIs, for temporary storage.
-	 *
-	 * @since 1.0.0
-	 * @var string
-	 */
-	private $access_token = '';
-
-	/**
-	 * Refresh token to refresh access token, for temporary storage.
-	 *
-	 * @since 1.0.0
-	 * @var string
-	 */
-	private $refresh_token = '';
-
-	/**
-	 * OAuth2 client credentials data, for temporary storage.
-	 *
-	 * @since 1.0.0
-	 * @var object|null
-	 */
-	private $client_credentials = false;
-
-	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -204,116 +179,27 @@ final class OAuth_Client {
 	 */
 	public function get_client() {
 		if ( ! $this->google_client instanceof Google_Site_Kit_Client ) {
-			$this->google_client = $this->setup_client();
+			$credentials = $this->credentials->get();
+
+			$this->google_client = Client_Factory::create_client(
+				array(
+					'client_id'                => $credentials['oauth2_client_id'],
+					'client_secret'            => $credentials['oauth2_client_secret'],
+					'redirect_uri'             => $this->get_redirect_uri(),
+					'token'                    => $this->get_token(),
+					'token_callback'           => array( $this, 'set_token' ),
+					'token_exception_callback' => function( Exception $e ) {
+						$this->handle_fetch_token_exception( $e );
+					},
+					'required_scopes'          => $this->get_required_scopes(),
+					'login_hint_email'         => $this->profile->has() ? $this->profile->get()['email'] : '',
+					'using_proxy'              => $this->credentials->using_proxy(),
+					'proxy_url'                => $this->google_proxy->url(),
+				)
+			);
 		}
 
 		return $this->google_client;
-	}
-
-	/**
-	 * Sets up a fresh Google client instance.
-	 *
-	 * @since 1.2.0
-	 *
-	 * @return Google_Site_Kit_Client|Google_Site_Kit_Proxy_Client
-	 */
-	private function setup_client() {
-		if ( $this->credentials->using_proxy() ) {
-			$client = new Google_Site_Kit_Proxy_Client(
-				array( 'proxy_base_path' => $this->google_proxy->url() )
-			);
-		} else {
-			$client = new Google_Site_Kit_Client();
-		}
-
-		// Enable exponential retries, try up to three times.
-		$client->setConfig( 'retry', array( 'retries' => 3 ) );
-
-		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
-		// By default this header uses the generic Guzzle client's user-agent and includes
-		// Guzzle, cURL, and PHP versions as it is normally shared.
-		// In our case however, the client is namespaced to be used by Site Kit only.
-		$http_client = $client->getHttpClient();
-		$http_client->setDefaultOption( 'headers/User-Agent', Google_Proxy::get_application_name() );
-
-		// Configure the Google_Client's HTTP client to use to use the same HTTP proxy as WordPress HTTP, if set.
-		if ( $this->http_proxy->is_enabled() ) {
-			// See http://docs.guzzlephp.org/en/5.3/clients.html#proxy for reference.
-			$auth = $this->http_proxy->use_authentication() ? "{$this->http_proxy->authentication()}@" : '';
-			$http_client->setDefaultOption( 'proxy', "{$auth}{$this->http_proxy->host()}:{$this->http_proxy->port()}" );
-			$ssl_verify = $http_client->getDefaultOption( 'verify' );
-			// Allow SSL verification to be filtered, as is often necessary with HTTP proxies.
-			$http_client->setDefaultOption(
-				'verify',
-				/** This filter is documented in wp-includes/class-http.php */
-				apply_filters( 'https_ssl_verify', $ssl_verify, null )
-			);
-		}
-
-		// Return unconfigured client if credentials not yet set.
-		$client_credentials = $this->get_client_credentials();
-		if ( ! $client_credentials ) {
-			return $client;
-		}
-
-		try {
-			$client->setAuthConfig( (array) $client_credentials->web );
-		} catch ( Exception $e ) {
-			return $client;
-		}
-
-		// Offline access so we can access the refresh token even when the user is logged out.
-		$client->setAccessType( 'offline' );
-		$client->setPrompt( 'consent' );
-		$client->setRedirectUri( $this->get_redirect_uri() );
-		$client->setScopes( $this->get_required_scopes() );
-		$client->prepareScopes();
-
-		// This is called when the client refreshes the access token on-the-fly.
-		$client->setTokenCallback(
-			function( $cache_key, $access_token ) use ( $client ) {
-				$expires_in = HOUR_IN_SECONDS; // Reasonable default, Google OAuth tokens are typically valid for an hour.
-				$created    = 0; // This will be replaced with the current timestamp when saving.
-
-				// Try looking up the real values if possible.
-				$token = $client->getAccessToken();
-				if ( isset( $token['access_token'], $token['expires_in'], $token['created'] ) && $access_token === $token['access_token'] ) {
-					$expires_in = $token['expires_in'];
-					$created    = $token['created'];
-				}
-
-				$this->set_access_token( $access_token, $expires_in, $created );
-			}
-		);
-
-		// This is called when refreshing the access token on-the-fly fails.
-		$client->setTokenExceptionCallback(
-			function( Exception $e ) {
-				$this->handle_fetch_token_exception( $e );
-			}
-		);
-
-		if ( $this->profile->has() ) {
-			$client->setLoginHint( $this->profile->get()['email'] );
-		}
-
-		$access_token = $this->get_access_token();
-
-		// Return unconfigured client if access token not yet set.
-		if ( empty( $access_token ) ) {
-			return $client;
-		}
-
-		$client->setAccessToken(
-			array(
-				'access_token'  => $access_token,
-				'expires_in'    => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
-				'created'       => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
-				'refresh_token' => $this->get_refresh_token(),
-			)
-		);
-
-		return $client;
 	}
 
 	/**
@@ -326,8 +212,8 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 */
 	public function refresh_token() {
-		$refresh_token = $this->get_refresh_token();
-		if ( empty( $refresh_token ) ) {
+		$token = $this->get_token();
+		if ( empty( $token['refresh_token'] ) ) {
 			$this->delete_token();
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'refresh_token_not_exist' );
 			return;
@@ -339,7 +225,7 @@ final class OAuth_Client {
 		}
 
 		try {
-			$token_response = $this->google_client->fetchAccessTokenWithRefreshToken( $refresh_token );
+			$token_response = $this->google_client->fetchAccessTokenWithRefreshToken( $token['refresh_token'] );
 		} catch ( \Exception $e ) {
 			$this->handle_fetch_token_exception( $e );
 			return;
@@ -350,11 +236,7 @@ final class OAuth_Client {
 			return;
 		}
 
-		$this->set_access_token(
-			$token_response['access_token'],
-			isset( $token_response['expires_in'] ) ? $token_response['expires_in'] : '',
-			isset( $token_response['created'] ) ? $token_response['created'] : 0
-		);
+		$this->set_token( $token_response );
 	}
 
 	/**
@@ -445,7 +327,7 @@ final class OAuth_Client {
 	 * @return bool true if any required scopes are not satisfied, otherwise false.
 	 */
 	public function needs_reauthentication() {
-		if ( ! $this->get_access_token() ) {
+		if ( ! $this->get_token() ) {
 			return false;
 		}
 
@@ -519,32 +401,95 @@ final class OAuth_Client {
 	}
 
 	/**
+	 * Gets the current user's full OAuth token data, including access token and optional refresh token.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Associative array with 'access_token', 'expires_in', 'created', and 'refresh_token' keys, or empty
+	 *               array if no token available.
+	 */
+	public function get_token() {
+		$access_token = $this->encrypted_user_options->get( self::OPTION_ACCESS_TOKEN );
+		if ( empty( $access_token ) ) {
+			return array();
+		}
+
+		$token = array(
+			'access_token' => $access_token,
+			'expires_in'   => (int) $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
+			'created'      => (int) $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
+		);
+
+		$refresh_token = $this->encrypted_user_options->get( self::OPTION_REFRESH_TOKEN );
+		if ( ! empty( $refresh_token ) ) {
+			$token['refresh_token'] = $refresh_token;
+		}
+
+		return $token;
+	}
+
+	/**
+	 * Sets the current user's full OAuth token data, including access token and optional refresh token.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $token {
+	 *     Full token data, optionally including the refresh token.
+	 *
+	 *     @type string $access_token  Required. The access token.
+	 *     @type int    $expires_in    Number of seconds in which the token expires. Default 3600 (1 hour).
+	 *     @type int    $created       Timestamp in seconds when the token was created. Default is the current time.
+	 *     @type string $refresh_token The refresh token, if relevant. If passed, it is set as well.
+	 * }
+	 * @return bool True on success, false on failure.
+	 */
+	public function set_token( array $token ) {
+		if ( empty( $token['access_token'] ) ) {
+			return false;
+		}
+
+		// Use sane defaults for these fields.
+		if ( empty( $token['expires_in'] ) ) {
+			$token['expires_in'] = HOUR_IN_SECONDS;
+		}
+		if ( empty( $token['created'] ) ) {
+			$token['created'] = time();
+		}
+
+		$this->encrypted_user_options->set( self::OPTION_ACCESS_TOKEN, $token['access_token'] );
+		$this->user_options->set( self::OPTION_ACCESS_TOKEN_EXPIRES_IN, $token['expires_in'] );
+		$this->user_options->set( self::OPTION_ACCESS_TOKEN_CREATED, $token['created'] );
+
+		if ( ! empty( $token['refresh_token'] ) ) {
+			$this->encrypted_user_options->set( self::OPTION_REFRESH_TOKEN, $token['refresh_token'] );
+		}
+
+		return true;
+	}
+
+	/**
 	 * Gets the current user's OAuth access token.
 	 *
 	 * @since 1.0.0
+	 * @deprecated n.e.x.t Use `OAuth_Client::get_token` instead.
 	 *
 	 * @return string|bool Access token if it exists, false otherwise.
 	 */
 	public function get_access_token() {
-		if ( ! empty( $this->access_token ) ) {
-			return $this->access_token;
-		}
+		_deprecated_function( __METHOD__, 'n.e.x.t', self::class . '::get_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		$access_token = $this->encrypted_user_options->get( self::OPTION_ACCESS_TOKEN );
-
-		if ( ! $access_token ) {
+		$token = $this->get_token();
+		if ( empty( $token['access_token'] ) ) {
 			return false;
 		}
-
-		$this->access_token = $access_token;
-
-		return $this->access_token;
+		return $token['access_token'];
 	}
 
 	/**
 	 * Sets the current user's OAuth access token.
 	 *
 	 * @since 1.0.0
+	 * @deprecated n.e.x.t Use `OAuth_Client::set_token` instead.
 	 *
 	 * @param string $access_token New access token.
 	 * @param int    $expires_in   TTL of the access token in seconds.
@@ -552,64 +497,50 @@ final class OAuth_Client {
 	 * @return bool True on success, false on failure.
 	 */
 	public function set_access_token( $access_token, $expires_in, $created = 0 ) {
-		// Bail early if nothing change.
-		if ( $this->get_access_token() === $access_token ) {
-			return true;
-		}
+		_deprecated_function( __METHOD__, 'n.e.x.t', self::class . '::set_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		$this->access_token = $access_token;
-
-		// If not provided, assume current GMT time.
-		if ( empty( $created ) ) {
-			$created = time();
-		}
-
-		$this->user_options->set( self::OPTION_ACCESS_TOKEN_EXPIRES_IN, $expires_in );
-		$this->user_options->set( self::OPTION_ACCESS_TOKEN_CREATED, $created );
-
-		return $this->encrypted_user_options->set( self::OPTION_ACCESS_TOKEN, $this->access_token );
+		return $this->set_token(
+			array(
+				'access_token' => $access_token,
+				'expires_in'   => $expires_in,
+				'created'      => $created,
+			)
+		);
 	}
 
 	/**
 	 * Gets the current user's OAuth refresh token.
 	 *
 	 * @since 1.0.0
+	 * @deprecated n.e.x.t Use `OAuth_Client::get_token` instead.
 	 *
 	 * @return string|bool Refresh token if it exists, false otherwise.
 	 */
 	public function get_refresh_token() {
-		if ( ! empty( $this->refresh_token ) ) {
-			return $this->refresh_token;
-		}
+		_deprecated_function( __METHOD__, 'n.e.x.t', self::class . '::get_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		$refresh_token = $this->encrypted_user_options->get( self::OPTION_REFRESH_TOKEN );
-
-		if ( ! $refresh_token ) {
+		$token = $this->get_token();
+		if ( empty( $token['refresh_token'] ) ) {
 			return false;
 		}
-
-		$this->refresh_token = $refresh_token;
-
-		return $this->refresh_token;
+		return $token['refresh_token'];
 	}
 
 	/**
 	 * Sets the current user's OAuth refresh token.
 	 *
 	 * @since 1.0.0
+	 * @deprecated n.e.x.t Use `OAuth_Client::set_token` instead.
 	 *
 	 * @param string $refresh_token New refresh token.
 	 * @return bool True on success, false on failure.
 	 */
 	public function set_refresh_token( $refresh_token ) {
-		// Bail early if nothing change.
-		if ( $this->get_refresh_token() === $refresh_token ) {
-			return true;
-		}
+		_deprecated_function( __METHOD__, 'n.e.x.t', self::class . '::set_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		$this->refresh_token = $refresh_token;
-
-		return $this->encrypted_user_options->set( self::OPTION_REFRESH_TOKEN, $this->refresh_token );
+		$token                  = $this->get_token();
+		$token['refresh_token'] = $refresh_token;
+		return $this->set_token( $token );
 	}
 
 	/**
@@ -697,15 +628,8 @@ final class OAuth_Client {
 			exit();
 		}
 
-		$this->set_access_token(
-			$token_response['access_token'],
-			isset( $token_response['expires_in'] ) ? $token_response['expires_in'] : '',
-			isset( $token_response['created'] ) ? $token_response['created'] : 0
-		);
-
-		// Update the site refresh token.
-		$refresh_token = $this->get_client()->getRefreshToken();
-		$this->set_refresh_token( $refresh_token );
+		// Update the access token and refresh token.
+		$this->set_token( $token_response );
 
 		// Store the previously granted scopes for use in the action below before they're updated.
 		$previous_scopes = $this->get_granted_scopes();
@@ -891,14 +815,14 @@ final class OAuth_Client {
 	 *                or empty string on failure.
 	 */
 	public function get_proxy_permissions_url() {
-		$access_token = $this->get_access_token();
-		if ( empty( $access_token ) ) {
+		$token = $this->get_token();
+		if ( empty( $token['access_token'] ) ) {
 			return '';
 		}
 
 		return $this->google_proxy->permissions_url(
 			$this->credentials,
-			array( 'token' => $access_token )
+			array( 'token' => $token['access_token'] )
 		);
 	}
 
@@ -981,9 +905,6 @@ final class OAuth_Client {
 		$this->user_options->delete( self::OPTION_REDIRECT_URL );
 		$this->user_options->delete( self::OPTION_AUTH_SCOPES );
 		$this->user_options->delete( self::OPTION_ADDITIONAL_AUTH_SCOPES );
-
-		$this->access_token  = '';
-		$this->refresh_token = '';
 	}
 
 	/**
@@ -995,37 +916,5 @@ final class OAuth_Client {
 	 */
 	private function get_redirect_uri() {
 		return add_query_arg( 'oauth2callback', '1', admin_url( 'index.php' ) );
-	}
-
-	/**
-	 * Retrieves the OAuth credentials object.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return object|null Credentials object with `web` property, or null if no credentials available.
-	 */
-	private function get_client_credentials() {
-		if ( false !== $this->client_credentials ) {
-			return $this->client_credentials;
-		}
-
-		if ( ! $this->credentials->has() ) {
-			return null;
-		}
-
-		$credentials = $this->credentials->get();
-
-		$this->client_credentials = (object) array(
-			'web' => (object) array(
-				'client_id'                   => $credentials['oauth2_client_id'],
-				'client_secret'               => $credentials['oauth2_client_secret'],
-				'auth_uri'                    => 'https://accounts.google.com/o/oauth2/auth',
-				'token_uri'                   => 'https://oauth2.googleapis.com/token',
-				'auth_provider_x509_cert_url' => 'https://www.googleapis.com/oauth2/v1/certs',
-				'redirect_uris'               => array( $this->get_redirect_uri() ),
-			),
-		);
-
-		return $this->client_credentials;
 	}
 }
