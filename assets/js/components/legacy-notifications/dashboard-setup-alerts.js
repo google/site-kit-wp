@@ -99,6 +99,7 @@ class DashboardSetupAlerts extends Component {
 							description={ winData.description }
 							handleDismiss={ () => {} }
 							WinImageSVG={ SuccessGreenSVG }
+							winImageSVGsize={ showModuleList ? 'large' : 'small' }
 							dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 							format="large"
 							type="win-success"
@@ -108,7 +109,6 @@ class DashboardSetupAlerts extends Component {
 							anchorLink={ 'pagespeed-insights' === slug ? '#googlesitekit-pagespeed-header' : '' }
 							anchorLinkLabel={ 'pagespeed-insights' === slug ? __( 'Jump to the bottom of the dashboard to see how fast your home page is', 'google-site-kit' ) : '' }
 						>
-							{ /* will end up with whitespace here! */ }
 							{ showModuleList && <ModulesList
 								moduleSlugs={ MODULE_SLUGS }
 							/> }

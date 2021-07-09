@@ -133,6 +133,7 @@ class Notification extends Component {
 			description,
 			blockData,
 			WinImageSVG,
+			winImageSVGsize,
 			SmallImageSVG,
 			format,
 			learnMoreURL,
@@ -358,7 +359,14 @@ class Notification extends Component {
 								mdc-layout-grid__cell--span-2-tablet
 								mdc-layout-grid__cell--span-4-desktop
 							">
-								<div className="googlesitekit-publisher-win__image-large">
+								<div className={
+									classnames(
+										'googlesitekit-publisher-win__image-large',
+										{
+											'googlesitekit-publisher-win__image-large__small': winImageSVGsize === 'small',
+										}
+
+									) }>
 									<WinImageSVG />
 								</div>
 							</div>
@@ -392,6 +400,7 @@ Notification.propTypes = {
 	learnMoreLabel: PropTypes.string,
 	blockData: PropTypes.array,
 	WinImageSVG: PropTypes.elementType,
+	winImageSVGsize: PropTypes.oneOf( [ 'large', 'small' ] ),
 	SmallImageSVG: PropTypes.elementType,
 	format: PropTypes.string,
 	ctaLink: PropTypes.string,
@@ -416,6 +425,7 @@ Notification.defaultProps = {
 	className: '',
 	dismissExpires: 0,
 	showOnce: false,
+	winImageSVGsize: 'large',
 };
 
 export default Notification;
