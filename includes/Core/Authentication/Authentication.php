@@ -571,9 +571,9 @@ final class Authentication {
 	public function is_authenticated() {
 		$auth_client = $this->get_oauth_client();
 
-		$access_token = $auth_client->get_access_token();
+		$token = $auth_client->get_token();
 
-		return ! empty( $access_token );
+		return ! empty( $token['access_token'] );
 	}
 	/**
 	 * Checks whether the Site Kit setup is considered complete.
@@ -759,14 +759,14 @@ final class Authentication {
 	private function inline_js_setup_data( $data ) {
 		$auth_client = $this->get_oauth_client();
 
-		$access_token = $auth_client->get_access_token();
+		$token = $auth_client->get_token();
 
 		$data['isSiteKitConnected'] = $this->credentials->has();
 		$data['isResettable']       = $this->options->has( Credentials::OPTION );
-		$data['isAuthenticated']    = ! empty( $access_token );
+		$data['isAuthenticated']    = ! empty( $token['access_token'] );
 		$data['requiredScopes']     = $auth_client->get_required_scopes();
-		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
-		$data['unsatisfiedScopes']  = ! empty( $access_token ) ? $auth_client->get_unsatisfied_scopes() : array();
+		$data['grantedScopes']      = ! empty( $token['access_token'] ) ? $auth_client->get_granted_scopes() : array();
+		$data['unsatisfiedScopes']  = ! empty( $token['access_token'] ) ? $auth_client->get_unsatisfied_scopes() : array();
 		$data['needReauthenticate'] = $auth_client->needs_reauthentication();
 
 		if ( $this->credentials->using_proxy() ) {
@@ -856,13 +856,13 @@ final class Authentication {
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$oauth_client = $this->get_oauth_client();
-							$access_token = $oauth_client->get_access_token();
+							$token = $oauth_client->get_token();
 
 							$data = array(
-								'authenticated'         => ! empty( $access_token ),
+								'authenticated'         => ! empty( $token['access_token'] ),
 								'requiredScopes'        => $oauth_client->get_required_scopes(),
-								'grantedScopes'         => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
-								'unsatisfiedScopes'     => ! empty( $access_token ) ? $oauth_client->get_unsatisfied_scopes() : array(),
+								'grantedScopes'         => ! empty( $token['access_token'] ) ? $oauth_client->get_granted_scopes() : array(),
+								'unsatisfiedScopes'     => ! empty( $token['access_token'] ) ? $oauth_client->get_unsatisfied_scopes() : array(),
 								'needsReauthentication' => $oauth_client->needs_reauthentication(),
 								'disconnectedReason'    => $this->disconnected_reason->get(),
 							);

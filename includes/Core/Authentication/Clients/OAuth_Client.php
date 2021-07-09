@@ -212,13 +212,20 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 */
 	public function refresh_token() {
+		$token = $this->get_token();
+		if ( empty( $token['refresh_token'] ) ) {
+			$this->delete_token();
+			$this->user_options->set( self::OPTION_ERROR_CODE, 'refresh_token_not_exist' );
+			return;
+		}
+
 		// Stop if google_client not initialized yet.
 		if ( ! $this->google_client instanceof Google_Site_Kit_Client ) {
 			return;
 		}
 
 		try {
-			$token_response = $this->google_client->fetchAccessTokenWithRefreshToken( $refresh_token );
+			$token_response = $this->google_client->fetchAccessTokenWithRefreshToken( $token['refresh_token'] );
 		} catch ( \Exception $e ) {
 			$this->handle_fetch_token_exception( $e );
 			return;
@@ -402,7 +409,7 @@ final class OAuth_Client {
 	 *               array if no token available.
 	 */
 	public function get_token() {
-		$access_token = $this->get_access_token();
+		$access_token = $this->encrypted_user_options->get( self::OPTION_ACCESS_TOKEN );
 		if ( empty( $access_token ) ) {
 			return array();
 		}
@@ -413,8 +420,8 @@ final class OAuth_Client {
 			'created'      => (int) $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
 		);
 
-		$refresh_token = $this->get_refresh_token();
-		if ( empty( $refresh_token ) ) {
+		$refresh_token = $this->encrypted_user_options->get( self::OPTION_REFRESH_TOKEN );
+		if ( ! empty( $refresh_token ) ) {
 			$token['refresh_token'] = $refresh_token;
 		}
 
@@ -434,42 +441,55 @@ final class OAuth_Client {
 	 *     @type int    $created       Timestamp in seconds when the token was created. Default is the current time.
 	 *     @type string $refresh_token The refresh token, if relevant. If passed, it is set as well.
 	 * }
+	 * @return bool True on success, false on failure.
 	 */
 	public function set_token( array $token ) {
 		if ( empty( $token['access_token'] ) ) {
-			return;
+			return false;
 		}
 
-		$token = array_merge(
-			array(
-				'access_token' => '',
-				'expires_in'   => 0,
-				'created'      => 0,
-			),
-			$token
-		);
-		$this->set_access_token( $token['access_token'], $token['expires_in'], $token['created'] );
+		// Use sane defaults for these fields.
+		if ( empty( $token['expires_in'] ) ) {
+			$token['expires_in'] = HOUR_IN_SECONDS;
+		}
+		if ( empty( $token['created'] ) ) {
+			$token['created'] = time();
+		}
+
+		$this->encrypted_user_options->set( self::OPTION_ACCESS_TOKEN, $token['access_token'] );
+		$this->user_options->set( self::OPTION_ACCESS_TOKEN_EXPIRES_IN, $token['expires_in'] );
+		$this->user_options->set( self::OPTION_ACCESS_TOKEN_CREATED, $token['created'] );
 
 		if ( ! empty( $token['refresh_token'] ) ) {
-			$this->set_refresh_token( $token['refresh_token'] );
+			$this->encrypted_user_options->set( self::OPTION_REFRESH_TOKEN, $token['refresh_token'] );
 		}
+
+		return true;
 	}
 
 	/**
 	 * Gets the current user's OAuth access token.
 	 *
 	 * @since 1.0.0
+	 * @deprecated n.e.x.t Use `OAuth_Client::get_token` instead.
 	 *
 	 * @return string|bool Access token if it exists, false otherwise.
 	 */
 	public function get_access_token() {
-		return $this->encrypted_user_options->get( self::OPTION_ACCESS_TOKEN );
+		_deprecated_function( __METHOD__, 'n.e.x.t', self::class . '::get_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+		$token = $this->get_token();
+		if ( empty( $token['access_token'] ) ) {
+			return false;
+		}
+		return $token['access_token'];
 	}
 
 	/**
 	 * Sets the current user's OAuth access token.
 	 *
 	 * @since 1.0.0
+	 * @deprecated n.e.x.t Use `OAuth_Client::set_token` instead.
 	 *
 	 * @param string $access_token New access token.
 	 * @param int    $expires_in   TTL of the access token in seconds.
@@ -477,51 +497,50 @@ final class OAuth_Client {
 	 * @return bool True on success, false on failure.
 	 */
 	public function set_access_token( $access_token, $expires_in, $created = 0 ) {
-		// Bail early if nothing change.
-		if ( $this->get_access_token() === $access_token ) {
-			return true;
-		}
+		_deprecated_function( __METHOD__, 'n.e.x.t', self::class . '::set_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		// Use sane defaults for these fields.
-		if ( empty( $expires_in ) ) {
-			$expires_in = HOUR_IN_SECONDS;
-		}
-		if ( empty( $created ) ) {
-			$created = time();
-		}
-
-		$this->user_options->set( self::OPTION_ACCESS_TOKEN_EXPIRES_IN, $expires_in );
-		$this->user_options->set( self::OPTION_ACCESS_TOKEN_CREATED, $created );
-
-		return $this->encrypted_user_options->set( self::OPTION_ACCESS_TOKEN, $access_token );
+		return $this->set_token(
+			array(
+				'access_token' => $access_token,
+				'expires_in'   => $expires_in,
+				'created'      => $created,
+			)
+		);
 	}
 
 	/**
 	 * Gets the current user's OAuth refresh token.
 	 *
 	 * @since 1.0.0
+	 * @deprecated n.e.x.t Use `OAuth_Client::get_token` instead.
 	 *
 	 * @return string|bool Refresh token if it exists, false otherwise.
 	 */
 	public function get_refresh_token() {
-		return $this->encrypted_user_options->get( self::OPTION_REFRESH_TOKEN );
+		_deprecated_function( __METHOD__, 'n.e.x.t', self::class . '::get_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+		$token = $this->get_token();
+		if ( empty( $token['refresh_token'] ) ) {
+			return false;
+		}
+		return $token['refresh_token'];
 	}
 
 	/**
 	 * Sets the current user's OAuth refresh token.
 	 *
 	 * @since 1.0.0
+	 * @deprecated n.e.x.t Use `OAuth_Client::set_token` instead.
 	 *
 	 * @param string $refresh_token New refresh token.
 	 * @return bool True on success, false on failure.
 	 */
 	public function set_refresh_token( $refresh_token ) {
-		// Bail early if nothing change.
-		if ( $this->get_refresh_token() === $refresh_token ) {
-			return true;
-		}
+		_deprecated_function( __METHOD__, 'n.e.x.t', self::class . '::set_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		return $this->encrypted_user_options->set( self::OPTION_REFRESH_TOKEN, $refresh_token );
+		$token                  = $this->get_token();
+		$token['refresh_token'] = $refresh_token;
+		return $this->set_token( $token );
 	}
 
 	/**
