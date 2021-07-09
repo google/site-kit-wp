@@ -41,23 +41,26 @@ export default function createLegacySettingsWrapper( moduleSlug ) {
 			callback,
 			route,
 			features,
+			skipModulesProvide,
 		} = props;
 
-		// HACK: This removes Search Console from appearing in stories for
-		// individual module's settings screens. It's a bit of a hack because
-		// Search Console _should_ also be enabled, but works for now.
-		provideModules( registry, [
-			{
-				slug: 'search-console',
-				active: false,
-				connected: true,
-			},
-			{
-				slug: moduleSlug,
-				active: true,
-				connected: true,
-			},
-		] );
+		if ( ! skipModulesProvide ) {
+			// HACK: This removes Search Console from appearing in stories for
+			// individual module's settings screens. It's a bit of a hack because
+			// Search Console _should_ also be enabled, but works for now.
+			provideModules( registry, [
+				{
+					slug: 'search-console',
+					active: false,
+					connected: true,
+				},
+				{
+					slug: moduleSlug,
+					active: true,
+					connected: true,
+				},
+			] );
+		}
 
 		return (
 			<WithTestRegistry registry={ registry } callback={ callback } route={ route } features={ features }>

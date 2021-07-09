@@ -89,9 +89,12 @@ storiesOf( 'Analytics Module/Settings', module )
 		],
 	} )
 	.add( 'View, open with all settings + GA4', ( args, { registry } ) => {
-		const accountID = '1234567890';
-
 		provideModules( registry, [
+			{
+				slug: 'search-console',
+				active: false,
+				connected: true,
+			},
 			{
 				slug: 'analytics',
 				active: true,
@@ -101,12 +104,13 @@ storiesOf( 'Analytics Module/Settings', module )
 				slug: 'analytics-4',
 				active: true,
 				connected: true,
+				internal: true,
 			},
 		] );
 
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			...defaultSettings,
-			accountID,
+			accountID: '1234567890',
 			propertyID: 'UA-1234567890-1',
 			internalWebPropertyID: '135791113',
 			profileID: '9999999',
@@ -123,6 +127,7 @@ storiesOf( 'Analytics Module/Settings', module )
 				registry={ registry }
 				features={ [ 'ga4setup' ] }
 				route="/connected-services/analytics"
+				skipModulesProvide
 			/>
 		);
 	}, {
@@ -173,6 +178,83 @@ storiesOf( 'Analytics Module/Settings', module )
 		} );
 
 		return <Settings registry={ registry } route="/connected-services/analytics/edit" />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
+	} )
+	.add( 'Edit, open with all settings + GA4', ( args, { registry } ) => {
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		// eslint-disable-next-line sitekit/acronym-case
+		const { accountId: accountID, webPropertyId, id: profileID } = profiles[ 0 ];
+		// eslint-disable-next-line sitekit/acronym-case
+		const { internalWebPropertyId } = properties.find( ( property ) => webPropertyId === property.id );
+
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				active: false,
+				connected: true,
+			},
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+				internal: true,
+			},
+		] );
+
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+			accountID,
+			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
+		} );
+
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			...defaultSettings,
+			accountID,
+			propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
+			internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
+			profileID,
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: '1001',
+			webDataStreamID: '2001',
+			measurementID: 'G-12345ABCDE',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [
+			{
+				_id: '1001',
+				displayName: 'GA4 Property',
+			},
+		], { accountID } );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( [
+			{
+				_id: '2001',
+				/* eslint-disable sitekit/acronym-case */
+				measurementId: 'G-12345ABCDE',
+				defaultUri: 'http://example.com',
+				/* eslint-disable */
+			},
+		], { propertyID: '1001' } );
+
+		return (
+			<Settings
+				registry={ registry }
+				features={ [ 'ga4setup' ] }
+				route="/connected-services/analytics/edit"
+				skipModulesProvide
+			/>
+		);
 	}, {
 		decorators: [
 			withRegistry,
