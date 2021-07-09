@@ -577,9 +577,9 @@ final class Idea_Hub extends Module
 			new Script(
 				'googlesitekit-idea-hub-post-list-notice',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-idea-hub-post-list-notice.js',
-					// 'context'	   => CONTEXT_ADMIN_POSTS, // @TODO 3272
-					'dependencies' => array(
+					'src'           => $base_url . 'js/googlesitekit-idea-hub-post-list-notice.js',
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POSTS ),
+					'dependencies'  => array(
 						'googlesitekit-datastore-user',
 						'googlesitekit-api', // @TODO do we need these?
 						'googlesitekit-data', // @TODO do we need these?

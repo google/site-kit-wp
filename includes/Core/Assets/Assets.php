@@ -124,21 +124,30 @@ final class Assets {
 			}
 		);
 
-		add_action(
-			'enqueue_block_editor_assets',
-			function() {
-				$assets = $this->get_assets();
-
-				array_walk(
-					$assets,
-					function( $asset ) {
-						if ( $asset->has_context( Asset::CONTEXT_ADMIN_POST_EDITOR ) ) {
-							$this->enqueue_asset( $asset->get_handle() );
-						}
-					}
-				);
-			}
+		// A map of asset contexts to load for specific hooks.
+		$actions_contexts_map = array(
+			'admin_print_scripts-edit.php' => Asset::CONTEXT_ADMIN_POSTS,
+			'enqueue_block_editor_assets'  => Asset::CONTEXT_ADMIN_POST_EDITOR,
 		);
+
+		foreach ( $actions_contexts_map as $hook => $context ) {
+			add_action(
+				$hook,
+				function() use ( $context ) {
+					$assets = $this->get_assets();
+
+					array_walk(
+						$assets,
+						function( $asset ) use ( $context ) {
+							if ( $asset->has_context( $context ) ) {
+								$this->enqueue_asset( $asset->get_handle() );
+							}
+						}
+					);
+				}
+			);
+
+		}
 
 		$scripts_print_callback = function() {
 			$scripts = wp_scripts();
