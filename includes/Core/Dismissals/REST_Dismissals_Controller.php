@@ -1,14 +1,14 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Feature_Tours\REST_Feature_Tours_Controller
+ * Class Google\Site_Kit\Core\Dismissals\REST_Dismissals_Controller
  *
- * @package   Google\Site_Kit\Core\Feature_Tours
+ * @package   Google\Site_Kit\Core\Dismissals
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Feature_Tours;
+namespace Google\Site_Kit\Core\Dismissals;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
@@ -19,37 +19,37 @@ use WP_REST_Response;
 use WP_REST_Server;
 
 /**
- * Class for handling feature tour rest routes.
+ * Class for handling dismissed items rest routes.
  *
- * @since 1.27.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
-class REST_Feature_Tours_Controller {
+class REST_Dismissals_Controller {
 
 	/**
-	 * Dismissed_Tours instance.
+	 * Dismissed_Items instance.
 	 *
-	 * @since 1.27.0
-	 * @var Dismissed_Tours
+	 * @since n.e.x.t
+	 * @var Dismissed_Items
 	 */
-	protected $dismissed_tours;
+	protected $dismissed_items;
 
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.27.0
+	 * @since n.e.x.t
 	 *
-	 * @param Dismissed_Tours $dismissed_tours Dismissed tours instance.
+	 * @param Dismissed_Items $dismissed_items Dismissed items instance.
 	 */
-	public function __construct( Dismissed_Tours $dismissed_tours ) {
-		$this->dismissed_tours = $dismissed_tours;
+	public function __construct( Dismissed_Items $dismissed_items ) {
+		$this->dismissed_items = $dismissed_items;
 	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since 1.27.0
+	 * @since n.e.x.t
 	 */
 	public function register() {
 		add_filter(
@@ -62,11 +62,12 @@ class REST_Feature_Tours_Controller {
 		add_filter(
 			'googlesitekit_apifetch_preload_paths',
 			function ( $paths ) {
-				$feature_tour_routes = array(
-					'/' . REST_Routes::REST_ROOT . '/core/user/data/dismissed-tours',
+				return array_merge(
+					$paths,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/core/user/data/dismissed-items',
+					)
 				);
-
-				return array_merge( $paths, $feature_tour_routes );
 			}
 		);
 	}
@@ -74,7 +75,7 @@ class REST_Feature_Tours_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since 1.27.0
+	 * @since n.e.x.t
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -85,17 +86,17 @@ class REST_Feature_Tours_Controller {
 
 		return array(
 			new REST_Route(
-				'core/user/data/dismissed-tours',
+				'core/user/data/dismissed-items',
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => function () {
-						return new WP_REST_Response( $this->dismissed_tours->get() );
+						return new WP_REST_Response( $this->dismissed_items->get_dismissed_items() );
 					},
 					'permission_callback' => $can_authenticate,
 				)
 			),
 			new REST_Route(
-				'core/user/data/dismiss-tour',
+				'core/user/data/dismiss-item',
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
@@ -110,9 +111,14 @@ class REST_Feature_Tours_Controller {
 							);
 						}
 
-						$this->dismissed_tours->add( $data['slug'] );
+						$expiration = Dismissed_Items::DISMISS_ITEM_PERMANENTLY;
+						if ( isset( $data['expiration'] ) && intval( $data['expiration'] ) > 0 ) {
+							$expiration = $data['expiration'];
+						}
 
-						return new WP_REST_Response( $this->dismissed_tours->get() );
+						$this->dismissed_items->add( $data['slug'], $expiration );
+
+						return new WP_REST_Response( $this->dismissed_items->get_dismissed_items() );
 					},
 					'permission_callback' => $can_authenticate,
 					'args'                => array(
