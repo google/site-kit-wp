@@ -1,7 +1,9 @@
+
 /**
  * WordPress dependencies
  */
 import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { getQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -14,12 +16,11 @@ import {
 	switchDateRange,
 	useRequestInterception,
 } from '../../../utils';
-import * as modulePageRequests from './fixtures/module-page';
+import { getAnalyticsMockResponse } from '../../../../../assets/js/modules/analytics/util/data-mock';
 
-let mockBatchResponse;
+const datapointSelector = '.googlesitekit-data-block--sessions .googlesitekit-data-block__datapoint';
 
 async function getTotalSessions() {
-	const datapointSelector = '.googlesitekit-data-block--sessions .googlesitekit-data-block__datapoint';
 	await expect( page ).toMatchElement( datapointSelector );
 	return await page.$eval( datapointSelector, ( el ) => el.textContent );
 }
@@ -33,10 +34,20 @@ describe( 'date range filtering on dashboard views', () => {
 
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
+			const url = request.url();
+			if ( url.match( 'google-site-kit/v1/modules/analytics' ) ) {
+				let response;
+
+				if ( url.match( 'notifications' ) ) {
+					response = [];
+				} else {
+					const query = getQueryArgs( url );
+					response = getAnalyticsMockResponse( query, false );
+				}
+
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( mockBatchResponse ),
+					body: JSON.stringify( response ),
 				} );
 			} else {
 				request.continue();
@@ -44,19 +55,15 @@ describe( 'date range filtering on dashboard views', () => {
 		} );
 	} );
 
-	afterEach( async () => {
-		mockBatchResponse = [];
-	} );
-
 	it( 'loads new data when the date range is changed on the module dashboard', async () => {
-		const { last28Days, last14Days } = modulePageRequests;
-		mockBatchResponse = last28Days;
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-module-analytics' );
+
 		const TOTAL_SESSIONS_28_DAYS = await getTotalSessions();
-		mockBatchResponse = last14Days;
+
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
 			switchDateRange( 'last 28 days', 'last 14 days' ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/analytics' ) ),
+			page.waitForSelector( '.googlesitekit-preview-block' ),
 		] );
 
 		const TOTAL_SESSIONS_14_DAYS = await getTotalSessions();
