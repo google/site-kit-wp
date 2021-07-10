@@ -36,7 +36,16 @@ import * as dashboardRequests from './fixtures/dashboard';
 import * as dashboardDetailsRequests from './fixtures/dashboard-details';
 import * as modulePageRequests from './fixtures/module-page';
 
+// TODO The dashboard and page dashboard tests still use legacy widgets
+// and require legacy fixtures via calls to /data. Once they are refactored, this
+// can be removed and the request interception can be brought in line with the other
+// Widget API tests (see below).
 let mockBatchResponse;
+// TODO The module page tests here now use the Widget API. They no longer call
+// /data and receive batched responses. To make the distinction clear, these tests
+// make use of this variable instead of `mockBatchResponse`. As part of #2586,
+// this can be refactored to use the new getSearchConsoleMockResponse utility.
+let mockResponse;
 
 async function getTotalImpressions() {
 	const datapointSelector = '.overview-total-impressions .googlesitekit-data-block__datapoint, .googlesitekit-data-block--impressions .googlesitekit-data-block__datapoint';
@@ -52,7 +61,17 @@ describe( 'date range filtering on dashboard views', () => {
 
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
+			const url = request.url();
+			// Widget API requests. As mentioned above, these can be refactored
+			// to use the mock response utility as part of #2586.
+			if ( url.match( 'google-site-kit/v1/.*search-console' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( mockResponse ),
+				} );
+			// Legacy requests, to be removed when the dashboard and page dashboard
+			// tests are refactored to use the Widget API.
+			} else if ( url.match( 'google-site-kit/v1/data/' ) ) {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( mockBatchResponse ),
@@ -143,15 +162,15 @@ describe( 'date range filtering on dashboard views', () => {
 	it( 'loads new data when the date range is changed on the module dashboard page', async () => {
 		const { last28Days, last14Days } = modulePageRequests;
 
-		mockBatchResponse = last28Days;
+		mockResponse = last28Days;
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-module-search-console' );
 
 		const TOTAL_IMPRESSIONS_28_DAYS = await getTotalImpressions();
 
-		mockBatchResponse = last14Days;
+		mockResponse = last14Days;
 
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/.*search-console' ) ),
 			switchDateRange( 'last 28 days', 'last 14 days' ),
 		] );
 
