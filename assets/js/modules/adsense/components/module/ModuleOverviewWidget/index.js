@@ -33,6 +33,8 @@ import { __ } from '@wordpress/i18n';
 import { STORE_NAME } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../../util';
+import DashboardZeroData from '../../dashboard/DashboardZeroData';
+import { HIDDEN_CLASS } from '../../../../../googlesitekit/widgets/util/constants';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
 import Overview from './Overview';
@@ -110,8 +112,11 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 
 	if ( isZeroReport( currentRangeData ) || isZeroReport( currentRangeChartData ) ) {
 		return (
-			<Widget Header={ Header }>
-				<WidgetReportZero moduleSlug="adsense" />
+			<Widget noPadding>
+				<DashboardZeroData />
+				<div className={ HIDDEN_CLASS }>
+					<WidgetReportZero moduleSlug="adsense" />
+				</div>
 			</Widget>
 		);
 	}
