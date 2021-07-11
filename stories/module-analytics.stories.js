@@ -42,7 +42,7 @@ import {
 	PropertySelectIncludingGA4,
 	ProfileSelect,
 	AnonymizeIPSwitch,
-	UseSnippetSwitch,
+	UseUASnippetSwitch,
 	TrackingExclusionSwitches,
 	GA4Notice,
 } from '../assets/js/modules/analytics/components/common';
@@ -66,54 +66,42 @@ function SetupWrap( { children } ) {
 }
 
 storiesOf( 'Analytics Module', module )
-	.add( 'Account Property Profile Select (none selected)', () => {
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+	.add( 'Account Property Profile Select', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/acronym-case
-				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/acronym-case
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
-		};
+			const account = {
+				id: '1000',
+				name: 'Account A',
+			};
 
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<SetupWrap>
-					<div className="googlesitekit-setup-module__inputs">
-						<AccountSelect />
-						<PropertySelect />
-						<ProfileSelect />
-					</div>
-				</SetupWrap>
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Account Property Profile Select (all selected)', () => {
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/acronym-case
-				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/acronym-case
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				// eslint-disable-next-line sitekit/acronym-case
-				accountID: profiles[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/acronym-case
-				propertyID: profiles[ 0 ].webPropertyId,
-				// eslint-disable-next-line sitekit/acronym-case
-				internalWebPropertyID: profiles[ 0 ].internalWebPropertyId,
-				profileID: profiles[ 0 ].id,
-			} );
+			const propertyOne = {
+				id: 'UA-2000-1',
+				name: 'Property A',
+			};
+
+			const propertyTwo = {
+				id: 'UA-2001-1',
+				name: 'Property B',
+			};
+
+			const profile = {
+				id: '3000',
+				name: 'Profile A',
+			};
+
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
+
+			dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+			dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+
+			dispatch( STORE_NAME ).receiveGetProperties( [ propertyOne, propertyTwo ], { accountID: account.id } );
+			dispatch( STORE_NAME ).finishResolution( 'getProperties', [ account.id ] );
+
+			dispatch( STORE_NAME ).receiveGetProfiles( [ profile ], { accountID: account.id, propertyID: propertyOne.id } );
+			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ account.id, propertyOne.id ] );
+
+			dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID: account.id, propertyID: propertyTwo.id } );
+			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ account.id, propertyTwo.id ] );
 		};
 
 		return (
@@ -205,7 +193,7 @@ storiesOf( 'Analytics Module', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
-					<UseSnippetSwitch />
+					<UseUASnippetSwitch />
 				</SetupWrap>
 			</WithTestRegistry>
 		);
@@ -218,7 +206,7 @@ storiesOf( 'Analytics Module', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
-					<UseSnippetSwitch />
+					<UseUASnippetSwitch />
 				</SetupWrap>
 			</WithTestRegistry>
 		);
@@ -323,7 +311,9 @@ storiesOf( 'Analytics Module', module )
 	},
 	// This uses the legacy widget, the new one is in:
 	// 'Analytics Module/Components/Module Page/Acquisition Channels Widget'.
-	{ options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' } } )
+	{
+		options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' },
+	} )
 	.add( 'Top Acquisition Pie Chart', () => {
 		global._googlesitekitLegacyData = analyticsData;
 
@@ -370,4 +360,6 @@ storiesOf( 'Analytics Module', module )
 			</WithTestRegistry>
 		);
 	},
-	{ options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' } } );
+	{
+		options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' },
+	} );

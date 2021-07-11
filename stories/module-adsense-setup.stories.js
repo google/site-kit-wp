@@ -53,8 +53,8 @@ const defaultSettings = {
 };
 
 const accountCompleteSettings = {
-	accountID: fixtures.accounts[ 0 ].id,
-	clientID: fixtures.clients[ 0 ].id,
+	accountID: fixtures.accounts[ 0 ]._id,
+	clientID: fixtures.clients[ 0 ]._id,
 	accountStatus: '',
 	siteStatus: '',
 	useSnippet: false,
@@ -87,17 +87,18 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'AdBlocker active', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetAlerts( [], { accountID: fixtures.accounts[ 0 ].id } );
+		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ]._id } );
+		registry.dispatch( STORE_NAME ).receiveGetAlerts( [], { accountID: fixtures.accounts[ 0 ]._id } );
 		registry.dispatch( STORE_NAME ).receiveGetURLChannels( [], {
-			accountID: fixtures.accounts[ 0 ].id,
-			clientID: fixtures.clients[ 0 ].id,
+			accountID: fixtures.accounts[ 0 ]._id,
+			clientID: fixtures.clients[ 0 ]._id,
 		} );
 
 		return <Setup registry={ registry } />;
@@ -105,6 +106,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'No account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -124,6 +126,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'No account (existing tag)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -143,26 +146,27 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Multiple accounts', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsMultiple );
-		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accountsMultiple[ 0 ].id } );
+		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accountsMultiple[ 0 ]._id } );
 		registry.dispatch( STORE_NAME ).receiveGetClients( [ {
 			...fixtures.clients[ 0 ],
-			id: `ca-${ fixtures.accountsMultiple[ 1 ].id }`,
-		} ], { accountID: fixtures.accountsMultiple[ 1 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetAlerts( [], { accountID: fixtures.accountsMultiple[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetAlerts( [], { accountID: fixtures.accountsMultiple[ 1 ].id } );
+			id: `ca-${ fixtures.accountsMultiple[ 1 ]._id }`,
+		} ], { accountID: fixtures.accountsMultiple[ 1 ]._id } );
+		registry.dispatch( STORE_NAME ).receiveGetAlerts( [], { accountID: fixtures.accountsMultiple[ 0 ]._id } );
+		registry.dispatch( STORE_NAME ).receiveGetAlerts( [], { accountID: fixtures.accountsMultiple[ 1 ]._id } );
 		registry.dispatch( STORE_NAME ).receiveGetURLChannels( [], {
-			accountID: fixtures.accountsMultiple[ 0 ].id,
-			clientID: fixtures.clients[ 0 ].id,
+			accountID: fixtures.accountsMultiple[ 0 ]._id,
+			clientID: fixtures.clients[ 0 ]._id,
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetURLChannels( [], {
-			accountID: fixtures.accountsMultiple[ 1 ].id,
-			clientID: `ca-${ fixtures.accountsMultiple[ 1 ].id }`,
+			accountID: fixtures.accountsMultiple[ 1 ]._id,
+			clientID: `ca-${ fixtures.accountsMultiple[ 1 ]._id }`,
 		} );
 
 		return <Setup registry={ registry } />;
@@ -170,6 +174,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Disapproved account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -189,17 +194,18 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Graylisted account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alertsGraylisted, { accountID: fixtures.accounts[ 0 ].id } );
+		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ]._id } );
+		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alertsGraylisted, { accountID: fixtures.accounts[ 0 ]._id } );
 		registry.dispatch( STORE_NAME ).receiveGetURLChannels( [], {
-			accountID: fixtures.accounts[ 0 ].id,
-			clientID: fixtures.clients[ 0 ].id,
+			accountID: fixtures.accounts[ 0 ]._id,
+			clientID: fixtures.clients[ 0 ]._id,
 		} );
 
 		return <Setup registry={ registry } />;
@@ -207,24 +213,25 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Pending account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getAlerts', [ fixtures.accounts[ 0 ].id ] );
+		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ]._id } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAlerts', [ fixtures.accounts[ 0 ]._id ] );
 		registry.dispatch( STORE_NAME ).receiveError( {
 			// Typically thrown when fetching alerts.
 			message: 'Account pending review.',
 			data: {
 				reason: 'accountPendingReview',
 			},
-		}, 'getAlerts', [ fixtures.accounts[ 0 ].id ] );
+		}, 'getAlerts', [ fixtures.accounts[ 0 ]._id ] );
 		registry.dispatch( STORE_NAME ).receiveGetURLChannels( [], {
-			accountID: fixtures.accounts[ 0 ].id,
-			clientID: fixtures.clients[ 0 ].id,
+			accountID: fixtures.accounts[ 0 ]._id,
+			clientID: fixtures.clients[ 0 ]._id,
 		} );
 
 		return <Setup registry={ registry } />;
@@ -232,20 +239,22 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Account without AFC client (AdMob)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clientsNoAFC, { accountID: fixtures.accounts[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clientsNoAFC, { accountID: fixtures.accounts[ 0 ]._id } );
+		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ]._id } );
 
 		return <Setup registry={ registry } />;
 	}, {
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Newly approved account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -257,11 +266,11 @@ storiesOf( 'AdSense Module/Setup', module )
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ]._id } );
+		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ]._id } );
 		registry.dispatch( STORE_NAME ).receiveGetURLChannels( [], {
-			accountID: fixtures.accounts[ 0 ].id,
-			clientID: fixtures.clients[ 0 ].id,
+			accountID: fixtures.accounts[ 0 ]._id,
+			clientID: fixtures.clients[ 0 ]._id,
 		} );
 
 		return <Setup registry={ registry } />;
@@ -269,6 +278,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Newly approved account (existing tag with permission)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -278,17 +288,17 @@ storiesOf( 'AdSense Module/Setup', module )
 			accountStatus: 'pending',
 		} );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( fixtures.clients[ 0 ].id );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( fixtures.clients[ 0 ]._id );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
-			accountID: fixtures.accounts[ 0 ].id,
+			accountID: fixtures.accounts[ 0 ]._id,
 			permission: true,
-		}, { clientID: fixtures.clients[ 0 ].id } );
+		}, { clientID: fixtures.clients[ 0 ]._id } );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ]._id } );
+		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ]._id } );
 		registry.dispatch( STORE_NAME ).receiveGetURLChannels( [], {
-			accountID: fixtures.accounts[ 0 ].id,
-			clientID: fixtures.clients[ 0 ].id,
+			accountID: fixtures.accounts[ 0 ]._id,
+			clientID: fixtures.clients[ 0 ]._id,
 		} );
 
 		return <Setup registry={ registry } />;
@@ -296,6 +306,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Newly approved account (existing tag without permission)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
@@ -311,11 +322,11 @@ storiesOf( 'AdSense Module/Setup', module )
 			permission: false,
 		}, { clientID: 'ca-pub-123456789' } );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ]._id } );
+		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ]._id } );
 		registry.dispatch( STORE_NAME ).receiveGetURLChannels( [], {
-			accountID: fixtures.accounts[ 0 ].id,
-			clientID: fixtures.clients[ 0 ].id,
+			accountID: fixtures.accounts[ 0 ]._id,
+			clientID: fixtures.clients[ 0 ]._id,
 		} );
 
 		return <Setup registry={ registry } />;
@@ -323,17 +334,18 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Already approved account', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ]._id } );
+		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ]._id } );
 		registry.dispatch( STORE_NAME ).receiveGetURLChannels( [], {
-			accountID: fixtures.accounts[ 0 ].id,
-			clientID: fixtures.clients[ 0 ].id,
+			accountID: fixtures.accounts[ 0 ]._id,
+			clientID: fixtures.clients[ 0 ]._id,
 		} );
 
 		return <Setup registry={ registry } />;
@@ -341,21 +353,22 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Already approved account (existing tag with permission)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( fixtures.clients[ 0 ].id );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( fixtures.clients[ 0 ]._id );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
-			accountID: fixtures.accounts[ 0 ].id,
+			accountID: fixtures.accounts[ 0 ]._id,
 			permission: true,
-		}, { clientID: fixtures.clients[ 0 ].id } );
+		}, { clientID: fixtures.clients[ 0 ]._id } );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ]._id } );
+		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ]._id } );
 		registry.dispatch( STORE_NAME ).receiveGetURLChannels( [], {
-			accountID: fixtures.accounts[ 0 ].id,
-			clientID: fixtures.clients[ 0 ].id,
+			accountID: fixtures.accounts[ 0 ]._id,
+			clientID: fixtures.clients[ 0 ]._id,
 		} );
 
 		return <Setup registry={ registry } />;
@@ -363,6 +376,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Already approved account (existing tag without permission)', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
@@ -373,11 +387,11 @@ storiesOf( 'AdSense Module/Setup', module )
 			permission: false,
 		}, { clientID: 'ca-pub-123456789' } );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ]._id } );
+		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ]._id } );
 		registry.dispatch( STORE_NAME ).receiveGetURLChannels( [], {
-			accountID: fixtures.accounts[ 0 ].id,
-			clientID: fixtures.clients[ 0 ].id,
+			accountID: fixtures.accounts[ 0 ]._id,
+			clientID: fixtures.clients[ 0 ]._id,
 		} );
 
 		return <Setup registry={ registry } />;
@@ -385,17 +399,18 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Site not added', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( accountCompleteSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ]._id } );
+		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ]._id } );
 		registry.dispatch( STORE_NAME ).receiveGetURLChannels( [], {
-			accountID: fixtures.accounts[ 0 ].id,
-			clientID: fixtures.clients[ 0 ].id,
+			accountID: fixtures.accounts[ 0 ]._id,
+			clientID: fixtures.clients[ 0 ]._id,
 		} );
 
 		return <Setup registry={ registry } />;
@@ -403,19 +418,20 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 	.add( 'Site added', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( accountCompleteSettings );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+		registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ]._id } );
+		registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ]._id } );
 		registry.dispatch( STORE_NAME ).receiveGetURLChannels(
 			fixtures.urlchannels,
 			{
-				accountID: fixtures.accounts[ 0 ].id,
-				clientID: fixtures.clients[ 0 ].id,
+				accountID: fixtures.accounts[ 0 ]._id,
+				clientID: fixtures.clients[ 0 ]._id,
 			}
 		);
 
@@ -424,5 +440,6 @@ storiesOf( 'AdSense Module/Setup', module )
 		decorators: [
 			withRegistry,
 		],
+		padding: 0,
 	} )
 ;

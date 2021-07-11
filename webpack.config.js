@@ -288,6 +288,8 @@ function* webpackConfig( env, argv ) {
 			'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
 			// Analytics advanced tracking script to be injected in the frontend.
 			'analytics-advanced-tracking': './assets/js/analytics-advanced-tracking.js',
+			// Idea Hub Block Editor notice.
+			'googlesitekit-idea-hub-notice': './assets/js/googlesitekit-idea-hub-notice.js',
 		},
 		externals,
 		output: {

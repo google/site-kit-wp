@@ -63,7 +63,7 @@ class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 			chart: {
 				title: pageTitle,
 			},
-			curveType: 'line',
+			curveType: 'function',
 			height: 270,
 			width: '100%',
 			chartArea: {
@@ -104,6 +104,9 @@ class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 					color: '#616161',
 					fontSize: 12,
 					italic: false,
+				},
+				viewWindow: {
+					min: 0,
 				},
 			},
 			focusTarget: 'category',

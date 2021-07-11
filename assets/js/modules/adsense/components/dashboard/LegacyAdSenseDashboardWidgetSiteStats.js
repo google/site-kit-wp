@@ -81,7 +81,7 @@ export default function LegacyAdSenseDashboardWidgetSiteStats( props ) {
 	}
 
 	const options = {
-		curveType: 'line',
+		curveType: 'function',
 		height: 270,
 		width: '100%',
 		chartArea: {
@@ -121,6 +121,9 @@ export default function LegacyAdSenseDashboardWidgetSiteStats( props ) {
 				color: '#616161',
 				fontSize: 12,
 				italic: false,
+			},
+			viewWindow: {
+				min: 0,
 			},
 		},
 		focusTarget: 'category',

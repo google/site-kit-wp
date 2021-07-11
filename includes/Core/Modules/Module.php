@@ -39,10 +39,8 @@ use Exception;
  * @property-read string $slug         Unique module identifier.
  * @property-read string $name         Module name.
  * @property-read string $description  Module description.
- * @property-read string $cta          Call to action to activate module.
  * @property-read int    $order        Module order within module lists.
  * @property-read string $homepage     External module homepage URL.
- * @property-read string $learn_more   External URL to learn more about the module.
  * @property-read array  $depends_on   List of other module slugs the module depends on.
  * @property-read bool   $force_active Whether the module cannot be disabled.
  * @property-read bool   $internal     Whether the module is internal, thus without any UI.
@@ -180,10 +178,8 @@ abstract class Module {
 			'slug'         => $this->slug,
 			'name'         => $this->name,
 			'description'  => $this->description,
-			'cta'          => $this->cta,
 			'sort'         => $this->order,
 			'homepage'     => $this->homepage,
-			'learnMore'    => $this->learn_more,
 			'required'     => $this->depends_on,
 			'autoActivate' => $this->force_active,
 			'internal'     => $this->internal,
@@ -518,19 +514,33 @@ abstract class Module {
 			throw new Invalid_Datapoint_Exception();
 		}
 
-		if ( empty( $definitions[ $datapoint_key ]['scopes'] ) ) {
+		if ( ! $this instanceof Module_With_Scopes ) {
 			return;
 		}
 
-		$datapoint = $definitions[ $datapoint_key ];
+		$datapoint    = $definitions[ $datapoint_key ];
+		$oauth_client = $this->authentication->get_oauth_client();
 
-		// If the datapoint requires specific scopes, ensure they are satisfied.
-		if ( ! $this->authentication->get_oauth_client()->has_sufficient_scopes( $datapoint['scopes'] ) ) {
-			$request_scopes_message = ! empty( $datapoint['request_scopes_message'] )
+		if ( ! empty( $datapoint['scopes'] ) && ! $oauth_client->has_sufficient_scopes( $datapoint['scopes'] ) ) {
+			// Otherwise, if the datapoint doesn't rely on a service but requires
+			// specific scopes, ensure they are satisfied.
+			$message = ! empty( $datapoint['request_scopes_message'] )
 				? $datapoint['request_scopes_message']
 				: __( 'You’ll need to grant Site Kit permission to do this.', 'google-site-kit' );
 
-			throw new Insufficient_Scopes_Exception( $request_scopes_message, 0, null, $datapoint['scopes'] );
+			throw new Insufficient_Scopes_Exception( $message, 0, null, $datapoint['scopes'] );
+		}
+
+		$requires_service = ! empty( $datapoint['service'] );
+
+		if ( $requires_service && ! $oauth_client->has_sufficient_scopes( $this->get_scopes() ) ) {
+			// If the datapoint relies on a service which requires scopes and
+			// these have not been granted, fail the request with a permissions
+			// error (see issue #3227).
+
+			/* translators: %s: module name */
+			$message = sprintf( __( 'Site Kit can’t access the relevant data from %s because you haven’t granted all permissions requested during setup.', 'google-site-kit' ), $this->name );
+			throw new Insufficient_Scopes_Exception( $message, 0, null, $this->get_scopes() );
 		}
 	}
 
@@ -669,12 +679,13 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 Now returns Google_Site_Kit_Client instance.
+	 * @since 1.35.0 Updated to be public.
 	 *
 	 * @return Google_Site_Kit_Client Google client instance.
 	 *
 	 * @throws Exception Thrown when the module did not correctly set up the client.
 	 */
-	final protected function get_client() {
+	final public function get_client() {
 		if ( null === $this->google_client ) {
 			$client = $this->setup_client();
 			if ( ! $client instanceof Google_Site_Kit_Client ) {
@@ -788,13 +799,9 @@ abstract class Module {
 				'slug'         => '',
 				'name'         => '',
 				'description'  => '',
-				'cta'          => '',
 				'order'        => 10,
-				'homepage'     => __( 'https://www.google.com', 'google-site-kit' ),
-				'learn_more'   => __( 'https://about.google/intl/en/', 'google-site-kit' ),
-				'group'        => '',
+				'homepage'     => '',
 				'feature'      => '',
-				'tags'         => array(),
 				'depends_on'   => array(),
 				'force_active' => false,
 				'internal'     => false,
@@ -804,12 +811,7 @@ abstract class Module {
 		if ( empty( $info['name'] ) && ! empty( $info['slug'] ) ) {
 			$info['name'] = $info['slug'];
 		}
-		if ( empty( $info['cta'] ) && ! empty( $info['name'] ) ) {
-			/* translators: %s: module name */
-			$info['cta'] = sprintf( __( 'Activate %s', 'google-site-kit' ), $info['name'] );
-		}
 
-		$info['tags']       = (array) $info['tags'];
 		$info['depends_on'] = (array) $info['depends_on'];
 
 		return $info;

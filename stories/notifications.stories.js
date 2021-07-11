@@ -64,6 +64,8 @@ storiesOf( 'Global/Notifications', module )
 				</Notification>
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} )
 	.add( 'Small with Image', () => (
 		<Notification
@@ -76,7 +78,9 @@ storiesOf( 'Global/Notifications', module )
 			SmallImageSVG={ AwardSVG }
 			type="win-success"
 		/>
-	) )
+	), {
+		padding: 0,
+	} )
 	.add( 'Small with No Image', () => (
 		<Notification
 			id="notification-id"
@@ -89,7 +93,9 @@ storiesOf( 'Global/Notifications', module )
 			format="small"
 			type="win-success"
 		/>
-	) )
+	), {
+		padding: 0,
+	} )
 	.add( 'Small with Error', () => (
 		<Notification
 			id="notification-id"
@@ -103,7 +109,9 @@ storiesOf( 'Global/Notifications', module )
 			format="small"
 			type="win-error"
 		/>
-	) )
+	), {
+		padding: 0,
+	} )
 	.add( 'Small with Warning', () => (
 		<Notification
 			id="notification-id"
@@ -118,7 +126,9 @@ storiesOf( 'Global/Notifications', module )
 			type="win-warning"
 			pageIndex="First detected: 2/13/18"
 		/>
-	) )
+	), {
+		padding: 0,
+	} )
 	.add( 'User Input Prompt Notification', () => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( CORE_USER ).receiveUserInputState( 'missing' );
@@ -130,7 +140,11 @@ storiesOf( 'Global/Notifications', module )
 				<UserInputPromptNotification />
 			</WithTestRegistry>
 		);
+	}, {
+		padding: 0,
 	} )
 	.add( 'User Input Success Notification', () => (
 		<UserInputSuccessNotification />
-	) );
+	), {
+		padding: 0,
+	} );

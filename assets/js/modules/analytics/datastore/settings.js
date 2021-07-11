@@ -44,6 +44,7 @@ import {
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE, FORM_SETUP } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isFeatureEnabled } from '../../../features';
+import { isPermissionScopeError } from '../../../util/errors';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID = 'a valid accountID is required to submit changes';
@@ -66,8 +67,8 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 
 		propertyID = property.id;
-		await dispatch( STORE_NAME ).setPropertyID( property.id );
-		await dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
+		dispatch( STORE_NAME ).setPropertyID( property.id );
+		dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 	}
 
 	const profileID = select( STORE_NAME ).getProfileID();
@@ -80,7 +81,7 @@ export async function submitChanges( { select, dispatch } ) {
 			return { error };
 		}
 
-		await dispatch( STORE_NAME ).setProfileID( profile.id );
+		dispatch( STORE_NAME ).setProfileID( profile.id );
 	}
 
 	// This action shouldn't be called if settings haven't changed,
@@ -99,7 +100,10 @@ export async function submitChanges( { select, dispatch } ) {
 
 	if ( isFeatureEnabled( 'ga4setup' ) ) {
 		if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
-			await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+			const { error } = await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+			if ( isPermissionScopeError( error ) ) {
+				return { error };
+			}
 		}
 	}
 
@@ -107,6 +111,8 @@ export async function submitChanges( { select, dispatch } ) {
 }
 
 export function validateCanSubmitChanges( select ) {
+	const isGA4Enabled = isFeatureEnabled( 'ga4setup' );
+
 	const strictSelect = createStrictSelect( select );
 	const {
 		getAccountID,
@@ -132,7 +138,11 @@ export function validateCanSubmitChanges( select ) {
 		);
 	}
 
-	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+	invariant(
+		haveSettingsChanged() || ( isGA4Enabled && select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ),
+		INVARIANT_SETTINGS_NOT_CHANGED,
+	);
+
 	invariant( isValidAccountID( getAccountID() ), INVARIANT_INVALID_ACCOUNT_ID );
 	invariant( isValidPropertySelection( getPropertyID() ), INVARIANT_INVALID_PROPERTY_SELECTION );
 	invariant( isValidProfileSelection( getProfileID() ), INVARIANT_INVALID_PROFILE_SELECTION );
@@ -155,7 +165,7 @@ export function validateCanSubmitChanges( select ) {
 	// Do existing tag check last.
 	invariant( hasExistingTagPermission() !== false, INVARIANT_INSUFFICIENT_TAG_PERMISSIONS );
 
-	if ( isFeatureEnabled( 'ga4setup' ) ) {
+	if ( isGA4Enabled ) {
 		select( MODULES_ANALYTICS_4 ).__dangerousCanSubmitChanges();
 	}
 }

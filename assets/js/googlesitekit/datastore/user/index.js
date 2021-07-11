@@ -24,9 +24,11 @@ import { createErrorStore } from '../../data/create-error-store';
 import authentication from './authentication';
 import dateRange from './date-range';
 import disconnect from './disconnect';
+import dismissedItems from './dismissed-items';
 import featureTours from './feature-tours';
 import notifications from './notifications';
 import permissions from './permissions';
+import surveys from './surveys';
 import tracking from './tracking';
 import userInfo from './user-info';
 import userInputSettings from './user-input-settings';
@@ -38,9 +40,11 @@ const store = Data.combineStores(
 	authentication,
 	dateRange,
 	disconnect,
+	dismissedItems,
 	featureTours,
 	notifications,
 	permissions,
+	surveys,
 	tracking,
 	userInfo,
 	userInputSettings,

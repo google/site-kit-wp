@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
+import { Grid, Row, Cell } from '../../../../../material-components';
 import { calculateChange } from '../../../../../util';
 import DataBlock from '../../../../../components/DataBlock';
 
@@ -37,59 +38,75 @@ const Overview = ( {
 	const { totals, headers } = currentRangeData;
 	const { totals: previousTotals } = previousRangeData;
 
+	const cellProps = {
+		smSize: 2,
+		mdSize: 2,
+		lgSize: 3,
+	};
+
 	return (
-		<div className="googlesitekit-adsense-performance-overview">
-			<DataBlock
-				stat={ 0 }
-				className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-1"
-				title={ metrics[ headers[ 0 ].name ] }
-				datapoint={ totals[ 0 ] }
-				datapointUnit={ headers[ 0 ]?.currency }
-				change={ calculateChange( previousTotals[ 0 ], totals[ 0 ] ) }
-				changeDataUnit="%"
-				context="button"
-				selected={ selectedStats === 0 }
-				handleStatSelection={ handleStatsSelection }
-			/>
+		<Grid>
+			<Row>
+				<Cell { ...cellProps }>
+					<DataBlock
+						stat={ 0 }
+						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-1"
+						title={ metrics[ headers[ 0 ].name ] }
+						datapoint={ totals?.cells[ 0 ].value || 0 }
+						datapointUnit={ headers[ 0 ]?.currencyCode }
+						change={ calculateChange( previousTotals?.cells[ 0 ].value || 0, totals?.cells[ 0 ].value || 0 ) }
+						changeDataUnit="%"
+						context="button"
+						selected={ selectedStats === 0 }
+						handleStatSelection={ handleStatsSelection }
+					/>
 
-			<DataBlock
-				stat={ 1 }
-				className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-2"
-				title={ metrics[ headers[ 1 ].name ] }
-				datapoint={ totals[ 1 ] }
-				datapointUnit={ headers[ 1 ]?.currency }
-				change={ calculateChange( previousTotals[ 1 ], totals[ 1 ] ) }
-				changeDataUnit="%"
-				context="button"
-				selected={ selectedStats === 1 }
-				handleStatSelection={ handleStatsSelection }
-			/>
+				</Cell>
+				<Cell { ...cellProps }>
+					<DataBlock
+						stat={ 1 }
+						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-2"
+						title={ metrics[ headers[ 1 ].name ] }
+						datapoint={ totals?.cells[ 1 ].value || 0 }
+						datapointUnit={ headers[ 1 ]?.currencyCode }
+						change={ calculateChange( previousTotals?.cells[ 1 ].value || 0, totals?.cells[ 1 ].value || 0 ) }
+						changeDataUnit="%"
+						context="button"
+						selected={ selectedStats === 1 }
+						handleStatSelection={ handleStatsSelection }
+					/>
 
-			<DataBlock
-				stat={ 2 }
-				className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-3"
-				title={ metrics[ headers[ 2 ].name ] }
-				datapoint={ totals[ 2 ] }
-				change={ calculateChange( previousTotals[ 2 ], totals[ 2 ] ) }
-				changeDataUnit="%"
-				context="button"
-				selected={ selectedStats === 2 }
-				handleStatSelection={ handleStatsSelection }
-			/>
+				</Cell>
+				<Cell { ...cellProps }>
+					<DataBlock
+						stat={ 2 }
+						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-3"
+						title={ metrics[ headers[ 2 ].name ] }
+						datapoint={ totals?.cells[ 2 ].value || 0 }
+						change={ calculateChange( previousTotals?.cells[ 2 ].value || 0, totals?.cells[ 2 ].value || 0 ) }
+						changeDataUnit="%"
+						context="button"
+						selected={ selectedStats === 2 }
+						handleStatSelection={ handleStatsSelection }
+					/>
 
-			<DataBlock
-				stat={ 3 }
-				className="googlesitekit-data-block--impression googlesitekit-data-block--button-4"
-				title={ metrics[ headers[ 3 ].name ] }
-				datapoint={ totals[ 3 ] }
-				datapointUnit="%"
-				change={ calculateChange( previousTotals[ 3 ], totals[ 3 ] ) }
-				changeDataUnit="%"
-				context="button"
-				selected={ selectedStats === 3 }
-				handleStatSelection={ handleStatsSelection }
-			/>
-		</div>
+				</Cell>
+				<Cell { ...cellProps }>
+					<DataBlock
+						stat={ 3 }
+						className="googlesitekit-data-block--impression googlesitekit-data-block--button-4"
+						title={ metrics[ headers[ 3 ].name ] }
+						datapoint={ totals?.cells[ 3 ].value || 0 }
+						datapointUnit="%"
+						change={ calculateChange( previousTotals?.cells[ 3 ].value || 0, totals?.cells[ 3 ].value || 0 ) }
+						changeDataUnit="%"
+						context="button"
+						selected={ selectedStats === 3 }
+						handleStatSelection={ handleStatsSelection }
+					/>
+				</Cell>
+			</Row>
+		</Grid>
 	);
 };
 

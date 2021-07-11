@@ -50,12 +50,13 @@ const Stats = ( {
 	};
 
 	const options = {
-		curveType: 'line',
+		curveType: 'function',
 		height: 270,
 		width: '100%',
 		chartArea: {
 			height: '80%',
-			width: '87%',
+			width: '100%',
+			left: 60,
 		},
 		legend: {
 			position: 'top',
@@ -90,6 +91,9 @@ const Stats = ( {
 				color: '#616161',
 				fontSize: 12,
 				italic: false,
+			},
+			viewWindow: {
+				min: 0,
 			},
 		},
 		focusTarget: 'category',

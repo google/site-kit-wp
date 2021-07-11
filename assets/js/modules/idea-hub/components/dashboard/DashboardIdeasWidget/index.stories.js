@@ -52,6 +52,21 @@ const mockEndpoints = ( args ) => {
 		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
 		{ body: args?.draftPostIdeas || draftPostIdeas, status: 200 }
 	);
+	fetchMock.post(
+		/google-site-kit\/v1\/modules\/idea-hub\/data\/create-idea-draft-post/,
+		{ body: {}, status: 200 }
+	);
+	fetchMock.post(
+		/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
+		( url, opts ) => {
+			const { data } = JSON.parse( opts.body );
+
+			return {
+				status: 200,
+				body: JSON.stringify( data ),
+			};
+		}
+	);
 };
 const bootstrapRegistry = () => {
 	const registry = createTestRegistry();
@@ -168,6 +183,20 @@ DataUnavailableDrafts.decorators = [
 DataUnavailableDrafts.args = {
 	defaultActiveTabIndex: 2,
 };
+
+export const DataUnavailableAll = Template.bind( {} );
+DataUnavailableAll.storyName = 'Data Unavailable: All';
+DataUnavailableAll.decorators = [
+	( Story ) => {
+		mockEndpoints( {
+			draftPostIdeas: [],
+			newIdeas: [],
+			savedIdeas: [],
+		} );
+
+		return <Story />;
+	},
+];
 
 export default {
 	title: 'Modules/Idea Hub/Widgets/DashboardIdeasWidget',
