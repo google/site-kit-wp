@@ -31,8 +31,8 @@ import { DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { isZeroReport } from '../../../../analytics/util/is-zero-report';
-import { isRestrictedMetricsError } from '../../../../analytics/util/error';
 import WhenActive from '../../../../../util/when-active';
+import { isRestrictedMetricsError } from '../../../../analytics/util/error';
 import Header from './Header';
 import Table from './Table';
 

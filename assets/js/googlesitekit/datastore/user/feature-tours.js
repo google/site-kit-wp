@@ -31,6 +31,7 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { STORE_NAME } from './constants';
 import featureTours from '../../../feature-tours';
 import { setItem, getItem } from '../../../googlesitekit/api/cache';
+import { createValidatedAction } from '../../data/utils';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 const { getRegistry } = Data.commonActions;
@@ -45,37 +46,25 @@ const RECEIVE_READY_TOURS = 'RECEIVE_READY_TOURS';
 const RECEIVE_TOURS = 'RECEIVE_TOURS';
 const CHECK_TOUR_REQUIREMENTS = 'CHECK_TOUR_REQUIREMENTS';
 const RECEIVE_LAST_DISMISSED_AT = 'RECEIVE_LAST_DISMISSED_AT';
+
 // Controls.
 const CACHE_LAST_DISMISSED_AT = 'CACHE_LAST_DISMISSED_AT';
 
 const fetchGetDismissedToursStore = createFetchStore( {
 	baseName: 'getDismissedTours',
-	controlCallback: () => {
-		return API.get( 'core', 'user', 'dismissed-tours', {}, { useCache: false } );
-	},
-	reducerCallback: ( state, dismissedTourSlugs ) => {
-		return {
-			...state,
-			dismissedTourSlugs,
-		};
-	},
+	controlCallback: () => API.get( 'core', 'user', 'dismissed-tours', {}, { useCache: false } ),
+	reducerCallback: ( state, dismissedTourSlugs ) => ( { ...state, dismissedTourSlugs } ),
 } );
-const { fetchGetDismissedTours } = fetchGetDismissedToursStore.actions;
+
 const fetchDismissTourStore = createFetchStore( {
 	baseName: 'dismissTour',
 	controlCallback: ( { slug } ) => API.set( 'core', 'user', 'dismiss-tour', { slug } ),
-	reducerCallback: ( state, dismissedTourSlugs ) => {
-		return {
-			...state,
-			dismissedTourSlugs,
-		};
-	},
+	reducerCallback: ( state, dismissedTourSlugs ) => ( { ...state, dismissedTourSlugs } ),
 	argsToParams: ( slug ) => ( { slug } ),
 	validateParams: ( { slug } = {} ) => {
 		invariant( slug, 'slug is required.' );
 	},
 } );
-const { fetchDismissTour } = fetchDismissTourStore.actions;
 
 const baseInitialState = {
 	lastDismissedAt: undefined,
@@ -96,26 +85,31 @@ const baseActions = {
 	 * @param {string} slug Tour slug to dismiss.
 	 * @return {Object} Generator instance.
 	 */
-	dismissTour( slug ) {
-		invariant( slug, 'A tour slug is required to dismiss a tour.' );
-
-		return ( function* () {
+	dismissTour: createValidatedAction(
+		( slug ) => {
+			invariant( slug, 'A tour slug is required to dismiss a tour.' );
+		},
+		function*( slug ) {
 			const { select } = yield getRegistry();
+
 			if ( select( STORE_NAME ).isFetchingDismissTour( slug ) ) {
 				const response = select( STORE_NAME ).getDismissedFeatureTourSlugs();
 				return { response, error: undefined };
 			}
+
 			// Dismiss the given tour immediately.
 			yield {
-				payload: { slug },
 				type: DISMISS_TOUR,
+				payload: { slug },
 			};
+
 			// Save the timestamp to allow the cooldown
 			yield actions.setLastDismissedAt( Date.now() );
+
 			// Dispatch a request to persist and receive updated dismissed tours.
-			return yield fetchDismissTour( slug );
-		}() );
-	},
+			return yield fetchDismissTourStore.actions.fetchDismissTour( slug );
+		},
+	),
 
 	receiveFeatureToursForView( viewTours, { viewContext } = {} ) {
 		invariant( Array.isArray( viewTours ), 'viewTours must be an array.' );
@@ -144,10 +138,11 @@ const baseActions = {
 		};
 	},
 
-	setLastDismissedAt( timestamp ) {
-		invariant( timestamp, 'A timestamp is required.' );
-
-		return ( function* () {
+	setLastDismissedAt: createValidatedAction(
+		( timestamp ) => {
+			invariant( timestamp, 'A timestamp is required.' );
+		},
+		function*( timestamp ) {
 			yield {
 				type: CACHE_LAST_DISMISSED_AT,
 				payload: { timestamp },
@@ -156,8 +151,8 @@ const baseActions = {
 				type: RECEIVE_LAST_DISMISSED_AT,
 				payload: { timestamp },
 			};
-		}() );
-	},
+		},
+	),
 };
 
 const baseControls = {
@@ -248,8 +243,10 @@ const baseReducer = ( state, { type, payload } ) => {
 const baseResolvers = {
 	*getDismissedFeatureTourSlugs() {
 		const { select } = yield getRegistry();
-		if ( ! select( STORE_NAME ).getDismissedFeatureTourSlugs() ) {
-			yield fetchGetDismissedTours();
+
+		const tours = select( STORE_NAME ).getDismissedFeatureTourSlugs();
+		if ( tours === undefined ) {
+			yield fetchGetDismissedToursStore.actions.fetchGetDismissedTours();
 		}
 	},
 
