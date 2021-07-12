@@ -29,6 +29,8 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
+const REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS = 'REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS';
+
 const fetchCreateIdeaDraftPostStore = createFetchStore( {
 	baseName: 'createIdeaDraftPost',
 	controlCallback: async ( { idea } ) => {
@@ -42,8 +44,6 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 		return {
 			...state,
 			draftPostIdeas: [ ...( state.draftPostIdeas || [] ), ideaDraftPost ],
-			newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== ideaDraftPost.name ),
-			savedIdeas: ( state.savedIdeas || [] ).filter( ( { name } ) => name !== ideaDraftPost.name ),
 		};
 	},
 	argsToParams: ( idea ) => {
@@ -76,12 +76,46 @@ const baseActions = {
 		const { response, error } = yield fetchCreateIdeaDraftPostStore.actions.fetchCreateIdeaDraftPost( idea );
 		return { response, error };
 	},
+
+	/**
+	 * Removes an idea from the list of newIdeas and savedIdeas state variables.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} name Idea name.
+	 * @return {Object} Redux-style action.
+	 */
+	removeIdeaFromNewAndSavedIdeas( name ) {
+		invariant( typeof name === 'string' && name.length > 0, 'name is required.' );
+
+		return {
+			payload: { name },
+			type: REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS,
+		};
+	},
+};
+
+export const baseReducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS: {
+			return {
+				...state,
+				newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== payload?.name ),
+				savedIdeas: ( state.savedIdeas || [] ).filter( ( { name } ) => name !== payload?.name ),
+			};
+		}
+
+		default: {
+			return state;
+		}
+	}
 };
 
 const store = Data.combineStores(
 	fetchCreateIdeaDraftPostStore,
 	{
 		actions: baseActions,
+		reducer: baseReducer,
 	}
 );
 
