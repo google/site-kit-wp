@@ -24,17 +24,25 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import API from 'googlesitekit-api';
+import Button from '../components/Button';
+import TourTooltips from '../components/TourTooltips';
+import ideaHubModuleFeatureTour from './idea-hub-module';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+import { MODULES_IDEA_HUB } from '../modules/idea-hub/datastore/constants';
 import { provideModules } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
-import { getWidgetComponentProps } from '../googlesitekit/widgets/util/get-widget-component-props';
+import { withWidgetComponentProps } from '../googlesitekit/widgets/util/get-widget-component-props';
 import { DashboardIdeasWidget } from '../modules/idea-hub/components/dashboard/';
 import {
 	newIdeas,
 	savedIdeas,
 	draftPostIdeas,
 } from '../modules/idea-hub/datastore/__fixtures__';
+const { useDispatch } = Data;
 
-const widgetComponentProps = getWidgetComponentProps( 'ideaHubIdeas' );
 const mockEndpoints = ( args ) => {
 	fetchMock.reset();
 
@@ -65,35 +73,72 @@ const mockEndpoints = ( args ) => {
 			};
 		}
 	);
+	fetchMock.post(
+		/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/,
+		{ body: JSON.stringify( [ 'ideaHubModule' ] ), status: 200 }
+	);
 };
 
-const Template = ( { setupRegistry, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<DashboardIdeasWidget { ...widgetComponentProps } { ...args } />
-	</WithRegistrySetup>
+const WidgetWithComponentProps = withWidgetComponentProps( 'idea-hub' )( DashboardIdeasWidget );
+
+const tourProps = {
+	...ideaHubModuleFeatureTour,
+	tourID: ideaHubModuleFeatureTour.slug,
+};
+
+const TourControls = () => {
+	const { receiveGetDismissedTours } = useDispatch( CORE_USER );
+	const { setValue } = useDispatch( CORE_UI );
+	const reset = () => {
+		receiveGetDismissedTours( [] );
+		setValue( 'ideaHubModule-step', 0 );
+	};
+
+	return (
+		<div style={ { textAlign: 'right', marginBottom: '10px' } }>
+			<Button onClick={ reset }>
+				Reset Tour
+			</Button>
+		</div>
+	);
+};
+
+const Template = ( { ...args } ) => (
+	<div>
+		<TourControls />
+		<WidgetWithComponentProps { ...args } />
+		<TourTooltips { ...tourProps } />
+	</div>
 );
 
 export const DefaultFeatureTour = Template.bind( null );
 DefaultFeatureTour.storyName = 'Default';
-DefaultFeatureTour.decorators = [
-	( Story ) => {
-		mockEndpoints();
-		return <Story />;
-	},
-];
-DefaultFeatureTour.args = {
-	setupRegistry: ( registry ) => {
-		provideModules( registry, [ {
-			active: true,
-			connected: true,
-			slug: 'idea-hub',
-		} ] );
-	},
-};
 
 export default {
 	title: 'Modules/Idea Hub/Feature tour',
 	parameters: {
 		features: [ 'ideaHubModule' ],
 	},
+	decorators: [
+		( Story ) => {
+			API.setUsingCache( false );
+			mockEndpoints();
+
+			const setupRegistry = ( registry ) => {
+				provideModules( registry, [ {
+					active: true,
+					connected: true,
+					slug: 'idea-hub',
+				} ] );
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+				registry.dispatch( MODULES_IDEA_HUB ).receiveGetSettings( { tosAccepted: true } );
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };

@@ -34,7 +34,7 @@ import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { MODULES_IDEA_HUB } from '../modules/idea-hub/datastore/constants';
 
 const ideaHubModule = {
-	slug: `ideaHubModule-${ Math.random() }`,
+	slug: 'ideaHubModule',
 	contexts: [ VIEW_CONTEXT_DASHBOARD ],
 	// TODO: change this if launch version for the feature changes.
 	version: '3.6.0',
