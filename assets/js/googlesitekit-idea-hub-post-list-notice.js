@@ -56,7 +56,7 @@ domReady( () => {
 	setTimeout( () => {
 		const button = notice.getElementsByClassName( 'notice-dismiss' )[ 0 ];
 		const slug = type === 'new' ? 'new-ideas' : 'saved-ideas';
-		const expirationType = type === 'new' ? 0 : WEEK_IN_SECONDS;
+		const expirationType = type === 'new' ? WEEK_IN_SECONDS : 0;
 		button.addEventListener( 'click', () => dismissNotice( slug, expirationType ) );
 	}, 1 );
 } );
