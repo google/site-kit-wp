@@ -30,15 +30,13 @@ import domReady from '@wordpress/dom-ready';
 /**
  * Internal dependencies
  */
-// import Data from 'googlesitekit-data';
-// const { registry } = Data;
+import Data from 'googlesitekit-data';
+const { dispatch } = Data;
+import { CORE_USER } from './googlesitekit/datastore/user/constants';
 
 const WEEK_IN_SECONDS = 3600 * 24 * 7;
 
-const dismissNotice = ( slug, expirationTime ) => {
-	// @TODO: figure out  how to get Data.registry in place once dismissItem is in place.
-	global.googlesitekit.data.stores[ 'core/user' ].actions.dismissItem( slug, expirationTime );
-};
+const dismissNotice = ( slug, expirationTime ) => dispatch( CORE_USER ).dismissItem( slug, expirationTime );
 
 domReady( () => {
 	const newNotice = document.getElementById( 'googlesitekit-notice-new' );
@@ -57,7 +55,7 @@ domReady( () => {
 	// Button pops up only after the timeout passes
 	setTimeout( () => {
 		const button = notice.getElementsByClassName( 'notice-dismiss' )[ 0 ];
-		const slug = type === 'new' ? 'newIdeas' : 'savedIdeas';
+		const slug = type === 'new' ? 'new-ideas' : 'saved-ideas';
 		const expirationType = type === 'new' ? 0 : WEEK_IN_SECONDS;
 		button.addEventListener( 'click', () => dismissNotice( slug, expirationType ) );
 	}, 1 );

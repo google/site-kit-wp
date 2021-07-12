@@ -12,6 +12,8 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Dismissals\Dismissals;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
@@ -68,6 +70,13 @@ final class Idea_Hub extends Module
 	private $post_text_setting;
 
 	/**
+	 * Dismissed_Items instance.
+	 *
+	 * @var Dismissed_Items
+	 */
+	private $dismissed_items;
+
+	/**
 	 * Post_Idea_Topics instance.
 	 *
 	 * @var Post_Idea_Topics
@@ -80,7 +89,8 @@ final class Idea_Hub extends Module
 	 * @since 1.32.0
 	 */
 	public function register() {
-		$post_meta = new Post_Meta();
+		$post_meta             = new Post_Meta();
+		$this->dismissed_items = new Dismissed_Items( $this->user_options );
 
 		$this->register_scopes_hook();
 		if ( $this->is_connected() ) {
@@ -162,20 +172,38 @@ final class Idea_Hub extends Module
 			),
 		);
 
-		$dismissed_items = array(); // @TODO update following https://github.com/google/site-kit-wp/pull/3640/files
-		$saved_ideas     = $this->get_data( 'saved-ideas' );
-		$new_ideas       = $this->get_data( 'saved-ideas' );
+		$dismissed_items   = $this->dismissed_items->get_dismissed_items();
+		$dismissed_items[] = 'ideas/2285812891948871921';
+		$dismissed_items[] = 'saved-ideas';
+		$ideas             = array(
+			'saved-ideas' => $this->get_data( 'saved-ideas' ),
+			'new-ideas'   => $this->get_data( 'new-ideas' ),
+		);
 
-		$has_saved_ideas = false; // @TODO fix this logic once above is in place
-		$has_new_ideas   = true; // @TODO fix this logic once above is in place
+		foreach ( $ideas as $idea_type => &$all_ideas ) {
+			foreach ( $all_ideas as $k => $idea ) {
+				if ( in_array( $idea['name'], $dismissed_items, true ) ) {
+					unset( $all_ideas[ $k ] );
+				}
+			}
+		}
 
-		if ( $has_saved_ideas ) {
+		$has_saved_ideas = count( $ideas['saved-ideas'] ) > 0;
+		$has_new_ideas   = count( $ideas['new-ideas'] ) > 0;
+
+		if ( ! $has_saved_ideas && in_array( 'saved-ideas', $dismissed_items, true ) ) {
+			// Saved items no longer need to be dismissed as there are none currently.
+			$this->dismissed_items->delete( 'saved-ideas' );
+		}
+
+		if ( $has_saved_ideas && ! in_array( 'saved-ideas', $dismissed_items, true ) ) {
 			$type = 'saved';
-		} elseif ( $has_new_ideas ) {
+		} elseif ( $has_new_ideas && ! in_array( 'new-ideas', $dismissed_items, true ) ) {
 			$type = 'new';
 		} else {
 			return $notices;
 		}
+
 		$active_notice = $notice_settings[ $type ];
 
 		$notices[] = new Notice(
