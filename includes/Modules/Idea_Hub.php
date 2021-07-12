@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Assets\Asset;
-use Google\Site_Kit\Core\Dismissals\Dismissals;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
@@ -28,6 +27,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Post_Meta;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
@@ -56,6 +56,11 @@ final class Idea_Hub extends Module
 	const MODULE_SLUG = 'idea-hub';
 
 	/**
+	 * Saved ideas cache key.
+	 */
+	const TRANSIENT_IDEAS = 'googlesitekit_idea_hub_ideas';
+
+	/**
 	 * Post_Idea_Name instance.
 	 *
 	 * @var Post_Idea_Name
@@ -77,6 +82,13 @@ final class Idea_Hub extends Module
 	private $dismissed_items;
 
 	/**
+	 * Transients instance.
+	 *
+	 * @var Dismissed_Items
+	 */
+	private $transients;
+
+	/**
 	 * Post_Idea_Topics instance.
 	 *
 	 * @var Post_Idea_Topics
@@ -91,6 +103,7 @@ final class Idea_Hub extends Module
 	public function register() {
 		$post_meta             = new Post_Meta();
 		$this->dismissed_items = new Dismissed_Items( $this->user_options );
+		$this->transients      = new Transients( $this->context );
 
 		$this->register_scopes_hook();
 		if ( $this->is_connected() ) {
@@ -159,6 +172,7 @@ final class Idea_Hub extends Module
 		if ( 'edit-post' !== get_current_screen()->id ) {
 			return $notices;
 		}
+
 		$notice_settings = array(
 			'saved' => array(
 				'text' => esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ),
@@ -175,10 +189,16 @@ final class Idea_Hub extends Module
 		$dismissed_items   = $this->dismissed_items->get_dismissed_items();
 		$dismissed_items[] = 'ideas/2285812891948871921';
 		$dismissed_items[] = 'saved-ideas';
-		$ideas             = array(
-			'saved-ideas' => $this->get_data( 'saved-ideas' ),
-			'new-ideas'   => $this->get_data( 'new-ideas' ),
-		);
+		$ideas             = $this->transients->get( self::TRANSIENT_IDEAS );
+
+		if ( false === $ideas ) {
+			$ideas = array(
+				'saved-ideas' => $this->get_data( 'saved-ideas' ),
+				'new-ideas'   => $this->get_data( 'new-ideas' ),
+			);
+
+			$this->transients->set( self::TRANSIENT_IDEAS, $ideas, DAY_IN_SECONDS );
+		}
 
 		foreach ( $ideas as $idea_type => &$all_ideas ) {
 			foreach ( $all_ideas as $k => $idea ) {
