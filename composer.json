@@ -22,7 +22,7 @@
     "google/apiclient": "^2.9.1",
     "google/apiclient-services": "^0.180",
     "guzzlehttp/guzzle": "^5.3.3",
-    "true/punycode": "2.1.0"
+    "true/punycode": "^2.1"
   },
   "replace": {
     "phpseclib/phpseclib": "*"
