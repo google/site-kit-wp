@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Modules;
 
 use Closure;
+use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Exception\Insufficient_Scopes_Exception;
@@ -26,8 +27,8 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
+use Google\Site_Kit_Dependencies\TrueBV\Punycode;
 use WP_Error;
-use Exception;
 
 /**
  * Base class for a module.
@@ -652,38 +653,60 @@ abstract class Module {
 	 * @return array List of permutations.
 	 */
 	final protected function permute_site_url( $site_url ) {
-		$urls  = array();
-		$hosts = array();
-
-		// Get host url.
 		$hostname = wp_parse_url( $site_url, PHP_URL_HOST );
-		$hosts[]  = $hostname;
 
-		if ( strpos( $hostname, 'xn--' ) !== false ) {
-			$converted_host = idn_to_utf8( $hostname, 0, INTL_IDNA_VARIANT_UTS46 );
-		} else {
-			$converted_host = idn_to_ascii( $hostname, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46 );
-		}
+		return array_reduce(
+			$this->permute_site_hosts( $hostname ),
+			function ( $urls, $host ) {
+				array_push( $urls, "https://$host", "http://$host" );
+				return $urls;
+			},
+			array()
+		);
+	}
 
-		if ( ! in_array( $converted_host, $hosts, true ) ) {
-			$hosts[] = $converted_host;
-		}
+	/**
+	 * Generates common variations of the given hostname.
+	 *
+	 * Returns a list of hostnames that includes:
+	 * - (if IDN) in Punycode encoding
+	 * - (if IDN) in Unicode encoding
+	 * - with and without www. subdomain (including IDNs)
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $hostname Hostname to generate variations of.
+	 * @return string[] Hostname variations.
+	 */
+	protected function permute_site_hosts( $hostname ) {
+		$punycode = new Punycode();
+		// See \Requests_IDNAEncoder::is_ascii.
+		$is_ascii = preg_match( '/(?:[^\x00-\x7F])/', $hostname ) !== 1;
+		$is_www   = 0 === strpos( $hostname, 'www.' );
+		// Normalize hostname without www.
+		$hostname = $is_www ? substr( $hostname, strlen( 'www.' ) ) : $hostname;
+		$hosts    = array();
+		$add_host = function ( $host ) use ( &$hosts ) {
+			array_push( $hosts, $host, "www.$host" );
+		};
+		$add_host( $hostname );
 
-		foreach ( $hosts as $host ) {
-			// Add http:// and https:// to host.
-			$urls[] = 'https://' . $host;
-			$urls[] = 'http://' . $host;
-
-			if ( 0 === strpos( $host, 'www.' ) ) {
-				$urls[] = 'https://' . substr( $host, 4 );
-				$urls[] = 'http://' . substr( $host, 4 );
+		try {
+			// An ASCII hostname can only be non-IDN or punycode-encoded.
+			if ( $is_ascii ) {
+				// If the hostname is in punycode encoding, add the decoded version to the list of hosts.
+				if ( 0 === strpos( $hostname, Punycode::PREFIX ) || false !== strpos( $hostname, '.' . Punycode::PREFIX ) ) {
+					$add_host( $punycode->decode( $hostname ) );
+				}
 			} else {
-				$urls[] = 'https://www.' . $host;
-				$urls[] = 'http://www.' . $host;
+				// If it's not ASCII, then add the punycode encoded version.
+				$add_host( $punycode->encode( $hostname ) );
 			}
+		} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// Do nothing.
 		}
 
-		return $urls;
+		return $hosts;
 	}
 
 	/**
