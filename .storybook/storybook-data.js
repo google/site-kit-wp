@@ -108,19 +108,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'dashboard--module-header',
-		kind: 'Dashboard',
-		name: 'Module Header',
-		story: 'Module Header',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
 		id: 'global--plugin-header',
 		kind: 'Global',
 		name: 'Plugin Header',
