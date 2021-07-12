@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { HashRouter } from 'react-router-dom';
+
+/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
@@ -28,6 +33,7 @@ import { render } from '@wordpress/element';
 import './components/legacy-notifications';
 import Root from './components/Root';
 import SettingsApp from './components/settings/SettingsApp';
+import './modules';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
@@ -36,7 +42,9 @@ domReady( () => {
 	if ( renderTarget ) {
 		render(
 			<Root dataAPIContext="Settings">
-				<SettingsApp />
+				<HashRouter>
+					<SettingsApp />
+				</HashRouter>
 			</Root>,
 			renderTarget
 		);

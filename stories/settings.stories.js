@@ -22,6 +22,8 @@
 import { storiesOf } from '@storybook/react';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
+import { Router } from 'react-router-dom';
+import { createHashHistory } from 'history';
 
 /**
  * WordPress dependencies
@@ -31,8 +33,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SettingsActiveModules from '../assets/js/components/settings/SettingsActiveModules';
-import SettingsInactiveModules from '../assets/js/components/settings/SettingsInactiveModules';
+import SettingsModules from '../assets/js/components/settings/SettingsModules';
 import Layout from '../assets/js/components/layout/Layout';
 import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
 import SettingsAdmin from '../assets/js/components/settings/SettingsAdmin';
@@ -82,13 +83,13 @@ storiesOf( 'Settings', module )
 			provideModuleRegistrations( registry );
 		};
 
+		const history = createHashHistory();
+
 		return (
 			<WithTestRegistry callback={ setupRegistry } >
-				<div className="mdc-layout-grid__inner">
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-						<SettingsActiveModules />
-					</div>
-				</div>
+				<Router history={ history }>
+					<SettingsModules />
+				</Router>
 			</WithTestRegistry>
 		);
 	}, {
@@ -109,13 +110,15 @@ storiesOf( 'Settings', module )
 			registry.select( CORE_MODULES ).getModule( 'adsense' );
 			await untilResolved( registry, CORE_MODULES ).getModules();
 		};
+
+		const history = createHashHistory();
+		history.push( '/connect-more-services' );
+
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<div className="mdc-layout-grid__inner">
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-						<SettingsInactiveModules />
-					</div>
-				</div>
+				<Router history={ history }>
+					<SettingsModules />
+				</Router>
 			</WithTestRegistry>
 		);
 	} )
@@ -136,9 +139,7 @@ storiesOf( 'Settings', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry } >
 				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<SettingsAdmin />
-					</div>
+					<SettingsAdmin />
 				</div>
 			</WithTestRegistry>
 		);
