@@ -80,7 +80,7 @@ export const GA_ACTIONS = {
 	COMPLETE: 'feature_tooltip_complete',
 };
 
-export default function TourTooltips( { steps, tourID, gaEventCategory, callback = () => {} } ) {
+export default function TourTooltips( { steps, tourID, gaEventCategory, callback } ) {
 	const stepKey = `${ tourID }-step`;
 	const runKey = `${ tourID }-run`;
 	const { setValue } = useDispatch( CORE_UI );
@@ -180,7 +180,9 @@ export default function TourTooltips( { steps, tourID, gaEventCategory, callback
 			endTour();
 		}
 
-		callback( data );
+		if ( callback ) {
+			callback( data );
+		}
 	};
 
 	// Start tour on initial render
