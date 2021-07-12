@@ -46,7 +46,7 @@ const IdeaHubModuleNotification = () => {
 		await dismissItem( NOTIFICATION_ID );
 	}, [ dismissItem ] );
 
-	if ( isActive || isItemDismissed || isItemDismissed === undefined ) {
+	if ( isActive || isActive === undefined || isItemDismissed || isItemDismissed === undefined ) {
 		return null;
 	}
 

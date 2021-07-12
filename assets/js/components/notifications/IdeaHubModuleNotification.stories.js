@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import IdeaHubModuleNotification from './IdeaHubModuleNotification';
@@ -28,6 +33,17 @@ const Template = ( { ...args } ) => <IdeaHubModuleNotification { ...args } />;
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
+Ready.decorators = [
+	( Story ) => {
+		fetchMock.reset();
+
+		fetchMock.get(
+			/^\/google-site-kit\/v1\/core\/user\/data\/dismissed-items/,
+			{ body: {}, status: 200 }
+		);
+		return <Story />;
+	},
+];
 
 export default {
 	title: 'Modules/Idea Hub/Notifications/ModuleNotification',
@@ -40,8 +56,8 @@ export default {
 			const registry = createTestRegistry();
 			provideModules( registry, [ {
 				slug: 'idea-hub',
-				active: true,
-				connected: true,
+				active: false,
+				connected: false,
 			} ] );
 			registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
 
