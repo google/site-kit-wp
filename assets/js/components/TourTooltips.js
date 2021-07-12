@@ -149,6 +149,7 @@ export default function TourTooltips( { steps, tourID, gaEventCategory, callback
 	 * @property {string} type   Specific type (tour, step, beacon).
 	 *
 	 * @since 1.28.0
+	 * @since n.e.x.t Calls new callback prop.
 	 * @see {@link https://docs.react-joyride.com/callback} Example data provided by `react-joyride`.
 	 * @see {@link https://docs.react-joyride.com/constants} State & lifecycle constants used by `react-joyride`.
 	 *
@@ -215,4 +216,5 @@ TourTooltips.propTypes = {
 	steps: PropTypes.arrayOf( PropTypes.object ).isRequired,
 	tourID: PropTypes.string.isRequired,
 	gaEventCategory: PropTypes.string.isRequired,
+	callback: PropTypes.func,
 };
