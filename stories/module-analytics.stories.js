@@ -42,7 +42,7 @@ import {
 	PropertySelectIncludingGA4,
 	ProfileSelect,
 	AnonymizeIPSwitch,
-	UseSnippetSwitch,
+	UseUASnippetSwitch,
 	TrackingExclusionSwitches,
 	GA4Notice,
 } from '../assets/js/modules/analytics/components/common';
@@ -193,7 +193,7 @@ storiesOf( 'Analytics Module', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
-					<UseSnippetSwitch />
+					<UseUASnippetSwitch />
 				</SetupWrap>
 			</WithTestRegistry>
 		);
@@ -206,7 +206,7 @@ storiesOf( 'Analytics Module', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
-					<UseSnippetSwitch />
+					<UseUASnippetSwitch />
 				</SetupWrap>
 			</WithTestRegistry>
 		);
@@ -311,7 +311,9 @@ storiesOf( 'Analytics Module', module )
 	},
 	// This uses the legacy widget, the new one is in:
 	// 'Analytics Module/Components/Module Page/Acquisition Channels Widget'.
-	{ options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' } } )
+	{
+		options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' },
+	} )
 	.add( 'Top Acquisition Pie Chart', () => {
 		global._googlesitekitLegacyData = analyticsData;
 
@@ -358,4 +360,6 @@ storiesOf( 'Analytics Module', module )
 			</WithTestRegistry>
 		);
 	},
-	{ options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' } } );
+	{
+		options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' },
+	} );
