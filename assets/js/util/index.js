@@ -26,7 +26,6 @@ import unescape from 'lodash/unescape';
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
-import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -141,26 +140,6 @@ export const getModulesData = ( __googlesitekitLegacyData = global._googlesiteki
 		}
 		return { ...acc, [ slug ]: modulesObj[ slug ] };
 	}, {} );
-};
-
-/**
- * Gets Site Kit Admin URL Helper.
- *
- * @since 1.0.0
- *
- * @param {string} page The page slug. Optional. Default is 'googlesitekit-dashboard'.
- * @param {Object} args Optional. Object of arguments to add to the URL.
- * @return {string} Admin URL with appended query params.
- */
-export const getSiteKitAdminURL = ( page, args ) => {
-	const { adminRoot } = global._googlesitekitLegacyData.admin;
-
-	if ( ! page ) {
-		page = 'googlesitekit-dashboard';
-	}
-
-	args = { page, ...args };
-	return addQueryArgs( adminRoot, args );
 };
 
 /**
