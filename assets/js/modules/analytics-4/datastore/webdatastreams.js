@@ -143,7 +143,7 @@ const baseActions = {
 	 * @since n.e.x.t
 	 *
 	 * @param {string} propertyID GA4 property ID.
-	 * @return {Object|null} Matched property object on success, otherwise NULL.
+	 * @return {Object|null} Matched web data stream object on success, otherwise NULL.
 	 */
 	*matchWebDataStream( propertyID ) {
 		yield baseActions.waitForWebDataStreams( propertyID );

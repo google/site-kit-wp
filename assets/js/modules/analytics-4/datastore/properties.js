@@ -201,7 +201,7 @@ const baseActions = {
 	},
 
 	/**
-	 * Matches properties for provided accountID.
+	 * Matches a property for provided accountID.
 	 *
 	 * @since n.e.x.t
 	 *
