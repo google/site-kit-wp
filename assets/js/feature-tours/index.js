@@ -71,7 +71,7 @@ const allTrafficWidget = {
 			placement: 'top',
 		},
 		{
-			target: '.mdc-button.googlesitekit-header__date-range-selector-menu',
+			target: '.googlesitekit-header__date-range-selector-menu',
 			title: __( 'Check how your traffic changed since you last looked', 'google-site-kit' ),
 			content: __( 'Select a time frame to see the comparison with the previous time period', 'google-site-kit' ),
 		},
