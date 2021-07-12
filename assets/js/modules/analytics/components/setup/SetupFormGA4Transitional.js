@@ -27,7 +27,7 @@ import { Fragment, useEffect } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { STORE_NAME, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 } from '../../datastore/constants';
+import { STORE_NAME, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import {
@@ -48,6 +48,7 @@ export default function SetupFormGA4Transitional() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 
@@ -58,7 +59,7 @@ export default function SetupFormGA4Transitional() {
 	const { setUseSnippet: uaSetUseSnippet } = useDispatch( STORE_NAME );
 	const { setUseSnippet: ga4SetUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const shouldShowAssociatedPropertyNotice = propertyID || ga4PropertyID;
+	const shouldShowAssociatedPropertyNotice = accountID && accountID !== ACCOUNT_CREATE && ( propertyID || ga4PropertyID );
 
 	useEffect( () => {
 		uaSetUseSnippet( existingTag !== propertyID );
