@@ -185,6 +185,83 @@ class ModuleTest extends TestCase {
 		);
 	}
 
+	/**
+	 * @dataProvider data_site_hosts
+	 */
+	public function test_permute_site_hosts( $hostname, $expected ) {
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$method = new ReflectionMethod( $module, 'permute_site_hosts' );
+		$method->setAccessible( true );
+		$permute_site_hosts = function ( ...$args ) use ( $module, $method ) {
+			return $method->invoke( $module, ...$args );
+		};
+
+		$this->assertEqualSets(
+			$expected,
+			$permute_site_hosts( $hostname )
+		);
+	}
+
+	public function data_site_hosts() {
+		return array(
+			'example.com'              => array(
+				'example.com',
+				array(
+					'example.com',
+					'www.example.com',
+				),
+			),
+			'www.example.com'          => array(
+				'www.example.com',
+				array(
+					'example.com',
+					'www.example.com',
+				),
+			),
+			'éxämplę.test'             => array(
+				'éxämplę.test',
+				array(
+					'éxämplę.test',
+					'www.éxämplę.test',
+					'xn--xmpl-loa2a55a.test',
+					'www.xn--xmpl-loa2a55a.test',
+				),
+			),
+			'éxämplę.test as punycode' => array(
+				'xn--xmpl-loa2a55a.test',
+				array(
+					'éxämplę.test',
+					'www.éxämplę.test',
+					'xn--xmpl-loa2a55a.test',
+					'www.xn--xmpl-loa2a55a.test',
+				),
+			),
+		);
+	}
+
+	public function test_permute_site_url() {
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$method = new ReflectionMethod( $module, 'permute_site_url' );
+		$method->setAccessible( true );
+		$permute_site_url = function ( ...$args ) use ( $module, $method ) {
+			return $method->invoke( $module, ...$args );
+		};
+
+		$this->assertEqualSets(
+			array(
+				'http://éxämplę.test',
+				'https://éxämplę.test',
+				'http://www.éxämplę.test',
+				'https://www.éxämplę.test',
+				'http://xn--xmpl-loa2a55a.test',
+				'https://xn--xmpl-loa2a55a.test',
+				'http://www.xn--xmpl-loa2a55a.test',
+				'https://www.xn--xmpl-loa2a55a.test',
+			),
+			$permute_site_url( 'http://éxämplę.test' )
+		);
+	}
+
 	public function test_exception_to_error() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
