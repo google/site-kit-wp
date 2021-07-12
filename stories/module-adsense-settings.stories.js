@@ -93,7 +93,7 @@ const withRegistry = ( Story ) => {
 
 storiesOf( 'AdSense Module/Settings', module )
 	.add( 'View, closed', ( args, { registry } ) => {
-		return <Settings registry={ registry } isOpen={ false } />;
+		return <Settings registry={ registry } route={ `/connected-services` } />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -107,13 +107,7 @@ storiesOf( 'AdSense Module/Settings', module )
 			siteSetupComplete: false,
 		} );
 
-		const module = {
-			...global._googlesitekitLegacyData.modules.adsense,
-			active: true,
-			setupComplete: false,
-		};
-
-		return <Settings isOpen={ true } module={ module } registry={ registry } />;
+		return <Settings route={ `/connected-services/adsense` } registry={ registry } />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -122,7 +116,7 @@ storiesOf( 'AdSense Module/Settings', module )
 	.add( 'View, open with all settings', ( args, { registry } ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
 
-		return <Settings isOpen={ true } registry={ registry } />;
+		return <Settings route={ `/connected-services/adsense` } registry={ registry } />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -132,7 +126,7 @@ storiesOf( 'AdSense Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
 		setUpAdUnits( registry );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings route={ `/connected-services/adsense/edit` } registry={ registry } />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -143,7 +137,7 @@ storiesOf( 'AdSense Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( completeSettings.clientID );
 		setUpAdUnits( registry );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings route={ `/connected-services/adsense/edit` } registry={ registry } />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -154,7 +148,7 @@ storiesOf( 'AdSense Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'ca-pub-12345678' );
 		setUpAdUnits( registry );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings route={ `/connected-services/adsense/edit` } registry={ registry } />;
 	}, {
 		decorators: [
 			withRegistry,

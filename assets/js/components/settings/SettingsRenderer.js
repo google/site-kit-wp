@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
+import { useParams } from 'react-router-dom';
 
 /**
  * Internal dependencies
@@ -28,7 +29,11 @@ import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
-export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
+export default function SettingsRenderer( { slug } ) {
+	const { action, moduleSlug } = useParams();
+	const isEditing = action === 'edit';
+	const isOpen = moduleSlug === slug;
+
 	const [ initiallyConnected, setInitiallyConnected ] = useState();
 	const storeName = useSelect( ( select ) => select( CORE_MODULES ).getModuleStoreName( slug ) );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( CORE_MODULES ).isDoingSubmitChanges( slug ) );
