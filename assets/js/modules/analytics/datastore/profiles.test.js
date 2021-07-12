@@ -129,27 +129,30 @@ describe( 'modules/analytics profiles', () => {
 
 		describe( 'findPropertyProfile', () => {
 			it( 'should return undefined if there is no profiles', async () => {
-				fetchMock.getOnce( getProfilesEndpoint, {
-					body: [],
-				} );
+				const accountID = '123';
+				const propertyID = 'UA-123-1';
 
-				const profile = await registry.dispatch( STORE_NAME ).findPropertyProfile( '123', 'UA-123-1', '' );
+				registry.dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID, propertyID } );
+
+				const profile = await registry.dispatch( STORE_NAME ).findPropertyProfile( accountID, propertyID, '' );
 				expect( profile ).toBeUndefined();
 			} );
 
 			it( 'should return a profile that matches provided defaultProfileID', async () => {
-				fetchMock.getOnce( getProfilesEndpoint, {
-					body: [
-						{
-							id: '1001',
-						},
-						{
-							id: '1002',
-						},
-					],
-				} );
+				const accountID = '123';
+				const propertyID = 'UA-123-1';
+				const profiles = [
+					{
+						id: '1001',
+					},
+					{
+						id: '1002',
+					},
+				];
 
-				const profile = await registry.dispatch( STORE_NAME ).findPropertyProfile( '123', 'UA-123-1', '1002' );
+				registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
+
+				const profile = await registry.dispatch( STORE_NAME ).findPropertyProfile( accountID, propertyID, '1002' );
 				expect( profile ).toMatchObject( { id: '1002' } );
 			} );
 

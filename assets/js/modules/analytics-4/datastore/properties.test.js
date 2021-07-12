@@ -194,22 +194,24 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'matchAccountProperty', () => {
+			const accountID = '12345';
+
 			beforeEach( () => {
+				const properties = [
+					{ _id: '1001' },
+					{ _id: '1002' },
+					{ _id: '1003' },
+				];
+
 				provideSiteInfo( registry );
 
-				fetchMock.getOnce( propertiesEndpoint, {
-					body: [
-						{ _id: '1001' },
-						{ _id: '1002' },
-						{ _id: '1003' },
-					],
-				} );
+				registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
 			} );
 
 			it( 'should return NULL if no property matches the current site', async () => {
 				fetchMock.getOnce( webDataStreamsBatchEndpoint, { body: { 1001: [] } } );
 
-				const property = await registry.dispatch( STORE_NAME ).matchAccountProperty( '12345' );
+				const property = await registry.dispatch( STORE_NAME ).matchAccountProperty( accountID );
 				expect( property ).toBeNull();
 			} );
 
@@ -233,7 +235,7 @@ describe( 'modules/analytics-4 properties', () => {
 					},
 				} );
 
-				const property = await registry.dispatch( STORE_NAME ).matchAccountProperty( '12345' );
+				const property = await registry.dispatch( STORE_NAME ).matchAccountProperty( accountID );
 				expect( property ).toMatchObject( { _id: '1003' } );
 			} );
 		} );

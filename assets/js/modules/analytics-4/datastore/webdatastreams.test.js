@@ -108,21 +108,23 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 		} );
 
 		describe( 'matchWebDataStream', () => {
+			const propertyID = '1234';
+
 			beforeEach( () => {
 				provideSiteInfo( registry );
 			} );
 
 			it( 'should return NULL if no matching web data stream is found', async () => {
-				fetchMock.getOnce( webDataStreamsEndpoint, { body: [ { defaultUri: 'http://example.net' } ] } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( [ { defaultUri: 'http://example.net' } ], { propertyID } );
 
-				const webDataStream = await registry.dispatch( STORE_NAME ).matchWebDataStream( '1234' );
+				const webDataStream = await registry.dispatch( STORE_NAME ).matchWebDataStream( propertyID );
 				expect( webDataStream ).toBeNull();
 			} );
 
 			it( 'should return a web data stream if we find a matching one', async () => {
-				fetchMock.getOnce( webDataStreamsEndpoint, { body: [ { _id: '2001', defaultUri: 'http://example.com' } ] } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( [ { _id: '2001', defaultUri: 'http://example.com' } ], { propertyID } );
 
-				const webDataStream = await registry.dispatch( STORE_NAME ).matchWebDataStream( '1234' );
+				const webDataStream = await registry.dispatch( STORE_NAME ).matchWebDataStream( propertyID );
 				expect( webDataStream ).toMatchObject( { _id: '2001' } );
 			} );
 		} );
