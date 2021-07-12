@@ -112,10 +112,10 @@ const Template = ( { ...args } ) => (
 );
 
 export const DefaultFeatureTour = Template.bind( null );
-DefaultFeatureTour.storyName = 'Default';
+DefaultFeatureTour.storyName = 'Feature tour';
 
 export default {
-	title: 'Modules/Idea Hub/Feature tour',
+	title: 'Modules/Idea Hub',
 	parameters: {
 		features: [ 'ideaHubModule' ],
 	},

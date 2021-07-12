@@ -17,14 +17,14 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * External dependencies
  */
 import { EVENTS } from 'react-joyride';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 /*
  * Internal dependencies
@@ -42,9 +42,14 @@ const ideaHubModule = {
 		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
 		const isIdeaHubModuleActive = registry.select( CORE_MODULES ).isModuleActive( 'idea-hub' );
 		const isIdeaHubModuleConnected = registry.select( CORE_MODULES ).isModuleConnected( 'idea-hub' );
+
+		if ( ! isIdeaHubModuleActive || ! isIdeaHubModuleConnected ) {
+			return false;
+		}
+
 		const newIdeas = registry.select( MODULES_IDEA_HUB ).getNewIdeas() || [];
 
-		return ( isIdeaHubModuleActive && isIdeaHubModuleConnected && !! newIdeas.length );
+		return !! newIdeas.length;
 	},
 	steps: [
 		{
@@ -60,7 +65,7 @@ const ideaHubModule = {
 		{
 			target: '.googlesitekit-idea-hub__idea--single',
 			title: 'Save for later or dismiss',
-			content: "If you're not ready to create a draft about an idea just yet, add it to your 'Saved' list and revisit later. If you don’t like an idea, you can dismiss it from your list.",
+			content: __( "If you're not ready to create a draft about an idea just yet, add it to your 'Saved' list and revisit later. If you don’t like an idea, you can dismiss it from your list.", 'google-site-kit' ),
 		},
 	],
 	gaEventCategory: 'idea_hub_module',
@@ -72,16 +77,20 @@ const ideaHubModule = {
 		 * visible during the final step of the tour by adding a CSS class,
 		 * then remove the class once that step is finished.
 		 */
+
+		const { type, index } = data;
+		if ( ! [ EVENTS.STEP_BEFORE, EVENTS.STEP_AFTER ].includes( type ) || index !== 2 ) {
+			return;
+		}
+
 		const unhideElementClass = 'googlesitekit-idea-hub__actions--unhide';
 
-		const pinElement = global.document.getElementsByClassName( 'googlesitekit-idea-hub__actions--pin' ).item( 0 );
-		const dismissElement = global.document.getElementsByClassName( 'googlesitekit-idea-hub__actions--delete' ).item( 0 );
+		const pinElement = global.document.querySelector( '.googlesitekit-idea-hub__actions--pin' );
+		const dismissElement = global.document.querySelector( '.googlesitekit-idea-hub__actions--delete' );
 
 		if ( ! pinElement || ! dismissElement ) {
 			return;
 		}
-
-		const { type, index } = data;
 
 		if ( index === 2 && type === EVENTS.STEP_BEFORE ) {
 			// Before final step, add the CSS class to the save / dismiss elements
