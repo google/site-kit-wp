@@ -21,30 +21,17 @@
  */
 import { __ } from '@wordpress/i18n';
 
+/**
+ * External dependencies
+ */
+import { EVENTS } from 'react-joyride';
+
 /*
  * Internal dependencies
  */
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { MODULES_IDEA_HUB } from '../modules/idea-hub/datastore/constants';
-
-const STEPS = [
-	{
-		target: '.googlesitekit-idea-hub__title',
-		title: __( 'Get inspiration for new topics to write about!', 'google-site-kit' ),
-		content: __( 'These ideas are based on unanswered searches related to the content of your site. They are organised by topics and will refresh every N days.', 'google-site-kit' ),
-	},
-	{
-		target: '.googlesitekit-idea-hub__actions--create',
-		title: __( 'Start a draft', 'google-site-kit' ),
-		content: __( 'Found an interesting idea you want to write about? Create a draft! You can always get back to it later on the Posts page', 'google-site-kit' ),
-	},
-	{
-		target: '.mdc-button.googlesitekit-idea-hub__actions--pin',
-		title: 'Save for later or dismiss',
-		content: "If you're not ready to create a draft about an idea just yet, add it to your 'Saved' list and revisit later. If you don’t like an idea, you can dismiss it from your list.",
-	},
-];
 
 const ideaHubModule = {
 	slug: `ideaHubModule-${ Math.random() }`,
@@ -59,20 +46,55 @@ const ideaHubModule = {
 
 		return ( isIdeaHubModuleActive && isIdeaHubModuleConnected && !! newIdeas.length );
 	},
-	steps: STEPS,
+	steps: [
+		{
+			target: '.googlesitekit-idea-hub__title',
+			title: __( 'Get inspiration for new topics to write about!', 'google-site-kit' ),
+			content: __( 'These ideas are based on unanswered searches related to the content of your site. They are organised by topics and will refresh every N days.', 'google-site-kit' ),
+		},
+		{
+			target: '.googlesitekit-idea-hub__actions--create',
+			title: __( 'Start a draft', 'google-site-kit' ),
+			content: __( 'Found an interesting idea you want to write about? Create a draft! You can always get back to it later on the Posts page', 'google-site-kit' ),
+		},
+		{
+			target: '.googlesitekit-idea-hub__idea--single',
+			title: 'Save for later or dismiss',
+			content: "If you're not ready to create a draft about an idea just yet, add it to your 'Saved' list and revisit later. If you don’t like an idea, you can dismiss it from your list.",
+		},
+	],
 	gaEventCategory: 'idea_hub_module',
 	callback: ( data ) => {
-		const { type, step: { target } } = data;
-		const firstPin = `${ STEPS[ 2 ].target }:first`;
+		/*
+		 * The third step of the feature tour involves the 'save' (pin) and
+		 * 'dismiss' buttons, both of which are hidden unless you hover over
+		 * them. As an enhancement, we will un-hide these buttons so they are
+		 * visible during the final step of the tour by adding a CSS class,
+		 * then remove the class once that step is finished.
+		 */
+		const unhideElementClass = 'googlesitekit-idea-hub__actions--unhide';
 
-		if ( type === 'step:after' && target === STEPS[ 1 ].target ) {
-			global.jQuery( firstPin ).
-				addClass( 'googlesitekit-idea-hub__actions--pin-visible' );
+		const pinElement = global.document.getElementsByClassName( 'googlesitekit-idea-hub__actions--pin' ).item( 0 );
+		const dismissElement = global.document.getElementsByClassName( 'googlesitekit-idea-hub__actions--delete' ).item( 0 );
+
+		if ( ! pinElement || ! dismissElement ) {
+			return;
 		}
 
-		if ( type === 'step:after' && target === STEPS[ 2 ].target ) {
-			global.jQuery( firstPin ).
-				removeClass( 'googlesitekit-idea-hub__actions--pin-visible' );
+		const { type, index } = data;
+
+		if ( index === 2 && type === EVENTS.STEP_BEFORE ) {
+			// Before final step, add the CSS class to the save / dismiss elements
+			// to un-hide them.
+			pinElement.classList.add( unhideElementClass );
+			dismissElement.classList.add( unhideElementClass );
+		}
+
+		if ( index === 2 && type === EVENTS.STEP_AFTER ) {
+			// After final step, remove the CSS class to the save / dismiss elements
+			// to return them to normal.
+			pinElement.classList.remove( unhideElementClass );
+			dismissElement.classList.remove( unhideElementClass );
 		}
 	},
 };

@@ -115,7 +115,8 @@
 	}
 
 	// We need to toggle the visibility of the button for the feature tour.
-	.googlesitekit-idea-hub__actions--pin.googlesitekit-idea-hub__actions--pin-visible {
+	.googlesitekit-idea-hub__actions--pin.googlesitekit-idea-hub__actions--unhide,
+	.googlesitekit-idea-hub__actions--delete.googlesitekit-idea-hub__actions--unhide {
 
 		@media (min-width: $bp-tablet) {
 			display: block;
