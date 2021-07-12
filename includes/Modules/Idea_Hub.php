@@ -197,6 +197,7 @@ final class Idea_Hub extends Module
 
 			$this->transients->set( self::TRANSIENT_IDEAS, $ideas, DAY_IN_SECONDS );
 		}
+		$dismissed_items = array();
 
 		foreach ( $ideas as $idea_type => &$all_ideas ) {
 			foreach ( $all_ideas as $k => $idea ) {

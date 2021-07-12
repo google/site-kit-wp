@@ -36,7 +36,10 @@ import { CORE_USER } from './googlesitekit/datastore/user/constants';
 
 const WEEK_IN_SECONDS = 3600 * 24 * 7;
 
-const dismissNotice = ( slug, expirationTime ) => dispatch( CORE_USER ).dismissItem( slug, expirationTime );
+const dismissNotice = ( slug, expiresInSeconds ) => dispatch( CORE_USER ).dismissItem( {
+	slug,
+	expiresInSeconds,
+} );
 
 domReady( () => {
 	const newNotice = document.getElementById( 'googlesitekit-notice-new' );
