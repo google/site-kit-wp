@@ -105,7 +105,7 @@ const withRegistrySecondaryAMP = ( Story ) => {
 
 storiesOf( 'Tag Manager Module/Settings', module )
 	.add( 'View, closed', ( args, { registry } ) => {
-		return <Settings isOpen={ false } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -120,7 +120,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 			useSnippet: true,
 		} );
 
-		return <Settings isOpen registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/tagmanager" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -138,7 +138,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-G000GL3' );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: 'GTM-G000GL3' } );
 
-		return <Settings isOpen registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/tagmanager" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -156,7 +156,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-G000GL3' );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: false }, { containerID: 'GTM-G000GL3' } );
 
-		return <Settings isOpen registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/tagmanager" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -166,7 +166,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 
-		return <Settings isOpen isEditing registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -185,7 +185,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).setInternalContainerID( container.containerId );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 
-		return <Settings isOpen isEditing registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -195,7 +195,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 
-		return <Settings isOpen isEditing registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -206,7 +206,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 
-		return <Settings isOpen isEditing registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -222,7 +222,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
 		registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
 
-		return <Settings isOpen isEditing registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -239,7 +239,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
 		registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { containerName: fixtures.getContainers.web[ 0 ].name } );
 
-		return <Settings isOpen isEditing registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -260,7 +260,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-G000GL3' );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: 'GTM-G000GL3' } );
 
-		return <Settings isOpen isEditing registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -281,7 +281,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-GXXXGL3' );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: false }, { containerID: 'GTM-GXXXGL3' } );
 
-		return <Settings isOpen isEditing registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -302,7 +302,7 @@ storiesOf( 'Tag Manager Module/Settings/Primary AMP', module )
 		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
 
-		return <Settings isOpen isEditing registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
 		decorators: [
 			withRegistryPrimaryAMP,
@@ -328,7 +328,7 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 		// eslint-disable-next-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
 
-		return <Settings isOpen isEditing registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
 		decorators: [
 			withRegistrySecondaryAMP,
@@ -346,7 +346,7 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 		registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
 		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
 
-		return <Settings isOpen isEditing registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
 		decorators: [
 			withRegistrySecondaryAMP,
@@ -368,7 +368,7 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 			ampContainerName: fixtures.getContainers.amp[ 0 ].name,
 		} );
 
-		return <Settings isOpen isEditing registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
 		decorators: [
 			withRegistrySecondaryAMP,

@@ -23,22 +23,6 @@ use Google\Site_Kit\Core\Storage\User_Options;
 class Feature_Tours {
 
 	/**
-	 * Context instance.
-	 *
-	 * @since 1.27.0
-	 * @var Context
-	 */
-	protected $context;
-
-	/**
-	 * User_Options instance.
-	 *
-	 * @since 1.27.0
-	 * @var User_Options
-	 */
-	protected $user_options;
-
-	/**
 	 * Dismissed_Tours instance.
 	 *
 	 * @since 1.27.0
@@ -63,10 +47,8 @@ class Feature_Tours {
 	 * @param User_Options $user_options Optional. User option API. Default is a new instance.
 	 */
 	public function __construct( Context $context, User_Options $user_options = null ) {
-		$this->context         = $context;
-		$this->user_options    = $user_options ?: new User_Options( $context );
-		$this->dismissed_tours = new Dismissed_Tours( $this->user_options );
-		$this->rest_controller = new REST_Feature_Tours_Controller( $context, $this->user_options );
+		$this->dismissed_tours = new Dismissed_Tours( $user_options ?: new User_Options( $context ) );
+		$this->rest_controller = new REST_Feature_Tours_Controller( $this->dismissed_tours );
 	}
 
 	/**
@@ -78,4 +60,5 @@ class Feature_Tours {
 		$this->dismissed_tours->register();
 		$this->rest_controller->register();
 	}
+
 }
