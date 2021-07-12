@@ -186,10 +186,8 @@ final class Idea_Hub extends Module
 			),
 		);
 
-		$dismissed_items   = $this->dismissed_items->get_dismissed_items();
-		$dismissed_items[] = 'ideas/2285812891948871921';
-		$dismissed_items[] = 'saved-ideas';
-		$ideas             = $this->transients->get( self::TRANSIENT_IDEAS );
+		$dismissed_items = $this->dismissed_items->get_dismissed_items();
+		$ideas           = $this->transients->get( self::TRANSIENT_IDEAS );
 
 		if ( false === $ideas ) {
 			$ideas = array(
