@@ -28,6 +28,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -46,6 +47,31 @@ export default function SettingsAdminSharing() {
 	if ( ! currentUserID ) {
 		return null;
 	}
+
+	// This variable just exists to show two different UIs. The MVP will only having role-sharing,
+	// which is what is most common in WordPress.
+	// A future enhancement could be to allow sharing also with individual users, which is closer
+	// to what Google services allow.
+	const roleSharingOnly = true;
+
+	// The 'administrator' role is not included here since it is always shared with.
+	const allRoles = [
+		{
+			id: 'editor',
+			label: 'Editors',
+			shared: true,
+		},
+		{
+			id: 'author',
+			label: 'Authors',
+			shared: false,
+		},
+		{
+			id: 'contributor',
+			label: 'Contributors',
+			shared: false,
+		},
+	];
 
 	const users = [
 		{
@@ -105,7 +131,7 @@ export default function SettingsAdminSharing() {
                             googlesitekit-heading-4
                             googlesitekit-settings-module__title
                         ">
-							{ __( 'Share with people or roles', 'google-site-kit' ) }
+							{ roleSharingOnly ? __( 'Share with roles', 'google-site-kit' ) : __( 'Share with people or roles', 'google-site-kit' ) }
 						</h3>
 						<p>
 							{ __( 'Share the Site Kit dashboard with other users of your site', 'google-site-kit' ) }
@@ -114,58 +140,83 @@ export default function SettingsAdminSharing() {
 				</Row>
 				<Row>
 					<Cell size={ 12 }>
-						<Combobox className="autocomplete__wrapper googlesitekit-permission-autocomplete">
-							<ComboboxInput
-								className="autocomplete__input autocomplete__input--default"
-								type="text"
-							/>
-						</Combobox>
-						<div className="googlesitekit-permission-list" role="list">
-							<div id="googlesitekit-permission-list__item--admin" className="googlesitekit-permission-list__item googlesitekit-permission-list__item--role googlesitekit-permission-list__item--disabled" role="listitem">
-								<div className="googlesitekit-permission-list__item__icon">
-									<div className="googlesitekit-permission-list__item__icon__wrapper">
-										<div className="dashicons dashicons-admin-users"></div>
-									</div>
+						{ roleSharingOnly && (
+							<div className="googlesitekit-role-list" role="list">
+								<div id={ `googlesitekit-role-list__item--administrator` } className="googlesitekit-role-list__item" role="listitem">
+									<Switch
+										label="Administrators"
+										checked={ true }
+										disabled={ true }
+										hideLabel={ false }
+									/>
 								</div>
-								<div className="googlesitekit-permission-list__item__main">
-									<div className="googlesitekit-permission-list__item__main__primary">
-										All administrators
+								{ allRoles.map( ( role ) => (
+									<div key={ role.id } id={ `googlesitekit-role-list__item--${ role.id }` } className="googlesitekit-role-list__item" role="listitem">
+										<Switch
+											label={ role.label }
+											checked={ role.shared }
+											hideLabel={ false }
+										/>
 									</div>
-									<div className="googlesitekit-permission-list__item__main__secondary">
-										Administrators can always access the dashboard
-									</div>
-								</div>
-								<div className="googlesitekit-permission-list__item__actions">
-								</div>
+								) ) }
 							</div>
-							{ users.map( ( user ) => (
-								<div key={ user.id } id={ `googlesitekit-permission-list__item--${ user.id }` } className={ `googlesitekit-permission-list__item googlesitekit-permission-list__item--${ user.type }` } role="listitem">
-									<div className="googlesitekit-permission-list__item__icon">
-										<div className="googlesitekit-permission-list__item__icon__wrapper">
-											{ user.type === 'user' && (
-												<img src={ user.thumbnail } alt="" />
-											) }
-											{ user.type === 'role' && (
+						) }
+						{ ! roleSharingOnly && (
+							<Fragment>
+								<Combobox className="autocomplete__wrapper googlesitekit-permission-autocomplete">
+									<ComboboxInput
+										className="autocomplete__input autocomplete__input--default"
+										type="text"
+									/>
+								</Combobox>
+								<div className="googlesitekit-permission-list" role="list">
+									<div id="googlesitekit-permission-list__item--administrator" className="googlesitekit-permission-list__item googlesitekit-permission-list__item--role googlesitekit-permission-list__item--disabled" role="listitem">
+										<div className="googlesitekit-permission-list__item__icon">
+											<div className="googlesitekit-permission-list__item__icon__wrapper">
 												<div className="dashicons dashicons-admin-users"></div>
-											) }
-										</div>
-									</div>
-									<div className="googlesitekit-permission-list__item__main">
-										<div className="googlesitekit-permission-list__item__main__primary">
-											{ user.primary }
-										</div>
-										{ user.secondary && (
-											<div className="googlesitekit-permission-list__item__main__secondary">
-												{ user.secondary }
 											</div>
-										) }
+										</div>
+										<div className="googlesitekit-permission-list__item__main">
+											<div className="googlesitekit-permission-list__item__main__primary">
+												All administrators
+											</div>
+											<div className="googlesitekit-permission-list__item__main__secondary">
+												Administrators can always access the dashboard
+											</div>
+										</div>
+										<div className="googlesitekit-permission-list__item__actions">
+										</div>
 									</div>
-									<div className="googlesitekit-permission-list__item__actions">
-										<Link>Remove</Link>
-									</div>
+									{ users.map( ( user ) => (
+										<div key={ user.id } id={ `googlesitekit-permission-list__item--${ user.id }` } className={ `googlesitekit-permission-list__item googlesitekit-permission-list__item--${ user.type }` } role="listitem">
+											<div className="googlesitekit-permission-list__item__icon">
+												<div className="googlesitekit-permission-list__item__icon__wrapper">
+													{ user.type === 'user' && (
+														<img src={ user.thumbnail } alt="" />
+													) }
+													{ user.type === 'role' && (
+														<div className="dashicons dashicons-admin-users"></div>
+													) }
+												</div>
+											</div>
+											<div className="googlesitekit-permission-list__item__main">
+												<div className="googlesitekit-permission-list__item__main__primary">
+													{ user.primary }
+												</div>
+												{ user.secondary && (
+													<div className="googlesitekit-permission-list__item__main__secondary">
+														{ user.secondary }
+													</div>
+												) }
+											</div>
+											<div className="googlesitekit-permission-list__item__actions">
+												<Link>Remove</Link>
+											</div>
+										</div>
+									) ) }
 								</div>
-							) ) }
-						</div>
+							</Fragment>
+						) }
 					</Cell>
 				</Row>
 				<Row>
