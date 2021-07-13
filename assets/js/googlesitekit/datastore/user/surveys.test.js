@@ -26,7 +26,6 @@ import {
 import { createCacheKey } from '../../api';
 import { setItem, setSelectedStorageBackend } from '../../api/cache';
 import { STORE_NAME } from './constants';
-import fetchMock from 'fetch-mock';
 
 describe( 'core/user surveys', () => {
 	let registry;
