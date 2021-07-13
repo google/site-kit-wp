@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics;
 
-use Google\Site_Kit_Dependencies\Google_Service_Analytics_AccountTicket;
+use Google\Site_Kit_Dependencies\Google\Service\Analytics\AccountTicket;
 
 /**
  * Class for the Analytics provisioning Account Ticket object.
@@ -19,7 +19,7 @@ use Google\Site_Kit_Dependencies\Google_Service_Analytics_AccountTicket;
  * @access private
  * @ignore
  */
-class Proxy_AccountTicket extends Google_Service_Analytics_AccountTicket {
+class Proxy_AccountTicket extends AccountTicket {
 
 	/**
 	 * The site ID.
