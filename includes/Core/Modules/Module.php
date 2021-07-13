@@ -685,22 +685,20 @@ abstract class Module {
 		$is_www   = 0 === strpos( $hostname, 'www.' );
 		// Normalize hostname without www.
 		$hostname = $is_www ? substr( $hostname, strlen( 'www.' ) ) : $hostname;
-		$hosts    = array();
-		$add_host = function ( $host ) use ( &$hosts ) {
-			array_push( $hosts, $host, "www.$host" );
-		};
-		$add_host( $hostname );
+		$hosts    = array( $hostname, "www.$hostname" );
 
 		try {
 			// An ASCII hostname can only be non-IDN or punycode-encoded.
 			if ( $is_ascii ) {
 				// If the hostname is in punycode encoding, add the decoded version to the list of hosts.
 				if ( 0 === strpos( $hostname, Punycode::PREFIX ) || false !== strpos( $hostname, '.' . Punycode::PREFIX ) ) {
-					$add_host( $punycode->decode( $hostname ) );
+					$host_decoded = $punycode->decode( $hostname );
+					array_push( $hosts, $host_decoded, "www.$host_decoded" );
 				}
 			} else {
 				// If it's not ASCII, then add the punycode encoded version.
-				$add_host( $punycode->encode( $hostname ) );
+				$host_encoded = $punycode->encode( $hostname );
+				array_push( $hosts, $host_encoded, "www.$host_encoded" );
 			}
 		} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// Do nothing.
