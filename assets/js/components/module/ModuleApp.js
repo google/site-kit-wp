@@ -36,7 +36,6 @@ import { useFeature } from '../../hooks/useFeature';
 import Header from '../Header';
 import Alert from '../Alert';
 import ModuleHeader from './ModuleHeader';
-import ModuleFooter from './ModuleFooter';
 import LegacyModuleApp from './LegacyModuleApp';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import HelpMenu from '../help/HelpMenu';
@@ -73,7 +72,6 @@ function ModuleApp( { moduleSlug } ) {
 						`googlesitekit-module-page--${ moduleSlug }`,
 					] ) }
 					Header={ getModuleHeader }
-					Footer={ ModuleFooter }
 				/>
 			)
 			}
