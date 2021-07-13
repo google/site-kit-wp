@@ -34,6 +34,21 @@ import Link from './Link';
 import { getFullURL } from '../util';
 const { useSelect } = Data;
 
+const PrimaryAdminLink = ( { children, permaLink, useAdminURLs, PrimaryLink, link } ) => {
+	const adminURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink } ) );
+
+	return (
+		<PrimaryLink
+			className="googlesitekit-table__body-item-link"
+			href={ useAdminURLs ? adminURL : link }
+			external={ ! useAdminURLs }
+			inherit
+		>
+			{ children }
+		</PrimaryLink>
+	);
+};
+
 // Construct a table component from a data object.
 export const getDataTableFromData = ( data, headers, options ) => {
 	const dataRows = [];
@@ -54,7 +69,6 @@ export const getDataTableFromData = ( data, headers, options ) => {
 		const cells = [];
 		const link = links && links[ j ];
 		const permaLink = link && link[ 0 ] === '/' ? getFullURL( global._googlesitekitLegacyData.admin.siteURL, link ) : link;
-		const adminURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink } ) );
 
 		each( row, ( cell, i ) => {
 			// Replace (none) by direct.
@@ -74,14 +88,14 @@ export const getDataTableFromData = ( data, headers, options ) => {
 				>
 					{ row[ 0 ] === cell && link
 						? <div className="googlesitekit-table__body-item-content">
-							<PrimaryLink
-								className="googlesitekit-table__body-item-link"
-								href={ useAdminURLs ? adminURL : link }
-								external={ ! useAdminURLs }
-								inherit
+							<PrimaryAdminLink
+								permaLink={ permaLink }
+								useAdminURLs={ useAdminURLs }
+								PrimaryLink={ PrimaryLink }
+								link={ link }
 							>
 								{ cell }
-							</PrimaryLink>
+							</PrimaryAdminLink>
 
 							{ showURLs &&
 								<Link
