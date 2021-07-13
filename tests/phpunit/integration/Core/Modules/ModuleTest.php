@@ -239,7 +239,10 @@ class ModuleTest extends TestCase {
 		);
 	}
 
-	public function test_permute_site_url() {
+	/**
+	 * @dataProvider data_site_urls
+	 */
+	public function test_permute_site_url( $site_url, $expected ) {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$method = new ReflectionMethod( $module, 'permute_site_url' );
 		$method->setAccessible( true );
@@ -248,17 +251,52 @@ class ModuleTest extends TestCase {
 		};
 
 		$this->assertEqualSets(
-			array(
+			$expected,
+			$permute_site_url( $site_url )
+		);
+	}
+
+	public function data_site_urls() {
+		return array(
+			'http://éxämplę.test'               => array(
 				'http://éxämplę.test',
-				'https://éxämplę.test',
-				'http://www.éxämplę.test',
-				'https://www.éxämplę.test',
-				'http://xn--xmpl-loa2a55a.test',
-				'https://xn--xmpl-loa2a55a.test',
-				'http://www.xn--xmpl-loa2a55a.test',
-				'https://www.xn--xmpl-loa2a55a.test',
+				array(
+					'http://éxämplę.test',
+					'https://éxämplę.test',
+					'http://www.éxämplę.test',
+					'https://www.éxämplę.test',
+					'http://xn--xmpl-loa2a55a.test',
+					'https://xn--xmpl-loa2a55a.test',
+					'http://www.xn--xmpl-loa2a55a.test',
+					'https://www.xn--xmpl-loa2a55a.test',
+				),
 			),
-			$permute_site_url( 'http://éxämplę.test' )
+			'http://éxämplę.test/sub-directory' => array(
+				'http://éxämplę.test/sub-directory',
+				array(
+					'http://éxämplę.test/sub-directory',
+					'https://éxämplę.test/sub-directory',
+					'http://www.éxämplę.test/sub-directory',
+					'https://www.éxämplę.test/sub-directory',
+					'http://xn--xmpl-loa2a55a.test/sub-directory',
+					'https://xn--xmpl-loa2a55a.test/sub-directory',
+					'http://www.xn--xmpl-loa2a55a.test/sub-directory',
+					'https://www.xn--xmpl-loa2a55a.test/sub-directory',
+				),
+			),
+			'http://éxämplę.test/sub-directory as punycode' => array(
+				'http://xn--xmpl-loa2a55a.test/sub-directory',
+				array(
+					'http://éxämplę.test/sub-directory',
+					'https://éxämplę.test/sub-directory',
+					'http://www.éxämplę.test/sub-directory',
+					'https://www.éxämplę.test/sub-directory',
+					'http://xn--xmpl-loa2a55a.test/sub-directory',
+					'https://xn--xmpl-loa2a55a.test/sub-directory',
+					'http://www.xn--xmpl-loa2a55a.test/sub-directory',
+					'https://www.xn--xmpl-loa2a55a.test/sub-directory',
+				),
+			),
 		);
 	}
 

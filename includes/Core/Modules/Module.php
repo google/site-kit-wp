@@ -654,11 +654,13 @@ abstract class Module {
 	 */
 	final protected function permute_site_url( $site_url ) {
 		$hostname = wp_parse_url( $site_url, PHP_URL_HOST );
+		$path     = wp_parse_url( $site_url, PHP_URL_PATH );
 
 		return array_reduce(
 			$this->permute_site_hosts( $hostname ),
-			function ( $urls, $host ) {
-				array_push( $urls, "https://$host", "http://$host" );
+			function ( $urls, $host ) use ( $path ) {
+				$host_with_path = $host . $path;
+				array_push( $urls, "https://$host_with_path", "http://$host_with_path" );
 				return $urls;
 			},
 			array()
