@@ -36,9 +36,9 @@ use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
-use Google\Site_Kit_Dependencies\Google_Service_GoogleAnalyticsAdmin;
-use Google\Site_Kit_Dependencies\Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty;
-use Google\Site_Kit_Dependencies\Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaProperty;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaWebDataStream;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -209,7 +209,7 @@ final class Analytics_4 extends Module
 	 * @since 1.35.0
 	 *
 	 * @param string $account_id Account ID.
-	 * @return Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty A new property.
+	 * @return GoogleAnalyticsAdminV1alphaProperty A new property.
 	 */
 	private function create_property( $account_id ) {
 		$timezone = get_option( 'timezone_string' );
@@ -217,7 +217,7 @@ final class Analytics_4 extends Module
 			$timezone = 'UTC';
 		}
 
-		$property = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty();
+		$property = new GoogleAnalyticsAdminV1alphaProperty();
 		$property->setParent( self::normalize_account_id( $account_id ) );
 		$property->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 		$property->setTimeZone( $timezone );
@@ -231,12 +231,12 @@ final class Analytics_4 extends Module
 	 * @since 1.35.0
 	 *
 	 * @param string $property_id Property ID.
-	 * @return Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream A new web data stream.
+	 * @return GoogleAnalyticsAdminV1alphaWebDataStream A new web data stream.
 	 */
 	private function create_webdatastream( $property_id ) {
 		$site_url = $this->context->get_reference_site_url();
 
-		$datastream = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream();
+		$datastream = new GoogleAnalyticsAdminV1alphaWebDataStream();
 		$datastream->setDisplayName( wp_parse_url( $site_url, PHP_URL_HOST ) );
 		$datastream->setDefaultUri( $site_url );
 
@@ -481,7 +481,7 @@ final class Analytics_4 extends Module
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
-			'analyticsadmin' => new Google_Service_GoogleAnalyticsAdmin( $client ),
+			'analyticsadmin' => new GoogleAnalyticsAdmin( $client ),
 		);
 	}
 
