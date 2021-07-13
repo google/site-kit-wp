@@ -36,7 +36,6 @@ import { useFeature } from '../../hooks/useFeature';
 import Header from '../Header';
 import Alert from '../Alert';
 import ModuleHeader from './ModuleHeader';
-import ModuleFooter from './ModuleFooter';
 import LegacyModuleApp from './LegacyModuleApp';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import HelpMenu from '../help/HelpMenu';
@@ -47,7 +46,6 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
 function ModuleApp( { moduleSlug } ) {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const screenWidgetContext = useSelect( ( select ) => select( CORE_MODULES ).getScreenWidgetContext( moduleSlug ) );
 	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleSlug ) );
 	const moduleScreensWidgetsEnabled = useFeature( 'widgets.moduleScreens' );
@@ -56,15 +54,13 @@ function ModuleApp( { moduleSlug } ) {
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && (
-					<HelpMenu>
-						{ moduleSlug === 'adsense' && (
-							<HelpMenuLink gaEventLabel="adsense_help" href="https://support.google.com/adsense/">
-								{ __( 'Get help with AdSense', 'google-site-kit' ) }
-							</HelpMenuLink>
-						) }
-					</HelpMenu>
-				) }
+				<HelpMenu>
+					{ moduleSlug === 'adsense' && (
+						<HelpMenuLink gaEventLabel="adsense_help" href="https://support.google.com/adsense/">
+							{ __( 'Get help with AdSense', 'google-site-kit' ) }
+						</HelpMenuLink>
+					) }
+				</HelpMenu>
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
 			<Alert module={ moduleSlug } />
@@ -76,7 +72,6 @@ function ModuleApp( { moduleSlug } ) {
 						`googlesitekit-module-page--${ moduleSlug }`,
 					] ) }
 					Header={ getModuleHeader }
-					Footer={ ModuleFooter }
 				/>
 			)
 			}

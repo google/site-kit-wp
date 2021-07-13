@@ -42,17 +42,12 @@ import LegacyDashboardAcquisitionPieChart from './LegacyDashboardAcquisitionPieC
 import ProgressBar from '../../../../components/ProgressBar';
 import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
 import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
-import HelpLink from '../../../../components/HelpLink';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../datastore/constants';
-import { useFeature } from '../../../../hooks/useFeature';
-
 const { useSelect } = Data;
 
 export default function LegacyAnalyticsDashboardWidget() {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
-
 	const [ selectedStats, setSelectedStats ] = useState( [ 0 ] );
 	const [ receivingData, setReceivingData ] = useState( true );
 	const [ error, setError ] = useState( false );
@@ -260,15 +255,6 @@ export default function LegacyAnalyticsDashboardWidget() {
 								</div>
 							</Layout>
 						</div>
-						{ ! helpVisibilityEnabled && (
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								mdc-layout-grid__cell--align-right
-							">
-								<HelpLink />
-							</div>
-						) }
 					</div>
 				</div>
 			</div>

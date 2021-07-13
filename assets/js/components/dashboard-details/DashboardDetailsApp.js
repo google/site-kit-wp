@@ -28,7 +28,6 @@ import Data from 'googlesitekit-data';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import LegacyDashboardDetailsModule from './LegacyDashboardDetailsModule';
 import DashboardDetailsHeader from './DashboardDetailsHeader';
-import DashboardDetailsFooter from './DashboardDetailsFooter';
 import Header from '../Header';
 import DateRangeSelector from '../DateRangeSelector';
 import { Grid, Row, Cell } from '../../material-components/layout';
@@ -38,7 +37,6 @@ import HelpMenu from '../help/HelpMenu';
 const { useSelect } = Data;
 
 export default function DashboardDetailsApp() {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const pageDashboardWidgetsEnabled = useFeature( 'widgets.pageDashboard' );
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
@@ -50,7 +48,7 @@ export default function DashboardDetailsApp() {
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && <HelpMenu /> }
+				 <HelpMenu />
 				{ currentEntityURL && <DateRangeSelector /> }
 			</Header>
 
@@ -59,7 +57,6 @@ export default function DashboardDetailsApp() {
 					slug={ currentEntityURL ? 'pageDashboard' : 'pageDashboardNotFound' }
 					className="googlesitekit-module-page googlesitekit-dashboard-single-url"
 					Header={ DashboardDetailsHeader }
-					Footer={ DashboardDetailsFooter }
 				/>
 			) }
 
@@ -75,9 +72,6 @@ export default function DashboardDetailsApp() {
 									key={ 'googlesitekit-dashboard-details-module' }
 								/>
 							) }
-							<Cell size={ 12 }>
-								<DashboardDetailsFooter />
-							</Cell>
 						</Row>
 					</Grid>
 				</div>
