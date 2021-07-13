@@ -27,7 +27,6 @@ import { Fragment } from '@wordpress/element';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import LegacyDashboardModule from './LegacyDashboardModule';
 import DashboardHeader from './DashboardHeader';
-import DashboardFooter from './DashboardFooter';
 import DashboardNotifications from './dashboard-notifications';
 import Header from '../Header';
 import DateRangeSelector from '../DateRangeSelector';
@@ -54,7 +53,6 @@ export default function DashboardApp() {
 					slug="dashboard"
 					className="googlesitekit-module-page googlesitekit-dashboard"
 					Header={ DashboardHeader }
-					Footer={ DashboardFooter }
 				/>
 			) }
 
@@ -68,9 +66,6 @@ export default function DashboardApp() {
 							<LegacyDashboardModule
 								key={ 'googlesitekit-dashboard-module' }
 							/>
-							<Cell size={ 12 }>
-								<DashboardFooter />
-							</Cell>
 						</Row>
 					</Grid>
 				</div>
