@@ -38,13 +38,12 @@ import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
 
 export default function DashboardApp() {
 	const dashboardWidgetsEnabled = useFeature( 'widgets.dashboard' );
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const userFeedbackEnabled = useFeature( 'userFeedback' );
 
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && <HelpMenu /> }
+				<HelpMenu />
 				<DateRangeSelector />
 			</Header>
 

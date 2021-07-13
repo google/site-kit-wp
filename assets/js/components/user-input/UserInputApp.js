@@ -37,7 +37,6 @@ import UserInputQuestionnaire from './UserInputQuestionnaire';
 const { useSelect } = Data;
 
 export default function UserInputApp() {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const userInputEnabled = useFeature( 'userInput' );
 	const { hasFinishedGettingInputSettings } = useSelect( ( select ) => ( {
 		userInputSettings: select( CORE_USER ).getUserInputSettings(), // This will be used in the children components.
@@ -51,7 +50,7 @@ export default function UserInputApp() {
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && <HelpMenu /> }
+				 <HelpMenu />
 			</Header>
 			<div className="googlesitekit-user-input">
 				<div className="googlesitekit-module-page">

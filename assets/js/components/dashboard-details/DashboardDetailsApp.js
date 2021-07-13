@@ -38,7 +38,6 @@ import HelpMenu from '../help/HelpMenu';
 const { useSelect } = Data;
 
 export default function DashboardDetailsApp() {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const pageDashboardWidgetsEnabled = useFeature( 'widgets.pageDashboard' );
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
@@ -50,7 +49,7 @@ export default function DashboardDetailsApp() {
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && <HelpMenu /> }
+				 <HelpMenu />
 				{ currentEntityURL && <DateRangeSelector /> }
 			</Header>
 
