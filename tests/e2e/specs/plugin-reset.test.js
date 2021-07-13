@@ -26,10 +26,10 @@ describe( 'Plugin Reset', () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await expect( page ).toMatchElement( '.googlesitekit-page-header__title', { text: 'Settings' } );
 
-		await page.waitForSelector( 'button.mdc-tab' );
+		await page.waitForSelector( 'a.mdc-tab' );
 
 		// Click on Admin Settings Tab.
-		await expect( page ).toClick( 'button.mdc-tab', { text: 'Admin Settings' } );
+		await expect( page ).toClick( 'a.mdc-tab', { text: 'Admin Settings' } );
 		await page.waitForSelector( '.googlesitekit-settings-module__footer' );
 	} );
 

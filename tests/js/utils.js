@@ -4,6 +4,8 @@
 import castArray from 'lodash/castArray';
 import mapValues from 'lodash/mapValues';
 import fetchMock from 'fetch-mock';
+import { createMemoryHistory } from 'history';
+import { Router } from 'react-router';
 
 /**
  * WordPress dependencies
@@ -89,6 +91,8 @@ export const createTestRegistry = () => {
  * @param {Object}    [props]          Component props.
  * @param {Function}  [props.callback] Function which receives the registry instance.
  * @param {WPElement} [props.children] Children components.
+ * @param {History}   [props.history]  History object for React Router. Defaults to MemoryHistory.
+ * @param {string}    [props.route]    Route to pass to history as starting route.
  * @param {string[]}  [props.features] Feature flags to enable for this test registry provider.
  * @param {Object}    [props.registry] Registry object; uses `createTestRegistry()` by default.
  * @return {WPElement} Wrapped components.
@@ -98,10 +102,16 @@ export function WithTestRegistry( {
 	callback,
 	features = [],
 	registry = createTestRegistry(),
+	history = createMemoryHistory(),
+	route = undefined,
 } = {} ) {
 	const enabledFeatures = new Set( features );
 	// Populate most basic data which should not affect any tests.
 	provideUserInfo( registry );
+
+	if ( route ) {
+		history.push( route );
+	}
 
 	if ( callback ) {
 		callback( registry );
@@ -110,7 +120,9 @@ export function WithTestRegistry( {
 	return (
 		<RegistryProvider value={ registry }>
 			<FeaturesProvider value={ enabledFeatures }>
-				{ children }
+				<Router history={ history }>
+					{ children }
+				</Router>
 			</FeaturesProvider>
 		</RegistryProvider>
 	);

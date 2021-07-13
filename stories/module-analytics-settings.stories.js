@@ -43,10 +43,9 @@ function usingGenerateGTMAnalyticsPropertyStory( args ) {
 		Component( { callback, registry } ) {
 			return (
 				<Settings
-					isOpen={ true }
-					isEditing={ true }
 					callback={ callback }
 					registry={ registry }
+					route="/connected-services/analytics/edit"
 				/>
 			);
 		},
@@ -71,7 +70,7 @@ const withRegistry = ( Story ) => {
 
 storiesOf( 'Analytics Module/Settings', module )
 	.add( 'View, closed', ( args, { registry } ) => {
-		return <Settings isOpen={ false } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -86,7 +85,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			profileID: '9999999',
 		} );
 
-		return <Settings isOpen={ true } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/analytics" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -107,7 +106,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			permission: true,
 		}, { propertyID: 'UA-1234567890-1' } );
 
-		return <Settings isOpen={ true } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/analytics" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -134,7 +133,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			profileID,
 		} );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/analytics/edit" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -165,7 +164,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			profileID: PROFILE_CREATE,
 		} );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/analytics/edit" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -175,7 +174,7 @@ storiesOf( 'Analytics Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/analytics/edit" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -202,7 +201,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			permission: true,
 		}, { propertyID: existingTag.propertyID } );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/analytics/edit" />;
 	}, {
 		decorators: [
 			withRegistry,
@@ -229,7 +228,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			permission: false,
 		}, { propertyID: existingTag.propertyID } );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/analytics/edit" />;
 	}, {
 		decorators: [
 			withRegistry,

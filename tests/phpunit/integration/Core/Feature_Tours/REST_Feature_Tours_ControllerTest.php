@@ -22,6 +22,32 @@ use WP_REST_Response;
 
 class REST_Feature_Tours_ControllerTest extends TestCase {
 
+	/**
+	 * Dismissed tours instance.
+	 *
+	 * @var Dismissed_Tours
+	 */
+	private $dismissed_tours;
+
+	/**
+	 * Controller instance.
+	 *
+	 * @var REST_Feature_Tours_Controller
+	 */
+	private $controller;
+
+	public function setUp() {
+		parent::setUp();
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$context               = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options          = new User_Options( $context, $user_id );
+		$this->dismissed_tours = new Dismissed_Tours( $user_options );
+		$this->controller      = new REST_Feature_Tours_Controller( $this->dismissed_tours );
+	}
+
 	public function tearDown() {
 		parent::tearDown();
 		// This ensures the REST server is initialized fresh for each test using it.
@@ -29,27 +55,20 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 	}
 
 	public function test_register() {
-		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$controller = new REST_Feature_Tours_Controller( $context );
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
 
-		$controller->register();
+		$this->controller->register();
 
 		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
 	}
 
 	public function test_get_dismissed_tours() {
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$user_options = new User_Options( $context, $user_id );
-		$controller   = new REST_Feature_Tours_Controller( $context, $user_options );
 		remove_all_filters( 'googlesitekit_rest_routes' );
-		$controller->register();
+		$this->controller->register();
 
-		( new Dismissed_Tours( $user_options ) )->add( 'feature_x', 'feature_y' );
+		$this->dismissed_tours->add( 'feature_x', 'feature_y' );
 
 		$this->register_rest_routes();
 
@@ -67,15 +86,10 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 	}
 
 	public function test_post_dismiss_tour() {
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$user_options = new User_Options( $context, $user_id );
-		$controller   = new REST_Feature_Tours_Controller( $context, $user_options );
 		remove_all_filters( 'googlesitekit_rest_routes' );
-		$controller->register();
+		$this->controller->register();
 
-		( new Dismissed_Tours( $user_options ) )->add( 'feature_x', 'feature_y' );
+		$this->dismissed_tours->add( 'feature_x', 'feature_y' );
 
 		$this->register_rest_routes();
 
@@ -130,4 +144,5 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 
 		return $routes;
 	}
+
 }

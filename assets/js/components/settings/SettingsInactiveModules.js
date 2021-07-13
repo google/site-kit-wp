@@ -40,6 +40,7 @@ const SettingsInactiveModules = () => {
 	// cause the activated module to be removed upon activation.
 	const [ initialInactiveSlugs, setInitialInactiveSlugs ] = useState();
 	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
+
 	useEffect( () => {
 		// Only set initialInactiveSlugs once, as soon as modules are available.
 		if ( ! modules || initialInactiveSlugs !== undefined ) {
