@@ -55,7 +55,8 @@ export default function SetupFormUA() {
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const shouldShowGA4PropertyNotice = accountID && accountID !== ACCOUNT_CREATE;
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const shouldShowGA4PropertyNotice = accountID && accountID !== ACCOUNT_CREATE && propertyID;
 
 	useMount( () => {
 		selectProperty( PROPERTY_CREATE );
