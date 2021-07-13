@@ -65,7 +65,7 @@ const ideaHubModule = {
 		{
 			target: '.googlesitekit-idea-hub__idea--single',
 			title: 'Save for later or dismiss',
-			content: __( "If you're not ready to create a draft about an idea just yet, add it to your 'Saved' list and revisit later. If you don’t like an idea, you can dismiss it from your list.", 'google-site-kit' ),
+			content: __( 'If you’re not ready to create a draft about an idea just yet, add it to your "Saved" list and revisit later. If you don’t like an idea, you can dismiss it from your list.', 'google-site-kit' ),
 		},
 	],
 	gaEventCategory: 'idea_hub_module',
