@@ -329,13 +329,6 @@ const baseResolvers = {
 			return;
 		}
 
-		// Do nothing if UA is already connected but GA4 is not.
-		const isUAConnected = registry.select( CORE_MODULES ).isModuleConnected( 'analytics' );
-		const isGA4Connected = registry.select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
-		if ( isUAConnected && ! isGA4Connected ) {
-			return;
-		}
-
 		// Do not try to find a matching GA4 property if the module has already been connected.
 		const connected = registry.select( CORE_MODULES ).isModuleConnected( 'analytics' );
 		if ( connected ) {
