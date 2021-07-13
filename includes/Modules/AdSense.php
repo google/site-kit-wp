@@ -37,7 +37,7 @@ use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Modules\AdSense\Tag_Guard;
 use Google\Site_Kit\Modules\AdSense\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model;
-use Google\Site_Kit_Dependencies\Google_Service_Adsense;
+use Google\Site_Kit_Dependencies\Google\Service\Adsense as Google_Service_Adsense;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;

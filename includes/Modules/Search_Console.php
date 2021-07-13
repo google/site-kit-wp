@@ -31,7 +31,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
 use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
 use Google\Site_Kit\Modules\Search_Console\Settings;
-use Google\Site_Kit_Dependencies\Google_Service_Exception;
+use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SitesListResponse;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\WmxSite;
