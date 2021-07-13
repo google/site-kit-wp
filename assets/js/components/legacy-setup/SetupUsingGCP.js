@@ -38,7 +38,6 @@ import { trackEvent, clearWebStorage, getSiteKitAdminURL } from '../../util';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
 import HelpMenu from '../help/HelpMenu';
-import withFeatureFlag from '../higherorder/withFeatureFlag';
 
 class SetupUsingGCP extends Component {
 	constructor( props ) {
@@ -187,8 +186,6 @@ class SetupUsingGCP extends Component {
 			isSiteKitConnected,
 		} = this.state;
 
-		const { helpVisibilityEnabled } = this.props;
-
 		if ( this.isSetupFinished() ) {
 			const redirectURL = getSiteKitAdminURL(
 				'googlesitekit-dashboard',
@@ -227,7 +224,7 @@ class SetupUsingGCP extends Component {
 		return (
 			<Fragment>
 				<Header>
-					{ helpVisibilityEnabled && <HelpMenu /> }
+					<HelpMenu />
 				</Header>
 				<div className="googlesitekit-wizard">
 					<div className="mdc-layout-grid">
@@ -303,4 +300,4 @@ class SetupUsingGCP extends Component {
 	}
 }
 
-export default withFeatureFlag( 'helpVisibility' )( SetupUsingGCP );
+export default SetupUsingGCP;
