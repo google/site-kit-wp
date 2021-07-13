@@ -177,6 +177,13 @@ const baseActions = {
 				return;
 			}
 
+			// Do nothing if UA is already connected but GA4 is not.
+			const isUAConnected = registry.select( CORE_MODULES ).isModuleConnected( 'analytics' );
+			const isGA4Connected = registry.select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			if ( isUAConnected && ! isGA4Connected ) {
+				return;
+			}
+
 			registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_UA );
 
 			const ga4MatchProperty = registry.dispatch( MODULES_ANALYTICS_4 ).matchAndSelectProperty( accountID, GA4_PROPERTY_CREATE );
