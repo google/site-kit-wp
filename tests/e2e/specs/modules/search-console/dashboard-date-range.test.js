@@ -36,15 +36,16 @@ import * as dashboardRequests from './fixtures/dashboard';
 import * as dashboardDetailsRequests from './fixtures/dashboard-details';
 import * as modulePageRequests from './fixtures/module-page';
 
-// TODO The dashboard and page dashboard tests still use legacy widgets
+// TODO The dashboard and page dashboard still use legacy widgets
 // and require legacy fixtures via calls to /data. Once they are refactored, this
 // can be removed and the request interception can be brought in line with the other
 // Widget API tests (see below).
 let mockBatchResponse;
-// TODO The module page tests here now use the Widget API. They no longer call
+// TODO The module pages use the Widget API. They no longer call
 // /data and receive batched responses. To make the distinction clear, these tests
-// make use of this variable instead of `mockBatchResponse`. As part of #2586,
-// this can be refactored to use the new getSearchConsoleMockResponse utility.
+// make use of this variable instead of `mockBatchResponse`. As part of
+// https://github.com/google/site-kit-wp/issues/2586, this can be refactored to use
+// the new getSearchConsoleMockResponse utility.
 let mockResponse;
 
 async function getTotalImpressions() {
@@ -62,8 +63,9 @@ describe( 'date range filtering on dashboard views', () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
 			const url = request.url();
-			// Widget API requests. As mentioned above, these can be refactored
-			// to use the mock response utility as part of #2586.
+			// Widget API requests. As mentioned above, these can be
+			// refactored to use the mock response utility as part of
+			// https://github.com/google/site-kit-wp/issues/2586.
 			if ( url.match( 'google-site-kit/v1/.*search-console' ) ) {
 				request.respond( {
 					status: 200,
