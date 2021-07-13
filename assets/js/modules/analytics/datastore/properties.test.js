@@ -224,43 +224,47 @@ describe( 'modules/analytics properties', () => {
 		} );
 
 		describe( 'findMatchedProperty', () => {
+			const accountID = '123';
+
 			beforeEach( () => {
 				provideSiteInfo( registry );
 			} );
 
 			it( 'should return the correct property matching the current reference site URL', async () => {
-				fetchMock.get( propertiesProfilesEndpoint, {
-					body: {
-						properties: [
-							{
-								id: 'UA-151753095-1',
-								websiteUrl: 'http://example.net', // eslint-disable-line sitekit/acronym-case
-							},
-							{
-								id: 'UA-151753095-2',
-								websiteUrl: 'http://example.com', // eslint-disable-line sitekit/acronym-case
-							},
-						],
+				registry.dispatch( STORE_NAME ).receiveGetProperties(
+					[
+						{
+							id: 'UA-151753095-1',
+							websiteUrl: 'http://example.net', // eslint-disable-line sitekit/acronym-case
+						},
+						{
+							id: 'UA-151753095-2',
+							websiteUrl: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+						},
+					],
+					{
+						accountID,
 					},
-				} );
+				);
 
-				const property = await registry.dispatch( STORE_NAME ).findMatchedProperty( '123' );
+				const property = await registry.dispatch( STORE_NAME ).findMatchedProperty( accountID );
 				expect( property ).toMatchObject( { id: 'UA-151753095-2' } );
 			} );
 
 			it( 'should return NULL if there is no matching property', async () => {
-				fetchMock.get( propertiesProfilesEndpoint, {
-					body: {
-						properties: [
-							{
-								id: 'UA-151753095-1',
-								websiteUrl: 'http://example.net', // eslint-disable-line sitekit/acronym-case
-							},
-						],
+				registry.dispatch( STORE_NAME ).receiveGetProperties(
+					[
+						{
+							id: 'UA-151753095-1',
+							websiteUrl: 'http://example.net', // eslint-disable-line sitekit/acronym-case
+						},
+					],
+					{
+						accountID,
 					},
-				} );
+				);
 
-				const property = await registry.dispatch( STORE_NAME ).findMatchedProperty( '123' );
+				const property = await registry.dispatch( STORE_NAME ).findMatchedProperty( accountID );
 				expect( property ).toBeNull();
 			} );
 		} );

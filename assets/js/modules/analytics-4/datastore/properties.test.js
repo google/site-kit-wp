@@ -30,7 +30,6 @@ describe( 'modules/analytics-4 properties', () => {
 	const createPropertyEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/create-property/;
 	const propertiesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/;
 	const propertyEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/property/;
-	const webDataStreamsBatchEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -195,29 +194,36 @@ describe( 'modules/analytics-4 properties', () => {
 
 		describe( 'matchAccountProperty', () => {
 			const accountID = '12345';
+			const properties = [
+				{ _id: '1001' },
+				{ _id: '1002' },
+				{ _id: '1003' },
+			];
 
 			beforeEach( () => {
-				const properties = [
-					{ _id: '1001' },
-					{ _id: '1002' },
-					{ _id: '1003' },
-				];
-
 				provideSiteInfo( registry );
-
 				registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
 			} );
 
 			it( 'should return NULL if no property matches the current site', async () => {
-				fetchMock.getOnce( webDataStreamsBatchEndpoint, { body: { 1001: [] } } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreamsBatch(
+					{
+						1001: [],
+						1002: [],
+						1003: [],
+					},
+					{
+						propertyIDs: properties.map( ( { _id } ) => _id ),
+					},
+				);
 
 				const property = await registry.dispatch( STORE_NAME ).matchAccountProperty( accountID );
 				expect( property ).toBeNull();
 			} );
 
 			it( 'should return a property object if a property matches the current site', async () => {
-				fetchMock.getOnce( webDataStreamsBatchEndpoint, {
-					body: {
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreamsBatch(
+					{
 						1001: [
 							{
 								defaultUri: 'http://example.net',
@@ -233,7 +239,10 @@ describe( 'modules/analytics-4 properties', () => {
 							},
 						],
 					},
-				} );
+					{
+						propertyIDs: properties.map( ( { _id } ) => _id ),
+					},
+				);
 
 				const property = await registry.dispatch( STORE_NAME ).matchAccountProperty( accountID );
 				expect( property ).toMatchObject( { _id: '1003' } );
@@ -241,34 +250,38 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'matchAndSelectProperty', () => {
+			const accountID = '123';
+			const propertyID = '1001';
+			const webDataStreamID = '2001';
+			const measurementID = 'G-ABCD12345';
+
 			beforeEach( () => {
 				provideSiteInfo( registry );
 
-				fetchMock.getOnce( propertiesEndpoint, {
-					body: [
+				const properties = [
+					{
+						_id: propertyID,
+					},
+				];
+
+				const webDataStreams = {
+					[ propertyID ]: [
 						{
-							_id: '1001',
+							_id: webDataStreamID,
+							measurementId: measurementID, // eslint-disable-line sitekit/acronym-case
+							defaultUri: 'http://example.com',
 						},
 					],
-				} );
+				};
 
-				fetchMock.getOnce( webDataStreamsBatchEndpoint, {
-					body: {
-						1001: [
-							{
-								_id: '2001',
-								measurementId: 'G-ABCD12345', // eslint-disable-line sitekit/acronym-case
-								defaultUri: 'http://example.com',
-							},
-						],
-					},
-				} );
+				registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreamsBatch( webDataStreams, { propertyIDs: Object.keys( webDataStreams ) } );
 			} );
 
 			it( 'should select the fallback property if the matching property is not found', async () => {
 				provideSiteInfo( registry, { referenceSiteURL: 'http://example.net' } );
 
-				await registry.dispatch( STORE_NAME ).matchAndSelectProperty( '123', PROPERTY_CREATE );
+				await registry.dispatch( STORE_NAME ).matchAndSelectProperty( accountID, PROPERTY_CREATE );
 
 				expect( registry.select( STORE_NAME ).getSettings() ).toMatchObject( {
 					propertyID: PROPERTY_CREATE,
@@ -278,12 +291,12 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should select the correct property ID if we can find a matching property', async () => {
-				await registry.dispatch( STORE_NAME ).matchAndSelectProperty( '123' );
+				await registry.dispatch( STORE_NAME ).matchAndSelectProperty( accountID );
 
 				expect( registry.select( STORE_NAME ).getSettings() ).toMatchObject( {
-					propertyID: '1001',
-					webDataStreamID: '2001',
-					measurementID: 'G-ABCD12345',
+					propertyID,
+					webDataStreamID,
+					measurementID,
 				} );
 			} );
 		} );
