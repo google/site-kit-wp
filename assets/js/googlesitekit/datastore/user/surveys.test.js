@@ -23,10 +23,10 @@ import {
 	createTestRegistry,
 	muteFetch,
 } from '../../../../../tests/js/utils';
-import { actHook as act } from '../../../../../tests/js/test-utils';
 import { createCacheKey } from '../../api';
 import { setItem, setSelectedStorageBackend } from '../../api/cache';
 import { STORE_NAME } from './constants';
+import fetchMock from 'fetch-mock';
 
 describe( 'core/user surveys', () => {
 	let registry;
@@ -101,28 +101,27 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'should cache survey for provided ttl', async () => {
-				jest.useFakeTimers();
-				let ttl;
 				const triggerID = 'optimizeSurvey';
+				const mockedSetItem = jest.fn();
 
 				setSelectedStorageBackend( {
 					getItem: () => undefined,
-					setItem: ( _, options ) => {
-						try {
-							ttl = JSON.parse( options )?.ttl;
-						} catch {
-						}
-					},
+					setItem: mockedSetItem,
+					removeItem: () => undefined,
 				} );
 
 				fetchMock.postOnce( surveyTriggerEndpoint, { body: { triggerID } } );
 				await registry.dispatch( STORE_NAME ).triggerSurvey( triggerID, { ttl: 500 } );
-				act( () => jest.advanceTimersByTime( 40000 ) );
-				expect( ttl ).toBe( 500 );
+				jest.advanceTimersByTime( 35000 );
+
+				// Wait one tick for async storage functions.
+				await new Promise( ( resolve ) => resolve() );
+
+				const { ttl } = JSON.parse( mockedSetItem.mock.calls[ 0 ][ 1 ] );
+				expect( ttl ).toEqual( 500 );
 
 				// Reset the backend storage mechanism.
 				setSelectedStorageBackend( undefined );
-				jest.runAllTimers();
 			} );
 		} );
 

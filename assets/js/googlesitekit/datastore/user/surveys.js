@@ -107,9 +107,9 @@ const baseActions = {
 					return { response, error };
 				}
 				if ( ttl > 0 ) {
-					setTimeout( () => {
+					setTimeout( async () => {
 						// With a positive ttl we cache an empty object to avoid calling fetchTriggerSurvey() again after 30s.
-						setItem( cacheKey, {}, { ttl } );
+						await setItem( cacheKey, {}, { ttl } );
 					}, 30000 );
 				}
 			}
