@@ -27,10 +27,10 @@ use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_ReportRequest;
-use Google\Site_Kit_Dependencies\Google_Service_Analytics_Resource_ManagementWebproperties;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_OrderBy;
-use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperty;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\ReportRequest;
+use Google\Site_Kit_Dependencies\Google\Service\Analytics_Resource\ManagementWebproperties;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\OrderBy;
+use Google\Site_Kit_Dependencies\Google\Service\Analytics\Webproperty;
 use \ReflectionMethod;
 
 /**
@@ -374,7 +374,7 @@ class AnalyticsTest extends TestCase {
 		}
 
 		// Set up mock for Analytics web properties API request handler for success case below.
-		$webproperties_mock = $this->getMockBuilder( Google_Service_Analytics_Resource_ManagementWebproperties::class )
+		$webproperties_mock = $this->getMockBuilder( ManagementWebproperties::class )
 			->disableOriginalConstructor()
 			->setMethods( array( 'get' ) )
 			->getMock();
@@ -395,7 +395,7 @@ class AnalyticsTest extends TestCase {
 		$_GET['webPropertyId'] = 'UA-12345678-1';
 		$_GET['profileId']     = '987654';
 		$expected_internal_id  = '13579';
-		$expected_webproperty  = new Google_Service_Analytics_Webproperty();
+		$expected_webproperty  = new Webproperty();
 		$expected_webproperty->setAccountId( $_GET['accountId'] );
 		$expected_webproperty->setId( $_GET['webPropertyId'] );
 		$expected_webproperty->setDefaultProfileId( $_GET['profileId'] );
@@ -627,7 +627,7 @@ class AnalyticsTest extends TestCase {
 		$result = $reflected_parse_reporting_orderby_method->invoke( $analytics, $order );
 		$this->assertTrue( is_array( $result ) );
 		$this->assertEquals( 1, count( $result ) );
-		$this->assertTrue( $result[0] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertTrue( $result[0] instanceof OrderBy );
 		$this->assertEquals( 'views', $result[0]->getFieldName() );
 		$this->assertEquals( 'ASCENDING', $result[0]->getSortOrder() );
 
@@ -645,10 +645,10 @@ class AnalyticsTest extends TestCase {
 		$result = $reflected_parse_reporting_orderby_method->invoke( $analytics, $orders );
 		$this->assertTrue( is_array( $result ) );
 		$this->assertEquals( 2, count( $result ) );
-		$this->assertTrue( $result[0] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertTrue( $result[0] instanceof OrderBy );
 		$this->assertEquals( 'pages', $result[0]->getFieldName() );
 		$this->assertEquals( 'DESCENDING', $result[0]->getSortOrder() );
-		$this->assertTrue( $result[1] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertTrue( $result[1] instanceof OrderBy );
 		$this->assertEquals( 'sessions', $result[1]->getFieldName() );
 		$this->assertEquals( 'ASCENDING', $result[1]->getSortOrder() );
 
@@ -674,10 +674,10 @@ class AnalyticsTest extends TestCase {
 		$result = $reflected_parse_reporting_orderby_method->invoke( $analytics, $orders );
 		$this->assertTrue( is_array( $result ) );
 		$this->assertEquals( 2, count( $result ) );
-		$this->assertTrue( $result[0] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertTrue( $result[0] instanceof OrderBy );
 		$this->assertEquals( 'pages', $result[0]->getFieldName() );
 		$this->assertEquals( 'DESCENDING', $result[0]->getSortOrder() );
-		$this->assertTrue( $result[1] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertTrue( $result[1] instanceof OrderBy );
 		$this->assertEquals( 'sessions', $result[1]->getFieldName() );
 		$this->assertEquals( 'ASCENDING', $result[1]->getSortOrder() );
 	}
@@ -690,7 +690,7 @@ class AnalyticsTest extends TestCase {
 		$reflected_create_analytics_site_data_request_method->setAccessible( true );
 
 		$result = $reflected_create_analytics_site_data_request_method->invoke( $analytics, array() );
-		$this->assertTrue( $result instanceof Google_Service_AnalyticsReporting_ReportRequest );
+		$this->assertTrue( $result instanceof ReportRequest );
 
 		$clauses = $result->getDimensionFilterClauses();
 		$this->assertTrue( is_array( $clauses ) );
