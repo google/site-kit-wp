@@ -26,18 +26,22 @@ import { delay } from 'lodash';
  */
 import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
+import { compose } from '@wordpress/compose';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Header from '../Header';
 import Button from '../Button';
 import Layout from '../layout/Layout';
 import data, { TYPE_CORE } from '../data';
-import { trackEvent, clearWebStorage, getSiteKitAdminURL } from '../../util';
+import { trackEvent, clearWebStorage } from '../../util';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
 import HelpMenu from '../help/HelpMenu';
+const { withSelect } = Data;
 
 class SetupUsingGCP extends Component {
 	constructor( props ) {
@@ -186,14 +190,9 @@ class SetupUsingGCP extends Component {
 			isSiteKitConnected,
 		} = this.state;
 
-		if ( this.isSetupFinished() ) {
-			const redirectURL = getSiteKitAdminURL(
-				'googlesitekit-dashboard',
-				{
-					notification: 'authentication_success',
-				},
-			);
+		const { redirectURL } = this.props;
 
+		if ( this.isSetupFinished() ) {
 			delay( function() {
 				global.location.replace( redirectURL );
 			}, 500, 'later' );
@@ -300,4 +299,12 @@ class SetupUsingGCP extends Component {
 	}
 }
 
-export default SetupUsingGCP;
+export default compose(
+	withSelect( ( select ) => {
+		return {
+			redirectURL: select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+				notification: 'authentication_success',
+			} ),
+		};
+	} ),
+)( SetupUsingGCP );
