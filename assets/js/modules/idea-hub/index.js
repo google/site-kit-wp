@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { STORE_NAME } from './datastore/constants';
@@ -43,6 +48,9 @@ export const registerModule = ifIdeaHubIsEnabled( ( modules ) => {
 			storeName: STORE_NAME,
 			SettingsViewComponent: SettingsView,
 			Icon: IdeaHubIcon,
+			features: [
+				__( 'Suggestions for new topics to write about', 'google-site-kit' ),
+			],
 		}
 	);
 } );
