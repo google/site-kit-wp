@@ -33,7 +33,6 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Header from '../Header';
 import Link from '../Link';
-import { getSiteKitAdminURL } from '../../util';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -47,6 +46,16 @@ export default function ModuleSetup( { moduleSlug } ) {
 	const settingsPageURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 
+	const args = {
+		notification: 'authentication_success',
+	};
+
+	if ( moduleSlug ) {
+		args.slug = moduleSlug;
+	}
+
+	const adminURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', args ) );
+
 	/**
 	 * When module setup done, we redirect the user to Site Kit dashboard.
 	 *
@@ -56,20 +65,8 @@ export default function ModuleSetup( { moduleSlug } ) {
 	 * @param {string} [redirectURL] URL to redirect to when complete. Defaults to Site Kit dashboard.
 	 */
 	const finishSetup = useCallback( ( redirectURL ) => {
-		if ( ! redirectURL ) {
-			const args = {
-				notification: 'authentication_success',
-			};
-
-			if ( moduleSlug ) {
-				args.slug = moduleSlug;
-			}
-
-			redirectURL = getSiteKitAdminURL( 'googlesitekit-dashboard', args );
-		}
-
-		navigateTo( redirectURL );
-	}, [ moduleSlug, navigateTo ] );
+		navigateTo( redirectURL || adminURL );
+	}, [ adminURL, navigateTo ] );
 
 	if ( ! module?.SetupComponent ) {
 		return null;
