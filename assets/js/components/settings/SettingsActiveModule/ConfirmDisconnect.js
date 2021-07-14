@@ -58,7 +58,11 @@ export default function ConfirmDisconnect( { slug } ) {
 
 	useEffect( () => {
 		const onKeyPress = ( event ) => {
-			if ( ESCAPE === event.keyCode ) {
+			// Only trigger the `handleDialog()` code when a key is pressed and
+			// the dialog is active. Calling `handleDialog()` without `dialogActive`
+			// being truthy will cause all dialogs to appear, see
+			// https://github.com/google/site-kit-wp/issues/3707.
+			if ( ESCAPE === event.keyCode && dialogActive ) {
 				handleDialog();
 			}
 		};
@@ -67,7 +71,7 @@ export default function ConfirmDisconnect( { slug } ) {
 		return () => {
 			global.removeEventListener( 'keydown', onKeyPress );
 		};
-	}, [ handleDialog ] );
+	}, [ dialogActive, handleDialog ] );
 
 	const { deactivateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
