@@ -33,7 +33,6 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Header from '../Header';
 import Link from '../Link';
-import HelpLink from '../HelpLink';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
