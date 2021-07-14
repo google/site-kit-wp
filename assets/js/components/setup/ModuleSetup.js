@@ -65,11 +65,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 	 * @param {string} [redirectURL] URL to redirect to when complete. Defaults to Site Kit dashboard.
 	 */
 	const finishSetup = useCallback( ( redirectURL ) => {
-		if ( ! redirectURL ) {
-			redirectURL = adminURL;
-		}
-
-		navigateTo( redirectURL );
+		navigateTo( redirectURL || adminURL );
 	}, [ adminURL, navigateTo ] );
 
 	if ( ! module?.SetupComponent ) {
