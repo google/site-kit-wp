@@ -58,7 +58,7 @@ export default function ConfirmDisconnect( { slug } ) {
 
 	useEffect( () => {
 		const onKeyPress = ( event ) => {
-			if ( ESCAPE === event.keyCode ) {
+			if ( ESCAPE === event.keyCode && dialogActive ) {
 				handleDialog();
 			}
 		};
@@ -67,7 +67,7 @@ export default function ConfirmDisconnect( { slug } ) {
 		return () => {
 			global.removeEventListener( 'keydown', onKeyPress );
 		};
-	}, [ handleDialog ] );
+	}, [ dialogActive, handleDialog ] );
 
 	const { deactivateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
