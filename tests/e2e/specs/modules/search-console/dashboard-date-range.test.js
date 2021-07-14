@@ -66,7 +66,7 @@ describe( 'date range filtering on dashboard views', () => {
 			// Widget API requests. As mentioned above, these can be
 			// refactored to use the mock response utility as part of
 			// https://github.com/google/site-kit-wp/issues/2586.
-			if ( url.match( 'google-site-kit/v1/.*search-console' ) ) {
+			if ( url.match( 'google-site-kit/v1/modules/search-console' ) ) {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( mockResponse ),
@@ -172,7 +172,7 @@ describe( 'date range filtering on dashboard views', () => {
 		mockResponse = last14Days;
 
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/.*search-console' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console' ) ),
 			switchDateRange( 'last 28 days', 'last 14 days' ),
 		] );
 
