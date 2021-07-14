@@ -26,30 +26,28 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import Switch from '../../../../components/Switch';
 import { trackEvent } from '../../../../util';
-import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function UseUAandGA4SnippetSwitches() {
-	const isGA4Enabled = useFeature( 'ga4setup' );
-
 	const useUASnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const canUseUASnippet = useSelect( ( select ) => select( STORE_NAME ).getCanUseSnippet() );
 
 	const {
+		showGA4Toggle,
 		ga4ExistingTag,
 		ga4MeasurementID,
 		useGA4Snippet,
 	} = useSelect( ( select ) => {
-		if ( ! isGA4Enabled || select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) === false ) {
+		if ( ! select( STORE_NAME ).canUseGA4Controls() ) {
 			return {};
 		}
 
 		return {
+			showGA4Toggle: true,
 			ga4ExistingTag: select( MODULES_ANALYTICS_4 ).getExistingTag(),
 			ga4MeasurementID: select( MODULES_ANALYTICS_4 ).getMeasurementID(),
 			useGA4Snippet: select( MODULES_ANALYTICS_4 ).getUseSnippet(),
@@ -104,7 +102,7 @@ export default function UseUAandGA4SnippetSwitches() {
 					/>
 				</div>
 
-				{ useGA4Snippet !== undefined && (
+				{ showGA4Toggle && (
 					<div className="googlesitekit-settings-module__inline-item">
 						<Switch
 							label={ __( 'Place Google Analytics 4 code', 'google-site-kit' ) }

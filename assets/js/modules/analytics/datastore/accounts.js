@@ -173,14 +173,7 @@ const baseActions = {
 				registry.dispatch( STORE_NAME ).setProfileID( '' );
 			}
 
-			if ( ! isFeatureEnabled( 'ga4setup' ) ) {
-				return;
-			}
-
-			// Do nothing if UA is already connected but GA4 is not.
-			const isUAConnected = registry.select( CORE_MODULES ).isModuleConnected( 'analytics' );
-			const isGA4Connected = registry.select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
-			if ( isUAConnected && ! isGA4Connected ) {
+			if ( ! registry.select( STORE_NAME ).canUseGA4Controls() ) {
 				return;
 			}
 
