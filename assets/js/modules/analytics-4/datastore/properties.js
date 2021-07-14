@@ -241,7 +241,7 @@ const baseActions = {
 	*matchPropertyByURL( properties, url ) {
 		const registry = yield commonActions.getRegistry();
 		const urls = ( Array.isArray( url ) ? url : [ url ] )
-			.filter( ( item ) => item?.length > 0 )
+			.filter( ( item ) => typeof item === 'string' )
 			.map( normalizeURL );
 
 		for ( let i = 0; i < properties.length; i += MAX_WEBDATASTREAMS_PER_BATCH ) {
