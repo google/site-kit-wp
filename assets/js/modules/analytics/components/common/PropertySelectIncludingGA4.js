@@ -48,13 +48,12 @@ export default function PropertySelectIncludingGA4() {
 	} );
 
 	const primaryPropertyType = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPrimaryPropertyType() );
+	const propertyID = primaryPropertyType === PROPERTY_TYPE_GA4 ? ga4PropertyID : uaPropertyID;
 
 	const ga4Dispatch = useDispatch( MODULES_ANALYTICS_4 );
 	const uaDispatch = useDispatch( MODULES_ANALYTICS );
 
-	const propertyID = primaryPropertyType === PROPERTY_TYPE_GA4 ? ga4PropertyID : uaPropertyID;
-
-	const onChange = useCallback( ( index, item ) => {
+	const onChange = useCallback( async ( index, item ) => {
 		const newPropertyID = item.dataset.value;
 		const internalID = item.dataset.internalId; // eslint-disable-line sitekit/acronym-case
 		if ( propertyID === newPropertyID ) {
@@ -64,21 +63,35 @@ export default function PropertySelectIncludingGA4() {
 		trackEvent( 'analytics_setup', 'property_change', newPropertyID );
 
 		if ( !! internalID || newPropertyID === PROPERTY_CREATE ) {
+			const ga4Property = await ga4Dispatch.matchAccountProperty( accountID );
+
+			let webdatastream;
+			if ( ga4Property?._id ) {
+				webdatastream = await ga4Dispatch.matchWebDataStream( ga4Property._id );
+			}
+
 			uaDispatch.selectProperty( newPropertyID, internalID );
 			uaDispatch.setPrimaryPropertyType( PROPERTY_TYPE_UA );
 
-			ga4Dispatch.setPropertyID( '' );
-			ga4Dispatch.setWebDataStreamID( '' );
-			ga4Dispatch.setMeasurementID( '' );
+			ga4Dispatch.setPropertyID( ga4Property?._id || '' );
+			ga4Dispatch.setWebDataStreamID( webdatastream?._id || '' );
+			ga4Dispatch.setMeasurementID( webdatastream?.measurementId || '' ); // eslint-disable-line sitekit/acronym-case
 		} else {
+			const uaProperty = await uaDispatch.findMatchedProperty( accountID );
+
+			let uaProfile;
+			if ( uaProperty?.id ) {
+				uaProfile = await uaDispatch.findPropertyProfile( accountID, uaProperty.id, uaProperty.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
+			}
+
 			ga4Dispatch.selectProperty( newPropertyID );
 			uaDispatch.setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
 
-			uaDispatch.setPropertyID( '' );
-			uaDispatch.setInternalWebPropertyID( '' );
-			uaDispatch.setProfileID( '' );
+			uaDispatch.setPropertyID( uaProperty?.id || '' );
+			uaDispatch.setInternalWebPropertyID( uaProperty?.internalWebPropertyId || '' ); // eslint-disable-line sitekit/acronym-case
+			uaDispatch.setProfileID( uaProfile?.id || '' );
 		}
-	}, [ propertyID, ga4Dispatch, uaDispatch ] );
+	}, [ accountID, propertyID, ga4Dispatch, uaDispatch ] );
 
 	if ( ! isValidAccountID( accountID ) ) {
 		return null;
@@ -108,9 +121,9 @@ export default function PropertySelectIncludingGA4() {
 					id: PROPERTY_CREATE,
 					name: __( 'Set up a new property', 'google-site-kit' ),
 				} )
-				.map( ( { id, name, internalWebPropertyId }, index ) => ( // eslint-disable-line sitekit/acronym-case
+				.map( ( { id, name, internalWebPropertyId } ) => ( // eslint-disable-line sitekit/acronym-case
 					<Option
-						key={ index }
+						key={ id }
 						value={ id }
 						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
 					>

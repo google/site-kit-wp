@@ -137,6 +137,32 @@ describe( 'modules/idea-hub idea-state', () => {
 				expect( response.dismissed ).toEqual( true );
 			} );
 		} );
+
+		describe( 'Activities', () => {
+			it( 'sets and removes different values for different activity keys', async () => {
+				expect( registry.stores[ STORE_NAME ].store.getState().activities ).toEqual( {} );
+
+				registry.dispatch( STORE_NAME ).setActivity( 'foo', 'bar' );
+
+				expect( registry.stores[ STORE_NAME ].store.getState().activities ).toEqual( { foo: 'bar' } );
+
+				registry.dispatch( STORE_NAME ).setActivity( 'bar', 'baz' );
+
+				expect( registry.stores[ STORE_NAME ].store.getState().activities ).toEqual( { foo: 'bar', bar: 'baz' } );
+
+				registry.dispatch( STORE_NAME ).removeActivity( 'bar' );
+
+				expect( registry.stores[ STORE_NAME ].store.getState().activities ).toEqual( { foo: 'bar' } );
+
+				registry.dispatch( STORE_NAME ).setActivity( 'bar', 'baz' );
+
+				expect( registry.stores[ STORE_NAME ].store.getState().activities ).toEqual( { foo: 'bar', bar: 'baz' } );
+
+				registry.dispatch( STORE_NAME ).removeActivity( 'foo' );
+
+				expect( registry.stores[ STORE_NAME ].store.getState().activities ).toEqual( { bar: 'baz' } );
+			} );
+		} );
 	} );
 } );
 

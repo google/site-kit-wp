@@ -31,6 +31,7 @@ import DashboardCoreSiteAlerts from './DashboardCoreSiteAlerts';
 import DashboardSetupAlerts from './dashboard-setup-alerts';
 import DashboardModulesAlerts from './dashboard-modules-alerts';
 import UserInputPromptNotification from '../notifications/UserInputPromptNotification';
+import IdeaHubModuleNotification from '../notifications/IdeaHubModuleNotification';
 
 const { setup } = global._googlesitekitLegacyData;
 const notification = getQueryParameter( 'notification' );
@@ -39,6 +40,7 @@ const addCoreSiteNotifications = createAddToFilter( <DashboardCoreSiteAlerts /> 
 const addSetupNotifications = createAddToFilter( <DashboardSetupAlerts /> );
 const addModulesNotifications = createAddToFilter( <DashboardModulesAlerts /> );
 const addUserInputPrompt = createAddToFilter( <UserInputPromptNotification /> );
+const addIdeaHubModuleNotification = createAddToFilter( <IdeaHubModuleNotification /> );
 
 addFilter( 'googlesitekit.DashboardNotifications',
 	'googlesitekit.SetupNotification',
@@ -48,6 +50,12 @@ if ( isFeatureEnabled( 'userInput' ) ) {
 	addFilter( 'googlesitekit.DashboardNotifications',
 		'googlesitekit.UserInputSettings',
 		addUserInputPrompt, 1 );
+}
+
+if ( isFeatureEnabled( 'ideaHubModule' ) && 'authentication_success' !== notification && 'authentication_failure' !== notification ) {
+	addFilter( 'googlesitekit.DashboardNotifications',
+		'googlesitekit.IdeaHubModule',
+		addIdeaHubModuleNotification, 1 );
 }
 
 if ( 'authentication_success' === notification || 'authentication_failure' === notification || 'user_input_success' === notification ) {

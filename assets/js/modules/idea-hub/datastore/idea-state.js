@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import omit from 'lodash/omit';
 
 /**
  * Internal dependencies
@@ -88,7 +89,12 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 	},
 } );
 
-const baseInitialState = {};
+const baseInitialState = {
+	activities: {},
+};
+
+const SET_ACTIVITY = 'SET_ACTIVITY';
+const REMOVE_ACTIVITY = 'REMOVE_ACTIVITY';
 
 const baseActions = {
 	/**
@@ -179,6 +185,86 @@ const baseActions = {
 
 		return { response, error };
 	},
+
+	/**
+	 * Sets an actvity.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} key   The idea name.
+	 * @param {string} value Store the current activity of the idea, i.e whether a draft is being created or has been created.
+	 * @return {Object} Redux-style action.
+	 */
+	setActivity( key, value ) {
+		invariant( typeof key === 'string' && key.length > 0, 'key is required.' );
+
+		return {
+			payload: { key, value },
+			type: SET_ACTIVITY,
+		};
+	},
+
+	/**
+	 * Removes an actvity.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} key The idea name.
+	 * @return {Object} Redux-style action.
+	 */
+	removeActivity( key ) {
+		invariant( typeof key === 'string' && key.length > 0, 'key is required.' );
+
+		return {
+			payload: { key },
+			type: REMOVE_ACTIVITY,
+		};
+	},
+};
+
+export const baseReducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case SET_ACTIVITY: {
+			const { key, value } = payload;
+
+			return {
+				...state,
+				activities: {
+					...state.activities,
+					[ key ]: value,
+				},
+			};
+		}
+
+		case REMOVE_ACTIVITY: {
+			const { key } = payload;
+
+			return {
+				...state,
+				activities: omit( state.activities, [ key ] ),
+			};
+		}
+
+		default: {
+			return state;
+		}
+	}
+};
+
+export const baseSelectors = {
+	/**
+	 * Gets the existing activity by key.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} key   Get data stored in this key.
+	 * @return {*} Value stored in state by key. Returns `undefined` if key isn't found.
+	 */
+	getActivity( state, key ) {
+		return state.activities[ key ];
+	},
 };
 
 const store = Data.combineStores(
@@ -186,6 +272,8 @@ const store = Data.combineStores(
 	{
 		actions: baseActions,
 		initialState: baseInitialState,
+		reducer: baseReducer,
+		selectors: baseSelectors,
 	}
 );
 
