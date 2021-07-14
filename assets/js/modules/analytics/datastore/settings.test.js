@@ -28,7 +28,8 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import * as fixtures from './__fixtures__';
 import {
-	createTestRegistry, provideModules,
+	createTestRegistry,
+	provideModules,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
