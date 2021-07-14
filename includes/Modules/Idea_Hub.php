@@ -339,6 +339,14 @@ final class Idea_Hub extends Module
 					);
 				}
 
+				if ( ! isset( $data['saved'] ) && ! isset( $data['dismissed'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						__( 'Either "saved" or "dismissed" parameter must be provided.', 'google-site-kit' ),
+						array( 'status' => 400 )
+					);
+				}
+
 				$parent = $this->get_parent_slug();
 				$body   = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState();
 
@@ -347,16 +355,11 @@ final class Idea_Hub extends Module
 				if ( isset( $data['saved'] ) ) {
 					$parent = $parent . '/ideaStates/saved';
 					$body->setSaved( filter_var( $data['saved'], FILTER_VALIDATE_BOOL ) );
-				} elseif ( isset( $data['dismissed'] ) ) {
+				}
+
+				if ( isset( $data['dismissed'] ) ) {
 					$parent = $parent . '/ideaStates/dismissed';
 					$body->setDismissed( filter_var( $data['dismissed'], FILTER_VALIDATE_BOOL ) );
-				} else {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						__( 'Either "saved" or "dismissed" parameter must be provided.', 'google-site-kit' ),
-						array( 'status' => 400 )
-					);
 				}
 
 				return $this->get_service( 'ideahub' )->platforms_properties_ideaStates->patch( $parent, $body );
