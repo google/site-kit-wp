@@ -33,7 +33,7 @@ import Button from '../../../../components/Button';
 import SettingsNotice from '../../../../components/SettingsNotice';
 const { useSelect, useDispatch } = Data;
 
-export default function SetupForm() {
+export default function SetupForm( { finishSetup } ) {
 	const { description } = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'idea-hub' ) );
 	const tosAccepted = useSelect( ( select ) => select( STORE_NAME ).getTosAccepted() );
 	const { setTosAccepted } = useDispatch( STORE_NAME );
@@ -43,8 +43,17 @@ export default function SetupForm() {
 		setTosAccepted( checked );
 	}, [ setTosAccepted ] );
 
+	const { submitChanges } = useDispatch( STORE_NAME );
+	const submitForm = useCallback( async ( event ) => {
+		event.preventDefault();
+		const { error } = await submitChanges();
+		if ( ! error ) {
+			finishSetup();
+		}
+	}, [ finishSetup, submitChanges ] );
+
 	return (
-		<form className="googlesitekit-ideahub-setup__form">
+		<form className="googlesitekit-ideahub-setup__form" onSubmit={ submitForm }>
 			<p>{ description }</p>
 
 			<SettingsNotice notice={ __( 'Idea Hub is only available in the US for now', 'google-site-kit' ) } />
