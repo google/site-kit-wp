@@ -102,7 +102,7 @@ const baseSelectors = {
 	} ),
 
 	/**
-	 * Determines whether we can use GA4 controls or not.
+	 * Determines whether GA4 controls should be displayed or not.
 	 *
 	 * @since n.e.x.t
 	 *
