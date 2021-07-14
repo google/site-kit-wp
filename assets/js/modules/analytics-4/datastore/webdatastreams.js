@@ -39,7 +39,7 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',
 	controlCallback( { propertyID } ) {
 		return API.get( 'modules', 'analytics-4', 'webdatastreams', { propertyID }, {
-			useCache: true,
+			useCache: false,
 		} );
 	},
 	reducerCallback( state, webDataStreams, { propertyID } ) {
@@ -63,7 +63,7 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 	baseName: 'getWebDataStreamsBatch',
 	controlCallback( { propertyIDs } ) {
 		return API.get( 'modules', 'analytics-4', 'webdatastreams-batch', { propertyIDs }, {
-			useCache: true,
+			useCache: false,
 		} );
 	},
 	reducerCallback( state, webDataStreams ) {
