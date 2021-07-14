@@ -98,9 +98,6 @@ export async function submitChanges( { select, dispatch } ) {
 	// TODO: Remove once legacy dataAPI is no longer used.
 	invalidateCacheGroup( TYPE_MODULES, 'analytics' );
 
-	// Try to save GA4 settings only if the Analytics-4 module has the same connection status as the Analytics module has.
-	// This check is needed to prevent saving GA4 settings unintentionally for cases when the Analytics module has been
-	// already connected by the time the GA4 functionality is revealed.
 	if ( select( STORE_NAME ).canUseGA4Controls() && select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
 		const { error } = await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 		if ( isPermissionScopeError( error ) ) {
@@ -166,9 +163,6 @@ export function validateCanSubmitChanges( select ) {
 	// Do existing tag check last.
 	invariant( hasExistingTagPermission() !== false, INVARIANT_INSUFFICIENT_TAG_PERMISSIONS );
 
-	// Validate GA4 settings only if the Analytics-4 module has the same connection status as the Analytics module has.
-	// This check is needed to prevent saving GA4 settings unintentionally for cases when the Analytics module has been
-	// already connected by the time the GA4 functionality is revealed.
 	if ( select( STORE_NAME ).canUseGA4Controls() ) {
 		select( MODULES_ANALYTICS_4 ).__dangerousCanSubmitChanges();
 	}
