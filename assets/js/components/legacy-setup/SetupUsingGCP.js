@@ -41,7 +41,6 @@ import { trackEvent, clearWebStorage } from '../../util';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
 import HelpMenu from '../help/HelpMenu';
-import withFeatureFlag from '../higherorder/withFeatureFlag';
 const { withSelect } = Data;
 
 class SetupUsingGCP extends Component {
@@ -191,7 +190,7 @@ class SetupUsingGCP extends Component {
 			isSiteKitConnected,
 		} = this.state;
 
-		const { helpVisibilityEnabled, redirectURL } = this.props;
+		const { redirectURL } = this.props;
 
 		if ( this.isSetupFinished() ) {
 			delay( function() {
@@ -224,7 +223,7 @@ class SetupUsingGCP extends Component {
 		return (
 			<Fragment>
 				<Header>
-					{ helpVisibilityEnabled && <HelpMenu /> }
+					<HelpMenu />
 				</Header>
 				<div className="googlesitekit-wizard">
 					<div className="mdc-layout-grid">
@@ -308,5 +307,4 @@ export default compose(
 			} ),
 		};
 	} ),
-	withFeatureFlag( 'helpVisibility' )
 )( SetupUsingGCP );

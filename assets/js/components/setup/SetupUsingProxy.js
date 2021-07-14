@@ -50,7 +50,6 @@ import HelpMenu from '../help/HelpMenu';
 const { useSelect, useDispatch } = Data;
 
 function SetupUsingProxy() {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const serviceSetupV2Enabled = useFeature( 'serviceSetupV2' );
 
 	const {
@@ -106,7 +105,7 @@ function SetupUsingProxy() {
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && <HelpMenu /> }
+				<HelpMenu />
 			</Header>
 			{ errorMessage && (
 				<Notification
