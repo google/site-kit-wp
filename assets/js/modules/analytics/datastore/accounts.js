@@ -29,7 +29,6 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../util';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	STORE_NAME,
@@ -45,7 +44,6 @@ import { actions as errorStoreActions } from '../../../googlesitekit/data/create
 import { actions as tagActions } from './tags';
 import { actions as propertyActions } from './properties';
 import { isFeatureEnabled } from '../../../features';
-import { matchPropertyByURL } from '../util/property';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 const { createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
@@ -151,15 +149,11 @@ const baseActions = {
 				return;
 			}
 
-			yield propertyActions.waitForProperties( accountID );
-
-			const urls = registry.select( CORE_SITE ).getSiteURLPermutations();
-			const uaProperties = registry.select( STORE_NAME ).getProperties( accountID );
-
-			let uaProperty = matchPropertyByURL( uaProperties, urls );
+			let uaProperty = yield propertyActions.findMatchedProperty( accountID );
 			const uaPropertyID = uaProperty?.id;
 
 			if ( ! uaProperty ) {
+				const uaProperties = registry.select( STORE_NAME ).getProperties( accountID );
 				uaProperty = {
 					id: uaProperties.length === 0 ? PROPERTY_CREATE : '', // Create a new property only if the selected account has no UA properties.
 					internalWebPropertyId: '', // eslint-disable-line sitekit/acronym-case

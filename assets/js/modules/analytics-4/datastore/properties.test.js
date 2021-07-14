@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { createTestRegistry, muteFetch, provideSiteInfo, unsubscribeFromAll, untilResolved } from '../../../../../tests/js/utils';
 import { STORE_NAME, PROPERTY_CREATE, WEBDATASTREAM_CREATE } from './constants';
-import { createTestRegistry, muteFetch, provideSiteInfo, unsubscribeFromAll, untilResolved } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 properties', () => {
@@ -189,6 +189,115 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
 				expect( registry.select( STORE_NAME ).getWebDataStreamID() ).toBe( fixtures.webDataStreams[ 1 ]._id );
 				expect( registry.select( STORE_NAME ).getMeasurementID() ).toBe( fixtures.webDataStreams[ 1 ].measurementId ); // eslint-disable-line sitekit/acronym-case
+			} );
+		} );
+
+		describe( 'matchAccountProperty', () => {
+			const accountID = '12345';
+			const properties = [
+				{ _id: '1001' },
+				{ _id: '1002' },
+				{ _id: '1003' },
+			];
+
+			beforeEach( () => {
+				provideSiteInfo( registry );
+				registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
+			} );
+
+			it( 'should return NULL if no property matches the current site', async () => {
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreamsBatch(
+					{
+						1001: [],
+						1002: [],
+						1003: [],
+					},
+					{
+						propertyIDs: properties.map( ( { _id } ) => _id ),
+					},
+				);
+
+				const property = await registry.dispatch( STORE_NAME ).matchAccountProperty( accountID );
+				expect( property ).toBeNull();
+			} );
+
+			it( 'should return a property object if a property matches the current site', async () => {
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreamsBatch(
+					{
+						1001: [
+							{
+								defaultUri: 'http://example.net',
+							},
+							{
+								defaultUri: 'http://example.org',
+							},
+						],
+						1002: [],
+						1003: [
+							{
+								defaultUri: 'http://example.com',
+							},
+						],
+					},
+					{
+						propertyIDs: properties.map( ( { _id } ) => _id ),
+					},
+				);
+
+				const property = await registry.dispatch( STORE_NAME ).matchAccountProperty( accountID );
+				expect( property ).toMatchObject( { _id: '1003' } );
+			} );
+		} );
+
+		describe( 'matchAndSelectProperty', () => {
+			const accountID = '123';
+			const propertyID = '1001';
+			const webDataStreamID = '2001';
+			const measurementID = 'G-ABCD12345';
+
+			beforeEach( () => {
+				provideSiteInfo( registry );
+
+				const properties = [
+					{
+						_id: propertyID,
+					},
+				];
+
+				const webDataStreams = {
+					[ propertyID ]: [
+						{
+							_id: webDataStreamID,
+							measurementId: measurementID, // eslint-disable-line sitekit/acronym-case
+							defaultUri: 'http://example.com',
+						},
+					],
+				};
+
+				registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreamsBatch( webDataStreams, { propertyIDs: Object.keys( webDataStreams ) } );
+			} );
+
+			it( 'should select the fallback property if the matching property is not found', async () => {
+				provideSiteInfo( registry, { referenceSiteURL: 'http://example.net' } );
+
+				await registry.dispatch( STORE_NAME ).matchAndSelectProperty( accountID, PROPERTY_CREATE );
+
+				expect( registry.select( STORE_NAME ).getSettings() ).toMatchObject( {
+					propertyID: PROPERTY_CREATE,
+					webDataStreamID: WEBDATASTREAM_CREATE,
+					measurementID: '',
+				} );
+			} );
+
+			it( 'should select the correct property ID if we can find a matching property', async () => {
+				await registry.dispatch( STORE_NAME ).matchAndSelectProperty( accountID );
+
+				expect( registry.select( STORE_NAME ).getSettings() ).toMatchObject( {
+					propertyID,
+					webDataStreamID,
+					measurementID,
+				} );
 			} );
 		} );
 

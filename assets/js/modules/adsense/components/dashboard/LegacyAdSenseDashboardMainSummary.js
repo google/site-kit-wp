@@ -25,6 +25,8 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	reduceAdSenseData,
 	isDataZeroAdSense,
@@ -33,13 +35,11 @@ import Layout from '../../../../components/layout/Layout';
 import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import {
-	getTimeInSeconds,
-	getSiteKitAdminURL,
-} from '../../../../util';
+import { getTimeInSeconds } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
+const { withSelect } = Data;
 
 class LegacyAdSenseDashboardMainSummary extends Component {
 	constructor( props ) {
@@ -75,6 +75,8 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 	}
 
 	render() {
+		const { href } = this.props;
+
 		const {
 			today,
 			period,
@@ -96,11 +98,6 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 		}
 
 		const processedData = reduceAdSenseData( daily.rows );
-
-		const href = getSiteKitAdminURL(
-			'googlesitekit-module-adsense',
-			{}
-		);
 
 		const currencyHeader = period.headers.find( ( header ) => null !== header.currencyCode && 0 < header.currencyCode.length );
 		const currencyCode = currencyHeader ? currencyHeader.currencyCode : false;
@@ -191,7 +188,11 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 	}
 }
 
-export default withData(
+export default withSelect( ( select ) => {
+	return {
+		href: select( CORE_SITE ).getAdminURL( 'googlesitekit-module-adsense', {} ),
+	};
+} )( withData(
 	LegacyAdSenseDashboardMainSummary,
 	[
 		{
@@ -264,4 +265,4 @@ export default withData(
 		createGrid: true,
 	},
 	isDataZeroAdSense
-);
+) );

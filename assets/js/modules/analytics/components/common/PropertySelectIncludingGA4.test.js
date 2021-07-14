@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import PropertySelectIncludingGA4 from './PropertySelectIncludingGA4';
-import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS, ACCOUNT_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
@@ -46,7 +46,9 @@ const setupRegistry = ( registry ) => {
 
 	dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+
 	dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 
 	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
@@ -78,6 +80,66 @@ const setupEmptyRegistry = ( { dispatch } ) => {
 	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [ accountID ] );
 };
 
+const setupAdvancedRegistry = ( registry ) => {
+	const { dispatch } = registry;
+
+	setupRegistry( registry );
+
+	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [
+		{
+			id: accountID,
+			name: 'Example.com',
+		},
+	] );
+
+	dispatch( MODULES_ANALYTICS ).receiveGetProperties( [
+		{
+			id: propertyIDua,
+			name: 'UA Property',
+			/* eslint-disable sitekit/acronym-case */
+			internalWebPropertyId: '216084974',
+			websiteUrl: 'http://example.com',
+			defaultProfileId: '67890',
+			/* eslint-enable */
+		},
+	], { accountID } );
+
+	dispatch( MODULES_ANALYTICS ).receiveGetProfiles( [
+		{
+			id: '12345',
+			name: 'All Web Site Data',
+		},
+		{
+			id: '67890',
+			name: 'View 2',
+		},
+	], { accountID, propertyID: propertyIDua } );
+
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [
+		{
+			_id: propertyIDga4,
+			displayName: 'GA4 Property',
+		},
+	], { accountID } );
+
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( [
+		{
+			_id: '2001',
+			/* eslint-disable sitekit/acronym-case */
+			measurementId: '1A2BCD345E',
+			defaultUri: 'http://example.net',
+			/* eslint-disable */
+		},
+		{
+			_id: '2002',
+			/* eslint-disable sitekit/acronym-case */
+			measurementId: 'G-12345ABCDE',
+			defaultUri: 'http://example.com',
+			/* eslint-disable */
+		},
+	], { propertyID: propertyIDga4 } );
+};
+
 describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 	beforeEach( () => {
 		enabledFeatures.add( 'ga4setup' );
@@ -93,9 +155,7 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 	} );
 
 	it( 'should not render in the absence of an valid account ID.', () => {
-		const { container, registry } = render( <PropertySelectIncludingGA4 />, {
-			setupRegistry,
-		} );
+		const { container, registry } = render( <PropertySelectIncludingGA4 />, { setupRegistry } );
 
 		// A valid accountID is provided, so ensure it is not currently disabled.
 		const selectWrapper = container.querySelector( '.googlesitekit-analytics__select-property' );
@@ -120,59 +180,83 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 		expect( listItems[ 0 ].textContent ).toMatch( /set up a new property/i );
 	} );
 
-	it( 'should change between UA and GA4 properties', () => {
-		const { getAllByRole, container, registry } = render( <PropertySelectIncludingGA4 />, { setupRegistry } );
-		const ga4Properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
-		// the selector getPropertiesIncludingGA4 sorts so this is rendered second in the select
-		const ga4TargetProperty = ga4Properties[ 0 ];
+	it( 'should set the primary property type to GA4 when the GA4 property is selected', async () => {
+		const {
+			getByText,
+			container,
+			registry,
+			findByText,
+		} = render( <PropertySelectIncludingGA4 />, { setupRegistry: setupAdvancedRegistry } );
 
 		expect( container.querySelector( '.mdc-select__selected-text' ) ).toHaveTextContent( '' );
 
-		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
+		await act( async () => {
+			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
+			fireEvent.click( getByText( `GA4 Property (${ propertyIDga4 })` ) );
+			await findByText( `GA4 Property (${ propertyIDga4 })` );
+		} );
 
-		// The selected property is a GA4 property
-		expect( registry.select( MODULES_ANALYTICS ).getPrimaryPropertyType() ).toBe( 'ga4' );
-		const newGA4PropertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
-		expect( ga4TargetProperty._id ).toEqual( newGA4PropertyID );
-
-		expect( container.querySelector( '.mdc-select__selected-text' ) )
-			.toHaveTextContent( `${ ga4TargetProperty.displayName } (${ ga4TargetProperty._id })` );
-		expect( container.querySelector( '.mdc-select__selected-text' ) )
-			.toHaveTextContent( 'Test GA4 Property (1000)' );
-
-		// the modules/analytics store's getPropertyID action should be reset
-		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe( '' );
-
-		// Select a UA property
-		const uaProperties = registry.select( MODULES_ANALYTICS ).getProperties( accountID );
-
-		const uaTargetProperty = uaProperties[ 0 ];
-
-		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 7 ] );
-
-		expect( registry.select( MODULES_ANALYTICS ).getPrimaryPropertyType() ).toBe( 'ua' );
-
-		const newUAPropertyID = registry.select( MODULES_ANALYTICS ).getPropertyID();
-
-		expect( uaTargetProperty.id ).toEqual( newUAPropertyID );
-
-		expect( container.querySelector( '.mdc-select__selected-text' ) )
-			.toHaveTextContent( `${ uaTargetProperty.name } (${ uaTargetProperty.id })` );
-		expect( container.querySelector( '.mdc-select__selected-text' ) ).toHaveTextContent( 'wegweg (UA-152925174-1)' );
-
-		expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( '' );
-
-		// Select a GA4 property again
-		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
-		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
-
-		expect( container.querySelector( '.mdc-select__selected-text' ) )
-			.toHaveTextContent( `${ ga4TargetProperty.displayName } (${ ga4TargetProperty._id })` );
-		expect( container.querySelector( '.mdc-select__selected-text' ) )
-			.toHaveTextContent( 'Test GA4 Property (1000)' );
-
-		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe( '' );
+		expect( registry.select( MODULES_ANALYTICS ).getPrimaryPropertyType() ).toBe( PROPERTY_TYPE_GA4 );
 	} );
+
+	it( 'should set the primary property type to UA when the UA property is selected', async () => {
+		const {
+			getByText,
+			container,
+			registry,
+			findByText,
+		} = render( <PropertySelectIncludingGA4 />, { setupRegistry: setupAdvancedRegistry } );
+
+		expect( container.querySelector( '.mdc-select__selected-text' ) ).toHaveTextContent( '' );
+
+		await act( async () => {
+			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
+			fireEvent.click( getByText( `UA Property (${ propertyIDua })` ) );
+			await findByText( `UA Property (${ propertyIDua })` );
+		} );
+
+		expect( registry.select( MODULES_ANALYTICS ).getPrimaryPropertyType() ).toBe( PROPERTY_TYPE_UA );
+	} );
+
+	it( 'should correctly set UA settings when the GA4 property is selected', async () => {
+		const {
+			getByText,
+			container,
+			registry,
+			findByText,
+		} = render( <PropertySelectIncludingGA4 />, { setupRegistry: setupAdvancedRegistry } );
+
+		expect( container.querySelector( '.mdc-select__selected-text' ) ).toHaveTextContent( '' );
+
+		await act( async () => {
+			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
+			fireEvent.click( getByText( `GA4 Property (${ propertyIDga4 })` ) );
+			await findByText( `GA4 Property (${ propertyIDga4 })` );
+		} );
+
+		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe( propertyIDua );
+		expect( registry.select( MODULES_ANALYTICS ).getProfileID() ).toBe( '67890' );
+	} );
+
+	it( 'should correctly set GA4 settings when the UA property is selected', async () => {
+		const {
+			getByText,
+			container,
+			registry,
+			findByText,
+		} = render( <PropertySelectIncludingGA4 />, { setupRegistry: setupAdvancedRegistry } );
+
+		expect( container.querySelector( '.mdc-select__selected-text' ) ).toHaveTextContent( '' );
+
+		await act( async () => {
+			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
+			fireEvent.click( getByText( `UA Property (${ propertyIDua })` ) );
+			await findByText( `UA Property (${ propertyIDua })` );
+		} );
+
+		expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( propertyIDga4 );
+		expect( registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID() ).toBe( '2002' );
+		expect( registry.select( MODULES_ANALYTICS_4 ).getMeasurementID() ).toBe( 'G-12345ABCDE' );
+	} );
+
 } );
