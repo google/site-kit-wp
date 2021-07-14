@@ -556,15 +556,14 @@ final class AdSense extends Module
 		}
 
 		// @see https://developers.google.com/adsense/management/reporting/filtering?hl=en#OR
+		$site_hostname         = wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
 		$opt_params['filters'] = join(
 			',',
-			array_unique(
-				array_map(
-					function ( $site_url ) {
-						return 'DOMAIN_NAME==' . wp_parse_url( $site_url, PHP_URL_HOST );
-					},
-					$this->permute_site_url( $this->context->get_reference_site_url() )
-				)
+			array_map(
+				function ( $hostname ) {
+					return 'DOMAIN_NAME==' . $hostname;
+				},
+				$this->permute_site_hosts( $site_hostname )
 			)
 		);
 
