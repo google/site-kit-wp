@@ -64,7 +64,7 @@ const ideaHubModule = {
 		},
 		{
 			target: '.googlesitekit-idea-hub__idea--single',
-			title: 'Save for later or dismiss',
+			title: __( 'Save for later or dismiss', 'google-site-kit' ),
 			content: __( 'If you’re not ready to create a draft about an idea just yet, add it to your "Saved" list and revisit later. If you don’t like an idea, you can dismiss it from your list.', 'google-site-kit' ),
 		},
 	],
@@ -92,14 +92,14 @@ const ideaHubModule = {
 			return;
 		}
 
-		if ( index === 2 && type === EVENTS.STEP_BEFORE ) {
+		if ( type === EVENTS.STEP_BEFORE ) {
 			// Before final step, add the CSS class to the save / dismiss elements
 			// to un-hide them.
 			pinElement.classList.add( unhideElementClass );
 			dismissElement.classList.add( unhideElementClass );
 		}
 
-		if ( index === 2 && type === EVENTS.STEP_AFTER ) {
+		if ( type === EVENTS.STEP_AFTER ) {
 			// After final step, remove the CSS class to the save / dismiss elements
 			// to return them to normal.
 			pinElement.classList.remove( unhideElementClass );
