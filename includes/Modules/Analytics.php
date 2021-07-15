@@ -61,7 +61,6 @@ use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
 
-
 /**
  * Class representing the Analytics module.
  *
@@ -1324,5 +1323,4 @@ final class Analytics extends Module
 
 		return null;
 	}
-
 }
