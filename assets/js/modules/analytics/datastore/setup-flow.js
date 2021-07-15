@@ -38,7 +38,7 @@ const baseSelectors = {
 	/**
 	 * Gets the setup flow mode based on different conditions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @return {string} Setup flow mode.
 	 */
@@ -104,7 +104,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether GA4 controls should be displayed or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @return {boolean} TRUE if we can use GA4 controls, otherwise FALSE.
 	 */

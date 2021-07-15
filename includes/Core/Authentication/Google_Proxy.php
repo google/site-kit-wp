@@ -457,7 +457,7 @@ class Google_Proxy {
 	/**
 	 * Gets the platform.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @return string WordPress multisite or WordPress.
 	 */
