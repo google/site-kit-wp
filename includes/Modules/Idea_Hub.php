@@ -101,9 +101,7 @@ final class Idea_Hub extends Module
 	 * @since 1.32.0
 	 */
 	public function register() {
-		$post_meta             = new Post_Meta();
-		$this->dismissed_items = new Dismissed_Items( $this->user_options );
-		$this->transients      = new Transients( $this->context );
+		$post_meta = new Post_Meta();
 
 		$this->register_scopes_hook();
 		if ( $this->is_connected() ) {
@@ -146,7 +144,7 @@ final class Idea_Hub extends Module
 			/**
 			 * Show admin notices on the posts page if we have saved / new ideas.
 			 */
-			add_filter( 'googlesitekit_admin_notices', $this->get_method_proxy( 'googlesitekit_admin_notices' ) );
+			add_filter( 'googlesitekit_admin_notices', $this->get_method_proxy( 'admin_notice_idea_hub_ideas' ) );
 		}
 
 		$this->post_name_setting = new Post_Idea_Name( $post_meta );
@@ -165,13 +163,14 @@ final class Idea_Hub extends Module
 	 * @since n.e.x.t
 	 *
 	 * @param array $notices Array of admin notices.
-	 *
 	 * @return array Array of admin notices.
 	 */
-	private function googlesitekit_admin_notices( $notices ) {
-		if ( 'edit-post' !== get_current_screen()->id ) {
+	private function admin_notice_idea_hub_ideas( $notices ) {
+		if ( 'edit-post' !== get_current_screen()->id || 'post' !== $GLOBALS['post_type'] ) {
 			return $notices;
 		}
+		$this->dismissed_items = new Dismissed_Items( $this->user_options );
+		$this->transients      = new Transients( $this->context );
 
 		$notice_settings = array(
 			'saved' => array(
@@ -197,7 +196,6 @@ final class Idea_Hub extends Module
 
 			$this->transients->set( self::TRANSIENT_IDEAS, $ideas, DAY_IN_SECONDS );
 		}
-		$dismissed_items = array();
 
 		foreach ( $ideas as $idea_type => &$all_ideas ) {
 			foreach ( $all_ideas as $k => $idea ) {
