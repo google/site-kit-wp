@@ -32,12 +32,12 @@ use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
 use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
 use Google\Site_Kit\Modules\Search_Console\Settings;
 use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
-use Google\Site_Kit_Dependencies\Google\Service\SearchConsole;
-use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SitesListResponse;
-use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\WmxSite;
-use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SearchAnalyticsQueryRequest;
-use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\ApiDimensionFilter;
-use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\ApiDimensionFilterGroup;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole as Google_Service_SearchConsole;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SitesListResponse as Google_Service_SearchConsole_SitesListResponse;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\WmxSite as Google_Service_SearchConsole_WmxSite;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SearchAnalyticsQueryRequest as Google_Service_SearchConsole_SearchAnalyticsQueryRequest;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\ApiDimensionFilter as Google_Service_SearchConsole_ApiDimensionFilter;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\ApiDimensionFilterGroup as Google_Service_SearchConsole_ApiDimensionFilterGroup;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -274,7 +274,7 @@ final class Search_Console extends Module
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:matched-sites':
-				/* @var SitesListResponse $response Response object. */
+				/* @var Google_Service_SearchConsole_SitesListResponse $response Response object. */
 				$entries = $this->map_sites( (array) $response->getSiteEntry() );
 				$strict  = filter_var( $data['strict'], FILTER_VALIDATE_BOOLEAN );
 
@@ -313,7 +313,7 @@ final class Search_Console extends Module
 			case 'GET:searchanalytics':
 				return $response->getRows();
 			case 'GET:sites':
-				/* @var SitesListResponse $response Response object. */
+				/* @var Google_Service_SearchConsole_SitesListResponse $response Response object. */
 				return $this->map_sites( (array) $response->getSiteEntry() );
 		}
 
@@ -329,7 +329,7 @@ final class Search_Console extends Module
 	 */
 	private function map_sites( $sites ) {
 		return array_map(
-			function ( WmxSite $site ) {
+			function ( Google_Service_SearchConsole_WmxSite $site ) {
 				return array(
 					'siteURL'         => $site->getSiteUrl(),
 					'permissionLevel' => $site->getPermissionLevel(),
@@ -369,7 +369,7 @@ final class Search_Console extends Module
 
 		$property_id = $this->get_property_id();
 
-		$request = new SearchAnalyticsQueryRequest();
+		$request = new Google_Service_SearchConsole_SearchAnalyticsQueryRequest();
 		if ( ! empty( $args['dimensions'] ) ) {
 			$request->setDimensions( (array) $args['dimensions'] );
 		}
@@ -386,7 +386,7 @@ final class Search_Console extends Module
 
 		// If domain property, limit data to URLs that are part of the current site.
 		if ( 0 === strpos( $property_id, 'sc-domain:' ) ) {
-			$scope_site_filter = new ApiDimensionFilter();
+			$scope_site_filter = new Google_Service_SearchConsole_ApiDimensionFilter();
 			$scope_site_filter->setDimension( 'page' );
 			$scope_site_filter->setOperator( 'contains' );
 			$scope_site_filter->setExpression( esc_url_raw( $this->context->get_reference_site_url() ) );
@@ -395,7 +395,7 @@ final class Search_Console extends Module
 
 		// If specific URL requested, limit data to that URL.
 		if ( ! empty( $args['page'] ) ) {
-			$single_url_filter = new ApiDimensionFilter();
+			$single_url_filter = new Google_Service_SearchConsole_ApiDimensionFilter();
 			$single_url_filter->setDimension( 'page' );
 			$single_url_filter->setOperator( 'equals' );
 			$single_url_filter->setExpression( rawurldecode( esc_url_raw( $args['page'] ) ) );
@@ -404,7 +404,7 @@ final class Search_Console extends Module
 
 		// If there are relevant filters, add them to the request.
 		if ( ! empty( $filters ) ) {
-			$filter_group = new ApiDimensionFilterGroup();
+			$filter_group = new Google_Service_SearchConsole_ApiDimensionFilterGroup();
 			$filter_group->setGroupType( 'and' );
 			$filter_group->setFilters( $filters );
 			$request->setDimensionFilterGroups( array( $filter_group ) );
@@ -488,7 +488,7 @@ final class Search_Console extends Module
 	 *
 	 * @since 1.25.0
 	 *
-	 * @return SearchConsole The Search Console API service.
+	 * @return Google_Service_SearchConsole The Search Console API service.
 	 */
 	private function get_searchconsole_service() {
 		return $this->get_service( 'searchconsole' );
@@ -509,7 +509,7 @@ final class Search_Console extends Module
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
-			'searchconsole' => new SearchConsole( $client ),
+			'searchconsole' => new Google_Service_SearchConsole( $client ),
 		);
 	}
 
