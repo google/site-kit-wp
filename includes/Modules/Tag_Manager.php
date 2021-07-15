@@ -36,11 +36,11 @@ use Google\Site_Kit\Modules\Tag_Manager\AMP_Tag;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Modules\Tag_Manager\Tag_Guard;
 use Google\Site_Kit\Modules\Tag_Manager\Web_Tag;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\Account;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\ListAccountsResponse;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\ListContainersResponse;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\Account as Google_Service_TagManager_Account;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container as Google_Service_TagManager_Container;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\ListAccountsResponse as Google_Service_TagManager_ListAccountsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\ListContainersResponse as Google_Service_TagManager_ListContainersResponse;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -302,7 +302,7 @@ final class Tag_Manager extends Module
 					}
 				}
 
-				$container = new Container();
+				$container = new Google_Service_TagManager_Container();
 				$container->setName( self::sanitize_container_name( $container_name ) );
 				$container->setUsageContext( (array) $usage_context );
 
@@ -392,7 +392,7 @@ final class Tag_Manager extends Module
 		}
 		$container_name = self::sanitize_container_name( $container_name );
 
-		$container = new Container();
+		$container = new Google_Service_TagManager_Container();
 		$container->setName( $container_name );
 		$container->setUsageContext( (array) $usage_context );
 
@@ -421,10 +421,10 @@ final class Tag_Manager extends Module
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
-				/* @var ListAccountsResponse $response List accounts response. */
+				/* @var Google_Service_TagManager_ListAccountsResponse $response List accounts response. */
 				return $response->getAccount();
 			case 'GET:accounts-containers':
-				/* @var ListAccountsResponse $response List accounts response. */
+				/* @var Google_Service_TagManager_ListAccountsResponse $response List accounts response. */
 				$response = array(
 					// TODO: Parse this response to a regular array.
 					'accounts'   => $response->getAccount(),
@@ -453,12 +453,12 @@ final class Tag_Manager extends Module
 
 				return array_merge( $response, compact( 'containers' ) );
 			case 'GET:containers':
-				/* @var ListContainersResponse $response Response object. */
+				/* @var Google_Service_TagManager_ListContainersResponse $response Response object. */
 				$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
-				/* @var Container[] $containers Filtered containers. */
+				/* @var Google_Service_TagManager_Container[] $containers Filtered containers. */
 				$containers = array_filter(
 					(array) $response->getContainer(),
-					function ( Container $container ) use ( $usage_context ) {
+					function ( Google_Service_TagManager_Container $container ) use ( $usage_context ) {
 						return array_intersect( (array) $usage_context, $container->getUsageContext() );
 					}
 				);
@@ -477,18 +477,18 @@ final class Tag_Manager extends Module
 	 *
 	 * @since 1.2.0
 	 *
-	 * @param string    $container_id Container public ID (e.g. GTM-ABCDEFG).
-	 * @param Account[] $accounts     All accounts available to the current user.
+	 * @param string                              $container_id Container public ID (e.g. GTM-ABCDEFG).
+	 * @param Google_Service_TagManager_Account[] $accounts     All accounts available to the current user.
 	 *
 	 * @return array {
-	 *     @type Account   $account   Account model instance.
-	 *     @type Container $container Container model instance.
+	 *     @type Google_Service_TagManager_Account   $account   Account model instance.
+	 *     @type Google_Service_TagManager_Container $container Container model instance.
 	 * }
 	 * @throws Exception Thrown if the given container ID does not belong to any of the given accounts.
 	 */
 	private function get_account_for_container( $container_id, $accounts ) {
 		foreach ( (array) $accounts as $account ) {
-			/* @var Account $account Tag manager account */
+			/* @var Google_Service_TagManager_Account $account Tag manager account */
 			$containers = $this->get_data(
 				'containers',
 				array(
@@ -502,7 +502,7 @@ final class Tag_Manager extends Module
 			}
 
 			foreach ( (array) $containers as $container ) {
-				/* @var Container $container Container instance */
+				/* @var Google_Service_TagManager_Container $container Container instance */
 				if ( $container_id === $container->getPublicId() ) {
 					return compact( 'account', 'container' );
 				}
@@ -516,7 +516,7 @@ final class Tag_Manager extends Module
 	 *
 	 * @since 1.2.0
 	 *
-	 * @return TagManager instance.
+	 * @return Google_Service_TagManager instance.
 	 * @throws Exception Thrown if the module did not correctly set up the service.
 	 */
 	private function get_tagmanager_service() {
@@ -555,7 +555,7 @@ final class Tag_Manager extends Module
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
-			'tagmanager' => new TagManager( $client ),
+			'tagmanager' => new Google_Service_TagManager( $client ),
 		);
 	}
 
