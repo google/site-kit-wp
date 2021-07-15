@@ -134,6 +134,10 @@ final class Assets {
 			add_action(
 				$hook,
 				function() use ( $context ) {
+					if ( Asset::CONTEXT_ADMIN_POSTS === $context && 'post' !== $GLOBALS['post_type'] ) {
+						// For CONTEXT_ADMIN_POSTS we only load scripts for the 'post' post type.
+						return;
+					}
 					$assets = $this->get_assets();
 
 					array_walk(
