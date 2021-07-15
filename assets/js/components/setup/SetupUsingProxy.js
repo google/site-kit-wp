@@ -99,7 +99,7 @@ function SetupUsingProxy() {
 		description = __( `Looks like the URL of your site has changed. In order to continue using Site Kit, you'll need to reconnect, so that your plugin settings are updated with the new URL.`, 'google-site-kit' );
 	} else {
 		title = __( 'Set up Site Kit', 'google-site-kit' );
-		description = __( "Get insights on how people find your site, as well as how to improve and monetize your site's content, directly in your WordPress dashboard.", 'google-site-kit' );
+		description = __( 'Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard.', 'google-site-kit' );
 	}
 
 	return (
