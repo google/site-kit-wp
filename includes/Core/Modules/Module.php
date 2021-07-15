@@ -23,7 +23,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit_Dependencies\Google\Service;
+use Google\Site_Kit_Dependencies\Google\Service as Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -705,7 +705,7 @@ abstract class Module {
 	 * @since 1.0.0
 	 *
 	 * @param string $identifier Identifier for the service.
-	 * @return Service Google service instance.
+	 * @return Google_Service Google service instance.
 	 *
 	 * @throws Exception Thrown when the module did not correctly set up the services or when the identifier is invalid.
 	 */
@@ -716,7 +716,7 @@ abstract class Module {
 				throw new Exception( __( 'Google services not set up correctly.', 'google-site-kit' ) );
 			}
 			foreach ( $services as $service ) {
-				if ( ! $service instanceof Service ) {
+				if ( ! $service instanceof Google_Service ) {
 					throw new Exception( __( 'Google services not set up correctly.', 'google-site-kit' ) );
 				}
 			}
@@ -766,7 +766,7 @@ abstract class Module {
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
-	 *               instance of Service.
+	 *               instance of Google_Service.
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array();
