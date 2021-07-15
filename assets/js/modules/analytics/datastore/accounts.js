@@ -167,7 +167,7 @@ const baseActions = {
 				registry.dispatch( STORE_NAME ).setProfileID( '' );
 			}
 
-			if ( ! isFeatureEnabled( 'ga4setup' ) ) {
+			if ( ! registry.select( STORE_NAME ).canUseGA4Controls() ) {
 				return;
 			}
 

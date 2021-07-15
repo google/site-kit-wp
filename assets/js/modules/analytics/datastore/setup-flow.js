@@ -30,10 +30,18 @@ import {
 } from './constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { isFeatureEnabled } from '../../../features';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 const { createRegistrySelector } = Data;
 
 const baseSelectors = {
+	/**
+	 * Gets the setup flow mode based on different conditions.
+	 *
+	 * @since 1.37.0
+	 *
+	 * @return {string} Setup flow mode.
+	 */
 	getSetupFlowMode: createRegistrySelector( ( select ) => () => {
 		// The Google Analytics 4 is not enabled, so we have
 		// to use the legacy implementation.
@@ -91,6 +99,25 @@ const baseSelectors = {
 
 		// There are UA and GA4 properties, so use the transitional mode.
 		return SETUP_FLOW_MODE_GA4_TRANSITIONAL;
+	} ),
+
+	/**
+	 * Determines whether GA4 controls should be displayed or not.
+	 *
+	 * @since 1.37.0
+	 *
+	 * @return {boolean} TRUE if we can use GA4 controls, otherwise FALSE.
+	 */
+	canUseGA4Controls: createRegistrySelector( ( select ) => () => {
+		// The Google Analytics 4 is not enabled, so can't use it.
+		if ( ! isFeatureEnabled( 'ga4setup' ) ) {
+			return false;
+		}
+
+		const uaConnected = select( CORE_MODULES ).isModuleConnected( 'analytics' );
+		const ga4Connected = select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+		return uaConnected === ga4Connected;
 	} ),
 };
 

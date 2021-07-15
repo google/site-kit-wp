@@ -189,7 +189,7 @@ const baseActions = {
 	/**
 	 * Sets an actvity.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @param {string} key   The idea name.
 	 * @param {string} value Store the current activity of the idea, i.e whether a draft is being created or has been created.
@@ -207,7 +207,7 @@ const baseActions = {
 	/**
 	 * Removes an actvity.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @param {string} key The idea name.
 	 * @return {Object} Redux-style action.
@@ -255,7 +255,7 @@ export const baseSelectors = {
 	/**
 	 * Gets the existing activity by key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
