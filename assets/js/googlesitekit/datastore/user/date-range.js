@@ -35,7 +35,8 @@ import {
 } from '../../../util/date-range';
 
 export const initialState = {
-	dateRange: 'last-28-days',
+	// dateRange: 'last-28-days',
+	dateRange: 'last-7-days',
 	referenceDate: getDateString( new Date() ),
 };
 

@@ -40,8 +40,25 @@ export default function SiteStats( { selectedStat, report } ) {
 		vAxisFormat = getTimeColumnVaxisFormat( dataMap, selectedStat );
 	}
 
+	// const dates = dataMap.slice( 1 ).map( ( [ date ] ) => date );
+	// console.log( 'dates ', dates );
+	// console.log( 'dates.length ', dates.length );
+
 	const options = {
 		...SiteStats.options,
+		hAxis: {
+			...SiteStats.options.hAxis,
+			ticks: [
+				// 6 is July - count from 0
+				new Date( 2021, 6, 8 ),
+				new Date( 2021, 6, 9 ),
+				new Date( 2021, 6, 10 ),
+				new Date( 2021, 6, 11 ),
+				new Date( 2021, 6, 12 ),
+				new Date( 2021, 6, 13 ),
+				new Date( 2021, 6, 14 ),
+			],
+		},
 		vAxis: {
 			...SiteStats.options.vAxis,
 			format: vAxisFormat,
