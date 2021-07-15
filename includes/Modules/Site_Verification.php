@@ -25,11 +25,11 @@ use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Util\Exit_Handler;
 use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
 use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
-use Google\Site_Kit_Dependencies\Google\Service\SiteVerification;
-use Google\Site_Kit_Dependencies\Google\Service\SiteVerification\SiteVerificationWebResourceGettokenRequest;
-use Google\Site_Kit_Dependencies\Google\Service\SiteVerification\SiteVerificationWebResourceGettokenRequestSite;
-use Google\Site_Kit_Dependencies\Google\Service\SiteVerification\SiteVerificationWebResourceResource;
-use Google\Site_Kit_Dependencies\Google\Service\SiteVerification\SiteVerificationWebResourceResourceSite;
+use Google\Site_Kit_Dependencies\Google\Service\SiteVerification as Google_Service_SiteVerification;
+use Google\Site_Kit_Dependencies\Google\Service\SiteVerification\SiteVerificationWebResourceGettokenRequest as Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest;
+use Google\Site_Kit_Dependencies\Google\Service\SiteVerification\SiteVerificationWebResourceGettokenRequestSite as Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequestSite;
+use Google\Site_Kit_Dependencies\Google\Service\SiteVerification\SiteVerificationWebResourceResource as Google_Service_SiteVerification_SiteVerificationWebResourceResource;
+use Google\Site_Kit_Dependencies\Google\Service\SiteVerification\SiteVerificationWebResourceResourceSite as Google_Service_SiteVerification_SiteVerificationWebResourceResourceSite;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
@@ -199,10 +199,10 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 						$errors        = new WP_Error();
 
 						foreach ( $this->permute_site_url( $data['siteURL'] ) as $url ) {
-							$site = new SiteVerificationWebResourceResourceSite();
+							$site = new Google_Service_SiteVerification_SiteVerificationWebResourceResourceSite();
 							$site->setType( 'SITE' );
 							$site->setIdentifier( $url );
-							$resource = new SiteVerificationWebResourceResource();
+							$resource = new Google_Service_SiteVerification_SiteVerificationWebResourceResource();
 							$resource->setSite( $site );
 
 							try {
@@ -251,10 +251,10 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				}
 
 				$current_url = ! empty( $data['siteURL'] ) ? $data['siteURL'] : $this->context->get_reference_site_url();
-				$site        = new SiteVerificationWebResourceGettokenRequestSite();
+				$site        = new Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequestSite();
 				$site->setIdentifier( $current_url );
 				$site->setType( 'SITE' );
-				$request = new SiteVerificationWebResourceGettokenRequest();
+				$request = new Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest();
 				$request->setSite( $site );
 				$request->setVerificationMethod( 'META' );
 
@@ -359,7 +359,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	/**
 	 * Get the configured siteverification service instance.
 	 *
-	 * @return SiteVerification The Site Verification API service.
+	 * @return Google_Service_SiteVerification The Site Verification API service.
 	 */
 	private function get_siteverification_service() {
 		return $this->get_service( 'siteverification' );
@@ -380,7 +380,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
-			'siteverification' => new SiteVerification( $client ),
+			'siteverification' => new Google_Service_SiteVerification( $client ),
 		);
 	}
 
