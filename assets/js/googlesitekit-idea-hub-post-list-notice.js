@@ -17,22 +17,16 @@
  */
 
 /**
- * External dependencies
- */
-// import './modules';
-
-/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-// import { render } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-const { dispatch } = Data;
 import { CORE_USER } from './googlesitekit/datastore/user/constants';
+const { dispatch } = Data;
 
 const WEEK_IN_SECONDS = 3600 * 24 * 7;
 
