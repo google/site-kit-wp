@@ -114,6 +114,15 @@
 		}
 	}
 
+	// We need to toggle the visibility of the button for the feature tour.
+	.googlesitekit-idea-hub__actions--pin.googlesitekit-idea-hub__actions--unhide,
+	.googlesitekit-idea-hub__actions--delete.googlesitekit-idea-hub__actions--unhide {
+
+		@media (min-width: $bp-tablet) {
+			display: block;
+		}
+	}
+
 	.googlesitekit-idea-hub__idea--single {
 		box-shadow: 0 -1px 0 rgba($c-black, 0.12);
 		padding-bottom: 12px;
