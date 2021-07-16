@@ -67,7 +67,7 @@ const baseActions = {
 	/**
 	 * Dismisses the given item by slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @param {string} slug             Item slug to dismiss.
 	 * @param {number} expiresInSeconds An integer number of seconds for expiry. 0 denotes permanent dismissal.
@@ -98,7 +98,7 @@ const baseSelectors = {
 	/**
 	 * Gets the list of dismissed items.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string[]|undefined)} Array of dismissed item slugs, `undefined` if not resolved yet.
@@ -110,7 +110,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the item is dismissed or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Item slug.

@@ -59,7 +59,8 @@ export default function SetupFormGA4Transitional() {
 	const { setUseSnippet: uaSetUseSnippet } = useDispatch( STORE_NAME );
 	const { setUseSnippet: ga4SetUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const shouldShowAssociatedPropertyNotice = accountID && accountID !== ACCOUNT_CREATE && ( propertyID || ga4PropertyID );
+	const primaryPropertyID = propertyType === PROPERTY_TYPE_UA ? propertyID : ga4PropertyID;
+	const showAssociatedPropertyNotice = accountID && accountID !== ACCOUNT_CREATE && primaryPropertyID;
 
 	useEffect( () => {
 		uaSetUseSnippet( existingTag !== propertyID );
@@ -104,27 +105,29 @@ export default function SetupFormGA4Transitional() {
 				</div>
 			) }
 
-			{ shouldShowAssociatedPropertyNotice && <GA4PropertyNotice notice={ notice }>
-				{ propertyType === PROPERTY_TYPE_GA4 && (
-					<Fragment>
-						<div className="googlesitekit-setup-module__inputs">
-							<PropertySelect />
-							<ProfileSelect />
-						</div>
-
-						{ profileID === PROFILE_CREATE && (
-							<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-								<ProfileNameTextField />
+			{ showAssociatedPropertyNotice && (
+				<GA4PropertyNotice notice={ notice }>
+					{ propertyType === PROPERTY_TYPE_GA4 && (
+						<Fragment>
+							<div className="googlesitekit-setup-module__inputs">
+								<PropertySelect />
+								<ProfileSelect />
 							</div>
-						) }
-					</Fragment>
-				) }
-				{ propertyType === PROPERTY_TYPE_UA && (
-					<div className="googlesitekit-setup-module__inputs">
-						<GA4PropertySelect />
-					</div>
-				) }
-			</GA4PropertyNotice> }
+
+							{ profileID === PROFILE_CREATE && (
+								<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+									<ProfileNameTextField />
+								</div>
+							) }
+						</Fragment>
+					) }
+					{ propertyType === PROPERTY_TYPE_UA && (
+						<div className="googlesitekit-setup-module__inputs">
+							<GA4PropertySelect />
+						</div>
+					) }
+				</GA4PropertyNotice>
+			) }
 		</Fragment>
 	);
 }

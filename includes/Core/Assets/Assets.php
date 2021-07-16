@@ -81,7 +81,7 @@ final class Assets {
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Enqueues Block Editor assets.
+	 * @since 1.37.0 Enqueues Block Editor assets.
 	 */
 	public function register() {
 		$register_callback = function() {

@@ -100,23 +100,24 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'should cache survey for provided ttl', async () => {
-				let ttl;
 				const triggerID = 'optimizeSurvey';
+				const mockedSetItem = jest.fn();
 
 				setSelectedStorageBackend( {
 					getItem: () => undefined,
-					setItem: ( _, options ) => {
-						try {
-							ttl = JSON.parse( options )?.ttl;
-						} catch {
-						}
-					},
+					setItem: mockedSetItem,
+					removeItem: () => undefined,
 				} );
 
 				fetchMock.postOnce( surveyTriggerEndpoint, { body: { triggerID } } );
-
 				await registry.dispatch( STORE_NAME ).triggerSurvey( triggerID, { ttl: 500 } );
-				expect( ttl ).toBe( 500 );
+				jest.advanceTimersByTime( 35000 );
+
+				// Wait one tick for async storage functions.
+				await new Promise( ( resolve ) => resolve() );
+
+				const { ttl } = JSON.parse( mockedSetItem.mock.calls[ 0 ][ 1 ] );
+				expect( ttl ).toEqual( 500 );
 
 				// Reset the backend storage mechanism.
 				setSelectedStorageBackend( undefined );

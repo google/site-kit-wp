@@ -84,7 +84,9 @@ class Notification extends Component {
 
 		setTimeout( () => {
 			setCache( `notification::dismissed::${ this.props.id }`, new Date() );
-			card.style.display = 'none';
+			if ( card?.style ) {
+				card.style.display = 'none';
+			}
 
 			const event = new Event( 'notificationDismissed' );
 			document.dispatchEvent( event );

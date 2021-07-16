@@ -30,16 +30,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	showErrorNotification,
-	trackEvent,
-} from '../util';
+import { trackEvent } from '../util';
 import Data from 'googlesitekit-data';
 import Link from './Link';
 import ModuleIcon from './ModuleIcon';
-import GenericError from './legacy-notifications/generic-error';
 import ModuleSettingsWarning from './legacy-notifications/module-settings-warning';
 import VisuallyHidden from './VisuallyHidden';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
@@ -47,6 +44,7 @@ const { useSelect, useDispatch } = Data;
 function ModulesList( { moduleSlugs } ) {
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { setInternalServerError } = useDispatch( CORE_SITE );
 
 	const modulesData = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 
@@ -54,12 +52,9 @@ function ModulesList( { moduleSlugs } ) {
 		const { response, error } = await activateModule( slug );
 
 		if ( error ) {
-			showErrorNotification( GenericError, {
+			setInternalServerError( {
 				id: 'setup-module-error',
-				title: __( 'Internal Server Error', 'google-site-kit' ),
 				description: error.message,
-				format: 'small',
-				type: 'win-error',
 			} );
 			return null;
 		}
@@ -72,7 +67,7 @@ function ModulesList( { moduleSlugs } ) {
 
 		// Redirect to ReAuthentication URL
 		navigateTo( response.moduleReauthURL );
-	}, [ activateModule, navigateTo ] );
+	}, [ activateModule, navigateTo, setInternalServerError ] );
 
 	if ( ! modulesData ) {
 		return null;
