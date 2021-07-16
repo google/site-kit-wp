@@ -50,7 +50,6 @@ import HelpMenu from '../help/HelpMenu';
 const { useSelect, useDispatch } = Data;
 
 function SetupUsingProxy() {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const serviceSetupV2Enabled = useFeature( 'serviceSetupV2' );
 
 	const {
@@ -100,13 +99,13 @@ function SetupUsingProxy() {
 		description = __( `Looks like the URL of your site has changed. In order to continue using Site Kit, you'll need to reconnect, so that your plugin settings are updated with the new URL.`, 'google-site-kit' );
 	} else {
 		title = __( 'Set up Site Kit', 'google-site-kit' );
-		description = __( 'Get insights about how people find and use your site, how to improve and monetize your content, directly in your WordPress dashboard', 'google-site-kit' );
+		description = __( 'Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard.', 'google-site-kit' );
 	}
 
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && <HelpMenu /> }
+				<HelpMenu />
 			</Header>
 			{ errorMessage && (
 				<Notification

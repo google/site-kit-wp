@@ -252,6 +252,19 @@ describe( 'modules/analytics accounts', () => {
 					} );
 
 					provideSiteInfo( registry );
+
+					provideModules( registry, [
+						{
+							slug: 'analytics',
+							active: true,
+							connected: true,
+						},
+						{
+							slug: 'analytics-4',
+							active: true,
+							connected: true,
+						},
+					] );
 				} );
 
 				it( 'should select the correct GA4 property', async () => {

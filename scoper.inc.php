@@ -54,6 +54,7 @@ return array(
 			->path( '#^psr/#' )
 			->path( '#^ralouphie/#' )
 			->path( '#^react/#' )
+			->path( '#^true/#' )
 			->in( 'vendor' ),
 
 		// Google API service infrastructure classes.

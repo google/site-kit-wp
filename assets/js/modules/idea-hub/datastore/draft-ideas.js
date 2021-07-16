@@ -80,7 +80,7 @@ const baseActions = {
 	/**
 	 * Removes an idea from the list of newIdeas and savedIdeas state variables.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @param {string} name Idea name.
 	 * @return {Object} Redux-style action.

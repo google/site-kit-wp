@@ -31,10 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	showErrorNotification,
-} from '../../../../util';
-import GenericError from '../../../../components/legacy-notifications/generic-error';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -53,6 +50,7 @@ function DashboardCTA( { Widget } ) {
 
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { setInternalServerError } = useDispatch( CORE_SITE );
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const onClick = useCallback( async () => {
@@ -61,15 +59,12 @@ function DashboardCTA( { Widget } ) {
 		if ( ! error ) {
 			navigateTo( response.moduleReauthURL );
 		} else {
-			showErrorNotification( GenericError, {
+			setInternalServerError( {
 				id: 'idea-hub-setup-error',
-				title: __( 'Internal Server Error', 'google-site-kit' ),
 				description: error.message,
-				format: 'small',
-				type: 'win-error',
 			} );
 		}
-	}, [ activateModule, navigateTo ] );
+	}, [ activateModule, navigateTo, setInternalServerError ] );
 
 	const onDismiss = useCallback( async () => {
 		await dismissItem( DISMISS_ITEM_IDEA_HUB_CTA );
