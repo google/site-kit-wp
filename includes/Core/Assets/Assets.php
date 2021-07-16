@@ -124,34 +124,42 @@ final class Assets {
 			}
 		);
 
-		// A map of asset contexts to load for specific hooks.
-		$actions_contexts_map = array(
-			'admin_print_scripts-edit.php' => Asset::CONTEXT_ADMIN_POSTS,
-			'enqueue_block_editor_assets'  => Asset::CONTEXT_ADMIN_POST_EDITOR,
+		add_action(
+			'admin_print_scripts-edit.php',
+			function() {
+				global $post_type;
+				if ( 'post' !== $post_type ) {
+					// For CONTEXT_ADMIN_POSTS we only load scripts for the 'post' post type.
+					return;
+				}
+				$assets = $this->get_assets();
+
+				array_walk(
+					$assets,
+					function( $asset ) {
+						if ( $asset->has_context( Asset::CONTEXT_ADMIN_POSTS ) ) {
+							$this->enqueue_asset( $asset->get_handle() );
+						}
+					}
+				);
+			}
 		);
 
-		foreach ( $actions_contexts_map as $hook => $context ) {
-			add_action(
-				$hook,
-				function() use ( $context ) {
-					if ( Asset::CONTEXT_ADMIN_POSTS === $context && 'post' !== $GLOBALS['post_type'] ) {
-						// For CONTEXT_ADMIN_POSTS we only load scripts for the 'post' post type.
-						return;
-					}
-					$assets = $this->get_assets();
+		add_action(
+			'enqueue_block_editor_assets',
+			function() {
+				$assets = $this->get_assets();
 
-					array_walk(
-						$assets,
-						function( $asset ) use ( $context ) {
-							if ( $asset->has_context( $context ) ) {
-								$this->enqueue_asset( $asset->get_handle() );
-							}
+				array_walk(
+					$assets,
+					function( $asset ) {
+						if ( $asset->has_context( Asset::CONTEXT_ADMIN_POST_EDITOR ) ) {
+							$this->enqueue_asset( $asset->get_handle() );
 						}
-					);
-				}
-			);
-
-		}
+					}
+				);
+			}
+		);
 
 		$scripts_print_callback = function() {
 			$scripts = wp_scripts();
