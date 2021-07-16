@@ -80,20 +80,6 @@ final class Idea_Hub extends Module
 	private $post_text_setting;
 
 	/**
-	 * Dismissed_Items instance.
-	 *
-	 * @var Dismissed_Items
-	 */
-	private $dismissed_items;
-
-	/**
-	 * Transients instance.
-	 *
-	 * @var Dismissed_Items
-	 */
-	private $transients;
-
-	/**
 	 * Post_Idea_Topics instance.
 	 *
 	 * @var Post_Idea_Topics
@@ -191,11 +177,13 @@ final class Idea_Hub extends Module
 	 * @return array Array of admin notices.
 	 */
 	private function admin_notice_idea_hub_ideas( $notices ) {
-		if ( 'edit-post' !== get_current_screen()->id || 'post' !== $GLOBALS['post_type'] ) {
+		global $post_type;
+		$current_screen = get_current_screen();
+		if ( is_null( $current_screen ) || 'edit-post' !== $current_screen->id || 'post' !== $post_type ) {
 			return $notices;
 		}
-		$this->dismissed_items = new Dismissed_Items( $this->user_options );
-		$this->transients      = new Transients( $this->context );
+		$dismissed_items_instance = new Dismissed_Items( $this->user_options );
+		$transients               = new Transients( $this->context );
 
 		$notice_settings = array(
 			'saved' => array(
@@ -210,8 +198,8 @@ final class Idea_Hub extends Module
 			),
 		);
 
-		$dismissed_items = $this->dismissed_items->get_dismissed_items();
-		$ideas           = $this->transients->get( self::TRANSIENT_IDEAS );
+		$dismissed_items = $dismissed_items_instance->get_dismissed_items();
+		$ideas           = $transients->get( self::TRANSIENT_IDEAS );
 
 		if ( false === $ideas ) {
 			$ideas = array(
@@ -219,7 +207,7 @@ final class Idea_Hub extends Module
 				'new-ideas'   => $this->get_data( 'new-ideas' ),
 			);
 
-			$this->transients->set( self::TRANSIENT_IDEAS, $ideas, DAY_IN_SECONDS );
+			$transients->set( self::TRANSIENT_IDEAS, $ideas, DAY_IN_SECONDS );
 		}
 
 		foreach ( $ideas as $idea_type => &$all_ideas ) {
