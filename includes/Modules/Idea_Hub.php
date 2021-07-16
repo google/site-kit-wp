@@ -210,14 +210,6 @@ final class Idea_Hub extends Module
 			$transients->set( self::TRANSIENT_IDEAS, $ideas, DAY_IN_SECONDS );
 		}
 
-		foreach ( $ideas as $idea_type => &$all_ideas ) {
-			foreach ( $all_ideas as $k => $idea ) {
-				if ( in_array( $idea['name'], $dismissed_items, true ) ) {
-					unset( $all_ideas[ $k ] );
-				}
-			}
-		}
-
 		$has_saved_ideas = count( $ideas['saved-ideas'] ) > 0;
 		$has_new_ideas   = count( $ideas['new-ideas'] ) > 0;
 
