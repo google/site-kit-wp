@@ -78,7 +78,7 @@ const baseActions = {
 			invariant( slug, 'A tour slug is required to dismiss a tour.' );
 			invariant( Number.isInteger( expiresInSeconds ), 'expiresInSeconds should be an integer.' );
 		},
-		function* ( slug, expiresInSeconds ) {
+		function* ( slug, expiresInSeconds = 0 ) {
 			return yield fetchDismissItemStore.actions.fetchDismissItem( slug, expiresInSeconds );
 		},
 	),

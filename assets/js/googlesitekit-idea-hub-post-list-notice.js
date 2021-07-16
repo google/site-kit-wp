@@ -30,10 +30,7 @@ const { dispatch } = Data;
 
 const WEEK_IN_SECONDS = 3600 * 24 * 7;
 
-const dismissNotice = ( slug, expiresInSeconds ) => dispatch( CORE_USER ).dismissItem( {
-	slug,
-	expiresInSeconds,
-} );
+const dismissNotice = ( slug, expiresInSeconds ) => dispatch( CORE_USER ).dismissItem( slug, expiresInSeconds );
 
 domReady( () => {
 	const newNotice = document.getElementById( 'googlesitekit-notice-new' );
