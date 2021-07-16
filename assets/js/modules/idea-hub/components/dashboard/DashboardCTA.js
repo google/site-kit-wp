@@ -67,7 +67,7 @@ function DashboardCTA( { Widget } ) {
 	}, [ activateModule, navigateTo, setInternalServerError ] );
 
 	const onDismiss = useCallback( async () => {
-		await dismissItem( { slug: DISMISS_ITEM_IDEA_HUB_CTA } );
+		await dismissItem( DISMISS_ITEM_IDEA_HUB_CTA );
 	}, [ dismissItem ] );
 
 	// Don't render this component if it has been dismissed or dismissed items aren't loaded yet.
