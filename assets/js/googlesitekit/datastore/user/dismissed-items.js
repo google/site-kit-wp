@@ -50,7 +50,7 @@ const fetchDismissItemStore = createFetchStore( {
 	baseName: 'dismissItem',
 	controlCallback: ( { slug, expiresInSeconds } ) => API.set( 'core', 'user', 'dismiss-item', { slug, expiresInSeconds } ),
 	reducerCallback,
-	argsToParams: ( { slug, expiresInSeconds = 0 } ) => {
+	argsToParams: ( slug, expiresInSeconds = 0 ) => {
 		return ( { slug, expiresInSeconds } );
 	},
 	validateParams: ( { slug, expiresInSeconds } = {} ) => {
