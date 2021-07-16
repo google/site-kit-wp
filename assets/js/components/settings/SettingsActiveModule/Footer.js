@@ -102,7 +102,7 @@ export default function Footer( props ) {
 
 		primaryColumn = (
 			<Fragment>
-				<Button disabled={ isSaving || ! canSubmitChanges } onClick={ handleConfirm }>
+				<Button disabled={ isSaving || ( hasSettings && ! canSubmitChanges ) } onClick={ handleConfirm }>
 					{ buttonText }
 				</Button>
 
