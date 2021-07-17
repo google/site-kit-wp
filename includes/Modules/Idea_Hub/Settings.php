@@ -31,6 +31,6 @@ class Settings extends Module_Settings {
 	 * @return array
 	 */
 	protected function get_default() {
-		return array();
+		return array( 'tosAccepted' => false );
 	}
 }

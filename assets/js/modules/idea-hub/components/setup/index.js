@@ -1,5 +1,5 @@
 /**
- * ModuleFooter component.
+ * Idea Hub Setup Form components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,15 +16,5 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import PageFooter from '../PageFooter';
-
-const ModuleFooter = () => {
-	return (
-		<PageFooter />
-	);
-};
-
-export default ModuleFooter;
+export { default as SetupMain } from './SetupMain';
+export { default as SetupForm } from './SetupForm';

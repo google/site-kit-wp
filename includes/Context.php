@@ -32,7 +32,7 @@ class Context {
 	 * when AMP is in standard mode and some urls have AMP disabled.
 	 *
 	 * @since 1.0.0 Originally introduced.
-	 * @since n.e.x.t Marked as unused, see description.
+	 * @since 1.36.0 Marked as unused, see description.
 	 * @var string
 	 */
 	const AMP_MODE_PRIMARY = 'primary';
@@ -323,6 +323,12 @@ class Context {
 	 *                     false if AMP not active, or unknown mode
 	 */
 	public function get_amp_mode() {
+		// If the Web Stories plugin is enabled, consider the site to be running
+		// in Secondary AMP mode.
+		if ( defined( 'WEBSTORIES_VERSION' ) ) {
+			return self::AMP_MODE_SECONDARY;
+		}
+
 		if ( ! class_exists( 'AMP_Theme_Support' ) ) {
 			return false;
 		}

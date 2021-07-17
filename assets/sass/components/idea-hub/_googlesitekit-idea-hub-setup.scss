@@ -1,5 +1,5 @@
 /**
- * PageFooter component.
+ * Idea Hub setup component styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,24 +16,24 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import HelpLink from './HelpLink';
-import { useFeature } from '../hooks/useFeature';
+.googlesitekit-ideahub-setup__button {
+	margin-top: $grid-gap-phone;
 
-export default function PageFooter() {
-	// The `helpVisibility` feature shows help info in the header of Site Kit.
-	// If it isn't enabled, show help links in the footer instead.
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
-
-	if ( helpVisibilityEnabled ) {
-		return null;
+	@media (min-width: $bp-desktop) {
+		margin-top: $grid-gap-desktop;
 	}
+}
 
-	return (
-		<div className="googlesitekit-page-footer">
-			<HelpLink />
-		</div>
-	);
+.googlesitekit-ideahub-setup__checkbox {
+
+	/*
+	 * The MDC Checkbox has 11px padding, so this brings the edge
+	 * of the checkbox in line with the rest of the content.
+	 */
+	margin-left: -11px;
+
+	label[for="tosAccepted"] {
+
+		@include responsive-text("body2", "body2");
+	}
 }

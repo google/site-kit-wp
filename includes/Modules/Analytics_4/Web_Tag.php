@@ -25,18 +25,6 @@ class Web_Tag extends Analytics_Web_Tag {
 	use Method_Proxy_Trait;
 
 	/**
-	 * Constructor.
-	 *
-	 * @since 1.33.0
-	 *
-	 * @param string $tag_id Tag ID.
-	 * @param string $module_slug Module slug.
-	 */
-	public function __construct( $tag_id, $module_slug ) {
-		parent::__construct( 'G-' . $tag_id, $module_slug );
-	}
-
-	/**
 	 * Registers tag hooks.
 	 *
 	 * @since 1.31.0

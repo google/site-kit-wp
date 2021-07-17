@@ -114,6 +114,15 @@
 		}
 	}
 
+	// We need to toggle the visibility of the button for the feature tour.
+	.googlesitekit-idea-hub__actions--pin.googlesitekit-idea-hub__actions--unhide,
+	.googlesitekit-idea-hub__actions--delete.googlesitekit-idea-hub__actions--unhide {
+
+		@media (min-width: $bp-tablet) {
+			display: block;
+		}
+	}
+
 	.googlesitekit-idea-hub__idea--single {
 		box-shadow: 0 -1px 0 rgba($c-black, 0.12);
 		padding-bottom: 12px;
@@ -200,6 +209,30 @@
 		&:hover,
 		&:focus {
 			text-decoration: underline;
+		}
+	}
+
+	.googlesitekit-idea-hub__loading-notice {
+		align-items: center;
+		display: flex;
+
+		p {
+			color: $c-denim;
+			font-family: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+			font-size: 0.75rem;
+			font-weight: 500;
+			letter-spacing: 0.3px;
+			line-height: 1.33;
+		}
+
+		.googlesitekit-idea-hub__loading-notice__spinner-wrapper {
+			margin-left: 8px;
+
+			svg { // stylelint-disable-line
+				height: inherit;
+				width: inherit;
+			}
 		}
 	}
 

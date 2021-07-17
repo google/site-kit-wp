@@ -105,6 +105,9 @@ class LegacyAnalyticsDashboardWidgetSiteStats extends Component {
 					fontSize: 12,
 					italic: false,
 				},
+				viewWindow: {
+					min: 0,
+				},
 			},
 			focusTarget: 'category',
 			crosshair: {

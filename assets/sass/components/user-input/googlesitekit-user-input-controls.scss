@@ -145,9 +145,13 @@
 			}
 		}
 
-		.mdc-text-field .mdc-text-field__input {
-			color: $c-user-input-color;
-			font-weight: 500;
+		.mdc-text-field {
+			width: auto;
+
+			.mdc-text-field__input {
+				color: $c-user-input-color;
+				font-weight: 500;
+			}
 		}
 	}
 

@@ -61,6 +61,18 @@ class Idea_HubTest extends TestCase {
 		);
 	}
 
+	public function test_register_persistent() {
+		remove_all_filters( 'display_post_states' );
+
+		$this->assertFalse( has_filter( 'display_post_states' ) );
+		$this->assertFalse( has_filter( 'wp_insert_post_empty_content' ) );
+
+		$this->idea_hub->register_persistent();
+
+		$this->assertTrue( has_filter( 'display_post_states' ) );
+		$this->assertTrue( has_filter( 'wp_insert_post_empty_content' ) );
+	}
+
 	public function test_get_scopes() {
 		$this->assertEqualSets(
 			array(
@@ -76,7 +88,7 @@ class Idea_HubTest extends TestCase {
 
 		$options->set(
 			Settings::OPTION,
-			array()
+			array( 'tosAccepted' => true )
 		);
 
 		$this->assertTrue( $idea_hub->is_connected() );
@@ -104,7 +116,7 @@ class Idea_HubTest extends TestCase {
 
 		$options->set(
 			Settings::OPTION,
-			array()
+			array( 'tosAccepted' => true )
 		);
 
 		// Create the post
@@ -118,6 +130,7 @@ class Idea_HubTest extends TestCase {
 			),
 		);
 
+		$this->idea_hub->register_persistent();
 		$this->idea_hub->register();
 		$this->idea_hub->set_post_idea( $post2->ID, $idea );
 
@@ -145,7 +158,16 @@ class Idea_HubTest extends TestCase {
 		$this->assertFalse( has_filter( 'wp_insert_post_empty_content' ) );
 
 		// Connect the Idea Hub module.
-		$this->idea_hub->register();
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array( 'tosAccepted' => true )
+		);
+		$idea_hub = new Idea_Hub( $this->context, $options );
+
+		$idea_hub->register_persistent();
+		$idea_hub->register();
+
 		$this->assertTrue( has_filter( 'wp_insert_post_empty_content' ) );
 
 		// Trashing this post fails silently, because it isn't an Idea Hub
@@ -164,7 +186,7 @@ class Idea_HubTest extends TestCase {
 			),
 		);
 
-		$this->idea_hub->set_post_idea( $post_id, $idea );
+		$idea_hub->set_post_idea( $post_id, $idea );
 
 		// This succeeds as the post is now an idea post.
 		wp_trash_post( $post_id );

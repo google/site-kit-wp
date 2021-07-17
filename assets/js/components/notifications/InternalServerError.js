@@ -1,5 +1,5 @@
 /**
- * DashboardFooter component.
+ * InternalServerError component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,10 +19,16 @@
 /**
  * Internal dependencies
  */
-import PageFooter from '../PageFooter';
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import Notification from '../legacy-notifications/notification';
+const { useSelect } = Data;
 
-export default function DashboardFooter() {
-	return (
-		<PageFooter />
-	);
+export default function InternalServerError() {
+	const error = useSelect( ( select ) => select( CORE_SITE ).getInternalServerError() );
+	if ( ! error ) {
+		return null;
+	}
+
+	return <Notification { ...error } />;
 }

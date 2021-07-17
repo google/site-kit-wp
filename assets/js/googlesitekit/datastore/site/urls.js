@@ -28,7 +28,7 @@ export const selectors = {
 	/**
 	 * Gets an external Google URL that includes the user's locale.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param {Object} state          Data store's state.
 	 * @param {Object} [args]         Optional arguments for the resulting URL.
@@ -88,7 +88,7 @@ export const selectors = {
 	/**
 	 * Gets the Google privacy policy URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} The Google privacy policy URL.
@@ -103,7 +103,7 @@ export const selectors = {
 	/**
 	 * Gets the Google terms of service URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} The Google terms URL.

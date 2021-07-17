@@ -25,6 +25,8 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	reduceAdSenseData,
 	isDataZeroAdSense,
@@ -33,13 +35,11 @@ import Layout from '../../../../components/layout/Layout';
 import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import {
-	getTimeInSeconds,
-	getSiteKitAdminURL,
-} from '../../../../util';
+import { getTimeInSeconds } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
+const { withSelect } = Data;
 
 class LegacyAdSenseDashboardMainSummary extends Component {
 	constructor( props ) {
@@ -75,13 +75,15 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 	}
 
 	render() {
+		const { href } = this.props;
+
 		const {
 			today,
 			period,
 			daily,
 		} = this.state;
 
-		if ( ! today || ! period || ! daily || ! period.totals ) {
+		if ( ! today || ! period || ! daily || ! period?.totals?.cells ) {
 			return (
 				<div className="
 					mdc-layout-grid__cell
@@ -97,13 +99,8 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 
 		const processedData = reduceAdSenseData( daily.rows );
 
-		const href = getSiteKitAdminURL(
-			'googlesitekit-module-adsense',
-			{}
-		);
-
-		const currencyHeader = period.headers.find( ( header ) => null !== header.currency && 0 < header.currency.length );
-		const currencyCode = currencyHeader ? currencyHeader.currency : false;
+		const currencyHeader = period.headers.find( ( header ) => null !== header.currencyCode && 0 < header.currencyCode.length );
+		const currencyCode = currencyHeader ? currencyHeader.currencyCode : false;
 
 		return (
 			<Fragment>
@@ -122,7 +119,7 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 									<DataBlock
 										className="overview-adsense-rpm"
 										title={ __( 'Page RPM', 'google-site-kit' ) }
-										datapoint={ period.totals[ 1 ] }
+										datapoint={ period.totals.cells[ 1 ].value }
 										datapointUnit={ currencyCode }
 										source={ {
 											name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
@@ -144,13 +141,13 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 									<DataBlock
 										className="overview-adsense-earnings"
 										title={ __( 'Total Earnings', 'google-site-kit' ) }
-										datapoint={ period.totals[ 0 ] }
+										datapoint={ period.totals.cells[ 0 ].value }
 										datapointUnit={ currencyCode }
 										source={ {
 											name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 											link: href,
 										} }
-										change={ today.totals[ 0 ] }
+										change={ today.totals.cells[ 0 ].value }
 										changeDataUnit={ currencyCode }
 										sparkline={ daily &&
 											<Sparkline
@@ -168,7 +165,7 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 									<DataBlock
 										className="overview-adsense-impressions"
 										title={ __( 'Ad Impressions', 'google-site-kit' ) }
-										datapoint={ period.totals[ 2 ] }
+										datapoint={ period.totals.cells[ 2 ].value }
 										source={ {
 											name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 											link: href,
@@ -191,7 +188,11 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 	}
 }
 
-export default withData(
+export default withSelect( ( select ) => {
+	return {
+		href: select( CORE_SITE ).getAdminURL( 'googlesitekit-module-adsense', {} ),
+	};
+} )( withData(
 	LegacyAdSenseDashboardMainSummary,
 	[
 		{
@@ -264,4 +265,4 @@ export default withData(
 		createGrid: true,
 	},
 	isDataZeroAdSense
-);
+) );

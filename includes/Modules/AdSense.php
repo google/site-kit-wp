@@ -37,8 +37,8 @@ use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Modules\AdSense\Tag_Guard;
 use Google\Site_Kit\Modules\AdSense\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
-use Google\Site_Kit_Dependencies\Google_Service_Adsense;
-use Google\Site_Kit_Dependencies\Google_Service_Adsense_Alert;
+use Google\Site_Kit_Dependencies\Google\Service\Adsense as Google_Service_Adsense;
+use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_Adsense_Alert;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -536,7 +536,7 @@ final class AdSense extends Module
 			'endDate.day'     => (int) $end_day,
 			'languageCode'    => $this->context->get_locale( 'site', 'language-code' ),
 			// Include default metrics only for backward-compatibility.
-			'metrics'         => array( 'TOTAL_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ),
+			'metrics'         => array( 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ),
 		);
 
 		if ( ! empty( $args['dimensions'] ) ) {
@@ -555,17 +555,24 @@ final class AdSense extends Module
 			$opt_params['limit'] = (int) $args['limit'];
 		}
 
-		$opt_params['filters'] = array_unique(
+		// @see https://developers.google.com/adsense/management/reporting/filtering?hl=en#OR
+		$site_hostname         = wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+		$opt_params['filters'] = join(
+			',',
 			array_map(
-				function ( $site_url ) {
-					return 'DOMAIN_NAME==' . wp_parse_url( $site_url, PHP_URL_HOST );
+				function ( $hostname ) {
+					return 'DOMAIN_NAME==' . $hostname;
 				},
-				$this->permute_site_url( $this->context->get_reference_site_url() )
+				$this->permute_site_hosts( $site_hostname )
 			)
 		);
 
-		$service = $this->get_service( 'adsense' );
-		return $service->accounts_reports->generate( self::normalize_account_id( $account_id ), $opt_params );
+		return $this->get_service( 'adsense' )
+			->accounts_reports
+			->generate(
+				self::normalize_account_id( $account_id ),
+				$opt_params
+			);
 	}
 
 	/**
@@ -767,10 +774,10 @@ final class AdSense extends Module
 	/**
 	 * Parses account ID, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param Google_Model $account Account model.
-	 * @param string       $id_key  Attribute name that contains account ID.
+	 * @param string       $id_key Attribute name that contains account ID.
 	 * @return \stdClass Updated model with _id attribute.
 	 */
 	public static function filter_account_with_ids( $account, $id_key = 'name' ) {
@@ -787,7 +794,7 @@ final class AdSense extends Module
 	/**
 	 * Parses account and client IDs, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param Google_Model $client Client model.
 	 * @param string       $id_key Attribute name that contains client ID.
@@ -808,7 +815,7 @@ final class AdSense extends Module
 	/**
 	 * Parses account, client and ad unit IDs, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param Google_Model $adunit Ad unit model.
 	 * @param string       $id_key Attribute name that contains ad unit ID.
@@ -830,7 +837,7 @@ final class AdSense extends Module
 	/**
 	 * Normalizes account ID and returns it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param string $account_id Account ID.
 	 * @return string Updated account ID with "accounts/" prefix.
@@ -842,7 +849,7 @@ final class AdSense extends Module
 	/**
 	 * Normalizes ad client ID and returns it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.36.0
 	 *
 	 * @param string $account_id Account ID.
 	 * @param string $client_id  Ad client ID.

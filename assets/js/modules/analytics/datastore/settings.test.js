@@ -29,6 +29,7 @@ import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures_
 import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,
+	provideModules,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
@@ -80,7 +81,14 @@ describe( 'modules/analytics settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive() );
+
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+		] );
 	} );
 
 	afterAll( () => {
@@ -345,6 +353,19 @@ describe( 'modules/analytics settings', () => {
 					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 					registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
+					provideModules( registry, [
+						{
+							slug: 'analytics',
+							active: true,
+							connected: true,
+						},
+						{
+							slug: 'analytics-4',
+							active: true,
+							connected: true,
+						},
+					] );
+
 					enabledFeatures.add( 'ga4setup' );
 				} );
 
@@ -597,6 +618,19 @@ describe( 'modules/analytics settings', () => {
 				beforeEach( () => {
 					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 					registry.dispatch( STORE_NAME ).setSettings( validSettings );
+
+					provideModules( registry, [
+						{
+							slug: 'analytics',
+							active: true,
+							connected: true,
+						},
+						{
+							slug: 'analytics-4',
+							active: true,
+							connected: true,
+						},
+					] );
 
 					enabledFeatures.add( 'ga4setup' );
 				} );
