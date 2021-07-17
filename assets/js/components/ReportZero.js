@@ -35,7 +35,7 @@ import CTA from './legacy-notifications/cta';
 
 const { useSelect } = Data;
 
-export default function ReportZero( { moduleSlug, className } ) {
+export default function ReportZero( { moduleSlug } ) {
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 
 	return (
@@ -51,7 +51,6 @@ export default function ReportZero( { moduleSlug, className } ) {
 					module?.name
 				)
 			}
-			className={ className }
 		/>
 	);
 }
