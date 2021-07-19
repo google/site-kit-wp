@@ -27,7 +27,7 @@ import { Fragment, useEffect } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { STORE_NAME, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 } from '../../datastore/constants';
+import { STORE_NAME, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import {
@@ -48,14 +48,19 @@ export default function SetupFormGA4Transitional() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 
+	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 	const ga4ExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
 	const ga4MeasurementID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID() );
 
 	const { setUseSnippet: uaSetUseSnippet } = useDispatch( STORE_NAME );
 	const { setUseSnippet: ga4SetUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const primaryPropertyID = propertyType === PROPERTY_TYPE_UA ? propertyID : ga4PropertyID;
+	const showAssociatedPropertyNotice = accountID && accountID !== ACCOUNT_CREATE && primaryPropertyID;
 
 	useEffect( () => {
 		uaSetUseSnippet( existingTag !== propertyID );
@@ -100,27 +105,29 @@ export default function SetupFormGA4Transitional() {
 				</div>
 			) }
 
-			<GA4PropertyNotice notice={ notice }>
-				{ propertyType === PROPERTY_TYPE_GA4 && (
-					<Fragment>
-						<div className="googlesitekit-setup-module__inputs">
-							<PropertySelect />
-							<ProfileSelect />
-						</div>
-
-						{ profileID === PROFILE_CREATE && (
-							<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-								<ProfileNameTextField />
+			{ showAssociatedPropertyNotice && (
+				<GA4PropertyNotice notice={ notice }>
+					{ propertyType === PROPERTY_TYPE_GA4 && (
+						<Fragment>
+							<div className="googlesitekit-setup-module__inputs">
+								<PropertySelect />
+								<ProfileSelect />
 							</div>
-						) }
-					</Fragment>
-				) }
-				{ propertyType === PROPERTY_TYPE_UA && (
-					<div className="googlesitekit-setup-module__inputs">
-						<GA4PropertySelect />
-					</div>
-				) }
-			</GA4PropertyNotice>
+
+							{ profileID === PROFILE_CREATE && (
+								<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+									<ProfileNameTextField />
+								</div>
+							) }
+						</Fragment>
+					) }
+					{ propertyType === PROPERTY_TYPE_UA && (
+						<div className="googlesitekit-setup-module__inputs">
+							<GA4PropertySelect />
+						</div>
+					) }
+				</GA4PropertyNotice>
+			) }
 		</Fragment>
 	);
 }

@@ -21,6 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import connection from './connection';
+import errors from './errors';
 import html from './html';
 import info from './info';
 import reset from './reset';
@@ -34,6 +35,7 @@ import { createErrorStore } from '../../data/create-error-store';
 const store = Data.combineStores(
 	Data.commonStore,
 	connection,
+	errors,
 	html,
 	info,
 	developerPlugin,

@@ -88,6 +88,15 @@ export default {
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( ga4Fixtures.properties, { accountID } );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( [
+					{
+						_id: '2001',
+						/* eslint-disable sitekit/acronym-case */
+						measurementId: '1A2BCD345E',
+						defaultUri: 'http://example.com',
+						/* eslint-disable */
+					},
+				], { propertyID: ga4Fixtures.properties[ 0 ]._id } );
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					useSnippet: true,
 				} );
@@ -95,6 +104,8 @@ export default {
 				registry.dispatch( STORE_NAME ).receiveGetSettings( {
 					useSnippet: true,
 					canUseSnippet: true,
+					anonymizeIP: true,
+					trackingDisabled: [ 'loggedinUsers' ],
 				} );
 				registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 				registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );

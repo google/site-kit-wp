@@ -265,7 +265,7 @@ class Debug_Data {
 	/**
 	 * Gets the field definition for the verification_status field.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @return array
 	 */

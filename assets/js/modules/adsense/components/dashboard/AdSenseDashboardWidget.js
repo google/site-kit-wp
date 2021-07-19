@@ -34,7 +34,6 @@ import getNoDataComponent from '../../../../components/legacy-notifications/noda
 import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
 import ProgressBar from '../../../../components/ProgressBar';
 import ModuleSettingsWarning from '../../../../components/legacy-notifications/module-settings-warning';
-import HelpLink from '../../../../components/HelpLink';
 import PageHeader from '../../../../components/PageHeader';
 import Layout from '../../../../components/layout/Layout';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -43,7 +42,6 @@ import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../adsense/datastore/consta
 import { Cell, Grid, Row } from '../../../../material-components';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { generateDateRangeArgs } from '../../../adsense/util/report-date-range-args';
-import { useFeature } from '../../../../hooks/useFeature';
 
 const { useSelect } = Data;
 
@@ -51,8 +49,6 @@ const { useSelect } = Data;
 const AdSenseDashboardZeroData = withFilters( 'googlesitekit.AdSenseDashboardZeroData' )( () => null );
 
 export default function AdSenseDashboardWidget() {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
-
 	const [ receivingData, setReceivingData ] = useState( true );
 	const [ error, setError ] = useState( false );
 	const [ errorObj, setErrorObj ] = useState();
@@ -194,12 +190,6 @@ export default function AdSenseDashboardWidget() {
 						<Cell className={ wrapperClass } size={ 12 }>
 							<LegacyDashboardAdSenseTopPages />
 						</Cell>
-
-						{ ! helpVisibilityEnabled && (
-							<Cell alignRight size={ 12 }>
-								<HelpLink />
-							</Cell>
-						) }
 					</Row>
 				</Grid>
 			</div>

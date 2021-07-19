@@ -40,20 +40,16 @@ import Layout from '../../../../components/layout/Layout';
 import ProgressBar from '../../../../components/ProgressBar';
 import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
 import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
-import HelpLink from '../../../../components/HelpLink';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { untrailingslashit } from '../../../../util';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
-import { useFeature } from '../../../../hooks/useFeature';
 
 const { useSelect } = Data;
 
 const GoogleSitekitSearchConsoleDashboardWidget = () => {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
-
 	const [ selectedStats, setSelectedStats ] = useState( [ 0, 1 ] );
 	const [ receivingData, setReceivingData ] = useState( true );
 	const [ error, setError ] = useState( false );
@@ -250,15 +246,6 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 								<LegacySearchConsoleDashboardWidgetKeywordTable />
 							</Layout>
 						</div>
-						{ ! helpVisibilityEnabled && (
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								mdc-layout-grid__cell--align-right
-							">
-								<HelpLink />
-							</div>
-						) }
 					</div>
 				</div>
 			</div>

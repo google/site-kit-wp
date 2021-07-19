@@ -1,5 +1,5 @@
 /**
- * PageFooter component.
+ * InternalServerError component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,21 +19,16 @@
 /**
  * Internal dependencies
  */
-import HelpLink from './HelpLink';
-import { useFeature } from '../hooks/useFeature';
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import Notification from '../legacy-notifications/notification';
+const { useSelect } = Data;
 
-export default function PageFooter() {
-	// The `helpVisibility` feature shows help info in the header of Site Kit.
-	// If it isn't enabled, show help links in the footer instead.
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
-
-	if ( helpVisibilityEnabled ) {
+export default function InternalServerError() {
+	const error = useSelect( ( select ) => select( CORE_SITE ).getInternalServerError() );
+	if ( ! error ) {
 		return null;
 	}
 
-	return (
-		<div className="googlesitekit-page-footer">
-			<HelpLink />
-		</div>
-	);
+	return <Notification { ...error } />;
 }

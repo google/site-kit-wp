@@ -10,13 +10,16 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Persistent_Registration;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -24,7 +27,9 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Post_Meta;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
@@ -40,7 +45,7 @@ use WP_Error;
  * @ignore
  */
 final class Idea_Hub extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets, Module_With_Deactivation {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets, Module_With_Deactivation, Module_With_Persistent_Registration {
 	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
@@ -72,59 +77,78 @@ final class Idea_Hub extends Module
 	private $post_topic_setting;
 
 	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context        $context        Plugin context.
+	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
+	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 */
+	public function __construct( Context $context, Options $options = null, User_Options $user_options = null, Authentication $authentication = null ) {
+		parent::__construct( $context, $options, $user_options, $authentication );
+
+		$post_meta                = new Post_Meta();
+		$this->post_name_setting  = new Post_Idea_Name( $post_meta );
+		$this->post_text_setting  = new Post_Idea_Text( $post_meta );
+		$this->post_topic_setting = new Post_Idea_Topics( $post_meta );
+	}
+
+	/**
+	 * Registers functionality through WordPress hooks.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function register_persistent() {
+		/**
+		 * Changes the posts view to have a custom label in place of Draft for Idea Hub Drafts.
+		 */
+		add_filter(
+			'display_post_states',
+			function( $post_states, $post ) {
+				if ( 'draft' !== $post->post_status ) {
+					return $post_states;
+				}
+				$idea = $this->get_post_idea( $post->ID );
+				if ( is_null( $idea ) ) {
+					return $post_states;
+				}
+				/* translators: %s: Idea Hub Idea Title */
+				$post_states['draft'] = sprintf( __( 'Idea Hub Draft “%s”', 'google-site-kit' ), $idea['text'] );
+				return $post_states;
+			},
+			10,
+			2
+		);
+
+		/**
+		 * Allows us to trash / modify empty idea posts.
+		 */
+		add_filter(
+			'wp_insert_post_empty_content',
+			function( $maybe_empty, $postarr ) {
+				if ( isset( $postarr['ID'] ) && $this->is_idea_post( $postarr['ID'] ) ) {
+					return false;
+				}
+				return $maybe_empty;
+			},
+			10,
+			2
+		);
+
+	}
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.32.0
 	 */
 	public function register() {
-		$post_meta = new Post_Meta();
-
 		$this->register_scopes_hook();
-		if ( $this->is_connected() ) {
-			/**
-			 * Changes the posts view to have a custom label in place of Draft for Idea Hub Drafts.
-			 */
-			add_filter(
-				'display_post_states',
-				function( $post_states, $post ) {
-					if ( 'draft' !== $post->post_status ) {
-						return $post_states;
-					}
-					$idea = $this->get_post_idea( $post->ID );
-					if ( is_null( $idea ) ) {
-						return $post_states;
-					}
-					/* translators: %s: Idea Hub Idea Title */
-					$post_states['draft'] = sprintf( __( 'Idea Hub Draft “%s”', 'google-site-kit' ), $idea['text'] );
-					return $post_states;
-				},
-				10,
-				2
-			);
 
-			/**
-			 * Allows us to trash / modify empty idea posts.
-			 */
-			add_filter(
-				'wp_insert_post_empty_content',
-				function( $maybe_empty, $postarr ) {
-					if ( isset( $postarr['ID'] ) && $this->is_idea_post( $postarr['ID'] ) ) {
-						return false;
-					}
-					return $maybe_empty;
-				},
-				10,
-				2
-			);
-		}
-
-		$this->post_name_setting = new Post_Idea_Name( $post_meta );
 		$this->post_name_setting->register();
-
-		$this->post_text_setting = new Post_Idea_Text( $post_meta );
 		$this->post_text_setting->register();
-
-		$this->post_topic_setting = new Post_Idea_Topics( $post_meta );
 		$this->post_topic_setting->register();
 	}
 

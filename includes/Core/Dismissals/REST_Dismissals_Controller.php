@@ -21,7 +21,7 @@ use WP_REST_Server;
 /**
  * Class for handling dismissed items rest routes.
  *
- * @since n.e.x.t
+ * @since 1.37.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class REST_Dismissals_Controller {
 	/**
 	 * Dismissed_Items instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 * @var Dismissed_Items
 	 */
 	protected $dismissed_items;
@@ -38,7 +38,7 @@ class REST_Dismissals_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @param Dismissed_Items $dismissed_items Dismissed items instance.
 	 */
@@ -49,7 +49,7 @@ class REST_Dismissals_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 */
 	public function register() {
 		add_filter(
@@ -75,7 +75,7 @@ class REST_Dismissals_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
