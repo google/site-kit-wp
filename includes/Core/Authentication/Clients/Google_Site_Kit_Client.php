@@ -16,6 +16,7 @@ use Google\Site_Kit_Dependencies\Google\Auth\OAuth2;
 use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpHandlerFactory;
 use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpClientCache;
 use Google\Site_Kit_Dependencies\GuzzleHttp\ClientInterface;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Exception;
 use InvalidArgumentException;
 use LogicException;
@@ -243,4 +244,23 @@ class Google_Site_Kit_Client extends Google_Client {
 	protected function handleAuthTokenErrorResponse( $error, array $data ) {
 		throw new Google_OAuth_Exception( $error );
 	}
+
+	/**
+	 * Executes deferred HTTP requests.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param RequestInterface $request Request object to execute.
+	 * @param string           $expected_class Expected class to return.
+	 * @return object An object of the type of the expected class or Psr\Http\Message\ResponseInterface.
+	 */
+	public function execute( RequestInterface $request, $expected_class = null ) {
+		$request = $request->withHeader(
+			'X-Goog-Quota-User',
+			sprintf( '%s-%s', get_home_url(), get_current_user_id() )
+		);
+
+		return parent::execute( $request, $expected_class );
+	}
+
 }
