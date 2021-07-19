@@ -133,7 +133,7 @@ describe( 'initialization on load for Site Kit screens', () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
 			const url = request.url();
-			if ( url.match( '/google-site-kit/v1/modules/search-console/searchanalytics' ) ) {
+			if ( url.match( '/google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
 				request.respond( { status: 200 } );
 			} else if ( url.match( '/google-site-kit/v1/data/' ) ) {
 				// TODO Remove this matcher once all the legacy tests have been
