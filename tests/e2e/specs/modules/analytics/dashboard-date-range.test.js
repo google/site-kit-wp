@@ -59,7 +59,11 @@ describe( 'date range filtering on dashboard views', () => {
 				} );
 			} else if ( url.match( 'google-site-kit/v1/modules/analytics' ) ) {
 				const query = getQueryArgs( url );
-				const response = getAnalyticsMockResponse( query, false );
+				// @TODO The total sessions can be the same even if different dates are selected,
+				// so we need another way for this test to establish whether the feature works.
+				// For now, we will force a new mock report to be generated if the url is different.
+				query.url = url;
+				const response = getAnalyticsMockResponse( query );
 
 				request.respond( {
 					status: 200,

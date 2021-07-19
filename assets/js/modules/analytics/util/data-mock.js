@@ -172,13 +172,11 @@ function sortRows( rows, metrics, orderby ) {
  * Generates mock data for Analytics reports.
  *
  * @since 1.28.0
- * @since n.e.x.t Added setSeed param.
  *
- * @param {Object}  args    Report options.
- * @param {boolean} setSeed Whether to generate fresh data from the same args.
+ * @param {Object} args Report options.
  * @return {Array.<Object>} An array with generated report.
  */
-export function getAnalyticsMockResponse( args, setSeed = true ) {
+export function getAnalyticsMockResponse( args ) {
 	const originalSeedValue = faker.seedValue;
 	const argsHash = parseInt(
 		md5( args.url || 'http://example.com' ).substring( 0, 8 ),
@@ -188,7 +186,7 @@ export function getAnalyticsMockResponse( args, setSeed = true ) {
 	// We set seed for every data mock to make sure that the same arguments get the same report data.
 	// It means that everyone will have the same report data and will see the same widgets in the storybook.
 	// This approach gives us additional flexibility to control randomness on a per widget basis.
-	if ( ! Number.isNaN( argsHash ) && setSeed ) {
+	if ( ! Number.isNaN( argsHash ) ) {
 		faker.seed( argsHash );
 	}
 
