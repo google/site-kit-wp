@@ -64,8 +64,9 @@ export const registerModule = ( modules ) => {
 			SetupComponent: SetupMain,
 			Icon: AdSenseIcon,
 			features: [
-				__( 'Monetize your website', 'google-site-kit' ),
 				__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
+				__( 'Revenue from ads placed on your site', 'google-site-kit' ),
+				__( 'AdSense insights through Site Kit', 'google-site-kit' ),
 			],
 			checkRequirements: async ( registry ) => {
 				const adBlockerActive = await registry.__experimentalResolveSelect( STORE_NAME ).isAdBlockerActive();

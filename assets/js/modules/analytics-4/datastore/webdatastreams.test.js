@@ -106,6 +106,28 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
+
+		describe( 'matchWebDataStream', () => {
+			const propertyID = '1234';
+
+			beforeEach( () => {
+				provideSiteInfo( registry );
+			} );
+
+			it( 'should return NULL if no matching web data stream is found', async () => {
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( [ { defaultUri: 'http://example.net' } ], { propertyID } );
+
+				const webDataStream = await registry.dispatch( STORE_NAME ).matchWebDataStream( propertyID );
+				expect( webDataStream ).toBeNull();
+			} );
+
+			it( 'should return a web data stream if we find a matching one', async () => {
+				registry.dispatch( STORE_NAME ).receiveGetWebDataStreams( [ { _id: '2001', defaultUri: 'http://example.com' } ], { propertyID } );
+
+				const webDataStream = await registry.dispatch( STORE_NAME ).matchWebDataStream( propertyID );
+				expect( webDataStream ).toMatchObject( { _id: '2001' } );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {

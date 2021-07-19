@@ -27,16 +27,13 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import DashboardDetailsHeader from './DashboardDetailsHeader';
-import DashboardDetailsFooter from './DashboardDetailsFooter';
 import Header from '../Header';
 import DateRangeSelector from '../DateRangeSelector';
-import { useFeature } from '../../hooks/useFeature';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import HelpMenu from '../help/HelpMenu';
 const { useSelect } = Data;
 
 export default function DashboardDetailsApp() {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
@@ -47,7 +44,7 @@ export default function DashboardDetailsApp() {
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && <HelpMenu /> }
+				 <HelpMenu />
 				{ currentEntityURL && <DateRangeSelector /> }
 			</Header>
 
@@ -55,7 +52,6 @@ export default function DashboardDetailsApp() {
 				slug={ currentEntityURL ? 'pageDashboard' : 'pageDashboardNotFound' }
 				className="googlesitekit-module-page googlesitekit-dashboard-single-url"
 				Header={ DashboardDetailsHeader }
-				Footer={ DashboardDetailsFooter }
 			/>
 		</Fragment>
 	);

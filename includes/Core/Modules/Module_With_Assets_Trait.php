@@ -51,7 +51,7 @@ trait Module_With_Assets_Trait {
 	 * has registered.
 	 *
 	 * @since 1.7.0
-	 * @since n.e.x.t Added the $asset_context argument; only enqueue assets in the correct context.
+	 * @since 1.37.0 Added the $asset_context argument; only enqueue assets in the correct context.
 	 *
 	 * @param string $asset_context The page context to load this asset, see `Asset::CONTEXT_*` constants.
 	 */

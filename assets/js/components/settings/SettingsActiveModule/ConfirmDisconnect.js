@@ -49,7 +49,7 @@ export default function ConfirmDisconnect( { slug } ) {
 	const dependentModules = useSelect( ( select ) => select( CORE_MODULES ).getModuleDependantNames( slug ) );
 	const provides = useSelect( ( select ) => select( CORE_MODULES ).getModuleFeatures( slug ) );
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
-	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
+	const settingsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
 	const dialogActive = useSelect( ( select ) => select( CORE_UI ).getValue( dialogActiveKey ) );
 
 	const handleDialog = useCallback( () => {
@@ -58,7 +58,11 @@ export default function ConfirmDisconnect( { slug } ) {
 
 	useEffect( () => {
 		const onKeyPress = ( event ) => {
-			if ( ESCAPE === event.keyCode ) {
+			// Only trigger the `handleDialog()` code when a key is pressed and
+			// the dialog is active. Calling `handleDialog()` without `dialogActive`
+			// being truthy will cause all dialogs to appear, see
+			// https://github.com/google/site-kit-wp/issues/3707.
+			if ( ESCAPE === event.keyCode && dialogActive ) {
 				handleDialog();
 			}
 		};
@@ -67,7 +71,7 @@ export default function ConfirmDisconnect( { slug } ) {
 		return () => {
 			global.removeEventListener( 'keydown', onKeyPress );
 		};
-	}, [ handleDialog ] );
+	}, [ dialogActive, handleDialog ] );
 
 	const { deactivateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -81,12 +85,12 @@ export default function ConfirmDisconnect( { slug } ) {
 
 		if ( ! error ) {
 			clearWebStorage();
-			navigateTo( dashboardURL );
+			navigateTo( settingsURL );
 		} else {
 			// Only set deactivating to false if there is an error.
 			setIsDeactivating( false );
 		}
-	}, [ slug, module?.forceActive, dashboardURL, deactivateModule, navigateTo ] );
+	}, [ slug, module?.forceActive, settingsURL, deactivateModule, navigateTo ] );
 
 	if ( ! module || ! dialogActive ) {
 		return null;

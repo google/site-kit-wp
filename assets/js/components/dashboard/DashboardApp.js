@@ -26,7 +26,6 @@ import { Fragment } from '@wordpress/element';
  */
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import DashboardHeader from './DashboardHeader';
-import DashboardFooter from './DashboardFooter';
 import DashboardNotifications from './dashboard-notifications';
 import Header from '../Header';
 import DateRangeSelector from '../DateRangeSelector';
@@ -35,13 +34,12 @@ import { useFeature } from '../../hooks/useFeature';
 import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
 
 export default function DashboardApp() {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const userFeedbackEnabled = useFeature( 'userFeedback' );
 
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && <HelpMenu /> }
+				<HelpMenu />
 				<DateRangeSelector />
 			</Header>
 
@@ -51,7 +49,6 @@ export default function DashboardApp() {
 				slug="dashboard"
 				className="googlesitekit-module-page googlesitekit-dashboard"
 				Header={ DashboardHeader }
-				Footer={ DashboardFooter }
 			/>
 
 			{ userFeedbackEnabled && <SurveyViewTrigger triggerID="view_dashboard" ttl={ 3600 } /> }

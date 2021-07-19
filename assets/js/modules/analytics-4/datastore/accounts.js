@@ -28,7 +28,7 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 	baseName: 'getAccountSummaries',
 	controlCallback() {
 		return API.get( 'modules', 'analytics-4', 'account-summaries', {}, {
-			useCache: true,
+			useCache: false,
 		} );
 	},
 	reducerCallback( state, accountSummaries ) {
