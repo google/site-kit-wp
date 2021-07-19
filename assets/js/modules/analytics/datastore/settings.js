@@ -98,12 +98,10 @@ export async function submitChanges( { select, dispatch } ) {
 	// TODO: Remove once legacy dataAPI is no longer used.
 	invalidateCacheGroup( TYPE_MODULES, 'analytics' );
 
-	if ( isFeatureEnabled( 'ga4setup' ) ) {
-		if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
-			const { error } = await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
-			if ( isPermissionScopeError( error ) ) {
-				return { error };
-			}
+	if ( select( STORE_NAME ).canUseGA4Controls() && select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
+		const { error } = await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+		if ( isPermissionScopeError( error ) ) {
+			return { error };
 		}
 	}
 
@@ -165,7 +163,7 @@ export function validateCanSubmitChanges( select ) {
 	// Do existing tag check last.
 	invariant( hasExistingTagPermission() !== false, INVARIANT_INSUFFICIENT_TAG_PERMISSIONS );
 
-	if ( isGA4Enabled ) {
+	if ( select( STORE_NAME ).canUseGA4Controls() ) {
 		select( MODULES_ANALYTICS_4 ).__dangerousCanSubmitChanges();
 	}
 }

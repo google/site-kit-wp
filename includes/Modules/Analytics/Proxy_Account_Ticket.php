@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics;
 
-use Google\Site_Kit_Dependencies\Google_Service_Analytics_AccountTicket;
+use Google\Site_Kit_Dependencies\Google\Service\Analytics\AccountTicket as Google_Service_Analytics_AccountTicket;
 
 /**
  * Class for the Analytics provisioning Account Ticket object.

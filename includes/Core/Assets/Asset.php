@@ -47,7 +47,7 @@ abstract class Asset {
 	 * Constructor.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Add the 'load_contexts' argument.
+	 * @since 1.37.0 Add the 'load_contexts' argument.
 	 *
 	 * @param string $handle Unique asset handle.
 	 * @param array  $args {
@@ -90,7 +90,7 @@ abstract class Asset {
 	/**
 	 * Checks to see if the specified context exists for the current request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @param string $context Context value (see the `CONTEXT_` variables above).
 	 * @return bool TRUE if context exists; FALSE otherwise.

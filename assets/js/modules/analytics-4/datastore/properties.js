@@ -40,7 +40,7 @@ const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',
 	controlCallback( { propertyID } ) {
 		return API.get( 'modules', 'analytics-4', 'property', { propertyID }, {
-			useCache: true,
+			useCache: false,
 		} );
 	},
 	reducerCallback( state, property, { propertyID } ) {
@@ -64,7 +64,7 @@ const fetchGetPropertiesStore = createFetchStore( {
 	baseName: 'getProperties',
 	controlCallback( { accountID } ) {
 		return API.get( 'modules', 'analytics-4', 'properties', { accountID }, {
-			useCache: true,
+			useCache: false,
 		} );
 	},
 	reducerCallback( state, properties, { accountID } ) {
@@ -254,7 +254,9 @@ const baseActions = {
 	 */
 	*matchPropertyByURL( properties, url ) {
 		const registry = yield commonActions.getRegistry();
-		const urls = ( Array.isArray( url ) ? url : [ url ] ).map( normalizeURL );
+		const urls = ( Array.isArray( url ) ? url : [ url ] )
+			.filter( ( item ) => typeof item === 'string' )
+			.map( normalizeURL );
 
 		for ( let i = 0; i < properties.length; i += MAX_WEBDATASTREAMS_PER_BATCH ) {
 			const chunk = properties.slice( i, i + MAX_WEBDATASTREAMS_PER_BATCH );
