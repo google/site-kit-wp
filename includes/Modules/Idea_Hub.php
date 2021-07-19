@@ -35,8 +35,8 @@ use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
-use Google\Site_Kit_Dependencies\Google_Service_Ideahub;
-use Google\Site_Kit_Dependencies\Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState;
+use Google\Site_Kit_Dependencies\Google\Service\Ideahub as Google_Service_Ideahub;
+use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1alphaIdeaState as Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
