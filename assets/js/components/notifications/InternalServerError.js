@@ -1,5 +1,5 @@
 /**
- * GenericError component.
+ * InternalServerError component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,21 +17,18 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import Notification from './notification';
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import Notification from '../legacy-notifications/notification';
+const { useSelect } = Data;
 
-class GenericError extends Component {
-	render() {
-		return (
-			<Notification { ...this.props } />
-		);
+export default function InternalServerError() {
+	const error = useSelect( ( select ) => select( CORE_SITE ).getInternalServerError() );
+	if ( ! error ) {
+		return null;
 	}
-}
 
-export default GenericError;
+	return <Notification { ...error } />;
+}

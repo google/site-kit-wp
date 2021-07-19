@@ -110,7 +110,7 @@ abstract class Post_Meta_Setting {
 	/**
 	 * Gets the `show_in_rest` value for this postmeta setting value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @return bool|Array Any valid value for the `show_in_rest`
 	 */

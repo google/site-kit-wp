@@ -207,11 +207,6 @@ describe( 'modules/analytics-4 settings', () => {
 				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() ).toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
 			} );
 
-			it( 'should ignore propertyID if it is an empty string', () => {
-				registry.dispatch( STORE_NAME ).setPropertyID( '' );
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() ).not.toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
-			} );
-
 			it( 'should require a valid webDataStreamID', () => {
 				registry.dispatch( STORE_NAME ).setWebDataStreamID( '' );
 				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() ).toThrow( INVARIANT_INVALID_WEBDATASTREAM_ID );

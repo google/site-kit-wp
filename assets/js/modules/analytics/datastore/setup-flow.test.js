@@ -27,7 +27,7 @@ import {
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
 } from './constants';
-import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
+import { createTestRegistry, unsubscribeFromAll, provideModules } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { enabledFeatures } from '../../../features';
 
@@ -257,6 +257,42 @@ describe( 'modules/analytics setup-flow', () => {
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_GA4_TRANSITIONAL );
+			} );
+		} );
+
+		describe( 'canUseGA4Controls', () => {
+			it( 'should return TRUE if both modules are connected', () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics',
+						active: true,
+						connected: true,
+					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				expect( registry.select( MODULES_ANALYTICS ).canUseGA4Controls() ).toBe( true );
+			} );
+
+			it( 'should return FALSE when one of the modules is not connected', () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics',
+						active: true,
+						connected: true,
+					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: false,
+					},
+				] );
+
+				expect( registry.select( MODULES_ANALYTICS ).canUseGA4Controls() ).toBe( false );
 			} );
 		} );
 	} );
