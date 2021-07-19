@@ -104,17 +104,15 @@ const WPDashboardWidgets = () => {
 			{ analyticsModuleActive && analyticsModuleConnected && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsWidget />
-					<WPDashboardSessionDurationWidget className={ classnames( {
-						[ HIDDEN_CLASS ]: shouldCombineAnalyticsArea1,
-					} ) } />
+					{
+						! shouldCombineAnalyticsArea1 && <WPDashboardSessionDurationWidget />
+					}
 				</Fragment>
 			) }
 
 			<Fragment>
 				<WPDashboardImpressionsWidget />
-				<WPDashboardClicksWidget className={ classnames( {
-					[ HIDDEN_CLASS ]: shouldCombineSearchConsoleWidgets,
-				} ) } />
+				{ ! shouldCombineSearchConsoleWidgets && <WPDashboardClicksWidget /> }
 			</Fragment>
 
 			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
@@ -128,11 +126,13 @@ const WPDashboardWidgets = () => {
 				</div>
 			) }
 
-			{ analyticsModuleActive && analyticsModuleConnected && (
-				<WPDashboardPopularPagesWidget className={ classnames( {
-					[ HIDDEN_CLASS ]: shouldCombineAnalyticsArea2,
-				} ) } />
-			) }
+			{ analyticsModuleActive && analyticsModuleConnected && ! shouldCombineAnalyticsArea2 && <WPDashboardPopularPagesWidget /> }
+
+			<div className={ HIDDEN_CLASS }>
+				{ shouldCombineSearchConsoleWidgets && <WPDashboardClicksWidget /> }
+				{ shouldCombineAnalyticsArea1 && <WPDashboardSessionDurationWidget /> }
+				{ shouldCombineAnalyticsArea2 && <WPDashboardPopularPagesWidget /> }
+			</div>
 		</div>
 	);
 };
