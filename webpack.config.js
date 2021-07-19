@@ -356,7 +356,7 @@ function* webpackConfig( env, argv ) {
 	};
 }
 
-const testBundle = () => {
+function testBundle() {
 	return {
 		entry: {
 			'e2e-api-fetch': './tests/e2e/assets/e2e-api-fetch.js',
@@ -380,7 +380,7 @@ const testBundle = () => {
 		externals,
 		resolve,
 	};
-};
+}
 
 module.exports = {
 	externals,
