@@ -7,7 +7,7 @@ set -e
 . "$(dirname "$0")/includes.sh"
 
 # Get the host port for the WordPress container.
-HOST_PORT=$(dc port $CONTAINER 80 | awk -F : '{printf $2}')
+HOST_PORT=$(dc port http_proxy 80 | awk -F : '{printf $2}')
 
 # Check for the site status
 if [[ -z $(curl -s --head --fail http://localhost:$HOST_PORT) ]]; then

@@ -15,7 +15,7 @@ WP_VERSION=${WP_VERSION-"latest"}
 dc up -d >/dev/null 2>&1
 
 # Get the host port for the WordPress container.
-HOST_PORT=$(dc port $CONTAINER 80 | awk -F : '{printf $2}')
+HOST_PORT=$(dc port http_proxy 80 | awk -F : '{printf $2}')
 
 # Wait until the Docker containers are running and the WordPress site is
 # responding to requests.
