@@ -54,8 +54,9 @@ function Link( {
 	...otherProps
 } ) {
 	const getType = () => {
-		// Force button element if `onClick` prop is passed.
-		if ( onClick ) {
+		// Force button element if `onClick` prop is passed and there's no `href`
+		// or `to` prop.
+		if ( ! href && ! to && onClick ) {
 			if ( disabled ) {
 				return BUTTON_DISABLED;
 			}
