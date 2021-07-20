@@ -94,31 +94,3 @@ export const extractSearchConsoleDashboardData = ( rows, dateRangeLength ) => {
 		averagePositionChange: calculateChange( olderData.averagePosition, latestData.averagePosition ),
 	};
 };
-
-/**
- * Checks for Zero data from Search Console API.
- *
- * @since 1.0.0
- *
- * @param {Object} data The data returned from the Search Console API call.
- * @return {boolean} Indicates zero data was returned from Search Console API call.
- */
-export const isDataZeroSearchConsole = ( data ) => {
-	if ( ! data.length ) {
-		return true;
-	}
-
-	const {
-		totalClicks,
-		totalImpressions,
-		averageCTR,
-		averagePosition,
-	} = reduceSearchConsoleData( data );
-
-	return (
-		0 === parseInt( totalClicks, 10 ) &&
-			0 === parseInt( totalImpressions, 10 ) &&
-			0 === parseInt( averageCTR, 10 ) &&
-			0 === parseInt( averagePosition, 10 )
-	);
-};

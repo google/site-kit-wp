@@ -22,11 +22,6 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { removeAllFilters } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
 import { provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
@@ -35,11 +30,6 @@ import DashboardDetailsApp from '../assets/js/components/dashboard-details/Dashb
 
 storiesOf( 'Dashboard Details', module )
 	.add( 'Existing Entity', () => {
-		// Ensure legacy widgets are not displayed. The new widgets should not be displayed either,
-		// but that is already the case since the Widgets API is behind a feature flag.
-		// TODO: Delete this hook removal once legacy widgets are no longer used.
-		removeAllFilters( 'googlesitekit.DashboardDetailsModule' );
-
 		const setupRegistry = ( registry ) => {
 			provideUserAuthentication( registry );
 			provideSiteInfo( registry, {

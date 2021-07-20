@@ -69,6 +69,8 @@ describe( 'Tag Manager module setup', () => {
 				request.respond( { status: 200, body: JSON.stringify( liveContainerVersionFixture ) } );
 			} else if ( request.url().match( /^https:\/\/www\.googletagmanager\.com\/(gtm\.js|amp\.json)/ ) ) {
 				request.respond( { status: 200 } );
+			} else if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
 				request.continue();
 			}

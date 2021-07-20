@@ -57,6 +57,10 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					status: 200,
 					body: JSON.stringify( { placeholder_response: true } ),
 				} );
+			} else if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			} else if ( request.url().match( 'google-site-kit/v1/modules/analytics/data/goals' ) ) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
 				request.continue();
 			}

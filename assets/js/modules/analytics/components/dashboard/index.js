@@ -16,20 +16,8 @@
  * limitations under the License.
  */
 
-export { default as AnalyticsAdSenseDashboardWidgetLayout } from './AnalyticsAdSenseDashboardWidgetLayout';
-export { default as LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable } from './LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable';
-export { default as LegacyAnalyticsDashboardWidget } from './LegacyAnalyticsDashboardWidget';
-export { default as LegacyAnalyticsDashboardWidgetOverview } from './LegacyAnalyticsDashboardWidgetOverview';
-export { default as LegacyAnalyticsDashboardWidgetSiteStats } from './LegacyAnalyticsDashboardWidgetSiteStats';
-export { default as LegacyAnalyticsDashboardWidgetTopPagesTable } from './LegacyAnalyticsDashboardWidgetTopPagesTable';
 export { default as DashboardAllTrafficWidget } from './DashboardAllTrafficWidget';
 export { default as DashboardPopularPagesWidget } from './DashboardPopularPagesWidget';
 export { default as DashboardBounceRateWidget } from './DashboardBounceRateWidget';
 export { default as DashboardGoalsWidget } from './DashboardGoalsWidget';
 export { default as DashboardSearchVisitorsWidget } from './DashboardSearchVisitorsWidget';
-export { default as LegacyAdSenseDashboardWidgetTopPagesTableSmall } from './LegacyAdSenseDashboardWidgetTopPagesTableSmall';
-export { default as LegacyAnalyticsDashboardWidgetPopularPagesTable } from './LegacyAnalyticsDashboardWidgetPopularPagesTable';
-export { default as LegacyAnalyticsDashboardWidgetTopAcquisitionSources } from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
-export { default as LegacyAnalyticsDashboardWidgetTopLevel } from './LegacyAnalyticsDashboardWidgetTopLevel';
-export { default as LegacyDashboardAcquisitionPieChart } from './LegacyDashboardAcquisitionPieChart';
-

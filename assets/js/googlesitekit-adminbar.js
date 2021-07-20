@@ -33,7 +33,6 @@ import { render } from '@wordpress/element';
 import { trackEvent } from './util';
 import Root from './components/Root';
 import AdminBarApp from './components/adminbar/AdminBarApp';
-import './modules';
 
 // Initialize the whole adminbar app.
 const init = once( () => {
