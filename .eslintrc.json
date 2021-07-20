@@ -67,8 +67,7 @@
         "googlesitekit-widgets",
         "@wordpress/i18n__non-shim",
         "@wordpress/api-fetch__non-shim",
-        "tests/js/utils",
-        "assets/js/googlesitekit/datastore/site"
+        "tests/js/utils"
       ]
   },
   "overrides": [
