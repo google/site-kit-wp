@@ -26,7 +26,8 @@ import {
 } from '../../../../../tests/js/utils';
 import * as CacheModule from '../../../googlesitekit/api/cache';
 import { STORE_NAME } from './constants';
-import initialState, {
+import {
+	initialState,
 	FEATURE_TOUR_COOLDOWN_SECONDS,
 	FEATURE_TOUR_LAST_DISMISSED_AT,
 } from './feature-tours';

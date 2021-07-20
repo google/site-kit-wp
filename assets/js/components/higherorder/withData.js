@@ -36,7 +36,7 @@ import Data from 'googlesitekit-data';
 import { getModulesData, stringifyObject } from '../../util';
 import getNoDataComponent from '../legacy-notifications/nodata';
 import getDataErrorComponent from '../legacy-notifications/data-error';
-import getSetupIncompleteComponent, { getModuleInactiveComponent } from '../legacy-notifications/setup-incomplete';
+import { getSetupIncompleteComponent, getModuleInactiveComponent } from '../legacy-notifications/setup-incomplete';
 import { TYPE_MODULES } from '../data/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { requestWithDateRange } from '../data/utils/request-with-date-range';
