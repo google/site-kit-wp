@@ -189,9 +189,12 @@ final class Idea_Hub extends Module
 		}
 		$transients               = new Transients( $this->context );
 		$dismissed_items_instance = new Dismissed_Items( $this->user_options );
-		$dismissed_items          = $dismissed_items_instance->get_dismissed_items();
-		$saved_ideas              = $transients->get( self::TRANSIENT_SAVED_IDEAS );
-		$new_ideas                = $transients->get( self::TRANSIENT_NEW_IDEAS );
+		if ( $dismissed_items_instance->is_dismissed( 'saved-ideas' ) && $dismissed_items_instance->is_dismissed( 'new-ideas' ) ) {
+			return $notices;
+		}
+		$dismissed_items = $dismissed_items_instance->get_dismissed_items();
+		$saved_ideas     = $transients->get( self::TRANSIENT_SAVED_IDEAS );
+		$new_ideas       = $transients->get( self::TRANSIENT_NEW_IDEAS );
 
 		$notices[] = new Notice(
 			'saved',
