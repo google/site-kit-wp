@@ -23,6 +23,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+const { createRegistrySelector, commonActions, combineStores } = Data;
 
 const fetchGetNewIdeasStore = createFetchStore( {
 	baseName: 'getNewIdeas',
@@ -42,9 +43,9 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getNewIdeas( options = {} ) {
-		const registry = yield Data.commonActions.getRegistry();
-		const newIdeas = registry.select( STORE_NAME ).getNewIdeas( options );
+	*getNewIdeas() {
+		const registry = yield commonActions.getRegistry();
+		const newIdeas = registry.select( STORE_NAME ).getNewIdeas();
 
 		// If there are already ideas in state, don't make an API request.
 		if ( newIdeas === undefined ) {
@@ -59,15 +60,26 @@ const baseSelectors = {
 	 *
 	 * @since 1.32.0
 	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
+	 */
+	getNewIdeas( state ) {
+		return state.newIdeas;
+	},
+
+	/**
+	 * Gets a subset of new ideas from the Idea Hub.
+	 *
+	 * @since n.e.x.t
+	 *
 	 * @param {Object} state            Data store's state.
 	 * @param {Object} options          Options for getting new ideas.
 	 * @param {number} [options.offset] Optional. From which array index to get ideas.
 	 * @param {number} [options.length] Optional. Amount of new ideas to return.
 	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
 	 */
-	getNewIdeas( state, options = {} ) {
-		const { newIdeas } = state;
-
+	getNewIdeasSlice: createRegistrySelector( ( select ) => ( state, options = {} ) => {
+		const newIdeas = select( STORE_NAME ).getNewIdeas();
 		if ( newIdeas === undefined ) {
 			return undefined;
 		}
@@ -75,10 +87,10 @@ const baseSelectors = {
 		const offset = options?.offset || 0;
 		const length = options.length ? offset + options.length : newIdeas.length;
 		return ( 'offset' in options || 'length' in options ) ? newIdeas.slice( offset, length ) : newIdeas;
-	},
+	} ),
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetNewIdeasStore,
 	{
 		initialState: baseInitialState,

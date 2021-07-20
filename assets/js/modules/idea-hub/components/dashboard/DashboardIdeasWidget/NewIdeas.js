@@ -47,14 +47,15 @@ const { useSelect } = Data;
 
 const NewIdeas = ( { active, WidgetReportError } ) => {
 	const [ page, setPage ] = useState( 1 );
-	const args = {
+
+	const totalNewIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeas()?.length );
+	const hasFinishedResolution = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getNewIdeas' ) );
+	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getNewIdeas' ) );
+
+	const newIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeasSlice( {
 		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
 		length: IDEA_HUB_IDEAS_PER_PAGE,
-	};
-	const totalNewIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeas()?.length );
-	const newIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeas( args ) );
-	const hasFinishedResolution = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getNewIdeas', [ args ] ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getNewIdeas', [ args ] ) );
+	} ) );
 
 	const handlePrev = useCallback( () => {
 		if ( page > 1 ) {
