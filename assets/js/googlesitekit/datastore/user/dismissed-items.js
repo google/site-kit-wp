@@ -48,11 +48,14 @@ const fetchGetDismissedItemsStore = createFetchStore( {
 
 const fetchDismissItemStore = createFetchStore( {
 	baseName: 'dismissItem',
-	controlCallback: ( { slug } ) => API.set( 'core', 'user', 'dismiss-item', { slug } ),
+	controlCallback: ( { slug, expiresInSeconds } ) => API.set( 'core', 'user', 'dismiss-item', { slug, expiresInSeconds } ),
 	reducerCallback,
-	argsToParams: ( slug ) => ( { slug } ),
-	validateParams: ( { slug } = {} ) => {
+	argsToParams: ( slug, expiresInSeconds = 0 ) => {
+		return ( { slug, expiresInSeconds } );
+	},
+	validateParams: ( { slug, expiresInSeconds } = {} ) => {
 		invariant( slug, 'slug is required.' );
+		invariant( Number.isInteger( expiresInSeconds ), 'expiresInSeconds should be an integer.' );
 	},
 } );
 
@@ -66,15 +69,17 @@ const baseActions = {
 	 *
 	 * @since 1.37.0
 	 *
-	 * @param {string} slug Item slug to dismiss.
+	 * @param {string} slug             Item slug to dismiss.
+	 * @param {number} expiresInSeconds An integer number of seconds for expiry. 0 denotes permanent dismissal.
 	 * @return {Object} Generator instance.
 	 */
 	dismissItem: createValidatedAction(
-		( slug ) => {
+		( slug, expiresInSeconds = 0 ) => {
 			invariant( slug, 'A tour slug is required to dismiss a tour.' );
+			invariant( Number.isInteger( expiresInSeconds ), 'expiresInSeconds should be an integer.' );
 		},
-		function* ( slug ) {
-			return yield fetchDismissItemStore.actions.fetchDismissItem( slug );
+		function* ( slug, expiresInSeconds = 0 ) {
+			return yield fetchDismissItemStore.actions.fetchDismissItem( slug, expiresInSeconds );
 		},
 	),
 };
