@@ -43,7 +43,7 @@ import Empty from './Empty';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-const DraftIdeas = ( { active, WidgetReportError } ) => {
+const DraftIdeas = ( { WidgetReportError } ) => {
 	const [ page, setPage ] = useState( 1 );
 
 	const totalDraftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas()?.length );
@@ -66,10 +66,6 @@ const DraftIdeas = ( { active, WidgetReportError } ) => {
 			setPage( page + 1 );
 		}
 	}, [ page, setPage, totalDraftIdeas ] );
-
-	if ( ! active ) {
-		return null;
-	}
 
 	if ( ! hasFinishedResolution ) {
 		return (
@@ -118,7 +114,6 @@ const DraftIdeas = ( { active, WidgetReportError } ) => {
 };
 
 DraftIdeas.propTypes = {
-	active: PropTypes.bool.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
 

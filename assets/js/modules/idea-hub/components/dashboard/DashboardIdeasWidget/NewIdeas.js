@@ -45,7 +45,7 @@ import Empty from './Empty';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-const NewIdeas = ( { active, WidgetReportError } ) => {
+const NewIdeas = ( { WidgetReportError } ) => {
 	const [ page, setPage ] = useState( 1 );
 
 	const totalNewIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeas()?.length );
@@ -68,10 +68,6 @@ const NewIdeas = ( { active, WidgetReportError } ) => {
 			setPage( page + 1 );
 		}
 	}, [ page, setPage, totalNewIdeas ] );
-
-	if ( ! active ) {
-		return null;
-	}
 
 	if ( ! hasFinishedResolution ) {
 		return (
@@ -118,7 +114,6 @@ const NewIdeas = ( { active, WidgetReportError } ) => {
 };
 
 NewIdeas.propTypes = {
-	active: PropTypes.bool.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
 
