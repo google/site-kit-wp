@@ -189,12 +189,12 @@ final class Idea_Hub extends Module
 			'saved' => array(
 				'text' => esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ),
 				'cta'  => esc_html__( 'See saved ideas', 'google-site-kit' ),
-				'link' => admin_url( 'admin.php?page=googlesitekit-dashboard#new-ideas' ),
+				'link' => $this->context->admin_url() . '#new-ideas',
 			),
 			'new'   => array(
 				'text' => esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub', 'google-site-kit' ),
 				'cta'  => esc_html__( 'See new ideas', 'google-site-kit' ),
-				'link' => admin_url( 'admin.php?page=googlesitekit-dashboard#saved-ideas' ),
+				'link' => $this->context->admin_url() . '#saved-ideas',
 			),
 		);
 
