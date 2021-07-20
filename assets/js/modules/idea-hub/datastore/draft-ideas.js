@@ -56,7 +56,7 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 		invariant( Array.isArray( idea.topics ), 'idea.topics must be an array.' );
 		idea.topics.forEach( ( topic ) => {
 			invariant( typeof topic.mid === 'string', 'topic.mid must be a string.' );
-			invariant( typeof topic.display_name === 'string', 'topic.display_name must be a string.' );
+			invariant( typeof topic.displayName === 'string', 'topic.displayName must be a string.' );
 		} );
 	},
 } );

@@ -104,7 +104,7 @@ const Idea = ( props ) => {
 				<Cell smSize={ 4 } mdSize={ 5 } lgSize={ 9 } className="googlesitekit-idea-hub__idea--details">
 					<div className="googlesitekit-idea-hub__idea--topics">
 						{ topics.map( ( topic, key ) => (
-							<span className="googlesitekit-idea-hub__idea--topic" key={ key }>{ topic.display_name }</span>
+							<span className="googlesitekit-idea-hub__idea--topic" key={ key }>{ topic.displayName }</span>
 						) ) }
 					</div>
 
@@ -192,7 +192,7 @@ Idea.propTypes = {
 	text: PropTypes.string.isRequired,
 	topics: PropTypes.arrayOf(
 		PropTypes.shape( {
-			display_name: PropTypes.string,
+			displayName: PropTypes.string,
 			mid: PropTypes.string,
 		} )
 	).isRequired,

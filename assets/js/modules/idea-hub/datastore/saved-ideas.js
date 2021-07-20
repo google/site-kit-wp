@@ -23,6 +23,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+const { createRegistrySelector, commonActions, combineStores } = Data;
 
 const fetchGetSavedIdeasStore = createFetchStore( {
 	baseName: 'getSavedIdeas',
@@ -42,9 +43,9 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getSavedIdeas( options = {} ) {
-		const registry = yield Data.commonActions.getRegistry();
-		const savedIdeas = registry.select( STORE_NAME ).getSavedIdeas( options );
+	*getSavedIdeas() {
+		const registry = yield commonActions.getRegistry();
+		const savedIdeas = registry.select( STORE_NAME ).getSavedIdeas();
 
 		// If there are already saved ideas in state, don't make an API request.
 		if ( savedIdeas === undefined ) {
@@ -59,15 +60,26 @@ const baseSelectors = {
 	 *
 	 * @since 1.33.0
 	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
+	 */
+	getSavedIdeas( state ) {
+		return state.savedIdeas;
+	},
+
+	/**
+	 * Gets a subset of saved ideas from the Idea Hub.
+	 *
+	 * @since n.e.x.t
+	 *
 	 * @param {Object} state            Data store's state.
 	 * @param {Object} options          Options for getting saved ideas.
 	 * @param {number} [options.offset] Optional. From which array index to get ideas.
 	 * @param {number} [options.length] Optional. Amount of saved ideas to return.
 	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
 	 */
-	getSavedIdeas( state, options = {} ) {
-		const { savedIdeas } = state;
-
+	getSavedIdeasSlice: createRegistrySelector( ( select ) => ( state, options = {} ) => {
+		const savedIdeas = select( STORE_NAME ).getSavedIdeas();
 		if ( savedIdeas === undefined ) {
 			return undefined;
 		}
@@ -75,10 +87,10 @@ const baseSelectors = {
 		const offset = options?.offset || 0;
 		const length = options.length ? offset + options.length : savedIdeas.length;
 		return ( 'offset' in options || 'length' in options ) ? savedIdeas.slice( offset, length ) : savedIdeas;
-	},
+	} ),
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetSavedIdeasStore,
 	{
 		initialState: baseInitialState,
