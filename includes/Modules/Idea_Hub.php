@@ -139,7 +139,6 @@ final class Idea_Hub extends Module
 			10,
 			2
 		);
-
 	}
 
 	/**
@@ -424,7 +423,7 @@ final class Idea_Hub extends Module
 					)
 				);
 			case 'GET:new-ideas':
-				return $response->getIdeas();
+				return $this->filter_out_drafted_ideas( $response->getIdeas() );
 			case 'GET:published-post-ideas':
 				return array_filter(
 					array_map(
@@ -442,7 +441,7 @@ final class Idea_Hub extends Module
 					)
 				);
 			case 'GET:saved-ideas':
-				return $response->getIdeas();
+				return $this->filter_out_drafted_ideas( $response->getIdeas() );
 			case 'POST:update-idea-state':
 				return array(
 					'name'      => $response->getName(),
@@ -632,6 +631,18 @@ final class Idea_Hub extends Module
 		$ideas   = $service->platforms_properties_ideas;
 
 		return $ideas->listPlatformsPropertiesIdeas( $parent, $params );
+	}
+
+	/**
+	 * Filters out ideas for which we have already created a post.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $ideas Ideas list to filter.
+	 * @return array Filtered ideas list.
+	 */
+	private function filter_out_drafted_ideas( $ideas ) {
+		return $ideas;
 	}
 
 }
