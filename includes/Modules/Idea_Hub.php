@@ -378,12 +378,12 @@ final class Idea_Hub extends Module
 
 				if ( isset( $data['saved'] ) ) {
 					$parent = $parent . '/ideaStates/saved';
-					$body->setSaved( filter_var( $data['saved'], FILTER_VALIDATE_BOOL ) );
+					$body->setSaved( filter_var( $data['saved'], FILTER_VALIDATE_BOOLEAN ) );
 				}
 
 				if ( isset( $data['dismissed'] ) ) {
 					$parent = $parent . '/ideaStates/dismissed';
-					$body->setDismissed( filter_var( $data['dismissed'], FILTER_VALIDATE_BOOL ) );
+					$body->setDismissed( filter_var( $data['dismissed'], FILTER_VALIDATE_BOOLEAN ) );
 				}
 
 				return $this->get_service( 'ideahub' )->platforms_properties_ideaStates->patch( $parent, $body );
@@ -443,6 +443,12 @@ final class Idea_Hub extends Module
 				);
 			case 'GET:saved-ideas':
 				return $response->getIdeas();
+			case 'POST:update-idea-state':
+				return array(
+					'name'      => $response->getName(),
+					'saved'     => $response->getSaved(),
+					'dismissed' => $response->getDismissed(),
+				);
 		}
 
 		return parent::parse_data_response( $data, $response );
