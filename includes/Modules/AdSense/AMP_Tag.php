@@ -78,9 +78,26 @@ class AMP_Tag extends Module_AMP_Tag {
 
 		$this->adsense_tag_printed = true;
 
+		$amp_auto_ads_opt = array(
+			'data-ad-client' => $this->tag_id,
+		);
+
+		$amp_auto_ads_opt_filtered = apply_filters( 'googlesitekit_amp_auto_ads_attributes', $amp_auto_ads_opt );
+
+		if ( ! is_array( $amp_auto_ads_opt_filtered ) ) {
+			$amp_auto_ads_opt_filtered = $amp_auto_ads_opts;
+		}
+
+		$amp_auto_ads_opt_filtered['data-ad-client'] = $this->tag_id;
+
+		$attributes = '';
+		foreach ( $amp_auto_ads_opt_filtered as $amp_auto_ads_opt_key => $amp_auto_ads_opt_value ) {
+			$attributes .= sprintf( ' %s="%s"', $amp_auto_ads_opt_key, $amp_auto_ads_opt_value );
+		}
+
 		printf(
-			'<amp-auto-ads type="adsense" data-ad-client="%s"%s></amp-auto-ads>',
-			esc_attr( $this->tag_id ),
+			'<amp-auto-ads type="adsense" %s%s></amp-auto-ads>',
+			esc_attr( $attributes ),
 			$this->get_tag_blocked_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
 	}
@@ -128,11 +145,24 @@ class AMP_Tag extends Module_AMP_Tag {
 	private function render_story_auto_ads() {
 		$config = array(
 			'ad-attributes' => array(
-				'type'           => 'adsense',
-				'data-ad-client' => $this->tag_id,
-				'data-ad-slot'   => $this->story_ad_slot_id,
+				'type' => 'adsense',
 			),
 		);
+
+		$amp_auto_ads_opt = array(
+			'data-ad-client' => $this->tag_id,
+			'data-ad-slot'   => $this->story_ad_slot_id,
+		);
+
+		$amp_auto_ads_opt_filtered = apply_filters( 'googlesitekit_amp_story_auto_ads_attributes', $amp_auto_ads_opt );
+
+		if ( ! is_array( $amp_auto_ads_opt_filtered ) ) {
+			$amp_auto_ads_opt_filtered = $amp_auto_ads_opt;
+		}
+
+		$amp_auto_ads_opt_filtered['data-ad-client'] = $this->tag_id;
+		$config['ad-attributes']                     = array_merge( $config['ad-attributes'], $amp_auto_ads_opt_filtered );
+
 		printf( '<amp-story-auto-ads><script type="application/json">%s</script></amp-story-auto-ads>', wp_json_encode( $config ) );
 	}
 }
