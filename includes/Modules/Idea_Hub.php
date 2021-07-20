@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Service\ShoppingContent\Resource\Pos;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Authentication\Authentication;
@@ -642,7 +643,38 @@ final class Idea_Hub extends Module
 	 * @return array Filtered ideas list.
 	 */
 	private function filter_out_drafted_ideas( $ideas ) {
-		return $ideas;
+		global $wpdb;
+
+		// Return early if there are no ideas in the incoming array.
+		if ( empty( $ideas ) ) {
+			return $ideas;
+		}
+
+		$names = wp_list_pluck( $ideas, 'name' );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$drafted_ideas = $wpdb->get_col(
+			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+			$wpdb->prepare(
+				"SELECT DISTINCT meta_value FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value IN (" . implode( ', ', array_fill( 0, count( $names ), '%s' ) ) . ')',
+				Post_Idea_Name::META_KEY,
+				...$names
+			)
+		);
+
+		// Return early if we haven't found posts created for incoming ideas.
+		if ( empty( $drafted_ideas ) ) {
+			return $ideas;
+		}
+
+		$ideas = array_filter(
+			$ideas,
+			function( $idea ) use ( $drafted_ideas ) {
+				return ! in_array( $idea->getName(), $drafted_ideas, true );
+			}
+		);
+
+		return array_values( $ideas );
 	}
 
 }
