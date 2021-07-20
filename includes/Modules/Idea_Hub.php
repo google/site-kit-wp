@@ -63,7 +63,12 @@ final class Idea_Hub extends Module
 	/**
 	 * Saved ideas cache key.
 	 */
-	const TRANSIENT_IDEAS = 'googlesitekit_idea_hub_ideas';
+	const TRANSIENT_SAVED_IDEAS = 'googlesitekit_idea_hub_saved_ideas';
+
+	/**
+	 * New ideas cache key.
+	 */
+	const TRANSIENT_NEW_IDEAS = 'googlesitekit_idea_hub_new_ideas';
 
 	/**
 	 * Post_Idea_Name instance.
@@ -199,19 +204,21 @@ final class Idea_Hub extends Module
 		);
 
 		$dismissed_items = $dismissed_items_instance->get_dismissed_items();
-		$ideas           = $transients->get( self::TRANSIENT_IDEAS );
+		$saved_ideas     = $transients->get( self::TRANSIENT_SAVED_IDEAS );
+		$new_ideas       = $transients->get( self::TRANSIENT_NEW_IDEAS );
 
-		if ( false === $ideas ) {
-			$ideas = array(
-				'saved-ideas' => $this->get_data( 'saved-ideas' ),
-				'new-ideas'   => $this->get_data( 'new-ideas' ),
-			);
-
-			$transients->set( self::TRANSIENT_IDEAS, $ideas, DAY_IN_SECONDS );
+		if ( false === $saved_ideas ) {
+			$saved_ideas = $this->get_data( 'saved-ideas' );
+			$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
 		}
 
-		$has_saved_ideas = count( $ideas['saved-ideas'] ) > 0;
-		$has_new_ideas   = count( $ideas['new-ideas'] ) > 0;
+		if ( false === $new_ideas ) {
+			$saved_ideas = $this->get_data( 'new-ideas' );
+			$transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, DAY_IN_SECONDS );
+		}
+
+		$has_saved_ideas = count( $saved_ideas ) > 0;
+		$has_new_ideas   = count( $new_ideas ) > 0;
 
 		if ( ! $has_saved_ideas && in_array( 'saved-ideas', $dismissed_items, true ) ) {
 			// Saved items no longer need to be dismissed as there are none currently.
