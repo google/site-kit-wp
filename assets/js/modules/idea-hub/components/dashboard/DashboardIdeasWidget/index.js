@@ -131,15 +131,15 @@ const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportErro
 
 				<div className="googlesitekit-idea-hub__body">
 					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'new-ideas' }>
-						<NewIdeas WidgetReportError={ WidgetReportError } active={ activeTab === 'new-ideas' } />
+						<NewIdeas WidgetReportError={ WidgetReportError } />
 					</div>
 
 					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'saved-ideas' }>
-						<SavedIdeas WidgetReportError={ WidgetReportError } active={ activeTab === 'saved-ideas' } />
+						<SavedIdeas WidgetReportError={ WidgetReportError } />
 					</div>
 
 					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'draft-ideas' }>
-						<DraftIdeas WidgetReportError={ WidgetReportError } active={ activeTab === 'draft-ideas' } />
+						<DraftIdeas WidgetReportError={ WidgetReportError } />
 					</div>
 				</div>
 			</div>
