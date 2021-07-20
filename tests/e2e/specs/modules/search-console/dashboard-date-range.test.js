@@ -52,13 +52,8 @@ describe( 'date range filtering on dashboard views', () => {
 
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( mockBatchResponse ),
-				} );
-			} else if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
+				request.respond( { status: 200, body: JSON.stringify( mockBatchResponse ) } );
 			} else {
 				request.continue();
 			}
@@ -76,14 +71,14 @@ describe( 'date range filtering on dashboard views', () => {
 	it( 'loads new data when the date range is changed on the Site Kit dashboard', async () => {
 		const { last28Days, last14Days, last7DaysNoData } = dashboardRequests;
 
-		mockBatchResponse = last28Days;
+		mockBatchResponse = Object.values( last28Days )[ 0 ];
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
 		const TOTAL_IMPRESSIONS_28_DAYS = await getTotalImpressions();
 
-		mockBatchResponse = last14Days;
+		mockBatchResponse = Object.values( last14Days )[ 0 ];
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ),
 			switchDateRange( 'last 28 days', 'last 14 days' ),
 		] );
 
@@ -96,9 +91,9 @@ describe( 'date range filtering on dashboard views', () => {
 		await pageWait();
 		expect( await getTotalImpressions() ).toBe( TOTAL_IMPRESSIONS_28_DAYS );
 
-		mockBatchResponse = last7DaysNoData;
+		mockBatchResponse = Object.values( last7DaysNoData )[ 0 ];
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ),
 			switchDateRange( 'last 28 days', 'last 7 days' ),
 		] );
 
@@ -116,19 +111,19 @@ describe( 'date range filtering on dashboard views', () => {
 		await page.waitForResponse( ( res ) => res.url().match( 'core/search/data/post-search' ) );
 		await expect( postSearcher ).toClick( '.autocomplete__option', { text: /hello world/i } );
 
-		mockBatchResponse = last28Days;
+		mockBatchResponse = Object.values( last28Days )[ 0 ];
 
 		await Promise.all( [
 			page.waitForNavigation(),
 			expect( postSearcher ).toClick( 'button', { text: /view data/i } ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ),
 		] );
 
 		const TOTAL_IMPRESSIONS_28_DAYS = await getTotalImpressions();
 
-		mockBatchResponse = last14Days;
+		mockBatchResponse = Object.values( last14Days )[ 0 ];
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ),
 			switchDateRange( 'last 28 days', 'last 14 days' ),
 		] );
 
@@ -145,15 +140,15 @@ describe( 'date range filtering on dashboard views', () => {
 	it( 'loads new data when the date range is changed on the module dashboard page', async () => {
 		const { last28Days, last14Days } = modulePageRequests;
 
-		mockBatchResponse = last28Days;
+		mockBatchResponse = Object.values( last28Days )[ 0 ];
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-module-search-console' );
 
 		const TOTAL_IMPRESSIONS_28_DAYS = await getTotalImpressions();
 
-		mockBatchResponse = last14Days;
+		mockBatchResponse = Object.values( last14Days )[ 0 ];
 
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ),
 			switchDateRange( 'last 28 days', 'last 14 days' ),
 		] );
 
