@@ -28,6 +28,8 @@ import { useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_IDEA_HUB } from '../../modules/idea-hub/datastore/constants';
 import Notification from '../legacy-notifications/notification';
 import IdeaHubNotificationSVG from '../../../svg/idea-hub-notification.svg';
@@ -37,6 +39,9 @@ const NOTIFICATION_ID = 'idea-hub-module-notification';
 
 const IdeaHubModuleNotification = () => {
 	const { dismissItem } = useDispatch( CORE_USER );
+	const { activateModule } = useDispatch( CORE_MODULES );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { setInternalServerError } = useDispatch( CORE_SITE );
 
 	const isActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'idea-hub' ) );
 	const isItemDismissed = useSelect( ( select ) => select( CORE_USER ).isItemDismissed( NOTIFICATION_ID ) );
@@ -45,6 +50,20 @@ const IdeaHubModuleNotification = () => {
 	const handleOnDismiss = useCallback( async () => {
 		await dismissItem( NOTIFICATION_ID );
 	}, [ dismissItem ] );
+
+	const handleOnCTAClick = useCallback( async ( event ) => {
+		event.preventDefault();
+		const { error, response } = await activateModule( 'idea-hub' );
+
+		if ( ! error ) {
+			navigateTo( response.moduleReauthURL );
+		} else {
+			setInternalServerError( {
+				id: 'idea-hub-setup-error',
+				description: error.message,
+			} );
+		}
+	}, [ activateModule, navigateTo, setInternalServerError ] );
 
 	if ( isActive || isActive === undefined || isItemDismissed || isItemDismissed === undefined ) {
 		return null;
@@ -62,6 +81,7 @@ const IdeaHubModuleNotification = () => {
 			type="win-success"
 			dismiss={ __( 'Dismiss', 'google-site-kit' ) }
 			onDismiss={ handleOnDismiss }
+			onCTAClick={ handleOnCTAClick }
 		/>
 	);
 };
