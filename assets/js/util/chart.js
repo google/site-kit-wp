@@ -62,7 +62,7 @@ export const isSingleSlice = ( report ) => {
 
 	if (
 		report?.[ 0 ]?.data?.rows?.length === 1 ||
-		report?.[ 0 ]?.data?.rows?.[ 0 ]?.metrics?.[ 0 ]?.values?.[ 0 ] === report?.[ 0 ]?.data?.totals?.[0]?.values?.[ 0 ]
+		report?.[ 0 ]?.data?.rows?.[ 0 ]?.metrics?.[ 0 ]?.values?.[ 0 ] === report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ]
 	) {
 		return true;
 	}
