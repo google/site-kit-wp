@@ -55,17 +55,18 @@ const ideaHubModule = {
 		{
 			target: '.googlesitekit-idea-hub__title',
 			title: __( 'Get inspiration for new topics to write about!', 'google-site-kit' ),
-			content: __( 'These ideas are based on unanswered searches related to the content of your site. They are organised by topics and will refresh every N days.', 'google-site-kit' ),
+			content: __( 'These ideas are based on unanswered searches related to the content of your site. They are organised by topics and will refresh every 2-3 days.', 'google-site-kit' ),
 		},
 		{
 			target: '.googlesitekit-idea-hub__actions--create',
 			title: __( 'Start a draft', 'google-site-kit' ),
-			content: __( 'Found an interesting idea you want to write about? Create a draft! You can always get back to it later on the Posts page', 'google-site-kit' ),
+			content: __( 'Found an interesting idea you want to write about? Create a draft! You can always get back to it later on the Posts page.', 'google-site-kit' ),
 		},
 		{
 			target: '.googlesitekit-idea-hub__idea--single',
 			title: __( 'Save for later or dismiss', 'google-site-kit' ),
 			content: __( 'If you’re not ready to create a draft about an idea just yet, add it to your "Saved" list and revisit later. If you don’t like an idea, you can dismiss it from your list.', 'google-site-kit' ),
+			placement: 'top',
 		},
 	],
 	gaEventCategory: 'idea_hub_module',
