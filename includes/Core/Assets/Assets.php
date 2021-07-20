@@ -136,7 +136,7 @@ final class Assets {
 
 				array_walk(
 					$assets,
-					function( $asset ) {
+					function( Asset $asset ) {
 						if ( $asset->has_context( Asset::CONTEXT_ADMIN_POSTS ) ) {
 							$this->enqueue_asset( $asset->get_handle() );
 						}
@@ -452,6 +452,7 @@ final class Assets {
 					'src'          => $base_url . 'js/googlesitekit-vendor.js',
 					'dependencies' => array(
 						'googlesitekit-i18n',
+						'googlesitekit-runtime',
 					),
 				)
 			),
@@ -503,7 +504,6 @@ final class Assets {
 						'googlesitekit-data',
 						'googlesitekit-api',
 						'googlesitekit-user-data',
-						'googlesitekit-runtime',
 					),
 				)
 			),
