@@ -65,7 +65,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				expect( response ).toEqual( fixtures.draftIdeas.response );
 
 				expect( registry.stores[ STORE_NAME ].store.getState().draftPostIdeas ).toEqual( [
-					{ name: 'ideas/7612031899179595408', text: 'How to speed up your WordPress site', topics: [ { display_name: 'Websites', mid: '/m/09kqc' } ] },
+					{ name: 'ideas/7612031899179595408', text: 'How to speed up your WordPress site', topics: [ { displayName: 'Websites', mid: '/m/09kqc' } ] },
 				] );
 				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual( undefined );
 				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual( undefined );

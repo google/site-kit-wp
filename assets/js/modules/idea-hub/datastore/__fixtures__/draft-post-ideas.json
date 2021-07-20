@@ -7,7 +7,7 @@
     "topics": [
       {
         "mid": "/m/05z6w",
-        "display_name": "Penguins"
+        "displayName": "Penguins"
       }
     ]
   },
@@ -19,7 +19,7 @@
     "topics": [
       {
         "mid": "/m/07030",
-        "display_name": "Sushi"
+        "displayName": "Sushi"
       }
     ]
   },
@@ -31,7 +31,7 @@
     "topics": [
       {
         "mid": "/m/09kqc",
-        "display_name": "Websites"
+        "displayName": "Websites"
       }
     ]
   },
@@ -43,7 +43,7 @@
     "topics": [
       {
         "mid": "/m/080ag",
-        "display_name": "Analytics"
+        "displayName": "Analytics"
       }
     ]
   },
@@ -55,7 +55,7 @@
     "topics": [
       {
         "mid": "/m/07fhc",
-        "display_name": "Cooking"
+        "displayName": "Cooking"
       }
     ]
   }
