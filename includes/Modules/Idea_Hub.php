@@ -423,6 +423,8 @@ final class Idea_Hub extends Module
 						is_array( $response ) ? $response : array( $response )
 					)
 				);
+			case 'GET:new-ideas':
+				return $response->getIdeas();
 			case 'GET:published-post-ideas':
 				return array_filter(
 					array_map(
@@ -439,6 +441,8 @@ final class Idea_Hub extends Module
 						is_array( $response ) ? $response : array( $response )
 					)
 				);
+			case 'GET:saved-ideas':
+				return $response->getIdeas();
 		}
 
 		return parent::parse_data_response( $data, $response );
