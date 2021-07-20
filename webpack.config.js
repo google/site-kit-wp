@@ -155,6 +155,8 @@ function* webpackConfig( env, argv ) {
 			'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
 			'googlesitekit-modules-tagmanager': './assets/js/googlesitekit-modules-tagmanager.js',
 			'googlesitekit-user-input': './assets/js/googlesitekit-user-input.js',
+			'googlesitekit-idea-hub-post-list-notice': './assets/js/googlesitekit-idea-hub-post-list-notice.js',
+			'googlesitekit-idea-hub-notice': './assets/js/googlesitekit-idea-hub-notice.js',
 			// Old Modules
 			'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 			'googlesitekit-adminbar': './assets/js/googlesitekit-adminbar.js',
@@ -288,10 +290,6 @@ function* webpackConfig( env, argv ) {
 			'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
 			// Analytics advanced tracking script to be injected in the frontend.
 			'analytics-advanced-tracking': './assets/js/analytics-advanced-tracking.js',
-			// Idea Hub Post List notice.
-			'googlesitekit-idea-hub-post-list-notice': './assets/js/googlesitekit-idea-hub-post-list-notice.js',
-			// Idea Hub Block Editor notice.
-			'googlesitekit-idea-hub-notice': './assets/js/googlesitekit-idea-hub-notice.js',
 		},
 		externals,
 		output: {
