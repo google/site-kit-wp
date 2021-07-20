@@ -29,10 +29,10 @@ import SettingsActiveModule from '.';
 import { render, fireEvent, createTestRegistry, provideModules } from '../../../../../tests/js/test-utils';
 
 describe( 'SettingsModule', () => {
-	const SettingsModuleWithWrapper = () => (
+	const SettingsModuleWithWrapper = ( { slug = 'analytics' } ) => (
 		<Switch>
 			<Route path={ [ '/connected-services/:moduleSlug/:action', '/connected-services/:moduleSlug', '/connected-services' ] }>
-				<SettingsActiveModule slug="analytics" />
+				<SettingsActiveModule slug={ slug } />
 			</Route>
 		</Switch>
 	);
@@ -47,12 +47,17 @@ describe( 'SettingsModule', () => {
 
 		provideModules( registry, [ {
 			slug: 'analytics',
-			name: 'Analytics',
 			active: true,
 			connected: true,
-			setupComplete: true,
 			SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
 			SettingsViewComponent: () => <div data-testid="view-component">view</div>,
+		}, {
+			slug: 'pagespeed-insights',
+			active: true,
+			connected: true,
+			SettingsViewComponent: () => <div data-testid="view-component">view</div>,
+			// SettingsEditComponent is intentionally `null` here for no-edit-component tests below.
+			SettingsEditComponent: null,
 		} ] );
 	} );
 
@@ -70,6 +75,15 @@ describe( 'SettingsModule', () => {
 		const { queryByTestID } = render( <SettingsModuleWithWrapper />, { history, registry } );
 
 		expect( queryByTestID( 'edit-component' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should display SettingsViewComponent when on module edit route and module has no SettingsEditComponent', () => {
+		history.push( '/connected-services/pagespeed-insights/edit' );
+
+		const { queryByTestID } = render( <SettingsModuleWithWrapper slug="pagespeed-insights" />, { history, registry } );
+
+		expect( queryByTestID( 'edit-component' ) ).not.toBeInTheDocument();
+		expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should change route when "Edit" link is clicked and switch to SettingsEditComponent', async () => {
@@ -91,6 +105,17 @@ describe( 'SettingsModule', () => {
 		fireEvent.click( getByRole( 'link', { name: /cancel/i } ) );
 
 		expect( global.location.hash ).toEqual( '#/connected-services/analytics' );
+		expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should change route when "Close" button is clicked and continue rendering SettingsViewComponent when module has no SettingsEditComponent', async () => {
+		history.push( '/connected-services/pagespeed-insights/edit' );
+
+		const { getByRole, queryByTestID } = render( <SettingsModuleWithWrapper slug="pagespeed-insights" />, { history, registry } );
+
+		expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
+		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
+		expect( global.location.hash ).toEqual( '#/connected-services/pagespeed-insights' );
 		expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
 	} );
 
