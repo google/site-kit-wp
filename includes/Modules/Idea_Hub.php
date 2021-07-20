@@ -187,71 +187,87 @@ final class Idea_Hub extends Module
 		if ( is_null( $current_screen ) || 'edit-post' !== $current_screen->id || 'post' !== $post_type ) {
 			return $notices;
 		}
-		$dismissed_items_instance = new Dismissed_Items( $this->user_options );
 		$transients               = new Transients( $this->context );
-
-		$notice_settings = array(
-			'saved' => array(
-				'text' => esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ),
-				'cta'  => esc_html__( 'See saved ideas', 'google-site-kit' ),
-				'link' => $this->context->admin_url() . '#new-ideas',
-			),
-			'new'   => array(
-				'text' => esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub', 'google-site-kit' ),
-				'cta'  => esc_html__( 'See new ideas', 'google-site-kit' ),
-				'link' => $this->context->admin_url() . '#saved-ideas',
-			),
-		);
-
-		$dismissed_items = $dismissed_items_instance->get_dismissed_items();
-		$saved_ideas     = $transients->get( self::TRANSIENT_SAVED_IDEAS );
-		$new_ideas       = $transients->get( self::TRANSIENT_NEW_IDEAS );
-
-		if ( false === $saved_ideas ) {
-			$saved_ideas = $this->get_data( 'saved-ideas' );
-			$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
-		}
-
-		if ( false === $new_ideas ) {
-			$saved_ideas = $this->get_data( 'new-ideas' );
-			$transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, DAY_IN_SECONDS );
-		}
-
-		$has_saved_ideas = count( $saved_ideas ) > 0;
-		$has_new_ideas   = count( $new_ideas ) > 0;
-
-		if ( ! $has_saved_ideas && in_array( 'saved-ideas', $dismissed_items, true ) ) {
-			// Saved items no longer need to be dismissed as there are none currently.
-			$this->dismissed_items->delete( 'saved-ideas' );
-		}
-
-		if ( $has_saved_ideas && ! in_array( 'saved-ideas', $dismissed_items, true ) ) {
-			$type = 'saved';
-		} elseif ( $has_new_ideas && ! in_array( 'new-ideas', $dismissed_items, true ) ) {
-			$type = 'new';
-		} else {
-			return $notices;
-		}
-
-		$active_notice = $notice_settings[ $type ];
+		$dismissed_items_instance = new Dismissed_Items( $this->user_options );
+		$dismissed_items          = $dismissed_items_instance->get_dismissed_items();
+		$saved_ideas              = $transients->get( self::TRANSIENT_SAVED_IDEAS );
+		$new_ideas                = $transients->get( self::TRANSIENT_NEW_IDEAS );
 
 		$notices[] = new Notice(
-			$type,
+			'saved',
 			array(
-				'content'         => function() use ( $active_notice ) {
+				'content'         => function() {
+					$saved_notice = array(
+						'text' => esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ),
+						'cta'  => esc_html__( 'See saved ideas', 'google-site-kit' ),
+						'link' => $this->context->admin_url() . '#new-ideas',
+					);
 					ob_start();
 					?>
 					<p>
-						<?php echo esc_html( $active_notice['text'] ); ?>
-						<a href="<?php echo esc_url( $active_notice['link'] ); ?>"
-						><?php echo esc_html( $active_notice['cta'] ); ?></a>
+						<?php echo esc_html( $saved_notice['text'] ); ?>
+						<a href="<?php echo esc_url( $saved_notice['link'] ); ?>"
+						><?php echo esc_html( $saved_notice['cta'] ); ?></a>
 					</p>
 					<?php
 					return ob_get_clean();
 				},
 				'type'            => Notice::TYPE_INFO,
-				'active_callback' => function() {
-					return true;
+				'active_callback' => function() use ( $transients, $saved_ideas, $dismissed_items, $dismissed_items_instance ) {
+					if ( false === $saved_ideas ) {
+						$saved_ideas = $this->get_data( 'saved-ideas' );
+						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
+					}
+					$has_saved_ideas = count( $saved_ideas ) > 0;
+					if ( ! $has_saved_ideas && in_array( 'saved-ideas', $dismissed_items, true ) ) {
+						// Saved items no longer need to be dismissed as there are none currently.
+						$dismissed_items_instance->delete( 'saved-ideas' );
+					}
+
+					return $has_saved_ideas && ! in_array( 'saved-ideas', $dismissed_items, true );
+				},
+				'dismissible'     => true,
+			)
+		);
+		$notices[] = new Notice(
+			'new',
+			array(
+				'content'         => function() {
+					$new_notice = array(
+						'text' => esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub', 'google-site-kit' ),
+						'cta'  => esc_html__( 'See new ideas', 'google-site-kit' ),
+						'link' => $this->context->admin_url() . '#saved-ideas',
+					);
+					ob_start();
+					?>
+					<p>
+						<?php echo esc_html( $new_notice['text'] ); ?>
+						<a href="<?php echo esc_url( $new_notice['link'] ); ?>"
+						><?php echo esc_html( $new_notice['cta'] ); ?></a>
+					</p>
+					<?php
+					return ob_get_clean();
+				},
+				'type'            => Notice::TYPE_INFO,
+				'active_callback' => function() use ( $transients, $saved_ideas, $new_ideas, $dismissed_items ) {
+					if ( false === $saved_ideas ) {
+						$saved_ideas = $this->get_data( 'saved-ideas' );
+						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
+					}
+					$has_saved_ideas = count( $saved_ideas ) > 0;
+
+					if ( $has_saved_ideas && ! in_array( 'saved-ideas', $dismissed_items, true ) ) {
+						return false; // Saved ideas notice shown instead.
+					}
+
+					if ( false === $new_ideas ) {
+						$new_ideas = $this->get_data( 'new-ideas' );
+						$transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, DAY_IN_SECONDS );
+					}
+
+					$has_new_ideas = count( $new_ideas ) > 0;
+
+					return $has_new_ideas && ! in_array( 'new-ideas', $dismissed_items, true );
 				},
 				'dismissible'     => true,
 			)
