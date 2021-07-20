@@ -32,6 +32,8 @@ import ModulesList from '../ModulesList';
 import SuccessGreenSVG from '../../../svg/success-green.svg';
 import UserInputSuccessNotification from '../notifications/UserInputSuccessNotification';
 
+const MODULE_SLUGS = [ 'search-console', 'adsense', 'analytics', 'pagespeed-insights' ];
+
 class DashboardSetupAlerts extends Component {
 	render() {
 		// Only show the connected win when the user completes setup flow.
@@ -66,10 +68,24 @@ class DashboardSetupAlerts extends Component {
 					return null;
 				}
 
+				let showModuleList = true;
+
 				if ( slug && modulesData[ slug ] ) {
+					const numberOfActivatedModules = MODULE_SLUGS
+						.map( ( moduleSlug ) => modulesData[ moduleSlug ].setupComplete )
+						.filter( ( x ) => !! x ).length;
+
+					showModuleList = numberOfActivatedModules !== MODULE_SLUGS.length;
+
 					winData.id = `${ winData.id }-${ slug }`;
 					winData.setupTitle = modulesData[ slug ].name;
-					winData.description = __( 'Here are some other services you can connect to see even more stats:', 'google-site-kit' );
+
+					if ( showModuleList ) {
+						winData.description = __( 'Here are some other services you can connect to see even more stats:', 'google-site-kit' );
+					} else {
+						// Need to reset this because of default above.
+						winData.description = null;
+					}
 
 					winData = applyFilters( `googlesitekit.SetupWinNotification-${ slug }`, winData );
 				}
@@ -83,6 +99,7 @@ class DashboardSetupAlerts extends Component {
 							description={ winData.description }
 							handleDismiss={ () => {} }
 							WinImageSVG={ SuccessGreenSVG }
+							winImageSVGsize={ showModuleList ? 'large' : 'small' }
 							dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 							format="large"
 							type="win-success"
@@ -92,9 +109,9 @@ class DashboardSetupAlerts extends Component {
 							anchorLink={ 'pagespeed-insights' === slug ? '#googlesitekit-pagespeed-header' : '' }
 							anchorLinkLabel={ 'pagespeed-insights' === slug ? __( 'Jump to the bottom of the dashboard to see how fast your home page is', 'google-site-kit' ) : '' }
 						>
-							<ModulesList
-								moduleSlugs={ [ 'search-console', 'adsense', 'analytics', 'pagespeed-insights' ] }
-							/>
+							{ showModuleList && <ModulesList
+								moduleSlugs={ MODULE_SLUGS }
+							/> }
 						</Notification>
 					</Fragment>
 				);
