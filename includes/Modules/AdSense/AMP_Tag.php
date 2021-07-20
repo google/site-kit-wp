@@ -92,12 +92,12 @@ class AMP_Tag extends Module_AMP_Tag {
 
 		$attributes = '';
 		foreach ( $amp_auto_ads_opt_filtered as $amp_auto_ads_opt_key => $amp_auto_ads_opt_value ) {
-			$attributes .= sprintf( ' %s="%s"', $amp_auto_ads_opt_key, $amp_auto_ads_opt_value );
+			$attributes .= sprintf( ' %s="%s"', $amp_auto_ads_opt_key, esc_attr( $amp_auto_ads_opt_value ) );
 		}
 
 		printf(
 			'<amp-auto-ads type="adsense" %s%s></amp-auto-ads>',
-			esc_attr( $attributes ),
+			$attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			$this->get_tag_blocked_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
 	}
