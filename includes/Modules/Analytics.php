@@ -41,22 +41,22 @@ use Google\Site_Kit\Modules\Analytics\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics\Web_Tag;
 use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
-use Google\Site_Kit_Dependencies\Google_Service_Analytics;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsRequest;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_ReportRequest;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_Dimension;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DimensionFilter;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DimensionFilterClause;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRange;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_Metric;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_OrderBy;
-use Google\Site_Kit_Dependencies\Google_Service_Analytics_Accounts;
-use Google\Site_Kit_Dependencies\Google_Service_Analytics_Account;
-use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperties;
-use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperty;
-use Google\Site_Kit_Dependencies\Google_Service_Analytics_Profile;
-use Google\Site_Kit_Dependencies\Google_Service_Exception;
+use Google\Site_Kit_Dependencies\Google\Service\Analytics as Google_Service_Analytics;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting as Google_Service_AnalyticsReporting;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\GetReportsRequest as Google_Service_AnalyticsReporting_GetReportsRequest;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\ReportRequest as Google_Service_AnalyticsReporting_ReportRequest;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\Dimension as Google_Service_AnalyticsReporting_Dimension;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\DimensionFilter as Google_Service_AnalyticsReporting_DimensionFilter;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\DimensionFilterClause as Google_Service_AnalyticsReporting_DimensionFilterClause;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\DateRange as Google_Service_AnalyticsReporting_DateRange;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\Metric as Google_Service_AnalyticsReporting_Metric;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\OrderBy as Google_Service_AnalyticsReporting_OrderBy;
+use Google\Site_Kit_Dependencies\Google\Service\Analytics\Accounts as Google_Service_Analytics_Accounts;
+use Google\Site_Kit_Dependencies\Google\Service\Analytics\Account as Google_Service_Analytics_Account;
+use Google\Site_Kit_Dependencies\Google\Service\Analytics\Webproperties as Google_Service_Analytics_Webproperties;
+use Google\Site_Kit_Dependencies\Google\Service\Analytics\Webproperty as Google_Service_Analytics_Webproperty;
+use Google\Site_Kit_Dependencies\Google\Service\Analytics\Profile as Google_Service_Analytics_Profile;
+use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
@@ -1323,5 +1323,4 @@ final class Analytics extends Module
 
 		return null;
 	}
-
 }

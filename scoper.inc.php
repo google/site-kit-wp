@@ -19,7 +19,7 @@ $google_services = implode(
 		'Adsense',
 		'GoogleAnalyticsAdmin',
 		'Ideahub',
-		'Pagespeedonline',
+		'PagespeedInsights',
 		'PeopleService',
 		'SearchConsole',
 		'SiteVerification',
@@ -72,7 +72,7 @@ return array(
 					'vendor-bin',
 				)
 			)
-			->path( "#^google/apiclient-services/src/Google/Service/($google_services)/#" )
+			->path( "#^google/apiclient-services/src/($google_services)/#" )
 			->in( 'vendor' ),
 
 		// Google API service entry classes.
@@ -81,7 +81,13 @@ return array(
 			->ignoreVCS( true )
 			->name( "#^($google_services)\.php$#" )
 			->depth( '== 0' )
-			->in( 'vendor/google/apiclient-services/src/Google/Service' ),
+			->in( 'vendor/google/apiclient-services/src' ),
+		Finder::create()
+			->files()
+			->ignoreVCS( true )
+			->name( '#^autoload.php$#' )
+			->depth( '== 0' )
+			->in( 'vendor/google/apiclient-services' ),
 	),
 	'files-whitelist'            => array(
 
@@ -103,10 +109,6 @@ return array(
 			if ( false !== strpos( $file_path, 'vendor/google/apiclient/' ) ) {
 				$contents = str_replace( "'Google_", "'" . $prefix . '\Google_', $contents );
 				$contents = str_replace( '"Google_', '"' . $prefix . '\Google_', $contents );
-			}
-			if ( false !== strpos( $file_path, 'vendor/google/apiclient-services/' ) ) {
-				$contents = str_replace( "'Google_Service_", "'" . $prefix . '\Google_Service_', $contents );
-				$contents = str_replace( '"Google_Service_', '"' . $prefix . '\Google_Service_', $contents );
 			}
 			return $contents;
 		},

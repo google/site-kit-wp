@@ -14,7 +14,7 @@ use Exception;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
-use Google\Site_Kit_Dependencies\Google_Service_SearchConsole;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole as Google_Service_SearchConsole;
 use WP_REST_Server;
 
 /**

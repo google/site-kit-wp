@@ -26,11 +26,11 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\Exception\RedirectException;
-use Google\Site_Kit_Dependencies\Google_Service_Analytics;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_ReportRequest;
-use Google\Site_Kit_Dependencies\Google_Service_Analytics_Resource_ManagementWebproperties;
-use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_OrderBy;
-use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperty;
+use Google\Site_Kit_Dependencies\Google\Service\Analytics as Google_Service_Analytics;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\ReportRequest as Google_Service_AnalyticsReporting_ReportRequest;
+use Google\Site_Kit_Dependencies\Google\Service\Analytics_Resource\ManagementWebproperties as Google_Service_Analytics_Resource_ManagementWebproperties;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsReporting\OrderBy as Google_Service_AnalyticsReporting_OrderBy;
+use Google\Site_Kit_Dependencies\Google\Service\Analytics\Webproperty as Google_Service_Analytics_Webproperty;
 use \ReflectionMethod;
 
 /**

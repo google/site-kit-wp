@@ -97,7 +97,6 @@ class WizardStepAuthentication extends Component {
 
 WizardStepAuthentication.propTypes = {
 	connectURL: PropTypes.string.isRequired,
-	helpVisibilityEnabled: PropTypes.bool,
 	resetAndRestart: PropTypes.func,
 };
 

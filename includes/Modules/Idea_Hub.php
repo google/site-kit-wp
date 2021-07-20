@@ -537,7 +537,7 @@ final class Idea_Hub extends Module
 			return array_merge(
 				array(
 					'postID'      => $post_id,
-					'postEditURL' => get_edit_post_link( $post_id ),
+					'postEditURL' => get_edit_post_link( $post_id, null ),
 				),
 				$this->get_post_idea( $post_id )
 			);
