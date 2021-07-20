@@ -69,6 +69,7 @@ const WPDashboardWidgets = () => {
 	const analyticsModule = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'analytics' ) );
 	const analyticsModuleActive = analyticsModule?.active;
 	const analyticsModuleConnected = analyticsModule?.connected;
+	const analyticsModuleActiveAndConnected = analyticsModuleActive && analyticsModuleConnected;
 
 	// The two Analytics widgets at the top can be combined (i.e. the second can be hidden)
 	// if they are both ReportZero.
@@ -101,7 +102,7 @@ const WPDashboardWidgets = () => {
 		) }>
 			<WPDashboardIdeaHub />
 
-			{ analyticsModuleActive && analyticsModuleConnected && (
+			{ analyticsModuleActiveAndConnected && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsWidget />
 					{
@@ -126,13 +127,15 @@ const WPDashboardWidgets = () => {
 				</div>
 			) }
 
-			{ analyticsModuleActive && analyticsModuleConnected && ! shouldCombineAnalyticsArea2 && <WPDashboardPopularPagesWidget /> }
+			{ analyticsModuleActiveAndConnected && ! shouldCombineAnalyticsArea2 && <WPDashboardPopularPagesWidget /> }
 
-			<div className={ HIDDEN_CLASS }>
-				{ shouldCombineSearchConsoleWidgets && <WPDashboardClicksWidget /> }
-				{ shouldCombineAnalyticsArea1 && <WPDashboardSessionDurationWidget /> }
-				{ shouldCombineAnalyticsArea2 && <WPDashboardPopularPagesWidget /> }
-			</div>
+			{ ( shouldCombineSearchConsoleWidgets || shouldCombineAnalyticsArea1 || shouldCombineAnalyticsArea2 ) &&
+				<div className={ HIDDEN_CLASS }>
+					{ shouldCombineSearchConsoleWidgets && <WPDashboardClicksWidget /> }
+					{ analyticsModuleActiveAndConnected && shouldCombineAnalyticsArea1 && <WPDashboardSessionDurationWidget /> }
+					{ analyticsModuleActiveAndConnected && shouldCombineAnalyticsArea2 && <WPDashboardPopularPagesWidget /> }
+				</div>
+			}
 		</div>
 	);
 };
