@@ -30,8 +30,6 @@ const { dispatch } = Data;
 
 const WEEK_IN_SECONDS = 3600 * 24 * 7;
 
-const dismissNotice = ( slug, expiresInSeconds ) => dispatch( CORE_USER ).dismissItem( slug, expiresInSeconds );
-
 domReady( () => {
 	const newNotice = document.getElementById( 'googlesitekit-notice-new' );
 	const savedNotice = document.getElementById( 'googlesitekit-notice-saved' );
@@ -53,7 +51,7 @@ domReady( () => {
 			return;
 		}
 		const slug = type === 'new' ? 'new-ideas' : 'saved-ideas';
-		const expirationType = type === 'new' ? WEEK_IN_SECONDS : 0;
-		button.addEventListener( 'click', () => dismissNotice( slug, expirationType ) );
+		const expiresInSeconds = type === 'new' ? WEEK_IN_SECONDS : 0;
+		button.addEventListener( 'click', () => dispatch( CORE_USER ).dismissItem( slug, expiresInSeconds ) );
 	}, 1 );
 } );
