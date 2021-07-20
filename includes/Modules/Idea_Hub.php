@@ -618,7 +618,9 @@ final class Idea_Hub extends Module
 	 */
 	private function fetch_ideas( $type ) {
 		$parent = $this->get_parent_slug();
-		$params = array();
+		$params = array(
+			'pageSize' => 100,
+		);
 
 		if ( 'saved' === $type ) {
 			$params['filter'] = 'saved(true)';
