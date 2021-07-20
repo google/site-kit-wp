@@ -75,7 +75,9 @@ export default function SettingsRenderer( { slug } ) {
 
 	if ( isEditing && SettingsEditComponent ) {
 		return <SettingsEditComponent />;
-	} else if ( ! isEditing && SettingsViewComponent ) {
+	} else if ( isEditing && ! SettingsEditComponent ) {
+		return <SettingsViewComponent />;
+	} else if ( SettingsViewComponent ) {
 		return <SettingsViewComponent />;
 	}
 
