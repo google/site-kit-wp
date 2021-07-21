@@ -37,7 +37,7 @@ describe( 'core/user dismissed-items', () => {
 			it( 'should save settings and return new dismissed items', async () => {
 				fetchMock.postOnce( fetchDismissItem, { body: [ 'foo', 'bar', 'baz' ] } );
 
-				await registry.dispatch( STORE_NAME ).dismissItem( 'baz', 3 );
+				await registry.dispatch( STORE_NAME ).dismissItem( 'baz', { expiresInSeconds: 3 } );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched( fetchDismissItem, {

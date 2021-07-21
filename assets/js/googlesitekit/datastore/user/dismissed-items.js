@@ -69,16 +69,19 @@ const baseActions = {
 	 *
 	 * @since 1.37.0
 	 *
-	 * @param {string} slug             Item slug to dismiss.
-	 * @param {number} expiresInSeconds An integer number of seconds for expiry. 0 denotes permanent dismissal.
+	 * @param {string} slug                       Item slug to dismiss.
+	 * @param {Object} options                    Dismiss item options.
+	 * @param {number} [options.expiresInSeconds] Optional. An integer number of seconds for expiry. 0 denotes permanent dismissal.
 	 * @return {Object} Generator instance.
 	 */
 	dismissItem: createValidatedAction(
-		( slug, expiresInSeconds = 0 ) => {
+		( slug, options = {} ) => {
+			const { expiresInSeconds = 0 } = options;
 			invariant( slug, 'A tour slug is required to dismiss a tour.' );
 			invariant( Number.isInteger( expiresInSeconds ), 'expiresInSeconds must be an integer.' );
 		},
-		function* ( slug, expiresInSeconds = 0 ) {
+		function* ( slug, options = {} ) {
+			const { expiresInSeconds = 0 } = options;
 			return yield fetchDismissItemStore.actions.fetchDismissItem( slug, expiresInSeconds );
 		},
 	),

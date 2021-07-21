@@ -44,6 +44,6 @@ domReady( () => {
 			return;
 		}
 		const expiresInSeconds = type === 'new-ideas' ? WEEK_IN_SECONDS : 0;
-		button.addEventListener( 'click', () => dispatch( CORE_USER ).dismissItem( type, expiresInSeconds ) );
+		button.addEventListener( 'click', () => dispatch( CORE_USER ).dismissItem( type, { expiresInSeconds } ) );
 	}, 1 );
 } );
