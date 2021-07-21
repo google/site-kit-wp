@@ -55,7 +55,7 @@ const fetchDismissItemStore = createFetchStore( {
 	},
 	validateParams: ( { slug, expiresInSeconds } = {} ) => {
 		invariant( slug, 'slug is required.' );
-		invariant( Number.isInteger( expiresInSeconds ), 'expiresInSeconds should be an integer.' );
+		invariant( Number.isInteger( expiresInSeconds ), 'expiresInSeconds must be an integer.' );
 	},
 } );
 
