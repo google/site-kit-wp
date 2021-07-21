@@ -189,12 +189,9 @@ final class Idea_Hub extends Module
 		}
 		$transients               = new Transients( $this->context );
 		$dismissed_items_instance = new Dismissed_Items( $this->user_options );
-		if ( $dismissed_items_instance->is_dismissed( 'saved-ideas' ) && $dismissed_items_instance->is_dismissed( 'new-ideas' ) ) {
-			return $notices;
-		}
-		$dismissed_items = $dismissed_items_instance->get_dismissed_items();
-		$saved_ideas     = $transients->get( self::TRANSIENT_SAVED_IDEAS );
-		$new_ideas       = $transients->get( self::TRANSIENT_NEW_IDEAS );
+		$dismissed_items          = $dismissed_items_instance->get_dismissed_items();
+		$saved_ideas              = $transients->get( self::TRANSIENT_SAVED_IDEAS );
+		$new_ideas                = $transients->get( self::TRANSIENT_NEW_IDEAS );
 
 		$notices[] = new Notice(
 			'idea-hub_saved-ideas',
@@ -217,6 +214,9 @@ final class Idea_Hub extends Module
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() use ( $transients, $saved_ideas, $dismissed_items, $dismissed_items_instance ) {
+					if ( $dismissed_items_instance->is_dismissed( 'saved-ideas' ) ) {
+						return false;
+					}
 					if ( false === $saved_ideas ) {
 						$saved_ideas = $this->get_data( 'saved-ideas' );
 						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
@@ -252,7 +252,10 @@ final class Idea_Hub extends Module
 					return ob_get_clean();
 				},
 				'type'            => Notice::TYPE_INFO,
-				'active_callback' => function() use ( $transients, $saved_ideas, $new_ideas, $dismissed_items ) {
+				'active_callback' => function() use ( $transients, $saved_ideas, $new_ideas, $dismissed_items, $dismissed_items_instance ) {
+					if ( $dismissed_items_instance->is_dismissed( 'new-ideas' ) ) {
+						return false;
+					}
 					if ( false === $saved_ideas ) {
 						$saved_ideas = $this->get_data( 'saved-ideas' );
 						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
