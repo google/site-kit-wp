@@ -56,7 +56,6 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 		} = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
-			weekdayAlign: true,
 		} );
 
 		const args = {

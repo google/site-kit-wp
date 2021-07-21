@@ -44,7 +44,7 @@ const { useSelect, useDispatch } = Data;
 
 const DISMISS_ITEM_IDEA_HUB_CTA = 'idea-hub-cta';
 
-function DashboardCTA( { Widget } ) {
+function DashboardCTA( { Widget, WidgetNull } ) {
 	const { connected, active } = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'idea-hub' ) );
 	const dismissed = useSelect( ( select ) => select( CORE_USER ).isItemDismissed( DISMISS_ITEM_IDEA_HUB_CTA ) );
 
@@ -72,7 +72,7 @@ function DashboardCTA( { Widget } ) {
 
 	// Don't render this component if it has been dismissed or dismissed items aren't loaded yet.
 	if ( dismissed || dismissed === undefined ) {
-		return null;
+		return <WidgetNull />;
 	}
 
 	return (

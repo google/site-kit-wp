@@ -90,13 +90,25 @@ describe( 'Link', () => {
 			expect( container.firstChild.tagName ).toEqual( 'A' );
 		} );
 
+		it( 'creates an <a> attribute even when an onClick prop is supplied', () => {
+			const { container } = render( <Link href="/" onClick={ () => {} }>text content</Link> );
+
+			expect( container.firstChild.tagName ).toEqual( 'A' );
+		} );
+
 		it( 'creates an <a> attribute when using React Router', () => {
 			const { container } = render( <Link to="/">text content</Link> );
 
 			expect( container.firstChild.tagName ).toEqual( 'A' );
 		} );
 
-		it( 'creates a <button> tag when `onClick` is set', () => {
+		it( 'creates an <a> attribute when using React Router, even when an onClick prop is supplied', () => {
+			const { container } = render( <Link to="/" onClick={ () => {} }>text content</Link> );
+
+			expect( container.firstChild.tagName ).toEqual( 'A' );
+		} );
+
+		it( 'creates a <button> tag when no `href` or `to` prop exists, but `onClick` is set', () => {
 			const { container } = render( <Link onClick={ () => {} }>text content</Link> );
 
 			expect( container.firstChild.tagName ).toEqual( 'BUTTON' );
