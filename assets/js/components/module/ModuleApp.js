@@ -32,11 +32,9 @@ import classNames from 'classnames';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { useFeature } from '../../hooks/useFeature';
 import Header from '../Header';
 import Alert from '../Alert';
 import ModuleHeader from './ModuleHeader';
-import LegacyModuleApp from './LegacyModuleApp';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import HelpMenu from '../help/HelpMenu';
 import DateRangeSelector from '../DateRangeSelector';
@@ -48,7 +46,6 @@ const { useSelect } = Data;
 function ModuleApp( { moduleSlug } ) {
 	const screenWidgetContext = useSelect( ( select ) => select( CORE_MODULES ).getScreenWidgetContext( moduleSlug ) );
 	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleSlug ) );
-	const moduleScreensWidgetsEnabled = useFeature( 'widgets.moduleScreens' );
 	const getModuleHeader = () => <ModuleHeader moduleSlug={ moduleSlug } />;
 
 	return (
@@ -64,18 +61,14 @@ function ModuleApp( { moduleSlug } ) {
 				{ moduleConnected && <DateRangeSelector /> }
 			</Header>
 			<Alert module={ moduleSlug } />
-			{ moduleScreensWidgetsEnabled && (
-				<WidgetContextRenderer
-					slug={ screenWidgetContext }
-					className={ classNames( [
-						'googlesitekit-module-page',
-						`googlesitekit-module-page--${ moduleSlug }`,
-					] ) }
-					Header={ getModuleHeader }
-				/>
-			)
-			}
-			{ ! moduleScreensWidgetsEnabled && <LegacyModuleApp /> }
+			<WidgetContextRenderer
+				slug={ screenWidgetContext }
+				className={ classNames( [
+					'googlesitekit-module-page',
+					`googlesitekit-module-page--${ moduleSlug }`,
+				] ) }
+				Header={ getModuleHeader }
+			/>
 		</Fragment>
 	);
 }
