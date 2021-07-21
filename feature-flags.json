@@ -5,6 +5,5 @@
   "userFeedback",
   "userInput",
   "widgets.dashboard",
-  "widgets.pageDashboard",
-  "widgets.moduleScreens"
+  "widgets.pageDashboard"
 ]
