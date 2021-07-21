@@ -25,14 +25,20 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Cell, Grid, Row } from '../../material-components';
 import Layout from '../layout/Layout';
 import Checkbox from '../Checkbox';
+const { useDispatch, useSelect } = Data;
 
 export default function SettingsPlugin() {
-	const onAdminBarToggle = useCallback( () => {
+	const showAdminBar = useSelect( ( select ) => select( CORE_SITE ).getShowAdminBar() );
 
-	}, [] );
+	const { setShowAdminBar } = useDispatch( CORE_SITE );
+	const onAdminBarToggle = useCallback( ( { target } ) => {
+		setShowAdminBar( !! target.checked );
+	}, [ setShowAdminBar ] );
 
 	return (
 		<Layout
@@ -51,6 +57,7 @@ export default function SettingsPlugin() {
 										id="admin-bar-toggle"
 										name="admin-bar-toggle"
 										value="1"
+										checked={ showAdminBar }
 										onChange={ onAdminBarToggle }
 									>
 										<span>
