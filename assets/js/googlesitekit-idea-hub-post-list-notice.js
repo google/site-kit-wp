@@ -31,18 +31,11 @@ const { dispatch } = Data;
 const WEEK_IN_SECONDS = 3600 * 24 * 7;
 
 domReady( () => {
-	const newNotice = document.getElementById( 'googlesitekit-notice-new' );
-	const savedNotice = document.getElementById( 'googlesitekit-notice-saved' );
-	let type, notice;
-	if ( newNotice ) {
-		type = 'new';
-		notice = newNotice;
-	} else if ( savedNotice ) {
-		type = 'saved';
-		notice = savedNotice;
-	} else {
+	const notice = document.querySelector( '[id="googlesitekit-notice-idea-hub_new-ideas"],[id="googlesitekit-notice-idea-hub_saved-ideas"]' );
+	if ( ! notice ) {
 		return;
 	}
+	const type = notice.id.replace( 'googlesitekit-notice-idea-hub_', '' );
 
 	// Button pops up only after the timeout passes
 	setTimeout( () => {
@@ -50,8 +43,7 @@ domReady( () => {
 		if ( ! button ) {
 			return;
 		}
-		const slug = type === 'new' ? 'new-ideas' : 'saved-ideas';
-		const expiresInSeconds = type === 'new' ? WEEK_IN_SECONDS : 0;
-		button.addEventListener( 'click', () => dispatch( CORE_USER ).dismissItem( slug, expiresInSeconds ) );
+		const expiresInSeconds = type === 'new-ideas' ? WEEK_IN_SECONDS : 0;
+		button.addEventListener( 'click', () => dispatch( CORE_USER ).dismissItem( type, expiresInSeconds ) );
 	}, 1 );
 } );
