@@ -27,7 +27,6 @@ import invariant from 'invariant';
 import {
 	getPreviousDate,
 	getDateString,
-	getPreviousWeekDate,
 	isValidDateRange,
 	isValidDateString,
 	INVALID_DATE_RANGE_ERROR,
@@ -147,14 +146,12 @@ export const selectors = {
 	 * @param {boolean} [options.compare]       Set to true if date ranges to compare should be included. Default is: false.
 	 * @param {number}  [options.offsetDays]    Number of days to offset. Default is: 0.
 	 * @param {string}  [options.referenceDate] Used for testing to set a static date. Default is the datastore's reference date.
-	 * @param {boolean} [options.weekDayAlign]  Set to true if the compared date range should be aligned for the weekdays. Default is: false.
 	 * @return {DateRangeReturnObj}             Object containing dates for date ranges.
 	 */
 	getDateRangeDates( state, {
 		compare = false,
 		offsetDays = 0,
 		referenceDate = state.referenceDate,
-		weekDayAlign = false,
 	} = {} ) {
 		const dateRange = selectors.getDateRange( state );
 		const endDate = getPreviousDate( referenceDate, offsetDays );
@@ -164,9 +161,7 @@ export const selectors = {
 		const dates = { startDate, endDate };
 
 		if ( compare ) {
-			const compareEndDate = weekDayAlign
-				? getPreviousWeekDate( endDate, numberOfDays )
-				: getPreviousDate( startDate, 1 );
+			const compareEndDate = getPreviousDate( startDate, 1 );
 			const compareStartDate = getPreviousDate( compareEndDate, numberOfDays - 1 );
 			dates.compareStartDate = compareStartDate;
 			dates.compareEndDate = compareEndDate;

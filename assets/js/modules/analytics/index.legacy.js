@@ -26,7 +26,6 @@ import { addFilter } from '@wordpress/hooks';
  */
 import { getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
-import LegacyAnalyticsDashboardWidget from './components/dashboard/LegacyAnalyticsDashboardWidget';
 import LegacyAnalyticsDashboardWidgetTopLevel from './components/dashboard/LegacyAnalyticsDashboardWidgetTopLevel';
 import AnalyticsDashboardDetailsWidgetTopAcquisitionSources from './components/dashboard-details/AnalyticsDashboardDetailsWidgetTopAcquisitionSources';
 import LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable from './components/dashboard/LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable';
@@ -39,7 +38,6 @@ const slug = 'analytics';
 const modulesData = getModulesData();
 
 if ( modulesData.analytics.active ) {
-	const addAnalyticsDashboardWidget = createAddToFilter( <LegacyAnalyticsDashboardWidget /> );
 	const legacyDashboardAllTraffic = createAddToFilter( <LegacyDashboardAllTraffic /> );
 	const addLegacyAnalyticsDashboardWidgetTopLevel = createAddToFilter( <LegacyAnalyticsDashboardWidgetTopLevel /> );
 	const addAnalyticsDashboardDetailsWidget = createAddToFilter( <AnalyticsDashboardDetailsWidgetTopAcquisitionSources /> );
@@ -69,15 +67,6 @@ if ( modulesData.analytics.active ) {
 	addFilter( 'googlesitekit.DashboardDetailsModule',
 		'googlesitekit.Analytics',
 		addAnalyticsDashboardDetailsWidget, 20 );
-
-	if ( modulesData[ slug ].setupComplete ) {
-		/**
-		 * Add components to the module detail page.
-		 */
-		addFilter( 'googlesitekit.ModuleApp-' + slug,
-			'googlesitekit.Analytics',
-			addAnalyticsDashboardWidget );
-	}
 
 	/**
 	 * Add components to the AdSense Dashboard.
