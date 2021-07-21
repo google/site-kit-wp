@@ -79,20 +79,20 @@ class AMP_Tag extends Module_AMP_Tag {
 		$this->adsense_tag_printed = true;
 
 		$amp_auto_ads_opt = array(
-			'data-ad-client' => $this->tag_id,
+			'ad-client' => $this->tag_id,
 		);
 
-		$amp_auto_ads_opt_filtered = apply_filters( 'googlesitekit_amp_auto_ads_attributes', $amp_auto_ads_opt );
+		$amp_auto_ads_opt_filtered = apply_filters( 'googlesitekit_amp_auto_ads_attributes', $amp_auto_ads_opt, $this->tag_id );
 
-		if ( ! is_array( $amp_auto_ads_opt_filtered ) ) {
+		if ( ! is_array( $amp_auto_ads_opt_filtered ) || empty( $amp_auto_ads_opt_filtered ) ) {
 			$amp_auto_ads_opt_filtered = $amp_auto_ads_opts;
 		}
 
-		$amp_auto_ads_opt_filtered['data-ad-client'] = $this->tag_id;
+		$amp_auto_ads_opt_filtered['ad-client'] = $this->tag_id;
 
 		$attributes = '';
 		foreach ( $amp_auto_ads_opt_filtered as $amp_auto_ads_opt_key => $amp_auto_ads_opt_value ) {
-			$attributes .= sprintf( ' %s="%s"', $amp_auto_ads_opt_key, esc_attr( $amp_auto_ads_opt_value ) );
+			$attributes .= sprintf( ' data-%s="%s"', esc_attr( $amp_auto_ads_opt_key ), esc_attr( $amp_auto_ads_opt_value ) );
 		}
 
 		printf(
@@ -150,18 +150,23 @@ class AMP_Tag extends Module_AMP_Tag {
 		);
 
 		$amp_auto_ads_opt = array(
-			'data-ad-client' => $this->tag_id,
-			'data-ad-slot'   => $this->story_ad_slot_id,
+			'ad-client' => $this->tag_id,
+			'ad-slot'   => $this->story_ad_slot_id,
 		);
 
-		$amp_auto_ads_opt_filtered = apply_filters( 'googlesitekit_amp_story_auto_ads_attributes', $amp_auto_ads_opt );
+		$amp_auto_ads_opt_filtered = apply_filters( 'googlesitekit_amp_story_auto_ads_attributes', $amp_auto_ads_opt, $this->tag_id, $this->story_ad_slot_id );
 
-		if ( ! is_array( $amp_auto_ads_opt_filtered ) ) {
+		if ( ! is_array( $amp_auto_ads_opt_filtered ) || empty( $amp_auto_ads_opt_filtered ) ) {
 			$amp_auto_ads_opt_filtered = $amp_auto_ads_opt;
 		}
 
-		$amp_auto_ads_opt_filtered['data-ad-client'] = $this->tag_id;
-		$config['ad-attributes']                     = array_merge( $config['ad-attributes'], $amp_auto_ads_opt_filtered );
+		$amp_auto_ads_opt_filtered['ad-client'] = $this->tag_id;
+		foreach ( $amp_auto_ads_opt_filtered as $key => $value ) {
+			$amp_auto_ads_opt_filtered[ 'data-' . $key ] = $value;
+			unset( $amp_auto_ads_opt_filtered[ $key ] );
+		}
+
+		$config['ad-attributes'] = array_merge( $config['ad-attributes'], $amp_auto_ads_opt_filtered );
 
 		printf( '<amp-story-auto-ads><script type="application/json">%s</script></amp-story-auto-ads>', wp_json_encode( $config ) );
 	}

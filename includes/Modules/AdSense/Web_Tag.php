@@ -62,9 +62,9 @@ class Web_Tag extends Module_Web_Tag {
 			'tag_partner'           => 'site_kit',
 		);
 
-		$auto_ads_opt_filtered = apply_filters( 'googlesitekit_auto_ads_opt', $auto_ads_opt );
+		$auto_ads_opt_filtered = apply_filters( 'googlesitekit_auto_ads_opt', $auto_ads_opt, $this->tag_id );
 
-		if ( ! is_array( $auto_ads_opt_filtered ) ) {
+		if ( ! is_array( $auto_ads_opt_filtered ) || empty( $auto_ads_opt_filtered ) ) {
 			$auto_ads_opt_filtered = $auto_ads_opt;
 		}
 
