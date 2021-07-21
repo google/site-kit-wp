@@ -104,7 +104,7 @@ export default function Footer( props ) {
 		);
 		const submitButton = (
 			<Button
-				disabled={ isSaving || ( hasSettings && ! canSubmitChanges ) }
+				disabled={ isSaving || ! canSubmitChanges }
 				onClick={ handleConfirm }
 			>
 				{ isSaving
