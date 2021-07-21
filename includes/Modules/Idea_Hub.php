@@ -197,7 +197,7 @@ final class Idea_Hub extends Module
 		$new_ideas       = $transients->get( self::TRANSIENT_NEW_IDEAS );
 
 		$notices[] = new Notice(
-			'saved',
+			'idea-hub_saved-ideas',
 			array(
 				'content'         => function() {
 					$saved_notice = array(
@@ -233,7 +233,7 @@ final class Idea_Hub extends Module
 			)
 		);
 		$notices[] = new Notice(
-			'new',
+			'idea-hub_new-ideas',
 			array(
 				'content'         => function() {
 					$new_notice = array(
