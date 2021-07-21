@@ -79,9 +79,9 @@ class NotificationCounter extends Component {
 	}
 
 	render() {
-		const wpMenuNameEl = document.querySelector( '#toplevel_page_googlesitekit-dashboard .wp-menu-name' );
+		const wpMenuNameElement = document.querySelector( '#toplevel_page_googlesitekit-dashboard .wp-menu-name' );
 
-		if ( ! wpMenuNameEl ) {
+		if ( ! wpMenuNameElement ) {
 			return null;
 		}
 
@@ -102,7 +102,7 @@ class NotificationCounter extends Component {
 			</span>
 		);
 
-		return createPortal( markup, wpMenuNameEl );
+		return createPortal( markup, wpMenuNameElement );
 	}
 }
 
