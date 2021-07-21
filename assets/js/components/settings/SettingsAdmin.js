@@ -40,6 +40,7 @@ import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
 import UserInputSettings from '../notifications/UserInputSettings';
 import { useFeature } from '../../hooks/useFeature';
 import { trackEvent } from '../../util';
+import SettingsPlugin from './SettingsPlugin';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsAdmin() {
@@ -136,25 +137,7 @@ export default function SettingsAdmin() {
 			</Cell>
 
 			<Cell size={ 12 }>
-				<Layout
-					className="googlesitekit-settings-meta"
-					title={ __( 'Plugin Settings', 'google-site-kit' ) }
-					header
-					fill
-				>
-					<div className="googlesitekit-settings-module googlesitekit-settings-module--active">
-						<Grid>
-							<Row>
-								<Cell size={ 12 }>
-									<div className="googlesitekit-settings-module__meta-items">
-										<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--nomargin">
-										</div>
-									</div>
-								</Cell>
-							</Row>
-						</Grid>
-					</div>
-				</Layout>
+				<SettingsPlugin />
 			</Cell>
 
 			<Cell size={ 12 }>
