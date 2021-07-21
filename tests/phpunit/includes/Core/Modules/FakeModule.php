@@ -220,12 +220,11 @@ class FakeModule extends Module
 	 * @param int    $offset        Days the range should be offset by. Default 1. Used by Search Console where
 	 *                              data is delayed by two days.
 	 * @param bool   $previous      Whether to select the previous period. Default false.
-	 * @param bool   $weekday_align Whether to align the previous period days of the week to current period. Default false.
 	 *
 	 * @return array List with two elements, the first with the start date and the second with the end date, both as
 	 *               'Y-m-d'.
 	 */
-	public function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false, $weekday_align = false ) { // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod
-		return parent::parse_date_range( $range, $multiplier, $offset, $previous, $weekday_align );
+	public function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false ) { // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod
+		return parent::parse_date_range( $range, $multiplier, $offset, $previous );
 	}
 }
