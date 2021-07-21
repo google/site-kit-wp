@@ -20,14 +20,20 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { Cell, Grid, Row } from '../../material-components';
 import Layout from '../layout/Layout';
+import Checkbox from '../Checkbox';
 
 export default function SettingsPlugin() {
+	const onAdminBarToggle = useCallback( () => {
+
+	}, [] );
+
 	return (
 		<Layout
 			className="googlesitekit-settings-meta"
@@ -41,6 +47,16 @@ export default function SettingsPlugin() {
 						<Cell size={ 12 }>
 							<div className="googlesitekit-settings-module__meta-items">
 								<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--nomargin">
+									<Checkbox
+										id="admin-bar-toggle"
+										name="admin-bar-toggle"
+										value="1"
+										onChange={ onAdminBarToggle }
+									>
+										<span>
+											{ __( 'Display relevant page stats in the Admin bar', 'google-site-kit' ) }
+										</span>
+									</Checkbox>
 								</div>
 							</div>
 						</Cell>
