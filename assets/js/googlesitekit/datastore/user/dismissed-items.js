@@ -76,7 +76,7 @@ const baseActions = {
 	dismissItem: createValidatedAction(
 		( slug, expiresInSeconds = 0 ) => {
 			invariant( slug, 'A tour slug is required to dismiss a tour.' );
-			invariant( Number.isInteger( expiresInSeconds ), 'expiresInSeconds should be an integer.' );
+			invariant( Number.isInteger( expiresInSeconds ), 'expiresInSeconds must be an integer.' );
 		},
 		function* ( slug, expiresInSeconds = 0 ) {
 			return yield fetchDismissItemStore.actions.fetchDismissItem( slug, expiresInSeconds );
