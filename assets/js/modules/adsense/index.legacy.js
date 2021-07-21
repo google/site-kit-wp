@@ -21,7 +21,6 @@
  */
 import { createAddToFilter } from '../../util/helpers';
 import { getModulesData } from '../../util';
-import AdSenseDashboardWidget from './components/dashboard/AdSenseDashboardWidget';
 import LegacyDashboardEarnings from './components/dashboard/LegacyDashboardEarnings';
 
 /**
@@ -32,18 +31,10 @@ const slug = 'adsense';
 
 const modulesData = getModulesData();
 if ( modulesData.adsense.active ) {
-	const addAdSenseDashboardWidget = createAddToFilter( <AdSenseDashboardWidget /> );
 	const addLegacyDashboardEarnings = createAddToFilter( <LegacyDashboardEarnings /> );
 
 	// If setup is complete, show the AdSense data.
 	if ( modulesData[ slug ].setupComplete ) {
-		/**
-		 * Action triggered when the settings App is loaded.
-		 */
-		addFilter( `googlesitekit.ModuleApp-${ slug }`,
-			'googlesitekit.ModuleApp',
-			addAdSenseDashboardWidget );
-
 		addFilter( 'googlesitekit.DashboardModule',
 			'googlesitekit.DashboardEarningModule',
 			addLegacyDashboardEarnings, 50 );
