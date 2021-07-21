@@ -20,6 +20,7 @@ use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Exception;
 use InvalidArgumentException;
 use LogicException;
+use WP_User;
 
 /**
  * Extended Google API client with custom functionality for Site Kit.
@@ -203,6 +204,48 @@ class Google_Site_Kit_Client extends Google_Client {
 	}
 
 	/**
+	 * Executes deferred HTTP requests.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param RequestInterface $request Request object to execute.
+	 * @param string           $expected_class Expected class to return.
+	 * @return object An object of the type of the expected class or Psr\Http\Message\ResponseInterface.
+	 */
+	public function execute( RequestInterface $request, $expected_class = null ) {
+		$request = $request->withHeader( 'X-Goog-Quota-User', self::getQuotaUser() );
+
+		return parent::execute( $request, $expected_class );
+	}
+
+	/**
+	 * Returns a string that uniquely identifies a user of the application.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Unique user identifier.
+	 */
+	public static function getQuotaUser() {
+		$url        = wp_parse_url( get_home_url() );
+		$quota_user = "{$url['scheme']}://";
+
+		$user        = wp_get_current_user();
+		$quota_user .= $user instanceof WP_User && $user->ID
+			? "{$user->user_login}@{$url['host']}"
+			: $url['host'];
+
+		if ( ! empty( $url['port'] ) ) {
+			$quota_user .= ":{$url['port']}";
+		}
+
+		if ( ! empty( $url['path'] ) ) {
+			$quota_user .= $url['path'];
+		}
+
+		return $quota_user;
+	}
+
+	/**
 	 * Fetches an OAuth 2.0 access token using a given auth object and HTTP handler.
 	 *
 	 * This method is used in place of {@see OAuth2::fetchAuthToken()}.
@@ -243,24 +286,6 @@ class Google_Site_Kit_Client extends Google_Client {
 	 */
 	protected function handleAuthTokenErrorResponse( $error, array $data ) {
 		throw new Google_OAuth_Exception( $error );
-	}
-
-	/**
-	 * Executes deferred HTTP requests.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param RequestInterface $request Request object to execute.
-	 * @param string           $expected_class Expected class to return.
-	 * @return object An object of the type of the expected class or Psr\Http\Message\ResponseInterface.
-	 */
-	public function execute( RequestInterface $request, $expected_class = null ) {
-		$request = $request->withHeader(
-			'X-Goog-Quota-User',
-			sprintf( '%s-%s', get_home_url(), get_current_user_id() )
-		);
-
-		return parent::execute( $request, $expected_class );
 	}
 
 }
