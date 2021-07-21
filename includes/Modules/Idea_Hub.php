@@ -194,17 +194,12 @@ final class Idea_Hub extends Module
 			'idea-hub_saved-ideas',
 			array(
 				'content'         => function() {
-					$saved_notice = array(
-						'text' => esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ),
-						'cta'  => esc_html__( 'See saved ideas', 'google-site-kit' ),
-						'link' => $this->context->admin_url() . '#new-ideas',
-					);
 					ob_start();
 					?>
 					<p>
-						<?php echo esc_html( $saved_notice['text'] ); ?>
-						<a href="<?php echo esc_url( $saved_notice['link'] ); ?>"
-						><?php echo esc_html( $saved_notice['cta'] ); ?></a>
+						<?php echo esc_html( esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ) ); ?>
+						<a href="<?php echo esc_url( $this->context->admin_url() . '#saved-ideas' ); ?>"
+						><?php echo esc_html( esc_html__( 'See saved ideas', 'google-site-kit' ) ); ?></a>
 					</p>
 					<?php
 					return ob_get_clean();
@@ -234,17 +229,12 @@ final class Idea_Hub extends Module
 			'idea-hub_new-ideas',
 			array(
 				'content'         => function() {
-					$new_notice = array(
-						'text' => esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub', 'google-site-kit' ),
-						'cta'  => esc_html__( 'See new ideas', 'google-site-kit' ),
-						'link' => $this->context->admin_url() . '#saved-ideas',
-					);
 					ob_start();
 					?>
 					<p>
-						<?php echo esc_html( $new_notice['text'] ); ?>
-						<a href="<?php echo esc_url( $new_notice['link'] ); ?>"
-						><?php echo esc_html( $new_notice['cta'] ); ?></a>
+						<?php echo esc_html( esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub', 'google-site-kit' ) ); ?>
+						<a href="<?php echo esc_url( $this->context->admin_url() . '#new-ideas' ); ?>"
+						><?php echo esc_html( esc_html__( 'See new ideas', 'google-site-kit' ) ); ?></a>
 					</p>
 					<?php
 					return ob_get_clean();
