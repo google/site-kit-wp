@@ -220,7 +220,7 @@ final class Idea_Hub extends Module
 						return false;
 					}
 
-					return $has_saved_ideas && ! $dismissed_items->is_dismissed( 'saved-ideas' );
+					return $has_saved_ideas;
 				},
 				'dismissible'     => true,
 			)
