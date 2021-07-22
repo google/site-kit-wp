@@ -71,6 +71,16 @@ final class Idea_Hub extends Module
 	const TRANSIENT_NEW_IDEAS = 'googlesitekit_idea_hub_new_ideas';
 
 	/**
+	 * New ideas notice slug and dismissible item key.
+	 */
+	const SLUG_NEW_IDEAS = 'idea-hub_new-ideas';
+
+	/**
+	 * Saved ideas notice slug and dismissible item key.
+	 */
+	const SLUG_SAVED_IDEAS = 'idea-hub_new-ideas';
+
+	/**
 	 * Post_Idea_Name instance.
 	 *
 	 * @var Post_Idea_Name
@@ -191,7 +201,7 @@ final class Idea_Hub extends Module
 		$dismissed_items = new Dismissed_Items( $this->user_options );
 
 		$notices[] = new Notice(
-			'idea-hub_saved-ideas',
+			self::SLUG_SAVED_IDEAS,
 			array(
 				'content'         => function() {
 					ob_start();
@@ -208,15 +218,15 @@ final class Idea_Hub extends Module
 				'active_callback' => function() use ( $transients, $dismissed_items ) {
 					$saved_ideas = $transients->get( self::TRANSIENT_SAVED_IDEAS );
 					if ( false === $saved_ideas ) {
-						$saved_ideas = $this->get_data( 'saved-ideas' );
+						$saved_ideas = $this->get_data( self::SLUG_SAVED_IDEAS );
 						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
 					}
 					$has_saved_ideas = count( $saved_ideas ) > 0;
-					if ( ! $has_saved_ideas && $dismissed_items->is_dismissed( 'saved-ideas' ) ) {
+					if ( ! $has_saved_ideas && $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
 						// Saved items no longer need to be dismissed as there are none currently.
-						$dismissed_items->delete( 'saved-ideas' );
+						$dismissed_items->delete( self::SLUG_SAVED_IDEAS );
 					}
-					if ( $dismissed_items->is_dismissed( 'saved-ideas' ) ) {
+					if ( $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
 						return false;
 					}
 
@@ -226,7 +236,7 @@ final class Idea_Hub extends Module
 			)
 		);
 		$notices[] = new Notice(
-			'idea-hub_new-ideas',
+			self::SLUG_NEW_IDEAS,
 			array(
 				'content'         => function() {
 					ob_start();
@@ -241,12 +251,12 @@ final class Idea_Hub extends Module
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() use ( $transients, $dismissed_items ) {
-					if ( $dismissed_items->is_dismissed( 'new-ideas' ) || $dismissed_items->is_dismissed( 'saved-ideas' ) ) {
+					if ( $dismissed_items->is_dismissed( self::SLUG_NEW_IDEAS ) || $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
 						return false;
 					}
 					$saved_ideas = $transients->get( self::TRANSIENT_SAVED_IDEAS );
 					if ( false === $saved_ideas ) {
-						$saved_ideas = $this->get_data( 'saved-ideas' );
+						$saved_ideas = $this->get_data( self::SLUG_SAVED_IDEAS );
 						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
 					}
 					$has_saved_ideas = count( $saved_ideas ) > 0;
@@ -259,13 +269,13 @@ final class Idea_Hub extends Module
 
 					$new_ideas = $transients->get( self::TRANSIENT_NEW_IDEAS );
 					if ( false === $new_ideas ) {
-						$new_ideas = $this->get_data( 'new-ideas' );
+						$new_ideas = $this->get_data( self::SLUG_NEW_IDEAS );
 						$transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, DAY_IN_SECONDS );
 					}
 
 					$has_new_ideas = count( $new_ideas ) > 0;
 
-					return $has_new_ideas && ! $dismissed_items->is_dismissed( 'new-ideas' );
+					return $has_new_ideas && ! $dismissed_items->is_dismissed( self::SLUG_NEW_IDEAS );
 				},
 				'dismissible'     => true,
 			)
