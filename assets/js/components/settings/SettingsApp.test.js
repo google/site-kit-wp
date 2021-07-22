@@ -27,6 +27,7 @@ import { createHashHistory } from 'history';
 import SettingsApp from './SettingsApp';
 import { render, fireEvent, createTestRegistry, provideModules } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 const coreUserTrackingSettingsEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/tracking/;
 const coreUserTrackingResponse = { status: 200, body: { enabled: false } };
@@ -43,6 +44,7 @@ describe( 'SettingsApp', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
+		registry.dispatch( CORE_SITE ).receiveGetShowAdminBar( false );
 
 		provideModules( registry, [
 			{

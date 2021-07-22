@@ -28,6 +28,7 @@ import SettingsModules from './SettingsModules';
 import { render, createTestRegistry } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 describe( 'SettingsModules', () => {
 	// Create hash history to interact with HashRouter using `history.push`
@@ -45,6 +46,7 @@ describe( 'SettingsModules', () => {
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [
 			{ slug: 'test-module', name: 'Test Module' },
 		] );
+		registry.dispatch( CORE_SITE ).receiveGetShowAdminBar( false );
 	} );
 
 	afterAll( () => {
