@@ -39,23 +39,14 @@ namespace Google\Site_Kit\Tests\Core\Tags\Guards {
 			if ( ! function_exists( 'wp_get_environment_type' ) ) {
 				$this->markTestSkipped( 'Missing wp_get_environment_type() function.' );
 			}
-			$tagproduction                           = new Tag_Production_Guard();
-			$GLOBALS['test_wp_get_environment_type'] = 'development';
+			if ( ! function_exists( 'uopz_set_static' ) ) {
+				$this->markTestSkipped( 'The uopz extension is not available.' );
+			}
+			$tagproduction = new Tag_Production_Guard();
+			uopz_set_static( 'wp_get_environment_type', array( 'current_env' => 'development' ) );
 			$this->assertFalse( $tagproduction->can_activate() );
-			unset( $GLOBALS['test_wp_get_environment_type'] );
+			uopz_set_static( 'wp_get_environment_type', array( 'current_env' => 'production' ) );
 
-		}
-	}
-}
-
-// As we're not able to change the return values of wp_get_environment_type
-// We create an implementation for this test so that we can define custom return values.
-// @see https://github.com/WordPress/WordPress/blob/f5713b8d717b398efe7de40c869f77543fb2068e/wp-includes/load.php#L195
-namespace Google\Site_Kit\Core\Tags\Guards {
-	if ( function_exists( 'wp_get_environment_type' ) ) {
-
-		function wp_get_environment_type() {
-			return isset( $GLOBALS['test_wp_get_environment_type'] ) ? $GLOBALS['test_wp_get_environment_type'] : \wp_get_environment_type();
 		}
 	}
 }
