@@ -44,7 +44,7 @@ describe( 'core/user dismissed-items', () => {
 					body: {
 						data: {
 							slug: 'baz',
-							expiresInSeconds: 3,
+							expiration: 3,
 						},
 					},
 				} );
