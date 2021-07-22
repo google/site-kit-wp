@@ -37,13 +37,14 @@ describe( 'core/user dismissed-items', () => {
 			it( 'should save settings and return new dismissed items', async () => {
 				fetchMock.postOnce( fetchDismissItem, { body: [ 'foo', 'bar', 'baz' ] } );
 
-				await registry.dispatch( STORE_NAME ).dismissItem( 'baz' );
+				await registry.dispatch( STORE_NAME ).dismissItem( 'baz', { expiresInSeconds: 3 } );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched( fetchDismissItem, {
 					body: {
 						data: {
 							slug: 'baz',
+							expiration: 3,
 						},
 					},
 				} );
@@ -66,7 +67,7 @@ describe( 'core/user dismissed-items', () => {
 				} );
 
 				await registry.dispatch( STORE_NAME ).dismissItem( 'baz' );
-				expect( registry.select( STORE_NAME ).getErrorForAction( 'dismissItem', [ 'baz' ] ) ).toMatchObject( response );
+				expect( registry.select( STORE_NAME ).getErrorForAction( 'dismissItem', [ 'baz', 0 ] ) ).toMatchObject( response );
 				expect( console ).toHaveErrored();
 			} );
 		} );
