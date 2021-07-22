@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
 
 /**
@@ -51,6 +52,14 @@ final class Admin_Bar {
 	private $modules;
 
 	/**
+	 * Admin_Bar_Enabled instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Admin_Bar_Enabled
+	 */
+	private $admin_bar_enabled;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -67,6 +76,9 @@ final class Admin_Bar {
 		$this->context = $context;
 		$this->assets  = $assets ?: new Assets( $this->context );
 		$this->modules = $modules ?: new Modules( $this->context );
+
+		$options                 = new Options( $this->context );
+		$this->admin_bar_enabled = new Admin_Bar_Enabled( $options );
 	}
 
 	/**
@@ -108,6 +120,8 @@ final class Admin_Bar {
 		};
 		add_action( 'admin_enqueue_scripts', $admin_bar_callback, 40 );
 		add_action( 'wp_enqueue_scripts', $admin_bar_callback, 40 );
+
+		$this->admin_bar_enabled->register();
 	}
 
 	/**
