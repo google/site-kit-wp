@@ -23,7 +23,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/site reset', () => {
