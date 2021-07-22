@@ -269,7 +269,7 @@ final class Idea_Hub extends Module
 
 					$has_new_ideas = count( $new_ideas ) > 0;
 
-					return $has_new_ideas && ! $dismissed_items->is_dismissed( self::SLUG_NEW_IDEAS );
+					return $has_new_ideas;
 				},
 				'dismissible'     => true,
 			)
