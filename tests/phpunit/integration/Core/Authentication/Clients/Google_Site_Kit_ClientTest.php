@@ -15,55 +15,46 @@ use Google\Site_Kit\Tests\TestCase;
 
 class Google_Site_Kit_ClientTest extends TestCase {
 
-	/**
-	 * @dataProvider data_getQuotaUser
-	 *
-	 * @param string $homeurl Home URL.
-	 * @param string $user_login User login.
-	 * @param string $expected Expected URL.
-	 */
-	public function test_getQuotaUser( $homeurl, $user_login, $expected ) {
-		if ( ! empty( $user_login ) ) {
-			$user_id = $this->factory()->user->create(
-				array(
-					'user_login' => $user_login,
-				)
-			);
-
-			wp_set_current_user( $user_id );
-		} else {
-			wp_set_current_user( 0 );
-		}
-
+	private static function force_home_url( $url ) {
 		remove_all_filters( 'home_url' );
 		add_filter(
 			'home_url',
-			function() use ( $homeurl ) {
-				return $homeurl;
+			function() use ( $url ) {
+				return $url;
 			}
 		);
-
-		$this->assertEquals( $expected, Google_Site_Kit_Client::getQuotaUser() );
 	}
 
-	public function data_getQuotaUser() {
-		return array(
-			'basic home url'                      => array(
-				'https://example.com',
-				'user111',
-				'https://user111@example.com',
-			),
-			'home url with port and subdirectory' => array(
-				'https://example.com:8080/subdirectory',
-				'testuser',
-				'https://testuser@example.com:8080/subdirectory',
-			),
-			'without user login'                  => array(
-				'http://example.com',
-				'',
-				'http://example.com',
-			),
-		);
+	public function test_getQuotaUser__basic_url() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		self::force_home_url( 'https://example.com' );
+
+		$this->assertEquals( "https://{$user_id}@example.com", Google_Site_Kit_Client::getQuotaUser() );
+	}
+
+	public function test_getQuotaUser__port_is_ignored() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		self::force_home_url( 'https://example.org:9000' );
+
+		$this->assertEquals( "https://{$user_id}@example.org", Google_Site_Kit_Client::getQuotaUser() );
+	}
+
+	public function test_getQuotaUser__no_user() {
+		wp_set_current_user( 0 );
+		self::force_home_url( 'https://example.com' );
+
+		$this->assertEquals( 'https://0@example.com', Google_Site_Kit_Client::getQuotaUser() );
+	}
+
+	public function test_getQuotaUser__subdirectory_url() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+
+		self::force_home_url( 'http://example.com/subdirectory' );
+
+		$this->assertEquals( "http://{$user_id}@example.com/subdirectory", Google_Site_Kit_Client::getQuotaUser() );
 	}
 
 }

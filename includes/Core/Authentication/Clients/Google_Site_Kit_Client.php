@@ -226,23 +226,14 @@ class Google_Site_Kit_Client extends Google_Client {
 	 * @return string Unique user identifier.
 	 */
 	public static function getQuotaUser() {
-		$url        = wp_parse_url( get_home_url() );
-		$quota_user = "{$url['scheme']}://";
+		$user_id = get_current_user_id();
+		$url     = get_home_url();
 
-		$user        = wp_get_current_user();
-		$quota_user .= $user instanceof WP_User && $user->ID
-			? "{$user->user_login}@{$url['host']}"
-			: $url['host'];
+		$scheme = wp_parse_url( $url, PHP_URL_SCHEME );
+		$host   = wp_parse_url( $url, PHP_URL_HOST );
+		$path   = wp_parse_url( $url, PHP_URL_PATH );
 
-		if ( ! empty( $url['port'] ) ) {
-			$quota_user .= ":{$url['port']}";
-		}
-
-		if ( ! empty( $url['path'] ) ) {
-			$quota_user .= $url['path'];
-		}
-
-		return $quota_user;
+		return "{$scheme}://{$user_id}@{$host}{$path}";
 	}
 
 	/**
