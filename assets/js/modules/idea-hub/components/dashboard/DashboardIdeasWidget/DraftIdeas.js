@@ -43,7 +43,7 @@ import Empty from './Empty';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-const DraftIdeas = ( { active, WidgetReportError } ) => {
+const DraftIdeas = ( { WidgetReportError } ) => {
 	const [ page, setPage ] = useState( 1 );
 	const args = {
 		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
@@ -65,10 +65,6 @@ const DraftIdeas = ( { active, WidgetReportError } ) => {
 			setPage( page + 1 );
 		}
 	}, [ page, setPage, totalDraftIdeas ] );
-
-	if ( ! active ) {
-		return null;
-	}
 
 	if ( ! hasFinishedResolution ) {
 		return (
@@ -117,7 +113,6 @@ const DraftIdeas = ( { active, WidgetReportError } ) => {
 };
 
 DraftIdeas.propTypes = {
-	active: PropTypes.bool.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
 

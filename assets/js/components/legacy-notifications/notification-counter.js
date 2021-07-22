@@ -79,6 +79,12 @@ class NotificationCounter extends Component {
 	}
 
 	render() {
+		const wpMenuNameElement = document.querySelector( '#toplevel_page_googlesitekit-dashboard .wp-menu-name' );
+
+		if ( ! wpMenuNameElement ) {
+			return null;
+		}
+
 		const screenReader = sprintf(
 			/* translators: %d: the number of notifications */
 			_n( '%d notification', '%d notifications', this.state.count, 'google-site-kit' ),
@@ -96,10 +102,7 @@ class NotificationCounter extends Component {
 			</span>
 		);
 
-		return createPortal(
-			markup,
-			document.querySelector( '#toplevel_page_googlesitekit-dashboard .wp-menu-name' )
-		);
+		return createPortal( markup, wpMenuNameElement );
 	}
 }
 
