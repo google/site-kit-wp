@@ -28,7 +28,7 @@ const { createRegistrySelector, commonActions, combineStores } = Data;
 const fetchGetDraftPostIdeasStore = createFetchStore( {
 	baseName: 'getDraftPostIdeas',
 	controlCallback: () => {
-		return API.get( 'modules', 'idea-hub', 'draft-post-ideas' );
+		return API.get( 'modules', 'idea-hub', 'draft-post-ideas', undefined, { useCache: false } );
 	},
 	reducerCallback: ( state, draftPostIdeas ) => {
 		return {
