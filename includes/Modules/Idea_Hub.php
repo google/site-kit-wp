@@ -215,7 +215,7 @@ final class Idea_Hub extends Module
 				'active_callback' => function() use ( $transients, $dismissed_items ) {
 					$saved_ideas = $transients->get( self::TRANSIENT_SAVED_IDEAS );
 					if ( false === $saved_ideas ) {
-						$saved_ideas = $this->get_data( self::SLUG_SAVED_IDEAS );
+						$saved_ideas = $this->get_data( 'saved-ideas' );
 						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
 					}
 					$has_saved_ideas = count( $saved_ideas ) > 0;
@@ -250,7 +250,7 @@ final class Idea_Hub extends Module
 					}
 					$saved_ideas = $transients->get( self::TRANSIENT_SAVED_IDEAS );
 					if ( false === $saved_ideas ) {
-						$saved_ideas = $this->get_data( self::SLUG_SAVED_IDEAS );
+						$saved_ideas = $this->get_data( 'saved-ideas' );
 						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
 					}
 					$has_saved_ideas = count( $saved_ideas ) > 0;
@@ -263,7 +263,7 @@ final class Idea_Hub extends Module
 
 					$new_ideas = $transients->get( self::TRANSIENT_NEW_IDEAS );
 					if ( false === $new_ideas ) {
-						$new_ideas = $this->get_data( self::SLUG_NEW_IDEAS );
+						$new_ideas = $this->get_data( 'new-ideas' );
 						$transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, DAY_IN_SECONDS );
 					}
 
