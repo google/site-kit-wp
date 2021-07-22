@@ -35,7 +35,7 @@ domReady( () => {
 	if ( ! notice ) {
 		return;
 	}
-	const type = notice.id.replace( 'googlesitekit-notice-idea-hub_', '' );
+	const type = notice.id.replace( 'googlesitekit-notice-', '' );
 	const expiresInSeconds = type === 'new-ideas' ? WEEK_IN_SECONDS : 0;
 
 	notice.addEventListener( 'click', ( event ) => {
