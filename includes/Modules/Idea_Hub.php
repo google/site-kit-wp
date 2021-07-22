@@ -221,7 +221,7 @@ final class Idea_Hub extends Module
 					$has_saved_ideas = count( $saved_ideas ) > 0;
 					if ( ! $has_saved_ideas && $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
 						// Saved items no longer need to be dismissed as there are none currently.
-						$dismissed_items->delete( self::SLUG_SAVED_IDEAS );
+						$dismissed_items->add( self::SLUG_SAVED_IDEAS, -1 );
 					}
 					if ( $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
 						return false;
