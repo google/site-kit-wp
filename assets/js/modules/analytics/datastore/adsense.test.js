@@ -26,7 +26,7 @@ import {
 	// muteConsole,
 	unsubscribeFromAll,
 	untilResolved,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import fetchMock from 'fetch-mock';
 
 describe( 'modules/analytics adsense', () => {

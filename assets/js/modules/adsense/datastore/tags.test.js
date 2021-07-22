@@ -28,7 +28,7 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import * as factories from './__factories__';
 

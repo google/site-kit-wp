@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
-import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
+import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
