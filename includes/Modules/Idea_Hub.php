@@ -78,7 +78,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Saved ideas notice slug and dismissible item key.
 	 */
-	const SLUG_SAVED_IDEAS = 'idea-hub_new-ideas';
+	const SLUG_SAVED_IDEAS = 'idea-hub_saved-ideas';
 
 	/**
 	 * Post_Idea_Name instance.

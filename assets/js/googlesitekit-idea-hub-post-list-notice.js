@@ -39,7 +39,7 @@ domReady( () => {
 	const expiresInSeconds = type === 'idea-hub_new-ideas' ? WEEK_IN_SECONDS : 0;
 
 	notice.addEventListener( 'click', ( event ) => {
-		if ( 'notice-dismiss' === event.target.className ) {
+		if ( event.target.classList.contains( 'notice-dismiss' ) ) {
 			dispatch( CORE_USER ).dismissItem( type, { expiresInSeconds } );
 		}
 	} );
