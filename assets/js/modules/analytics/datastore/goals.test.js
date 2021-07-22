@@ -52,7 +52,7 @@ describe( 'modules/analytics goals', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/goals/,
-					{ body: fixtures.goals, status: 200 }
+					{ body: fixtures.goals, status: 200 },
 				);
 
 				const initialGoals = registry.select( STORE_NAME ).getGoals();
@@ -78,7 +78,7 @@ describe( 'modules/analytics goals', () => {
 
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getGoals', [] )
+					.hasFinishedResolution( 'getGoals', [] ),
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
@@ -94,7 +94,7 @@ describe( 'modules/analytics goals', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/goals/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				registry.select( STORE_NAME ).getGoals();

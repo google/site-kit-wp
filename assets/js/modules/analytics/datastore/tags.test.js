@@ -59,7 +59,7 @@ describe( 'modules/analytics tags', () => {
 
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
+					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getExistingTag();
@@ -75,7 +75,7 @@ describe( 'modules/analytics tags', () => {
 			it( 'returns true if a user has access to this tag', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ body: fixtures.getTagPermissionsAccess, status: 200 }
+					{ body: fixtures.getTagPermissionsAccess, status: 200 },
 				);
 
 				const propertyID = fixtures.getTagPermissionsAccess.propertyID;
@@ -89,7 +89,7 @@ describe( 'modules/analytics tags', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
 					{
 						query: { propertyID },
-					}
+					},
 				);
 
 				// The connection info will be its initial value while the connection
@@ -113,7 +113,7 @@ describe( 'modules/analytics tags', () => {
 			it( 'returns false if a user cannot access the requested tag', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ body: fixtures.getTagPermissionsNoAccess, status: 200 }
+					{ body: fixtures.getTagPermissionsNoAccess, status: 200 },
 				);
 
 				const propertyID = fixtures.getTagPermissionsNoAccess.propertyID;
@@ -147,7 +147,7 @@ describe( 'modules/analytics tags', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				const propertyID = fixtures.getTagPermissionsAccess.propertyID;
@@ -205,7 +205,7 @@ describe( 'modules/analytics tags', () => {
 			it( 'makes a request via the getTagPermission selector if no tag has been loaded ', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ body: fixtures.getTagPermissionsAccess, status: 200 }
+					{ body: fixtures.getTagPermissionsAccess, status: 200 },
 				);
 
 				const { propertyID } = fixtures.getTagPermissionsAccess;
@@ -214,7 +214,7 @@ describe( 'modules/analytics tags', () => {
 				// Ensure the proper parameters were sent.
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getTagPermission', [ propertyID ] )
+					.hasFinishedResolution( 'getTagPermission', [ propertyID ] ),
 				);
 
 				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( propertyID );
@@ -236,7 +236,7 @@ describe( 'modules/analytics tags', () => {
 				// Ensure the proper parameters were sent.
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getTagPermission', [ propertyID ] )
+					.hasFinishedResolution( 'getTagPermission', [ propertyID ] ),
 				);
 
 				expect( hasPermission ).toEqual( true );
@@ -256,7 +256,7 @@ describe( 'modules/analytics tags', () => {
 				// Ensure the proper parameters were sent.
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getTagPermission', [ propertyID ] )
+					.hasFinishedResolution( 'getTagPermission', [ propertyID ] ),
 				);
 
 				expect( hasPermission ).toEqual( false );
@@ -266,7 +266,7 @@ describe( 'modules/analytics tags', () => {
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ body: fixtures.getTagPermissionsAccess, status: 200 }
+					{ body: fixtures.getTagPermissionsAccess, status: 200 },
 				);
 
 				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( fixtures.getTagPermissionsNoAccess.propertyID );

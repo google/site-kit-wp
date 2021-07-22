@@ -183,7 +183,7 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 								statusText={ sprintf(
 									/* translators: %s: module name. */
 									__( '%s is connected', 'google-site-kit' ),
-									_x( 'Search Console', 'Service name', 'google-site-kit' )
+									_x( 'Search Console', 'Service name', 'google-site-kit' ),
 								) }
 							/>
 							{ loading && <ProgressBar /> }
@@ -195,19 +195,19 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 						<div className={ classnames(
 							'mdc-layout-grid__cell',
 							'mdc-layout-grid__cell--span-12',
-							wrapperClass
+							wrapperClass,
 						) }>
 							<Layout
 								header
 								title={ sprintf(
 									/* translators: %s: number of days */
-									_n( 'Overview for the last %s day', 'Overview for the last %s days', currentDayCount, 'google-site-kit', ),
+									_n( 'Overview for the last %s day', 'Overview for the last %s days', currentDayCount, 'google-site-kit' ),
 									currentDayCount,
 								) }
 								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
-									_x( 'Search Console', 'Service name', 'google-site-kit' )
+									_x( 'Search Console', 'Service name', 'google-site-kit' ),
 								) }
 								headerCTALink={ searchConsoleDeepLink }
 							>
@@ -223,13 +223,13 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 						<div className={ classnames(
 							'mdc-layout-grid__cell',
 							'mdc-layout-grid__cell--span-12',
-							wrapperClass
+							wrapperClass,
 						) }>
 							<Layout
 								/* translators: %s: number of days */
 								title={ sprintf(
 									/* translators: %s: number of days */
-									_n( 'Top search queries over the last %s day', 'Top search queries over last %s days', currentDayCount, 'google-site-kit', ),
+									_n( 'Top search queries over the last %s day', 'Top search queries over last %s days', currentDayCount, 'google-site-kit' ),
 									currentDayCount,
 								) }
 								header
@@ -237,7 +237,7 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
-									_x( 'Search Console', 'Service name', 'google-site-kit' )
+									_x( 'Search Console', 'Service name', 'google-site-kit' ),
 								) }
 								headerCTALink={ searchConsoleDeepLink }
 								footerCTALabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }

@@ -76,10 +76,10 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 
 	while ( currentDate <= endDate ) {
 		const currentMonth = parseFloat(
-			( current?.rows || [] ).find( findRowByDate( currentDate ) )?.cells?.[ selectedColumn ]?.value || 0
+			( current?.rows || [] ).find( findRowByDate( currentDate ) )?.cells?.[ selectedColumn ]?.value || 0,
 		);
 		const prevMonth = parseFloat(
-			( previous?.rows || [] ).find( findRowByDate( previousDate ) )?.cells?.[ selectedColumn ]?.value || 0
+			( previous?.rows || [] ).find( findRowByDate( previousDate ) )?.cells?.[ selectedColumn ]?.value || 0,
 		);
 
 		const difference = prevMonth !== 0

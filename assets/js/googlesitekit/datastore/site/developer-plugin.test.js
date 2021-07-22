@@ -85,7 +85,7 @@ describe( 'core/site developer plugin state', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/developer-plugin/,
-					{ body: responseDeveloperPluginState, status: 200 }
+					{ body: responseDeveloperPluginState, status: 200 },
 				);
 
 				const initialDeveloperPluginState = registry.select( STORE_NAME ).getDeveloperPluginState();
@@ -118,7 +118,7 @@ describe( 'core/site developer plugin state', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/developer-plugin/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				registry.select( STORE_NAME ).getDeveloperPluginState();

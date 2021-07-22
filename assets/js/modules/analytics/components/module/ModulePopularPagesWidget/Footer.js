@@ -37,7 +37,7 @@ export default function Footer() {
 	} ) );
 	const contentPagesURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL(
 		'content-pages',
-		generateDateRangeArgs( dates )
+		generateDateRangeArgs( dates ),
 	) );
 
 	return (

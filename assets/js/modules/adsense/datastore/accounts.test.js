@@ -56,7 +56,7 @@ describe( 'modules/adsense accounts', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/accounts/,
-					{ body: fixtures.accounts, status: 200 }
+					{ body: fixtures.accounts, status: 200 },
 				);
 
 				const initialAccounts = registry.select( STORE_NAME ).getAccounts();
@@ -81,7 +81,7 @@ describe( 'modules/adsense accounts', () => {
 
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getAccounts' )
+					.hasFinishedResolution( 'getAccounts' ),
 				);
 
 				expect( accounts ).toEqual( fixtures.accounts );
@@ -96,7 +96,7 @@ describe( 'modules/adsense accounts', () => {
 				};
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/accounts/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				registry.select( STORE_NAME ).getAccounts();

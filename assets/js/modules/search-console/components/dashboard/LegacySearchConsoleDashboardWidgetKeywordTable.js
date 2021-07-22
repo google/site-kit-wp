@@ -66,7 +66,7 @@ const LegacySearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 		{
 			path: '/performance/search-analytics',
 			query: baseServiceURLArgs,
-		}
+		},
 	) );
 
 	if ( ! data || ! data.length ) {
@@ -134,5 +134,5 @@ export default withData(
 	],
 	<PreviewTable padding />,
 	{ createGrid: true },
-	( returnedData ) => ! returnedData.length
+	( returnedData ) => ! returnedData.length,
 );

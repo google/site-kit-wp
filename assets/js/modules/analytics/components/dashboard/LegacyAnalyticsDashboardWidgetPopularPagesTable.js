@@ -127,5 +127,5 @@ export default withData(
 		inGrid: true,
 		createGrid: true,
 	},
-	isDataZeroForReporting
+	isDataZeroForReporting,
 );

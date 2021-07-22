@@ -35,7 +35,7 @@ export const useKeyCodesInside = ( keyCodes, ref, handler ) => {
 		( event ) => {
 			return keyCodes.includes( event.keyCode ) && ref.current.contains( event.target );
 		},
-		handler
+		handler,
 	);
 };
 

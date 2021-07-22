@@ -87,12 +87,12 @@ export default function SetupAccountCreate() {
 					__( 'Site Kit detected AdSense code %1$s on your page. We recommend you remove that code or add %2$s as a user to the AdSense account %3$s.', 'google-site-kit' ),
 					existingTag,
 					userEmail,
-					parseAccountID( existingTag )
+					parseAccountID( existingTag ),
 				) }
 				{ ! existingTag && sprintf(
 					/* translators: %s: user email address */
 					__( 'Already use AdSense? Add %s as a user to an existing AdSense account.', 'google-site-kit' ),
-					userEmail
+					userEmail,
 				) }
 				{ ' ' }
 				<Link

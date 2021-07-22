@@ -83,7 +83,7 @@ describe( 'modules/analytics adsense', () => {
 			it( 'resolves the initial value from the adsenseLinked setting', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
-					{ body: { adsenseLinked: true }, status: 200 }
+					{ body: { adsenseLinked: true }, status: 200 },
 				);
 
 				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBeUndefined();
@@ -100,7 +100,7 @@ describe( 'modules/analytics adsense', () => {
 				} );
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
-					responsePromise
+					responsePromise,
 				);
 				// Select getAdsenseLinked once, using resolve select.
 				const selectPromise = registry.__experimentalResolveSelect( STORE_NAME ).getAdsenseLinked();

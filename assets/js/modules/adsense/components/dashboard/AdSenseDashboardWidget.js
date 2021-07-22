@@ -113,14 +113,14 @@ export default function AdSenseDashboardWidget() {
 		moduleStatusText = sprintf(
 			/* translators: %s: module name. */
 			__( '%s is connected', 'google-site-kit' ),
-			_x( 'AdSense', 'Service name', 'google-site-kit' )
+			_x( 'AdSense', 'Service name', 'google-site-kit' ),
 		);
 	} else {
 		moduleStatus = 'not-connected';
 		moduleStatusText = sprintf(
 			/* translators: %s: module name. */
 			__( '%s is not connected', 'google-site-kit' ),
-			_x( 'AdSense', 'Service name', 'google-site-kit' )
+			_x( 'AdSense', 'Service name', 'google-site-kit' ),
 		);
 	}
 
@@ -168,7 +168,7 @@ export default function AdSenseDashboardWidget() {
 								title={ sprintf(
 									/* translators: %s: number of days */
 									_n( 'Performance over the last %s day', 'Performance over the last %s days', currentDayCount, 'google-site-kit' ),
-									currentDayCount
+									currentDayCount,
 								) }
 								headerCTALabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
 								headerCTALink={ accountSiteURL }

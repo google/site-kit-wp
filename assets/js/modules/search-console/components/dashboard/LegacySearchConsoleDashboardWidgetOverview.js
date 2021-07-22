@@ -159,5 +159,5 @@ export default withData(
 	],
 	<PreviewBlock width="100%" height="190px" padding />,
 	{ createGrid: true },
-	isDataZeroSearchConsole
+	isDataZeroSearchConsole,
 );

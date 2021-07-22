@@ -96,17 +96,17 @@ describe( 'modules/analytics-4 properties', () => {
 									displayName: 'Test GA4 WebDataStream',
 								},
 							],
-							{ propertyID: 'foobar' }
+							{ propertyID: 'foobar' },
 						);
 					}
 					if ( errorProperty ) {
 						registry.dispatch( STORE_NAME ).receiveError(
-							new Error( 'foo' ), 'getProperties', [ 'foo', 'bar' ]
+							new Error( 'foo' ), 'getProperties', [ 'foo', 'bar' ],
 						);
 					}
 					if ( errorWebData ) {
 						registry.dispatch( STORE_NAME ).receiveError(
-							new Error( 'foo' ), 'getWebDataStreams', [ 'foo', 'bar' ]
+							new Error( 'foo' ), 'getWebDataStreams', [ 'foo', 'bar' ],
 						);
 					}
 

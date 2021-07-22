@@ -61,7 +61,7 @@ export const registerModule = ( modules ) => {
 				__( 'Top acquisition channels', 'google-site-kit' ),
 			],
 			screenWidgetContext: CONTEXT_MODULE_ANALYTICS,
-		}
+		},
 	);
 };
 

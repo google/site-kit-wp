@@ -75,7 +75,7 @@ describe( 'createModuleStore store', () => {
 			[ 'createSubmitChangesStore', createSubmitChangesStore() ],
 		] )( 'includes all actions from %s store', ( partialStoreName, partialStore ) => {
 			expect( Object.keys( storeDefinition.actions ) ).toEqual(
-				expect.arrayContaining( Object.keys( partialStore.actions ) )
+				expect.arrayContaining( Object.keys( partialStore.actions ) ),
 			);
 		} );
 	} );
@@ -88,7 +88,7 @@ describe( 'createModuleStore store', () => {
 			[ 'createSubmitChangesStore', createSubmitChangesStore() ],
 		] )( 'includes all actions from %s store', ( partialStoreName, partialStore ) => {
 			expect( Object.keys( storeDefinition.selectors ) ).toEqual(
-				expect.arrayContaining( Object.keys( partialStore.selectors ) )
+				expect.arrayContaining( Object.keys( partialStore.selectors ) ),
 			);
 		} );
 	} );

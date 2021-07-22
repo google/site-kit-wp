@@ -53,7 +53,7 @@ export const generateDateRangeArgs = ( dates ) => {
 		invariant(
 			isValidDateString( compareStartDate ) &&
 			isValidDateString( compareEndDate ),
-			'Valid compareStartDate and compareEndDate values are required.'
+			'Valid compareStartDate and compareEndDate values are required.',
 		);
 		range[ '_u.date10' ] = compareStartDate.replace( /-/g, '' );
 		range[ '_u.date11' ] = compareEndDate.replace( /-/g, '' );

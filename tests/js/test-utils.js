@@ -113,7 +113,7 @@ const customRenderHook = (
 		history = createMemoryHistory(),
 		route = undefined,
 		...renderHookOptions
-	} = {}
+	} = {},
 ) => {
 	if ( route ) {
 		history.push( route );

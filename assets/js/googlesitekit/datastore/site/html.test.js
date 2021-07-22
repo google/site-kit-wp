@@ -90,7 +90,7 @@ describe( 'core/site html', () => {
 
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{ body: html, status: 200 }
+					{ body: html, status: 200 },
 				);
 				const promise = registry.dispatch( STORE_NAME ).waitForHTMLForURL( url );
 
@@ -113,7 +113,7 @@ describe( 'core/site html', () => {
 
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{ body: html, status: 200 }
+					{ body: html, status: 200 },
 				);
 
 				const initialHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
@@ -143,7 +143,7 @@ describe( 'core/site html', () => {
 
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{ body: undefined, status: 500 }
+					{ body: undefined, status: 500 },
 				);
 
 				// `expect( console ).toHaveErrored()` is not needed since `fetchGetHTMLForURL` uses `fetch` internally instead of `apiFetch`.

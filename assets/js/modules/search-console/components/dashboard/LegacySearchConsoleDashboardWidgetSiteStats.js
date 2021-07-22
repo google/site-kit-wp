@@ -158,5 +158,5 @@ export default withData(
 		},
 	],
 	<PreviewBlock width="100%" height="270px" padding />,
-	{ createGrid: true }
+	{ createGrid: true },
 );

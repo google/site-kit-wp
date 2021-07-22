@@ -223,7 +223,7 @@ const webpackConfig = ( env, argv ) => {
 							'{{assets}}',
 							Object.keys( manifest )
 								.map( ( key ) => `"${ key.replace( '.js', '' ) }"${ ''.padEnd( maxLen - key.length, ' ' ) } => "${ manifest[ key ] }",` )
-								.join( '\n\t\t' )
+								.join( '\n\t\t' ),
 						);
 
 						return content;

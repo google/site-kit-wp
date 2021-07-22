@@ -66,7 +66,7 @@ export const actions = {
 				type: DO_NAVIGATE_TO,
 				payload,
 			};
-		}
+		},
 	),
 
 };

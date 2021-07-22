@@ -54,6 +54,6 @@ export async function trackAPIError( { method, type, identifier, datapoint, erro
 		'api_error',
 		`${ method }:${ type }/${ identifier }/data/${ datapoint }`,
 		`${ error.message } (${ labelMeta })`,
-		error.data?.status || error.code
+		error.data?.status || error.code,
 	);
 }

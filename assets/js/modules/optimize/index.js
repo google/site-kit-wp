@@ -45,6 +45,6 @@ export const registerModule = ( modules ) => {
 				__( 'Improvement tracking', 'google-site-kit' ),
 				__( 'Probability and confidence calculations', 'google-site-kit' ),
 			],
-		}
+		},
 	);
 };

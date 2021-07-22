@@ -53,7 +53,7 @@ storiesOf( 'Global', module )
 		setTimeout( () => {
 			doAction(
 				'googlesitekit.moduleLoaded',
-				'Dashboard'
+				'Dashboard',
 			);
 		}, 250 );
 

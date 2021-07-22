@@ -67,7 +67,7 @@ function LegacyAnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 			title: __( 'New Users', 'google-site-kit' ),
 			tooltip: sprintf(
 				/* translators: %s: number of days */
-				_n( 'Number of new users to visit your page over last %s day', 'Number of new users to visit your page over last %s days', currentDayCount, 'google-site-kit', ),
+				_n( 'Number of new users to visit your page over last %s day', 'Number of new users to visit your page over last %s days', currentDayCount, 'google-site-kit' ),
 				currentDayCount,
 			),
 		},
@@ -75,7 +75,7 @@ function LegacyAnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 			title: __( 'Sessions', 'google-site-kit' ),
 			tooltip: sprintf(
 				/* translators: %s: number of days */
-				_n( 'Number of sessions users had on your website over last %s day', 'Number of sessions users had on your website over last %s days', currentDayCount, 'google-site-kit', ),
+				_n( 'Number of sessions users had on your website over last %s day', 'Number of sessions users had on your website over last %s days', currentDayCount, 'google-site-kit' ),
 				currentDayCount,
 			),
 		},
@@ -140,5 +140,5 @@ export default withData(
 		rowHeight={ 50 }
 	/>,
 	{},
-	isDataZeroForReporting
+	isDataZeroForReporting,
 );

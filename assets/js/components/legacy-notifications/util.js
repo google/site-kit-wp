@@ -112,7 +112,7 @@ export async function getModulesNotifications() {
 			const { identifier } = module;
 
 			const notifications = removeDismissed(
-				await data.get( TYPE_MODULES, identifier, 'notifications', {}, false )
+				await data.get( TYPE_MODULES, identifier, 'notifications', {}, false ),
 			);
 
 			resolve( { identifier, notifications } );

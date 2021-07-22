@@ -295,7 +295,7 @@ describe( 'determineAccountStatus', () => {
 					previousClientID: '',
 				},
 			],
-		]
+		],
 	)( 'returns undefined for undefined key parameters', ( params ) => {
 		expect( determineAccountStatus( params ) ).toEqual( undefined );
 	} );
@@ -354,7 +354,7 @@ describe( 'determineSiteStatus', () => {
 					siteURL: 'https://example.com',
 				},
 			],
-		]
+		],
 	)( 'returns undefined for undefined key parameters', ( params ) => {
 		expect( determineSiteStatus( params ) ).toEqual( undefined );
 	} );

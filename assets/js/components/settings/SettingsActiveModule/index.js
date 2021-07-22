@@ -56,7 +56,7 @@ export default function SettingsActiveModule( props ) {
 				'googlesitekit-settings-module',
 				'googlesitekit-settings-module--active',
 				`googlesitekit-settings-module--${ slug }`,
-				{ 'googlesitekit-settings-module--error': ( error || deactivationError ) && isEditing }
+				{ 'googlesitekit-settings-module--error': ( error || deactivationError ) && isEditing },
 			) }
 		>
 			{ isLocked && (

@@ -82,7 +82,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 					key={ 'cell-' + i }
 					className={ classnames(
 						'googlesitekit-table__body-item',
-						{ 'hidden-on-mobile': hiddenOnMobile }
+						{ 'hidden-on-mobile': hiddenOnMobile },
 					) }
 				>
 					{ row[ 0 ] === cell && link
@@ -110,14 +110,14 @@ export const getDataTableFromData = ( data, headers, options ) => {
 						)
 						: <div className="googlesitekit-table__body-item-content">{ cell }</div>
 					}
-				</td>
+				</td>,
 			);
 		} );
 
 		dataRows.push(
 			<tr key={ 'tr-' + j } className="googlesitekit-table__body-row">
 				{ cells }
-			</tr>
+			</tr>,
 		);
 	} );
 
@@ -129,12 +129,12 @@ export const getDataTableFromData = ( data, headers, options ) => {
 	return (
 		<div className={ classnames(
 			'googlesitekit-table',
-			{ 'googlesitekit-table--with-list': ! options || ! options.disableListMode }
+			{ 'googlesitekit-table--with-list': ! options || ! options.disableListMode },
 		) }>
 			<table className={ classnames(
 				'googlesitekit-table__wrapper',
 				`googlesitekit-table__wrapper--${ columns }-col`,
-				{ [ `googlesitekit-table__wrapper--mobile-${ mobileColumns }-col` ]: ( mobileColumns !== columns ) }
+				{ [ `googlesitekit-table__wrapper--mobile-${ mobileColumns }-col` ]: ( mobileColumns !== columns ) },
 			) }>
 				<thead className="googlesitekit-table__head">
 					<tr

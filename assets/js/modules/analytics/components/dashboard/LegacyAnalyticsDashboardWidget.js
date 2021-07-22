@@ -144,7 +144,7 @@ export default function LegacyAnalyticsDashboardWidget() {
 								statusText={ sprintf(
 									/* translators: %s: module name. */
 									__( '%s is connected', 'google-site-kit' ),
-									_x( 'Analytics', 'Service name', 'google-site-kit' )
+									_x( 'Analytics', 'Service name', 'google-site-kit' ),
 								) }
 							/>
 							{ loading && <ProgressBar /> }
@@ -156,19 +156,19 @@ export default function LegacyAnalyticsDashboardWidget() {
 						<div className={ classnames(
 							'mdc-layout-grid__cell',
 							'mdc-layout-grid__cell--span-12',
-							wrapperClass
+							wrapperClass,
 						) }>
 							<Layout
 								header
 								title={ sprintf(
 									/* translators: %s: number of days */
-									_n( 'Audience overview for the last %s day', 'Audience overview for the last %s days', currentDayCount, 'google-site-kit', ),
+									_n( 'Audience overview for the last %s day', 'Audience overview for the last %s days', currentDayCount, 'google-site-kit' ),
 									currentDayCount,
 								) }
 								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
-									_x( 'Analytics', 'Service name', 'google-site-kit' )
+									_x( 'Analytics', 'Service name', 'google-site-kit' ),
 								) }
 								headerCTALink={ visitorsOverview }
 							>
@@ -189,21 +189,21 @@ export default function LegacyAnalyticsDashboardWidget() {
 						<div className={ classnames(
 							'mdc-layout-grid__cell',
 							'mdc-layout-grid__cell--span-12',
-							wrapperClass
+							wrapperClass,
 						) }>
 							<Layout
 								header
 								footer
 								title={ sprintf(
 									/* translators: %s: number of days */
-									_n( 'Top content over the last %s day', 'Top content over the last %s days', currentDayCount, 'google-site-kit', ),
+									_n( 'Top content over the last %s day', 'Top content over the last %s days', currentDayCount, 'google-site-kit' ),
 									currentDayCount,
 								) }
 								headerCTALink={ topContentServiceURL }
 								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
-									_x( 'Analytics', 'Service name', 'google-site-kit' )
+									_x( 'Analytics', 'Service name', 'google-site-kit' ),
 								) }
 								footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 								footerCTALink={ topContentServiceURL }
@@ -214,21 +214,21 @@ export default function LegacyAnalyticsDashboardWidget() {
 						<div className={ classnames(
 							'mdc-layout-grid__cell',
 							'mdc-layout-grid__cell--span-12',
-							wrapperClass
+							wrapperClass,
 						) }>
 							<Layout
 								header
 								footer
 								title={ sprintf(
 									/* translators: %s: number of days */
-									_n( 'Top acquisition channels over the last %s day', 'Top acquisition channels over the last %s days', currentDayCount, 'google-site-kit', ),
+									_n( 'Top acquisition channels over the last %s day', 'Top acquisition channels over the last %s days', currentDayCount, 'google-site-kit' ),
 									currentDayCount,
 								) }
 								headerCTALink={ topAcquisitionServiceURL }
 								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
-									_x( 'Analytics', 'Service name', 'google-site-kit' )
+									_x( 'Analytics', 'Service name', 'google-site-kit' ),
 								) }
 								footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 								footerCTALink={ topAcquisitionServiceURL }

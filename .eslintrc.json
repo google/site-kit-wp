@@ -4,8 +4,7 @@
     "plugin:jest/recommended",
     "plugin:sitekit/main",
     "plugin:react-hooks/recommended",
-    "plugin:import/errors",
-    "plugin:import/warnings"
+    "plugin:import/recommended"
   ],
   "env": {
     "browser": true,

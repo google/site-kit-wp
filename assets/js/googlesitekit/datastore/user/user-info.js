@@ -322,7 +322,7 @@ export const selectors = {
 			// are valid URLs. As a workaround, we rewrite the scheme temporarily
 			// and then restore it on the server before requesting scopes.
 			const rewrittenScopes = additionalScopes.map(
-				( scope ) => scope.replace( /^http(s)?:/, 'gttp$1:' )
+				( scope ) => scope.replace( /^http(s)?:/, 'gttp$1:' ),
 			);
 			return addQueryArgs( connectURL, { ...queryArgs, additional_scopes: rewrittenScopes } );
 		}

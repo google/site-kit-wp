@@ -58,7 +58,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
+					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getExistingTag();
@@ -100,7 +100,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				};
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{ body: errorResponse, status: 500 }
+					{ body: errorResponse, status: 500 },
 				);
 
 				registry.select( STORE_NAME ).getExistingTag();
@@ -122,7 +122,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				const permissionResponse = { accountID, containerID, permission };
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/,
-					{ body: permissionResponse, status: 200 }
+					{ body: permissionResponse, status: 200 },
 				);
 
 				// The value will be undefined until the response is received.
@@ -132,7 +132,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/,
 					{
 						query: { containerID },
-					}
+					},
 				);
 
 				await untilResolved( registry, STORE_NAME ).getTagPermission( containerID );
@@ -140,7 +140,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				// The value will be undefined until the response is received.
 				expect( registry.select( STORE_NAME ).getTagPermission( containerID ) ).toEqual(
-					{ accountID, permission }
+					{ accountID, permission },
 				);
 			} );
 
@@ -152,7 +152,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/,
-					{ body: errorResponse, status: 500 }
+					{ body: errorResponse, status: 500 },
 				);
 
 				const containerID = 'GTM-ABC1234';

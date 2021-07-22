@@ -39,19 +39,19 @@ export default function Header() {
 	} ) );
 	const contentPagesURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL(
 		'content-pages',
-		generateDateRangeArgs( dates )
+		generateDateRangeArgs( dates ),
 	) );
 	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 	const title = sprintf(
 		/* translators: %s: number of days */
-		_n( 'Top content over the last %s day', 'Top content over the last %s days', currentDayCount, 'google-site-kit', ),
-		currentDayCount
+		_n( 'Top content over the last %s day', 'Top content over the last %s days', currentDayCount, 'google-site-kit' ),
+		currentDayCount,
 	);
 
 	const headerCTALabel = sprintf(
 		/* translators: %s: module name. */
 		__( 'See full stats in %s', 'google-site-kit' ),
-		_x( 'Analytics', 'Service name', 'google-site-kit' )
+		_x( 'Analytics', 'Service name', 'google-site-kit' ),
 	);
 
 	return (

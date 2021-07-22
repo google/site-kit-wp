@@ -145,7 +145,7 @@ const withData = (
 
 		// No error.
 		return false;
-	}
+	},
 ) => {
 	/**
 	 * Map of data requests by context.
@@ -162,7 +162,7 @@ const withData = (
 			} );
 			return acc;
 		},
-		{}
+		{},
 	);
 	// ...and returns another component...
 	class NewComponent extends Component {
@@ -186,7 +186,7 @@ const withData = (
 			addAction(
 				'googlesitekit.moduleDataReset',
 				'googlesitekit.moduleDataResetHandler',
-				this.handleModuleDataReset
+				this.handleModuleDataReset,
 			);
 
 			this.addDataRequests();
@@ -196,7 +196,7 @@ const withData = (
 			removeAction(
 				'googlesitekit.moduleDataReset',
 				'googlesitekit.moduleDataResetHandler',
-				this.handleModuleDataReset
+				this.handleModuleDataReset,
 			);
 
 			this.removeDataRequests();
@@ -246,9 +246,9 @@ const withData = (
 								requestsToAdd.push( request );
 							}
 							return contextRequests.concat( requestsToAdd );
-						}
+						},
 					);
-				}
+				},
 			);
 		}
 
@@ -259,7 +259,7 @@ const withData = (
 						`googlesitekit.module${ context }DataRequest`,
 						`googlesitekit.withData.${ hashRequests( dataRequests ) }`,
 					);
-				}
+				},
 			);
 		}
 

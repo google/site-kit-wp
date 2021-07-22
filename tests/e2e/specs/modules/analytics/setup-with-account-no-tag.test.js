@@ -41,7 +41,7 @@ async function proceedToSetUpAnalytics() {
 			expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } ),
 			page.waitForSelector( '.googlesitekit-setup-module__inputs' ),
 			page.waitForRequest( ( req ) => req.url().match( 'analytics/data' ) ),
-		] )
+		] ),
 	);
 }
 

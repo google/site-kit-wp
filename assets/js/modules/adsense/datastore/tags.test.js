@@ -60,7 +60,7 @@ describe( 'modules/adsense tags', () => {
 
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
+					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getExistingTag();
@@ -76,7 +76,7 @@ describe( 'modules/adsense tags', () => {
 			it( 'returns true if a user has access to this tag', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/,
-					{ body: fixtures.tagPermissionAccess, status: 200 }
+					{ body: fixtures.tagPermissionAccess, status: 200 },
 				);
 
 				const clientID = fixtures.tagPermissionAccess.clientID;
@@ -106,7 +106,7 @@ describe( 'modules/adsense tags', () => {
 			it( 'returns false if a user cannot access the requested tag', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/,
-					{ body: fixtures.tagPermissionNoAccess, status: 200 }
+					{ body: fixtures.tagPermissionNoAccess, status: 200 },
 				);
 
 				const clientID = fixtures.tagPermissionNoAccess.clientID;
@@ -140,7 +140,7 @@ describe( 'modules/adsense tags', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				const clientID = fixtures.tagPermissionAccess.clientID;
@@ -166,7 +166,7 @@ describe( 'modules/adsense tags', () => {
 
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getExistingTag' )
+					.hasFinishedResolution( 'getExistingTag' ),
 				);
 
 				expect( hasExistingTag ).toEqual( true );
@@ -199,7 +199,7 @@ describe( 'modules/adsense tags', () => {
 			it( 'makes a request via the getTagPermission selector if no tag has been loaded ', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/,
-					{ body: fixtures.tagPermissionAccess, status: 200 }
+					{ body: fixtures.tagPermissionAccess, status: 200 },
 				);
 
 				const { clientID } = fixtures.tagPermissionAccess;

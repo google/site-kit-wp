@@ -264,5 +264,5 @@ export default withSelect( ( select ) => {
 		inGrid: true,
 		createGrid: true,
 	},
-	isDataZeroAdSense
+	isDataZeroAdSense,
 ) );

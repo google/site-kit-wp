@@ -140,7 +140,7 @@ storiesOf( 'Analytics Module', module )
 			} );
 			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
 				propertiesGA4,
-				{ accountID }
+				{ accountID },
 			);
 		};
 
@@ -284,7 +284,7 @@ storiesOf( 'Analytics Module', module )
 		setTimeout( () => {
 			doAction(
 				'googlesitekit.moduleLoaded',
-				'Single'
+				'Single',
 			);
 		}, 250 );
 
@@ -321,7 +321,7 @@ storiesOf( 'Analytics Module', module )
 		setTimeout( () => {
 			doAction(
 				'googlesitekit.moduleLoaded',
-				'Single'
+				'Single',
 			);
 		}, 250 );
 

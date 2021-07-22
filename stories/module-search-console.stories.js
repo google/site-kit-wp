@@ -67,7 +67,7 @@ storiesOf( 'Search Console Module', module )
 		setTimeout( () => {
 			doAction(
 				'googlesitekit.moduleLoaded',
-				'Single'
+				'Single',
 			);
 		}, 250 );
 
