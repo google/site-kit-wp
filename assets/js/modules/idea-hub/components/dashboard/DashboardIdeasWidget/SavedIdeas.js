@@ -44,7 +44,7 @@ import Empty from './Empty';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-const SavedIdeas = ( { active, WidgetReportError } ) => {
+const SavedIdeas = ( { WidgetReportError } ) => {
 	const [ page, setPage ] = useState( 1 );
 	const args = {
 		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
@@ -66,10 +66,6 @@ const SavedIdeas = ( { active, WidgetReportError } ) => {
 			setPage( page + 1 );
 		}
 	}, [ page, setPage, totalSavedIdeas ] );
-
-	if ( ! active ) {
-		return null;
-	}
 
 	if ( ! hasFinishedResolution ) {
 		return (
@@ -117,7 +113,6 @@ const SavedIdeas = ( { active, WidgetReportError } ) => {
 };
 
 SavedIdeas.propTypes = {
-	active: PropTypes.bool.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
 

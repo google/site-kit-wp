@@ -34,14 +34,16 @@ import Layout from '../assets/js/components/layout/Layout';
 import LegacyAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetTopPagesTable';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
-import { WithTestRegistry } from '../tests/js/utils';
+import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Global', module )
 	.add( 'Data Table', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+		const setupRegistry = ( registry ) => {
+			provideSiteInfo( registry );
+
+			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 				accountID: '123456789',
 				propertyID: 'UA-1234567-1',
 				internalWebPropertyID: '123456789',

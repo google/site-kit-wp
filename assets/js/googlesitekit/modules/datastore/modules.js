@@ -71,6 +71,7 @@ const moduleDefaults = {
 	SettingsViewComponent: null,
 	SettingsSetupIncompleteComponent: DefaultSettingsSetupIncomplete,
 	SetupComponent: null,
+	checkRequirements: () => true,
 };
 
 const normalizeModules = memize(
@@ -270,7 +271,7 @@ const baseActions = {
 			SettingsViewComponent,
 			SetupComponent,
 			SettingsSetupIncompleteComponent,
-			checkRequirements = () => true,
+			checkRequirements,
 			screenWidgetContext,
 		} = {} ) {
 			const settings = {

@@ -72,10 +72,20 @@
 		}
 	}
 
+	.googlesitekit-idea-hub__body {
+		display: flex;
+	}
+
 	.googlesitekit-idea-hub__content {
+		width: 100%;
 
 		&[aria-hidden="true"] {
-			display: none;
+			margin-right: -100%;
+			visibility: hidden;
+		}
+
+		&[aria-hidden="false"] {
+			visibility: visible;
 		}
 
 		.googlesitekit-preview-table__row {
