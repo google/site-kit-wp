@@ -164,7 +164,6 @@ final class Admin_Bar {
 	 * @return bool True if Admin bar should display, False when it's not.
 	 */
 	public function is_active() {
-
 		// Only active if the admin bar is showing.
 		if ( ! is_admin_bar_showing() ) {
 			return false;
@@ -175,22 +174,24 @@ final class Admin_Bar {
 			return false;
 		}
 
-		$entity = $this->context->get_reference_entity();
+		$enabled = $this->admin_bar_enabled->get();
+		if ( ! $enabled ) {
+			return false;
+		}
 
 		// No entity was identified - don't display the admin bar menu.
+		$entity = $this->context->get_reference_entity();
 		if ( ! $entity ) {
 			return false;
 		}
 
 		// Check permissions for viewing post data.
 		if ( in_array( $entity->get_type(), array( 'post', 'blog' ), true ) && $entity->get_id() ) {
-
 			// If a post entity, check permissions for that post.
 			if ( ! current_user_can( Permissions::VIEW_POST_INSIGHTS, $entity->get_id() ) ) {
 				return false;
 			}
 		} else {
-
 			// Otherwise use more general permission check (typically admin-only).
 			if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
 				return false;
@@ -354,9 +355,10 @@ final class Admin_Bar {
 						'methods'             => WP_REST_Server::CREATABLE,
 						'callback'            => function( WP_REST_Request $request ) use ( $settings_callback ) {
 							$data    = $request->get_param( 'data' );
-							$enabled = ! empty( $data['enabled'] );
 
-							$this->admin_bar_enabled->set( $enabled );
+							if ( isset( $data['enabled'] ) ) {
+								$this->admin_bar_enabled->set( ! empty( $data['enabled'] ) );
+							}
 
 							return $settings_callback( $request );
 						},
@@ -368,7 +370,7 @@ final class Admin_Bar {
 								'properties' => array(
 									'enabled' => array(
 										'type'     => 'boolean',
-										'required' => true,
+										'required' => false,
 									),
 								),
 							),
