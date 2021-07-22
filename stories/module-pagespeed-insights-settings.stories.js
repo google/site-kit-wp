@@ -49,21 +49,21 @@ const withRegistry = ( Story ) => {
 
 storiesOf( 'PageSpeed Insights Module/Settings', module )
 	.add( 'View, closed', ( args, { registry } ) => {
-		return <Settings isOpen={ false } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services" />;
 	}, {
 		decorators: [
 			withRegistry,
 		],
 	} )
 	.add( 'View, open with all settings', ( args, { registry } ) => {
-		return <Settings isOpen={ true } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/pagespeed-insights" />;
 	}, {
 		decorators: [
 			withRegistry,
 		],
 	} )
 	.add( 'Edit, open with all settings', ( args, { registry } ) => {
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings registry={ registry } route="/connected-services/pagespeed-insights/edit" />;
 	}, {
 		decorators: [
 			withRegistry,

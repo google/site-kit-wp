@@ -74,7 +74,7 @@ const LegacyAdSenseDashboardWidgetTopPagesTableSmall = ( { data } ) => {
 		const adsenseData = select( MODULES_ADSENSE ).getReport( {
 			startDate,
 			endDate,
-			metrics: 'EARNINGS',
+			metrics: 'TOTAL_EARNINGS',
 		} );
 
 		return getCurrencyFormat( adsenseData );
@@ -118,9 +118,10 @@ const LegacyAdSenseDashboardWidgetTopPagesTableSmall = ( { data } ) => {
 			title: __( 'Earnings', 'google-site-kit' ),
 			description: __( 'Earnings', 'google-site-kit' ),
 			field: 'metrics.0.values.0',
-			Component: ( { fieldValue } ) => numFmt(
-				fieldValue,
-				currencyFormat,
+			Component: ( { fieldValue } ) => (
+				<span>
+					{ numFmt( fieldValue, currencyFormat ) }
+				</span>
 			),
 		},
 	];

@@ -80,7 +80,7 @@ export const GA_ACTIONS = {
 	COMPLETE: 'feature_tooltip_complete',
 };
 
-export default function TourTooltips( { steps, tourID, gaEventCategory } ) {
+export default function TourTooltips( { steps, tourID, gaEventCategory, callback } ) {
 	const stepKey = `${ tourID }-step`;
 	const runKey = `${ tourID }-run`;
 	const { setValue } = useDispatch( CORE_UI );
@@ -149,6 +149,7 @@ export default function TourTooltips( { steps, tourID, gaEventCategory } ) {
 	 * @property {string} type   Specific type (tour, step, beacon).
 	 *
 	 * @since 1.28.0
+	 * @since n.e.x.t Calls new callback prop.
 	 * @see {@link https://docs.react-joyride.com/callback} Example data provided by `react-joyride`.
 	 * @see {@link https://docs.react-joyride.com/constants} State & lifecycle constants used by `react-joyride`.
 	 *
@@ -177,6 +178,10 @@ export default function TourTooltips( { steps, tourID, gaEventCategory } ) {
 			changeStep( index, action );
 		} else if ( shouldEndTour ) {
 			endTour();
+		}
+
+		if ( callback ) {
+			callback( data );
 		}
 	};
 
@@ -213,4 +218,5 @@ TourTooltips.propTypes = {
 	steps: PropTypes.arrayOf( PropTypes.object ).isRequired,
 	tourID: PropTypes.string.isRequired,
 	gaEventCategory: PropTypes.string.isRequired,
+	callback: PropTypes.func,
 };

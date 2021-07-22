@@ -24,7 +24,7 @@ import {
 	muteFetch,
 } from '../../../../../tests/js/utils';
 import { createCacheKey } from '../../api';
-import { setItem } from '../../api/cache';
+import { setItem, setSelectedStorageBackend } from '../../api/cache';
 import { STORE_NAME } from './constants';
 
 describe( 'core/user surveys', () => {
@@ -97,6 +97,30 @@ describe( 'core/user surveys', () => {
 				await registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey' );
 
 				expect( fetchMock ).not.toHaveFetched();
+			} );
+
+			it( 'should cache survey for provided ttl', async () => {
+				const triggerID = 'optimizeSurvey';
+				const mockedSetItem = jest.fn();
+
+				setSelectedStorageBackend( {
+					getItem: () => undefined,
+					setItem: mockedSetItem,
+					removeItem: () => undefined,
+				} );
+
+				fetchMock.postOnce( surveyTriggerEndpoint, { body: { triggerID } } );
+				await registry.dispatch( STORE_NAME ).triggerSurvey( triggerID, { ttl: 500 } );
+				jest.advanceTimersByTime( 35000 );
+
+				// Wait one tick for async storage functions.
+				await new Promise( ( resolve ) => resolve() );
+
+				const { ttl } = JSON.parse( mockedSetItem.mock.calls[ 0 ][ 1 ] );
+				expect( ttl ).toEqual( 500 );
+
+				// Reset the backend storage mechanism.
+				setSelectedStorageBackend( undefined );
 			} );
 		} );
 

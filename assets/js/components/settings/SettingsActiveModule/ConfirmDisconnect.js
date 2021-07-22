@@ -35,21 +35,34 @@ import Data from 'googlesitekit-data';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { clearWebStorage } from '../../../util';
 import Dialog from '../../Dialog';
 const { useSelect, useDispatch } = Data;
 
-export default function ConfirmDisconnect( { slug, handleDialog } ) {
+export default function ConfirmDisconnect( { slug } ) {
 	const [ isDeactivating, setIsDeactivating ] = useState( false );
+	const { setValue } = useDispatch( CORE_UI );
+
+	const dialogActiveKey = `module-${ slug }-dialogActive`;
 
 	const dependentModules = useSelect( ( select ) => select( CORE_MODULES ).getModuleDependantNames( slug ) );
 	const provides = useSelect( ( select ) => select( CORE_MODULES ).getModuleFeatures( slug ) );
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
-	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
+	const settingsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
+	const dialogActive = useSelect( ( select ) => select( CORE_UI ).getValue( dialogActiveKey ) );
+
+	const handleDialog = useCallback( () => {
+		setValue( dialogActiveKey, ! dialogActive );
+	}, [ dialogActive, dialogActiveKey, setValue ] );
 
 	useEffect( () => {
-		const onKeyPress = ( e ) => {
-			if ( ESCAPE === e.keyCode ) {
+		const onKeyPress = ( event ) => {
+			// Only trigger the `handleDialog()` code when a key is pressed and
+			// the dialog is active. Calling `handleDialog()` without `dialogActive`
+			// being truthy will cause all dialogs to appear, see
+			// https://github.com/google/site-kit-wp/issues/3707.
+			if ( ESCAPE === event.keyCode && dialogActive ) {
 				handleDialog();
 			}
 		};
@@ -58,7 +71,7 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 		return () => {
 			global.removeEventListener( 'keydown', onKeyPress );
 		};
-	}, [ handleDialog ] );
+	}, [ dialogActive, handleDialog ] );
 
 	const { deactivateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -72,14 +85,14 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 
 		if ( ! error ) {
 			clearWebStorage();
-			navigateTo( dashboardURL );
+			navigateTo( settingsURL );
 		} else {
 			// Only set deactivating to false if there is an error.
 			setIsDeactivating( false );
 		}
-	}, [ slug, module?.forceActive, dashboardURL, deactivateModule, navigateTo ] );
+	}, [ slug, module?.forceActive, settingsURL, deactivateModule, navigateTo ] );
 
-	if ( ! module ) {
+	if ( ! module || ! dialogActive ) {
 		return null;
 	}
 
@@ -124,5 +137,4 @@ export default function ConfirmDisconnect( { slug, handleDialog } ) {
 
 ConfirmDisconnect.propTypes = {
 	slug: PropTypes.string.isRequired,
-	handleDialog: PropTypes.func.isRequired,
 };

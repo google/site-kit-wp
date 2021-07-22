@@ -49,15 +49,15 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 		await setSearchConsoleProperty();
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-		await page.waitForSelector( '.mdc-tab-bar button.mdc-tab' );
-		await expect( page ).toMatchElement( 'button.mdc-tab', { text: 'Admin Settings' } );
+		await page.waitForSelector( '.mdc-tab-bar a.mdc-tab' );
+		await expect( page ).toMatchElement( 'a.mdc-tab', { text: 'Admin Settings' } );
 
 		await pageWait(); // Delay the next steps.
 
 		// Click on Admin Settings Tab.
 		await Promise.all( [
 			page.waitForSelector( '#googlesitekit-opt-in' ),
-			expect( page ).toClick( 'button.mdc-tab', { text: 'Admin Settings' } ),
+			expect( page ).toClick( 'a.mdc-tab', { text: 'Admin Settings' } ),
 		] );
 	} );
 
@@ -132,7 +132,12 @@ describe( 'initialization on load for Site Kit screens', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( '/google-site-kit/v1/data/' ) ) {
+			const url = request.url();
+			if ( url.match( '/google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
+				request.respond( { status: 200 } );
+			} else if ( url.match( '/google-site-kit/v1/data/' ) ) {
+				// TODO Remove this matcher once all the legacy tests have been
+				// moved over to Widget API.
 				request.respond( { status: 200 } );
 			} else {
 				request.continue();

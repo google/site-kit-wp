@@ -39,7 +39,7 @@ import {
 	PropertySelect,
 	ProfileNameTextField,
 } from '../common';
-import { STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
+import { STORE_NAME, PROFILE_CREATE, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from '../../../analytics-4/datastore/constants';
 import GA4PropertyNotice from '../common/GA4PropertyNotice';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -53,6 +53,10 @@ export default function SetupFormUA() {
 
 	// Needed to conditionally show the profile name field and surrounding container.
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const shouldShowGA4PropertyNotice = accountID && accountID !== ACCOUNT_CREATE && propertyID;
 
 	useMount( () => {
 		selectProperty( PROPERTY_CREATE );
@@ -85,9 +89,11 @@ export default function SetupFormUA() {
 				</div>
 			) }
 
-			<GA4PropertyNotice
-				notice={ __( 'A Google Analytics 4 property will also be created.', 'google-site-kit' ) }
-			/>
+			{ shouldShowGA4PropertyNotice && (
+				<GA4PropertyNotice
+					notice={ __( 'A Google Analytics 4 property will also be created.', 'google-site-kit' ) }
+				/>
+			) }
 		</Fragment>
 	);
 }

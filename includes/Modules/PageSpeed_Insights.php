@@ -14,12 +14,13 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit_Dependencies\Google_Service_Pagespeedonline;
+use Google\Site_Kit_Dependencies\Google\Service\PagespeedInsights as Google_Service_PagespeedInsights;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -31,7 +32,7 @@ use WP_Error;
  * @ignore
  */
 final class PageSpeed_Insights extends Module
-	implements Module_With_Scopes, Module_With_Assets {
+	implements Module_With_Scopes, Module_With_Assets, Module_With_Deactivation {
 	use Module_With_Scopes_Trait, Module_With_Assets_Trait;
 
 	/**
@@ -184,7 +185,7 @@ final class PageSpeed_Insights extends Module
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
-			'pagespeedonline' => new Google_Service_Pagespeedonline( $client ),
+			'pagespeedonline' => new Google_Service_PagespeedInsights( $client ),
 		);
 	}
 

@@ -32,7 +32,7 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
-import { getLocale, normalizeURL, untrailingslashit } from '../../../util';
+import { normalizeURL, untrailingslashit } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
@@ -472,31 +472,6 @@ export const selectors = {
 
 		const queryArg = getQueryArg( global.location.href, 'permaLink' );
 		return queryArg ? queryArg : false;
-	},
-
-	/**
-	 * Gets external help links which includes the user's locale.
-	 *
-	 * @since 1.24.0
-	 *
-	 * @param {Object} state        Data store's state.
-	 * @param {Object} [args]       Optional arguments for the resulting URL.
-	 * @param {string} [args.path]  Base URL to build complete URL with starting slash.
-	 * @param {Object} [args.query] Object to append query to the URL.
-	 * @param {string} [args.hash]  Optional hash.
-	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
-	 */
-	getGoogleSupportURL: ( state, args ) => {
-		const { path, query, hash } = args || {};
-
-		if ( ! path ) {
-			return null;
-		}
-
-		const url = new URL( addQueryArgs( `https://support.google.com${ path }`, { ...query, hl: getLocale() } ) );
-		url.hash = hash || '';
-
-		return url.toString();
 	},
 
 	/**

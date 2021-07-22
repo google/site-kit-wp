@@ -33,7 +33,8 @@ import {
 	ProfileSelect,
 	PropertySelect,
 	TrackingExclusionSwitches,
-	UseSnippetSwitch,
+	UseUASnippetSwitch,
+	UseUAandGA4SnippetSwitches,
 	ProfileNameTextField,
 	ExistingGTMPropertyNotice,
 	GA4Notice,
@@ -41,28 +42,31 @@ import {
 } from '../common';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import {
-	SETUP_FLOW_MODE_GA4,
-	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
-	SETUP_FLOW_MODE_LEGACY,
-	SETUP_FLOW_MODE_UA,
-	STORE_NAME,
-	PROFILE_CREATE,
-} from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { SETUP_FLOW_MODE_LEGACY, STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
 	const isGA4Enabled = useFeature( 'ga4setup' );
+	const isGA4Connected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) );
 	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const hasExistingGA4Property = useSelect( ( select ) => isGA4Enabled && select( MODULES_ANALYTICS_4 ).getPropertyID() );
+	const ga4Properties = useSelect( ( select ) => isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getProperties( accountID ) : null );
 
 	const useAnalyticsSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const useTagManagerSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
 	const analyticsSinglePropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
 	const shouldShowTrackingExclusionSwitches = useAnalyticsSnippet || ( useTagManagerSnippet && analyticsSinglePropertyID );
+
+	const SnippetSwitchComponent = ( isGA4Enabled && hasExistingGA4Property )
+		? UseUAandGA4SnippetSwitches
+		: UseUASnippetSwitch;
 
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
@@ -86,20 +90,24 @@ export default function SettingsForm() {
 				</div>
 			) }
 
-			{ ( isGA4Enabled && ( SETUP_FLOW_MODE_GA4_TRANSITIONAL === setupFlowMode || SETUP_FLOW_MODE_GA4 === setupFlowMode ) ) && (
-				<GA4PropertyNotice notice={ __( 'You’ll need to connect the Google Analytics 4 property that’s associated with this Universal Analytics property.', 'google-site-kit' ) }>
-					<div className="googlesitekit-setup-module__inputs">
-						<GA4PropertySelect />
-					</div>
-				</GA4PropertyNotice>
+			{ ( isGA4Enabled && isGA4Connected && ga4Properties?.length > 0 ) && (
+				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--collapsed">
+					<GA4PropertySelect label={ __( 'Google Analytics 4 Property', 'google-site-kit' ) } />
+				</div>
 			) }
 
-			{ ( isGA4Enabled && SETUP_FLOW_MODE_UA === setupFlowMode ) && (
-				<GA4PropertyNotice notice={ __( 'A Google Analytics 4 property will also be created.', 'google-site-kit' ) } />
+			{ ( isGA4Enabled && isGA4Connected && ga4Properties?.length === 0 ) && (
+				<GA4PropertyNotice notice={ __( 'A Google Analytics 4 property will be created.', 'google-site-kit' ) } />
 			) }
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-				<UseSnippetSwitch />
+				<fieldset>
+					<legend className="googlesitekit-setup-module__text">
+						{ __( 'Let Site Kit place the Analytics code on your site', 'google-site-kit' ) }
+					</legend>
+					<SnippetSwitchComponent />
+				</fieldset>
+
 				<AnonymizeIPSwitch />
 				{ shouldShowTrackingExclusionSwitches && <TrackingExclusionSwitches /> }
 				<AdsConversionIDTextField />

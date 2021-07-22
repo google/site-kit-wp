@@ -1,4 +1,82 @@
 module.exports = [
+	/**
+	 * DashboardCoreSiteAlerts renders notifications after a five second timeout
+	 * and only if there has been no survey available in that time period.
+	 *
+	 * We have several seemingly similar backstop scenarios to catch potential
+	 * regressions in our render logic.
+	 *
+	 * The title 'Not Displayed' in the story indicates the component won't be
+	 * rendered and the lack of a readySelector in the corresponding test here
+	 * indicates that we're not expecting render to occur.
+	 */
+	{
+		id: 'components-dashboardcoresitealerts--notification-cta',
+		kind: 'Global',
+		name: 'DashboardCoreSiteAlerts1',
+		story: 'DashboardCoreSiteAlerts1',
+		parameters: {
+			fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				readySelector: '.googlesitekit-publisher-win',
+			},
+		},
+	},
+	{
+		id: 'components-dashboardcoresitealerts--no-notifications',
+		kind: 'Global',
+		name: 'DashboardCoreSiteAlerts2',
+		story: 'DashboardCoreSiteAlerts2',
+		parameters: {
+			fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+			},
+		},
+	},
+	{
+		id: 'components-dashboardcoresitealerts--notification-cta-with-survey',
+		kind: 'Global',
+		name: 'DashboardCoreSiteAlerts3',
+		story: 'DashboardCoreSiteAlerts3',
+		parameters: {
+			fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+			},
+		},
+	},
+	{
+		id: 'components-dashboardcoresitealerts--notification-cta-with-survey-short-delay',
+		kind: 'Global',
+		name: 'DashboardCoreSiteAlerts4',
+		story: 'DashboardCoreSiteAlerts4',
+		parameters: {
+			fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+			},
+		},
+	},
+	{
+		id: 'components-dashboardcoresitealerts--notification-cta-with-survey-longer-delay',
+		kind: 'Global',
+		name: 'DashboardCoreSiteAlerts5',
+		story: 'DashboardCoreSiteAlerts5',
+		parameters: {
+			fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				readySelector: '.googlesitekit-publisher-win',
+			},
+		},
+	},
 	{
 		id: 'views-adminbarapp-adminbarapp--ready',
 		kind: 'Global',
@@ -210,20 +288,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'analytics-module--audience-overview-chart',
-		kind: 'Analytics Module',
-		name: 'Audience Overview Chart',
-		story: 'Audience Overview Chart',
-		parameters: {
-			fileName: './stories/module-analytics.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
 		id: 'analytics-module-components-module-page-overview-widget--loaded',
 		kind: 'Analytics Module',
 		name: 'Overview Widget',
@@ -238,40 +302,12 @@ module.exports = [
 		},
 	},
 	{
-		id: 'analytics-module--top-acquisition-pie-chart',
-		kind: 'Analytics Module',
-		name: 'Top Acquisition Pie Chart',
-		story: 'Top Acquisition Pie Chart',
-		parameters: {
-			fileName: './stories/module-analytics.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
 		id: 'search-console-module-components-module-page-overview-widget--loaded',
 		kind: 'Search Console Module',
 		name: 'Overview Widget',
 		story: 'Loaded',
 		parameters: {
 			fileName: './stories/module-search-console-components.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
-		id: 'search-console-module--overview-chart',
-		kind: 'Search Console Module',
-		name: 'Overview Chart',
-		story: 'Overview Chart',
-		parameters: {
-			fileName: './stories/module-search-console.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},

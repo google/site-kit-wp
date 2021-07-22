@@ -31,6 +31,7 @@ import { STORE_NAME } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidDateRange, isValidOrders, isValidStringularItems } from '../../../util/report-validation';
+import { validateDimensions, validateMetrics } from '../util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -61,12 +62,14 @@ const fetchGetReportStore = createFetchStore( {
 			isValidStringularItems( metrics ),
 			'Metrics for an AdSense report must be either a string or an array of strings.',
 		);
+		validateMetrics( metrics );
 
 		if ( dimensions ) {
 			invariant(
 				isValidStringularItems( dimensions ),
 				'Dimensions for an AdSense report must be either a string or an array of strings.',
 			);
+			validateDimensions( dimensions );
 		}
 
 		if ( orderby ) {
@@ -103,7 +106,7 @@ const baseSelectors = {
 	 *
 	 * The report generated will include the following metrics:
 	 *
-	 * * 'EARNINGS'
+	 * * 'ESTIMATED_EARNINGS'
 	 * * 'PAGE_VIEWS_RPM'
 	 * * 'IMPRESSIONS'
 	 *

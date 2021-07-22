@@ -1,12 +1,9 @@
 [
   "ga4setup",
-  "helpVisibility",
   "ideaHubModule",
   "serviceSetupV2",
-  "storeErrorNotifications",
   "userFeedback",
   "userInput",
   "widgets.dashboard",
-  "widgets.pageDashboard",
-  "widgets.moduleScreens"
+  "widgets.pageDashboard"
 ]
