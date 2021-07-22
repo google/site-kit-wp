@@ -132,7 +132,12 @@ describe( 'initialization on load for Site Kit screens', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( '/google-site-kit/v1/data/' ) ) {
+			const url = request.url();
+			if ( url.match( '/google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
+				request.respond( { status: 200 } );
+			} else if ( url.match( '/google-site-kit/v1/data/' ) ) {
+				// TODO Remove this matcher once all the legacy tests have been
+				// moved over to Widget API.
 				request.respond( { status: 200 } );
 			} else {
 				request.continue();

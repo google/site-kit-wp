@@ -27,7 +27,7 @@
  * @return {Intl.NumberFormatOptions} Formatting options.
  */
 export function getCurrencyFormat( adsenseReport ) {
-	const currency = adsenseReport?.headers?.[0].currencyCode;
+	const currency = adsenseReport?.headers?.[ 0 ].currencyCode;
 	return currency ? ( {
 		style: 'currency',
 		currency,

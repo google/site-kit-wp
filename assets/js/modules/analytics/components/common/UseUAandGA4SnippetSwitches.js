@@ -36,9 +36,23 @@ export default function UseUAandGA4SnippetSwitches() {
 	const useUASnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const canUseUASnippet = useSelect( ( select ) => select( STORE_NAME ).getCanUseSnippet() );
 
-	const ga4ExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
-	const ga4MeasurementID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID() );
-	const useGA4Snippet = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getUseSnippet() );
+	const {
+		showGA4Toggle,
+		ga4ExistingTag,
+		ga4MeasurementID,
+		useGA4Snippet,
+	} = useSelect( ( select ) => {
+		if ( ! select( STORE_NAME ).canUseGA4Controls() ) {
+			return {};
+		}
+
+		return {
+			showGA4Toggle: true,
+			ga4ExistingTag: select( MODULES_ANALYTICS_4 ).getExistingTag(),
+			ga4MeasurementID: select( MODULES_ANALYTICS_4 ).getMeasurementID(),
+			useGA4Snippet: select( MODULES_ANALYTICS_4 ).getUseSnippet(),
+		};
+	} );
 
 	const { setUseSnippet: setUseUASnippet } = useDispatch( STORE_NAME );
 	const { setUseSnippet: setUseGA4Snippet } = useDispatch( MODULES_ANALYTICS_4 );
@@ -59,7 +73,7 @@ export default function UseUAandGA4SnippetSwitches() {
 		trackEvent( 'analytics_setup', useGA4Snippet ? 'analytics4_tag_enabled' : 'analytics4_tag_disabled' );
 	}, [ useGA4Snippet, setUseGA4Snippet ] );
 
-	if ( useGA4Snippet === undefined || useUASnippet === undefined ) {
+	if ( useUASnippet === undefined ) {
 		return null;
 	}
 
@@ -87,14 +101,17 @@ export default function UseUAandGA4SnippetSwitches() {
 						disabled={ ! canUseUASnippet }
 					/>
 				</div>
-				<div className="googlesitekit-settings-module__inline-item">
-					<Switch
-						label={ __( 'Place Google Analytics 4 code', 'google-site-kit' ) }
-						checked={ useGA4Snippet }
-						onClick={ onGA4Change }
-						hideLabel={ false }
-					/>
-				</div>
+
+				{ showGA4Toggle && (
+					<div className="googlesitekit-settings-module__inline-item">
+						<Switch
+							label={ __( 'Place Google Analytics 4 code', 'google-site-kit' ) }
+							checked={ useGA4Snippet }
+							onClick={ onGA4Change }
+							hideLabel={ false }
+						/>
+					</div>
+				) }
 			</div>
 
 			<p className="googlesitekit-margin-top-0">{ message }</p>

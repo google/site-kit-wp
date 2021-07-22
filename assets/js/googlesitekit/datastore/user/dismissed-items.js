@@ -48,11 +48,14 @@ const fetchGetDismissedItemsStore = createFetchStore( {
 
 const fetchDismissItemStore = createFetchStore( {
 	baseName: 'dismissItem',
-	controlCallback: ( { slug } ) => API.set( 'core', 'user', 'dismiss-item', { slug } ),
+	controlCallback: ( { slug, expiresInSeconds } ) => API.set( 'core', 'user', 'dismiss-item', { slug, expiration: expiresInSeconds } ),
 	reducerCallback,
-	argsToParams: ( slug ) => ( { slug } ),
-	validateParams: ( { slug } = {} ) => {
+	argsToParams: ( slug, expiresInSeconds = 0 ) => {
+		return ( { slug, expiresInSeconds } );
+	},
+	validateParams: ( { slug, expiresInSeconds } = {} ) => {
 		invariant( slug, 'slug is required.' );
+		invariant( Number.isInteger( expiresInSeconds ), 'expiresInSeconds must be an integer.' );
 	},
 } );
 
@@ -64,17 +67,22 @@ const baseActions = {
 	/**
 	 * Dismisses the given item by slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
-	 * @param {string} slug Item slug to dismiss.
+	 * @param {string} slug                       Item slug to dismiss.
+	 * @param {Object} options                    Dismiss item options.
+	 * @param {number} [options.expiresInSeconds] Optional. An integer number of seconds for expiry. 0 denotes permanent dismissal.
 	 * @return {Object} Generator instance.
 	 */
 	dismissItem: createValidatedAction(
-		( slug ) => {
+		( slug, options = {} ) => {
+			const { expiresInSeconds = 0 } = options;
 			invariant( slug, 'A tour slug is required to dismiss a tour.' );
+			invariant( Number.isInteger( expiresInSeconds ), 'expiresInSeconds must be an integer.' );
 		},
-		function* ( slug ) {
-			return yield fetchDismissItemStore.actions.fetchDismissItem( slug );
+		function* ( slug, options = {} ) {
+			const { expiresInSeconds = 0 } = options;
+			return yield fetchDismissItemStore.actions.fetchDismissItem( slug, expiresInSeconds );
 		},
 	),
 };
@@ -93,7 +101,7 @@ const baseSelectors = {
 	/**
 	 * Gets the list of dismissed items.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string[]|undefined)} Array of dismissed item slugs, `undefined` if not resolved yet.
@@ -105,7 +113,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the item is dismissed or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Item slug.

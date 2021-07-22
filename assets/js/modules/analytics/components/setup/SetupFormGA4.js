@@ -32,7 +32,7 @@ import { Fragment, useEffect } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { STORE_NAME, PROPERTY_CREATE, FORM_SETUP } from '../../datastore/constants';
+import { STORE_NAME, PROPERTY_CREATE, FORM_SETUP, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
@@ -45,10 +45,14 @@ export default function SetupFormGA4() {
 	const ga4HasExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).hasExistingTag() );
 	const ga4ExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
 	const ga4MeasurementID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID() );
+	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const { selectProperty } = useDispatch( STORE_NAME );
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const shouldShowAssociatedPropertyNotice = accountID && accountID !== ACCOUNT_CREATE && ga4PropertyID;
 
 	useMount( () => {
 		selectProperty( PROPERTY_CREATE );
@@ -77,9 +81,9 @@ export default function SetupFormGA4() {
 				<GA4PropertySelect />
 			</div>
 
-			<GA4PropertyNotice
+			{ shouldShowAssociatedPropertyNotice && <GA4PropertyNotice
 				notice={ __( 'An associated Universal Analytics property will also be created.', 'google-site-kit' ) }
-			/>
+			/> }
 		</Fragment>
 	);
 }

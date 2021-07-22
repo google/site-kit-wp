@@ -1,5 +1,5 @@
 /**
- * LegacyDashboardAdSenseTopPages component.
+ * InternalServerError component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,15 +17,18 @@
  */
 
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import Notification from '../legacy-notifications/notification';
+const { useSelect } = Data;
 
-class LegacyDashboardAdSenseTopPages extends Component {
-	render() {
+export default function InternalServerError() {
+	const error = useSelect( ( select ) => select( CORE_SITE ).getInternalServerError() );
+	if ( ! error ) {
 		return null;
 	}
-}
 
-export default withFilters( 'googlesitekit.AnalyticsAdSenseTopPagesTable' )( LegacyDashboardAdSenseTopPages );
+	return <Notification { ...error } />;
+}
