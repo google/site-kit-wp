@@ -36,14 +36,11 @@ domReady( () => {
 		return;
 	}
 	const type = notice.id.replace( 'googlesitekit-notice-idea-hub_', '' );
+	const expiresInSeconds = type === 'new-ideas' ? WEEK_IN_SECONDS : 0;
 
-	// Button pops up only after the timeout passes
-	setTimeout( () => {
-		const button = notice.querySelector( '.notice-dismiss' );
-		if ( ! button ) {
-			return;
+	notice.addEventListener( 'click', ( event ) => {
+		if ( 'notice-dismiss' === event.target.className ) {
+			dispatch( CORE_USER ).dismissItem( type, { expiresInSeconds } );
 		}
-		const expiresInSeconds = type === 'new-ideas' ? WEEK_IN_SECONDS : 0;
-		button.addEventListener( 'click', () => dispatch( CORE_USER ).dismissItem( type, { expiresInSeconds } ) );
-	}, 1 );
+	} );
 } );
