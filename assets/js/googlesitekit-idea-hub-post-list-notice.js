@@ -36,7 +36,7 @@ domReady( () => {
 		return;
 	}
 	const type = notice.id.replace( 'googlesitekit-notice-', '' );
-	const expiresInSeconds = type === 'new-ideas' ? WEEK_IN_SECONDS : 0;
+	const expiresInSeconds = type === 'idea-hub_new-ideas' ? WEEK_IN_SECONDS : 0;
 
 	notice.addEventListener( 'click', ( event ) => {
 		if ( 'notice-dismiss' === event.target.className ) {
