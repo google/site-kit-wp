@@ -241,7 +241,7 @@ final class Idea_Hub extends Module
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() use ( $transients, $dismissed_items ) {
-					if ( $dismissed_items->is_dismissed( 'new-ideas' ) ) {
+					if ( $dismissed_items->is_dismissed( 'new-ideas' ) || $dismissed_items->is_dismissed( 'saved-ideas' ) ) {
 						return false;
 					}
 					$saved_ideas = $transients->get( self::TRANSIENT_SAVED_IDEAS );
@@ -251,8 +251,10 @@ final class Idea_Hub extends Module
 					}
 					$has_saved_ideas = count( $saved_ideas ) > 0;
 
-					if ( $has_saved_ideas && ! $dismissed_items->is_dismissed( 'saved-ideas' ) ) {
-						return false; // Saved ideas notice shown instead.
+					if ( $has_saved_ideas ) {
+						// Don't show new ideas notice if there are saved ideas,
+						// irrespective of whether we show them the saved ideas notice.
+						return false;
 					}
 
 					$new_ideas = $transients->get( self::TRANSIENT_NEW_IDEAS );
