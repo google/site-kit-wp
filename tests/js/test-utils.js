@@ -137,7 +137,7 @@ const customRenderHook = (
 };
 
 // Export our own test utils from this file.
-export * from 'tests/js/utils';
+export * from './utils';
 
 // Export @testing-library/react as normal.
 export * from '@testing-library/react';

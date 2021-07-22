@@ -66,12 +66,7 @@
         "googlesitekit-widgets",
         "@wordpress/i18n__non-shim",
         "@wordpress/api-fetch__non-shim"
-      ],
-      "import/resolver": {
-        "alias": [
-          ["tests/js/utils", "./tests/js/utils"]
-        ]
-      }
+      ]
   },
   "overrides": [
     {

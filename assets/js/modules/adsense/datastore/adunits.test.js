@@ -25,7 +25,7 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 	untilResolved,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense Ad Units', () => {
