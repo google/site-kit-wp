@@ -59,6 +59,7 @@ export default function SettingsPlugin() {
 										value="1"
 										checked={ showAdminBar }
 										onChange={ onAdminBarToggle }
+										disabled={ showAdminBar === undefined }
 									>
 										<span>
 											{ __( 'Display relevant page stats in the Admin bar', 'google-site-kit' ) }

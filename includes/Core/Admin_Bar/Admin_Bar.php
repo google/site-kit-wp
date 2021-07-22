@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
 use WP_REST_Server;
+use WP_REST_Request;
 
 /**
  * Class handling the plugin's admin bar menu.
@@ -334,18 +335,44 @@ final class Admin_Bar {
 			return current_user_can( Permissions::AUTHENTICATE );
 		};
 
+		$settings_callback = function() {
+			return array(
+				'enabled' => $this->admin_bar_enabled->get(),
+			);
+		};
+
 		return array(
 			new REST_Route(
 				'core/site/data/admin-bar-settings',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function() {
-							return array(
-								'enabled' => $this->admin_bar_enabled->get(),
-							);
+						'callback'            => $settings_callback,
+						'permission_callback' => $can_authenticate,
+					),
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => function( WP_REST_Request $request ) use ( $settings_callback ) {
+							$data    = $request->get_param( 'data' );
+							$enabled = ! empty( $data['enabled'] );
+
+							$this->admin_bar_enabled->set( $enabled );
+
+							return $settings_callback( $request );
 						},
 						'permission_callback' => $can_authenticate,
+						'args'                => array(
+							'data' => array(
+								'type'       => 'object',
+								'required'   => true,
+								'properties' => array(
+									'enabled' => array(
+										'type'     => 'boolean',
+										'required' => true,
+									),
+								),
+							),
+						),
 					),
 				)
 			),
