@@ -44,7 +44,7 @@ describe( 'SettingsApp', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
-		registry.dispatch( CORE_SITE ).receiveGetShowAdminBar( false );
+		registry.dispatch( CORE_SITE ).receiveGetAdminBarSettings( { enabled: true } );
 
 		provideModules( registry, [
 			{

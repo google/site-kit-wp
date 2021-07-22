@@ -46,7 +46,7 @@ describe( 'SettingsModules', () => {
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [
 			{ slug: 'test-module', name: 'Test Module' },
 		] );
-		registry.dispatch( CORE_SITE ).receiveGetShowAdminBar( false );
+		registry.dispatch( CORE_SITE ).receiveGetAdminBarSettings( { enabled: true } );
 	} );
 
 	afterAll( () => {
