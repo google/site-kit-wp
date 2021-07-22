@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
 
 /**
@@ -25,7 +26,8 @@ use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
  * @ignore
  */
 final class Admin_Bar {
-	use Requires_Javascript_Trait;
+
+	use Requires_Javascript_Trait, Method_Proxy_Trait;
 
 	/**
 	 * Plugin context.
@@ -87,39 +89,12 @@ final class Admin_Bar {
 	 * @since 1.0.0
 	 */
 	public function register() {
-		add_action(
-			'admin_bar_menu',
-			function( $wp_admin_bar ) {
-				$this->add_menu_button( $wp_admin_bar );
-			},
-			99
-		);
+		add_action( 'admin_bar_menu', $this->get_method_proxy( 'add_menu_button' ), 99 );
+		add_action( 'admin_enqueue_scripts', $this->get_method_proxy( 'enqueue_assets' ), 40 );
+		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_assets' ), 40 );
 
 		// TODO: This can be removed at some point, see https://github.com/ampproject/amp-wp/pull/4001.
 		add_filter( 'amp_dev_mode_element_xpaths', array( $this, 'add_amp_dev_mode' ) );
-
-		$admin_bar_callback = function() {
-			if ( ! $this->is_active() ) {
-				return;
-			}
-
-			// Enqueue fonts.
-			$this->assets->enqueue_fonts();
-
-			// Enqueue styles.
-			$this->assets->enqueue_asset( 'googlesitekit-adminbar-css' );
-
-			if ( $this->context->is_amp() && ! $this->is_amp_dev_mode() ) {
-				// AMP Dev Mode support was added in v1.4, and if it is not enabled then short-circuit since scripts will be invalid.
-				return;
-			}
-
-			// Enqueue scripts.
-			$this->assets->enqueue_asset( 'googlesitekit-adminbar' );
-			$this->modules->enqueue_assets();
-		};
-		add_action( 'admin_enqueue_scripts', $admin_bar_callback, 40 );
-		add_action( 'wp_enqueue_scripts', $admin_bar_callback, 40 );
 
 		$this->admin_bar_enabled->register();
 	}
@@ -312,4 +287,31 @@ final class Admin_Bar {
 
 		return $markup;
 	}
+
+	/**
+	 * Enqueues assets.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function enqueue_assets() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
+
+		// Enqueue fonts.
+		$this->assets->enqueue_fonts();
+
+		// Enqueue styles.
+		$this->assets->enqueue_asset( 'googlesitekit-adminbar-css' );
+
+		if ( $this->context->is_amp() && ! $this->is_amp_dev_mode() ) {
+			// AMP Dev Mode support was added in v1.4, and if it is not enabled then short-circuit since scripts will be invalid.
+			return;
+		}
+
+		// Enqueue scripts.
+		$this->assets->enqueue_asset( 'googlesitekit-adminbar' );
+		$this->modules->enqueue_assets();
+	}
+
 }
