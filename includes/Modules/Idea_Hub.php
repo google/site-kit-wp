@@ -204,15 +204,12 @@ final class Idea_Hub extends Module
 			self::SLUG_SAVED_IDEAS,
 			array(
 				'content'         => function() {
-					ob_start();
-					?>
-					<p>
-						<?php echo esc_html( esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ) ); ?>
-						<a href="<?php echo esc_url( $this->context->admin_url() . '#saved-ideas' ); ?>"
-						><?php echo esc_html( esc_html__( 'See saved ideas', 'google-site-kit' ) ); ?></a>
-					</p>
-					<?php
-					return ob_get_clean();
+					return sprintf(
+						'<p>%s <a href="%s">%s</a>',
+						esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ),
+						esc_url( $this->context->admin_url() . '#saved-ideas' ),
+						esc_html( esc_html__( 'See saved ideas', 'google-site-kit' ) )
+					);
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() use ( $transients, $dismissed_items ) {
@@ -239,15 +236,12 @@ final class Idea_Hub extends Module
 			self::SLUG_NEW_IDEAS,
 			array(
 				'content'         => function() {
-					ob_start();
-					?>
-					<p>
-						<?php echo esc_html( esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub', 'google-site-kit' ) ); ?>
-						<a href="<?php echo esc_url( $this->context->admin_url() . '#new-ideas' ); ?>"
-						><?php echo esc_html( esc_html__( 'See new ideas', 'google-site-kit' ) ); ?></a>
-					</p>
-					<?php
-					return ob_get_clean();
+					return sprintf(
+						'<p>%s <a href="%s">%s</a>',
+						esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub', 'google-site-kit' ),
+						esc_url( $this->context->admin_url() . '#new-ideas' ),
+						esc_html( esc_html__( 'See new ideas', 'google-site-kit' ) )
+					);
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() use ( $transients, $dismissed_items ) {
