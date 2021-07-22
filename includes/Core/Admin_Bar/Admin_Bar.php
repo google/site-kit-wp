@@ -14,9 +14,11 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
+use WP_REST_Server;
 
 /**
  * Class handling the plugin's admin bar menu.
@@ -95,6 +97,12 @@ final class Admin_Bar {
 
 		// TODO: This can be removed at some point, see https://github.com/ampproject/amp-wp/pull/4001.
 		add_filter( 'amp_dev_mode_element_xpaths', array( $this, 'add_amp_dev_mode' ) );
+		add_filter(
+			'googlesitekit_rest_routes',
+			function( $routes ) {
+				return array_merge( $routes, $this->get_rest_routes() );
+			}
+		);
 
 		$this->admin_bar_enabled->register();
 	}
@@ -312,6 +320,36 @@ final class Admin_Bar {
 		// Enqueue scripts.
 		$this->assets->enqueue_asset( 'googlesitekit-adminbar' );
 		$this->modules->enqueue_assets();
+	}
+
+	/**
+	 * Gets related REST routes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of REST_Route objects.
+	 */
+	private function get_rest_routes() {
+		$can_authenticate = function() {
+			return current_user_can( Permissions::AUTHENTICATE );
+		};
+
+		return array(
+			new REST_Route(
+				'core/site/data/admin-bar-settings',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function() {
+							return array(
+								'enabled' => $this->admin_bar_enabled->get(),
+							);
+						},
+						'permission_callback' => $can_authenticate,
+					),
+				)
+			),
+		);
 	}
 
 }

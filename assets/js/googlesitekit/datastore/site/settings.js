@@ -28,46 +28,44 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
-const { commonActions, combineStores } = Data;
+const { commonActions, combineStores, createRegistrySelector } = Data;
 
-const fetchGetShowAdminBarStore = createFetchStore( {
-	baseName: 'getShowAdminBar',
-	controlCallback: async () => API.get( 'core', 'site', 'show-admin-bar', undefined, { useCache: false } ),
-	reducerCallback: ( state, showAdminBar ) => {
+const fetchGetAdminBarSettingsStore = createFetchStore( {
+	baseName: 'getAdminBarSettings',
+	controlCallback: async () => API.get( 'core', 'site', 'admin-bar-settings', undefined, { useCache: false } ),
+	reducerCallback: ( state, adminBarSettings ) => {
 		return {
 			...state,
-			settings: {
-				...state.settings,
-				showAdminBar,
+			adminBarSettings: {
+				...( state.adminBarSettings || {} ),
+				...adminBarSettings,
 			},
 		};
 	},
 } );
 
-const fetchSetShowAdminBarStore = createFetchStore( {
-	baseName: 'setShowAdminBar',
-	controlCallback: ( { showAdminBar } ) => API.set( 'core', 'site', 'show-admin-bar', { showAdminBar } ),
-	reducerCallback: ( state, showAdminBar ) => {
+const fetchSetAdminBarSettingsStore = createFetchStore( {
+	baseName: 'setAdminBarSettings',
+	controlCallback: ( { enabled } ) => API.set( 'core', 'site', 'admin-bar-settings', { enabled } ),
+	reducerCallback: ( state, adminBarSettings ) => {
 		return {
 			...state,
-			settings: {
-				...state.settings,
-				showAdminBar,
+			adminBarSettings: {
+				...( state.adminBarSettings || {} ),
+				...adminBarSettings,
 			},
 		};
 	},
-	argsToParams( showAdminBar ) {
-		return { showAdminBar };
+	argsToParams( { enabled } ) {
+		return { enabled };
 	},
-	validateParams( { showAdminBar } ) {
-		invariant( typeof showAdminBar === 'boolean', 'showAdminBar must be of boolean type' );
+	validateParams( { enabled } ) {
+		invariant( typeof enabled === 'boolean', 'enabled must be of boolean type' );
 	},
 } );
 
 const baseInitialState = {
-	settings: {
-		showAdminBar: undefined,
-	},
+	adminBarSettings: undefined,
 };
 
 const baseActions = {
@@ -76,11 +74,11 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {boolean} showAdminBar Whether to show or hide the admin bar.
+	 * @param {boolean} enabled Whether to show or hide the admin bar.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*setShowAdminBar( showAdminBar ) {
-		const { response, error } = yield fetchSetShowAdminBarStore.actions.fetchSetAdminBar( showAdminBar );
+	*setShowAdminBar( enabled ) {
+		const { response, error } = yield fetchSetAdminBarSettingsStore.actions.fetchSetAdminBarSettings( { enabled } );
 		return { response, error };
 	},
 };
@@ -95,17 +93,29 @@ function baseReducer( state, { type } ) {
 }
 
 const baseResolvers = {
-	*getShowAdminBar() {
+	*getAdminBarSettings() {
 		const { select } = yield commonActions.getRegistry();
 
-		const showAdminBar = select( STORE_NAME ).getShowAdminBar();
-		if ( showAdminBar === undefined ) {
-			yield fetchGetShowAdminBarStore.actions.fetchGetShowAdminBar();
+		const settings = select( STORE_NAME ).getAdminBarSettings();
+		if ( settings === undefined ) {
+			yield fetchGetAdminBarSettingsStore.actions.fetchGetAdminBarSettings();
 		}
 	},
 };
 
 const baseSelectors = {
+	/**
+	 * Gets admin bar settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} Admin bar setting if they have been already resolved, otherwise undefined.
+	 */
+	getAdminBarSettings( state ) {
+		return state.adminBarSettings;
+	},
+
 	/**
 	 * Gets showAdminBar setting.
 	 *
@@ -114,14 +124,14 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} The showAdminBar setting if it has been already resolved, otherwise undefined.
 	 */
-	getShowAdminBar( state ) {
-		return state.settings?.showAdminBar;
-	},
+	getShowAdminBar: createRegistrySelector( ( select ) => () => {
+		return select( STORE_NAME ).getAdminBarSettings()?.enabled;
+	} ),
 };
 
 const store = combineStores(
-	fetchGetShowAdminBarStore,
-	fetchSetShowAdminBarStore,
+	fetchGetAdminBarSettingsStore,
+	fetchSetAdminBarSettingsStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
