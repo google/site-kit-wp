@@ -24,7 +24,6 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit_Dependencies\Google\Service\PeopleService as Google_Service_PeopleService;
-use WP_HTTP_Proxy;
 
 /**
  * Class for connecting to Google APIs via OAuth.
@@ -112,14 +111,6 @@ final class OAuth_Client {
 	private $token;
 
 	/**
-	 * WP_HTTP_Proxy instance.
-	 *
-	 * @since 1.2.0
-	 * @var WP_HTTP_Proxy
-	 */
-	private $http_proxy;
-
-	/**
 	 * Owner_ID instance.
 	 *
 	 * @since 1.16.0
@@ -132,14 +123,13 @@ final class OAuth_Client {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param Context       $context      Plugin context.
-	 * @param Options       $options      Optional. Option API instance. Default is a new instance.
-	 * @param User_Options  $user_options Optional. User Option API instance. Default is a new instance.
-	 * @param Credentials   $credentials  Optional. Credentials instance. Default is a new instance from $options.
-	 * @param Google_Proxy  $google_proxy Optional. Google proxy instance. Default is a new instance.
-	 * @param Profile       $profile      Optional. Profile instance. Default is a new instance.
-	 * @param Token         $token        Optional. Token instance. Default is a new instance.
-	 * @param WP_HTTP_Proxy $http_proxy   Optional. WP_HTTP_Proxy instance. Default is a new instance.
+	 * @param Context      $context      Plugin context.
+	 * @param Options      $options      Optional. Option API instance. Default is a new instance.
+	 * @param User_Options $user_options Optional. User Option API instance. Default is a new instance.
+	 * @param Credentials  $credentials  Optional. Credentials instance. Default is a new instance from $options.
+	 * @param Google_Proxy $google_proxy Optional. Google proxy instance. Default is a new instance.
+	 * @param Profile      $profile      Optional. Profile instance. Default is a new instance.
+	 * @param Token        $token        Optional. Token instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
@@ -148,8 +138,7 @@ final class OAuth_Client {
 		Credentials $credentials = null,
 		Google_Proxy $google_proxy = null,
 		Profile $profile = null,
-		Token $token = null,
-		WP_HTTP_Proxy $http_proxy = null
+		Token $token = null
 	) {
 		$this->context      = $context;
 		$this->options      = $options ?: new Options( $this->context );
@@ -158,7 +147,6 @@ final class OAuth_Client {
 		$this->google_proxy = $google_proxy ?: new Google_Proxy( $this->context );
 		$this->profile      = $profile ?: new Profile( $this->user_options );
 		$this->token        = $token ?: new Token( $this->user_options );
-		$this->http_proxy   = $http_proxy ?: new WP_HTTP_Proxy();
 		$this->owner_id     = new Owner_ID( $this->options );
 	}
 
