@@ -33,6 +33,7 @@ import { render } from '@wordpress/element';
  */
 import './components/data';
 import Root from './components/Root';
+import { VIEW_CONTEXT_WP_DASHBOARD } from './googlesitekit/constants';
 import WPDashboardApp from './components/wp-dashboard/WPDashboardApp';
 
 // Initialize the app once the DOM is ready.
@@ -41,7 +42,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root dataAPIContext="WPDashboard">
+			<Root dataAPIContext="WPDashboard" viewContext={ VIEW_CONTEXT_WP_DASHBOARD }>
 				<WPDashboardApp />
 			</Root>,
 			renderTarget

@@ -30,6 +30,7 @@ import './components/legacy-notifications';
 import Root from './components/Root';
 import DashboardSplashApp from './components/dashboard-splash/DashboardSplashApp';
 import NotificationCounter from './components/legacy-notifications/notification-counter';
+import { VIEW_CONTEXT_DASHBOARD_SPLASH } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
@@ -41,7 +42,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root dataAPIContext="Splash">
+			<Root dataAPIContext="Splash" viewContext={ VIEW_CONTEXT_DASHBOARD_SPLASH }>
 				<NotificationCounter />
 				<DashboardSplashApp />
 			</Root>,

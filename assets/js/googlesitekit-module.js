@@ -35,6 +35,7 @@ import './components/legacy-notifications';
 import Root from './components/Root';
 import ModuleApp from './components/module/ModuleApp';
 import ModuleSetup from './components/setup/ModuleSetup';
+import { VIEW_CONTEXT_MODULE } from './googlesitekit/constants';
 
 function GoogleSitekitModule() {
 	const { moduleToSetup, showModuleSetupWizard } = global._googlesitekitLegacyData.setup;
@@ -55,6 +56,7 @@ domReady( () => {
 			<Root
 				dataAPIContext="Single"
 				dataAPIModuleArgs={ global.googlesitekitCurrentModule }
+				viewContext={ VIEW_CONTEXT_MODULE }
 			>
 				<GoogleSitekitModule />
 			</Root>,

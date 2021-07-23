@@ -33,6 +33,7 @@ import { render } from '@wordpress/element';
 import { trackEvent } from './util';
 import Root from './components/Root';
 import AdminBarApp from './components/adminbar/AdminBarApp';
+import { VIEW_CONTEXT_ADMIN_BAR } from './googlesitekit/constants';
 import './modules';
 
 // Initialize the whole adminbar app.
@@ -41,7 +42,7 @@ const init = once( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root dataAPIContext="Adminbar">
+			<Root dataAPIContext="Adminbar" viewContext={ VIEW_CONTEXT_ADMIN_BAR }>
 				<AdminBarApp />
 			</Root>,
 			renderTarget
