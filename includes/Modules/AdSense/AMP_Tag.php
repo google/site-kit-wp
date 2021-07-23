@@ -71,19 +71,25 @@ class AMP_Tag extends Module_AMP_Tag {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $filter The filter we want to apply.
+	 * @param string $type Whether it's for web stories. Can be `web-story` or ``.
 	 * @return array Filtered $options.
 	 */
-	private function get_auto_ads_attributes( $filter ) {
+	private function get_auto_ads_attributes( $type = '' ) {
 		$options = array(
 			'ad-client' => $this->tag_id,
 		);
 
-		if ( ! empty( $this->story_ad_slot_id ) ) {
+		if ( 'web-story' === $type && ! empty( $this->story_ad_slot_id ) ) {
 			$options['ad-slot'] = $this->story_ad_slot_id;
 		}
 
-		$filtered_options = apply_filters( $filter, $options, $this->tag_id, $this->story_ad_slot_id );
+		$hook_name        = 'web-story' === $type ? 'googlesitekit_amp_story_auto_ads_attributes' : 'googlesitekit_amp_auto_ads_attributes';
+		$filtered_options = apply_filters(
+			$hook_name,
+			$options,
+			$this->tag_id,
+			$this->story_ad_slot_id
+		);
 
 		if ( is_array( $filtered_options ) && ! empty( $filtered_options ) ) {
 			$options              = $filtered_options;
@@ -106,7 +112,7 @@ class AMP_Tag extends Module_AMP_Tag {
 		$this->adsense_tag_printed = true;
 
 		$attributes = '';
-		foreach ( $this->get_auto_ads_attributes( 'googlesitekit_amp_auto_ads_attributes' ) as $amp_auto_ads_opt_key => $amp_auto_ads_opt_value ) {
+		foreach ( $this->get_auto_ads_attributes() as $amp_auto_ads_opt_key => $amp_auto_ads_opt_value ) {
 			$attributes .= sprintf( ' data-%s="%s"', esc_attr( $amp_auto_ads_opt_key ), esc_attr( $amp_auto_ads_opt_value ) );
 		}
 
@@ -165,7 +171,7 @@ class AMP_Tag extends Module_AMP_Tag {
 		);
 
 		$attributes = array();
-		foreach ( $this->get_auto_ads_attributes( 'googlesitekit_amp_story_auto_ads_attributes' ) as $key => $value ) {
+		foreach ( $this->get_auto_ads_attributes( 'web-story' ) as $key => $value ) {
 			$attributes[ 'data-' . $key ] = $value;
 		}
 
