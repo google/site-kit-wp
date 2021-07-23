@@ -31,6 +31,7 @@ import { parseAccountID } from '../../util/parsing';
 import {
 	ErrorNotices,
 	UseSnippetSwitch,
+	AutoAdExclusionSwitches,
 } from '../common';
 import ProgressBar from '../../../../components/ProgressBar';
 import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
@@ -96,6 +97,8 @@ export default function SettingsForm() {
 					</p>
 				</Fragment>
 			) }
+
+			<AutoAdExclusionSwitches />
 		</div>
 	);
 }
