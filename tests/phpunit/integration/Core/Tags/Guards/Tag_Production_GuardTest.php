@@ -22,7 +22,6 @@ class Tag_Production_GuardTest extends TestCase {
 		}
 		$tagproduction = new Tag_Production_Guard();
 		$this->assertTrue( $tagproduction->can_activate() );
-
 	}
 
 	public function test_can_activate_in_production() {
@@ -42,10 +41,11 @@ class Tag_Production_GuardTest extends TestCase {
 		if ( ! function_exists( 'uopz_set_static' ) ) {
 			$this->markTestSkipped( 'The uopz extension is not available.' );
 		}
+		$env_type      = wp_get_environment_type();
 		$tagproduction = new Tag_Production_Guard();
 		uopz_set_static( 'wp_get_environment_type', array( 'current_env' => 'development' ) );
 		$this->assertFalse( $tagproduction->can_activate() );
-		uopz_set_static( 'wp_get_environment_type', array( 'current_env' => 'production' ) );
+		uopz_set_static( 'wp_get_environment_type', array( 'current_env' => $env_type ) );
 
 	}
 }
