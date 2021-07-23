@@ -70,7 +70,7 @@ export default function AdminBarApp() {
 								{
 									sprintf(
 										/* translators: %s: number of days */
-										_n( 'over the last %s day', 'over the last %s days', dateRangeLength, 'google-site-kit', ),
+										_n( 'over the last %s day', 'over the last %s days', dateRangeLength, 'google-site-kit' ),
 										dateRangeLength,
 									)
 								}

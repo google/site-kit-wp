@@ -59,7 +59,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-					{ body: fixtures.newIdeas, status: 200 }
+					{ body: fixtures.newIdeas, status: 200 },
 				);
 
 				const pendingNewIdeas = registry.select( STORE_NAME ).getNewIdeas( options );
@@ -80,7 +80,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-					{ body: fixtures.newIdeas, status: 200 }
+					{ body: fixtures.newIdeas, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getNewIdeas( customOptions );
@@ -95,7 +95,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 			it( 'treats all options as optional', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-					{ body: fixtures.newIdeas, status: 200 }
+					{ body: fixtures.newIdeas, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getNewIdeas( {} );
@@ -113,7 +113,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-					{ body: fixtures.newIdeas, status: 200 }
+					{ body: fixtures.newIdeas, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getNewIdeas( customOptions );
@@ -131,7 +131,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-					{ body: fixtures.newIdeas, status: 200 }
+					{ body: fixtures.newIdeas, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getNewIdeas( customOptions );
@@ -150,7 +150,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-					{ body: fixtures.newIdeas, status: 200 }
+					{ body: fixtures.newIdeas, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getNewIdeas( customOptions );
@@ -184,7 +184,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				registry.select( STORE_NAME ).getNewIdeas( options );

@@ -44,7 +44,7 @@ const init = once( () => {
 			<Root dataAPIContext="Adminbar">
 				<AdminBarApp />
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 
 		trackEvent( 'admin_bar', 'page_stats_view' );

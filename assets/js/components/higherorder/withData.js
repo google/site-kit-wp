@@ -36,7 +36,7 @@ import Data from 'googlesitekit-data';
 import { getModulesData, stringifyObject } from '../../util';
 import getNoDataComponent from '../legacy-notifications/nodata';
 import getDataErrorComponent from '../legacy-notifications/data-error';
-import getSetupIncompleteComponent, { getModuleInactiveComponent } from '../legacy-notifications/setup-incomplete';
+import { getSetupIncompleteComponent, getModuleInactiveComponent } from '../legacy-notifications/setup-incomplete';
 import { TYPE_MODULES } from '../data/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { requestWithDateRange } from '../data/utils/request-with-date-range';
@@ -145,7 +145,7 @@ const withData = (
 
 		// No error.
 		return false;
-	}
+	},
 ) => {
 	/**
 	 * Map of data requests by context.
@@ -162,7 +162,7 @@ const withData = (
 			} );
 			return acc;
 		},
-		{}
+		{},
 	);
 	// ...and returns another component...
 	class NewComponent extends Component {
@@ -186,7 +186,7 @@ const withData = (
 			addAction(
 				'googlesitekit.moduleDataReset',
 				'googlesitekit.moduleDataResetHandler',
-				this.handleModuleDataReset
+				this.handleModuleDataReset,
 			);
 
 			this.addDataRequests();
@@ -196,7 +196,7 @@ const withData = (
 			removeAction(
 				'googlesitekit.moduleDataReset',
 				'googlesitekit.moduleDataResetHandler',
-				this.handleModuleDataReset
+				this.handleModuleDataReset,
 			);
 
 			this.removeDataRequests();
@@ -246,9 +246,9 @@ const withData = (
 								requestsToAdd.push( request );
 							}
 							return contextRequests.concat( requestsToAdd );
-						}
+						},
 					);
-				}
+				},
 			);
 		}
 
@@ -259,7 +259,7 @@ const withData = (
 						`googlesitekit.module${ context }DataRequest`,
 						`googlesitekit.withData.${ hashRequests( dataRequests ) }`,
 					);
-				}
+				},
 			);
 		}
 

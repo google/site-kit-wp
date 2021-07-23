@@ -44,7 +44,7 @@ domReady( () => {
 			<Root dataAPIContext="WPDashboard">
 				<WPDashboardApp />
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 	}
 } );

@@ -39,7 +39,7 @@ export default function SettingsView() {
 			__( 'To view ideas for new content, <a>visit the dashboard</a>', 'google-site-kit' ),
 			{
 				a: <Link href={ dashboardPermalink } inherit />,
-			}
+			},
 		)
 	);
 }

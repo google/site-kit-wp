@@ -54,7 +54,7 @@ module.exports = iterateJsdoc( ( {
 		if (
 			previousTag &&
 			jsdoc.source.match(
-				new RegExp( `@${ previousTag }.*\\n\\n@${ tag }`, 'gm' )
+				new RegExp( `@${ previousTag }.*\\n\\n@${ tag }`, 'gm' ),
 			)
 		) {
 			context.report( {

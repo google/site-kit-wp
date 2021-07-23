@@ -67,7 +67,7 @@ const Dialog = ( {
 			ref={ dialogRef }
 			className={ classnames(
 				'mdc-dialog',
-				{ 'mdc-dialog--open': dialogActive }
+				{ 'mdc-dialog--open': dialogActive },
 			) }
 			role="alertdialog"
 			aria-modal="true"

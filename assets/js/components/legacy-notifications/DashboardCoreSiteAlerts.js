@@ -56,7 +56,7 @@ const DashboardCoreSiteAlerts = () => {
 				clearTimeout( timer );
 			};
 		},
-		[ hasSurveys ]
+		[ hasSurveys ],
 	);
 
 	useEffect(
@@ -68,7 +68,7 @@ const DashboardCoreSiteAlerts = () => {
 				setHasSurveys( true );
 			}
 		},
-		[ startTime, surveys, setHasSurveys ]
+		[ startTime, surveys, setHasSurveys ],
 	);
 
 	if ( ! Array.isArray( notifications ) || ! ready || hasSurveys ) {
@@ -96,7 +96,7 @@ const DashboardCoreSiteAlerts = () => {
 					await dismissNotification( notification.id );
 				} }
 			/>
-		)
+		),
 	);
 };
 

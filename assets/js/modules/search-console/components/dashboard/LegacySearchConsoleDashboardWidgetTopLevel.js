@@ -74,7 +74,7 @@ function LegacySearchConsoleDashboardWidgetTopLevel( { data, dateRangeLength } )
 		{
 			path: '/performance/search-analytics',
 			query: serviceBaseURLArgs,
-		} )
+		} ),
 	);
 
 	if ( error ) {
@@ -221,5 +221,5 @@ export default withData(
 	{
 		inGrid: true,
 	},
-	isDataZeroSearchConsole
+	isDataZeroSearchConsole,
 );

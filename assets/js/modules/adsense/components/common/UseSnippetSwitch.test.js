@@ -79,7 +79,7 @@ describe( 'UseSnippetSwitch', () => {
 
 		const newUseSnippet = registry.select( STORE_NAME ).getUseSnippet();
 		await act( () => subscribeUntil( registry,
-			() => registry.select( STORE_NAME ).hasFinishedResolution( 'getSettings' )
+			() => registry.select( STORE_NAME ).hasFinishedResolution( 'getSettings' ),
 		) );
 		expect( newUseSnippet ).toBe( true );
 

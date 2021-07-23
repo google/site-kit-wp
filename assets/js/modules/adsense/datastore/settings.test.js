@@ -72,7 +72,7 @@ describe( 'modules/adsense settings', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
-					{ body: validSettings, status: 200 }
+					{ body: validSettings, status: 200 },
 				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
@@ -84,7 +84,7 @@ describe( 'modules/adsense settings', () => {
 						body: {
 							data: validSettings,
 						},
-					}
+					},
 				);
 				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
 			} );
@@ -94,7 +94,7 @@ describe( 'modules/adsense settings', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
-					{ body: wpError, status: 500 }
+					{ body: wpError, status: 500 },
 				);
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -108,7 +108,7 @@ describe( 'modules/adsense settings', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
-					{ body: validSettings, status: 200 }
+					{ body: validSettings, status: 200 },
 				);
 
 				const cacheKey = createCacheKey( 'modules', 'adsense', 'arbitrary-datapoint' );
@@ -195,7 +195,7 @@ describe( 'modules/adsense settings', () => {
 				const response = { accountStatus: 'some-status' };
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
-					{ body: response, status: 200 }
+					{ body: response, status: 200 },
 				);
 
 				const initialOriginalAccountStatus = registry.select( STORE_NAME ).getOriginalAccountStatus();

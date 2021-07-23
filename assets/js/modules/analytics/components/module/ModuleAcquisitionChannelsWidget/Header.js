@@ -39,19 +39,19 @@ export default function Header() {
 	} ) );
 	const url = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL(
 		'trafficsources-overview',
-		generateDateRangeArgs( dates )
+		generateDateRangeArgs( dates ),
 	) );
 	const dateRangeNumberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 	const title = sprintf(
 		/* translators: %s: number of days */
-		_n( 'Top acquisition channels over the last %s day', 'Top acquisition channels over the last %s days', dateRangeNumberOfDays, 'google-site-kit', ),
+		_n( 'Top acquisition channels over the last %s day', 'Top acquisition channels over the last %s days', dateRangeNumberOfDays, 'google-site-kit' ),
 		dateRangeNumberOfDays,
 	);
 
 	const headerCTALabel = sprintf(
 		/* translators: %s: module name. */
 		__( 'See full stats in %s', 'google-site-kit' ),
-		_x( 'Analytics', 'Service name', 'google-site-kit' )
+		_x( 'Analytics', 'Service name', 'google-site-kit' ),
 	);
 
 	return (

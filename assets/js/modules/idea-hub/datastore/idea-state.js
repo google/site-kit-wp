@@ -274,7 +274,7 @@ const store = Data.combineStores(
 		initialState: baseInitialState,
 		reducer: baseReducer,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

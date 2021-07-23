@@ -67,7 +67,7 @@ export default function TimezoneSelect() {
 						>
 							{ displayName }
 						</Option>
-					)
+					),
 				)
 			}
 		</Select>

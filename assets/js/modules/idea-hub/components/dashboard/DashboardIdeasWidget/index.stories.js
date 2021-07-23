@@ -42,19 +42,19 @@ const mockEndpoints = ( args ) => {
 
 	fetchMock.get(
 		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-		{ body: args?.newIdeas || newIdeas, status: 200 }
+		{ body: args?.newIdeas || newIdeas, status: 200 },
 	);
 	fetchMock.get(
 		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-		{ body: args?.savedIdeas || savedIdeas, status: 200 }
+		{ body: args?.savedIdeas || savedIdeas, status: 200 },
 	);
 	fetchMock.get(
 		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-		{ body: args?.draftPostIdeas || draftPostIdeas, status: 200 }
+		{ body: args?.draftPostIdeas || draftPostIdeas, status: 200 },
 	);
 	fetchMock.post(
 		/google-site-kit\/v1\/modules\/idea-hub\/data\/create-idea-draft-post/,
-		{ body: {}, status: 200 }
+		{ body: {}, status: 200 },
 	);
 	fetchMock.post(
 		/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
@@ -65,7 +65,7 @@ const mockEndpoints = ( args ) => {
 				status: 200,
 				body: JSON.stringify( data ),
 			};
-		}
+		},
 	);
 };
 const bootstrapRegistry = () => {

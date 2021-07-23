@@ -190,7 +190,7 @@ const store = Data.combineStores(
 		controls: baseControls,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

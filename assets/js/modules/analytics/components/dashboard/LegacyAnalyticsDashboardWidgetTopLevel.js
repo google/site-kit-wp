@@ -344,5 +344,5 @@ export default withData(
 		inGrid: true,
 	},
 	isDataZero,
-	getAnalyticsErrorMessageFromData
+	getAnalyticsErrorMessageFromData,
 );

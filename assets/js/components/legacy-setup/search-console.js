@@ -103,7 +103,7 @@ class SearchConsole extends Component {
 					message: sprintf(
 						/* translators: %d: the number of matching properties */
 						__( 'We found %d existing accounts. Please choose which one to use below.', 'google-site-kit' ),
-						properties.length
+						properties.length,
 					),
 				};
 			} catch ( err ) {

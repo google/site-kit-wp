@@ -46,7 +46,7 @@ export default function SettingsNotice( props ) {
 				{
 					'googlesitekit-settings-notice--single-row': ! children,
 					'googlesitekit-settings-notice--multi-row': children,
-				}
+				},
 			) }
 		>
 			<div className="googlesitekit-settings-notice__icon">

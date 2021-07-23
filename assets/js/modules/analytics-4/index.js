@@ -38,6 +38,6 @@ if ( isFeatureEnabled( 'ga4setup' ) ) {
 			winData.learnMore.label = 'Learn more';
 			winData.learnMore.url = 'https://sitekit.withgoogle.com/documentation/ga4-analytics-property/';
 			return winData;
-		}
+		},
 	);
 }

@@ -25,7 +25,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/search-console report', () => {
@@ -52,7 +52,7 @@ describe( 'modules/search-console report', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/,
-					{ body: fixtures.report, status: 200 }
+					{ body: fixtures.report, status: 200 },
 				);
 
 				const initialReport = registry.select( STORE_NAME ).getReport( {
@@ -83,7 +83,7 @@ describe( 'modules/search-console report', () => {
 
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getReport', [ options ] )
+					.hasFinishedResolution( 'getReport', [ options ] ),
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
@@ -99,7 +99,7 @@ describe( 'modules/search-console report', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				const options = {

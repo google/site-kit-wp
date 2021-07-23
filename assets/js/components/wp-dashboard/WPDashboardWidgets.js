@@ -63,7 +63,7 @@ const WPDashboardWidgets = () => {
 	return (
 		<div className={ classnames(
 			'googlesitekit-wp-dashboard-stats',
-			{ 'googlesitekit-wp-dashboard-stats--fourup': analyticsModuleActive && analyticsModuleConnected }
+			{ 'googlesitekit-wp-dashboard-stats--fourup': analyticsModuleActive && analyticsModuleConnected },
 		) }>
 			<WPDashboardIdeaHub />
 			{ analyticsModuleActive && analyticsModuleConnected && (

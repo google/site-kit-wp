@@ -83,7 +83,7 @@ describe( 'data utils', () => {
 				objectTwo,
 				objectThree,
 				objectFour,
-				objectFive
+				objectFive,
 			) ).toEqual( {
 				...objectOne,
 				...objectTwo,
@@ -309,7 +309,7 @@ describe( 'data utils', () => {
 						reducer: {},
 						resolvers: {},
 						selectors: {},
-					}
+					},
 				);
 			} ).not.toThrow();
 		} );
@@ -324,7 +324,7 @@ describe( 'data utils', () => {
 						reducer: {},
 						resolvers: {},
 						selectors: {},
-					}
+					},
 				);
 			} ).not.toThrow();
 		} );
@@ -339,7 +339,7 @@ describe( 'data utils', () => {
 						reducer: {},
 						resolvers: {},
 						selectors: {},
-					}
+					},
 				);
 			} ).not.toThrow();
 		} );
@@ -354,7 +354,7 @@ describe( 'data utils', () => {
 						reducer: undefined,
 						resolvers: {},
 						selectors: {},
-					}
+					},
 				);
 			} ).not.toThrow();
 		} );
@@ -369,7 +369,7 @@ describe( 'data utils', () => {
 						reducer: {},
 						resolvers: undefined,
 						selectors: {},
-					}
+					},
 				);
 			} ).not.toThrow();
 		} );
@@ -384,7 +384,7 @@ describe( 'data utils', () => {
 						reducer: {},
 						resolvers: {},
 						selectors: undefined,
-					}
+					},
 				);
 			} ).not.toThrow();
 		} );
@@ -399,7 +399,7 @@ describe( 'data utils', () => {
 						reducer: undefined,
 						resolvers: undefined,
 						selectors: undefined,
-					}
+					},
 				);
 			} ).not.toThrow();
 		} );
@@ -610,7 +610,7 @@ describe( 'data utils', () => {
 								return null;
 							},
 						},
-					}
+					},
 				);
 			} ).toThrow( /collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: CONTROL_ONE./ );
 		} );
@@ -631,7 +631,7 @@ describe( 'data utils', () => {
 								yield () => {};
 							},
 						},
-					}
+					},
 				);
 			} ).toThrow( /collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: getActionOne./ );
 		} );
@@ -652,7 +652,7 @@ describe( 'data utils', () => {
 								return state.one;
 							},
 						},
-					}
+					},
 				);
 			} ).toThrow( /collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: getOne./ );
 		} );
@@ -815,7 +815,7 @@ describe( 'data utils', () => {
 
 			return expect( () => createValidatedAction(
 				validator,
-				actionCreator
+				actionCreator,
 			) )
 				.toThrow( 'an action’s validator function must not be a generator.' );
 		} );
@@ -827,7 +827,7 @@ describe( 'data utils', () => {
 
 			const validatedAction = createValidatedAction(
 				validator,
-				actionCreator
+				actionCreator,
 			);
 
 			validatedAction( args );
@@ -843,7 +843,7 @@ describe( 'data utils', () => {
 
 			const validatedAction = createValidatedAction(
 				validator,
-				actionCreator
+				actionCreator,
 			);
 
 			validatedAction( args );
@@ -861,7 +861,7 @@ describe( 'data utils', () => {
 
 			const validatedAction = createValidatedAction(
 				validator,
-				actionCreator
+				actionCreator,
 			);
 
 			expect( () => validatedAction( args ) ).toThrow( 'foo' );

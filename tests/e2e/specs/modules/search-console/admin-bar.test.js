@@ -126,7 +126,7 @@ describe( 'Site Kit admin bar component display', () => {
 
 		await expect( page ).toMatchElement(
 			'#js-googlesitekit-adminbar .googlesitekit-cta-link',
-			{ text: /More details/i, visible: true, timeout: 5000 }
+			{ text: /More details/i, visible: true, timeout: 5000 },
 		);
 
 		// Follow more details

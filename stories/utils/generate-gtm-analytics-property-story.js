@@ -113,7 +113,7 @@ export function generateGTMAnalyticsPropertyStory( {
 				accountProperties.forEach( ( { id: propertyID } ) => {
 					registry.dispatch( STORE_NAME ).receiveGetProfiles(
 						profiles.filter( ( { webPropertyId } ) => webPropertyId === propertyID ), // eslint-disable-line sitekit/acronym-case
-						{ accountID, propertyID }
+						{ accountID, propertyID },
 					);
 				} );
 			} );

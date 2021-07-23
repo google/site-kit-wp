@@ -124,7 +124,7 @@ const baseActions = {
 		function* ( accountID ) {
 			const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
 			return { response, error };
-		}
+		},
 	),
 
 	/**
@@ -185,7 +185,7 @@ const baseActions = {
 
 			const existingProfileID = registry.select( STORE_NAME ).getProfileID(); // eslint-disable-line @wordpress/no-unused-vars-before-return
 			const profiles = yield Data.commonActions.await(
-				registry.__experimentalResolveSelect( STORE_NAME ).getProfiles( accountID, propertyID )
+				registry.__experimentalResolveSelect( STORE_NAME ).getProfiles( accountID, propertyID ),
 			);
 
 			if ( ! Array.isArray( profiles ) ) {
@@ -205,7 +205,7 @@ const baseActions = {
 
 			// Otherwise just select the first profile, or the option to create if none.
 			registry.dispatch( STORE_NAME ).setProfileID( profiles[ 0 ]?.id || PROFILE_CREATE );
-		}
+		},
 	),
 
 	/**
@@ -542,7 +542,7 @@ const store = Data.combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

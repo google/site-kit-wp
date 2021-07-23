@@ -169,7 +169,7 @@ const baseActions = {
 				registry.dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._id );
 				registry.dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
 			}
-		}
+		},
 	),
 
 	/**
@@ -182,7 +182,7 @@ const baseActions = {
 	*findMatchedProperty() {
 		const registry = yield commonActions.getRegistry();
 		const accounts = yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( STORE_NAME ).getAccountSummaries()
+			registry.__experimentalResolveSelect( STORE_NAME ).getAccountSummaries(),
 		);
 
 		if ( ! Array.isArray( accounts ) || accounts.length === 0 ) {
@@ -196,7 +196,7 @@ const baseActions = {
 		);
 
 		return yield Data.commonActions.await(
-			registry.dispatch( STORE_NAME ).matchPropertyByURL( propertyIDs, url )
+			registry.dispatch( STORE_NAME ).matchPropertyByURL( propertyIDs, url ),
 		);
 	},
 
@@ -408,7 +408,7 @@ const store = Data.combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;
