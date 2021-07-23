@@ -35,7 +35,6 @@ import { getQueryParameter } from '../../util/standalone';
 import { isWPError } from '../../util/errors';
 import { getCacheKey, getCache, setCache } from './cache';
 import { TYPE_CORE, TYPE_MODULES } from './constants';
-import { invalidateCacheGroup } from './invalidate-cache-group';
 import { trackAPIError } from '../../util/api';
 
 export { TYPE_CORE, TYPE_MODULES };
@@ -200,8 +199,6 @@ const dataAPI = {
 		}
 	},
 
-	invalidateCacheGroup,
-
 	/**
 	 * Collects the initial module data request.
 	 *
@@ -289,8 +286,6 @@ const dataAPI = {
 			data: body,
 			method: 'POST',
 		} ).then( ( response ) => {
-			dataAPI.invalidateCacheGroup( type, identifier, datapoint );
-
 			return new Promise( ( resolve ) => {
 				resolve( response );
 			} );
