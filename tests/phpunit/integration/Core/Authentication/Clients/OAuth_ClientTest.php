@@ -32,16 +32,6 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
 class OAuth_ClientTest extends TestCase {
 	use Fake_Site_Connection_Trait;
 
-	public function test_get_client() {
-		$oauth_client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$client       = $oauth_client->get_client();
-
-		$this->assertInstanceOf( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client', $client );
-
-		$retry = $client->getConfig( 'retry' );
-		$this->assertEquals( $retry['retries'], 3 );
-	}
-
 	public function test_refresh_token() {
 		$this->fake_site_connection();
 		$user_id = $this->factory()->user->create();
@@ -100,20 +90,6 @@ class OAuth_ClientTest extends TestCase {
 		foreach ( $this->get_user_credential_keys() as $key ) {
 			$this->assertFalse( $user_options->get( $key ) );
 		}
-	}
-
-	public function test_get_required_scopes() {
-		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		remove_all_filters( 'googlesitekit_auth_scopes' );
-
-		$this->assertEqualSets(
-			array(
-				'https://www.googleapis.com/auth/userinfo.profile',
-				'https://www.googleapis.com/auth/userinfo.email',
-				'openid',
-			),
-			$client->get_required_scopes()
-		);
 	}
 
 	public function test_get_granted_scopes() {
@@ -668,37 +644,6 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'site_id=' . $fake_credentials['client_id'], $url );
 		$this->assertContains( 'application_name=', $url );
 		$this->assertContains( 'hl=', $url );
-	}
-
-	public function test_get_error_message_unknown() {
-		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertContains( 'Unknown Error (code: unknown_code)', $client->get_error_message( 'unknown_code' ) );
-		$this->assertContains( 'Unknown Error (code: )', $client->get_error_message( '' ) );
-		$this->assertContains( 'Unknown Error (code: 123)', $client->get_error_message( 123 ) );
-	}
-
-	/**
-	 * @dataProvider error_message_provider
-	 */
-	public function test_get_error_message( $error_code ) {
-		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$message = $client->get_error_message( $error_code );
-
-		$this->assertRegExp( '/unable|invalid|failed/i', $message );
-		$this->assertNotContains( 'Unknown Error', $message );
-	}
-
-	public function error_message_provider() {
-		return array(
-			array( 'oauth_credentials_not_exist' ),
-			array( 'refresh_token_not_exist' ),
-			array( 'cannot_log_in' ),
-			array( 'invalid_grant' ),
-			array( 'invalid_code' ),
-			array( 'access_token_not_received' ),
-		);
 	}
 
 	protected function get_user_credential_keys() {
