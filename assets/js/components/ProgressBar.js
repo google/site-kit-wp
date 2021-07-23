@@ -44,7 +44,7 @@ export default function ProgressBar( {
 					'mdc-linear-progress--indeterminate': indeterminate,
 					'mdc-linear-progress--small': small,
 					'mdc-linear-progress--compress': compress,
-				}
+				},
 			) }
 		>
 			<div className="mdc-linear-progress__buffering-dots" />

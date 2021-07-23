@@ -68,7 +68,7 @@ export const appendNotificationsCount = ( count = 0 ) => {
 	screenReader.textContent = sprintf(
 		/* translators: %d is the number of notifications */
 		_n( '%d notification', '%d notifications', count, 'google-site-kit' ),
-		count
+		count,
 	);
 
 	wrapper.appendChild( pluginCount );

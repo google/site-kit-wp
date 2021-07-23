@@ -193,7 +193,7 @@ describe( 'createFetchStore store', () => {
 				const expectedResponse = 'response-value';
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
-					{ body: JSON.stringify( expectedResponse ), status: 200 }
+					{ body: JSON.stringify( expectedResponse ), status: 200 },
 				);
 
 				const { response, error } = await dispatch.fetchGetSomeData( {}, 'value-to-key-response-by' );
@@ -213,7 +213,7 @@ describe( 'createFetchStore store', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
-					{ body: errorResponse, status: 500 }
+					{ body: errorResponse, status: 500 },
 				);
 
 				const { response, error } = await dispatch.fetchGetSomeData( {}, 'value-to-key-response-by' );
@@ -227,7 +227,7 @@ describe( 'createFetchStore store', () => {
 			it( 'sets flag for request being in progress', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
-					{ body: { someValue: 42 }, status: 200 }
+					{ body: { someValue: 42 }, status: 200 },
 				);
 
 				const requestArgs = [ {}, 'aValue' ];

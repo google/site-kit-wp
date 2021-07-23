@@ -116,7 +116,7 @@ describe( 'core/user userInfo', () => {
 
 				registry.select( STORE_NAME ).getConnectURL();
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getConnectURL' )
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getConnectURL' ),
 				);
 
 				const connectURL = registry.select( STORE_NAME ).getConnectURL();
@@ -298,7 +298,7 @@ describe( 'core/user userInfo', () => {
 
 				registry.select( STORE_NAME ).getUserInputState(); // invariant error
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getUserInputState' )
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getUserInputState' ),
 				);
 
 				const userInputState = registry.select( STORE_NAME ).getUserInputState();

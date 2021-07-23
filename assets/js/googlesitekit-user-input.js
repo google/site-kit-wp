@@ -43,7 +43,7 @@ domReady( () => {
 			<Root dataAPIContext="UserInput">
 				<UserInputApp />
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 	}
 } );

@@ -64,13 +64,13 @@ describe( 'modules/tagmanager versions', () => {
 
 			it( 'requires a liveContainerVersion object', () => {
 				expect(
-					() => registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion()
+					() => registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion(),
 				).toThrow( 'response is required.' );
 			} );
 
 			it( 'requires params', () => {
 				expect(
-					() => registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( validContainerVersion )
+					() => registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( validContainerVersion ),
 				).toThrow( 'params is required.' );
 			} );
 
@@ -382,7 +382,7 @@ describe( 'modules/tagmanager versions', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/,
-					{ body: liveContainerVersion, status: 200 }
+					{ body: liveContainerVersion, status: 200 },
 				);
 
 				const initialContainerVersion = registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
@@ -392,7 +392,7 @@ describe( 'modules/tagmanager versions', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect(
-					registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID )
+					registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ),
 				).toEqual( liveContainerVersion );
 			} );
 
@@ -402,11 +402,11 @@ describe( 'modules/tagmanager versions', () => {
 
 				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion(
 					liveContainerVersion,
-					{ accountID, internalContainerID }
+					{ accountID, internalContainerID },
 				);
 
 				expect(
-					registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID )
+					registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ),
 				).toEqual( liveContainerVersion );
 
 				await untilResolved( registry, STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
@@ -423,7 +423,7 @@ describe( 'modules/tagmanager versions', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/,
-					{ body: errorResponse, status: 500 }
+					{ body: errorResponse, status: 500 },
 				);
 
 				registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
@@ -448,7 +448,7 @@ describe( 'modules/tagmanager versions', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/,
-					{ body: notFoundResponse, status: 404 }
+					{ body: notFoundResponse, status: 404 },
 				);
 
 				registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
@@ -593,19 +593,19 @@ describe( 'modules/tagmanager versions', () => {
 
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
 				expect(
-					registry.select( STORE_NAME ).isDoingGetLiveContainerVersion( accountID, internalContainerID )
+					registry.select( STORE_NAME ).isDoingGetLiveContainerVersion( accountID, internalContainerID ),
 				).toBe( false );
 
 				registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
 				expect(
-					registry.select( STORE_NAME ).isDoingGetLiveContainerVersion( accountID, internalContainerID )
+					registry.select( STORE_NAME ).isDoingGetLiveContainerVersion( accountID, internalContainerID ),
 				).toBe( true );
 
 				await untilResolved( registry, STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
 				expect(
-					registry.select( STORE_NAME ).isDoingGetLiveContainerVersion( accountID, internalContainerID )
+					registry.select( STORE_NAME ).isDoingGetLiveContainerVersion( accountID, internalContainerID ),
 				).toBe( false );
 			} );
 		} );

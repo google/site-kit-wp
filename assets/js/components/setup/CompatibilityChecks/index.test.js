@@ -63,7 +63,7 @@ describe( 'CompatibilityChecks', () => {
 		const { container } = render(
 			<CompatibilityChecks>
 				{ compatibilityChildren }
-			</CompatibilityChecks>
+			</CompatibilityChecks>,
 		);
 
 		expect( container ).toHaveTextContent( 'Checking Compatibility…' );
@@ -74,7 +74,7 @@ describe( 'CompatibilityChecks', () => {
 		// Mock request to setup-tag
 		fetchMock.postOnce(
 			/^\/google-site-kit\/v1\/core\/site\/data\/setup-tag/,
-			{ body: {}, status: 500 }
+			{ body: {}, status: 500 },
 		);
 
 		// Mock request to developer-plugin when error is thrown.
@@ -88,7 +88,7 @@ describe( 'CompatibilityChecks', () => {
 			<CompatibilityChecks>
 				{ compatibilityChildren }
 			</CompatibilityChecks>,
-			{ registry }
+			{ registry },
 		);
 
 		// Wait for progress bar to disappear.
@@ -104,18 +104,18 @@ describe( 'CompatibilityChecks', () => {
 		// Mock request to setup-tag.
 		fetchMock.postOnce(
 			/^\/google-site-kit\/v1\/core\/site\/data\/setup-tag/,
-			{ body: { token }, status: 200 }
+			{ body: { token }, status: 200 },
 		);
 
 		fetchMock.postOnce(
 			homeURL,
-			{ body: { token }, status: 200 }
+			{ body: { token }, status: 200 },
 		);
 
 		// Mock request to health-checks.
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/core\/site\/data\/health-checks/,
-			{ body: { checks: { googleAPI: { pass: true } } }, status: 200 }
+			{ body: { checks: { googleAPI: { pass: true } } }, status: 200 },
 		);
 
 		// Mock request to AMP project.
@@ -129,14 +129,14 @@ describe( 'CompatibilityChecks', () => {
 			{
 				body: `<html><head><meta name="googlesitekit-setup" content="${ token }"/></head><body></body>`,
 				status: 200,
-			}
+			},
 		);
 
 		render(
 			<CompatibilityChecks>
 				{ compatibilityChildren }
 			</CompatibilityChecks>,
-			{ registry }
+			{ registry },
 		);
 
 		await waitForElementToBeRemoved( document.querySelector( '.mdc-linear-progress' ) );
@@ -156,19 +156,19 @@ describe( 'CompatibilityChecks', () => {
 		// Mock request to setup-tag.
 		fetchMock.postOnce(
 			/^\/google-site-kit\/v1\/core\/site\/data\/setup-tag/,
-			{ body: { token }, status: 200 }
+			{ body: { token }, status: 200 },
 		);
 
 		// Mock request to setup-tag.
 		fetchMock.postOnce(
 			homeURL,
-			{ body: { token }, status: 200 }
+			{ body: { token }, status: 200 },
 		);
 
 		// Mock request to health-checks.
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/core\/site\/data\/health-checks/,
-			{ body: { checks: { googleAPI: { pass: true } } }, status: 200 }
+			{ body: { checks: { googleAPI: { pass: true } } }, status: 200 },
 		);
 
 		// Mock request to AMP project.
@@ -182,14 +182,14 @@ describe( 'CompatibilityChecks', () => {
 			{
 				body: `<html><head><meta name="googlesitekit-setup" content="${ token }"/></head><body></body>`,
 				status: 200,
-			}
+			},
 		);
 
 		const { container } = render(
 			<CompatibilityChecks>
 				{ compatibilityChildren }
 			</CompatibilityChecks>,
-			{ registry }
+			{ registry },
 		);
 
 		await waitForElementToBeRemoved( document.querySelector( '.mdc-linear-progress' ) );

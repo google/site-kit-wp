@@ -53,7 +53,7 @@ export const registerModule = ifIdeaHubIsEnabled( ( modules ) => {
 			features: [
 				__( 'Suggestions for new topics to write about', 'google-site-kit' ),
 			],
-		}
+		},
 	);
 } );
 

@@ -21,11 +21,11 @@ describe( 'Search Console reporting date range arguments', () => {
 	describe( 'generateDateRangeArgs', () => {
 		it( 'should throw if `startDate` or `endDate` arguments are not provided', () => {
 			expect(
-				() => generateDateRangeArgs( { startDate: '2020-12-18' } )
+				() => generateDateRangeArgs( { startDate: '2020-12-18' } ),
 			).toThrow( 'A valid endDate is required' );
 
 			expect(
-				() => generateDateRangeArgs( { endDate: '2021-01-14' } )
+				() => generateDateRangeArgs( { endDate: '2021-01-14' } ),
 			).toThrow( 'A valid startDate is required' );
 		} );
 

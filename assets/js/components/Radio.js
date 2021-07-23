@@ -59,7 +59,7 @@ const Radio = ( {
 			<div
 				className={ classnames(
 					'mdc-radio',
-					{ 'mdc-radio--disabled': disabled }
+					{ 'mdc-radio--disabled': disabled },
 				) }
 			>
 				<input

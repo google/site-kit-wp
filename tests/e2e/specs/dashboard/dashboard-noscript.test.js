@@ -57,7 +57,7 @@ describe( 'dashboard noscript notice', () => {
 			await expect( page ).toMatchElement(
 				'.googlesitekit-noscript__text',
 				{ text: /The Site Kit by Google plugin requires JavaScript to be enabled in your browser/i },
-				{ visible: true }
+				{ visible: true },
 			);
 		} );
 	} );

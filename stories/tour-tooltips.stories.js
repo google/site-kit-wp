@@ -384,7 +384,7 @@ storiesOf( 'Global', module )
 		];
 		fetchMock.post(
 			/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/,
-			{ body: JSON.stringify( [ 'feature' ] ), status: 200 }
+			{ body: JSON.stringify( [ 'feature' ] ), status: 200 },
 		);
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );

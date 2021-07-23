@@ -85,7 +85,7 @@ SurveyAnsweredPositiveStory.args = {
 						},
 					},
 				],
-			}
+			},
 		);
 	},
 };

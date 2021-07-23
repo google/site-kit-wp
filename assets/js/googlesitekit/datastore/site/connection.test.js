@@ -93,7 +93,7 @@ describe( 'core/site connection', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-					{ body: responseConnected, status: 200 }
+					{ body: responseConnected, status: 200 },
 				);
 
 				const initialConnection = select.getConnection();
@@ -124,7 +124,7 @@ describe( 'core/site connection', () => {
 
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getConnection' )
+					.hasFinishedResolution( 'getConnection' ),
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
@@ -139,7 +139,7 @@ describe( 'core/site connection', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				select.getConnection();
@@ -175,7 +175,7 @@ describe( 'core/site connection', () => {
 			it( 'depends on the getConnection selector and resolver', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-					{ body: responseConnected, status: 200 }
+					{ body: responseConnected, status: 200 },
 				);
 
 				expect( select[ selector ]() ).toBeUndefined();
@@ -193,7 +193,7 @@ describe( 'core/site connection', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				select[ selector ]();

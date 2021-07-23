@@ -23,7 +23,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/site reset', () => {
@@ -43,7 +43,7 @@ describe( 'core/site reset', () => {
 				const response = true;
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
-					{ body: JSON.stringify( response ), status: 200 }
+					{ body: JSON.stringify( response ), status: 200 },
 				);
 
 				registry.dispatch( STORE_NAME ).fetchReset();
@@ -57,7 +57,7 @@ describe( 'core/site reset', () => {
 					const response = true;
 					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
-						{ body: JSON.stringify( response ), status: 200 }
+						{ body: JSON.stringify( response ), status: 200 },
 					);
 
 					await registry.dispatch( STORE_NAME ).reset();
@@ -68,7 +68,7 @@ describe( 'core/site reset', () => {
 				const response = true;
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
-					{ body: JSON.stringify( response ), status: 200 }
+					{ body: JSON.stringify( response ), status: 200 },
 				);
 
 				registry
@@ -80,7 +80,7 @@ describe( 'core/site reset', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-					{ body: { connected: false, resettable: false }, status: 200 }
+					{ body: { connected: false, resettable: false }, status: 200 },
 				);
 
 				// After a successful reset, `connection` state will be updated on the next page load.
@@ -93,7 +93,7 @@ describe( 'core/site reset', () => {
 				// it isn't reset.
 				registry.dispatch( STORE_NAME ).receiveGetConnection(
 					{ connected: true, resettable: true },
-					{}
+					{},
 				);
 
 				const response = {
@@ -103,7 +103,7 @@ describe( 'core/site reset', () => {
 				};
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
-					{ body: JSON.stringify( response ), status: 500 }
+					{ body: JSON.stringify( response ), status: 500 },
 				);
 
 				registry.dispatch( STORE_NAME ).reset();

@@ -199,5 +199,5 @@ export default withData(
 	{ createGrid: true },
 	// Force isDataZero to false since it is handled within the component.
 	() => false,
-	getDataError
+	getDataError,
 );

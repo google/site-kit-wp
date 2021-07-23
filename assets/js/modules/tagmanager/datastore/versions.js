@@ -103,14 +103,14 @@ const baseSelectors = {
 		const internalContainerID = select( STORE_NAME ).getInternalContainerID();
 		if ( ( ! isAMP() || isSecondaryAMP() ) && isValidInternalContainerID( internalContainerID ) ) {
 			propertyIDs.add(
-				select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalContainerID )
+				select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalContainerID ),
 			);
 		}
 
 		const internalAMPContainerID = select( STORE_NAME ).getInternalAMPContainerID();
 		if ( isAMP() && isValidInternalContainerID( internalAMPContainerID ) ) {
 			propertyIDs.add(
-				select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalAMPContainerID )
+				select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalAMPContainerID ),
 			);
 		}
 
@@ -309,7 +309,7 @@ const store = Data.combineStores(
 		initialState: baseInitialState,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const {
