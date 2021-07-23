@@ -24,8 +24,9 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import data, { TYPE_MODULES } from '../data';
-import { getCache } from '../data/cache';
+import { getItem } from '../../googlesitekit/api/cache';
+import API from 'googlesitekit-api';
+
 export const wincallbacks = applyFilters( 'googlesitekit.winCallbacks', {} );
 
 export const modulesNotificationsToRequest = () => {
@@ -78,7 +79,7 @@ export async function getTotalNotifications() {
  * @param {Array} notifications List of notifications.
  * @return {Array} Filtered list of notifications.
  */
-const removeDismissed = ( notifications ) => {
+const removeDismissed = async ( notifications ) => {
 	if ( ! notifications ) {
 		return [];
 	}
@@ -87,10 +88,15 @@ const removeDismissed = ( notifications ) => {
 		return notifications;
 	}
 
-	return notifications.filter( ( notification ) => {
-		const dismissed = getCache( `notification::dismissed::${ notification.id }` );
+	const promises = await notifications.map( ( notification ) => getItem( `notification::dismissed::${ notification.id }` ) );
+	const allNotifications = await Promise.all( promises );
+
+	const notDismissed = notifications.filter( ( _, index ) => {
+		const dismissed = allNotifications[ index ];
 		return ! dismissed;
 	} );
+
+	return notDismissed;
 };
 
 /**
@@ -111,8 +117,8 @@ export async function getModulesNotifications() {
 		const promise = new Promise( async ( resolve ) => {
 			const { identifier } = module;
 
-			const notifications = removeDismissed(
-				await data.get( TYPE_MODULES, identifier, 'notifications', {}, false )
+			const notifications = await removeDismissed(
+				await API.get( 'modules', identifier, 'notifications', {}, false )
 			);
 
 			resolve( { identifier, notifications } );
