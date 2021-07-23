@@ -73,8 +73,8 @@ export default function Root( {
 
 Root.propTypes = {
 	children: PropTypes.node.isRequired,
+	viewContext: PropTypes.string.isRequired,
 	registry: PropTypes.object,
-	viewContext: PropTypes.string,
 	dataAPIContext: PropTypes.string,
 	dataAPIModuleArgs: PropTypes.object,
 };
