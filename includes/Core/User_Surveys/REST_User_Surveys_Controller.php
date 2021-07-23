@@ -79,8 +79,7 @@ class REST_User_Surveys_Controller {
 					'callback'            => function ( WP_REST_Request $request ) {
 						$proxy        = $this->authentication->get_google_proxy();
 						$creds        = $this->authentication->credentials();
-						$token        = $this->authentication->get_oauth_client()->get_token();
-						$access_token = ! empty( $token['access_token'] ) ? $token['access_token'] : '';
+						$access_token = (string) $this->authentication->get_oauth_client()->get_access_token();
 						$data         = $request->get_param( 'data' );
 
 						$response = $proxy->send_survey_trigger( $creds, $access_token, $data['triggerID'] );
@@ -110,8 +109,7 @@ class REST_User_Surveys_Controller {
 					'callback'            => function ( WP_REST_Request $request ) {
 						$proxy        = $this->authentication->get_google_proxy();
 						$creds        = $this->authentication->credentials();
-						$token        = $this->authentication->get_oauth_client()->get_token();
-						$access_token = ! empty( $token['access_token'] ) ? $token['access_token'] : '';
+						$access_token = (string) $this->authentication->get_oauth_client()->get_access_token();
 						$data         = $request->get_param( 'data' );
 
 						$response = $proxy->send_survey_event( $creds, $access_token, $data['session'], $data['event'] );

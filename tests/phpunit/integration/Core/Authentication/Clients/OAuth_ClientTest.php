@@ -216,8 +216,6 @@ class OAuth_ClientTest extends TestCase {
 	}
 
 	public function test_get_access_token() {
-		$this->setExpectedDeprecated( OAuth_Client::class . '::get_access_token' );
-
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );

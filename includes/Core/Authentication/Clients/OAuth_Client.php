@@ -428,13 +428,10 @@ final class OAuth_Client {
 	 * Gets the current user's OAuth access token.
 	 *
 	 * @since 1.0.0
-	 * @deprecated n.e.x.t Use `OAuth_Client::get_token` instead.
 	 *
 	 * @return string|bool Access token if it exists, false otherwise.
 	 */
 	public function get_access_token() {
-		_deprecated_function( __METHOD__, 'n.e.x.t', self::class . '::get_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
 		$token = $this->get_token();
 		if ( empty( $token['access_token'] ) ) {
 			return false;
