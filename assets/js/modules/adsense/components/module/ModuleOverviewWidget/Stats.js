@@ -34,6 +34,16 @@ const Stats = ( {
 	previousRangeData,
 	selectedStats,
 } ) => {
+	const dataMap = getSiteStatsDataForGoogleChart(
+		currentRangeData,
+		previousRangeData,
+		Object.values( metrics )[ selectedStats ],
+		selectedStats + 1, // Since we have the dimension in first position, then the metrics, we need the +1 offset.
+		currentRangeData.headers[ selectedStats + 1 ],
+	);
+
+	const dates = dataMap.slice( 1 ).map( ( [ date ] ) => date );
+
 	const colors = [
 		'#4285f4',
 		'#27bcd4',
@@ -74,6 +84,7 @@ const Stats = ( {
 				color: '#616161',
 				fontSize: 12,
 			},
+			ticks: dates,
 		},
 		vAxis: {
 			format: formats[ currentRangeData.headers[ selectedStats + 1 ].type ],
@@ -120,14 +131,6 @@ const Stats = ( {
 			},
 		},
 	};
-
-	const dataMap = getSiteStatsDataForGoogleChart(
-		currentRangeData,
-		previousRangeData,
-		Object.values( metrics )[ selectedStats ],
-		selectedStats + 1, // Since we have the dimension in first position, then the metrics, we need the +1 offset.
-		currentRangeData.headers[ selectedStats + 1 ],
-	);
 
 	return (
 		<Grid className="googlesitekit-adsense-site-stats">
