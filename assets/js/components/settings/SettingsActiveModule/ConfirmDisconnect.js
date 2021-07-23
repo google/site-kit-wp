@@ -47,7 +47,7 @@ export default function ConfirmDisconnect( { slug } ) {
 	const dialogActiveKey = `module-${ slug }-dialogActive`;
 
 	const dependentModules = useSelect( ( select ) => select( CORE_MODULES ).getModuleDependantNames( slug ) );
-	const provides = useSelect( ( select ) => select( CORE_MODULES ).getModuleFeatures( slug ) );
+	const features = useSelect( ( select ) => select( CORE_MODULES ).getModuleFeatures( slug ) );
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
 	const settingsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
 	const dialogActive = useSelect( ( select ) => select( CORE_UI ).getValue( dialogActiveKey ) );
@@ -104,11 +104,13 @@ export default function ConfirmDisconnect( { slug } ) {
 		name,
 	);
 
-	const subtitle = sprintf(
+	const hasFeatures = features && features.length > 0;
+
+	const subtitle = hasFeatures ? sprintf(
 		/* translators: %s: module name */
 		__( 'By disconnecting the %s module from Site Kit, you will no longer have access to:', 'google-site-kit' ),
 		name,
-	);
+	) : null;
 
 	let dependentModulesText = null;
 	if ( dependentModules.length > 0 ) {
@@ -126,7 +128,7 @@ export default function ConfirmDisconnect( { slug } ) {
 			handleDialog={ handleDialog }
 			title={ title }
 			subtitle={ subtitle }
-			provides={ provides }
+			provides={ features }
 			handleConfirm={ handleDisconnect }
 			dependentModules={ dependentModulesText }
 			inProgress={ isDeactivating }
