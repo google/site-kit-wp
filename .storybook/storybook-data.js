@@ -399,7 +399,34 @@ module.exports = [
 			},
 		},
 	},
-	// ====================================
+	{
+		id: 'search-console-module-components-module-page-overview-widget--loaded',
+		kind: 'Search Console Module',
+		name: 'Components/Module Page/Overview Widget',
+		story: 'Loaded',
+		parameters: {
+			fileName: './stories/module-search-console-components.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+			},
+		},
+	},
+	{
+		id: 'search-console-module-components-module-page-popular-keywords-widget--loaded',
+		kind: 'Search Console Module',
+		name: 'Components/Module Page/Popular Keywords Widget',
+		story: 'Loaded',
+		parameters: {
+			fileName: './stories/module-search-console-components.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				readySelector: '.googlesitekit-table .googlesitekit-table__body-item',
+			},
+		},
+	},
 	{
 		id: 'global-notifications--module-setup-complete',
 		kind: 'Global/Notifications',
