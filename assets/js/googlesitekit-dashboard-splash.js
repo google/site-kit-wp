@@ -41,7 +41,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root dataAPIContext="Splash">
+			<Root>
 				<NotificationCounter />
 				<DashboardSplashApp />
 			</Root>,

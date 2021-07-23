@@ -41,7 +41,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root dataAPIContext="WPDashboard">
+			<Root>
 				<WPDashboardApp />
 			</Root>,
 			renderTarget
