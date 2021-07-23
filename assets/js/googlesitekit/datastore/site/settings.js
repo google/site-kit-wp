@@ -139,7 +139,7 @@ const store = combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;
