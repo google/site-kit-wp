@@ -65,6 +65,10 @@ export default function Footer( props ) {
 
 	const hasSettings = !! module?.SettingsEditComponent;
 
+	const handleClose = useCallback( () => {
+		history.push( `/connected-services/${ slug }` );
+	}, [ history, slug ] );
+
 	const handleConfirm = useCallback( async ( event ) => {
 		event.preventDefault();
 
@@ -93,18 +97,30 @@ export default function Footer( props ) {
 	let secondaryColumn = null;
 
 	if ( isEditing || isSaving ) {
-		let buttonText = __( 'Close', 'google-site-kit' );
-		if ( hasSettings && moduleConnected ) {
-			buttonText = isSaving
-				? __( 'Saving…', 'google-site-kit' )
-				: __( 'Confirm Changes', 'google-site-kit' );
-		}
+		const closeButton = (
+			<Button onClick={ handleClose }>
+				{ __( 'Close', 'google-site-kit' ) }
+			</Button>
+		);
+		const submitButton = (
+			<Button
+				disabled={ isSaving || ! canSubmitChanges }
+				onClick={ handleConfirm }
+			>
+				{ isSaving
+					? __( 'Saving…', 'google-site-kit' )
+					: __( 'Confirm Changes', 'google-site-kit' )
+				}
+			</Button>
+		);
 
 		primaryColumn = (
 			<Fragment>
-				<Button disabled={ isSaving || ! canSubmitChanges } onClick={ handleConfirm }>
-					{ buttonText }
-				</Button>
+				{
+					( hasSettings && moduleConnected )
+						? submitButton
+						: closeButton
+				}
 
 				<Spinner isSaving={ isSaving } />
 
