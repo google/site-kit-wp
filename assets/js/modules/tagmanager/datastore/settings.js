@@ -26,8 +26,6 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { TYPE_MODULES } from '../../../components/data/constants';
-import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import {
 	isValidAccountID,
 	isValidContainerID,
@@ -103,8 +101,6 @@ export async function submitChanges( { select, dispatch } ) {
 	}
 
 	await API.invalidateCache( 'modules', 'tagmanager' );
-	// TODO: Remove once legacy dataAPI is no longer used.
-	invalidateCacheGroup( TYPE_MODULES, 'tagmanager' );
 
 	return {};
 }
