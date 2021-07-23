@@ -28,7 +28,7 @@ class OAuth_Client_BaseTest extends TestCase {
 		$this->assertInstanceOf( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client', $client );
 
 		$retry = $client->getConfig( 'retry' );
-		$this->assertEquals( $retry['retries'], 3 );
+		$this->assertEquals( 3, $retry['retries'] );
 	}
 
 	public function test_get_required_scopes() {
