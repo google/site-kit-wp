@@ -302,6 +302,7 @@ module.exports = [
 		},
 	},
 	{
+	// group: 'Search Console Module/Components/Module Page/Overview Widget',
 		id: 'search-console-module-components-module-page-overview-widget--loaded',
 		kind: 'Search Console Module',
 		name: 'Overview Widget',
@@ -315,6 +316,23 @@ module.exports = [
 			},
 		},
 	},
+	// New ones new idea ====================================
+	{
+	// group: 'Search Console Module/Components/Dashboard/Clicks Widget',
+		id: 'search-console-module-components-dashboard-clicks-widget--loaded',
+		kind: 'Search Console Module',
+		name: 'Clicks Widget',
+		story: 'Loaded',
+		parameters: {
+			fileName: './stories/module-search-console-components.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+			},
+		},
+	},
+	// ====================================
 	{
 		id: 'global-notifications--module-setup-complete',
 		kind: 'Global/Notifications',
