@@ -30,7 +30,6 @@ import FeaturesProvider from '../FeaturesProvider';
 import { enabledFeatures } from '../../features';
 import PermissionsModal from '../PermissionsModal';
 import RestoreSnapshots from '../RestoreSnapshots';
-import CollectModuleData from '../data/collect-module-data';
 import { FeatureToursDesktop } from '../FeatureToursDesktop';
 import { useFeature } from '../../hooks/useFeature';
 import CurrentSurveyPortal from '../surveys/CurrentSurveyPortal';
@@ -39,9 +38,6 @@ export default function Root( {
 	children,
 	registry,
 	viewContext = null,
-	// TODO: Remove legacy dataAPI prop support once phased out.
-	dataAPIContext,
-	dataAPIModuleArgs,
 } ) {
 	const userFeedbackEnabled = useFeature( 'userFeedback' );
 
@@ -57,10 +53,6 @@ export default function Root( {
 							@see https://github.com/google/site-kit-wp/issues/3003
 						*/ }
 						{ viewContext && <FeatureToursDesktop viewContext={ viewContext } /> }
-						{ dataAPIContext && (
-						// Legacy dataAPI support.
-							<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
-						) }
 
 						{ userFeedbackEnabled && <CurrentSurveyPortal /> }
 					</RestoreSnapshots>
