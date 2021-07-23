@@ -321,7 +321,8 @@ module.exports = [
 	// group: 'Search Console Module/Components/Dashboard/Clicks Widget',
 		id: 'search-console-module-components-dashboard-clicks-widget--loaded',
 		kind: 'Search Console Module',
-		name: 'Clicks Widget',
+		// name: 'Clicks Widget',
+		name: 'Components/Dashboard/Clicks Widget',
 		story: 'Loaded',
 		parameters: {
 			fileName: './stories/module-search-console-components.stories.js',
@@ -338,7 +339,9 @@ module.exports = [
 		id: 'search-console-module-components-page-dashboard-clicks-widget--loaded',
 		kind: 'Search Console Module',
 		// But wait how is this not totally the same as the previous test??
-		name: 'Clicks Widget',
+		// name: 'Clicks Widget',
+		// trying this to differentiate!
+		name: 'Components/Page Dashboard/Clicks Widget',
 		story: 'Loaded',
 		parameters: {
 			fileName: './stories/module-search-console-components.stories.js',
