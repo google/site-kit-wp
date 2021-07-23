@@ -302,7 +302,6 @@ module.exports = [
 		},
 	},
 	{
-	// group: 'Search Console Module/Components/Module Page/Overview Widget',
 		id: 'search-console-module-components-module-page-overview-widget--loaded',
 		kind: 'Search Console Module',
 		name: 'Overview Widget',
@@ -316,12 +315,9 @@ module.exports = [
 			},
 		},
 	},
-	// New ones new idea ====================================
 	{
-	// group: 'Search Console Module/Components/Dashboard/Clicks Widget',
 		id: 'search-console-module-components-dashboard-clicks-widget--loaded',
 		kind: 'Search Console Module',
-		// name: 'Clicks Widget',
 		name: 'Components/Dashboard/Clicks Widget',
 		story: 'Loaded',
 		parameters: {
@@ -333,14 +329,9 @@ module.exports = [
 			},
 		},
 	},
-
 	{
-		// 	group: 'Search Console Module/Components/Page Dashboard/Clicks Widget',
 		id: 'search-console-module-components-page-dashboard-clicks-widget--loaded',
 		kind: 'Search Console Module',
-		// But wait how is this not totally the same as the previous test??
-		// name: 'Clicks Widget',
-		// trying this to differentiate!
 		name: 'Components/Page Dashboard/Clicks Widget',
 		story: 'Loaded',
 		parameters: {
@@ -349,6 +340,62 @@ module.exports = [
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
 				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+			},
+		},
+	},
+	{
+		id: 'search-console-module-components-dashboard-impressions-widget--loaded',
+		kind: 'Search Console Module',
+		name: 'Components/Dashboard/Impressions Widget',
+		story: 'Loaded',
+		parameters: {
+			fileName: './stories/module-search-console-components.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+			},
+		},
+	},
+	{
+		id: 'search-console-module-components-page-dashboard-impressions-widget--loaded',
+		kind: 'Search Console Module',
+		name: 'Components/Page Dashboard/Impressions Widget',
+		story: 'Loaded',
+		parameters: {
+			fileName: './stories/module-search-console-components.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+			},
+		},
+	},
+	{
+		id: 'search-console-module-components-dashboard-popular-keywords-widget--loaded',
+		kind: 'Search Console Module',
+		name: 'Components/Dashboard/Popular Keywords Widget',
+		story: 'Loaded',
+		parameters: {
+			fileName: './stories/module-search-console-components.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				readySelector: '.googlesitekit-table .googlesitekit-table__body-item',
+			},
+		},
+	},
+	{
+		id: 'search-console-module-components-page-dashboard-popular-keywords-widget--loaded',
+		kind: 'Search Console Module',
+		name: 'Components/Page Dashboard/Popular Keywords Widget',
+		story: 'Loaded',
+		parameters: {
+			fileName: './stories/module-search-console-components.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				readySelector: '.googlesitekit-table .googlesitekit-table__body-item',
 			},
 		},
 	},
