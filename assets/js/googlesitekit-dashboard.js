@@ -59,9 +59,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root
-				viewContext={ VIEW_CONTEXT_DASHBOARD }
-			>
+			<Root viewContext={ VIEW_CONTEXT_DASHBOARD }>
 				<GoogleSitekitDashboard />
 			</Root>,
 			renderTarget
