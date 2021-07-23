@@ -220,12 +220,12 @@ class OAuth_ClientTest extends TestCase {
 
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
-		$client                 = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$encrypted_user_options = $this->force_get_property( $client, 'encrypted_user_options' );
+		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$token  = $this->force_get_property( $client, 'token' );
 
 		$this->assertFalse( $client->get_access_token() );
 
-		$encrypted_user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN, 'test-access-token' );
+		$token->set( array( 'access_token' => 'test-access-token' ) );
 		$this->assertEquals( 'test-access-token', $client->get_access_token() );
 	}
 
@@ -260,13 +260,17 @@ class OAuth_ClientTest extends TestCase {
 
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
-		$client                 = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$encrypted_user_options = $this->force_get_property( $client, 'encrypted_user_options' );
+		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$token  = $this->force_get_property( $client, 'token' );
 
 		$this->assertFalse( $client->get_refresh_token() );
 
-		$encrypted_user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN, 'test-access-token' );
-		$encrypted_user_options->set( OAuth_Client::OPTION_REFRESH_TOKEN, 'test-refresh-token' );
+		$token->set(
+			array(
+				'access_token'  => 'test-access-token',
+				'refresh_token' => 'test-refresh-token',
+			)
+		);
 		$this->assertEquals( 'test-refresh-token', $client->get_refresh_token() );
 	}
 
@@ -275,13 +279,14 @@ class OAuth_ClientTest extends TestCase {
 
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
-		$client                 = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$encrypted_user_options = $this->force_get_property( $client, 'encrypted_user_options' );
+		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$token  = $this->force_get_property( $client, 'token' );
 
-		$encrypted_user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN, 'test-access-token' );
-		$this->assertFalse( $encrypted_user_options->get( OAuth_Client::OPTION_REFRESH_TOKEN ) );
+		$token->set( array( 'access_token' => 'test-access-token' ) );
 		$this->assertTrue( $client->set_refresh_token( 'test-refresh-token' ) );
-		$this->assertEquals( 'test-refresh-token', $encrypted_user_options->get( OAuth_Client::OPTION_REFRESH_TOKEN ) );
+		$token_data = $token->get();
+		$this->assertArrayHasKey( 'refresh_token', $token_data );
+		$this->assertEquals( 'test-refresh-token', $token_data['refresh_token'] );
 	}
 
 	public function test_get_authentication_url() {

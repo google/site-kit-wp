@@ -17,9 +17,9 @@ use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
+use Google\Site_Kit\Core\Authentication\Token;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
-use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Scopes;
@@ -71,22 +71,6 @@ final class OAuth_Client {
 	private $user_options;
 
 	/**
-	 * Encrypted_Options instance
-	 *
-	 * @since 1.0.0
-	 * @var Encrypted_Options
-	 */
-	private $encrypted_options;
-
-	/**
-	 * Encrypted_User_Options instance
-	 *
-	 * @since 1.0.0
-	 * @var Encrypted_User_Options
-	 */
-	private $encrypted_user_options;
-
-	/**
 	 * OAuth credentials instance.
 	 *
 	 * @since 1.0.0
@@ -120,6 +104,14 @@ final class OAuth_Client {
 	private $profile;
 
 	/**
+	 * Token instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Token
+	 */
+	private $token;
+
+	/**
 	 * WP_HTTP_Proxy instance.
 	 *
 	 * @since 1.2.0
@@ -146,6 +138,7 @@ final class OAuth_Client {
 	 * @param Credentials   $credentials  Optional. Credentials instance. Default is a new instance from $options.
 	 * @param Google_Proxy  $google_proxy Optional. Google proxy instance. Default is a new instance.
 	 * @param Profile       $profile      Optional. Profile instance. Default is a new instance.
+	 * @param Token         $token        Optional. Token instance. Default is a new instance.
 	 * @param WP_HTTP_Proxy $http_proxy   Optional. WP_HTTP_Proxy instance. Default is a new instance.
 	 */
 	public function __construct(
@@ -155,18 +148,18 @@ final class OAuth_Client {
 		Credentials $credentials = null,
 		Google_Proxy $google_proxy = null,
 		Profile $profile = null,
+		Token $token = null,
 		WP_HTTP_Proxy $http_proxy = null
 	) {
-		$this->context                = $context;
-		$this->options                = $options ?: new Options( $this->context );
-		$this->user_options           = $user_options ?: new User_Options( $this->context );
-		$this->encrypted_options      = new Encrypted_Options( $this->options );
-		$this->encrypted_user_options = new Encrypted_User_Options( $this->user_options );
-		$this->credentials            = $credentials ?: new Credentials( $this->encrypted_options );
-		$this->google_proxy           = $google_proxy ?: new Google_Proxy( $this->context );
-		$this->profile                = $profile ?: new Profile( $this->user_options );
-		$this->http_proxy             = $http_proxy ?: new WP_HTTP_Proxy();
-		$this->owner_id               = new Owner_ID( $this->options );
+		$this->context      = $context;
+		$this->options      = $options ?: new Options( $this->context );
+		$this->user_options = $user_options ?: new User_Options( $this->context );
+		$this->credentials  = $credentials ?: new Credentials( new Encrypted_Options( $this->options ) );
+		$this->google_proxy = $google_proxy ?: new Google_Proxy( $this->context );
+		$this->profile      = $profile ?: new Profile( $this->user_options );
+		$this->token        = $token ?: new Token( $this->user_options );
+		$this->http_proxy   = $http_proxy ?: new WP_HTTP_Proxy();
+		$this->owner_id     = new Owner_ID( $this->options );
 	}
 
 	/**
@@ -409,23 +402,7 @@ final class OAuth_Client {
 	 *               array if no token available.
 	 */
 	public function get_token() {
-		$access_token = $this->encrypted_user_options->get( self::OPTION_ACCESS_TOKEN );
-		if ( empty( $access_token ) ) {
-			return array();
-		}
-
-		$token = array(
-			'access_token' => $access_token,
-			'expires_in'   => (int) $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
-			'created'      => (int) $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
-		);
-
-		$refresh_token = $this->encrypted_user_options->get( self::OPTION_REFRESH_TOKEN );
-		if ( ! empty( $refresh_token ) ) {
-			$token['refresh_token'] = $refresh_token;
-		}
-
-		return $token;
+		return $this->token->get();
 	}
 
 	/**
@@ -444,27 +421,7 @@ final class OAuth_Client {
 	 * @return bool True on success, false on failure.
 	 */
 	public function set_token( array $token ) {
-		if ( empty( $token['access_token'] ) ) {
-			return false;
-		}
-
-		// Use sane defaults for these fields.
-		if ( empty( $token['expires_in'] ) ) {
-			$token['expires_in'] = HOUR_IN_SECONDS;
-		}
-		if ( empty( $token['created'] ) ) {
-			$token['created'] = time();
-		}
-
-		$this->encrypted_user_options->set( self::OPTION_ACCESS_TOKEN, $token['access_token'] );
-		$this->user_options->set( self::OPTION_ACCESS_TOKEN_EXPIRES_IN, $token['expires_in'] );
-		$this->user_options->set( self::OPTION_ACCESS_TOKEN_CREATED, $token['created'] );
-
-		if ( ! empty( $token['refresh_token'] ) ) {
-			$this->encrypted_user_options->set( self::OPTION_REFRESH_TOKEN, $token['refresh_token'] );
-		}
-
-		return true;
+		return $this->token->set( $token );
 	}
 
 	/**
@@ -898,10 +855,8 @@ final class OAuth_Client {
 	 * @since 1.0.3
 	 */
 	private function delete_token() {
-		$this->user_options->delete( self::OPTION_ACCESS_TOKEN );
-		$this->user_options->delete( self::OPTION_ACCESS_TOKEN_EXPIRES_IN );
-		$this->user_options->delete( self::OPTION_ACCESS_TOKEN_CREATED );
-		$this->user_options->delete( self::OPTION_REFRESH_TOKEN );
+		$this->token->delete();
+
 		$this->user_options->delete( self::OPTION_REDIRECT_URL );
 		$this->user_options->delete( self::OPTION_AUTH_SCOPES );
 		$this->user_options->delete( self::OPTION_ADDITIONAL_AUTH_SCOPES );
