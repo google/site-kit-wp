@@ -332,6 +332,23 @@ module.exports = [
 			},
 		},
 	},
+
+	{
+		// 	group: 'Search Console Module/Components/Page Dashboard/Clicks Widget',
+		id: 'search-console-module-components-page-dashboard-clicks-widget--loaded',
+		kind: 'Search Console Module',
+		// But wait how is this not totally the same as the previous test??
+		name: 'Clicks Widget',
+		story: 'Loaded',
+		parameters: {
+			fileName: './stories/module-search-console-components.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+			},
+		},
+	},
 	// ====================================
 	{
 		id: 'global-notifications--module-setup-complete',
