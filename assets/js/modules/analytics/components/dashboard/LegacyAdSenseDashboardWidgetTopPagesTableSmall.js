@@ -27,7 +27,7 @@ import { __, _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { MODULES_ADSENSE } from '../../../adsense/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import PreviewTable from '../../../../components/PreviewTable';
@@ -98,7 +98,7 @@ const LegacyAdSenseDashboardWidgetTopPagesTableSmall = ( { data } ) => {
 				const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 					offsetDays: DATE_RANGE_OFFSET,
 				} ) );
-				const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages', {
+				const serviceURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'content-pages', {
 					'explorer-table.plotKeys': '[]',
 					'_r.drilldown': `analytics.pagePath:${ url }`,
 					...generateDateRangeArgs( dateRange ),

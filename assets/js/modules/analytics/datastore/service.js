@@ -30,7 +30,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { reportArgsToURLSegment } from '../util/report-args';
 import { escapeURI } from '../../../util/escape-uri';
@@ -76,9 +76,9 @@ export const selectors = {
 	 * @return {(string|undefined)} The service URL.
 	 */
 	getServiceReportURL: createRegistrySelector( ( select ) => ( state, type, reportArgs = {} ) => {
-		const accountID = select( STORE_NAME ).getAccountID();
-		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
-		const profileID = select( STORE_NAME ).getProfileID();
+		const accountID = select( MODULES_ANALYTICS ).getAccountID();
+		const internalWebPropertyID = select( MODULES_ANALYTICS ).getInternalWebPropertyID();
+		const profileID = select( MODULES_ANALYTICS ).getProfileID();
 
 		invariant( type, 'type is required to get a service report URL.' );
 

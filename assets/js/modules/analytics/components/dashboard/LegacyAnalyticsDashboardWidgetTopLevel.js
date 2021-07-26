@@ -54,7 +54,7 @@ import Sparkline from '../../../../components/Sparkline';
 import CTA from '../../../../components/legacy-notifications/cta';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 
 const { useSelect } = Data;
 
@@ -101,10 +101,10 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
-	const uniqueVisitorsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( `visitors-overview`, {
+	const uniqueVisitorsServiceURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( `visitors-overview`, {
 		'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
 	} ) );
-	const goalsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( `conversions-goals-overview`, {
+	const goalsServiceURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( `conversions-goals-overview`, {
 		'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
 	} ) );
 	const goalURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {

@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
 const { useSelect, useDispatch } = Data;
 
@@ -39,8 +39,8 @@ export const trackingExclusionLabels = {
 };
 
 export default function TrackingExclusionSwitches() {
-	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() );
-	const { setTrackingDisabled } = useDispatch( STORE_NAME );
+	const trackingDisabled = useSelect( ( select ) => select( MODULES_ANALYTICS ).getTrackingDisabled() );
+	const { setTrackingDisabled } = useDispatch( MODULES_ANALYTICS );
 
 	let message;
 	if ( trackingDisabled && trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) ) {

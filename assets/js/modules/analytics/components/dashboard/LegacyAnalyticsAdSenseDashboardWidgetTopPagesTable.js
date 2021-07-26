@@ -32,7 +32,7 @@ import PreviewTable from '../../../../components/PreviewTable';
 import ctaWrapper from '../../../../components/legacy-notifications/cta-wrapper';
 import AdSenseLinkCTA from '../common/AdSenseLinkCTA';
 import { analyticsAdsenseReportDataDefaults, isDataZeroForReporting } from '../../util';
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { MODULES_ADSENSE } from '../../../adsense/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import AnalyticsAdSenseDashboardWidgetLayout from './AnalyticsAdSenseDashboardWidgetLayout';
@@ -79,7 +79,7 @@ const LegacyAnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 				const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 					offsetDays: DATE_RANGE_OFFSET,
 				} ) );
-				const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages', {
+				const serviceURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'content-pages', {
 					'explorer-table.plotKeys': '[]',
 					'_r.drilldown': `analytics.pagePath:${ url }`,
 					...generateDateRangeArgs( dateRange ),

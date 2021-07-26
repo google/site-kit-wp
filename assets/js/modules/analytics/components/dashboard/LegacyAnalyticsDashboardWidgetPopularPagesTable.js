@@ -32,13 +32,13 @@ import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
 import Layout from '../../../../components/layout/Layout';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 
 const { useSelect } = Data;
 
 const RenderLayout = ( { children } ) => {
-	const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages' ) );
+	const serviceURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'content-pages' ) );
 	return (
 		<div className="
 			mdc-layout-grid__cell

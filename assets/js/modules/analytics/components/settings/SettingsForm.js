@@ -43,7 +43,7 @@ import {
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { SETUP_FLOW_MODE_LEGACY, STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
+import { SETUP_FLOW_MODE_LEGACY, MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
@@ -52,14 +52,14 @@ const { useSelect } = Data;
 export default function SettingsForm() {
 	const isGA4Enabled = useFeature( 'ga4setup' );
 	const isGA4Connected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) );
-	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const setupFlowMode = useSelect( ( select ) => select( MODULES_ANALYTICS ).getSetupFlowMode() );
+	const hasExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasExistingTag() );
+	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
+	const profileID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getProfileID() );
 	const hasExistingGA4Property = useSelect( ( select ) => isGA4Enabled && select( MODULES_ANALYTICS_4 ).getPropertyID() );
 	const ga4Properties = useSelect( ( select ) => isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getProperties( accountID ) : null );
 
-	const useAnalyticsSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
+	const useAnalyticsSnippet = useSelect( ( select ) => select( MODULES_ANALYTICS ).getUseSnippet() );
 	const useTagManagerSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
 	const analyticsSinglePropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
 	const shouldShowTrackingExclusionSwitches = useAnalyticsSnippet || ( useTagManagerSnippet && analyticsSinglePropertyID );
@@ -74,7 +74,7 @@ export default function SettingsForm() {
 				<GA4Notice />
 			) }
 
-			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="analytics" storeName={ MODULES_ANALYTICS } />
 			<ExistingTagNotice />
 			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
 

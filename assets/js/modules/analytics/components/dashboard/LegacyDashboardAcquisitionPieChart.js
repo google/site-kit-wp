@@ -31,7 +31,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { getTimeInSeconds, getURLPath } from '../../../../util';
 import GoogleChart from '../../../../components/GoogleChart';
@@ -51,7 +51,7 @@ const { useSelect } = Data;
 const LegacyDashboardAcquisitionPieChart = ( { data, source } ) => {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
-	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', {
+	const sourceURI = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'trafficsources-overview', {
 		'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
 	} ) );
 

@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { getTimeInSeconds, numFmt } from '../../../../util';
 import withData from '../../../../components/higherorder/withData';
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { TYPE_MODULES } from '../../../../components/data';
 import PreviewTable from '../../../../components/PreviewTable';
@@ -67,7 +67,7 @@ const LegacyAnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 					const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
 						offsetDays: DATE_RANGE_OFFSET,
 					} );
-					return select( STORE_NAME ).getServiceReportURL( 'content-drilldown', {
+					return select( MODULES_ANALYTICS ).getServiceReportURL( 'content-drilldown', {
 						'explorer-table.plotKeys': '[]',
 						'_r.drilldown': `analytics.pagePath:${ url }`,
 						...generateDateRangeArgs( dateRangeDates ),

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import SettingsView from './SettingsView';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { provideModules, provideModuleRegistrations, provideSiteInfo } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
@@ -89,17 +89,17 @@ export default {
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( ga4Fixtures.properties, { accountID } );
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( ga4Fixtures.webDataStreams, { propertyID: ga4Fixtures.properties[ 0 ]._id } );
 
-				registry.dispatch( STORE_NAME ).receiveGetSettings( {
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 					useSnippet: true,
 					canUseSnippet: true,
 				} );
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-				registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-				registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
-				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID: properties[ 0 ].id } );
-				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID: properties[ 1 ].id } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID: properties[ 0 ].id } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID: properties[ 1 ].id } );
 
-				registry.dispatch( STORE_NAME ).selectAccount( accountID );
+				registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 			};
 
 			return (

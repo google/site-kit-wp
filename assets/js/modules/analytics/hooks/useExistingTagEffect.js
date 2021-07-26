@@ -27,13 +27,13 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore/constants';
+import { MODULES_ANALYTICS } from '../datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function useExistingTagEffect() {
-	const { setAccountID, selectProperty, setUseSnippet } = useDispatch( STORE_NAME );
+	const { setAccountID, selectProperty, setUseSnippet } = useDispatch( MODULES_ANALYTICS );
 	const gtmModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'tagmanager' ) );
 
 	const {
@@ -45,7 +45,7 @@ export default function useExistingTagEffect() {
 		gtmAnalyticsPermission,
 	} = useSelect( ( select ) => {
 		const data = {
-			existingTag: select( STORE_NAME ).getExistingTag(),
+			existingTag: select( MODULES_ANALYTICS ).getExistingTag(),
 			existingTagPermission: false,
 			existingTagAccountID: '',
 			gtmAnalyticsPropertyID: '',
@@ -55,7 +55,7 @@ export default function useExistingTagEffect() {
 
 		if ( data.existingTag ) {
 			// Just check existing tag permissions, if it is available and ignore tag manager settings.
-			const { permission = false, accountID = '' } = select( STORE_NAME ).getTagPermission( data.existingTag ) || {};
+			const { permission = false, accountID = '' } = select( MODULES_ANALYTICS ).getTagPermission( data.existingTag ) || {};
 			if ( permission ) {
 				data.existingTagPermission = permission;
 				data.existingTagAccountID = accountID;
@@ -64,7 +64,7 @@ export default function useExistingTagEffect() {
 			// There is no existing tag, so we need to try to get a property ID from GTM.
 			data.gtmAnalyticsPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
 			if ( data.gtmAnalyticsPropertyID ) {
-				const { permission = false, accountID = '' } = select( STORE_NAME ).getTagPermission( data.gtmAnalyticsPropertyID ) || {};
+				const { permission = false, accountID = '' } = select( MODULES_ANALYTICS ).getTagPermission( data.gtmAnalyticsPropertyID ) || {};
 				if ( permission ) {
 					data.gtmAnalyticsAccountID = accountID;
 					data.gtmAnalyticsPermission = permission;
