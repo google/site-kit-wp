@@ -15,7 +15,7 @@ namespace Google\Site_Kit\Tests\Core\Tags\Guards;
 
 class Tag_Production_GuardTest extends TestCase {
 
-	public function test_can_activate_on_older_environments() {
+	public function test_can_activate_on_older_versions() {
 		// Pre WP-5.5.0
 		if ( ! function_exists( 'wp_get_environment_type' ) ) {
 			$this->markTestSkipped( 'Missing wp_get_environment_type() function.' );
@@ -24,7 +24,7 @@ class Tag_Production_GuardTest extends TestCase {
 		$this->assertTrue( $tagproduction->can_activate() );
 	}
 
-	public function test_can_activate_in_production() {
+	public function test_can_activate_on_post_5_5_version() {
 		// Post WP-5.5.0
 		if ( function_exists( 'wp_get_environment_type' ) ) {
 			$this->markTestSkipped( 'Testing legacy environments without wp_get_environment_type() function.' );
