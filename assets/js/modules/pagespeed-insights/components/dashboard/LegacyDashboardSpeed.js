@@ -29,12 +29,12 @@ import Data from 'googlesitekit-data';
 import Layout from '../../../../components/layout/Layout';
 import DashboardModuleHeader from '../../../../components/dashboard/DashboardModuleHeader';
 import DashboardPageSpeed from './DashboardPageSpeed';
-import { STORE_NAME } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 function LegacyDashboardSpeed() {
-	const currentReferenceURL = useSelect( ( select ) => select( STORE_NAME ).getCurrentReferenceURL() );
-	const currentEntityURL = useSelect( ( select ) => select( STORE_NAME ).getCurrentEntityURL() );
+	const currentReferenceURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
+	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const description = currentEntityURL === currentReferenceURL
 		? __( 'How fast your page loads, how quickly people can interact with your content, and how stable your content is', 'google-site-kit' )
 		: __( 'How fast your home page loads, how quickly people can interact with your content, and how stable your content is', 'google-site-kit' );

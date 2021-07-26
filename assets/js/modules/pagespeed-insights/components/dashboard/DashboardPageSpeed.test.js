@@ -27,7 +27,7 @@ import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils';
  */
 import DashboardPageSpeed from './DashboardPageSpeed';
 import { fireEvent, render, waitFor } from '../../../../../../tests/js/test-utils';
-import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import { freezeFetch } from '../../../../../../tests/js/utils';
@@ -35,10 +35,10 @@ import { freezeFetch } from '../../../../../../tests/js/utils';
 const activeClass = 'mdc-tab--active';
 const url = fixtures.pagespeedMobile.loadingExperience.id;
 const setupRegistry = ( { dispatch } ) => {
-	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobileNoStackPacks, { url, strategy: STRATEGY_MOBILE } );
-	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktopNoStackPacks, { url, strategy: STRATEGY_DESKTOP } );
-	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
-	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
+	dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport( fixtures.pagespeedMobileNoStackPacks, { url, strategy: STRATEGY_MOBILE } );
+	dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport( fixtures.pagespeedDesktopNoStackPacks, { url, strategy: STRATEGY_DESKTOP } );
+	dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
+	dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
 	dispatch( CORE_SITE ).receiveSiteInfo( {
 		referenceSiteURL: url,
 		currentEntityURL: null,
@@ -51,10 +51,10 @@ const setupRegistryNoReports = ( { dispatch } ) => {
 	} );
 };
 const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
-	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobileNoStackPacks, { url, strategy: STRATEGY_MOBILE } );
-	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
-	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktopNoFieldDataNoStackPacks, { url, strategy: STRATEGY_DESKTOP } );
-	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
+	dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport( fixtures.pagespeedMobileNoStackPacks, { url, strategy: STRATEGY_MOBILE } );
+	dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
+	dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport( fixtures.pagespeedDesktopNoFieldDataNoStackPacks, { url, strategy: STRATEGY_DESKTOP } );
+	dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
 	dispatch( CORE_SITE ).receiveSiteInfo( {
 		referenceSiteURL: url,
 		currentEntityURL: null,
@@ -124,7 +124,7 @@ describe( 'DashboardPageSpeed', () => {
 	it( 'displays a "Field data unavailable" message when field data is not available', () => {
 		const { getByLabelText, queryByText, registry } = render( <DashboardPageSpeed />, { setupRegistry: setupRegistryNoFieldDataDesktop } );
 
-		const { getReport } = registry.select( STORE_NAME );
+		const { getReport } = registry.select( MODULES_PAGESPEED_INSIGHTS );
 		expect( getReport( url, STRATEGY_MOBILE ).loadingExperience ).toHaveProperty( 'metrics' );
 		expect( getReport( url, STRATEGY_DESKTOP ).loadingExperience ).not.toHaveProperty( 'metrics' );
 

@@ -46,7 +46,7 @@ import { trackEvent } from '../../../../util/tracking';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
-	STORE_NAME,
+	MODULES_PAGESPEED_INSIGHTS,
 	STRATEGY_MOBILE,
 	STRATEGY_DESKTOP,
 	DATA_SRC_FIELD,
@@ -70,7 +70,7 @@ export default function DashboardPageSpeed() {
 		errorMobile,
 		errorDesktop,
 	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+		const store = select( MODULES_PAGESPEED_INSIGHTS );
 
 		return {
 			isFetchingMobile: ! store.hasFinishedResolution( 'getReport', [ referenceURL, STRATEGY_MOBILE ] ),
@@ -83,7 +83,7 @@ export default function DashboardPageSpeed() {
 	} );
 
 	const { setValues } = useDispatch( CORE_UI );
-	const { invalidateResolution } = useDispatch( STORE_NAME );
+	const { invalidateResolution } = useDispatch( MODULES_PAGESPEED_INSIGHTS );
 
 	const setStrategyMobile = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_MOBILE } ), [ setValues ] );
 	const setStrategyDesktop = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_DESKTOP } ), [ setValues ] );

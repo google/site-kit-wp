@@ -33,7 +33,7 @@ import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedW
 import LegacyDashboardPageSpeedCTA from './components/dashboard/LegacyDashboardPageSpeedCTA';
 import LegacyDashboardSpeed from './components/dashboard/LegacyDashboardSpeed';
 import PageSpeedInsightsIcon from '../../../svg/pagespeed-insights.svg';
-import { STORE_NAME } from './datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from './datastore/constants';
 
 export { registerStore } from './datastore';
 
@@ -72,7 +72,7 @@ export const registerModule = ( modules ) => {
 	modules.registerModule(
 		'pagespeed-insights',
 		{
-			storeName: STORE_NAME,
+			storeName: MODULES_PAGESPEED_INSIGHTS,
 			SettingsViewComponent: SettingsView,
 			Icon: PageSpeedInsightsIcon,
 			features: [
