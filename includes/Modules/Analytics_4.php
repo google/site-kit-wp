@@ -384,12 +384,13 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				return function() use ( $data ) {
-					$analyticsadmin = $this->get_service( 'analyticsadmin' );
-					$batch_request  = $analyticsadmin->createBatch();
-					foreach ( $data['propertyIDs'] as $property_id ) {
-						$batch_request->add( $analyticsadmin->properties_webDataStreams->listPropertiesWebDataStreams( self::normalize_property_id( $property_id ) ) ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-					}
+				$analyticsadmin = $this->get_service( 'analyticsadmin' );
+				$batch_request  = $analyticsadmin->createBatch();
+				foreach ( $data['propertyIDs'] as $property_id ) {
+					$batch_request->add( $analyticsadmin->properties_webDataStreams->listPropertiesWebDataStreams( self::normalize_property_id( $property_id ) ) ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				}
+
+				return function() use ( $batch_request ) {
 					return $batch_request->execute();
 				};
 		}
