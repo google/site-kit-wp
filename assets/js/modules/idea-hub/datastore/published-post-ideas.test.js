@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_IDEA_HUB } from './constants';
 import {
 	createTestRegistry,
 	untilResolved,
@@ -62,12 +62,12 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 					{ body: fixtures.publishedPostIdeas, status: 200 },
 				);
 
-				const pendingPublishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( options );
+				const pendingPublishedPostIdeas = registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( options );
 
 				expect( pendingPublishedPostIdeas ).toBeUndefined();
-				await untilResolved( registry, STORE_NAME ).getPublishedPostIdeas( options );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getPublishedPostIdeas( options );
 
-				const publishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( options );
+				const publishedPostIdeas = registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( publishedPostIdeas ).toEqual( fixtures.publishedPostIdeas );
@@ -83,10 +83,10 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 					{ body: fixtures.publishedPostIdeas, status: 200 },
 				);
 
-				registry.select( STORE_NAME ).getPublishedPostIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getPublishedPostIdeas( customOptions );
+				registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( customOptions );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getPublishedPostIdeas( customOptions );
 
-				const publishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( customOptions );
+				const publishedPostIdeas = registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( customOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( publishedPostIdeas ).toEqual( fixtures.publishedPostIdeas.slice( 2, 4 ) );
@@ -98,10 +98,10 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 					{ body: fixtures.publishedPostIdeas, status: 200 },
 				);
 
-				registry.select( STORE_NAME ).getPublishedPostIdeas( {} );
-				await untilResolved( registry, STORE_NAME ).getPublishedPostIdeas( {} );
+				registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( {} );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getPublishedPostIdeas( {} );
 
-				const publishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( {} );
+				const publishedPostIdeas = registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( {} );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( publishedPostIdeas ).toEqual( fixtures.publishedPostIdeas );
@@ -116,10 +116,10 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 					{ body: fixtures.publishedPostIdeas, status: 200 },
 				);
 
-				registry.select( STORE_NAME ).getPublishedPostIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getPublishedPostIdeas( customOptions );
+				registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( customOptions );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getPublishedPostIdeas( customOptions );
 
-				const publishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( customOptions );
+				const publishedPostIdeas = registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( customOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( publishedPostIdeas ).toEqual( fixtures.publishedPostIdeas.slice( 2 ) );
@@ -134,10 +134,10 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 					{ body: fixtures.publishedPostIdeas, status: 200 },
 				);
 
-				registry.select( STORE_NAME ).getPublishedPostIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getPublishedPostIdeas( customOptions );
+				registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( customOptions );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getPublishedPostIdeas( customOptions );
 
-				const publishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( customOptions );
+				const publishedPostIdeas = registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( customOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( publishedPostIdeas ).toEqual( fixtures.publishedPostIdeas.slice( 0, 3 ) );
@@ -153,11 +153,11 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 					{ body: fixtures.publishedPostIdeas, status: 200 },
 				);
 
-				registry.select( STORE_NAME ).getPublishedPostIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getPublishedPostIdeas( customOptions );
+				registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( customOptions );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getPublishedPostIdeas( customOptions );
 
-				registry.select( STORE_NAME ).getPublishedPostIdeas( customOptions );
-				registry.select( STORE_NAME ).getPublishedPostIdeas( options );
+				registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( customOptions );
+				registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -165,11 +165,11 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 			it( 'does not make a network request if report for given options is already present', async () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetPublishedPostIdeas( fixtures.publishedPostIdeas, { options } );
+				registry.dispatch( MODULES_IDEA_HUB ).receiveGetPublishedPostIdeas( fixtures.publishedPostIdeas, { options } );
 
-				const report = registry.select( STORE_NAME ).getPublishedPostIdeas( options );
+				const report = registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( options );
 
-				await untilResolved( registry, STORE_NAME ).getPublishedPostIdeas( options );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getPublishedPostIdeas( options );
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( report ).toEqual( fixtures.publishedPostIdeas );
@@ -187,12 +187,12 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 					{ body: response, status: 500 },
 				);
 
-				registry.select( STORE_NAME ).getPublishedPostIdeas( options );
-				await untilResolved( registry, STORE_NAME ).getPublishedPostIdeas( options );
+				registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( options );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getPublishedPostIdeas( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const publishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( options );
+				const publishedPostIdeas = registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( options );
 				expect( publishedPostIdeas ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );

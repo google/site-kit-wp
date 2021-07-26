@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from './datastore/constants';
+import { MODULES_IDEA_HUB } from './datastore/constants';
 import { registerStore as registerDataStore } from './datastore';
 import { isFeatureEnabled } from '../../features';
 import { AREA_DASHBOARD_ACQUISITION } from '../../googlesitekit/widgets/default-areas';
@@ -46,7 +46,7 @@ export const registerModule = ifIdeaHubIsEnabled( ( modules ) => {
 	modules.registerModule(
 		'idea-hub',
 		{
-			storeName: STORE_NAME,
+			storeName: MODULES_IDEA_HUB,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
 			Icon: IdeaHubIcon,

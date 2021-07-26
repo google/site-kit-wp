@@ -29,7 +29,7 @@ import DashboardIdeasWidget from './index';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util/';
 import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../../../../tests/js/utils';
 import { enabledFeatures } from '../../../../../features';
-import { STORE_NAME } from '../../../datastore/constants';
+import { MODULES_IDEA_HUB } from '../../../datastore/constants';
 import {
 	newIdeas,
 	savedIdeas,
@@ -99,8 +99,8 @@ Loading.decorators = [
 				offset: 0,
 				length: 4,
 			};
-			registry.dispatch( STORE_NAME ).receiveGetNewIdeas( [], { options: option } );
-			registry.dispatch( STORE_NAME ).startResolution( 'getNewIdeas', [ option ] );
+			registry.dispatch( MODULES_IDEA_HUB ).receiveGetNewIdeas( [], { options: option } );
+			registry.dispatch( MODULES_IDEA_HUB ).startResolution( 'getNewIdeas', [ option ] );
 		};
 
 		mockEndpoints();
@@ -131,8 +131,8 @@ Error.decorators = [
 				length: 4,
 			};
 
-			registry.dispatch( STORE_NAME ).receiveError( error, 'getNewIdeas', [ option ] );
-			registry.dispatch( STORE_NAME ).finishResolution( 'getNewIdeas', [ option ] );
+			registry.dispatch( MODULES_IDEA_HUB ).receiveError( error, 'getNewIdeas', [ option ] );
+			registry.dispatch( MODULES_IDEA_HUB ).finishResolution( 'getNewIdeas', [ option ] );
 		};
 
 		enabledFeatures.clear();
