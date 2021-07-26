@@ -63,7 +63,7 @@ export default function PropertySelect() {
 						siteURL.startsWith( 'sc-domain:' )
 							? sprintf(
 								/* translators: %s: domain name */
-								__( '%s (domain property)', 'google-site-kit' ), siteURL.replace( /^sc-domain:/, '' )
+								__( '%s (domain property)', 'google-site-kit' ), siteURL.replace( /^sc-domain:/, '' ),
 							)
 							: siteURL
 					}

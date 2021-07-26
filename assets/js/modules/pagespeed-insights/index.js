@@ -49,7 +49,7 @@ if ( active && setupComplete ) {
 		'googlesitekit.DashboardModule',
 		'googlesitekit.PageSpeedInsights',
 		createAddToFilter( <LegacyDashboardSpeed /> ),
-		45
+		45,
 	);
 
 	// Add to dashboard-details view.
@@ -57,14 +57,14 @@ if ( active && setupComplete ) {
 		'googlesitekit.DashboardDetailsModule',
 		'googlesitekit.PageSpeedInsights',
 		createAddToFilter( <LegacyDashboardSpeed /> ),
-		45
+		45,
 	);
 } else {
 	addFilter(
 		'googlesitekit.DashboardModule',
 		'googlesitekit.PageSpeedInsights',
 		createAddToFilter( <LegacyDashboardPageSpeedCTA /> ),
-		45
+		45,
 	);
 }
 
@@ -78,7 +78,7 @@ export const registerModule = ( modules ) => {
 			features: [
 				__( 'Website performance reports for mobile and desktop', 'google-site-kit' ),
 			],
-		}
+		},
 	);
 };
 

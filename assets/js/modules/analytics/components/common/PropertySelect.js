@@ -102,7 +102,7 @@ export default function PropertySelect() {
 								/* translators: %1$s: property name, %2$s: property ID */
 								__( '%1$s (%2$s)', 'google-site-kit' ),
 								name,
-								id
+								id,
 							) : name
 						}
 					</Option>

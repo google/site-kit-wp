@@ -43,7 +43,7 @@ export const getChartDifferenceArrow = ( difference, options = {} ) => {
 	const { invertColor = false } = options;
 
 	return renderToString(
-		<ChangeArrow direction={ difference > 0 ? 'up' : 'down' } invertColor={ invertColor } />
+		<ChangeArrow direction={ difference > 0 ? 'up' : 'down' } invertColor={ invertColor } />,
 	);
 };
 

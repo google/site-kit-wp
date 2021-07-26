@@ -121,7 +121,7 @@ describe( 'modules/analytics settings', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
-					{ body: createdProperty, status: 200 }
+					{ body: createdProperty, status: 200 },
 				);
 				fetchMock.postOnce(
 					gaSettingsEndpoint,
@@ -129,7 +129,7 @@ describe( 'modules/analytics settings', () => {
 						const { data } = JSON.parse( opts.body );
 						// Return the same settings passed to the API.
 						return { body: data, status: 200 };
-					}
+					},
 				);
 
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
@@ -153,7 +153,7 @@ describe( 'modules/analytics settings', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
-					{ body: error, status: 500 }
+					{ body: error, status: 500 },
 				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
@@ -185,7 +185,7 @@ describe( 'modules/analytics settings', () => {
 				};
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
-					{ body: createdProfile, status: 200 }
+					{ body: createdProfile, status: 200 },
 				);
 				fetchMock.postOnce(
 					gaSettingsEndpoint,
@@ -193,7 +193,7 @@ describe( 'modules/analytics settings', () => {
 						const { data } = JSON.parse( opts.body );
 						// Return the same settings passed to the API.
 						return { body: data, status: 200 };
-					}
+					},
 				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
@@ -230,7 +230,7 @@ describe( 'modules/analytics settings', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
-					{ body: error, status: 500 }
+					{ body: error, status: 500 },
 				);
 
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
@@ -275,11 +275,11 @@ describe( 'modules/analytics settings', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
-					{ body: createdProperty, status: 200 }
+					{ body: createdProperty, status: 200 },
 				);
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
-					{ body: createdProfile, status: 200 }
+					{ body: createdProfile, status: 200 },
 				);
 				fetchMock.postOnce(
 					gaSettingsEndpoint,
@@ -287,7 +287,7 @@ describe( 'modules/analytics settings', () => {
 						const { data } = JSON.parse( opts.body );
 						// Return the same settings passed to the API.
 						return { body: data, status: 200 };
-					}
+					},
 				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
@@ -301,7 +301,7 @@ describe( 'modules/analytics settings', () => {
 
 				fetchMock.postOnce(
 					gaSettingsEndpoint,
-					{ body: validSettings, status: 200 }
+					{ body: validSettings, status: 200 },
 				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
@@ -318,7 +318,7 @@ describe( 'modules/analytics settings', () => {
 
 				fetchMock.postOnce(
 					gaSettingsEndpoint,
-					{ body: error, status: 500 }
+					{ body: error, status: 500 },
 				);
 
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
@@ -336,7 +336,7 @@ describe( 'modules/analytics settings', () => {
 
 				fetchMock.postOnce(
 					gaSettingsEndpoint,
-					{ body: validSettings, status: 200 }
+					{ body: validSettings, status: 200 },
 				);
 
 				const cacheKey = createCacheKey( 'modules', 'analytics', 'arbitrary-datapoint' );
@@ -437,7 +437,7 @@ describe( 'modules/analytics settings', () => {
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
 
 				await subscribeUntil( registry,
-					() => registry.stores[ STORE_NAME ].store.getState().isDoingSubmitChanges === false
+					() => registry.stores[ STORE_NAME ].store.getState().isDoingSubmitChanges === false,
 				);
 
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );

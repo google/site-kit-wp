@@ -155,7 +155,7 @@ describe( 'modules/tagmanager accounts', () => {
 				} );
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
-					responsePromise
+					responsePromise,
 				);
 
 				const promise = registry.dispatch( STORE_NAME ).selectAccount( accountID );
@@ -282,7 +282,7 @@ describe( 'modules/tagmanager accounts', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
-					{ body: fixtures.accounts, status: 200 }
+					{ body: fixtures.accounts, status: 200 },
 				);
 				// Mute fetch for containers request triggered in the resolver from auto-selecting first account.
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/, [] );
@@ -328,7 +328,7 @@ describe( 'modules/tagmanager accounts', () => {
 				};
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				registry.select( STORE_NAME ).getAccounts();

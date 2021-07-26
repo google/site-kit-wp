@@ -28,7 +28,7 @@ describe( 'useDebouncedState', () => {
 	it( 'should return initial value by default and should not change it after delay is expired', () => {
 		const { result } = renderHook(
 			( { value, delay } ) => useDebouncedState( value, delay ),
-			{ initialProps: { value: 'initial-data', delay: 500 } }
+			{ initialProps: { value: 'initial-data', delay: 500 } },
 		);
 
 		expect( result.current ).toBe( 'initial-data' );
@@ -39,7 +39,7 @@ describe( 'useDebouncedState', () => {
 	it( 'should correctly update value when delay is expired', () => {
 		const { result, rerender } = renderHook(
 			( { value, delay } ) => useDebouncedState( value, delay ),
-			{ initialProps: { value: '', delay: 500 } }
+			{ initialProps: { value: '', delay: 500 } },
 		);
 
 		rerender( { value: 'search query', delay: 500 } );

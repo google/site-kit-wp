@@ -52,7 +52,7 @@ export const registerModule = ( modules ) => {
 			SettingsViewComponent: SettingsView,
 			Icon: SearchConsoleIcon,
 			screenWidgetContext: CONTEXT_MODULE_SEARCH_CONSOLE,
-		}
+		},
 	);
 };
 

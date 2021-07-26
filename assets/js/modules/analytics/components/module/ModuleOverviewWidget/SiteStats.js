@@ -40,8 +40,14 @@ export default function SiteStats( { selectedStat, report } ) {
 		vAxisFormat = getTimeColumnVaxisFormat( dataMap, selectedStat );
 	}
 
+	const dates = dataMap.slice( 1 ).map( ( [ date ] ) => date );
+
 	const options = {
 		...SiteStats.options,
+		hAxis: {
+			...SiteStats.options.hAxis,
+			ticks: dates,
+		},
 		vAxis: {
 			...SiteStats.options.vAxis,
 			format: vAxisFormat,

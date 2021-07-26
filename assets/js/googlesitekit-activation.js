@@ -42,7 +42,7 @@ domReady( () => {
 			<Root dataAPIContext="Activation">
 				<ActivationApp />
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 
 		renderTarget.classList.remove( 'googlesitekit-activation--loading' );

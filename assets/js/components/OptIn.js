@@ -83,7 +83,7 @@ export default function OptIn( { id, name, className, optinAction } ) {
 								external
 								inherit
 							/>,
-						}
+						},
 					)
 					}
 				</span>

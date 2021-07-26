@@ -50,7 +50,7 @@ const Header = () => {
 			<WidgetHeaderTitle
 				title={ sprintf(
 					/* translators: %s: number of days */
-					_n( 'Top search queries over last %s days', 'Top search queries over last %s days', currentDayCount, 'google-site-kit', ),
+					_n( 'Top search queries over last %s days', 'Top search queries over last %s days', currentDayCount, 'google-site-kit' ),
 					currentDayCount,
 				) }
 			/>
@@ -59,7 +59,7 @@ const Header = () => {
 				label={ sprintf(
 					/* translators: %s: module name. */
 					__( 'See full stats in %s', 'google-site-kit' ),
-					_x( 'Search Console', 'Service name', 'google-site-kit' )
+					_x( 'Search Console', 'Service name', 'google-site-kit' ),
 				) }
 			/>
 		</Fragment>

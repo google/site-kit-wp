@@ -77,8 +77,8 @@ storiesOf( 'Settings', module )
 					'adsense',
 					'analytics',
 					'pagespeed-insights',
-					'search-console'
-				)
+					'search-console',
+				),
 			);
 			provideModuleRegistrations( registry );
 		};
@@ -104,7 +104,7 @@ storiesOf( 'Settings', module )
 					'adsense',
 					'pagespeed-insights',
 					'search-console',
-				)
+				),
 			);
 			provideModuleRegistrations( registry );
 			registry.select( CORE_MODULES ).getModule( 'adsense' );

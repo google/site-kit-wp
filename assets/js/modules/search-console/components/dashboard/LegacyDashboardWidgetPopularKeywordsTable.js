@@ -153,5 +153,5 @@ export default withData(
 		inGrid: true,
 		createGrid: true,
 	},
-	isDataZeroSearchConsole
+	isDataZeroSearchConsole,
 );

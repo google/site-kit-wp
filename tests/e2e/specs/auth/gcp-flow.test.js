@@ -87,7 +87,7 @@ describe( 'Site Kit set up flow for the first time', () => {
 		// Ensure the user is on step one of the setup wizard.
 		await expect( page ).toMatchElement(
 			'.googlesitekit-wizard-progress-step__number-text--inprogress',
-			{ text: '1' }
+			{ text: '1' },
 		);
 	} );
 } );

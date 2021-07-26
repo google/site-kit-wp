@@ -77,7 +77,7 @@ const store = Data.combineStores(
 		initialState: baseInitialState,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

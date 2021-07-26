@@ -54,7 +54,7 @@ export default function Header( { slug } ) {
 		<Link
 			className={ classnames(
 				'googlesitekit-settings-module__header',
-				{ 'googlesitekit-settings-module__header--open': isOpen }
+				{ 'googlesitekit-settings-module__header--open': isOpen },
 			) }
 			id={ `googlesitekit-settings-module__header--${ slug }` }
 			type="button"
@@ -80,12 +80,12 @@ export default function Header( { slug } ) {
 									? sprintf(
 										/* translators: %s: module name. */
 										__( '%s is connected', 'google-site-kit' ),
-										name
+										name,
 									)
 									: sprintf(
 										/* translators: %s: module name. */
 										__( '%s is not connected', 'google-site-kit' ),
-										name
+										name,
 									)
 							}
 
