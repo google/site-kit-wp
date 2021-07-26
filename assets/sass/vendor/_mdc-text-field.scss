@@ -8,10 +8,17 @@
 	@include mdc-text-field-hover-outline-color($c-border);
 	@include mdc-text-field-outline-color($c-border-medium);
 	@include mdc-text-field-textarea-stroke-color($c-border-medium);
-	width: 250px;
+
+	max-width: 100%;
 
 	@media (min-width: $bp-tablet) {
 		width: 350px;
+	}
+
+	.mdc-text-field__input {
+		display: block;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	&--textarea {
