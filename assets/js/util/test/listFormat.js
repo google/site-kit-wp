@@ -6,23 +6,23 @@ import { listFormat } from '../';
 describe( 'listFormat', () => {
 	it( 'flattens a list of strings correctly according to the locale provided', () => {
 		expect(
-			listFormat( [ 'A', 'B' ] )
+			listFormat( [ 'A', 'B' ] ),
 		).toStrictEqual( 'A and B' );
 
 		expect(
-			listFormat( [ 'A', 'B', 'C' ], { locale: 'en-US', type: 'conjunction' } )
+			listFormat( [ 'A', 'B', 'C' ], { locale: 'en-US', type: 'conjunction' } ),
 		).toStrictEqual( 'A, B, and C' );
 
 		expect(
-			listFormat( [ 'A', 'B', 'C' ], { locale: 'en-US', type: 'disjunction' } )
+			listFormat( [ 'A', 'B', 'C' ], { locale: 'en-US', type: 'disjunction' } ),
 		).toStrictEqual( 'A, B, or C' );
 
 		expect(
-			listFormat( [ 'A', 'B', 'C' ], { locale: 'en-US', style: 'short' } )
+			listFormat( [ 'A', 'B', 'C' ], { locale: 'en-US', style: 'short' } ),
 		).toStrictEqual( 'A, B, & C' );
 
 		expect(
-			listFormat( [ 'A', 'B', 'C' ], { locale: 'en-US', style: 'short', type: 'unit' } )
+			listFormat( [ 'A', 'B', 'C' ], { locale: 'en-US', style: 'short', type: 'unit' } ),
 		).toStrictEqual( 'A, B, C' );
 	} );
 

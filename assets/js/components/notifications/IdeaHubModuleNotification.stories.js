@@ -39,7 +39,7 @@ Ready.decorators = [
 
 		fetchMock.get(
 			/^\/google-site-kit\/v1\/core\/user\/data\/dismissed-items/,
-			{ body: {}, status: 200 }
+			{ body: {}, status: 200 },
 		);
 		return <Story />;
 	},

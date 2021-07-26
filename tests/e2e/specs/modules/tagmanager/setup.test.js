@@ -171,7 +171,7 @@ describe( 'Tag Manager module setup', () => {
 			// Ensure no AMP containers are shown as options.
 			// expect(...).not.toMatchElement with textContent matching does not work as expected.
 			await expect(
-				await page.$$eval( '.mdc-menu-surface--open .mdc-list-item', ( nodes ) => !! nodes.find( ( e ) => e.textContent.match( /test amp container/i ) ) )
+				await page.$$eval( '.mdc-menu-surface--open .mdc-list-item', ( nodes ) => !! nodes.find( ( e ) => e.textContent.match( /test amp container/i ) ) ),
 			).toStrictEqual( false );
 			await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test container y/i } );
 

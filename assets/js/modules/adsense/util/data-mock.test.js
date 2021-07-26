@@ -55,7 +55,7 @@ describe( 'getAdSenseMockResponse', () => {
 		expect( report.headers ).toEqual(
 			expect.arrayContaining( [
 				expect.objectContaining( { name: 'IMPRESSIONS' } ),
-			] )
+			] ),
 		);
 		expect( report.totals ).toEqual( rowMatcher );
 		expect( report.averages ).toEqual( rowMatcher );

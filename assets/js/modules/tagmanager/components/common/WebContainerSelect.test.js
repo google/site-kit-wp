@@ -41,10 +41,10 @@ describe( 'WebContainerSelect', () => {
 	it( 'should render an option for each web container of the currently selected account.', () => {
 		const account = factories.accountBuilder();
 		const webContainers = factories.buildContainers(
-			3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } // eslint-disable-line sitekit/acronym-case
+			3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }, // eslint-disable-line sitekit/acronym-case
 		);
 		const ampContainers = factories.buildContainers(
-			3, { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] } // eslint-disable-line sitekit/acronym-case
+			3, { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] }, // eslint-disable-line sitekit/acronym-case
 		);
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
@@ -60,13 +60,13 @@ describe( 'WebContainerSelect', () => {
 		// "Set up a new container".
 		expect( listItems ).toHaveLength( webContainers.length + 1 );
 		expect(
-			listItems.some( ( { dataset } ) => dataset.value === CONTAINER_CREATE )
+			listItems.some( ( { dataset } ) => dataset.value === CONTAINER_CREATE ),
 		).toBe( true );
 	} );
 
 	it( 'should have a "Set up a new container" item at the end of the list', () => {
 		const { account, containers } = factories.buildAccountWithContainers(
-			{ container: { usageContext: [ CONTEXT_WEB ] } }
+			{ container: { usageContext: [ CONTEXT_WEB ] } },
 		);
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
@@ -83,7 +83,7 @@ describe( 'WebContainerSelect', () => {
 
 	it( 'can select the "Set up a new container" option', async () => {
 		const { account, containers } = factories.buildAccountWithContainers(
-			{ container: { usageContext: [ CONTEXT_WEB ] } }
+			{ container: { usageContext: [ CONTEXT_WEB ] } },
 		);
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
@@ -102,7 +102,7 @@ describe( 'WebContainerSelect', () => {
 
 	it( 'should update the container ID and internal container ID when selected', async () => {
 		const { account, containers } = factories.buildAccountWithContainers(
-			{ container: { usageContext: [ CONTEXT_WEB ] } }
+			{ container: { usageContext: [ CONTEXT_WEB ] } },
 		);
 		const webContainer = containers[ 0 ];
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case

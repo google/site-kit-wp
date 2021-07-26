@@ -48,7 +48,7 @@ export default function DefaultSettingsSetupIncomplete( { slug } ) {
 				__( 'Setup incomplete: <a>continue module setup</a>', 'google-site-kit' ),
 				{
 					a: <Link href={ adminReauthURL } inherit />,
-				}
+				},
 			) }
 		</Cell>
 	);

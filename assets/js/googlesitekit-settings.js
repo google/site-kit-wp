@@ -45,7 +45,7 @@ domReady( () => {
 					<SettingsApp />
 				</HashRouter>
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 	}
 } );

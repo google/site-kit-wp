@@ -42,7 +42,7 @@ export const registerModule = ( modules ) => {
 			features: [
 				__( 'Website performance reports for mobile and desktop', 'google-site-kit' ),
 			],
-		}
+		},
 	);
 };
 

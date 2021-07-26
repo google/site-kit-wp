@@ -49,9 +49,9 @@ export const createAddToFilter = ( NewComponent ) => {
 					'',
 					createElement(
 						OriginalComponent,
-						props
+						props,
 					),
-					NewComponent
+					NewComponent,
 				)
 			);
 		};

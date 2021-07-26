@@ -58,7 +58,7 @@ describe( 'modules/idea-hub idea-state', () => {
 			it( "updates a given idea's state", async () => {
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
-					{ body: ideaStateFixture }
+					{ body: ideaStateFixture },
 				);
 				const { response } = await registry.dispatch( STORE_NAME ).updateIdeaState( ideaStateFixture );
 
@@ -74,7 +74,7 @@ describe( 'modules/idea-hub idea-state', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
-					{ body: errorResponse, status: 500 }
+					{ body: errorResponse, status: 500 },
 				);
 
 				const { response, error } = await registry.dispatch( STORE_NAME ).updateIdeaState( ideaStateFixture );

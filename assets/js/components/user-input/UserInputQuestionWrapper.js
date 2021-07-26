@@ -81,7 +81,7 @@ export default function UserInputQuestionWrapper( props ) {
 				{
 					'googlesitekit-user-input__question--active': isActive,
 					'googlesitekit-user-input__question--next': ! isActive,
-				}
+				},
 			) }
 		>
 			<Row>

@@ -48,7 +48,7 @@ import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/consta
 addFilter(
 	'googlesitekit.AdSenseDashboardZeroData',
 	'googlesitekit.AdSenseDashboardZeroDataRefactored',
-	fillFilterWithComponent( DashboardZeroData )
+	fillFilterWithComponent( DashboardZeroData ),
 );
 
 export { registerStore } from './datastore';
@@ -82,7 +82,7 @@ export const registerModule = ( modules ) => {
 				};
 			},
 			screenWidgetContext: CONTEXT_MODULE_ADSENSE,
-		}
+		},
 	);
 };
 

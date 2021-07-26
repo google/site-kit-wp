@@ -53,7 +53,7 @@ domReady( () => {
 			>
 				<GoogleSitekitModule />
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 	}
 } );

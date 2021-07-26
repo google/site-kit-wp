@@ -49,17 +49,17 @@ describe( 'Idea Hub', () => {
 
 		fetchMock.get(
 			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-			{ body: fixtures.draftPostIdeas, status: 200 }
+			{ body: fixtures.draftPostIdeas, status: 200 },
 		);
 
 		fetchMock.get(
 			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-			{ body: fixtures.savedIdeas, status: 200 }
+			{ body: fixtures.savedIdeas, status: 200 },
 		);
 
 		fetchMock.get(
 			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-			{ body: fixtures.newIdeas, status: 200 }
+			{ body: fixtures.newIdeas, status: 200 },
 		);
 	} );
 
@@ -70,7 +70,7 @@ describe( 'Idea Hub', () => {
 	] )( 'should change location hash & DOM correctly when the %s tab is clicked', async ( args, expected ) => {
 		const { getByRole, findByRole } = render(
 			<DashboardIdeasWidget { ...widgetComponentProps } />,
-			{ registry }
+			{ registry },
 		);
 
 		fireEvent.click( getByRole( 'tab', { name: args } ) );

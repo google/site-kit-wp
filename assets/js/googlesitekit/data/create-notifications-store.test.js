@@ -141,7 +141,7 @@ describe( 'createNotificationsStore store', () => {
 				const serverNotifications = [ { id: 'server_notification' } ];
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
-					{ body: serverNotifications, status: 200 }
+					{ body: serverNotifications, status: 200 },
 				);
 
 				const clientNotification = { id: 'client_notification' };
@@ -160,7 +160,7 @@ describe( 'createNotificationsStore store', () => {
 				expect( console ).toHaveWarned();
 				expect( global.console.warn ).toHaveBeenCalledWith( `Cannot remove server-side notification with ID "${ serverNotifications[ 0 ].id }"; this may be changed in a future release.` );
 				expect(
-					select.getNotifications()
+					select.getNotifications(),
 				).toEqual( expect.arrayContaining( serverNotifications ) );
 			} );
 		} );
@@ -200,7 +200,7 @@ describe( 'createNotificationsStore store', () => {
 				const response = [ { id: 'test_notification' } ];
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
-					{ body: response, status: 200 }
+					{ body: response, status: 200 },
 				);
 
 				const initialNotifications = select.getNotifications();
@@ -226,7 +226,7 @@ describe( 'createNotificationsStore store', () => {
 				const notification = { id: 'added_notification' };
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
-					{ body: [], status: 200 }
+					{ body: [], status: 200 },
 				);
 				dispatch.addNotification( notification );
 
@@ -247,7 +247,7 @@ describe( 'createNotificationsStore store', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				select.getNotifications();
@@ -272,7 +272,7 @@ describe( 'createNotificationsStore store', () => {
 
 				fetchMock.getOnce(
 					`path:/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
-					{ body: response, status: 200 }
+					{ body: response, status: 200 },
 				).catch(
 					{
 						body: {
@@ -281,7 +281,7 @@ describe( 'createNotificationsStore store', () => {
 							data: { status: 400 },
 						},
 						init: { status: 400 },
-					}
+					},
 				);
 
 				const result = await storeDefinition.controls.FETCH_GET_NOTIFICATIONS( {

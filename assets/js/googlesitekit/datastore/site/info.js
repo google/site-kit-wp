@@ -251,7 +251,7 @@ export const selectors = {
 			{
 				page: pageArg,
 				...queryArgs,
-			}
+			},
 		);
 	} ),
 

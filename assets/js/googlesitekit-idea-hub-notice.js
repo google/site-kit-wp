@@ -84,9 +84,9 @@ const loadIdeaHubNotices = async ( _global = global ) => {
 				sprintf(
 					/* translators: %s: Idea post name */
 					__( 'This post was created from an idea you picked in Site Kit’s Idea Hub: %s', 'google-site-kit' ),
-					postMeta.googlesitekitpersistent_idea_text
+					postMeta.googlesitekitpersistent_idea_text,
 				),
-				{ id: noticeKey }
+				{ id: noticeKey },
 			);
 
 			// Mark the notice as shown locally, so if it is no longer marked as

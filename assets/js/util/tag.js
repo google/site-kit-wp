@@ -65,7 +65,7 @@ export const extractExistingTag = ( html, tagMatchers ) => {
 export const getExistingTagURLs = memoize( async ( { homeURL, ampMode } ) => {
 	invariant(
 		isURL( homeURL ),
-		'homeURL must be valid URL'
+		'homeURL must be valid URL',
 	);
 
 	// Initialize urls with home URL
@@ -77,8 +77,8 @@ export const getExistingTagURLs = memoize( async ( { homeURL, ampMode } ) => {
 			const ampPostURL = await apiFetch( { path: '/wp/v2/posts?per_page=1' } )
 				.then(
 					( posts ) => posts.slice( 0, 1 ).map(
-						( post ) => addQueryArgs( post.link, { amp: 1 } )
-					).pop()
+						( post ) => addQueryArgs( post.link, { amp: 1 } ),
+					).pop(),
 				);
 			if ( ampPostURL ) {
 				urls.push( ampPostURL );

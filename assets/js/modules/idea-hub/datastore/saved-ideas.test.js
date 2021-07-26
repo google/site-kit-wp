@@ -59,7 +59,7 @@ describe( 'modules/idea-hub saved-ideas', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 }
+					{ body: fixtures.savedIdeas, status: 200 },
 				);
 
 				const pendingSavedIdeas = registry.select( STORE_NAME ).getSavedIdeas( options );
@@ -80,7 +80,7 @@ describe( 'modules/idea-hub saved-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 }
+					{ body: fixtures.savedIdeas, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getSavedIdeas( customOptions );
@@ -95,7 +95,7 @@ describe( 'modules/idea-hub saved-ideas', () => {
 			it( 'treats all options as optional', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 }
+					{ body: fixtures.savedIdeas, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getSavedIdeas( {} );
@@ -113,7 +113,7 @@ describe( 'modules/idea-hub saved-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 }
+					{ body: fixtures.savedIdeas, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getSavedIdeas( customOptions );
@@ -131,7 +131,7 @@ describe( 'modules/idea-hub saved-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 }
+					{ body: fixtures.savedIdeas, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getSavedIdeas( customOptions );
@@ -150,7 +150,7 @@ describe( 'modules/idea-hub saved-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 }
+					{ body: fixtures.savedIdeas, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getSavedIdeas( customOptions );
@@ -184,7 +184,7 @@ describe( 'modules/idea-hub saved-ideas', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				registry.select( STORE_NAME ).getSavedIdeas( options );

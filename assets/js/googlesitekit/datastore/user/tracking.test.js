@@ -78,7 +78,7 @@ describe( 'core/user tracking settings', () => {
 
 				fetchMock.post(
 					coreUserTrackingSettingsEndpointRegExp,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				await registry.dispatch( STORE_NAME ).setTrackingEnabled( ...args );
