@@ -73,10 +73,10 @@ const WPDashboardWidgets = () => {
 
 	// The two Analytics widgets at the top can be combined (i.e. the second can be hidden)
 	// if they are both ReportZero.
-	const shouldCombineAnalyticsArea1 = useSelect( ( select ) =>
+	const shouldCombineAnalyticsArea1 = useSelect( ( select ) => (
 			select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )?.Component === ReportZero &&
 			select( CORE_WIDGETS ).getWidgetState( WIDGET_SESSION_DURATION )?.Component === ReportZero
-	);
+	) );
 
 	// The Analytics widget at the bottom can be combined / hidden if one of the two at the top
 	// is also ReportZero.
