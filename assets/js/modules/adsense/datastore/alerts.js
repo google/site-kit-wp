@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import { isValidAccountID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
@@ -73,7 +73,7 @@ const baseActions = {
 
 		yield errorStoreActions.clearErrors( 'getAlerts' );
 
-		return dispatch( STORE_NAME )
+		return dispatch( MODULES_ADSENSE )
 			.invalidateResolutionForStoreSelector( 'getAlerts' );
 	},
 };
@@ -113,7 +113,7 @@ const baseResolvers = {
 		}
 
 		const registry = yield Data.commonActions.getRegistry();
-		const existingAlerts = registry.select( STORE_NAME ).getAlerts( accountID );
+		const existingAlerts = registry.select( MODULES_ADSENSE ).getAlerts( accountID );
 
 		// If there are already alerts loaded in state, consider it fulfilled
 		// and don't make an API request.

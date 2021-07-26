@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import AdSenseIcon from '../../../../../svg/adsense.svg';
 import ProgressBar from '../../../../components/ProgressBar';
 import ErrorText from '../../../../components/ErrorText';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import {
@@ -70,40 +70,40 @@ export default function SetupMain( { finishSetup } ) {
 	// Get settings.
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
-	const previousAccountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const previousClientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
-	const previousAccountStatus = useSelect( ( select ) => select( STORE_NAME ).getAccountStatus() );
-	const previousSiteStatus = useSelect( ( select ) => select( STORE_NAME ).getSiteStatus() );
-	const accountSetupComplete = useSelect( ( select ) => select( STORE_NAME ).getAccountSetupComplete() );
-	const siteSetupComplete = useSelect( ( select ) => select( STORE_NAME ).getSiteSetupComplete() );
+	const previousAccountID = useSelect( ( select ) => select( MODULES_ADSENSE ).getAccountID() );
+	const previousClientID = useSelect( ( select ) => select( MODULES_ADSENSE ).getClientID() );
+	const previousAccountStatus = useSelect( ( select ) => select( MODULES_ADSENSE ).getAccountStatus() );
+	const previousSiteStatus = useSelect( ( select ) => select( MODULES_ADSENSE ).getSiteStatus() );
+	const accountSetupComplete = useSelect( ( select ) => select( MODULES_ADSENSE ).getAccountSetupComplete() );
+	const siteSetupComplete = useSelect( ( select ) => select( MODULES_ADSENSE ).getSiteSetupComplete() );
 
 	// Check whether a change submission is in progress.
-	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
+	const isDoingSubmitChanges = useSelect( ( select ) => select( MODULES_ADSENSE ).isDoingSubmitChanges() );
 
 	// Check whether settings differ from server and are valid.
-	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
+	const canSubmitChanges = useSelect( ( select ) => select( MODULES_ADSENSE ).canSubmitChanges() );
 
 	// Determine account.
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
+	const accounts = useSelect( ( select ) => select( MODULES_ADSENSE ).getAccounts() );
 	const accountID = determineAccountID( {
 		accounts,
 		previousAccountID,
 	} );
 
 	// Determine client.
-	const clients = useSelect( ( select ) => select( STORE_NAME ).getClients( accountID ) );
+	const clients = useSelect( ( select ) => select( MODULES_ADSENSE ).getClients( accountID ) );
 	const clientID = determineClientID( {
 		clients,
 		previousClientID,
 	} );
 
 	// Get additional information to determine account and site status.
-	const alerts = useSelect( ( select ) => select( STORE_NAME ).getAlerts( accountID ) );
-	const urlChannels = useSelect( ( select ) => select( STORE_NAME ).getURLChannels( accountID, clientID ) );
-	const urlChannelsError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getURLChannels', [ accountID, clientID ] ) );
-	const accountsError = useSelect( ( select ) => select( STORE_NAME ).getError( 'getAccounts', [] ) );
-	const alertsError = useSelect( ( select ) => select( STORE_NAME ).getError( 'getAlerts', [ accountID ] ) );
-	const hasErrors = useSelect( ( select ) => select( STORE_NAME ).hasErrors() );
+	const alerts = useSelect( ( select ) => select( MODULES_ADSENSE ).getAlerts( accountID ) );
+	const urlChannels = useSelect( ( select ) => select( MODULES_ADSENSE ).getURLChannels( accountID, clientID ) );
+	const urlChannelsError = useSelect( ( select ) => select( MODULES_ADSENSE ).getErrorForSelector( 'getURLChannels', [ accountID, clientID ] ) );
+	const accountsError = useSelect( ( select ) => select( MODULES_ADSENSE ).getError( 'getAccounts', [] ) );
+	const alertsError = useSelect( ( select ) => select( MODULES_ADSENSE ).getError( 'getAlerts', [ accountID ] ) );
+	const hasErrors = useSelect( ( select ) => select( MODULES_ADSENSE ).hasErrors() );
 
 	// Determine account and site status.
 	const accountStatus = determineAccountStatus( {
@@ -136,7 +136,7 @@ export default function SetupMain( { finishSetup } ) {
 		resetAlerts,
 		resetClients,
 		resetURLChannels,
-	} = useDispatch( STORE_NAME );
+	} = useDispatch( MODULES_ADSENSE );
 
 	// Allow flagging when a background submission should happen.
 	const [ isAwaitingBackgroundSubmit, setIsAwaitingBackgroundSubmit ] = useState( false );
@@ -234,7 +234,7 @@ export default function SetupMain( { finishSetup } ) {
 		} )();
 	}, [ isAwaitingBackgroundSubmit, isSubmittingInBackground, canSubmitChanges, submitChanges ] );
 
-	const isAdBlockerActive = useSelect( ( select ) => select( STORE_NAME ).isAdBlockerActive() );
+	const isAdBlockerActive = useSelect( ( select ) => select( MODULES_ADSENSE ).isAdBlockerActive() );
 
 	// Reset all fetched data when user re-focuses tab.
 	useEffect( () => {
@@ -289,7 +289,7 @@ export default function SetupMain( { finishSetup } ) {
 	// Fetch existing tag right here, to ensure the progress bar is still being
 	// shown while this is being loaded. It is technically used only by child
 	// components.
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
+	const existingTag = useSelect( ( select ) => select( MODULES_ADSENSE ).getExistingTag() );
 
 	let viewComponent;
 	if ( ( undefined === accountStatus && ! hasErrors ) || undefined === existingTag || ( isDoingSubmitChanges && ! isSubmittingInBackground ) || isNavigating ) {

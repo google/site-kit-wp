@@ -30,7 +30,7 @@ import { map, reduce } from 'rxjs/operators';
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from '../datastore/constants';
+import { MODULES_ADSENSE } from '../datastore/constants';
 import { getDateString, isValidDateString } from '../../../util';
 import { validateMetrics } from './report-validation';
 import { dateInstanceToAdSenseDate } from './date';
@@ -286,7 +286,7 @@ export function getAdSenseMockResponse( args ) {
  * @param {Object}           options  Report options.
  */
 export function provideAdSenseMockReport( registry, options ) {
-	registry.dispatch( STORE_NAME ).receiveGetReport(
+	registry.dispatch( MODULES_ADSENSE ).receiveGetReport(
 		getAdSenseMockResponse( options ),
 		{
 			options,

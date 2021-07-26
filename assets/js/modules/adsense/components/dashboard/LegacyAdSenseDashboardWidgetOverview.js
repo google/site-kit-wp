@@ -30,7 +30,7 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import ReportError from '../../../../components/ReportError';
@@ -64,14 +64,14 @@ export default function LegacyAdSenseDashboardWidgetOverview( props ) {
 		endDate: compareEndDate,
 	};
 
-	const currentRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeArgs ) );
-	const previousRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( previousRangeArgs ) );
+	const currentRangeData = useSelect( ( select ) => select( MODULES_ADSENSE ).getReport( currentRangeArgs ) );
+	const previousRangeData = useSelect( ( select ) => select( MODULES_ADSENSE ).getReport( previousRangeArgs ) );
 
-	const currentDataLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) );
-	const previousDataLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousRangeArgs ] ) );
+	const currentDataLoaded = useSelect( ( select ) => select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) );
+	const previousDataLoaded = useSelect( ( select ) => select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [ previousRangeArgs ] ) );
 
-	const currentError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) );
-	const previousError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousRangeArgs ] ) );
+	const currentError = useSelect( ( select ) => select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) );
+	const previousError = useSelect( ( select ) => select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [ previousRangeArgs ] ) );
 
 	// TODO: remove the following logic when AdSenseDashboardWidget is refactored.
 	useEffect( () => {

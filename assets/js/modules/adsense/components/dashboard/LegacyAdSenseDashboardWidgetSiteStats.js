@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import { Cell, Grid, Row } from '../../../../material-components';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
@@ -58,14 +58,14 @@ export default function LegacyAdSenseDashboardWidgetSiteStats( props ) {
 		endDate: compareEndDate,
 	};
 
-	const currentRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeArgs ) );
-	const prevRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( prevRangeArgs ) );
+	const currentRangeData = useSelect( ( select ) => select( MODULES_ADSENSE ).getReport( currentRangeArgs ) );
+	const prevRangeData = useSelect( ( select ) => select( MODULES_ADSENSE ).getReport( prevRangeArgs ) );
 
-	const resolvedCurrentData = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) );
-	const resolvedPreviousData = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ prevRangeArgs ] ) );
+	const resolvedCurrentData = useSelect( ( select ) => select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) );
+	const resolvedPreviousData = useSelect( ( select ) => select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [ prevRangeArgs ] ) );
 
-	const currentError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) );
-	const previousError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ prevRangeArgs ] ) );
+	const currentError = useSelect( ( select ) => select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) );
+	const previousError = useSelect( ( select ) => select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [ prevRangeArgs ] ) );
 
 	if ( ! resolvedCurrentData || ! resolvedPreviousData ) {
 		return <PreviewBlock width="100%" height="250px" />;

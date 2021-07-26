@@ -28,17 +28,17 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const accountID = useSelect( ( select ) => select( MODULES_ADSENSE ).getAccountID() );
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
-		accounts: select( STORE_NAME ).getAccounts(),
-		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
+		accounts: select( MODULES_ADSENSE ).getAccounts(),
+		hasResolvedAccounts: select( MODULES_ADSENSE ).hasFinishedResolution( 'getAccounts' ),
 	} ) );
 
-	const { setAccountID } = useDispatch( STORE_NAME );
+	const { setAccountID } = useDispatch( MODULES_ADSENSE );
 	const onChange = useCallback( ( index, item ) => {
 		const newAccountID = item.dataset.value;
 		if ( accountID !== newAccountID ) {

@@ -30,7 +30,7 @@ import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import { trackEvent } from '../../../../util';
 import { parseAccountID } from '../../util/parsing';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
@@ -42,8 +42,8 @@ const { useSelect } = Data;
 export default function SetupAccountCreate() {
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-	const signUpURL = useSelect( ( select ) => select( STORE_NAME ).getServiceCreateAccountURL() );
+	const existingTag = useSelect( ( select ) => select( MODULES_ADSENSE ).getExistingTag() );
+	const signUpURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceCreateAccountURL() );
 	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
 		path: '/adsense/answer/2659101',
 	} ) );

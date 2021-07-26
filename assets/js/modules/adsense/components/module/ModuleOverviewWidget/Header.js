@@ -25,7 +25,7 @@ import { __, sprintf, _n, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
+import { MODULES_ADSENSE, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
@@ -37,7 +37,7 @@ const Header = () => {
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
-	const accountSiteURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( generateDateRangeArgs( dateRangeDates ) ) );
+	const accountSiteURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceReportURL( generateDateRangeArgs( dateRangeDates ) ) );
 	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
 	return (
