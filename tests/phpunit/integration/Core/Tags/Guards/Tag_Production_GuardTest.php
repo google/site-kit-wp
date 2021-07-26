@@ -15,18 +15,18 @@ namespace Google\Site_Kit\Tests\Core\Tags\Guards;
 
 class Tag_Production_GuardTest extends TestCase {
 
-	public function test_can_activate_on_older_versions() {
-		// Pre WP-5.5.0
+	public function test_can_activate_on_post_5_5_version() {
 		if ( ! function_exists( 'wp_get_environment_type' ) ) {
-			$this->markTestSkipped( 'Missing wp_get_environment_type() function.' );
+			// This environment is pre WP-5.5.0 and is skipped.
+			$this->markTestSkipped( 'Testing WP5.5.0 or later and skipping due to missing wp_get_environment_type() function.' );
 		}
 		$tagproduction = new Tag_Production_Guard();
 		$this->assertTrue( $tagproduction->can_activate() );
 	}
 
-	public function test_can_activate_on_post_5_5_version() {
-		// Post WP-5.5.0
+	public function test_can_activate_on_older_versions() {
 		if ( function_exists( 'wp_get_environment_type' ) ) {
+			// This environment is WP-5.5.0 or later and is skipped.
 			$this->markTestSkipped( 'Testing legacy environments without wp_get_environment_type() function.' );
 		}
 		$tagproduction = new Tag_Production_Guard();
