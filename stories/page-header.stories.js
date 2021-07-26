@@ -20,10 +20,6 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-/**
- * WordPress dependencies
- */
-import { removeAllFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -33,7 +29,6 @@ import PageHeader from '../assets/js/components/PageHeader';
 
 storiesOf( 'Global', module )
 	.add( 'Page Headers', () => {
-		removeAllFilters( 'googlesitekit.showDateRangeSelector-analytics' );
 		return <div>
 			<p>
 				<PageHeader
