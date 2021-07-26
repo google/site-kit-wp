@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
-import { createTestRegistry, unsubscribeFromAll, untilResolved } from 'tests/js/utils';
+import { createTestRegistry, unsubscribeFromAll, untilResolved } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 accounts', () => {

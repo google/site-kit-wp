@@ -55,7 +55,7 @@ export default function SettingsSetupIncomplete() {
 			{ createInterpolateElement(
 				sprintf(
 					statusText,
-					`<a>${ actionText }</a>`
+					`<a>${ actionText }</a>`,
 				),
 				{
 					a: <Link
@@ -63,7 +63,7 @@ export default function SettingsSetupIncomplete() {
 						href={ adminReauthURL }
 						inherit
 					/>,
-				}
+				},
 			) }
 		</Fragment>
 	);

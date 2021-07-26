@@ -23,7 +23,7 @@ import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 
 describe( 'modules/search-console properties', () => {
 	let registry;

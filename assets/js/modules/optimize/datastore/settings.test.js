@@ -68,7 +68,7 @@ describe( 'modules/optimize settings', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
-					{ body: validSettings, status: 200 }
+					{ body: validSettings, status: 200 },
 				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
@@ -79,7 +79,7 @@ describe( 'modules/optimize settings', () => {
 						body: {
 							data: validSettings,
 						},
-					}
+					},
 				);
 				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
 			} );
@@ -89,7 +89,7 @@ describe( 'modules/optimize settings', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
-					{ body: wpError, status: 500 }
+					{ body: wpError, status: 500 },
 				);
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -103,7 +103,7 @@ describe( 'modules/optimize settings', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
-					{ body: validSettings, status: 200 }
+					{ body: validSettings, status: 200 },
 				);
 
 				const cacheKey = createCacheKey( 'modules', 'optimize', 'arbitrary-datapoint' );

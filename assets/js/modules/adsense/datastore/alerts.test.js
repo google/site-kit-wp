@@ -25,7 +25,8 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
+
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense alerts', () => {
@@ -56,7 +57,7 @@ describe( 'modules/adsense alerts', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/alerts/,
-					{ body: fixtures.alerts, status: 200 }
+					{ body: fixtures.alerts, status: 200 },
 				);
 
 				const accountID = fixtures.accounts[ 0 ]._id;
@@ -87,7 +88,7 @@ describe( 'modules/adsense alerts', () => {
 
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getAlerts', [ accountID ] )
+					.hasFinishedResolution( 'getAlerts', [ accountID ] ),
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
@@ -102,7 +103,7 @@ describe( 'modules/adsense alerts', () => {
 				};
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/alerts/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				const fakeAccountID = 'pub-777888999';

@@ -32,7 +32,7 @@ jest.mock( 'just-detect-adblock' );
 
 function stubIsAdBlockerDetected( detected ) {
 	mockDetectAnyAdblocker.mockImplementation(
-		() => new Promise( ( resolve ) => setTimeout( () => resolve( !! detected ) ) )
+		() => new Promise( ( resolve ) => setTimeout( () => resolve( !! detected ) ) ),
 	);
 }
 

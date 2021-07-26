@@ -53,7 +53,7 @@ const Header = ( { metrics, selectedStats } ) => {
 			<WidgetHeaderTitle
 				title={ sprintf(
 					/* translators: %s: number of days */
-					_n( 'Overview for the last %s day', 'Overview for the last %s days', currentDayCount, 'google-site-kit', ),
+					_n( 'Overview for the last %s day', 'Overview for the last %s days', currentDayCount, 'google-site-kit' ),
 					currentDayCount,
 				) }
 			/>
@@ -62,7 +62,7 @@ const Header = ( { metrics, selectedStats } ) => {
 				label={ sprintf(
 					/* translators: %s: module name. */
 					__( 'See full stats in %s', 'google-site-kit' ),
-					_x( 'Search Console', 'Service name', 'google-site-kit' )
+					_x( 'Search Console', 'Service name', 'google-site-kit' ),
 				) }
 			/>
 		</Fragment>

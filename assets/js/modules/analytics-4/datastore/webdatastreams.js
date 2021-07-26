@@ -134,7 +134,7 @@ const baseActions = {
 		function* ( propertyID ) {
 			const { response, error } = yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream( propertyID );
 			return { response, error };
-		}
+		},
 	),
 
 	/**
@@ -271,7 +271,7 @@ const store = Data.combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

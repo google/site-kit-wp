@@ -57,7 +57,7 @@ class LegacyDashboardSearchFunnel extends Component {
 				</div>
 				<div className={ classnames(
 					'mdc-layout-grid__cell',
-					`mdc-layout-grid__cell--span-${ wrapperCols }`
+					`mdc-layout-grid__cell--span-${ wrapperCols }`,
 				) }>
 					<Layout className="googlesitekit-analytics-search-funnel">
 						<div className="mdc-layout-grid">

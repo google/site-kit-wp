@@ -66,7 +66,7 @@ export default function FormInstructions() {
 					sprintf(
 						/* translators: %s: Analytics property ID */
 						__( 'Looks like you’re using Google Analytics. Your Analytics property %s is already set up in your Google Tag Manager configuration, so Site Kit will switch to using Google Tag Manager for Analytics.', 'google-site-kit' ),
-						singleAnalyticsPropertyID
+						singleAnalyticsPropertyID,
 					)
 				}
 			</p>

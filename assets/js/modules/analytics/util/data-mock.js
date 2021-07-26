@@ -309,6 +309,6 @@ export function getAnalyticsMockResponse( args ) {
 export function provideAnalyticsMockReport( registry, options ) {
 	registry.dispatch( STORE_NAME ).receiveGetReport(
 		getAnalyticsMockResponse( options ),
-		{ options }
+		{ options },
 	);
 }

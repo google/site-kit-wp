@@ -65,7 +65,7 @@ function PreviewBlock( {
 			className={ classnames(
 				'googlesitekit-preview-block',
 				className,
-				{ 'googlesitekit-preview-block--padding': padding }
+				{ 'googlesitekit-preview-block--padding': padding },
 			) }
 			style={ {
 				width: blockWidth,
@@ -74,7 +74,7 @@ function PreviewBlock( {
 		>
 			<div className={ classnames(
 				'googlesitekit-preview-block__wrapper',
-				{ 'googlesitekit-preview-block__wrapper--circle': shape === 'circular' }
+				{ 'googlesitekit-preview-block__wrapper--circle': shape === 'circular' },
 			) }>
 			</div>
 		</div>

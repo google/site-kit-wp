@@ -170,7 +170,7 @@ describe( 'modules/analytics-4 properties', () => {
 				} );
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams/,
-					responsePromise
+					responsePromise,
 				);
 
 				provideSiteInfo( registry, { referenceSiteURL: 'https://www.example.org' } );
