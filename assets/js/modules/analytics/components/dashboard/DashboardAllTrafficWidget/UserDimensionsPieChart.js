@@ -174,7 +174,7 @@ export default function UserDimensionsPieChart( {
 					otherSupportURL,
 					/* translators: %s: pie slice label */
 					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel ),
-					rowLabel
+					rowLabel,
 				);
 			}
 
@@ -183,7 +183,7 @@ export default function UserDimensionsPieChart( {
 					notSetSupportURL,
 					/* translators: %s: pie slice label */
 					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel ),
-					rowLabel
+					rowLabel,
 				);
 			}
 
@@ -380,7 +380,7 @@ export default function UserDimensionsPieChart( {
 				{
 					'googlesitekit-widget--analyticsAllTraffic__slice-selected': !! dimensionValue,
 					'googlesitekit-widget--analyticsAllTraffic__selectable': selectable,
-				}
+				},
 			) }>
 				{ /* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events */ }
 				<GoogleChart
@@ -410,7 +410,7 @@ export default function UserDimensionsPieChart( {
 					'googlesitekit-widget--analyticsAllTraffic__legend',
 					{
 						'googlesitekit-widget--analyticsAllTraffic__legend--single': isSingleSliceReport,
-					}
+					},
 				) }>
 					{ loaded && dataMap?.slice( 1 ).map( ( [ label ], i ) => {
 						const isActive = label === dimensionValue;
@@ -426,7 +426,7 @@ export default function UserDimensionsPieChart( {
 									{
 										'googlesitekit-widget--analyticsAllTraffic__legend-active': isActive,
 										'googlesitekit-widget--analyticsAllTraffic__legend-others': isOthers,
-									}
+									},
 								) }
 							>
 								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: sliceColor } } />

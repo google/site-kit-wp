@@ -84,7 +84,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 							[ notification.id ]: notification,
 						};
 					},
-					{}
+					{},
 				),
 			};
 		},
@@ -230,7 +230,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 			reducer,
 			resolvers,
 			selectors,
-		}
+		},
 	);
 	return {
 		...store,

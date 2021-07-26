@@ -60,12 +60,12 @@ export default function UseSnippetInstructions() {
 						sprintf(
 							/* translators: %s: Analytics connect URL in Site Kit */
 							__( '<a href="%s">Click here</a> to connect Google Analytics', 'google-site-kit' ),
-							`${ settingsURL }#connect`
+							`${ settingsURL }#connect`,
 						),
 						{
 							ALLOWED_TAGS: [ 'a' ],
 							ALLOWED_ATTR: [ 'href' ],
-						}
+						},
 					) }
 				/>
 			</Fragment>
@@ -89,7 +89,7 @@ export default function UseSnippetInstructions() {
 						{
 							ALLOWED_TAGS: [ 'a' ],
 							ALLOWED_ATTR: [ 'href' ],
-						}
+						},
 					) }
 				/>
 			</Fragment>
@@ -115,7 +115,7 @@ export default function UseSnippetInstructions() {
 						{
 							ALLOWED_TAGS: [ 'a' ],
 							ALLOWED_ATTR: [ 'href' ],
-						}
+						},
 					) }
 				/>
 			</Fragment>

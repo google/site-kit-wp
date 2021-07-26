@@ -125,6 +125,27 @@ final class Assets {
 		);
 
 		add_action(
+			'admin_print_scripts-edit.php',
+			function() {
+				global $post_type;
+				if ( 'post' !== $post_type ) {
+					// For CONTEXT_ADMIN_POSTS we only load scripts for the 'post' post type.
+					return;
+				}
+				$assets = $this->get_assets();
+
+				array_walk(
+					$assets,
+					function( Asset $asset ) {
+						if ( $asset->has_context( Asset::CONTEXT_ADMIN_POSTS ) ) {
+							$this->enqueue_asset( $asset->get_handle() );
+						}
+					}
+				);
+			}
+		);
+
+		add_action(
 			'enqueue_block_editor_assets',
 			function() {
 				$assets = $this->get_assets();
@@ -431,6 +452,7 @@ final class Assets {
 					'src'          => $base_url . 'js/googlesitekit-vendor.js',
 					'dependencies' => array(
 						'googlesitekit-i18n',
+						'googlesitekit-runtime',
 					),
 				)
 			),

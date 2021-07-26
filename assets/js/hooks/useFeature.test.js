@@ -25,7 +25,7 @@ import { useFeature } from './useFeature';
 describe( 'useFeature', () => {
 	it( 'should return false when a flag is not in the enabled features list', () => {
 		const { result } = renderHook(
-			() => useFeature( 'maxMode' )
+			() => useFeature( 'maxMode' ),
 		);
 
 		expect( result.current ).toEqual( false );
@@ -34,7 +34,7 @@ describe( 'useFeature', () => {
 	it( 'should return true for a flag set in the features context', () => {
 		const { result } = renderHook(
 			() => useFeature( 'discoLights' ),
-			{ features: [ 'discoLights' ] }
+			{ features: [ 'discoLights' ] },
 		);
 
 		expect( result.current ).toEqual( true );

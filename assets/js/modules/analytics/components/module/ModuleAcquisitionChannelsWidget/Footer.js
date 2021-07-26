@@ -37,7 +37,7 @@ export default function Footer() {
 	} ) );
 	const url = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL(
 		'trafficsources-overview',
-		generateDateRangeArgs( dates )
+		generateDateRangeArgs( dates ),
 	) );
 	return (
 		<SourceLink

@@ -39,7 +39,7 @@ export const normalizeReportOptions = memize(
 			dimensions: normalizeDimensions( dimensions ),
 			...options,
 		};
-	}
+	},
 );
 
 const normalizeMetrics = ( metrics ) => {
@@ -47,7 +47,7 @@ const normalizeMetrics = ( metrics ) => {
 		.map(
 			( metric ) => typeof metric === 'string'
 				? { expression: metric }
-				: metric
+				: metric,
 		)
 		.filter( ( metric ) => isPlainObject( metric ) )
 	;
@@ -58,7 +58,7 @@ const normalizeDimensions = ( dimensions ) => {
 		.map(
 			( dimension ) => typeof dimension === 'string'
 				? { name: dimension }
-				: dimension
+				: dimension,
 		)
 		.filter( ( dimension ) => isPlainObject( dimension ) )
 	;

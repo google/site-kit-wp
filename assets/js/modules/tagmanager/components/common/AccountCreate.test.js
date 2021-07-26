@@ -60,7 +60,7 @@ describe( 'AccountCreate', () => {
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
-			{ body: [ accountA, accountB ], status: 200 }
+			{ body: [ accountA, accountB ], status: 200 },
 		);
 		const { getByRole } = render( <AccountCreate />, { registry } );
 

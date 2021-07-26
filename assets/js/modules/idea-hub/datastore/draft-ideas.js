@@ -116,7 +116,7 @@ const store = Data.combineStores(
 	{
 		actions: baseActions,
 		reducer: baseReducer,
-	}
+	},
 );
 
 export const initialState = store.initialState;

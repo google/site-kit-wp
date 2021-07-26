@@ -89,7 +89,7 @@ describe( 'CurrentSurvey', () => {
 					'Content-Type': 'application/json',
 				},
 				method: 'POST',
-			}
+			},
 		);
 
 		fetchMock.resetHistory();
@@ -131,7 +131,7 @@ describe( 'CurrentSurvey', () => {
 					'Content-Type': 'application/json',
 				},
 				method: 'POST',
-			}
+			},
 		);
 
 		await findByText( 'Thanks for sharing your thoughts!' );
@@ -168,7 +168,7 @@ describe( 'CurrentSurvey', () => {
 					'Content-Type': 'application/json',
 				},
 				method: 'POST',
-			}
+			},
 		);
 
 		await findByText( 'Another question: how do you feel when it rains?' );
@@ -195,7 +195,7 @@ describe( 'CurrentSurvey', () => {
 		await findByText( 'Another question: how do you feel when it rains?' );
 
 		expect(
-			getByText( 'Another question: how do you feel when it rains?' )
+			getByText( 'Another question: how do you feel when it rains?' ),
 		).toBeVisible();
 	} );
 
@@ -235,8 +235,8 @@ describe( 'CurrentSurvey', () => {
 				.select( CORE_FORMS )
 				.getValue(
 					`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
-					'answers'
-				)
+					'answers',
+				),
 		).toEqual(
 			[
 				{
@@ -245,7 +245,7 @@ describe( 'CurrentSurvey', () => {
 						answer: { answer_ordinal: 5 },
 					},
 				},
-			]
+			],
 		) );
 	} );
 
@@ -281,7 +281,7 @@ describe( 'CurrentSurvey', () => {
 					'Content-Type': 'application/json',
 				},
 				method: 'POST',
-			}
+			},
 		);
 	} );
 
@@ -319,7 +319,7 @@ describe( 'CurrentSurvey', () => {
 						},
 					},
 				],
-			}
+			},
 		);
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
@@ -348,7 +348,7 @@ describe( 'CurrentSurvey', () => {
 						},
 					},
 				],
-			}
+			},
 		);
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
@@ -377,7 +377,7 @@ describe( 'CurrentSurvey', () => {
 						},
 					},
 				],
-			}
+			},
 		);
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
@@ -403,7 +403,7 @@ describe( 'CurrentSurvey', () => {
 					'Content-Type': 'application/json',
 				},
 				method: 'POST',
-			}
+			},
 		);
 
 		fetchMock.reset();
@@ -430,7 +430,7 @@ describe( 'CurrentSurvey', () => {
 						},
 					},
 				],
-			}
+			},
 		);
 
 		fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
@@ -458,7 +458,7 @@ describe( 'CurrentSurvey', () => {
 					'Content-Type': 'application/json',
 				},
 				method: 'POST',
-			}
+			},
 		);
 
 		expect( fetchMock ).toHaveFetched(
@@ -478,7 +478,7 @@ describe( 'CurrentSurvey', () => {
 					'Content-Type': 'application/json',
 				},
 				method: 'POST',
-			}
+			},
 		);
 	} );
 } );

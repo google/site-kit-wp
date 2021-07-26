@@ -413,7 +413,7 @@ generateAnalyticsWidgetStories( {
 			limit: 10,
 			startDate: '2020-12-09',
 			endDate: '2021-01-05',
-		}
+		},
 	),
 	Component: ModuleAcquisitionChannelsWidget,
 	wrapWidget: false,

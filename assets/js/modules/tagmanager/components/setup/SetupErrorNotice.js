@@ -40,7 +40,7 @@ export default function SetupErrorNotice() {
 
 	if ( analyticsErrors.length ) {
 		return analyticsErrors.map(
-			( { message, reconnectURL } ) => <ErrorText key={ message } message={ message } reconnectURL={ reconnectURL } />
+			( { message, reconnectURL } ) => <ErrorText key={ message } message={ message } reconnectURL={ reconnectURL } />,
 		);
 	}
 

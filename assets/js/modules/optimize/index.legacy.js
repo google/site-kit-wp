@@ -39,6 +39,6 @@ if ( modulesData.optimize.active ) {
 			winData.learnMore.label = 'Optimize';
 			winData.learnMore.url = 'https://optimize.withgoogle.com/';
 			return winData;
-		}
+		},
 	);
 }

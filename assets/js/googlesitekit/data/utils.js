@@ -177,26 +177,26 @@ const passthroughReducer = ( state ) => state;
  */
 export const combineStores = ( ...stores ) => {
 	const combinedInitialState = collectState(
-		...stores.map( ( store ) => ( store.initialState || {} ) )
+		...stores.map( ( store ) => ( store.initialState || {} ) ),
 	);
 
 	return {
 		initialState: combinedInitialState,
 		controls: collectControls(
-			...stores.map( ( store ) => ( store.controls || {} ) )
+			...stores.map( ( store ) => ( store.controls || {} ) ),
 		),
 		actions: collectActions(
-			...stores.map( ( store ) => ( store.actions || {} ) )
+			...stores.map( ( store ) => ( store.actions || {} ) ),
 		),
 		reducer: collectReducers(
 			combinedInitialState,
-			...stores.map( ( store ) => ( store.reducer || passthroughReducer ) )
+			...stores.map( ( store ) => ( store.reducer || passthroughReducer ) ),
 		),
 		resolvers: collectResolvers(
-			...stores.map( ( store ) => ( store.resolvers || {} ) )
+			...stores.map( ( store ) => ( store.resolvers || {} ) ),
 		),
 		selectors: collectSelectors(
-			...stores.map( ( store ) => ( store.selectors || {} ) )
+			...stores.map( ( store ) => ( store.selectors || {} ) ),
 		),
 	};
 };
@@ -346,8 +346,8 @@ const getStrictSelectors = memize(
 			const returnValue = selector( ...args );
 			invariant( returnValue !== undefined, `${ selectorName }(...) is not resolved` );
 			return returnValue;
-		}
-	)
+		},
+	),
 );
 
 /**
@@ -392,7 +392,7 @@ export function createValidatedAction( validate, actionCreator ) {
 	invariant( typeof actionCreator === 'function', 'an action creator function is required.' );
 	invariant(
 		validate[ Symbol.toStringTag ] !== 'Generator' && validate[ Symbol.toStringTag ] !== 'GeneratorFunction',
-		'an action’s validator function must not be a generator.'
+		'an action’s validator function must not be a generator.',
 	);
 
 	return ( ...args ) => {

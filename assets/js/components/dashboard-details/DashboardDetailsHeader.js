@@ -77,12 +77,12 @@ export default function DashboardDetailsHeader() {
 									sprintf(
 										/* translators: %s: current entity URL */
 										__( 'It looks like the URL %s is not part of this site, therefore there is no data available to display.', 'google-site-kit' ),
-										`<strong>${ permaLink }</strong>`
+										`<strong>${ permaLink }</strong>`,
 									),
 									{
 										ALLOWED_TAGS: [ 'strong' ],
 										ALLOWED_ATTR: [],
-									}
+									},
 								) } />
 							) }
 						</Cell>

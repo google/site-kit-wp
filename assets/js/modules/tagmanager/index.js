@@ -43,6 +43,6 @@ export const registerModule = ( modules ) => {
 			features: [
 				__( 'Create tags without updating code', 'google-site-kit' ),
 			],
-		}
+		},
 	);
 };

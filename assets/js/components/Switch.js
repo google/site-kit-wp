@@ -66,7 +66,7 @@ const Switch = ( {
 					{
 						'mdc-switch--checked': checked,
 						'mdc-switch--disabled': disabled,
-					}
+					},
 				) }
 				onClick={ onClick }
 				onKeyDown={ onKeyDown }

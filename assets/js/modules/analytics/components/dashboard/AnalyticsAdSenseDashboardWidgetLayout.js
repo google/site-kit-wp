@@ -48,7 +48,7 @@ const AnalyticsAdSenseDashboardWidgetLayout = ( { children } ) => {
 			header
 			title={ sprintf(
 				/* translators: %s: number of days */
-				_n( 'Performance by page over the last %s day', 'Performance by page over the last %s days', currentDayCount, 'google-site-kit', ),
+				_n( 'Performance by page over the last %s day', 'Performance by page over the last %s days', currentDayCount, 'google-site-kit' ),
 				currentDayCount,
 			) }
 			headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }

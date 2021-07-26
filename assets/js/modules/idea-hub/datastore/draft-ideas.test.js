@@ -79,7 +79,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				};
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/create-idea-draft-post/,
-					{ body: errorResponse, status: 500 }
+					{ body: errorResponse, status: 500 },
 				);
 
 				const { response, error } = await registry.dispatch( STORE_NAME ).createIdeaDraftPost( fixtures.draftIdeas.idea );
@@ -101,7 +101,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual(
 					expect.arrayContaining( [
 						fixtures.draftIdeas.idea,
-					] )
+					] ),
 				);
 				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual( undefined );
 
@@ -110,7 +110,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).not.toEqual(
 					expect.arrayContaining( [
 						fixtures.draftIdeas.idea,
-					] )
+					] ),
 				);
 				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual( [] );
 			} );
@@ -126,7 +126,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual(
 					expect.arrayContaining( [
 						fixtures.draftIdeas.idea,
-					] )
+					] ),
 				);
 
 				registry.dispatch( STORE_NAME ).removeIdeaFromNewAndSavedIdeas( fixtures.draftIdeas.idea.name );
@@ -134,7 +134,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).not.toEqual(
 					expect.arrayContaining( [
 						fixtures.draftIdeas.idea,
-					] )
+					] ),
 				);
 				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual( [] );
 			} );

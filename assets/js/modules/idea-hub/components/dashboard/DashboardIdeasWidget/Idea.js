@@ -194,7 +194,7 @@ Idea.propTypes = {
 		PropTypes.shape( {
 			displayName: PropTypes.string,
 			mid: PropTypes.string,
-		} )
+		} ),
 	).isRequired,
 	buttons: PropTypes.arrayOf( PropTypes.string ).isRequired,
 };

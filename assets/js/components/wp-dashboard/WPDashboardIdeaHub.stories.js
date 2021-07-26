@@ -33,7 +33,7 @@ const mockEndpoints = () => {
 	fetchMock.reset();
 	fetchMock.get(
 		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-		{ body: savedIdeas }
+		{ body: savedIdeas },
 	);
 };
 

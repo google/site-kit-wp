@@ -193,7 +193,7 @@ export const selectors = {
 			Object.values( areas ).filter( ( area ) => {
 				return contextAssignments[ contextSlug ] && contextAssignments[ contextSlug ].includes( area.slug );
 			} ),
-			'priority'
+			'priority',
 		);
 	},
 

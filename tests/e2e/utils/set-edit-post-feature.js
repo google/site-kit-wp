@@ -21,6 +21,6 @@ export async function setEditPostFeature( feature, setActivation ) {
 			}
 		},
 		feature,
-		setActivation
+		setActivation,
 	);
 }

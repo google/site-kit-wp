@@ -118,7 +118,7 @@ const baseActions = {
 				response: {},
 				error: false,
 			};
-		}
+		},
 	),
 
 	/**
@@ -143,7 +143,7 @@ const baseActions = {
 				const { response, error } = yield fetchSendSurveyEventStore.actions.fetchSendSurveyEvent( event, session );
 				return { response, error };
 			}
-		}
+		},
 	),
 };
 
@@ -207,7 +207,7 @@ const store = Data.combineStores(
 		initialState: baseInitialState,
 		actions: baseActions,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

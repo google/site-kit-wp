@@ -124,14 +124,14 @@ describe( 'createSettingsStore store', () => {
 			it( 'does not require any params', () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
-					{ body: {}, status: 200 }
+					{ body: {}, status: 200 },
 				);
 				const values = { setting1: 'serverside' };
 				dispatch.setSettings( values, {} );
 				expect( async () => {
 					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
-						{ body: values, status: 200 }
+						{ body: values, status: 200 },
 					);
 					await dispatch.saveSettings();
 				} ).not.toThrow();
@@ -141,7 +141,7 @@ describe( 'createSettingsStore store', () => {
 				const response = { isSkyBlue: 'yes' };
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
-					{ body: response, status: 200 }
+					{ body: response, status: 200 },
 				);
 
 				// Set initial settings so that they are considered loaded.
@@ -160,7 +160,7 @@ describe( 'createSettingsStore store', () => {
 					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
 					{
 						body: { data: { isSkyBlue: 'no' } },
-					}
+					},
 				);
 
 				expect( store.getState().settings ).toMatchObject( response );
@@ -177,7 +177,7 @@ describe( 'createSettingsStore store', () => {
 			it( 'sets isDoingSaveSettings', () => {
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
-					{ body: { setting1: true }, status: 200 }
+					{ body: { setting1: true }, status: 200 },
 				);
 
 				dispatch.fetchSaveSettings( {} );
@@ -209,7 +209,7 @@ describe( 'createSettingsStore store', () => {
 			it( 'has the correct action name', () => {
 				expect( Object.keys( storeDefinition.actions ) ).toEqual(
 					// "isSkyBlue" should turn into "setIsSkyBlue".
-					expect.arrayContaining( [ 'setIsSkyBlue' ] )
+					expect.arrayContaining( [ 'setIsSkyBlue' ] ),
 				);
 			} );
 
@@ -262,7 +262,7 @@ describe( 'createSettingsStore store', () => {
 				const response = { setting1: 'value' };
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
-					{ body: response, status: 200 }
+					{ body: response, status: 200 },
 				);
 
 				const initialSettings = select.getSettings();
@@ -313,7 +313,7 @@ describe( 'createSettingsStore store', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				select.getSettings();
@@ -341,7 +341,7 @@ describe( 'createSettingsStore store', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
-					{ body: serverValues, status: 200 }
+					{ body: serverValues, status: 200 },
 				);
 
 				select.getSettings();
@@ -369,7 +369,7 @@ describe( 'createSettingsStore store', () => {
 			it( 'has the correct selector name', () => {
 				expect( Object.keys( storeDefinition.selectors ) ).toEqual(
 					// "isSkyBlue" should turn into "getIsSkyBlue".
-					expect.arrayContaining( [ 'getIsSkyBlue' ] )
+					expect.arrayContaining( [ 'getIsSkyBlue' ] ),
 				);
 			} );
 
@@ -383,7 +383,7 @@ describe( 'createSettingsStore store', () => {
 							isSkyBlue: value,
 						},
 						status: 200,
-					}
+					},
 				);
 
 				// Setting will have its initial value while being fetched.
@@ -425,7 +425,7 @@ describe( 'createSettingsStore store', () => {
 
 				fetchMock.getOnce(
 					`path:/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
-					{ body: response, status: 200 }
+					{ body: response, status: 200 },
 				).catch(
 					{
 						body: {
@@ -434,7 +434,7 @@ describe( 'createSettingsStore store', () => {
 							data: { status: 400 },
 						},
 						init: { status: 400 },
-					}
+					},
 				);
 
 				const result = await storeDefinition.controls.FETCH_GET_SETTINGS( {
@@ -455,7 +455,7 @@ describe( 'createSettingsStore store', () => {
 
 				fetchMock.postOnce(
 					`path:/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
-					{ body: response, status: 200 }
+					{ body: response, status: 200 },
 				).catch(
 					{
 						body: {
@@ -464,7 +464,7 @@ describe( 'createSettingsStore store', () => {
 							data: { status: 400 },
 						},
 						init: { status: 400 },
-					}
+					},
 				);
 
 				const result = await storeDefinition.controls.FETCH_SAVE_SETTINGS( {
