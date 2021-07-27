@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 import accounts from './accounts';
 import api from './api';
 import baseModuleStore from './base';
@@ -33,7 +33,7 @@ const store = Data.combineStores(
 	accounts,
 	api,
 	baseModuleStore,
-	createSnapshotStore( STORE_NAME ),
+	createSnapshotStore( MODULES_ANALYTICS_4 ),
 	properties,
 	tags,
 	webdatastreams,
@@ -47,7 +47,7 @@ export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
 export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, store );
+	registry.registerStore( MODULES_ANALYTICS_4, store );
 };
 
 export default store;
