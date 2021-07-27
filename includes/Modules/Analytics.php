@@ -1000,6 +1000,7 @@ final class Analytics extends Module
 			'description' => __( 'Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.', 'google-site-kit' ),
 			'order'       => 3,
 			'homepage'    => __( 'https://analytics.google.com/analytics/web', 'google-site-kit' ),
+			'shareable'   => true,
 		);
 	}
 

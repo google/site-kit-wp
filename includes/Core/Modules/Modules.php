@@ -882,6 +882,7 @@ final class Modules {
 			'dependencies' => $this->get_module_dependencies( $module->slug ),
 			'dependants'   => $this->get_module_dependants( $module->slug ),
 			'owner'        => null,
+			'shareable'    => $module->shareable,
 		);
 
 		if ( current_user_can( 'list_users' ) && $module instanceof Module_With_Owner ) {
@@ -936,6 +937,16 @@ final class Modules {
 					'description' => __( 'Whether the module is internal, thus without any UI.', 'google-site-kit' ),
 					'readonly'    => true,
 				),
+				'order'        => array(
+					'type'        => 'integer',
+					'description' => __( 'Internal order of the module within module listings.', 'google-site-kit' ),
+					'readonly'    => true,
+				),
+				'forceActive'  => array(
+					'type'        => 'boolean',
+					'description' => __( 'Whether the module is always active.', 'google-site-kit' ),
+					'readonly'    => true,
+				),
 				'active'       => array(
 					'type'        => 'boolean',
 					'description' => __( 'Whether the module is active.', 'google-site-kit' ),
@@ -975,6 +986,11 @@ final class Modules {
 							'readonly'    => true,
 						),
 					),
+				),
+				'shareable'    => array(
+					'type'        => 'boolean',
+					'description' => __( 'Whether reporting data from the module can be shared.', 'google-site-kit' ),
+					'readonly'    => true,
 				),
 			),
 		);

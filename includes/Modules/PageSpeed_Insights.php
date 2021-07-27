@@ -167,6 +167,7 @@ final class PageSpeed_Insights extends Module
 			'description' => __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA', 'google-site-kit' ),
 			'order'       => 4,
 			'homepage'    => __( 'https://developers.google.com/speed/pagespeed/insights/', 'google-site-kit' ),
+			'shareable'   => true,
 		);
 	}
 

@@ -825,6 +825,7 @@ abstract class Module {
 				'depends_on'   => array(),
 				'force_active' => false,
 				'internal'     => false,
+				'shareable'    => false,
 			)
 		);
 

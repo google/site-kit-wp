@@ -480,6 +480,7 @@ final class Search_Console extends Module
 			'order'        => 1,
 			'homepage'     => __( 'https://search.google.com/search-console', 'google-site-kit' ),
 			'force_active' => true,
+			'shareable'    => true,
 		);
 	}
 
