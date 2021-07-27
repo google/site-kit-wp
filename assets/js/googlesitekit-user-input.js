@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import './modules';
-
-/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
@@ -43,7 +38,7 @@ domReady( () => {
 			<Root dataAPIContext="UserInput">
 				<UserInputApp />
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 	}
 } );

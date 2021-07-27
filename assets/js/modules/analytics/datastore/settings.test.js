@@ -29,6 +29,7 @@ import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures_
 import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,
+	provideModules,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
@@ -80,7 +81,14 @@ describe( 'modules/analytics settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive() );
+
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+		] );
 	} );
 
 	afterAll( () => {
@@ -113,7 +121,7 @@ describe( 'modules/analytics settings', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
-					{ body: createdProperty, status: 200 }
+					{ body: createdProperty, status: 200 },
 				);
 				fetchMock.postOnce(
 					gaSettingsEndpoint,
@@ -121,7 +129,7 @@ describe( 'modules/analytics settings', () => {
 						const { data } = JSON.parse( opts.body );
 						// Return the same settings passed to the API.
 						return { body: data, status: 200 };
-					}
+					},
 				);
 
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
@@ -145,7 +153,7 @@ describe( 'modules/analytics settings', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
-					{ body: error, status: 500 }
+					{ body: error, status: 500 },
 				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
@@ -177,7 +185,7 @@ describe( 'modules/analytics settings', () => {
 				};
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
-					{ body: createdProfile, status: 200 }
+					{ body: createdProfile, status: 200 },
 				);
 				fetchMock.postOnce(
 					gaSettingsEndpoint,
@@ -185,7 +193,7 @@ describe( 'modules/analytics settings', () => {
 						const { data } = JSON.parse( opts.body );
 						// Return the same settings passed to the API.
 						return { body: data, status: 200 };
-					}
+					},
 				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
@@ -222,7 +230,7 @@ describe( 'modules/analytics settings', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
-					{ body: error, status: 500 }
+					{ body: error, status: 500 },
 				);
 
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
@@ -267,11 +275,11 @@ describe( 'modules/analytics settings', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
-					{ body: createdProperty, status: 200 }
+					{ body: createdProperty, status: 200 },
 				);
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
-					{ body: createdProfile, status: 200 }
+					{ body: createdProfile, status: 200 },
 				);
 				fetchMock.postOnce(
 					gaSettingsEndpoint,
@@ -279,7 +287,7 @@ describe( 'modules/analytics settings', () => {
 						const { data } = JSON.parse( opts.body );
 						// Return the same settings passed to the API.
 						return { body: data, status: 200 };
-					}
+					},
 				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
@@ -293,7 +301,7 @@ describe( 'modules/analytics settings', () => {
 
 				fetchMock.postOnce(
 					gaSettingsEndpoint,
-					{ body: validSettings, status: 200 }
+					{ body: validSettings, status: 200 },
 				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
@@ -310,7 +318,7 @@ describe( 'modules/analytics settings', () => {
 
 				fetchMock.postOnce(
 					gaSettingsEndpoint,
-					{ body: error, status: 500 }
+					{ body: error, status: 500 },
 				);
 
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
@@ -328,7 +336,7 @@ describe( 'modules/analytics settings', () => {
 
 				fetchMock.postOnce(
 					gaSettingsEndpoint,
-					{ body: validSettings, status: 200 }
+					{ body: validSettings, status: 200 },
 				);
 
 				const cacheKey = createCacheKey( 'modules', 'analytics', 'arbitrary-datapoint' );
@@ -344,6 +352,19 @@ describe( 'modules/analytics settings', () => {
 				beforeEach( () => {
 					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 					registry.dispatch( STORE_NAME ).setSettings( validSettings );
+
+					provideModules( registry, [
+						{
+							slug: 'analytics',
+							active: true,
+							connected: true,
+						},
+						{
+							slug: 'analytics-4',
+							active: true,
+							connected: true,
+						},
+					] );
 
 					enabledFeatures.add( 'ga4setup' );
 				} );
@@ -416,7 +437,7 @@ describe( 'modules/analytics settings', () => {
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
 
 				await subscribeUntil( registry,
-					() => registry.stores[ STORE_NAME ].store.getState().isDoingSubmitChanges === false
+					() => registry.stores[ STORE_NAME ].store.getState().isDoingSubmitChanges === false,
 				);
 
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
@@ -597,6 +618,19 @@ describe( 'modules/analytics settings', () => {
 				beforeEach( () => {
 					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 					registry.dispatch( STORE_NAME ).setSettings( validSettings );
+
+					provideModules( registry, [
+						{
+							slug: 'analytics',
+							active: true,
+							connected: true,
+						},
+						{
+							slug: 'analytics-4',
+							active: true,
+							connected: true,
+						},
+					] );
 
 					enabledFeatures.add( 'ga4setup' );
 				} );

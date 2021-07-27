@@ -83,7 +83,7 @@ export default function FieldReportMetrics( { data, error } ) {
 			<table
 				className={ classnames(
 					'googlesitekit-table',
-					'googlesitekit-table--with-list'
+					'googlesitekit-table--with-list',
 				) }
 			>
 				<thead>

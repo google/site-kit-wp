@@ -35,14 +35,11 @@ import { __ } from '@wordpress/i18n';
 import Header from '../Header';
 import PageHeader from '../PageHeader';
 import Layout from '../layout/Layout';
-import HelpLink from '../HelpLink';
 import SettingsModules from './SettingsModules';
 import { Cell, Grid, Row } from '../../material-components';
 import HelpMenu from '../help/HelpMenu';
-import { useFeature } from '../../hooks/useFeature';
 
 function SettingsApp() {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const location = useLocation();
 	// Prevent pushing to hash history if it would send you to the same URL.
 	// (Without this React Router will trigger a warning.)
@@ -53,7 +50,7 @@ function SettingsApp() {
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && <HelpMenu /> }
+				<HelpMenu />
 			</Header>
 
 			<div className="googlesitekit-module-page">
@@ -80,11 +77,6 @@ function SettingsApp() {
 						<Cell size={ 12 }>
 							<SettingsModules />
 						</Cell>
-						{ ! helpVisibilityEnabled && (
-							<Cell size={ 12 } alignRight>
-								<HelpLink />
-							</Cell>
-						) }
 					</Row>
 				</Grid>
 			</div>

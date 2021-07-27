@@ -27,7 +27,8 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySelection } from '../util';
+import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySelection, matchPropertyByURL } from '../util';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
@@ -123,7 +124,7 @@ const baseActions = {
 		function* ( accountID ) {
 			const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
 			return { response, error };
-		}
+		},
 	),
 
 	/**
@@ -184,7 +185,7 @@ const baseActions = {
 
 			const existingProfileID = registry.select( STORE_NAME ).getProfileID(); // eslint-disable-line @wordpress/no-unused-vars-before-return
 			const profiles = yield Data.commonActions.await(
-				registry.__experimentalResolveSelect( STORE_NAME ).getProfiles( accountID, propertyID )
+				registry.__experimentalResolveSelect( STORE_NAME ).getProfiles( accountID, propertyID ),
 			);
 
 			if ( ! Array.isArray( profiles ) ) {
@@ -204,8 +205,26 @@ const baseActions = {
 
 			// Otherwise just select the first profile, or the option to create if none.
 			registry.dispatch( STORE_NAME ).setProfileID( profiles[ 0 ]?.id || PROFILE_CREATE );
-		}
+		},
 	),
+
+	/**
+	 * Finds matching property for provided account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} accountID Account ID.
+	 * @return {Object|null} Matched property object on success, otherwise NULL.
+	 */
+	*findMatchedProperty( accountID ) {
+		yield baseActions.waitForProperties( accountID );
+
+		const registry = yield Data.commonActions.getRegistry();
+		const urls = registry.select( CORE_SITE ).getSiteURLPermutations();
+		const uaProperties = registry.select( STORE_NAME ).getProperties( accountID );
+
+		return matchPropertyByURL( uaProperties, urls );
+	},
 
 	receiveGetProperties( properties, { accountID } ) {
 		invariant( Array.isArray( properties ), 'properties must be an array.' );
@@ -523,7 +542,7 @@ const store = Data.combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

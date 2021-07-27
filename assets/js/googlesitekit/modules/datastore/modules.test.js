@@ -64,7 +64,7 @@ describe( 'core/modules modules', () => {
 				}, [] );
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
+					{ body: FIXTURES, status: 200 },
 				);
 
 				// Call a selector that triggers an HTTP request to get the modules.
@@ -78,15 +78,15 @@ describe( 'core/modules modules', () => {
 				// Activate the module.
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
-					{ body: { success: true }, status: 200 }
+					{ body: { success: true }, status: 200 },
 				);
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: responseWithOptimizeEnabled, status: 200 }
+					{ body: responseWithOptimizeEnabled, status: 200 },
 				);
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
-					{ body: {}, status: 200 }
+					{ body: {}, status: 200 },
 				);
 
 				await registry.dispatch( STORE_NAME ).activateModule( slug );
@@ -101,7 +101,7 @@ describe( 'core/modules modules', () => {
 								active: true,
 							},
 						},
-					}
+					},
 				);
 
 				// Optimize should be active.
@@ -129,7 +129,7 @@ describe( 'core/modules modules', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				await registry.dispatch( STORE_NAME ).activateModule( slug );
@@ -144,7 +144,7 @@ describe( 'core/modules modules', () => {
 								active: true,
 							},
 						},
-					}
+					},
 				);
 
 				// Optimize should be active.
@@ -169,17 +169,17 @@ describe( 'core/modules modules', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
-					{ body: { success: true }, status: 200 }
+					{ body: { success: true }, status: 200 },
 				);
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: withActive(), status: 200 }
+					{ body: withActive(), status: 200 },
 				);
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
-					{ body: {}, status: 200 }
+					{ body: {}, status: 200 },
 				);
 
 				await registry.dispatch( STORE_NAME ).deactivateModule( slug );
@@ -194,7 +194,7 @@ describe( 'core/modules modules', () => {
 								active: false,
 							},
 						},
-					}
+					},
 				);
 
 				// Analytics should no longer be active.
@@ -220,7 +220,7 @@ describe( 'core/modules modules', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				await registry.dispatch( STORE_NAME ).deactivateModule( slug );
@@ -235,7 +235,7 @@ describe( 'core/modules modules', () => {
 								active: false,
 							},
 						},
-					}
+					},
 				);
 
 				// Analytics should still be active.
@@ -405,7 +405,7 @@ describe( 'core/modules modules', () => {
 
 			fetchMock.getOnce(
 				/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-				{ body: moduleFixtures, status: 200 }
+				{ body: moduleFixtures, status: 200 },
 			);
 			const slug1 = 'slug1';
 			const slug2 = 'slug2';
@@ -426,7 +426,7 @@ describe( 'core/modules modules', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
+					{ body: FIXTURES, status: 200 },
 				);
 
 				const initialModules = registry.select( STORE_NAME ).getModules();
@@ -460,7 +460,7 @@ describe( 'core/modules modules', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				registry.select( STORE_NAME ).getModules();
@@ -484,7 +484,7 @@ describe( 'core/modules modules', () => {
 				const modules = registry.select( STORE_NAME ).getModules();
 
 				expect( Object.keys( modules ) ).toEqual(
-					expect.arrayContaining( [ 'server-module', 'client-module' ] )
+					expect.arrayContaining( [ 'server-module', 'client-module' ] ),
 				);
 			} );
 
@@ -536,7 +536,7 @@ describe( 'core/modules modules', () => {
 			it( 'uses a resolver get all modules when one is requested', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
+					{ body: FIXTURES, status: 200 },
 				);
 				const slug = 'analytics';
 				const module = registry.select( STORE_NAME ).getModule( slug );
@@ -563,7 +563,7 @@ describe( 'core/modules modules', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				registry.select( STORE_NAME ).getModule( slug );
@@ -589,7 +589,7 @@ describe( 'core/modules modules', () => {
 			it( 'returns null if the module does not exist', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
+					{ body: FIXTURES, status: 200 },
 				);
 
 				const slug = 'analytics';
@@ -657,7 +657,7 @@ describe( 'core/modules modules', () => {
 			it( 'returns undefined when no modules are loaded', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
+					{ body: FIXTURES, status: 200 },
 				);
 				const slug = 'optimize';
 				const namesLoaded = registry.select( STORE_NAME )[ selector ]( slug );
@@ -669,7 +669,7 @@ describe( 'core/modules modules', () => {
 			it( `returns ${ collectionName } module names when modules are loaded`, async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
+					{ body: FIXTURES, status: 200 },
 				);
 				const slug = 'optimize';
 				registry.select( STORE_NAME )[ selector ]( slug );
@@ -686,7 +686,7 @@ describe( 'core/modules modules', () => {
 			it( `returns an empty array when requesting ${ collectionName } for a non-existent module`, async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
+					{ body: FIXTURES, status: 200 },
 				);
 				const slug = 'non-existent-slug';
 				registry.select( STORE_NAME )[ selector ]( slug );
@@ -705,7 +705,7 @@ describe( 'core/modules modules', () => {
 			beforeEach( () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
+					{ body: FIXTURES, status: 200 },
 				);
 			} );
 

@@ -36,7 +36,12 @@ import * as dashboardRequests from './fixtures/dashboard';
 import * as dashboardDetailsRequests from './fixtures/dashboard-details';
 import * as modulePageRequests from './fixtures/module-page';
 
-let mockBatchResponse;
+// TODO The module pages use the Widget API. They no longer call
+// /data and receive batched responses. To make the distinction clear, these tests
+// make use of this variable instead of `mockBatchResponse`. As part of
+// https://github.com/google/site-kit-wp/issues/2586, this can be refactored to use
+// the new getSearchConsoleMockResponse utility.
+let mockResponse;
 
 async function getTotalImpressions() {
 	const datapointSelector = '.overview-total-impressions .googlesitekit-data-block__datapoint, .googlesitekit-data-block--impressions .googlesitekit-data-block__datapoint';
@@ -52,19 +57,19 @@ describe( 'date range filtering on dashboard views', () => {
 
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
+			const url = request.url();
+			// Widget API requests. As mentioned above, these can be
+			// refactored to use the mock response utility as part of
+			// https://github.com/google/site-kit-wp/issues/2586.
+			if ( url.match( 'google-site-kit/v1/modules/search-console' ) ) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( mockBatchResponse ),
+					body: JSON.stringify( mockResponse ),
 				} );
 			} else {
 				request.continue();
 			}
 		} );
-	} );
-
-	afterEach( async () => {
-		mockBatchResponse = [];
 	} );
 
 	afterAll( async () => {
@@ -74,14 +79,14 @@ describe( 'date range filtering on dashboard views', () => {
 	it( 'loads new data when the date range is changed on the Site Kit dashboard', async () => {
 		const { last28Days, last14Days, last7DaysNoData } = dashboardRequests;
 
-		mockBatchResponse = last28Days;
+		mockResponse = last28Days;
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
 		const TOTAL_IMPRESSIONS_28_DAYS = await getTotalImpressions();
 
-		mockBatchResponse = last14Days;
+		mockResponse = last14Days;
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ),
 			switchDateRange( 'last 28 days', 'last 14 days' ),
 		] );
 
@@ -94,9 +99,9 @@ describe( 'date range filtering on dashboard views', () => {
 		await pageWait();
 		expect( await getTotalImpressions() ).toBe( TOTAL_IMPRESSIONS_28_DAYS );
 
-		mockBatchResponse = last7DaysNoData;
+		mockResponse = last7DaysNoData;
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ),
 			switchDateRange( 'last 28 days', 'last 7 days' ),
 		] );
 
@@ -114,19 +119,19 @@ describe( 'date range filtering on dashboard views', () => {
 		await page.waitForResponse( ( res ) => res.url().match( 'core/search/data/post-search' ) );
 		await expect( postSearcher ).toClick( '.autocomplete__option', { text: /hello world/i } );
 
-		mockBatchResponse = last28Days;
+		mockResponse = last28Days;
 
 		await Promise.all( [
 			page.waitForNavigation(),
 			expect( postSearcher ).toClick( 'button', { text: /view data/i } ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ),
 		] );
 
 		const TOTAL_IMPRESSIONS_28_DAYS = await getTotalImpressions();
 
-		mockBatchResponse = last14Days;
+		mockResponse = last14Days;
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ),
 			switchDateRange( 'last 28 days', 'last 14 days' ),
 		] );
 
@@ -143,15 +148,15 @@ describe( 'date range filtering on dashboard views', () => {
 	it( 'loads new data when the date range is changed on the module dashboard page', async () => {
 		const { last28Days, last14Days } = modulePageRequests;
 
-		mockBatchResponse = last28Days;
+		mockResponse = last28Days;
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-module-search-console' );
 
 		const TOTAL_IMPRESSIONS_28_DAYS = await getTotalImpressions();
 
-		mockBatchResponse = last14Days;
+		mockResponse = last14Days;
 
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console' ) ),
 			switchDateRange( 'last 28 days', 'last 14 days' ),
 		] );
 

@@ -39,7 +39,7 @@ const CTA = ( {
 	<div
 		className={ classnames(
 			'googlesitekit-cta',
-			{ 'googlesitekit-cta--error': error }
+			{ 'googlesitekit-cta--error': error },
 		) }
 	>
 		{ title &&

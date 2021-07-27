@@ -27,7 +27,7 @@ import {
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
 } from './constants';
-import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
+import { createTestRegistry, unsubscribeFromAll, provideModules } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { enabledFeatures } from '../../../features';
 
@@ -49,7 +49,7 @@ const populateAnalyticsDatastore = ( registry ) => {
 				name: 'troubled-tipped.example.com',
 			},
 		],
-		{ accountID }
+		{ accountID },
 	);
 };
 
@@ -87,7 +87,7 @@ const populateAnalytics4Datastore = ( registry ) => {
 				displayName: 'Test GA4 WebDataStream',
 			},
 		],
-		{ propertyID: '12345' }
+		{ propertyID: '12345' },
 	);
 };
 
@@ -124,7 +124,7 @@ describe( 'modules/analytics setup-flow', () => {
 
 			it( 'should return "legacy" if isAdminAPIWorking() returns false', () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
-					new Error( 'foo' ), 'getProperties', [ 'foo', 'bar' ]
+					new Error( 'foo' ), 'getProperties', [ 'foo', 'bar' ],
 				);
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( false );
@@ -146,7 +146,7 @@ describe( 'modules/analytics setup-flow', () => {
 							useSnippet: true,
 						},
 						status: 200,
-					}
+					},
 				);
 
 				registry = createTestRegistry();
@@ -221,7 +221,7 @@ describe( 'modules/analytics setup-flow', () => {
 							displayName: 'Test GA4 WebDataStream',
 						},
 					],
-					{ propertyID: '12345' }
+					{ propertyID: '12345' },
 				);
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
@@ -257,6 +257,42 @@ describe( 'modules/analytics setup-flow', () => {
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
 				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_GA4_TRANSITIONAL );
+			} );
+		} );
+
+		describe( 'canUseGA4Controls', () => {
+			it( 'should return TRUE if both modules are connected', () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics',
+						active: true,
+						connected: true,
+					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				expect( registry.select( MODULES_ANALYTICS ).canUseGA4Controls() ).toBe( true );
+			} );
+
+			it( 'should return FALSE when one of the modules is not connected', () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics',
+						active: true,
+						connected: true,
+					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: false,
+					},
+				] );
+
+				expect( registry.select( MODULES_ANALYTICS ).canUseGA4Controls() ).toBe( false );
 			} );
 		} );
 	} );

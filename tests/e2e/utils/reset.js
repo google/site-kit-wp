@@ -60,7 +60,7 @@ export async function resetSiteKit( { persistent = false } = {} ) {
 				path: 'google-site-kit/v1/core/site/data/reset-persistent',
 				method: 'post',
 			} ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/core/site/data/reset-persistent' ) )
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/core/site/data/reset-persistent' ) ),
 		);
 	}
 

@@ -39,7 +39,7 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',
 	controlCallback( { propertyID } ) {
 		return API.get( 'modules', 'analytics-4', 'webdatastreams', { propertyID }, {
-			useCache: true,
+			useCache: false,
 		} );
 	},
 	reducerCallback( state, webDataStreams, { propertyID } ) {
@@ -63,7 +63,7 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 	baseName: 'getWebDataStreamsBatch',
 	controlCallback( { propertyIDs } ) {
 		return API.get( 'modules', 'analytics-4', 'webdatastreams-batch', { propertyIDs }, {
-			useCache: true,
+			useCache: false,
 		} );
 	},
 	reducerCallback( state, webDataStreams ) {
@@ -134,8 +134,23 @@ const baseActions = {
 		function* ( propertyID ) {
 			const { response, error } = yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream( propertyID );
 			return { response, error };
-		}
+		},
 	),
+
+	/**
+	 * Matches web data stream for provided property.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} propertyID GA4 property ID.
+	 * @return {Object|null} Matched web data stream object on success, otherwise NULL.
+	 */
+	*matchWebDataStream( propertyID ) {
+		yield baseActions.waitForWebDataStreams( propertyID );
+
+		const registry = yield Data.commonActions.getRegistry();
+		return registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
+	},
 
 	/**
 	 * Waits for web data streams to be loaded for a property.
@@ -256,7 +271,7 @@ const store = Data.combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

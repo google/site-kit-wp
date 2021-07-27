@@ -1,5 +1,5 @@
 /**
- * DashboardAllTrafficWidget component.
+ * DashboardGoalsWidget component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -58,7 +58,6 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 		} = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
-			weekdayAlign: true,
 		} );
 
 		const args = {

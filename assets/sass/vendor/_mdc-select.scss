@@ -9,6 +9,8 @@
 	@include mdc-select-focused-outline-color($c-input);
 	@include mdc-select-focused-bottom-line-color($c-border-brand);
 
+	max-width: 100%;
+
 	&--minimal {
 		background-color: transparent;
 		background-position: right center;
@@ -22,6 +24,12 @@
 		&::before {
 			background-color: transparent;
 		}
+	}
+
+	.mdc-select__selected-text {
+		display: block;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	// Overriding WordPress load-styles.php

@@ -52,7 +52,7 @@ describe( 'dataAPI', () => {
 		it( 'should call trackEvent when an error is returned on get', async () => {
 			fetchMock.getOnce(
 				/^\/google-site-kit\/v1\/test-type\/test-identifier\/data\/test-datapoint/,
-				{ body: errorResponse, status: 500 }
+				{ body: errorResponse, status: 500 },
 			);
 
 			try {
@@ -76,7 +76,7 @@ describe( 'dataAPI', () => {
 		it( 'should call trackEvent when an error is returned on set', async () => {
 			fetchMock.postOnce(
 				/^\/google-site-kit\/v1\/test-type\/test-identifier\/data\/test-datapoint/,
-				{ body: errorResponse, status: 500 }
+				{ body: errorResponse, status: 500 },
 			);
 
 			try {
@@ -121,7 +121,7 @@ describe( 'dataAPI', () => {
 		it( 'should not call trackEvent for no errors in combinedGet', async () => {
 			fetchMock.postOnce(
 				/^\/google-site-kit\/v1\/data/,
-				{ body: {}, status: 200 }
+				{ body: {}, status: 200 },
 			);
 
 			await combinedGet( combinedRequest );
@@ -149,7 +149,7 @@ describe( 'dataAPI', () => {
 
 			fetchMock.post(
 				/^\/google-site-kit\/v1\/data/,
-				response
+				response,
 			);
 
 			await combinedGet( combinedRequest );
@@ -192,7 +192,7 @@ describe( 'dataAPI', () => {
 
 			fetchMock.post(
 				/^\/google-site-kit\/v1\/data/,
-				response
+				response,
 			);
 			await combinedGet( combinedRequest );
 			expect( console ).toHaveWarned();

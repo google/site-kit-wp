@@ -56,7 +56,7 @@ export default function DetailsPermaLinks( { title, path, serviceURL } ) {
 			<Link
 				className={ classnames(
 					'googlesitekit-display-block',
-					'googlesitekit-overflow-wrap-break-word'
+					'googlesitekit-overflow-wrap-break-word',
 				) }
 				href={ permaLink }
 				target="_blank" // No external styling.

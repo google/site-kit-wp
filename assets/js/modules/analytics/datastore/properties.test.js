@@ -27,13 +27,17 @@ import {
 	freezeFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+	provideSiteInfo,
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics properties', () => {
 	let registry;
+
+	const propertiesProfilesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/;
+	const ga4PropertiesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -59,7 +63,7 @@ describe( 'modules/analytics properties', () => {
 				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/acronym-case
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
-					{ body: fixtures.createProperty, status: 200 }
+					{ body: fixtures.createProperty, status: 200 },
 				);
 
 				await registry.dispatch( STORE_NAME ).createProperty( accountID );
@@ -68,7 +72,7 @@ describe( 'modules/analytics properties', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{
 						body: { data: { accountID } },
-					}
+					},
 				);
 
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
@@ -79,7 +83,7 @@ describe( 'modules/analytics properties', () => {
 				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/acronym-case
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
-					{ body: fixtures.createProperty, status: 200 }
+					{ body: fixtures.createProperty, status: 200 },
 				);
 
 				registry.dispatch( STORE_NAME ).createProperty( accountID );
@@ -95,7 +99,7 @@ describe( 'modules/analytics properties', () => {
 				};
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				await registry.dispatch( STORE_NAME ).createProperty( accountID );
@@ -105,7 +109,7 @@ describe( 'modules/analytics properties', () => {
 				// The response isn't important for the test here and we intentionally don't wait for it,
 				// but the fixture is used to prevent an invariant error as the received properties
 				// taken from `response.properties` are required to be an array.
-				muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, fixtures.propertiesProfiles );
+				muteFetch( propertiesProfilesEndpoint, fixtures.propertiesProfiles );
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
 				// No properties should have been added yet, as the property creation failed.
 				expect( properties ).toEqual( undefined );
@@ -218,15 +222,58 @@ describe( 'modules/analytics properties', () => {
 				expect( registry.stores[ STORE_NAME ].store.getState().primaryPropertyType ).toBe( type );
 			} );
 		} );
+
+		describe( 'findMatchedProperty', () => {
+			const accountID = '123';
+
+			beforeEach( () => {
+				provideSiteInfo( registry );
+			} );
+
+			it( 'should return the correct property matching the current reference site URL', async () => {
+				registry.dispatch( STORE_NAME ).receiveGetProperties(
+					[
+						{
+							id: 'UA-151753095-1',
+							websiteUrl: 'http://example.net', // eslint-disable-line sitekit/acronym-case
+						},
+						{
+							id: 'UA-151753095-2',
+							websiteUrl: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+						},
+					],
+					{
+						accountID,
+					},
+				);
+
+				const property = await registry.dispatch( STORE_NAME ).findMatchedProperty( accountID );
+				expect( property ).toMatchObject( { id: 'UA-151753095-2' } );
+			} );
+
+			it( 'should return NULL if there is no matching property', async () => {
+				registry.dispatch( STORE_NAME ).receiveGetProperties(
+					[
+						{
+							id: 'UA-151753095-1',
+							websiteUrl: 'http://example.net', // eslint-disable-line sitekit/acronym-case
+						},
+					],
+					{
+						accountID,
+					},
+				);
+
+				const property = await registry.dispatch( STORE_NAME ).findMatchedProperty( accountID );
+				expect( property ).toBeNull();
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
 		describe( 'getProperties', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-					{ body: fixtures.propertiesProfiles, status: 200 }
-				);
+				fetchMock.get( propertiesProfilesEndpoint, { body: fixtures.propertiesProfiles } );
 
 				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const propertyID = fixtures.propertiesProfiles.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/acronym-case
@@ -234,12 +281,7 @@ describe( 'modules/analytics properties', () => {
 				const initialProperties = registry.select( STORE_NAME ).getProperties( accountID );
 
 				// Ensure the proper parameters were passed.
-				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-					{
-						query: { accountID },
-					}
-				);
+				expect( fetchMock ).toHaveFetched( propertiesProfilesEndpoint, { query: { accountID } } );
 
 				expect( initialProperties ).toEqual( undefined );
 				await subscribeUntil( registry,
@@ -272,14 +314,12 @@ describe( 'modules/analytics properties', () => {
 
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getProperties', [ testAccountID ] )
+					.hasFinishedResolution( 'getProperties', [ testAccountID ] ),
 				);
 
 				// It _may_ make a request for profiles internally if not loaded,
 				// so we only care that it did not fetch properties here.
-				expect( fetchMock ).not.toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-				);
+				expect( fetchMock ).not.toHaveFetched( propertiesProfilesEndpoint );
 				expect( properties ).toEqual( fixtures.propertiesProfiles.properties );
 				expect( properties ).toHaveLength( 17 );
 			} );
@@ -290,10 +330,7 @@ describe( 'modules/analytics properties', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-					{ body: response, status: 500 }
-				);
+				fetchMock.getOnce( propertiesProfilesEndpoint, { body: response, status: 500 } );
 
 				const fakeAccountID = '777888999';
 				registry.select( STORE_NAME ).getProperties( fakeAccountID );
@@ -317,7 +354,7 @@ describe( 'modules/analytics properties', () => {
 			it( 'returns undefined if UA properties are loading', () => {
 				const accountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
-				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/ );
+				freezeFetch( propertiesProfilesEndpoint );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
 					[
@@ -332,7 +369,7 @@ describe( 'modules/analytics properties', () => {
 							displayName: 'troubled-tipped.example.com',
 						},
 					],
-					{ accountID }
+					{ accountID },
 				);
 
 				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( accountID ) ).toBeUndefined();
@@ -358,21 +395,19 @@ describe( 'modules/analytics properties', () => {
 						},
 
 					],
-					{ accountID }
+					{ accountID },
 				);
 
-				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/ );
+				freezeFetch( ga4PropertiesEndpoint );
 
 				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
 			} );
 
 			it( 'returns undefined if both UA and GA4 properties are loading', () => {
+				freezeFetch( propertiesProfilesEndpoint );
+				freezeFetch( ga4PropertiesEndpoint );
+
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
-
-				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/ );
-
-				freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/ );
-
 				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
 			} );
 
@@ -396,7 +431,7 @@ describe( 'modules/analytics properties', () => {
 						},
 
 					],
-					{ accountID }
+					{ accountID },
 				);
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
@@ -412,7 +447,7 @@ describe( 'modules/analytics properties', () => {
 							displayName: 'troubled-tipped.example.com',
 						},
 					],
-					{ accountID }
+					{ accountID },
 				);
 
 				const properties = registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID );

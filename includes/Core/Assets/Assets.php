@@ -81,7 +81,7 @@ final class Assets {
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Enqueues Block Editor assets.
+	 * @since 1.37.0 Enqueues Block Editor assets.
 	 */
 	public function register() {
 		$register_callback = function() {
@@ -121,6 +121,27 @@ final class Assets {
 			'admin_enqueue_scripts',
 			function() {
 				$this->enqueue_minimal_admin_script();
+			}
+		);
+
+		add_action(
+			'admin_print_scripts-edit.php',
+			function() {
+				global $post_type;
+				if ( 'post' !== $post_type ) {
+					// For CONTEXT_ADMIN_POSTS we only load scripts for the 'post' post type.
+					return;
+				}
+				$assets = $this->get_assets();
+
+				array_walk(
+					$assets,
+					function( Asset $asset ) {
+						if ( $asset->has_context( Asset::CONTEXT_ADMIN_POSTS ) ) {
+							$this->enqueue_asset( $asset->get_handle() );
+						}
+					}
+				);
 			}
 		);
 
@@ -431,6 +452,7 @@ final class Assets {
 					'src'          => $base_url . 'js/googlesitekit-vendor.js',
 					'dependencies' => array(
 						'googlesitekit-i18n',
+						'googlesitekit-runtime',
 					),
 				)
 			),

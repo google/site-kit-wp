@@ -57,7 +57,7 @@ export default function AdBlockerWarning( { context } ) {
 		<div
 			className={ classnames(
 				'googlesitekit-settings-module-warning',
-				{ [ `googlesitekit-settings-module-warning--${ context }` ]: context }
+				{ [ `googlesitekit-settings-module-warning--${ context }` ]: context },
 			) }
 		>
 			<ErrorIcon height="20" width="23" /> { message }

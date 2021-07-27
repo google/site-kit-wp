@@ -98,12 +98,10 @@ export async function submitChanges( { select, dispatch } ) {
 	// TODO: Remove once legacy dataAPI is no longer used.
 	invalidateCacheGroup( TYPE_MODULES, 'analytics' );
 
-	if ( isFeatureEnabled( 'ga4setup' ) ) {
-		if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
-			const { error } = await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
-			if ( isPermissionScopeError( error ) ) {
-				return { error };
-			}
+	if ( select( STORE_NAME ).canUseGA4Controls() && select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
+		const { error } = await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+		if ( isPermissionScopeError( error ) ) {
+			return { error };
 		}
 	}
 
@@ -134,7 +132,7 @@ export function validateCanSubmitChanges( select ) {
 		const gtmAnalyticsPropertyID = strictSelect( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
 		invariant(
 			! isValidPropertyID( gtmAnalyticsPropertyID ) || hasTagPermission( gtmAnalyticsPropertyID ) !== false,
-			INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS
+			INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS,
 		);
 	}
 
@@ -159,13 +157,13 @@ export function validateCanSubmitChanges( select ) {
 	// If the property ID is valid (non-create) the internal ID must be valid as well.
 	invariant(
 		! isValidPropertyID( getPropertyID() ) || isValidInternalWebPropertyID( getInternalWebPropertyID() ),
-		INVARIANT_INVALID_INTERNAL_PROPERTY_ID
+		INVARIANT_INVALID_INTERNAL_PROPERTY_ID,
 	);
 
 	// Do existing tag check last.
 	invariant( hasExistingTagPermission() !== false, INVARIANT_INSUFFICIENT_TAG_PERMISSIONS );
 
-	if ( isGA4Enabled ) {
+	if ( select( STORE_NAME ).canUseGA4Controls() ) {
 		select( MODULES_ANALYTICS_4 ).__dangerousCanSubmitChanges();
 	}
 }

@@ -2,9 +2,9 @@
 
 Contributors:      google
 Requires at least: 4.7
-Tested up to:      5.7
+Tested up to:      5.8
 Requires PHP:      5.6
-Stable tag:        1.36.0
+Stable tag:        1.37.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -87,6 +87,33 @@ We plan to expand the plugin’s capabilities and integrations in the future; we
 If you have some ideas to improve the plugin or to solve a bug, feel free to raise an issue or submit a pull request in the [GitHub repository for the plugin](https://github.com/google/site-kit-wp). Please stick to the [contributing guidelines](https://github.com/google/site-kit-wp/blob/main/CONTRIBUTING.md). You can also contribute to the plugin by translating it. Simply visit [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/google-site-kit) to get started.
 
 == Changelog ==
+
+= 1.37.0 =
+
+**Enhanced**
+
+* Update wording in permissions modal when GA4 needs to create a web data stream for the selected property. See [#3622](https://github.com/google/site-kit-wp/issues/3622).
+* Add a new "Verification Status" row to the Site Health information for Site Kit. See [#3621](https://github.com/google/site-kit-wp/issues/3621).
+* Show information notice about associated UA / GA4 property only once a property has been selected. See [#3614](https://github.com/google/site-kit-wp/issues/3614).
+* Update styles of controls in the GA4 notice box on the settings page. See [#3541](https://github.com/google/site-kit-wp/issues/3541).
+* Add selected state of 300ms to user feedback survey. See [#3531](https://github.com/google/site-kit-wp/issues/3531).
+* Add Idea Hub setup UI. See [#3522](https://github.com/google/site-kit-wp/issues/3522).
+* Implement Idea Hub widget functionality for saving and unsaving an idea. See [#3519](https://github.com/google/site-kit-wp/issues/3519).
+* Add loading indicator to the Idea Hub widget when a new draft is being created. See [#3387](https://github.com/google/site-kit-wp/issues/3387).
+* Allow Idea Hub CTA to be dismissed. See [#3360](https://github.com/google/site-kit-wp/issues/3360).
+* Add the Idea Hub notification to the WordPress block editor. See [#3272](https://github.com/google/site-kit-wp/issues/3272).
+* Refactor settings tabs with React Router and update URL hashes with more user-friendly names. See [#2514](https://github.com/google/site-kit-wp/issues/2514).
+
+**Fixed**
+
+* Fix bug in new React Router-based Settings Screen. See [#3707](https://github.com/google/site-kit-wp/issues/3707).
+* Fix potential `Uncaught (in promise) TypeError: Cannot read property 'replace' of undefined` related to GA4 property matching logic. See [#3706](https://github.com/google/site-kit-wp/issues/3706).
+* Fix message for AdSense account with no data in new widget-based screen. See [#3667](https://github.com/google/site-kit-wp/issues/3667).
+* Fix a bug in Idea Hub where the most recent draft idea posts were not shown after creating a new draft from idea. See [#3660](https://github.com/google/site-kit-wp/issues/3660).
+* Add a configurable timeout to User Survey components. See [#3655](https://github.com/google/site-kit-wp/issues/3655).
+* Fix issue with Google Charts showing negative labels in some charts. See [#3564](https://github.com/google/site-kit-wp/issues/3564).
+* Improve User Input tag creation on Mobile Safari. See [#3420](https://github.com/google/site-kit-wp/issues/3420).
+* Fix global storybook padding issues. See [#3174](https://github.com/google/site-kit-wp/issues/3174).
 
 = 1.36.0 =
 

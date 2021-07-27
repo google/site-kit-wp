@@ -84,7 +84,9 @@ class Notification extends Component {
 
 		setTimeout( () => {
 			setCache( `notification::dismissed::${ this.props.id }`, new Date() );
-			card.style.display = 'none';
+			if ( card?.style ) {
+				card.style.display = 'none';
+			}
 
 			const event = new Event( 'notificationDismissed' );
 			document.dispatchEvent( event );
@@ -201,7 +203,7 @@ class Notification extends Component {
 											{
 												'mdc-layout-grid__cell--span-5-desktop': inlineLayout,
 												'mdc-layout-grid__cell--span-4-desktop': ! inlineLayout,
-											}
+											},
 										) }
 									>
 										<div className="googlesitekit-publisher-win__stats">
@@ -274,7 +276,7 @@ class Notification extends Component {
 						[ `googlesitekit-publisher-win--${ format }` ]: format,
 						[ `googlesitekit-publisher-win--${ type }` ]: type,
 						[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
-					}
+					},
 				) }
 			>
 				<div className="mdc-layout-grid">
@@ -287,7 +289,7 @@ class Notification extends Component {
 								{
 									'mdc-layout-grid__cell--order-2-phone': inlineLayout,
 									'mdc-layout-grid__cell--order-1-tablet': inlineLayout,
-								}
+								},
 							) }>
 								<div className="googlesitekit-publisher-win__logo">
 									{ logoSVG }
@@ -312,7 +314,7 @@ class Notification extends Component {
 
 						<div className={ classnames(
 							'mdc-layout-grid__cell',
-							layout
+							layout,
 						) } >
 
 							{ inlineLayout ? (

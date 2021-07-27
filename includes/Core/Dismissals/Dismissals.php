@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 /**
  * Class for handling dismissals.
  *
- * @since n.e.x.t
+ * @since 1.37.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Dismissals {
 	/**
 	 * Dismissed_Items instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 * @var Dismissed_Items
 	 */
 	protected $dismissed_items;
@@ -33,7 +33,7 @@ class Dismissals {
 	/**
 	 * REST_Dismissals_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 * @var REST_Dismissals_Controller
 	 */
 	protected $rest_controller;
@@ -41,7 +41,7 @@ class Dismissals {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @param Context      $context Plugin context.
 	 * @param User_Options $user_options Optional. User option API. Default is a new instance.
@@ -54,7 +54,7 @@ class Dismissals {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 */
 	public function register() {
 		$this->dismissed_items->register();

@@ -112,7 +112,7 @@ export default function SettingsView() {
 								__( '<VisuallyHidden>Google Analytics 4</VisuallyHidden> Measurement ID', 'google-site-kit' ),
 								{
 									VisuallyHidden: <VisuallyHidden />,
-								}
+								},
 							) }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">

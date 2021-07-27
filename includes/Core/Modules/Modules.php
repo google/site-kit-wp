@@ -211,6 +211,10 @@ final class Modules {
 				if ( $module instanceof Module_With_Settings ) {
 					$module->get_settings()->register();
 				}
+
+				if ( $module instanceof Module_With_Persistent_Registration ) {
+					$module->register_persistent();
+				}
 			}
 		);
 

@@ -114,7 +114,7 @@ export const createDurationFormat = ( durationInSeconds, options = {} ) => {
 			const formattedSeconds = sprintf(
 				// translators: %s number of seconds with "s" as the abbreviated unit.
 				__( '%ds', 'google-site-kit' ),
-				seconds
+				seconds,
 			);
 
 			if ( durationInSeconds === 0 ) {
@@ -124,12 +124,12 @@ export const createDurationFormat = ( durationInSeconds, options = {} ) => {
 			const formattedMinutes = sprintf(
 				// translators: %s number of minutes with "m" as the abbreviated unit.
 				__( '%dm', 'google-site-kit' ),
-				minutes
+				minutes,
 			);
 			const formattedHours = sprintf(
 				// translators: %s number of hours with "h" as the abbreviated unit.
 				__( '%dh', 'google-site-kit' ),
-				hours
+				hours,
 			);
 
 			return sprintf(
@@ -185,7 +185,7 @@ export const readableLargeNumber = ( number ) => {
 		return sprintf(
 			// translators: %s: an abbreviated number in millions.
 			__( '%sM', 'google-site-kit' ),
-			numberFormat( prepareForReadableLargeNumber( number ), number % 10 === 0 ? {} : withSingleDecimal )
+			numberFormat( prepareForReadableLargeNumber( number ), number % 10 === 0 ? {} : withSingleDecimal ),
 		);
 	}
 
@@ -194,7 +194,7 @@ export const readableLargeNumber = ( number ) => {
 		return sprintf(
 			// translators: %s: an abbreviated number in thousands.
 			__( '%sK', 'google-site-kit' ),
-			numberFormat( prepareForReadableLargeNumber( number ) )
+			numberFormat( prepareForReadableLargeNumber( number ) ),
 		);
 	}
 
@@ -203,7 +203,7 @@ export const readableLargeNumber = ( number ) => {
 		return sprintf(
 			// translators: %s: an abbreviated number in thousands.
 			__( '%sK', 'google-site-kit' ),
-			numberFormat( prepareForReadableLargeNumber( number ), number % 10 === 0 ? {} : withSingleDecimal )
+			numberFormat( prepareForReadableLargeNumber( number ), number % 10 === 0 ? {} : withSingleDecimal ),
 		);
 	}
 

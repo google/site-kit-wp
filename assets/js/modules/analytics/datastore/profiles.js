@@ -119,8 +119,32 @@ const baseActions = {
 		function* ( accountID, propertyID, { profileName } ) {
 			const { response, error } = yield fetchCreateProfileStore.actions.fetchCreateProfile( accountID, propertyID, { profileName } );
 			return { response, error };
-		}
+		},
 	),
+
+	/**
+	 * Finds a profile that fits the provided property.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} accountID        Account ID.
+	 * @param {string} propertyID       Property ID.
+	 * @param {string} defaultProfileID Optional. Default profile ID set for the property.
+	 * @return {Object|undefined} Porfile object on success, otherwise undefined.
+	 */
+	*findPropertyProfile( accountID, propertyID, defaultProfileID = '' ) {
+		const registry = yield Data.commonActions.getRegistry();
+		const profiles = yield Data.commonActions.await( registry.__experimentalResolveSelect( STORE_NAME ).getProfiles( accountID, propertyID ) );
+
+		if ( defaultProfileID ) {
+			const defaultProfile = profiles.find( ( profile ) => profile.id === defaultProfileID );
+			if ( defaultProfile ) {
+				return defaultProfile;
+			}
+		}
+
+		return profiles[ 0 ];
+	},
 };
 
 const baseResolvers = {
@@ -207,7 +231,7 @@ const store = Data.combineStores(
 		actions: baseActions,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

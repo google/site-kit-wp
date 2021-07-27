@@ -28,7 +28,7 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 	baseName: 'getAccountSummaries',
 	controlCallback() {
 		return API.get( 'modules', 'analytics-4', 'account-summaries', {}, {
-			useCache: true,
+			useCache: false,
 		} );
 	},
 	reducerCallback( state, accountSummaries ) {
@@ -87,7 +87,7 @@ const store = Data.combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

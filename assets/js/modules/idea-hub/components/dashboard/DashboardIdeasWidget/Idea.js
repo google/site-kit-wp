@@ -163,6 +163,7 @@ const Idea = ( props ) => {
 									onClick={ handleCreate }
 									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
 									icon={ <CreateIcon /> }
+									className="googlesitekit-idea-hub__actions--create"
 								/>
 							) }
 
@@ -193,7 +194,7 @@ Idea.propTypes = {
 		PropTypes.shape( {
 			display_name: PropTypes.string,
 			mid: PropTypes.string,
-		} )
+		} ),
 	).isRequired,
 	buttons: PropTypes.arrayOf( PropTypes.string ).isRequired,
 };

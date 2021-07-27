@@ -41,7 +41,7 @@ describe( 'useExistingTagEffect', () => {
 		const accountID = account.accountId;
 		const containers = factories.buildContainers(
 			// eslint-disable-next-line sitekit/acronym-case
-			3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }
+			3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] },
 		);
 		const [ firstContainer, existingContainer ] = containers;
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );

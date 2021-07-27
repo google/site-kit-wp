@@ -59,7 +59,7 @@ function TableOverflowContainer( { children } ) {
 			onScroll={ debounce( setIsScrolling, 100 ) }
 			className={ classnames(
 				'googlesitekit-table-overflow',
-				{ 'googlesitekit-table-overflow--gradient': isScrolling }
+				{ 'googlesitekit-table-overflow--gradient': isScrolling },
 			) }
 		>
 			<div ref={ scrollRef } className="googlesitekit-table-overflow__container">

@@ -40,14 +40,14 @@ export function useDebouncedState( value, delay ) {
 				() => {
 					setDebouncedValue( value );
 				},
-				delay
+				delay,
 			);
 
 			return () => {
 				clearTimeout( timeout );
 			};
 		},
-		[ value, delay ]
+		[ value, delay ],
 	);
 
 	return debouncedValue;

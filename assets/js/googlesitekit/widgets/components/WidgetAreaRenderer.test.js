@@ -159,7 +159,7 @@ describe( 'WidgetAreaRenderer', () => {
 					{ Component: WidgetComponent, slug: 'seven', width: WIDGET_WIDTHS.QUARTER },
 				],
 			],
-		]
+		],
 	)( 'should resize widgets in a row that spans 9 columns to fill the full 12 columns (%s)', async ( testName, widgets ) => {
 		createWidgets( registry, areaName, widgets );
 
@@ -193,7 +193,7 @@ describe( 'WidgetAreaRenderer', () => {
 					{ Component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.QUARTER },
 				],
 			],
-		]
+		],
 	)( 'should not resize widgets in a row that is smaller than 9 columns (%s)', async ( testName, widgets ) => {
 		createWidgets( registry, areaName, widgets );
 
@@ -237,7 +237,7 @@ describe( 'WidgetAreaRenderer', () => {
 					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.HALF },
 				],
 			],
-		]
+		],
 	)( 'should not resize widgets that fit into a 12-column grid (%s)', async ( testName, widgets ) => {
 		createWidgets( registry, areaName, widgets );
 

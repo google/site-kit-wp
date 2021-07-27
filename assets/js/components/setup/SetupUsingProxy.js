@@ -50,7 +50,6 @@ import HelpMenu from '../help/HelpMenu';
 const { useSelect, useDispatch } = Data;
 
 function SetupUsingProxy() {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const serviceSetupV2Enabled = useFeature( 'serviceSetupV2' );
 
 	const {
@@ -89,7 +88,7 @@ function SetupUsingProxy() {
 		title = sprintf(
 			/* translators: %s is the site's hostname. (e.g. example.com) */
 			__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
-			punycode.toUnicode( ( new URL( siteURL ) ).hostname )
+			punycode.toUnicode( ( new URL( siteURL ) ).hostname ),
 		);
 		description = __( 'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Sign in with Google" below to generate new credentials.', 'google-site-kit' );
 	} else if ( isSecondAdmin ) {
@@ -100,13 +99,13 @@ function SetupUsingProxy() {
 		description = __( `Looks like the URL of your site has changed. In order to continue using Site Kit, you'll need to reconnect, so that your plugin settings are updated with the new URL.`, 'google-site-kit' );
 	} else {
 		title = __( 'Set up Site Kit', 'google-site-kit' );
-		description = __( 'Get insights about how people find and use your site, how to improve and monetize your content, directly in your WordPress dashboard', 'google-site-kit' );
+		description = __( 'Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard.', 'google-site-kit' );
 	}
 
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && <HelpMenu /> }
+				<HelpMenu />
 			</Header>
 			{ errorMessage && (
 				<Notification
@@ -135,7 +134,7 @@ function SetupUsingProxy() {
 											'mdc-layout-grid__inner',
 											{
 												'googlesitekit-setup__content': serviceSetupV2Enabled,
-											}
+											},
 										) }>
 											{ serviceSetupV2Enabled && (
 												<div
@@ -157,7 +156,7 @@ function SetupUsingProxy() {
 													{
 														'mdc-layout-grid__cell--span-6-desktop': serviceSetupV2Enabled,
 														'mdc-layout-grid__cell--span-12-desktop': ! serviceSetupV2Enabled,
-													}
+													},
 												) }
 											>
 												<h1 className="googlesitekit-setup__title">

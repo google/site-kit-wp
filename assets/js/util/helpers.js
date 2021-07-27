@@ -28,7 +28,7 @@ import { createElement, Fragment } from '@wordpress/element';
  * This helper is used to append a filtered component with a passed component. To use, pass as the third
  * argument to an addFilter call, eg:
  *
- * 		addFilter( 'googlesitekit.DashboardModule', // Filter name.
+ * 		addFilter( 'googlesitekit.FooBar', // Filter name.
  *			'googlesitekit.DashboardEarningModule', // callback name.
  *			createAddToFilter( <LegacyDashboardEarnings /> ), // Using the helper to append a component.
  * 			11 ); // Priority will determine the order items are appended.
@@ -49,9 +49,9 @@ export const createAddToFilter = ( NewComponent ) => {
 					'',
 					createElement(
 						OriginalComponent,
-						props
+						props,
 					),
-					NewComponent
+					NewComponent,
 				)
 			);
 		};

@@ -185,6 +185,121 @@ class ModuleTest extends TestCase {
 		);
 	}
 
+	/**
+	 * @dataProvider data_site_hosts
+	 */
+	public function test_permute_site_hosts( $hostname, $expected ) {
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$method = new ReflectionMethod( $module, 'permute_site_hosts' );
+		$method->setAccessible( true );
+		$permute_site_hosts = function ( ...$args ) use ( $module, $method ) {
+			return $method->invoke( $module, ...$args );
+		};
+
+		$this->assertEqualSets(
+			$expected,
+			$permute_site_hosts( $hostname )
+		);
+	}
+
+	public function data_site_hosts() {
+		return array(
+			'example.com'              => array(
+				'example.com',
+				array(
+					'example.com',
+					'www.example.com',
+				),
+			),
+			'www.example.com'          => array(
+				'www.example.com',
+				array(
+					'example.com',
+					'www.example.com',
+				),
+			),
+			'éxämplę.test'             => array(
+				'éxämplę.test',
+				array(
+					'éxämplę.test',
+					'www.éxämplę.test',
+					'xn--xmpl-loa2a55a.test',
+					'www.xn--xmpl-loa2a55a.test',
+				),
+			),
+			'éxämplę.test as punycode' => array(
+				'xn--xmpl-loa2a55a.test',
+				array(
+					'éxämplę.test',
+					'www.éxämplę.test',
+					'xn--xmpl-loa2a55a.test',
+					'www.xn--xmpl-loa2a55a.test',
+				),
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_site_urls
+	 */
+	public function test_permute_site_url( $site_url, $expected ) {
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$method = new ReflectionMethod( $module, 'permute_site_url' );
+		$method->setAccessible( true );
+		$permute_site_url = function ( ...$args ) use ( $module, $method ) {
+			return $method->invoke( $module, ...$args );
+		};
+
+		$this->assertEqualSets(
+			$expected,
+			$permute_site_url( $site_url )
+		);
+	}
+
+	public function data_site_urls() {
+		return array(
+			'http://éxämplę.test'               => array(
+				'http://éxämplę.test',
+				array(
+					'http://éxämplę.test',
+					'https://éxämplę.test',
+					'http://www.éxämplę.test',
+					'https://www.éxämplę.test',
+					'http://xn--xmpl-loa2a55a.test',
+					'https://xn--xmpl-loa2a55a.test',
+					'http://www.xn--xmpl-loa2a55a.test',
+					'https://www.xn--xmpl-loa2a55a.test',
+				),
+			),
+			'http://éxämplę.test/sub-directory' => array(
+				'http://éxämplę.test/sub-directory',
+				array(
+					'http://éxämplę.test/sub-directory',
+					'https://éxämplę.test/sub-directory',
+					'http://www.éxämplę.test/sub-directory',
+					'https://www.éxämplę.test/sub-directory',
+					'http://xn--xmpl-loa2a55a.test/sub-directory',
+					'https://xn--xmpl-loa2a55a.test/sub-directory',
+					'http://www.xn--xmpl-loa2a55a.test/sub-directory',
+					'https://www.xn--xmpl-loa2a55a.test/sub-directory',
+				),
+			),
+			'http://éxämplę.test/sub-directory as punycode' => array(
+				'http://xn--xmpl-loa2a55a.test/sub-directory',
+				array(
+					'http://éxämplę.test/sub-directory',
+					'https://éxämplę.test/sub-directory',
+					'http://www.éxämplę.test/sub-directory',
+					'https://www.éxämplę.test/sub-directory',
+					'http://xn--xmpl-loa2a55a.test/sub-directory',
+					'https://xn--xmpl-loa2a55a.test/sub-directory',
+					'http://www.xn--xmpl-loa2a55a.test/sub-directory',
+					'https://www.xn--xmpl-loa2a55a.test/sub-directory',
+				),
+			),
+		);
+	}
+
 	public function test_exception_to_error() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -268,90 +383,6 @@ class ModuleTest extends TestCase {
 		$this->assertEquals( 'one', $result[0] );
 		$this->assertEquals( 'two', $result[1] );
 		$this->assertEquals( 'three', $result[2] );
-	}
-
-	/**
-	 * Test that previous dates ranges align by weekday when weekly_align = true.
-	 *
-	 * Call parse_date_range with previous = true and weekly_align = true.
-	 * Test $offset set to 1 and 2 work as expected.
-	 *
-	 * @dataProvider data_parse_date_range_weekday_align
-	 */
-	public function test_parse_date_range_weekday_align( $period_requested, $previous_period_end_offset ) {
-		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		// Test with $offset = 1.
-		$result                = $module->parse_date_range( 'last-' . $period_requested . '-days', 1, 1, true, true );
-		$previous_end          = strtotime( $result[1] );
-		$yesterday_day_of_week = gmdate( 'w', strtotime( 'yesterday' ) );
-		$diff                  = $this->calculate_diff_from_expected( 1, $period_requested, $previous_end );
-		$previous_day_of_week  = gmdate( 'w', strtotime( $result[1] ) );
-		$yesterday_day_of_week = gmdate( 'w', strtotime( 'yesterday' ) );
-
-		$this->assertEquals( $previous_day_of_week, $yesterday_day_of_week );
-		$this->assertEquals( $previous_period_end_offset, $diff );
-
-		// Test again with offset = 2.
-		$result               = $module->parse_date_range( 'last-' . $period_requested . '-days', 1, 2, true, true );
-		$previous_end         = strtotime( $result[1] );
-		$last_day_of_week     = gmdate( 'w', strtotime( '2 days ago' ) );
-		$diff                 = $this->calculate_diff_from_expected( 2, $period_requested, $previous_end );
-		$previous_day_of_week = gmdate( 'w', strtotime( $result[1] ) );
-		$last_day_of_week     = gmdate( 'w', strtotime( '2 days ago' ) );
-
-		$this->assertEquals( $previous_day_of_week, $last_day_of_week, 'failed with offfset 2' );
-		$this->assertEquals( $previous_period_end_offset, $diff, 'failed with offfset 2' );
-	}
-
-	public function data_parse_date_range_weekday_align() {
-		return array(
-			array(
-				7,
-				0,
-			),
-			array(
-				8,
-				-1, //sun -> mon
-			),
-			array(
-				9,
-				-2, // sat -> mon
-			),
-			array(
-				10,
-				-3, // fri -> mon
-			),
-			array(
-				11,
-				3, // thur -> previous mon
-			),
-			array(
-				12,
-				2, // wed -> previous mon
-			),
-			array(
-				13,
-				1, // tues -> previous mon
-			),
-			array(
-				14,
-				0, // mon === mon
-			),
-			// Test the ranges offdered in the plugin.
-			array(
-				7,
-				0, // mon === mon
-			),
-			array(
-				28,
-				0, // mon === mon
-			),
-			array(
-				90,
-				1, // mon -> sun
-			),
-		);
 	}
 
 	/**

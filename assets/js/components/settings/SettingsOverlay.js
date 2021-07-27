@@ -35,7 +35,7 @@ import LockIcon from '../../../svg/lock.svg';
 const SettingsOverlay = ( { compress } ) => (
 	<div className={ classnames(
 		'googlesitekit-overlay',
-		{ 'googlesitekit-overlay--compress': compress }
+		{ 'googlesitekit-overlay--compress': compress },
 	) }>
 		<div className="googlesitekit-overlay__wrapper">
 			<div className="googlesitekit-overlay__icon">

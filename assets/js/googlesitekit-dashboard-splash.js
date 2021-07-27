@@ -45,7 +45,7 @@ domReady( () => {
 				<NotificationCounter />
 				<DashboardSplashApp />
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 	}
 } );

@@ -91,7 +91,7 @@ describe( 'core/user surveys', () => {
 			it( 'does not fetch if there is a cache value present for the trigger ID', async () => {
 				await setItem(
 					createCacheKey( 'core', 'user', 'survey-trigger', { triggerID: 'optimizeSurvey' } ),
-					{} // Any value will due for now.
+					{}, // Any value will due for now.
 				);
 
 				await registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey' );
@@ -100,23 +100,24 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'should cache survey for provided ttl', async () => {
-				let ttl;
 				const triggerID = 'optimizeSurvey';
+				const mockedSetItem = jest.fn();
 
 				setSelectedStorageBackend( {
 					getItem: () => undefined,
-					setItem: ( _, options ) => {
-						try {
-							ttl = JSON.parse( options )?.ttl;
-						} catch {
-						}
-					},
+					setItem: mockedSetItem,
+					removeItem: () => undefined,
 				} );
 
 				fetchMock.postOnce( surveyTriggerEndpoint, { body: { triggerID } } );
-
 				await registry.dispatch( STORE_NAME ).triggerSurvey( triggerID, { ttl: 500 } );
-				expect( ttl ).toBe( 500 );
+				jest.advanceTimersByTime( 35000 );
+
+				// Wait one tick for async storage functions.
+				await new Promise( ( resolve ) => resolve() );
+
+				const { ttl } = JSON.parse( mockedSetItem.mock.calls[ 0 ][ 1 ] );
+				expect( ttl ).toEqual( 500 );
 
 				// Reset the backend storage mechanism.
 				setSelectedStorageBackend( undefined );
@@ -174,7 +175,7 @@ describe( 'core/user surveys', () => {
 				registry.dispatch( STORE_NAME ).receiveTriggerSurvey( survey, { triggerID: 'optimizeSurvey' } );
 
 				expect(
-					registry.select( STORE_NAME ).getCurrentSurvey()
+					registry.select( STORE_NAME ).getCurrentSurvey(),
 				).toEqual( survey.survey_payload );
 			} );
 		} );
@@ -182,7 +183,7 @@ describe( 'core/user surveys', () => {
 		describe( 'getCurrentSurveySession', () => {
 			it( 'returns null when no current survey session is set', async () => {
 				expect(
-					registry.select( STORE_NAME ).getCurrentSurveySession()
+					registry.select( STORE_NAME ).getCurrentSurveySession(),
 				).toBeNull();
 			} );
 
@@ -190,7 +191,7 @@ describe( 'core/user surveys', () => {
 				registry.dispatch( STORE_NAME ).receiveTriggerSurvey( survey, { triggerID: 'optimizeSurvey' } );
 
 				expect(
-					registry.select( STORE_NAME ).getCurrentSurveySession()
+					registry.select( STORE_NAME ).getCurrentSurveySession(),
 				).toEqual( survey.session );
 			} );
 		} );

@@ -18,7 +18,7 @@ module.exports = async ( { config } ) => {
 			}
 
 			return path.resolve( `assets/js/${ global }-${ api }.js` );
-		}
+		},
 	);
 
 	config.resolve = {
