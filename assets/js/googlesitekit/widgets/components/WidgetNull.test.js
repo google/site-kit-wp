@@ -26,7 +26,7 @@ import {
 	provideUserCapabilities,
 	render,
 } from '../../../../../tests/js/test-utils';
-import { STORE_NAME } from '../datastore/constants';
+import { CORE_WIDGETS } from '../datastore/constants';
 import Null from '../../../components/Null';
 
 describe( 'WidgetNull', () => {
@@ -42,19 +42,19 @@ describe( 'WidgetNull', () => {
 		const widgetSlug = 'TestWidget';
 
 		// Initial state should be null.
-		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toBe( null );
+		expect( registry.select( CORE_WIDGETS ).getWidgetState( widgetSlug ) ).toBe( null );
 
 		const widget = render( <WidgetNull widgetSlug={ widgetSlug } />, { registry } );
 
 		expect( widget.container ).toBeEmptyDOMElement();
 
-		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toMatchObject( {
+		expect( registry.select( CORE_WIDGETS ).getWidgetState( widgetSlug ) ).toMatchObject( {
 			Component: Null,
 			metadata: {},
 		} );
 
 		// Special state should be unset again upon unmount.
 		widget.unmount();
-		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toBe( null );
+		expect( registry.select( CORE_WIDGETS ).getWidgetState( widgetSlug ) ).toBe( null );
 	} );
 } );
