@@ -438,7 +438,7 @@ final class Analytics_4 extends Module
 			case 'GET:webdatastreams':
 				return array_map( array( self::class, 'filter_webdatastream_with_ids' ), $response->getWebDataStreams() );
 			case 'GET:webdatastreams-batch':
-				return self::filter_webdatastreams_batch( $response );
+				return self::parse_webdatastreams_batch( $response );
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -623,7 +623,7 @@ final class Analytics_4 extends Module
 	 * @param GoogleAnalyticsAdminV1alphaListWebDataStreamsResponse[] $response Array of GoogleAnalyticsAdminV1alphaListWebDataStreamsResponse objects.
 	 * @return \stdClass[] Array of models containing _id and _propertyID attributes, keyed by the propertyID.
 	 */
-	public static function filter_webdatastreams_batch( $response ) {
+	public static function parse_webdatastreams_batch( $response ) {
 		$mapped         = array();
 		$results        = array_shift( $response );
 		$webdatastreams = $results->getWebDataStreams();
