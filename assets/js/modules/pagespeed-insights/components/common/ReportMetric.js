@@ -49,7 +49,7 @@ export default function ReportMetric( {
 				'googlesitekit-pagespeed-report-metric',
 				{
 					'googlesitekit-pagespeed-report__row--last': isLast,
-				}
+				},
 			) }
 		>
 			<td>

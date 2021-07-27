@@ -128,7 +128,7 @@ storiesOf( 'Analytics Module', module )
 			} );
 			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
 				propertiesGA4,
-				{ accountID }
+				{ accountID },
 			);
 		};
 

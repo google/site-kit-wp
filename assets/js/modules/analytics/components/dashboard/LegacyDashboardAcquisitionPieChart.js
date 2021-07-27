@@ -101,7 +101,7 @@ const LegacyDashboardAcquisitionPieChart = ( { data, source } ) => {
 						sprintf(
 							/* translators: %s: source link */
 							__( 'Source: %s', 'google-site-kit' ),
-							`<a>${ _x( 'Analytics', 'Service name', 'google-site-kit' ) }</a>`
+							`<a>${ _x( 'Analytics', 'Service name', 'google-site-kit' ) }</a>`,
 						),
 						{
 							a: <Link
@@ -110,7 +110,7 @@ const LegacyDashboardAcquisitionPieChart = ( { data, source } ) => {
 								inherit
 								external
 							/>,
-						}
+						},
 					) }
 				</div>
 			}
@@ -145,5 +145,5 @@ export default withData(
 	<PreviewBlock width="282px" height="282px" shape="circular" />,
 	{},
 	isDataZeroForReporting,
-	getAnalyticsErrorMessageFromData
+	getAnalyticsErrorMessageFromData,
 );

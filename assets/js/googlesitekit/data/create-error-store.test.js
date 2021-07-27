@@ -84,7 +84,7 @@ describe( 'createErrorStore store', () => {
 
 				expect( store.getState().errors ).toHaveProperty(
 					generateErrorKey( baseName, args ),
-					errorNotFound
+					errorNotFound,
 				);
 			} );
 		} );
@@ -106,13 +106,13 @@ describe( 'createErrorStore store', () => {
 
 				expect( store.getState().errors ).toHaveProperty(
 					generateErrorKey( baseName, args ),
-					errorForbidden
+					errorForbidden,
 				);
 
 				dispatch.clearError( baseName, args );
 
 				expect( store.getState().errors ).not.toHaveProperty(
-					generateErrorKey( baseName, args )
+					generateErrorKey( baseName, args ),
 				);
 			} );
 		} );
@@ -140,12 +140,12 @@ describe( 'createErrorStore store', () => {
 				expect( store.getState().error ).toEqual( errorNotFound );
 				expect( store.getState().errors ).toHaveProperty(
 					generateErrorKey( 'otherBaseName', args ),
-					errorNotFound
+					errorNotFound,
 				);
 				// The store should no longer contain errorForbidden as it was the only
 				// error used with the given `baseName`.
 				expect( Object.values( store.getState().errors ) ).not.toContain(
-					errorForbidden
+					errorForbidden,
 				);
 			} );
 		} );
@@ -178,7 +178,7 @@ describe( 'createErrorStore store', () => {
 
 				expect( select[ selectorName ]( baseName, args ) ).toEqual( errorForbidden );
 			} );
-		}
+		},
 		);
 
 		describe( 'getError', () => {
@@ -227,7 +227,7 @@ describe( 'createErrorStore store', () => {
 				dispatch.receiveError( errorForbidden, baseName, [ 'bar' ] );
 
 				expect( select.getErrors() ).toEqual(
-					expect.arrayContaining( [ errorForbidden, errorNotFound ] )
+					expect.arrayContaining( [ errorForbidden, errorNotFound ] ),
 				);
 			} );
 

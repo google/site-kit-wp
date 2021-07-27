@@ -51,7 +51,7 @@ export const getWidgetComponentProps = memize(
 			WidgetCompleteModuleActivationCTA: withWidgetSlug( widgetSlug )( WidgetCompleteModuleActivationCTA ),
 			WidgetNull: withWidgetSlug( widgetSlug )( WidgetNull ),
 		};
-	}
+	},
 );
 
 function withWidgetSlug( widgetSlug ) {

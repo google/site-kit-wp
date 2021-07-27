@@ -109,7 +109,7 @@ describe( 'core/user user-input-settings', () => {
 			it( 'should save settings and add it to the store ', async () => {
 				fetchMock.postOnce(
 					coreUserInputSettingsEndpointRegExp,
-					{ body: coreUserInputSettingsExpectedResponse, status: 200 }
+					{ body: coreUserInputSettingsExpectedResponse, status: 200 },
 				);
 
 				await registry.dispatch( STORE_NAME ).saveUserInputSettings( coreUserInputSettings );
@@ -137,7 +137,7 @@ describe( 'core/user user-input-settings', () => {
 
 				fetchMock.post(
 					coreUserInputSettingsEndpointRegExp,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				await registry.dispatch( STORE_NAME ).saveUserInputSettings( ...args );

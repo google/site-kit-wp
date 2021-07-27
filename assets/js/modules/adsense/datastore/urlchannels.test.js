@@ -25,7 +25,7 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 	untilResolved,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense URL channels', () => {
@@ -56,7 +56,7 @@ describe( 'modules/adsense URL channels', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/,
-					{ body: fixtures.urlchannels, status: 200 }
+					{ body: fixtures.urlchannels, status: 200 },
 				);
 
 				const accountID = 'pub-12345';
@@ -97,7 +97,7 @@ describe( 'modules/adsense URL channels', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				const fakeAccountID = 'pub-777888999';

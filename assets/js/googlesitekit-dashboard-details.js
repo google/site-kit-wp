@@ -44,7 +44,7 @@ domReady( () => {
 			<Root viewContext={ VIEW_CONTEXT_PAGE_DASHBOARD }>
 				<DashboardDetailsApp />
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 	}
 } );

@@ -343,7 +343,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			reducer,
 			resolvers,
 			selectors,
-		}
+		},
 	);
 	return {
 		...store,

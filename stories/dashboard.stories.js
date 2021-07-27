@@ -106,7 +106,7 @@ storiesOf( 'Dashboard', module )
 		setTimeout( () => {
 			doAction(
 				'googlesitekit.moduleLoaded',
-				'Dashboard'
+				'Dashboard',
 			);
 		}, 250 );
 
@@ -165,7 +165,7 @@ storiesOf( 'Dashboard', module )
 		setTimeout( () => {
 			doAction(
 				'googlesitekit.moduleLoaded',
-				'Dashboard'
+				'Dashboard',
 			);
 		}, 250 );
 		const setupRegistry = ( { dispatch } ) => {

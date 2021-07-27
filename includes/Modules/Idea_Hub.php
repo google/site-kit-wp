@@ -11,8 +11,10 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
@@ -29,12 +31,14 @@ use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Post_Meta;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_Error;
 
 /**
@@ -49,11 +53,32 @@ final class Idea_Hub extends Module
 	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
+	use Method_Proxy_Trait;
 
 	/**
 	 * Module slug name.
 	 */
 	const MODULE_SLUG = 'idea-hub';
+
+	/**
+	 * Saved ideas cache key.
+	 */
+	const TRANSIENT_SAVED_IDEAS = 'googlesitekit_idea_hub_saved_ideas';
+
+	/**
+	 * New ideas cache key.
+	 */
+	const TRANSIENT_NEW_IDEAS = 'googlesitekit_idea_hub_new_ideas';
+
+	/**
+	 * New ideas notice slug and dismissible item key.
+	 */
+	const SLUG_NEW_IDEAS = 'idea-hub_new-ideas';
+
+	/**
+	 * Saved ideas notice slug and dismissible item key.
+	 */
+	const SLUG_SAVED_IDEAS = 'idea-hub_saved-ideas';
 
 	/**
 	 * Post_Idea_Name instance.
@@ -146,10 +171,110 @@ final class Idea_Hub extends Module
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+		if ( $this->is_connected() ) {
+			/**
+			 * Show admin notices on the posts page if we have saved / new ideas.
+			 */
+			add_filter( 'googlesitekit_admin_notices', $this->get_method_proxy( 'admin_notice_idea_hub_ideas' ) );
+		}
 
 		$this->post_name_setting->register();
 		$this->post_text_setting->register();
 		$this->post_topic_setting->register();
+	}
+
+	/**
+	 * Shows admin notification for idea hub ideas on post list screen.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $notices Array of admin notices.
+	 * @return array Array of admin notices.
+	 */
+	private function admin_notice_idea_hub_ideas( $notices ) {
+		global $post_type;
+		$current_screen = get_current_screen();
+		if ( is_null( $current_screen ) || 'edit-post' !== $current_screen->id || 'post' !== $post_type ) {
+			return $notices;
+		}
+		$transients      = new Transients( $this->context );
+		$dismissed_items = new Dismissed_Items( $this->user_options );
+
+		$notices[] = new Notice(
+			self::SLUG_SAVED_IDEAS,
+			array(
+				'content'         => function() {
+					return sprintf(
+						'<p>%s <a href="%s">%s</a></p>',
+						esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ),
+						esc_url( $this->context->admin_url() . '#saved-ideas' ),
+						esc_html__( 'See saved ideas', 'google-site-kit' )
+					);
+				},
+				'type'            => Notice::TYPE_INFO,
+				'active_callback' => function() use ( $transients, $dismissed_items ) {
+					$saved_ideas = $transients->get( self::TRANSIENT_SAVED_IDEAS );
+					if ( false === $saved_ideas ) {
+						$saved_ideas = $this->get_data( 'saved-ideas' );
+						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
+					}
+					$has_saved_ideas = count( $saved_ideas ) > 0;
+					if ( ! $has_saved_ideas && $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
+						// Saved items no longer need to be dismissed as there are none currently.
+						$dismissed_items->add( self::SLUG_SAVED_IDEAS, -1 );
+					}
+					if ( $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
+						return false;
+					}
+
+					return $has_saved_ideas;
+				},
+				'dismissible'     => true,
+			)
+		);
+		$notices[] = new Notice(
+			self::SLUG_NEW_IDEAS,
+			array(
+				'content'         => function() {
+					return sprintf(
+						'<p>%s <a href="%s">%s</a></p>',
+						esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub', 'google-site-kit' ),
+						esc_url( $this->context->admin_url() . '#new-ideas' ),
+						esc_html__( 'See new ideas', 'google-site-kit' )
+					);
+				},
+				'type'            => Notice::TYPE_INFO,
+				'active_callback' => function() use ( $transients, $dismissed_items ) {
+					if ( $dismissed_items->is_dismissed( self::SLUG_NEW_IDEAS ) || $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
+						return false;
+					}
+					$saved_ideas = $transients->get( self::TRANSIENT_SAVED_IDEAS );
+					if ( false === $saved_ideas ) {
+						$saved_ideas = $this->get_data( 'saved-ideas' );
+						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
+					}
+					$has_saved_ideas = count( $saved_ideas ) > 0;
+
+					if ( $has_saved_ideas ) {
+						// Don't show new ideas notice if there are saved ideas,
+						// irrespective of whether we show them the saved ideas notice.
+						return false;
+					}
+
+					$new_ideas = $transients->get( self::TRANSIENT_NEW_IDEAS );
+					if ( false === $new_ideas ) {
+						$new_ideas = $this->get_data( 'new-ideas' );
+						$transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, DAY_IN_SECONDS );
+					}
+
+					$has_new_ideas = count( $new_ideas ) > 0;
+
+					return $has_new_ideas;
+				},
+				'dismissible'     => true,
+			)
+		);
+		return $notices;
 	}
 
 	/**
@@ -521,6 +646,16 @@ final class Idea_Hub extends Module
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-idea-hub-post-list-notice',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-idea-hub-post-list-notice.js',
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POSTS ),
+					'dependencies'  => array(
+						'googlesitekit-datastore-user',
 					),
 				)
 			),

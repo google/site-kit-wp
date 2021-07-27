@@ -118,7 +118,7 @@ export async function getModulesNotifications() {
 			const { identifier } = module;
 
 			const notifications = await removeDismissed(
-				await API.get( 'modules', identifier, 'notifications', {}, false )
+				await API.get( 'modules', identifier, 'notifications', {}, false ),
 			);
 
 			resolve( { identifier, notifications } );

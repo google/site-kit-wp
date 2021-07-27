@@ -63,7 +63,7 @@ describe( 'modules/analytics properties', () => {
 				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/acronym-case
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
-					{ body: fixtures.createProperty, status: 200 }
+					{ body: fixtures.createProperty, status: 200 },
 				);
 
 				await registry.dispatch( STORE_NAME ).createProperty( accountID );
@@ -72,7 +72,7 @@ describe( 'modules/analytics properties', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{
 						body: { data: { accountID } },
-					}
+					},
 				);
 
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
@@ -83,7 +83,7 @@ describe( 'modules/analytics properties', () => {
 				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/acronym-case
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
-					{ body: fixtures.createProperty, status: 200 }
+					{ body: fixtures.createProperty, status: 200 },
 				);
 
 				registry.dispatch( STORE_NAME ).createProperty( accountID );
@@ -99,7 +99,7 @@ describe( 'modules/analytics properties', () => {
 				};
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				await registry.dispatch( STORE_NAME ).createProperty( accountID );
@@ -314,7 +314,7 @@ describe( 'modules/analytics properties', () => {
 
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getProperties', [ testAccountID ] )
+					.hasFinishedResolution( 'getProperties', [ testAccountID ] ),
 				);
 
 				// It _may_ make a request for profiles internally if not loaded,
@@ -369,7 +369,7 @@ describe( 'modules/analytics properties', () => {
 							displayName: 'troubled-tipped.example.com',
 						},
 					],
-					{ accountID }
+					{ accountID },
 				);
 
 				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( accountID ) ).toBeUndefined();
@@ -395,7 +395,7 @@ describe( 'modules/analytics properties', () => {
 						},
 
 					],
-					{ accountID }
+					{ accountID },
 				);
 
 				freezeFetch( ga4PropertiesEndpoint );
@@ -431,7 +431,7 @@ describe( 'modules/analytics properties', () => {
 						},
 
 					],
-					{ accountID }
+					{ accountID },
 				);
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
@@ -447,7 +447,7 @@ describe( 'modules/analytics properties', () => {
 							displayName: 'troubled-tipped.example.com',
 						},
 					],
-					{ accountID }
+					{ accountID },
 				);
 
 				const properties = registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID );

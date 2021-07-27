@@ -103,7 +103,7 @@ describe( 'core/user authentication', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
-					{ body: coreUserDataExpectedResponse, status: 200 }
+					{ body: coreUserDataExpectedResponse, status: 200 },
 				);
 
 				const initialAuthentication = registry.select( STORE_NAME ).getAuthentication();
@@ -133,7 +133,7 @@ describe( 'core/user authentication', () => {
 
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getAuthentication' )
+					.hasFinishedResolution( 'getAuthentication' ),
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
@@ -148,13 +148,13 @@ describe( 'core/user authentication', () => {
 				};
 				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				registry.select( STORE_NAME ).getAuthentication();
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getAuthentication' )
+					.hasFinishedResolution( 'getAuthentication' ),
 				);
 
 				const authentication = registry.select( STORE_NAME ).getAuthentication();
@@ -177,7 +177,7 @@ describe( 'core/user authentication', () => {
 						requiredScopes: [],
 						grantedScopes: [ grantedScope ],
 						unsatisfiedScopes: [],
-					}, status: 200 }
+					}, status: 200 },
 				);
 
 				const hasScope = registry.select( STORE_NAME ).hasScope( grantedScope );
@@ -185,7 +185,7 @@ describe( 'core/user authentication', () => {
 				// info is fetched.
 				expect( hasScope ).toEqual( undefined );
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAuthentication' )
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAuthentication' ),
 				);
 
 				const hasScopeAfterResolved = registry.select( STORE_NAME ).hasScope( grantedScope );
@@ -213,7 +213,7 @@ describe( 'core/user authentication', () => {
 			it( 'uses a resolver to load the authenticated value if not yet set.', async () => {
 				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
-					{ body: coreUserDataExpectedResponse, status: 200 }
+					{ body: coreUserDataExpectedResponse, status: 200 },
 				);
 
 				// The autentication info will be its initial value while the authentication
@@ -233,7 +233,7 @@ describe( 'core/user authentication', () => {
 				};
 				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				registry.select( STORE_NAME )[ selector ]();

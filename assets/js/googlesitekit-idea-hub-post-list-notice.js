@@ -1,7 +1,5 @@
 /**
- * Activation component.
- *
- * This JavaScript loads on every admin page. Reserved for later.
+ * Idea Hub Post List notice.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -22,29 +20,27 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { render } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { trackEvent } from './util';
-import './components/legacy-notifications';
-import { ActivationApp } from './components/activation/activation-app';
-import Root from './components/Root';
+import Data from 'googlesitekit-data';
+import { CORE_USER } from './googlesitekit/datastore/user/constants';
+const { dispatch } = Data;
+
+const WEEK_IN_SECONDS = 3600 * 24 * 7;
 
 domReady( () => {
-	const renderTarget = document.getElementById( 'js-googlesitekit-activation' );
-
-	if ( renderTarget ) {
-		trackEvent( 'plugin_setup', 'plugin_activated' );
-
-		render(
-			<Root>
-				<ActivationApp />
-			</Root>,
-			renderTarget,
-		);
-
-		renderTarget.classList.remove( 'googlesitekit-activation--loading' );
+	const notice = document.querySelector( '[id="googlesitekit-notice-idea-hub_new-ideas"],[id="googlesitekit-notice-idea-hub_saved-ideas"]' );
+	if ( ! notice ) {
+		return;
 	}
+	const type = notice.id.replace( 'googlesitekit-notice-', '' );
+	const expiresInSeconds = type === 'idea-hub_new-ideas' ? WEEK_IN_SECONDS : 0;
+
+	notice.addEventListener( 'click', ( event ) => {
+		if ( event.target.classList.contains( 'notice-dismiss' ) ) {
+			dispatch( CORE_USER ).dismissItem( type, { expiresInSeconds } );
+		}
+	} );
 } );

@@ -27,7 +27,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 const fetchGetDraftPostIdeasStore = createFetchStore( {
 	baseName: 'getDraftPostIdeas',
 	controlCallback: () => {
-		return API.get( 'modules', 'idea-hub', 'draft-post-ideas' );
+		return API.get( 'modules', 'idea-hub', 'draft-post-ideas', undefined, { useCache: false } );
 	},
 	reducerCallback: ( state, draftPostIdeas ) => {
 		return {
@@ -84,7 +84,7 @@ const store = Data.combineStores(
 		initialState: baseInitialState,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

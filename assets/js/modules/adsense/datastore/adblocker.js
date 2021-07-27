@@ -76,7 +76,7 @@ export const controls = {
 					credentials: 'omit',
 					// Don't follow any redirects; we only care about this request being blocked or not.
 					redirect: 'manual',
-				}
+				},
 			);
 		} catch {
 			return true;

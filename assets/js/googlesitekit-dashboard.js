@@ -62,7 +62,7 @@ domReady( () => {
 			<Root viewContext={ VIEW_CONTEXT_DASHBOARD }>
 				<GoogleSitekitDashboard />
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 	}
 } );

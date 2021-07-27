@@ -46,7 +46,7 @@ const Header = () => {
 				title={ sprintf(
 					/* translators: %s: number of days */
 					_n( 'Performance over the last %s day', 'Performance over the last %s days', currentDayCount, 'google-site-kit' ),
-					currentDayCount
+					currentDayCount,
 				) }
 			/>
 			<WidgetHeaderCTA
@@ -54,7 +54,7 @@ const Header = () => {
 				label={ sprintf(
 					/* translators: %s: module name. */
 					__( 'See full stats in %s', 'google-site-kit' ),
-					_x( 'AdSense', 'Service name', 'google-site-kit' )
+					_x( 'AdSense', 'Service name', 'google-site-kit' ),
 				) }
 			/>
 		</Fragment>

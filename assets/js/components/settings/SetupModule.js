@@ -74,7 +74,7 @@ export default function SetupModule( {
 			className={ classnames(
 				'googlesitekit-settings-connect-module',
 				`googlesitekit-settings-connect-module--${ slug }`,
-				{ 'googlesitekit-settings-connect-module--disabled': ! canActivateModule }
+				{ 'googlesitekit-settings-connect-module--disabled': ! canActivateModule },
 			) }
 			key={ slug }
 		>
@@ -108,7 +108,7 @@ export default function SetupModule( {
 						sprintf(
 							/* translators: %s: module name */
 							__( 'Set up %s', 'google-site-kit' ),
-							name
+							name,
 						)
 					}
 				</Link>

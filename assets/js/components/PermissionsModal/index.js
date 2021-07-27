@@ -40,7 +40,7 @@ const PermissionsModal = () => {
 		( select ) => select( CORE_USER ).getConnectURL( {
 			additionalScopes: permissionsError?.data?.scopes,
 			redirectURL: global.location.href,
-		} )
+		} ),
 	);
 
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );

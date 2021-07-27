@@ -43,7 +43,7 @@ domReady( () => {
 			<Root>
 				<UserInputApp />
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 	}
 } );

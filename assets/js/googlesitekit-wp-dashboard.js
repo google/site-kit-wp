@@ -44,7 +44,7 @@ domReady( () => {
 			<Root>
 				<WPDashboardApp />
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 	}
 } );

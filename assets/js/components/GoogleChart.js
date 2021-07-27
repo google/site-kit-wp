@@ -145,7 +145,7 @@ export default function GoogleChart( props ) {
 			<div className={ classnames(
 				'googlesitekit-chart',
 				'googlesitekit-chart-loading__forced',
-				className
+				className,
 			) }>
 				{ loader }
 			</div>
@@ -173,7 +173,7 @@ export default function GoogleChart( props ) {
 			className={ classnames(
 				'googlesitekit-chart',
 				`googlesitekit-chart--${ chartType }`,
-				className
+				className,
 			) }
 		>
 			<Chart

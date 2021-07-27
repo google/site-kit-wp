@@ -55,12 +55,12 @@ class NotificationCounter extends Component {
 				// Only handle the first completed data load.
 				removeAction(
 					'googlesitekit.dataLoaded',
-					'googlesitekit.dataLoadedGetTotalNotifications'
+					'googlesitekit.dataLoadedGetTotalNotifications',
 				);
 				getTotalNotifications().then( ( count ) => {
 					this.setState( { count } );
 				} );
-			}
+			},
 		);
 
 		document.addEventListener( 'notificationDismissed', this.handleDecrement, false );
@@ -79,27 +79,30 @@ class NotificationCounter extends Component {
 	}
 
 	render() {
+		const wpMenuNameElement = document.querySelector( '#toplevel_page_googlesitekit-dashboard .wp-menu-name' );
+
+		if ( ! wpMenuNameElement ) {
+			return null;
+		}
+
 		const screenReader = sprintf(
 			/* translators: %d: the number of notifications */
 			_n( '%d notification', '%d notifications', this.state.count, 'google-site-kit' ),
-			this.state.count
+			this.state.count,
 		);
 
 		const markup = (
 			<span className={ classnames(
 				'googlesitekit-notifications-counter',
 				'update-plugins',
-				`count-${ this.state.count }`
+				`count-${ this.state.count }`,
 			) }>
 				<span className="plugin-count" aria-hidden="true">{ this.state.count }</span>
 				<VisuallyHidden>{ screenReader }</VisuallyHidden>
 			</span>
 		);
 
-		return createPortal(
-			markup,
-			document.querySelector( '#toplevel_page_googlesitekit-dashboard .wp-menu-name' )
-		);
+		return createPortal( markup, wpMenuNameElement );
 	}
 }
 

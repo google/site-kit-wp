@@ -82,8 +82,9 @@ function Notification( {
 		if ( dismissExpires > 0 ) {
 			await expireDismiss();
 		}
-		setIsDismissed( await getItem( `notification::dismissed::${ id }` ) );
-	} ), [] );
+		const { cacheHit } = await getItem( `notification::dismissed::${ id }` );
+		setIsDismissed( cacheHit );
+	} ) );
 
 	async function handleDismiss( e ) {
 		e.persist();
@@ -136,7 +137,7 @@ function Notification( {
 		}
 	}
 
-	if ( isDismissed ) {
+	if ( isDismissed.value ) {
 		return null;
 	}
 
@@ -185,7 +186,7 @@ function Notification( {
 									{
 										'mdc-layout-grid__cell--span-5-desktop': inlineLayout,
 										'mdc-layout-grid__cell--span-4-desktop': ! inlineLayout,
-									}
+									},
 								) }
 							>
 								<div className="googlesitekit-publisher-win__stats">
@@ -258,7 +259,7 @@ function Notification( {
 					[ `googlesitekit-publisher-win--${ format }` ]: format,
 					[ `googlesitekit-publisher-win--${ type }` ]: type,
 					[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
-				}
+				},
 			) }
 		>
 			<div className="mdc-layout-grid">
@@ -271,9 +272,9 @@ function Notification( {
 						{
 							'mdc-layout-grid__cell--order-2-phone': inlineLayout,
 							'mdc-layout-grid__cell--order-1-tablet': inlineLayout,
-						}
+						},
 					) }>
-						<div className="googlesitekit-publisher-win__logo">
+						<div className="googlesitekit-pubisher-win__logo">
 							{ logoSVG }
 						</div>
 						{ moduleName &&
@@ -296,7 +297,7 @@ function Notification( {
 
 					<div className={ classnames(
 						'mdc-layout-grid__cell',
-						layout
+						layout,
 					) } >
 
 						{ inlineLayout ? (

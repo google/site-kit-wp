@@ -14,7 +14,7 @@ export async function logoutUser() {
 
 	if ( ! isCurrentURL( 'wp-login.php' ) ) {
 		await page.goto(
-			createURL( 'wp-login.php' )
+			createURL( 'wp-login.php' ),
 		);
 	}
 }

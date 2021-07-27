@@ -60,7 +60,7 @@ export default function SettingsForm() {
 		checkedMessage = sprintf(
 			/* translators: %s: account ID */
 			__( 'Site Kit detected AdSense code for a different account %s on your site. For a better ads experience, you should remove AdSense code that’s not linked to this AdSense account.', 'google-site-kit' ),
-			parseAccountID( existingTag )
+			parseAccountID( existingTag ),
 		);
 		uncheckedMessage = __( 'Please note that AdSense will not show ads on your website unless you’ve already placed the code.', 'google-site-kit' );
 	} else {
