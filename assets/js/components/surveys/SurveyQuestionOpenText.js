@@ -40,6 +40,10 @@ const SurveyQuestionOpenText = ( {
 	dismissSurvey } ) => {
 	const [ value, setValue ] = useState( '' );
 
+	const handleSubmit = () => {
+		answerQuestion( { answer: value } );
+	};
+
 	const onChange = useCallback( ( event ) => {
 		setValue( event.target.value );
 	}, [ setValue ] );
@@ -69,7 +73,7 @@ const SurveyQuestionOpenText = ( {
 				</div>
 			</div>
 			<div className="googlesitekit-survey__footer">
-				<Button onClick={ answerQuestion }>{ __( 'Submit', 'google-site-kit' ) }</Button>
+				<Button onClick={ handleSubmit }>{ __( 'Submit', 'google-site-kit' ) }</Button>
 			</div>
 		</div>
 	);
