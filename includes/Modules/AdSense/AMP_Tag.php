@@ -84,8 +84,8 @@ class AMP_Tag extends Module_AMP_Tag {
 		}
 
 		$filtered_options = 'web-story' === $type
-		? apply_filters( 'googlesitekit_amp_story_auto_ads_attributes', $options, $this->tag_id, $this->story_ad_slot_id )
-		: apply_filters( 'googlesitekit_amp_auto_ads_attributes', $options, $this->tag_id, $this->story_ad_slot_id );
+			? apply_filters( 'googlesitekit_amp_story_auto_ads_attributes', $options, $this->tag_id, $this->story_ad_slot_id )
+			: apply_filters( 'googlesitekit_amp_auto_ads_attributes', $options, $this->tag_id, $this->story_ad_slot_id );
 
 		if ( is_array( $filtered_options ) && ! empty( $filtered_options ) ) {
 			$options              = $filtered_options;
