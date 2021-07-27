@@ -243,20 +243,6 @@ function observeNavigationRequest( req ) {
 	}
 }
 
-function requestHandlerIdea( request ) {
-	// Prevent errors for requests that happen after interception is disabled.
-	if ( ! request._allowInterception ) {
-		return;
-	}
-
-	if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
-		/* same
-			JSHandles can be evaluated only in the context they were created!
-		*/
-		// request.respond( { status: 200, body: JSON.stringify( {} ) } );
-	}
-}
-
 /**
  * Observes the given navigation response.
  *
@@ -333,8 +319,6 @@ beforeAll( async () => {
 		page.on( 'request', observeRestRequest );
 		page.on( 'response', observeRestResponse );
 	}
-
-	page.on( 'request', requestHandlerIdea );
 
 	// There's no good way to otherwise conditionally enable this logging
 	// since the code needs to be built into the e2e-utilities.js.
