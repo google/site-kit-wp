@@ -114,13 +114,13 @@ export default function CompatibilityErrorNotice( { error } ) {
 						/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
 						__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
 						'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
-						`<br/>${ error }` // eslint-disable-line indent
+						`<br/>${ error }`, // eslint-disable-line indent
 					) /* eslint-disable-line indent */ }
 						`,
 					{
 						ALLOWED_TAGS: [ 'a', 'br' ],
 						ALLOWED_ATTR: [ 'href' ],
-					}
+					},
 				) } />
 			);
 		case ERROR_AMP_CDN_RESTRICTED:
@@ -133,13 +133,13 @@ export default function CompatibilityErrorNotice( { error } ) {
 						/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
 						__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
 						'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
-						`<br/>${ error }` // eslint-disable-line indent
+						`<br/>${ error }`, // eslint-disable-line indent
 					) /* eslint-disable-line indent */ }
 						`,
 					{
 						ALLOWED_TAGS: [ 'a', 'br' ],
 						ALLOWED_ATTR: [ 'href' ],
-					}
+					},
 				) } />
 			);
 		case ERROR_WP_PRE_V5:

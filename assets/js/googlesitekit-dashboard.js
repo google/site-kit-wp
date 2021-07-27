@@ -65,7 +65,7 @@ domReady( () => {
 			>
 				<GoogleSitekitDashboard />
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 	}
 } );

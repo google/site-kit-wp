@@ -25,7 +25,7 @@ import pick from 'lodash/pick';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { createTestRegistry, freezeFetch, provideSiteInfo, unsubscribeFromAll, untilResolved } from 'tests/js/utils';
+import { createTestRegistry, freezeFetch, provideSiteInfo, unsubscribeFromAll, untilResolved } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 import * as fixtures from './__fixtures__';
 

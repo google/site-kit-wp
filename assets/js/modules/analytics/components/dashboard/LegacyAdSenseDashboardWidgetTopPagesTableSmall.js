@@ -136,7 +136,7 @@ const LegacyAdSenseDashboardWidgetTopPagesTableSmall = ( { data } ) => {
 				rows={ firstFiveRows }
 				columns={ tableColumns }
 			/>
-		</TableOverflowContainer>
+		</TableOverflowContainer>,
 	);
 };
 
@@ -197,7 +197,7 @@ export default withData(
 		},
 	],
 	renderLayout(
-		<PreviewTable rows={ 5 } padding />
+		<PreviewTable rows={ 5 } padding />,
 	),
 	{
 		inGrid: true,

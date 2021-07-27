@@ -78,7 +78,7 @@ const DeviceSizeTabBar = ( {
 						{ icon }
 					</Tab>
 				);
-			}
+			},
 			) }
 		</TabBar>
 	);

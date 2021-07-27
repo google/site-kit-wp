@@ -432,7 +432,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			{
 				accountID: fixtures.accounts[ 0 ]._id,
 				clientID: fixtures.clients[ 0 ]._id,
-			}
+			},
 		);
 
 		return <Setup registry={ registry } />;

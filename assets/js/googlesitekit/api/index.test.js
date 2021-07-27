@@ -108,7 +108,7 @@ describe( 'googlesitekit.api', () => {
 			// mock requests.
 			fetchMock.getOnce(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/users/,
-				{ body: { foo: 'bar' }, status: 200 }
+				{ body: { foo: 'bar' }, status: 200 },
 			);
 
 			const response = await get( 'core', 'search-console', 'users' );
@@ -120,7 +120,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should send query string params from data params', async () => {
 			fetchMock.get(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/search/,
-				{ body: { foo: 'bar' }, status: 200 }
+				{ body: { foo: 'bar' }, status: 200 },
 			);
 
 			const dataBody = { somethingElse: 'to-set', foo: 1, arrayValue: [ 1, 2 ] };
@@ -134,7 +134,7 @@ describe( 'googlesitekit.api', () => {
 						Accept: 'application/json, */*;q=0.1',
 					},
 					method: 'GET',
-				}
+				},
 			);
 		} );
 
@@ -147,7 +147,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetchMock.getOnce(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/other/,
-				{ body: errorResponse, status: 404 }
+				{ body: errorResponse, status: 404 },
 			);
 
 			try {
@@ -167,7 +167,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetchMock.getOnce(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/users/,
-				{ body: errorResponse, status: 500 }
+				{ body: errorResponse, status: 500 },
 			);
 
 			try {
@@ -183,7 +183,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetchMock.get(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/users/,
-				{ body: { foo: 'bar' }, status: 200 }
+				{ body: { foo: 'bar' }, status: 200 },
 			);
 
 			const firstResponse = await get( 'core', 'search-console', 'users' );
@@ -192,7 +192,7 @@ describe( 'googlesitekit.api', () => {
 			expect( setItemSpy ).toHaveBeenCalledWith(
 				createCacheKey( 'core', 'search-console', 'users' ),
 				firstResponse,
-				{ ttl: 3600 }
+				{ ttl: 3600 },
 			);
 
 			// Ensure `fetch()` is not called a second time, because we have a cached
@@ -204,7 +204,7 @@ describe( 'googlesitekit.api', () => {
 
 			// Ensure cache functions were used.
 			expect( getItemSpy ).toHaveBeenCalledWith(
-				createCacheKey( 'core', 'search-console', 'users' )
+				createCacheKey( 'core', 'search-console', 'users' ),
 			);
 		} );
 
@@ -213,13 +213,13 @@ describe( 'googlesitekit.api', () => {
 
 			fetchMock.get(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/notifications/,
-				{ body: { foo: 'bar' }, status: 200 }
+				{ body: { foo: 'bar' }, status: 200 },
 			);
 
 			await get( 'core', 'search-console', 'notifications' );
 			expect( setItemSpy ).not.toHaveBeenCalledWith(
 				createCacheKey( 'core', 'search-console', 'notifications' ),
-				{ foo: 'bar' }
+				{ foo: 'bar' },
 			);
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 
@@ -230,7 +230,7 @@ describe( 'googlesitekit.api', () => {
 			// Ensure the cache was never used.
 			expect( getItemSpy ).not.toHaveBeenCalledWith(
 				createCacheKey( 'core', 'search-console', 'notifications' ),
-				3600
+				3600,
 			);
 		} );
 
@@ -240,13 +240,13 @@ describe( 'googlesitekit.api', () => {
 
 			fetchMock.get(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/other/,
-				{ body: { foo: 'bar' }, status: 200 }
+				{ body: { foo: 'bar' }, status: 200 },
 			);
 
 			await get( 'core', 'search-console', 'other', undefined, { useCache: false } );
 			expect( setItemSpy ).not.toHaveBeenCalledWith(
 				createCacheKey( 'core', 'search-console', 'other' ),
-				{ foo: 'bar' }
+				{ foo: 'bar' },
 			);
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 
@@ -257,21 +257,21 @@ describe( 'googlesitekit.api', () => {
 			// Ensure the cache was never used.
 			expect( getItemSpy ).not.toHaveBeenCalledWith(
 				createCacheKey( 'core', 'search-console', 'other' ),
-				3600
+				3600,
 			);
 		} );
 
 		it( 'should not use cache even if cached values exist', async () => {
 			fetchMock.get(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/cached/,
-				{ body: { foo: 'bar' }, status: 200 }
+				{ body: { foo: 'bar' }, status: 200 },
 			);
 
 			await get( 'core', 'search-console', 'cached' );
 			expect( setItemSpy ).toHaveBeenCalledWith(
 				createCacheKey( 'core', 'search-console', 'cached' ),
 				{ foo: 'bar' },
-				{ ttl: 3600 }
+				{ ttl: 3600 },
 			);
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 
@@ -283,7 +283,7 @@ describe( 'googlesitekit.api', () => {
 			// Ensure the cache was never used.
 			expect( getItemSpy ).not.toHaveBeenCalledWith(
 				createCacheKey( 'core', 'search-console', 'cached' ),
-				3600
+				3600,
 			);
 		} );
 
@@ -296,7 +296,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetchMock.getOnce(
 				/^\/google-site-kit\/v1\/test-type\/test-identifier\/data\/test-datapoint/,
-				{ body: errorResponse, status: 500 }
+				{ body: errorResponse, status: 500 },
 			);
 
 			try {
@@ -344,7 +344,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should send request body data from data params', async () => {
 			fetchMock.post(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
-				{ body: { foo: 'bar' }, status: 200 }
+				{ body: { foo: 'bar' }, status: 200 },
 			);
 
 			const dataBody = { somethingElse: 'to-set', foo: 1, arrayValue: [ 1, 2 ] };
@@ -359,14 +359,14 @@ describe( 'googlesitekit.api', () => {
 						'Content-Type': 'application/json',
 					},
 					method: 'POST',
-				}
+				},
 			);
 		} );
 
 		it( 'should send request body data from data params and query params if set', async () => {
 			fetchMock.post(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
-				{ body: { foo: 'bar' }, status: 200 }
+				{ body: { foo: 'bar' }, status: 200 },
 			);
 
 			const dataBody = { somethingElse: 'to-set', foo: 1, arrayValue: [ 1, 2 ] };
@@ -384,14 +384,14 @@ describe( 'googlesitekit.api', () => {
 						'Content-Type': 'application/json',
 					},
 					method: 'POST',
-				}
+				},
 			);
 		} );
 
 		it( 'should never use the cache for set requests', async () => {
 			fetchMock.post(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
-				{ body: { foo: 'bar' }, status: 200 }
+				{ body: { foo: 'bar' }, status: 200 },
 			);
 
 			await set( 'core', 'search-console', 'settings', { somethingElse: 'to-set' } );
@@ -410,12 +410,12 @@ describe( 'googlesitekit.api', () => {
 			// Mock all requests for this URL.
 			fetchMock.mock(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/will-cache/,
-				{ body: { foo: 'bar' }, status: 200 }
+				{ body: { foo: 'bar' }, status: 200 },
 			);
 
 			// Contents should not be found in the cache on first request.
 			let cacheData = await getItem(
-				createCacheKey( 'core', 'search-console', 'will-cache' )
+				createCacheKey( 'core', 'search-console', 'will-cache' ),
 			);
 			expect( cacheData.cacheHit ).toEqual( false );
 
@@ -424,7 +424,7 @@ describe( 'googlesitekit.api', () => {
 
 			// Now cached data will appear.
 			cacheData = await getItem(
-				createCacheKey( 'core', 'search-console', 'will-cache' )
+				createCacheKey( 'core', 'search-console', 'will-cache' ),
 			);
 			expect( cacheData.cacheHit ).toEqual( true );
 			expect( cacheData.value ).toEqual( { foo: 'bar' } );
@@ -432,7 +432,7 @@ describe( 'googlesitekit.api', () => {
 			await set( 'core', 'search-console', 'will-cache', { somethingElse: 'to-set' } );
 
 			cacheData = await getItem(
-				createCacheKey( 'core', 'search-console', 'will-cache' )
+				createCacheKey( 'core', 'search-console', 'will-cache' ),
 			);
 			expect( cacheData.cacheHit ).toEqual( false );
 		} );
@@ -441,14 +441,14 @@ describe( 'googlesitekit.api', () => {
 			// Mock all requests for this URL.
 			fetchMock.mock(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/will-cache/,
-				{ body: { foo: 'bar' }, status: 200 }
+				{ body: { foo: 'bar' }, status: 200 },
 			);
 
 			const queryParams = { surf: 'board' };
 
 			// Contents should not be found in the cache on first request.
 			let cacheData = await getItem(
-				createCacheKey( 'core', 'search-console', 'will-cache', queryParams )
+				createCacheKey( 'core', 'search-console', 'will-cache', queryParams ),
 			);
 			expect( cacheData.cacheHit ).toEqual( false );
 
@@ -457,7 +457,7 @@ describe( 'googlesitekit.api', () => {
 
 			// Now cached data will appear.
 			cacheData = await getItem(
-				createCacheKey( 'core', 'search-console', 'will-cache', queryParams )
+				createCacheKey( 'core', 'search-console', 'will-cache', queryParams ),
 			);
 			expect( cacheData.cacheHit ).toEqual( true );
 			expect( cacheData.value ).toEqual( { foo: 'bar' } );
@@ -465,7 +465,7 @@ describe( 'googlesitekit.api', () => {
 			await set( 'core', 'search-console', 'will-cache', { somethingElse: 'to-set' } );
 
 			cacheData = await getItem(
-				createCacheKey( 'core', 'search-console', 'will-cache', queryParams )
+				createCacheKey( 'core', 'search-console', 'will-cache', queryParams ),
 			);
 			expect( cacheData.cacheHit ).toEqual( false );
 		} );
@@ -479,7 +479,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetchMock.postOnce(
 				/^\/google-site-kit\/v1\/test-type\/test-identifier\/data\/test-datapoint/,
-				{ body: errorResponse, status: 500 }
+				{ body: errorResponse, status: 500 },
 			);
 
 			try {
@@ -501,11 +501,11 @@ describe( 'googlesitekit.api', () => {
 		it( 'should remove all cached items when called', async () => {
 			await setItem(
 				createCacheKey( 'core', 'search-console', 'accounts' ),
-				'data'
+				'data',
 			);
 			await setItem(
 				createCacheKey( 'core', 'search-console', 'accounts', { foo: 'test' } ),
-				'other-data'
+				'other-data',
 			);
 
 			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 2 );
@@ -518,7 +518,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should remove cached item with query params', async () => {
 			await setItem(
 				createCacheKey( 'core', 'search-console', 'accounts', { foo: 'bar' } ),
-				'data'
+				'data',
 			);
 
 			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 1 );
@@ -531,18 +531,18 @@ describe( 'googlesitekit.api', () => {
 		it( 'should only remove keys in the right scope', async () => {
 			await setItem(
 				createCacheKey( 'core', 'search-console', 'accounts' ),
-				'data'
+				'data',
 			);
 			await setItem(
 				createCacheKey( 'core', 'search-console', 'users' ),
-				'other-data'
+				'other-data',
 			);
 
 			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 2 );
 
 			await invalidateCache( 'core', 'search-console', 'accounts' );
 			const { value } = await getItem(
-				createCacheKey( 'core', 'search-console', 'users' )
+				createCacheKey( 'core', 'search-console', 'users' ),
 			);
 
 			expect( value ).toEqual( 'other-data' );
@@ -552,11 +552,11 @@ describe( 'googlesitekit.api', () => {
 		it( 'should remove all keys when scope is broad', async () => {
 			await setItem(
 				createCacheKey( 'core', 'search-console', 'accounts' ),
-				'data'
+				'data',
 			);
 			await setItem(
 				createCacheKey( 'core', 'search-console', 'users' ),
-				'other-data'
+				'other-data',
 			);
 
 			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 2 );
@@ -569,11 +569,11 @@ describe( 'googlesitekit.api', () => {
 		it( 'should remove everything in the cache when called without arguments', async () => {
 			await setItem(
 				createCacheKey( 'core', 'search-console', 'accounts' ),
-				'data'
+				'data',
 			);
 			await setItem(
 				createCacheKey( 'modules', 'analytics', 'something' ),
-				'other-data'
+				'other-data',
 			);
 
 			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 2 );
@@ -603,11 +603,11 @@ describe( 'googlesitekit.api', () => {
 	describe( 'createCacheKey', () => {
 		it( 'should create a cache key with all sections in order', () => {
 			expect(
-				createCacheKey( 'core', 'search-console', 'users' )
+				createCacheKey( 'core', 'search-console', 'users' ),
 			).toEqual( 'core::search-console::users' );
 
 			expect(
-				createCacheKey( 'core', 'adsense', 'accounts' )
+				createCacheKey( 'core', 'adsense', 'accounts' ),
 			).toEqual( 'core::adsense::accounts' );
 		} );
 
@@ -622,28 +622,28 @@ describe( 'googlesitekit.api', () => {
 				// params via `stringifyObject( queryParams )`.
 				// We manually set the value here to ensure all the external functions
 				// are working as expected. :-)
-				createCacheKey( 'core', 'search-console', 'users', queryParams )
+				createCacheKey( 'core', 'search-console', 'users', queryParams ),
 			).toEqual( 'core::search-console::users::a9e286c390a430f5dd1fbab4b31dd2a6' );
 		} );
 
 		it( 'should create a cache key without query params when params are empty', () => {
 			const queryParams = {};
 			expect(
-				createCacheKey( 'core', 'search-console', 'users', queryParams )
+				createCacheKey( 'core', 'search-console', 'users', queryParams ),
 			).toEqual( 'core::search-console::users' );
 		} );
 
 		it( 'should ignore non-object query params', () => {
 			expect(
-				createCacheKey( 'core', 'search-console', 'users', 0 )
+				createCacheKey( 'core', 'search-console', 'users', 0 ),
 			).toEqual( 'core::search-console::users' );
 
 			expect(
-				createCacheKey( 'core', 'search-console', 'users', [ 1, 2 ] )
+				createCacheKey( 'core', 'search-console', 'users', [ 1, 2 ] ),
 			).toEqual( 'core::search-console::users' );
 
 			expect(
-				createCacheKey( 'core', 'search-console', 'users', new Date() )
+				createCacheKey( 'core', 'search-console', 'users', new Date() ),
 			).toEqual( 'core::search-console::users' );
 		} );
 	} );
@@ -652,7 +652,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should send a request using fetch', async () => {
 			fetchMock.get(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
-				{ body: { foo: 'bar' }, status: 200 }
+				{ body: { foo: 'bar' }, status: 200 },
 			);
 
 			await siteKitRequest( 'core', 'search-console', 'settings' );
@@ -666,7 +666,7 @@ describe( 'googlesitekit.api', () => {
 						Accept: 'application/json, */*;q=0.1',
 					},
 					method: 'GET',
-				}
+				},
 			);
 		} );
 	} );

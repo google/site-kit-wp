@@ -132,13 +132,13 @@ describe( 'core/widgets Widgets', () => {
 
 			it( 'requires a component to be provided', () => {
 				expect(
-					() => registry.dispatch( STORE_NAME ).registerWidget( slug )
+					() => registry.dispatch( STORE_NAME ).registerWidget( slug ),
 				).toThrow( 'component is required to register a widget.' );
 			} );
 
 			it( 'requires a valid width to be provided', () => {
 				expect(
-					() => registry.dispatch( STORE_NAME ).registerWidget( slug, { Component: WidgetComponent, width: 'HUUGE' } )
+					() => registry.dispatch( STORE_NAME ).registerWidget( slug, { Component: WidgetComponent, width: 'HUUGE' } ),
 				).toThrow( 'Widget width should be one of' );
 			} );
 

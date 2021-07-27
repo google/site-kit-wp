@@ -76,7 +76,7 @@ describe( 'withData', () => {
 
 	beforeEach( () => {
 		TestComponent = jest.fn(
-			() => <div data-testid="test-component">Test</div>
+			() => <div data-testid="test-component">Test</div>,
 		);
 		removeAllActions( 'googlesitekit.dataLoaded' );
 		removeAllFilters( `googlesitekit.module${ context }DataRequest` );
@@ -126,13 +126,13 @@ describe( 'withData', () => {
 		const responseData = { foo: 'bar' };
 		fetchMock.postOnce(
 			/^\/google-site-kit\/v1\/data/,
-			{ body: { [ getCacheKeyForDataset( dataset ) ]: responseData } }
+			{ body: { [ getCacheKeyForDataset( dataset ) ]: responseData } },
 		);
 		await act(
 			() => new Promise( ( resolve ) => {
 				addAction( 'googlesitekit.dataLoaded', 'test.resolve', resolve );
 				collectModuleData( context );
-			} )
+			} ),
 		);
 
 		expect( container.firstChild ).toBe( queryByTestID( 'test-component' ) );
@@ -182,7 +182,7 @@ describe( 'withData', () => {
 			() => new Promise( ( resolve ) => {
 				addAction( 'googlesitekit.dataLoaded', 'test.resolve', resolve );
 				collectModuleData( context );
-			} )
+			} ),
 		);
 
 		expect( queryByTestID( 'test-component' ) ).not.toBeInTheDocument();
@@ -212,7 +212,7 @@ describe( 'withData', () => {
 			() => new Promise( ( resolve ) => {
 				addAction( 'googlesitekit.dataLoaded', 'test.resolve', resolve );
 				collectModuleData( context );
-			} )
+			} ),
 		);
 
 		expect( queryByTestID( 'test-component' ) ).not.toBeInTheDocument();
@@ -239,7 +239,7 @@ describe( 'withData', () => {
 			() => new Promise( ( resolve ) => {
 				addAction( 'googlesitekit.dataLoaded', 'test.resolve', resolve );
 				collectModuleData( context );
-			} )
+			} ),
 		);
 
 		expect( isDataZero ).toHaveBeenCalledWith( responseData, 'test-datapoint', dataset );

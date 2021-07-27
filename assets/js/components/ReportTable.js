@@ -64,7 +64,7 @@ export default function ReportTable( { rows, columns, className, limit } ) {
 								>
 									{ title }
 								</th>
-							)
+							),
 						) }
 					</tr>
 				</thead>
@@ -84,7 +84,7 @@ export default function ReportTable( { rows, columns, className, limit } ) {
 											className={ classnames(
 												'googlesitekit-table__body-item',
 												{ 'hidden-on-mobile': hideOnMobile },
-												columnClassName
+												columnClassName,
 											) }
 										>
 											<div className="googlesitekit-table__body-item-content">
@@ -109,8 +109,8 @@ ReportTable.propTypes = {
 			[
 				PropTypes.array,
 				PropTypes.object,
-			]
-		)
+			],
+		),
 	).isRequired,
 	columns: PropTypes.arrayOf(
 		PropTypes.shape( {
@@ -121,7 +121,7 @@ ReportTable.propTypes = {
 			field: PropTypes.string,
 			hideOnMobile: PropTypes.bool,
 			Component: PropTypes.componentType,
-		} )
+		} ),
 	).isRequired,
 	className: PropTypes.string,
 	limit: PropTypes.number,

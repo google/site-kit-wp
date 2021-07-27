@@ -69,7 +69,7 @@ const store = Data.combineStores(
 		initialState: baseInitialState,
 		actions: baseActions,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

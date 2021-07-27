@@ -47,7 +47,7 @@ domReady( () => {
 			>
 				<DashboardDetailsApp />
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 	}
 } );

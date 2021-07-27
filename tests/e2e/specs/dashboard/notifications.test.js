@@ -115,10 +115,10 @@ describe( 'core site notifications', () => {
 			const notificationDescription = await page.$$( '.googlesitekit-publisher-win__desc' );
 
 			expect(
-				notificationTitles.filter( ( { textContent } ) => textContent.match( /test notification title/i ) )
+				notificationTitles.filter( ( { textContent } ) => textContent.match( /test notification title/i ) ),
 			).toHaveLength( 0 );
 			expect(
-				notificationDescription.filter( ( { textContent } ) => textContent.match( /test notification content/i ) )
+				notificationDescription.filter( ( { textContent } ) => textContent.match( /test notification content/i ) ),
 			).toHaveLength( 0 );
 		} );
 	} );

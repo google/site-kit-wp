@@ -91,7 +91,7 @@ describe( 'core/user surveys', () => {
 			it( 'does not fetch if there is a cache value present for the trigger ID', async () => {
 				await setItem(
 					createCacheKey( 'core', 'user', 'survey-trigger', { triggerID: 'optimizeSurvey' } ),
-					{} // Any value will due for now.
+					{}, // Any value will due for now.
 				);
 
 				await registry.dispatch( STORE_NAME ).triggerSurvey( 'optimizeSurvey' );
@@ -175,7 +175,7 @@ describe( 'core/user surveys', () => {
 				registry.dispatch( STORE_NAME ).receiveTriggerSurvey( survey, { triggerID: 'optimizeSurvey' } );
 
 				expect(
-					registry.select( STORE_NAME ).getCurrentSurvey()
+					registry.select( STORE_NAME ).getCurrentSurvey(),
 				).toEqual( survey.survey_payload );
 			} );
 		} );
@@ -183,7 +183,7 @@ describe( 'core/user surveys', () => {
 		describe( 'getCurrentSurveySession', () => {
 			it( 'returns null when no current survey session is set', async () => {
 				expect(
-					registry.select( STORE_NAME ).getCurrentSurveySession()
+					registry.select( STORE_NAME ).getCurrentSurveySession(),
 				).toBeNull();
 			} );
 
@@ -191,7 +191,7 @@ describe( 'core/user surveys', () => {
 				registry.dispatch( STORE_NAME ).receiveTriggerSurvey( survey, { triggerID: 'optimizeSurvey' } );
 
 				expect(
-					registry.select( STORE_NAME ).getCurrentSurveySession()
+					registry.select( STORE_NAME ).getCurrentSurveySession(),
 				).toEqual( survey.session );
 			} );
 		} );

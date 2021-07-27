@@ -22,7 +22,7 @@
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/site registryKey', () => {
@@ -56,7 +56,7 @@ describe( 'core/site registryKey', () => {
 			await registry.dispatch( STORE_NAME ).setRegistryKey( registryKey );
 
 			expect(
-				registry.select( STORE_NAME ).getRegistryKey()
+				registry.select( STORE_NAME ).getRegistryKey(),
 			).toEqual( registryKey );
 		} );
 	} );

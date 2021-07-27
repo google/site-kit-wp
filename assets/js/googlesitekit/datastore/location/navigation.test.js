@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from 'tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/location', () => {

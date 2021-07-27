@@ -53,7 +53,7 @@ describe( 'AccountSelect', () => {
 		// "Set up a new account".
 		expect( listItems ).toHaveLength( fixtures.accounts.length + 1 );
 		expect(
-			listItems.some( ( { dataset } ) => dataset.value === ACCOUNT_CREATE )
+			listItems.some( ( { dataset } ) => dataset.value === ACCOUNT_CREATE ),
 		).toBe( true );
 	} );
 
