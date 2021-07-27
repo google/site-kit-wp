@@ -46,7 +46,7 @@ export default function SettingsAdminSharing() {
 	const currentUserID = useSelect( ( select ) => select( CORE_USER ).getID() );
 	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 
-	const [ sharedModules, setSharedModules ] = useState( false );
+	const [ sharedModules, setSharedModules ] = useState( {} );
 	const toggleShareModule = useCallback( async ( e ) => {
 		const moduleSlug = e.target.id.replace( 'share-', '' );
 		const shared = !! e.target.checked;

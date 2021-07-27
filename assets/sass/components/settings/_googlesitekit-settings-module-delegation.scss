@@ -1,0 +1,22 @@
+.googlesitekit-module-delegation {
+	float: right;
+	margin-top: -1rem;
+
+	&__text,
+	& > legend {
+		font-size: 0.75rem;
+		font-weight: 500;
+		margin: 0;
+	}
+
+	&__toggle label {
+		font-size: 0.75rem;
+		font-weight: 500;
+
+		span {
+			display: block;
+			font-weight: 400;
+			line-height: 1;
+		}
+	}
+}

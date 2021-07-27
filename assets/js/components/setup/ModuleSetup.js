@@ -38,6 +38,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import HelpMenu from '../help/HelpMenu';
 import HelpMenuLink from '../help/HelpMenuLink';
+import ModuleDelegationToggle from './ModuleDelegationToggle';
 const { useSelect, useDispatch } = Data;
 
 export default function ModuleSetup( { moduleSlug } ) {
@@ -99,6 +100,9 @@ export default function ModuleSetup( { moduleSlug } ) {
 											mdc-layout-grid__cell
 											mdc-layout-grid__cell--span-12
 										">
+											{ module.shareable && (
+												<ModuleDelegationToggle module={ module } />
+											) }
 											<p className="
 												googlesitekit-setup__intro-title
 												googlesitekit-overline
