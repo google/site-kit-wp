@@ -82,7 +82,7 @@ const SurveyQuestionOpenText = ( {
 				</div>
 			</div>
 			<div className="googlesitekit-survey__footer">
-				<Button onClick={ handleSubmit }>{ __( 'Submit', 'google-site-kit' ) }</Button>
+				<Button disabled={ value.length === 0 } onClick={ handleSubmit }>{ __( 'Submit', 'google-site-kit' ) }</Button>
 			</div>
 		</div>
 	);
