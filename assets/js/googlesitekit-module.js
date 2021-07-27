@@ -30,7 +30,6 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import './components/data';
 import './components/legacy-notifications';
 import Root from './components/Root';
 import ModuleApp from './components/module/ModuleApp';

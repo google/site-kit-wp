@@ -31,7 +31,6 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import './components/data';
 import Root from './components/Root';
 import WPDashboardApp from './components/wp-dashboard/WPDashboardApp';
 
