@@ -123,11 +123,7 @@ final class Client_Factory {
 		// Set the callback which is called when refreshing the access token on-the-fly fails.
 		$token_exception_callback = $args['token_exception_callback'];
 		if ( ! empty( $token_exception_callback ) ) {
-			$client->setTokenExceptionCallback(
-				function( Exception $e ) use ( $token_exception_callback ) {
-					$token_exception_callback( $e );
-				}
-			);
+			$client->setTokenExceptionCallback( $token_exception_callback );
 		}
 
 		if ( ! empty( $args['login_hint_email'] ) ) {

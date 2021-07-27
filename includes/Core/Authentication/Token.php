@@ -38,13 +38,13 @@ final class Token {
 	/**
 	 * Encrypted_User_Options instance.
 	 *
-	 * @since 1.0.0
+	 * @since n.e.x.t
 	 * @var Encrypted_User_Options
 	 */
 	private $encrypted_user_options;
 
 	/**
-	 * User_Setting constructor.
+	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -107,11 +107,11 @@ final class Token {
 	 * @return bool True on success, false on failure.
 	 */
 	public function set( $value ) {
-		if ( ! is_array( $value ) || empty( $value['access_token'] ) ) {
+		if ( empty( $value['access_token'] ) ) {
 			return false;
 		}
 
-		// Use sane defaults for these fields.
+		// Use reasonable defaults for these fields.
 		if ( empty( $value['expires_in'] ) ) {
 			$value['expires_in'] = HOUR_IN_SECONDS;
 		}

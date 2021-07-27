@@ -174,7 +174,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @return bool true if any required scopes are not satisfied, otherwise false.
 	 */
 	public function needs_reauthentication() {
-		if ( ! $this->get_token() ) {
+		if ( ! $this->token->has() ) {
 			return false;
 		}
 
@@ -592,14 +592,14 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 *                or empty string on failure.
 	 */
 	public function get_proxy_permissions_url() {
-		$token = $this->get_token();
-		if ( empty( $token['access_token'] ) ) {
+		$access_token = $this->get_access_token();
+		if ( empty( $access_token ) ) {
 			return '';
 		}
 
 		return $this->google_proxy->permissions_url(
 			$this->credentials,
-			array( 'token' => $token['access_token'] )
+			array( 'token' => $access_token )
 		);
 	}
 
