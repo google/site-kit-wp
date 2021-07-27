@@ -23,12 +23,12 @@ import Data from 'googlesitekit-data';
 import { createErrorStore } from '../../data/create-error-store';
 import { createSnapshotStore } from '../../data/create-snapshot-store';
 import forms from './forms';
-import { STORE_NAME } from './constants';
+import { CORE_FORMS } from './constants';
 
 const store = Data.combineStores(
 	Data.commonStore,
 	forms,
-	createSnapshotStore( STORE_NAME ),
+	createSnapshotStore( CORE_FORMS ),
 	createErrorStore(),
 );
 
@@ -40,7 +40,7 @@ export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
 export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, store );
+	registry.registerStore( CORE_FORMS, store );
 };
 
 export default store;
