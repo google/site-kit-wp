@@ -16,12 +16,67 @@
  * limitations under the License.
  */
 
-const SurveyQuestionMultiSelect = () => {
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import Button from '../Button';
+// I don't see this used anywhere else. MaterialUI default better?
+import Checkbox from '../Checkbox';
+import SurveyHeader from './SurveyHeader';
+
+const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismissSurvey } ) => {
+	const handleSubmit = () => {
+		answerQuestion( {} );
+	};
 	return (
-		<div>
-			SurveyQuestionMultiSelect
+		<div className="googlesitekit-survey__completion">
+			<SurveyHeader
+				title={ question }
+				dismissSurvey={ dismissSurvey }
+			/>
+
+			<div className="googlesitekit-survey__body">
+				<Checkbox>Value</Checkbox>
+				<Checkbox>Value</Checkbox>
+				<Checkbox>Value</Checkbox>
+				<Checkbox>Value</Checkbox>
+				<Checkbox>Value</Checkbox>
+				<Checkbox>Value</Checkbox>
+				<Checkbox>Value</Checkbox>
+				<Checkbox>Value</Checkbox>
+				{ choices }
+			</div>
+
+			<div className="googlesitekit-survey__footer">
+				<Button
+					onClick={ handleSubmit }
+				>
+					Next
+				</Button>
+			</div>
 		</div>
 	);
+};
+
+SurveyQuestionMultiSelect.propTypes = {
+	question: PropTypes.string.isRequired,
+	// TODO - is this shape ok?
+	choices: PropTypes.arrayOf(
+		PropTypes.shape( {
+			answer_ordinal: PropTypes.oneOfType( [
+				PropTypes.string,
+				PropTypes.number,
+			] ),
+			text: PropTypes.string,
+		} ),
+	).isRequired,
+	answerQuestion: PropTypes.func.isRequired,
+	dismissSurvey: PropTypes.func.isRequired,
 };
 
 export default SurveyQuestionMultiSelect;
