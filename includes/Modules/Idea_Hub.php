@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Modules;
 
-use Google\Service\ShoppingContent\Resource\Pos;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Assets\Asset;
@@ -54,6 +53,7 @@ use WP_Error;
  */
 final class Idea_Hub extends Module
 	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets, Module_With_Deactivation, Module_With_Persistent_Registration {
+
 	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
