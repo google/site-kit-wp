@@ -35,7 +35,7 @@ import withData from '../../../../components/higherorder/withData';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
@@ -45,9 +45,9 @@ const { useSelect } = Data;
 
 const LegacySearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 	const { data } = props;
-	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const domain = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
+	const isDomainProperty = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).isDomainProperty() );
 	const referenceSiteURL = useSelect( ( select ) => {
 		return untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 	} );
@@ -62,7 +62,7 @@ const LegacySearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 	} else if ( isDomainProperty && referenceSiteURL ) {
 		baseServiceURLArgs.page = `*${ referenceSiteURL }`;
 	}
-	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+	const baseServiceURL = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getServiceURL(
 		{
 			path: '/performance/search-analytics',
 			query: baseServiceURLArgs,

@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
-import { STORE_NAME } from './constants';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 import { validateCanSubmitChanges, INVARIANT_INVALID_PROPERTY_SELECTION } from './settings';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 
@@ -48,13 +48,13 @@ describe( 'modules/search-console settings', () => {
 		const settingsEndpoint = /^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/;
 
 		beforeEach( () => {
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 				propertyID: 'http://example.com/',
 			} );
 		} );
 
 		it( 'should not trigger saveSettings action if nothing is changed', async () => {
-			await registry.dispatch( STORE_NAME ).submitChanges();
+			await registry.dispatch( MODULES_SEARCH_CONSOLE ).submitChanges();
 			expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
 		} );
 
@@ -64,8 +64,8 @@ describe( 'modules/search-console settings', () => {
 				( url, opts ) => ( { body: JSON.parse( opts.body )?.data, status: 200 } ),
 			);
 
-			registry.dispatch( STORE_NAME ).setPropertyID( 'https://example.com/' );
-			await registry.dispatch( STORE_NAME ).submitChanges();
+			registry.dispatch( MODULES_SEARCH_CONSOLE ).setPropertyID( 'https://example.com/' );
+			await registry.dispatch( MODULES_SEARCH_CONSOLE ).submitChanges();
 
 			expect( fetchMock ).toHaveFetched( settingsEndpoint, {
 				body: {
@@ -79,7 +79,7 @@ describe( 'modules/search-console settings', () => {
 
 	describe( 'validateCanSubmitChanges', () => {
 		it( 'should throw an error if propertyID is invalid', () => {
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 				propertyID: '',
 			} );
 
@@ -87,7 +87,7 @@ describe( 'modules/search-console settings', () => {
 		} );
 
 		it( 'should not throw if propertyID is valid', () => {
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 				propertyID: 'http://example.com/',
 			} );
 
@@ -95,7 +95,7 @@ describe( 'modules/search-console settings', () => {
 		} );
 
 		it( 'should throw if there are no changes to the form', () => {
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 				propertyID: 'http://example.com/',
 			} );
 
@@ -103,11 +103,11 @@ describe( 'modules/search-console settings', () => {
 		} );
 
 		it( 'should not throw if there are changes to the form', () => {
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 				propertyID: 'http://example.com/',
 			} );
 
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 				propertyID: 'http://sitekit.google.com/',
 			} );
 

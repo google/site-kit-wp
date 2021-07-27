@@ -43,7 +43,7 @@ import extractForSparkline from '../../../../util/extract-for-sparkline';
 import CTA from '../../../../components/legacy-notifications/cta';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
@@ -53,8 +53,8 @@ function LegacySearchConsoleDashboardWidgetTopLevel( { data, dateRangeLength } )
 	const { error } = data;
 
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
+	const propertyID = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getPropertyID() );
+	const isDomainProperty = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).isDomainProperty() );
 	const referenceSiteURL = useSelect( ( select ) => {
 		return untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 	} );
@@ -70,7 +70,7 @@ function LegacySearchConsoleDashboardWidgetTopLevel( { data, dateRangeLength } )
 		serviceBaseURLArgs.page = `*${ referenceSiteURL }`;
 	}
 
-	const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+	const serviceURL = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getServiceURL(
 		{
 			path: '/performance/search-analytics',
 			query: serviceBaseURLArgs,
