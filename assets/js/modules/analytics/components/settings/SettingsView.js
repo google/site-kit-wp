@@ -42,6 +42,7 @@ export default function SettingsView() {
 	const isGA4Enabled = useFeature( 'ga4setup' );
 	const ga4PropertyID = useSelect( ( select ) => isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getPropertyID() : '' );
 	const ga4MeasurementID = useSelect( ( select ) => isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getMeasurementID() : '' );
+	const webDataStreamID = useSelect( ( select ) => isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getWebDataStreamID() : '' );
 
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
@@ -61,6 +62,11 @@ export default function SettingsView() {
 
 	const editViewSettingsURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
 		path: `/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`,
+	} ) );
+
+	// this is going to the wrong webDataStream... is opening elasticpress but that one is not selected
+	const editViewSettingsGA4URL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
+		path: `/a${ accountID }p${ ga4PropertyID }/admin/streams/table/${ webDataStreamID }`,
 	} ) );
 
 	return (
@@ -131,6 +137,19 @@ export default function SettingsView() {
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting value={ ga4MeasurementID } />
 						</p>
+					</div>
+					<div className="googlesitekit-settings-module__meta-item">
+						<Link
+							href={ editViewSettingsGA4URL }
+							external
+						>
+							{ createInterpolateElement(
+								__( 'Edit <VisuallyHidden>Google Analytics 4 web data stream </VisuallyHidden>in Analytics', 'google-site-kit' ),
+								{
+									VisuallyHidden: <VisuallyHidden />,
+								},
+							) }
+						</Link>
 					</div>
 				</div>
 			) }
