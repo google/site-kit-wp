@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import * as fixtures from '../../assets/js/modules/analytics/datastore/__fixtures__';
-import { STORE_NAME } from '../../assets/js/modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS } from '../../assets/js/modules/analytics/datastore/constants';
 import { CORE_SITE, AMP_MODE_SECONDARY } from '../../assets/js/googlesitekit/datastore/site/constants';
 import {
 	provideModules,
@@ -99,19 +99,19 @@ export function generateGTMAnalyticsPropertyStory( {
 				ampMode: AMP_MODE_SECONDARY,
 			} );
 
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 
 			[ gtmAccountID, existingTagAccountID ].forEach( ( accountID ) => {
 				const accountProperties = properties.filter( ( { accountId } ) => accountId === accountID ); // eslint-disable-line sitekit/acronym-case
 
-				registry.dispatch( STORE_NAME ).receiveGetProperties(
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
 					accountProperties,
 					{ accountID },
 				);
 
 				accountProperties.forEach( ( { id: propertyID } ) => {
-					registry.dispatch( STORE_NAME ).receiveGetProfiles(
+					registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles(
 						profiles.filter( ( { webPropertyId } ) => webPropertyId === propertyID ), // eslint-disable-line sitekit/acronym-case
 						{ accountID, propertyID },
 					);
@@ -119,16 +119,16 @@ export function generateGTMAnalyticsPropertyStory( {
 			} );
 
 			if ( useExistingTag ) {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTagPropertyID );
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( existingTagPropertyID );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( {
 					accountID: existingTagAccountID,
 					permission: gaPermission,
 				}, { propertyID: existingTagPropertyID } );
 			} else {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 			}
 
-			registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+			registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( {
 				accountID: gtmAccountID,
 				permission: gtmPermission,
 			}, { propertyID: gtmPropertyID } );
