@@ -65,8 +65,9 @@ const SurveyQuestionOpenText = ( {
 						value={ value }
 					/>
 				</TextField>
-				<Button onClick={ answerQuestion }>{ __( 'Continue', 'google-site-kit' ) }</Button>
-
+			</div>
+			<div className="googlesitekit-survey__footer">
+				<Button onClick={ answerQuestion }>{ __( 'Submit', 'google-site-kit' ) }</Button>
 			</div>
 		</div>
 	);
