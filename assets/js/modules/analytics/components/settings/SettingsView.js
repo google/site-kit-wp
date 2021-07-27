@@ -64,7 +64,6 @@ export default function SettingsView() {
 		path: `/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`,
 	} ) );
 
-	// this is going to the wrong webDataStream... is opening elasticpress but that one is not selected
 	const editViewSettingsGA4URL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
 		path: `/a${ accountID }p${ ga4PropertyID }/admin/streams/table/${ webDataStreamID }`,
 	} ) );
