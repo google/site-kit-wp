@@ -82,7 +82,7 @@ describe( 'modules/analytics accounts', () => {
 					{
 						body: fixtures.createAccount,
 						status: 200,
-					}
+					},
 				);
 
 				registry.dispatch( CORE_FORMS ).setValues( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
@@ -96,7 +96,7 @@ describe( 'modules/analytics accounts', () => {
 						body: {
 							data: { accountName, propertyName, profileName, timezone },
 						},
-					}
+					},
 				);
 
 				expect( store.getState().accountTicketID ).toEqual( fixtures.createAccount.id );
@@ -105,7 +105,7 @@ describe( 'modules/analytics accounts', () => {
 			it( 'sets isDoingCreateAccount ', async () => {
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/,
-					{ body: fixtures.createAccount, status: 200 }
+					{ body: fixtures.createAccount, status: 200 },
 				);
 
 				registry.dispatch( STORE_NAME ).createAccount();
@@ -120,7 +120,7 @@ describe( 'modules/analytics accounts', () => {
 				};
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				registry.dispatch( CORE_FORMS ).setValues( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
@@ -154,7 +154,7 @@ describe( 'modules/analytics accounts', () => {
 				// getAccounts() will trigger a request again.
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
-					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
+					{ body: fixtures.accountsPropertiesProfiles, status: 200 },
 				);
 				expect( registry.select( STORE_NAME ).getAccountID() ).toStrictEqual( undefined );
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toStrictEqual( undefined );
@@ -177,7 +177,7 @@ describe( 'modules/analytics accounts', () => {
 
 				await subscribeUntil(
 					registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAccounts' )
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
 				);
 
 				registry.dispatch( STORE_NAME ).resetAccounts();
@@ -208,7 +208,7 @@ describe( 'modules/analytics accounts', () => {
 			it( 'should correctly select property and profile IDs', async () => {
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-					{ body: fixtures.propertiesProfiles, status: 200 }
+					{ body: fixtures.propertiesProfiles, status: 200 },
 				);
 
 				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
@@ -224,7 +224,7 @@ describe( 'modules/analytics accounts', () => {
 			it( 'should correctly select PROPERTY_CREATE and PROFILE_CREATE when account has no properties', async () => {
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-					{ body: { properties: [], profiles: [] }, status: 200 }
+					{ body: { properties: [], profiles: [] }, status: 200 },
 				);
 
 				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
@@ -298,7 +298,7 @@ describe( 'modules/analytics accounts', () => {
 				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
-					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
+					{ body: fixtures.accountsPropertiesProfiles, status: 200 },
 				);
 
 				const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
@@ -333,7 +333,7 @@ describe( 'modules/analytics accounts', () => {
 
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getAccounts' )
+					.hasFinishedResolution( 'getAccounts' ),
 				);
 
 				expect( accounts ).toEqual( fixtures.accountsPropertiesProfiles.accounts );
@@ -347,7 +347,7 @@ describe( 'modules/analytics accounts', () => {
 
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getAccounts' )
+					.hasFinishedResolution( 'getAccounts' ),
 				);
 
 				expect( accounts ).toEqual( [] );
@@ -362,7 +362,7 @@ describe( 'modules/analytics accounts', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -388,14 +388,14 @@ describe( 'modules/analytics accounts', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
-					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
+					{ body: fixtures.accountsPropertiesProfiles, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getAccounts();
 
 				await subscribeUntil( registry,
 					() => registry.select( STORE_NAME ).getAccounts() !== undefined ||
-					registry.select( STORE_NAME ).getErrorForSelector( 'getAccounts' )
+					registry.select( STORE_NAME ).getErrorForSelector( 'getAccounts' ),
 				);
 
 				// Ensure the proper parameters were sent.
@@ -403,7 +403,7 @@ describe( 'modules/analytics accounts', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
 					{
 						query: { existingPropertyID },
-					}
+					},
 				);
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -412,15 +412,15 @@ describe( 'modules/analytics accounts', () => {
 				const existingPropertyID = 'UA-1234567-1';
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{ body: factories.generateHTMLWithTag( existingPropertyID ), status: 200 }
+					{ body: factories.generateHTMLWithTag( existingPropertyID ), status: 200 },
 				);
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ body: { accountID: '1234567', permission: true }, status: 200 }
+					{ body: { accountID: '1234567', permission: true }, status: 200 },
 				);
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
-					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
+					{ body: fixtures.accountsPropertiesProfiles, status: 200 },
 				);
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL: 'http://example.com/' } );
 
@@ -431,14 +431,14 @@ describe( 'modules/analytics accounts', () => {
 				expect( fetchMock ).toHaveFetched( true, { query: { tagverify: '1' } } );
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ query: { propertyID: existingPropertyID } }
+					{ query: { propertyID: existingPropertyID } },
 				);
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
 					{
 						query: { existingPropertyID },
-					}
+					},
 				);
 				expect( fetchMock ).toHaveFetchedTimes( 3 );
 			} );
@@ -465,7 +465,7 @@ describe( 'modules/analytics accounts', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
-					{ body: response, status: 200 }
+					{ body: response, status: 200 },
 				);
 
 				expect( store.getState().matchedProperty ).toBeFalsy();

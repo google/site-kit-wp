@@ -119,7 +119,7 @@ const baseActions = {
 		function* ( accountID, propertyID, { profileName } ) {
 			const { response, error } = yield fetchCreateProfileStore.actions.fetchCreateProfile( accountID, propertyID, { profileName } );
 			return { response, error };
-		}
+		},
 	),
 
 	/**
@@ -231,7 +231,7 @@ const store = Data.combineStores(
 		actions: baseActions,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

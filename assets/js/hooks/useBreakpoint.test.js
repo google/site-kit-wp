@@ -64,7 +64,7 @@ describe( 'useBreakpoint', () => {
 					{
 						value: args,
 						configurable: true,
-					}
+					},
 				);
 
 				global.window.dispatchEvent( new global.window.Event( 'resize' ) );

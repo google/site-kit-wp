@@ -52,7 +52,7 @@ describe( 'createExistingTagStore store', () => {
 				storeName: STORE_NAME,
 				tagMatchers,
 				isValidTag: ( tag ) => !! tag,
-			} )
+			} ),
 		) );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL: 'http://example.com/' } );
 	} );
@@ -119,7 +119,7 @@ describe( 'createExistingTagStore store', () => {
 				const expectedTag = 'test-tag-value';
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{ body: generateHTMLWithTag( expectedTag ), status: 200 }
+					{ body: generateHTMLWithTag( expectedTag ), status: 200 },
 				);
 
 				const promise = registry.dispatch( STORE_NAME ).waitForExistingTag();
@@ -140,7 +140,7 @@ describe( 'createExistingTagStore store', () => {
 
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{ body: generateHTMLWithTag( expectedTag ), status: 200 }
+					{ body: generateHTMLWithTag( expectedTag ), status: 200 },
 				);
 
 				const initialExistingTag = registry.select( STORE_NAME ).getExistingTag();

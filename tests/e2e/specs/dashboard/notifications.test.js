@@ -24,6 +24,8 @@ describe( 'core site notifications', () => {
 		useRequestInterception( ( request ) => {
 			if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
 				request.respond( { status: 200 } );
+			} else if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
 				request.continue();
 			}
@@ -115,10 +117,10 @@ describe( 'core site notifications', () => {
 			const notificationDescription = await page.$$( '.googlesitekit-publisher-win__desc' );
 
 			expect(
-				notificationTitles.filter( ( { textContent } ) => textContent.match( /test notification title/i ) )
+				notificationTitles.filter( ( { textContent } ) => textContent.match( /test notification title/i ) ),
 			).toHaveLength( 0 );
 			expect(
-				notificationDescription.filter( ( { textContent } ) => textContent.match( /test notification content/i ) )
+				notificationDescription.filter( ( { textContent } ) => textContent.match( /test notification content/i ) ),
 			).toHaveLength( 0 );
 		} );
 	} );

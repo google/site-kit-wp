@@ -52,7 +52,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 						{ link: 'http://example.com/ignore-me' },
 					],
 					status: 200,
-				}
+				},
 			);
 
 			const existingTagURLs = await getExistingTagURLs( { homeURL } );
@@ -76,7 +76,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 						{ link: 'http://example.com/ignore-me' },
 					],
 					status: 200,
-				}
+				},
 			);
 
 			const existingTagURLs = await getExistingTagURLs( { homeURL, ampMode: AMP_MODE_SECONDARY } );
@@ -93,7 +93,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 			fetchMock.getOnce(
 				/^\/wp\/v2\/posts/,
-				{ throws: 'error' }
+				{ throws: 'error' },
 			);
 
 			// No expect( console ).toHaveErrored() needed as the error is caught internally.

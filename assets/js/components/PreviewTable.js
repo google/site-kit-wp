@@ -36,14 +36,14 @@ function PreviewTable( { rows, rowHeight, padding } ) {
 					width="100%"
 					height={ rowHeight + 'px' }
 				/>
-			</div>
+			</div>,
 		);
 	}
 
 	return (
 		<div className={ classnames(
 			'googlesitekit-preview-table',
-			{ 'googlesitekit-preview-table--padding': padding }
+			{ 'googlesitekit-preview-table--padding': padding },
 		) }>
 			{ rowData }
 		</div>

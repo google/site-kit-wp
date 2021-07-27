@@ -180,7 +180,7 @@ const baseActions = {
 			if ( !! ga4PropertyID && ! uaPropertyID ) {
 				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
 			}
-		}
+		},
 	),
 
 	/**
@@ -345,7 +345,7 @@ const baseResolvers = {
 
 		if ( ga4PropertyID ) {
 			ga4Property = yield Data.commonActions.await(
-				registry.__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty( ga4PropertyID )
+				registry.__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty( ga4PropertyID ),
 			);
 		}
 
@@ -467,7 +467,7 @@ const store = Data.combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

@@ -60,7 +60,7 @@ class ErrorHandler extends Component {
 			'react_error',
 			`handle_${ viewContext }_error`,
 			// label has a max-length of 500 bytes.
-			`${ error?.message }\n${ info?.componentStack }`.slice( 0, 500 )
+			`${ error?.message }\n${ info?.componentStack }`.slice( 0, 500 ),
 		);
 	}
 

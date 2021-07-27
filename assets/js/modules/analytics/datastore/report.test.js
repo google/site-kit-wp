@@ -60,7 +60,7 @@ describe( 'modules/analytics report', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: fixtures.report, status: 200 }
+					{ body: fixtures.report, status: 200 },
 				);
 
 				const initialReport = registry.select( STORE_NAME ).getReport( options );
@@ -96,7 +96,7 @@ describe( 'modules/analytics report', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				registry.select( STORE_NAME ).getReport( options );
@@ -120,7 +120,7 @@ describe( 'modules/analytics report', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsError, status: 400 }
+					{ body: restrictedMetricsError, status: 400 },
 				);
 
 				registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
@@ -147,7 +147,7 @@ describe( 'modules/analytics report', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsError, status: 400 }
+					{ body: restrictedMetricsError, status: 400 },
 				);
 
 				registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
@@ -176,7 +176,7 @@ describe( 'modules/analytics report', () => {
 				];
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsSuccess, status: 200 }
+					{ body: restrictedMetricsSuccess, status: 200 },
 				);
 
 				registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
@@ -202,7 +202,7 @@ describe( 'modules/analytics report', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsError, status: 400 }
+					{ body: restrictedMetricsError, status: 400 },
 				);
 
 				registry.dispatch( STORE_NAME ).receiveGetSettings( {} );

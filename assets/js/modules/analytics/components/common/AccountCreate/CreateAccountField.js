@@ -41,7 +41,7 @@ export default function CreateAccountField( {
 		<TextField
 			className={ classnames(
 				'mdc-text-field',
-				{ 'mdc-text-field--error': hasError }
+				{ 'mdc-text-field--error': hasError },
 			) }
 			label={ label }
 			name={ name }

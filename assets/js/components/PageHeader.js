@@ -47,7 +47,7 @@ export default function PageHeader( props ) {
 						{ icon }
 						<h1 className={ classnames(
 							'googlesitekit-page-header__title',
-							className
+							className,
 						) }>
 							{ title }
 						</h1>
@@ -66,7 +66,7 @@ export default function PageHeader( props ) {
 							{ status &&
 								<span className={ classnames(
 									'googlesitekit-page-header__status',
-									`googlesitekit-page-header__status--${ status }`
+									`googlesitekit-page-header__status--${ status }`,
 								) }>
 									{ statusText }
 								</span>

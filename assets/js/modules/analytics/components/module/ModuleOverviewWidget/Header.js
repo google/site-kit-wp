@@ -39,19 +39,19 @@ export default function Header() {
 	} ) );
 	const visitorsOverview = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL(
 		'visitors-overview',
-		generateDateRangeArgs( dates )
+		generateDateRangeArgs( dates ),
 	) );
 	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 	const title = sprintf(
 		/* translators: %s: number of days */
-		_n( 'Audience overview for the last %s day', 'Audience overview for the last %s days', currentDayCount, 'google-site-kit', ),
-		currentDayCount
+		_n( 'Audience overview for the last %s day', 'Audience overview for the last %s days', currentDayCount, 'google-site-kit' ),
+		currentDayCount,
 	);
 
 	const headerCTALabel = sprintf(
 		/* translators: %s: module name. */
 		__( 'See full stats in %s', 'google-site-kit' ),
-		_x( 'Analytics', 'Service name', 'google-site-kit' )
+		_x( 'Analytics', 'Service name', 'google-site-kit' ),
 	);
 
 	return (

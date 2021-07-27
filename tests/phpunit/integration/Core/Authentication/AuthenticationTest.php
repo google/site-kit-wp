@@ -870,9 +870,9 @@ class AuthenticationTest extends TestCase {
 				}
 
 				$data = array(
-					'userInput'             => array( 'enabled' => true ),
-					'widgets.dashboard'     => array( 'enabled' => true ),
-					'widgets.pageDashboard' => array( 'enabled' => false ),
+					'userInput'       => array( 'enabled' => true ),
+					'test.featureOne' => array( 'enabled' => true ),
+					'test.featureTwo' => array( 'enabled' => false ),
 				);
 
 				return array(
@@ -886,8 +886,8 @@ class AuthenticationTest extends TestCase {
 		);
 
 		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'nonExisting' ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'widgets.dashboard' ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'widgets.pageDashboard' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureOne' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureTwo' ) );
 	}
 
 	protected function get_user_option_keys() {

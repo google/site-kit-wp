@@ -129,7 +129,7 @@ export const baseActions = {
 				// eslint-disable-next-line sitekit/acronym-case
 				dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
 			}
-		}
+		},
 	),
 };
 
@@ -209,7 +209,7 @@ const store = Data.combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const {

@@ -59,7 +59,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 }
+					{ body: fixtures.draftPostIdeas, status: 200 },
 				);
 
 				const pendingDraftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
@@ -80,7 +80,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 }
+					{ body: fixtures.draftPostIdeas, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
@@ -95,7 +95,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 			it( 'treats all options as optional', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 }
+					{ body: fixtures.draftPostIdeas, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getDraftPostIdeas( {} );
@@ -113,7 +113,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 }
+					{ body: fixtures.draftPostIdeas, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
@@ -131,7 +131,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 }
+					{ body: fixtures.draftPostIdeas, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
@@ -150,7 +150,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 }
+					{ body: fixtures.draftPostIdeas, status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
@@ -184,7 +184,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				registry.select( STORE_NAME ).getDraftPostIdeas( options );

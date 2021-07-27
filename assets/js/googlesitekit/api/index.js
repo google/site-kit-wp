@@ -71,7 +71,7 @@ export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) 
 		Object.keys( queryParams ).length
 	) {
 		keySections.push(
-			stringifyObject( queryParams )
+			stringifyObject( queryParams ),
 		);
 	}
 
@@ -154,7 +154,7 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 			method,
 			path: addQueryArgs(
 				`/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
-				queryParams
+				queryParams,
 			),
 		} );
 
@@ -201,7 +201,7 @@ export const get = async (
 	identifier,
 	datapoint,
 	data,
-	{ cacheTTL = 3600, useCache = undefined } = {}
+	{ cacheTTL = 3600, useCache = undefined } = {},
 ) => {
 	return siteKitRequest( type, identifier, datapoint, {
 		cacheTTL,
@@ -236,7 +236,7 @@ export const set = async (
 	identifier,
 	datapoint,
 	data,
-	{ method = 'POST', queryParams = {} } = {}
+	{ method = 'POST', queryParams = {} } = {},
 ) => {
 	const response = await siteKitRequest( type, identifier, datapoint, {
 		bodyParams: { data },

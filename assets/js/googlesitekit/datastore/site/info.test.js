@@ -72,7 +72,7 @@ describe( 'core/site site info', () => {
 				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
 				expect(
-					registry.select( STORE_NAME ).getSiteInfo()
+					registry.select( STORE_NAME ).getSiteInfo(),
 				).toMatchObject( { ...baseInfo, ...entityInfo, currentEntityID: 4 } );
 			} );
 		} );

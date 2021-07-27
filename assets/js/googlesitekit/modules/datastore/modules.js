@@ -92,7 +92,7 @@ const normalizeModules = memize(
 			.reduce( ( acc, module ) => {
 				return { ...acc, [ module.slug ]: module };
 			}, {} );
-	}
+	},
 );
 
 const fetchGetModulesStore = createFetchStore( {
@@ -227,7 +227,7 @@ const baseActions = {
 			}
 
 			return { response, error };
-		}
+		},
 	),
 
 	/**
@@ -303,7 +303,7 @@ const baseActions = {
 			// As we can specify a custom checkRequirements function here, we're invalidating the resolvers for activation checks.
 			yield registry.dispatch( STORE_NAME ).invalidateResolution( 'canActivateModule', [ slug ] );
 			yield registry.dispatch( STORE_NAME ).invalidateResolution( 'getCheckRequirementsError', [ slug ] );
-		}
+		},
 	),
 
 	/**
@@ -867,7 +867,7 @@ const store = Data.combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

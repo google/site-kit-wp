@@ -25,7 +25,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/pagespeed-insights report', () => {
@@ -85,12 +85,12 @@ describe( 'modules/pagespeed-insights report', () => {
 							url,
 							strategy,
 						},
-					}
+					},
 				);
 
 				expect( initialReport ).toEqual( undefined );
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] ),
 				);
 
 				const report = registry.select( STORE_NAME ).getReport( url, strategy );
@@ -115,7 +115,7 @@ describe( 'modules/pagespeed-insights report', () => {
 
 				registry.select( STORE_NAME ).getReport( url, strategy );
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] ),
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );

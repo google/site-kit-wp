@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import './modules';
-
-/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
@@ -47,7 +42,7 @@ domReady( () => {
 			>
 				<DashboardDetailsApp />
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 	}
 } );

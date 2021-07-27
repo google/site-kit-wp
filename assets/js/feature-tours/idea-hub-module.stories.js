@@ -48,19 +48,19 @@ const mockEndpoints = ( args ) => {
 
 	fetchMock.get(
 		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-		{ body: args?.newIdeas || newIdeas }
+		{ body: args?.newIdeas || newIdeas },
 	);
 	fetchMock.get(
 		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-		{ body: args?.savedIdeas || savedIdeas }
+		{ body: args?.savedIdeas || savedIdeas },
 	);
 	fetchMock.get(
 		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-		{ body: args?.draftPostIdeas || draftPostIdeas }
+		{ body: args?.draftPostIdeas || draftPostIdeas },
 	);
 	fetchMock.post(
 		/google-site-kit\/v1\/modules\/idea-hub\/data\/create-idea-draft-post/,
-		{ body: {} }
+		{ body: {} },
 	);
 	fetchMock.post(
 		/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
@@ -70,11 +70,11 @@ const mockEndpoints = ( args ) => {
 			return {
 				body: JSON.stringify( data ),
 			};
-		}
+		},
 	);
 	fetchMock.post(
 		/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/,
-		{ body: JSON.stringify( [ 'ideaHubModule' ] ) }
+		{ body: JSON.stringify( [ 'ideaHubModule' ] ) },
 	);
 };
 

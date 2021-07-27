@@ -92,7 +92,7 @@ class DashboardModulesAlerts extends Component {
 						pageIndex={ notification.pageIndex || '' }
 						dismissExpires={ notification.dismissExpires || 0 }
 						showOnce={ notification.showOnce || false }
-					/>
+					/>,
 				);
 			} );
 		} );

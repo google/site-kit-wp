@@ -69,6 +69,8 @@ describe( 'Tag Manager module setup', () => {
 				request.respond( { status: 200, body: JSON.stringify( liveContainerVersionFixture ) } );
 			} else if ( request.url().match( /^https:\/\/www\.googletagmanager\.com\/(gtm\.js|amp\.json)/ ) ) {
 				request.respond( { status: 200 } );
+			} else if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
 				request.continue();
 			}
@@ -169,7 +171,7 @@ describe( 'Tag Manager module setup', () => {
 			// Ensure no AMP containers are shown as options.
 			// expect(...).not.toMatchElement with textContent matching does not work as expected.
 			await expect(
-				await page.$$eval( '.mdc-menu-surface--open .mdc-list-item', ( nodes ) => !! nodes.find( ( e ) => e.textContent.match( /test amp container/i ) ) )
+				await page.$$eval( '.mdc-menu-surface--open .mdc-list-item', ( nodes ) => !! nodes.find( ( e ) => e.textContent.match( /test amp container/i ) ) ),
 			).toStrictEqual( false );
 			await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test container y/i } );
 

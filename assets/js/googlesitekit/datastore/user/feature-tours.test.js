@@ -26,7 +26,8 @@ import {
 } from '../../../../../tests/js/utils';
 import * as CacheModule from '../../../googlesitekit/api/cache';
 import { STORE_NAME } from './constants';
-import initialState, {
+import {
+	initialState,
 	FEATURE_TOUR_COOLDOWN_SECONDS,
 	FEATURE_TOUR_LAST_DISMISSED_AT,
 } from './feature-tours';
@@ -107,7 +108,7 @@ describe( 'core/user feature-tours', () => {
 				await registry.dispatch( STORE_NAME ).dismissTour( 'tour-b' );
 
 				expect( store.getState().dismissedTourSlugs ).toEqual(
-					expect.arrayContaining( [ 'tour-a', 'tour-b' ] )
+					expect.arrayContaining( [ 'tour-a', 'tour-b' ] ),
 				);
 			} );
 
@@ -190,7 +191,7 @@ describe( 'core/user feature-tours', () => {
 				expect( setItemSpy ).toHaveBeenCalledWith(
 					FEATURE_TOUR_LAST_DISMISSED_AT,
 					timestamp,
-					expect.objectContaining( { ttl: FEATURE_TOUR_COOLDOWN_SECONDS } )
+					expect.objectContaining( { ttl: FEATURE_TOUR_COOLDOWN_SECONDS } ),
 				);
 			} );
 		} );
@@ -233,7 +234,7 @@ describe( 'core/user feature-tours', () => {
 				registry.dispatch( STORE_NAME ).receiveGetDismissedTours( [ 'tour-a', 'feature-x' ] );
 
 				expect( registry.select( STORE_NAME ).getDismissedFeatureTourSlugs() ).toEqual(
-					expect.arrayContaining( [ 'feature-x', 'tour-a' ] )
+					expect.arrayContaining( [ 'feature-x', 'tour-a' ] ),
 				);
 			} );
 		} );
@@ -245,7 +246,7 @@ describe( 'core/user feature-tours', () => {
 
 			it( 'returns `undefined` while tour readiness is being resolved', () => {
 				expect(
-					registry.select( STORE_NAME ).getFeatureToursForView( 'test-view-context' )
+					registry.select( STORE_NAME ).getFeatureToursForView( 'test-view-context' ),
 				).toBeUndefined();
 			} );
 
@@ -253,11 +254,11 @@ describe( 'core/user feature-tours', () => {
 				registry.dispatch( STORE_NAME ).receiveAllFeatureTours( [ testTourA, testTourB ] );
 
 				expect(
-					await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' )
+					await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' ),
 				).toEqual( [ testTourA, testTourB ] );
 
 				expect(
-					await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'b-only-context' )
+					await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'b-only-context' ),
 				).toEqual( [ testTourB ] );
 			} );
 
@@ -279,18 +280,18 @@ describe( 'core/user feature-tours', () => {
 				registry.dispatch( STORE_NAME ).receiveGetDismissedTours( [ testTourB.slug ] );
 				// Tour B was received as dismissed, but A was not.
 				expect(
-					await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' )
+					await registry.__experimentalResolveSelect( STORE_NAME ).getFeatureToursForView( 'common-context' ),
 				).toEqual( [ testTourA ] );
 			} );
 
 			it( 'returns an array of tours that use their own logic for checking additional requirements', async () => {
 				// Check A will resolve with `true` on the next tick.
 				const checkA = jest.fn(
-					async () => new Promise( ( resolve ) => setTimeout( resolve( true ) ) )
+					async () => new Promise( ( resolve ) => setTimeout( resolve( true ) ) ),
 				);
 				// Check B will resolve with `false` on the next tick.
 				const checkB = jest.fn(
-					async () => new Promise( ( resolve ) => setTimeout( resolve( false ) ) )
+					async () => new Promise( ( resolve ) => setTimeout( resolve( false ) ) ),
 				);
 				registry.dispatch( STORE_NAME ).receiveAllFeatureTours( [
 					{ ...testTourA, checkRequirements: checkA },
@@ -317,7 +318,7 @@ describe( 'core/user feature-tours', () => {
 				registry.dispatch( STORE_NAME ).receiveAllFeatureTours( tours );
 
 				expect(
-					registry.select( STORE_NAME ).getAllFeatureTours()
+					registry.select( STORE_NAME ).getAllFeatureTours(),
 				).toEqual( tours );
 			} );
 		} );

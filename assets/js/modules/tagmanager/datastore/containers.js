@@ -114,7 +114,7 @@ const baseActions = {
 			const { response, error } = yield fetchCreateContainerStore.actions.fetchCreateContainer( accountID, usageContext, { containerName } );
 
 			return { response, error };
-		}
+		},
 	),
 
 	/**
@@ -163,7 +163,7 @@ const baseActions = {
 				// eslint-disable-next-line sitekit/acronym-case
 				dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
 			}
-		}
+		},
 	),
 
 	/**
@@ -184,7 +184,7 @@ const baseActions = {
 				payload: { accountID },
 				type: WAIT_FOR_CONTAINERS,
 			};
-		}
+		},
 	),
 };
 
@@ -264,7 +264,7 @@ const baseSelectors = {
 		}
 
 		return containers.filter(
-			( { usageContext } ) => usageContext.includes( CONTEXT_WEB )
+			( { usageContext } ) => usageContext.includes( CONTEXT_WEB ),
 		);
 	} ),
 
@@ -285,7 +285,7 @@ const baseSelectors = {
 		}
 
 		return containers.filter(
-			( { usageContext } ) => usageContext.includes( CONTEXT_AMP )
+			( { usageContext } ) => usageContext.includes( CONTEXT_AMP ),
 		);
 	} ),
 
@@ -337,7 +337,7 @@ const store = Data.combineStores(
 		controls: baseControls,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const {

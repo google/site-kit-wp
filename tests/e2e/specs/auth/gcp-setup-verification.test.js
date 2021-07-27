@@ -24,6 +24,8 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 						location: createURL( '/wp-admin/index.php', 'oauth2callback=1&code=valid-test-code' ),
 					},
 				} );
+			} else if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
 				request.respond( {
 					status: 200,

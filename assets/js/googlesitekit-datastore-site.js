@@ -20,6 +20,6 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { registerStore } from 'assets/js/googlesitekit/datastore/site';
+import { registerStore } from './googlesitekit/datastore/site';
 
 registerStore( Data );
