@@ -32,11 +32,29 @@
 	}
 
 	.googlesitekit-survey__body {
-		padding: 0 0 $grid-gap-phone;
+		padding: $grid-gap-phone 0;
 		position: relative;
 
 		@media (min-width: $bp-desktop) {
 			padding-bottom: $grid-gap-desktop;
+		}
+	}
+
+	.googlesitekit-survey__open-text {
+
+		.googlesitekit-survey__body {
+			align-items: center;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		.mdc-text-field {
+			margin-bottom: $grid-gap-phone;
+		}
+
+		.mdc-text-field-helper-line {
+			padding-left: 0;
 		}
 	}
 

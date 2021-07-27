@@ -52,19 +52,21 @@ const SurveyQuestionOpenText = ( {
 			/>
 
 			<div className="googlesitekit-survey__body">
-				<TextField
-					name="siteProperty"
-					helperText={
-						<HelperText>
-							{ __( 'Don\'t include personal information', 'google-site-kit' ) }
-						</HelperText>
-					}
-					onChange={ onChange }
-				>
-					<Input
-						value={ value }
-					/>
-				</TextField>
+				<div>
+					<TextField
+						name="siteProperty"
+						helperText={
+							<HelperText>
+								{ __( 'Don\'t include personal information', 'google-site-kit' ) }
+							</HelperText>
+						}
+						onChange={ onChange }
+					>
+						<Input
+							value={ value }
+						/>
+					</TextField>
+				</div>
 			</div>
 			<div className="googlesitekit-survey__footer">
 				<Button onClick={ answerQuestion }>{ __( 'Submit', 'google-site-kit' ) }</Button>
